@@ -1,0 +1,5 @@
+bobas.businessobjectscommon
+bobas.businessobjectscommon.db.hana
+bobas.businessobjectscommon.db.mssql
+bobas.businessobjectscommon.db.mysql
+bobas.businessobjectscommon.db.pgsql

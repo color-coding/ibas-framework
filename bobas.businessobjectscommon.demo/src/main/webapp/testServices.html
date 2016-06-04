@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Test Services</title>
+    <script type="text/javascript" src="./js/basis/jquery.js"></script>
+    <script>
+        var showResult = function (opRslt) {
+            $("#rsltCode").html("");
+            $("#rsltMsg").html("");
+            $("#rsltCount").html("");
+            $("#rsltValues").html("");
+            if (opRslt) {
+                if (opRslt.ResultCode) {
+                    $("#rsltCode").html(opRslt.ResultCode);
+                }
+                if (opRslt.Message) {
+                    $("#rsltMsg").html(opRslt.Message);
+                }
+                if (opRslt.ResultObjects) {
+                    $("#rsltCount").html(opRslt.ResultObjects.length);
+                }
+                $("#rsltValues").html(JSON.stringify(opRslt, null, "\n"));
+            } else {
+                $("#rsltCode").html(-999);
+                $("#rsltMsg").html("unkown.");
+            }
+        };
+        var showErrors = function (err) {
+            $("#rsltCode").html("");
+            $("#rsltMsg").html("");
+            $("#rsltCount").html("");
+            $("#rsltValues").html("");
+            if (err) {
+                if (err.status) {
+                    $("#rsltCode").html(err.status);
+                }
+                if (err.statusText) {
+                    $("#rsltMsg").html(err.statusText);
+                }
+                $("#rsltValues").html(err.responseText);
+            } else {
+                $("#rsltCode").html(-999);
+                $("#rsltMsg").html("unkown.");
+            }
+        }
+        var address = window.location.origin + '/demo/services/';
+        var getWadl = function () {
+            var url = address + 'application.wadl';
+            $.ajax({
+                type: 'get',
+                contentType: "application/xml",
+                url: url,
+                success: function (data, status) {
+                	document.location.assign(url);
+                },
+                error: function (err) {
+                    showErrors(err);
+                }
+            });
+        };
+        var testHello = function () {
+            var url = address + 'hello';
+            $.ajax({
+                type: 'get',
+                contentType: "text/html",
+                url: url,
+                success: function (data, status) {
+                    showResult(data);
+                },
+                error: function (err) {
+                    showErrors(err);
+                }
+            });
+        };
+        var criteria = null;
+        var testCreate = function () {
+            var url = address + 'create';
+            $.ajax({
+                type: 'get',
+                contentType: "text/html",
+                url: url,
+                success: function (data, status) {
+                    showResult(data);
+                    criteria = data;
+                },
+                error: function (err) {
+                    showErrors(err);
+                }
+            });
+        };
+        var testFetch = function () {
+            var url = address + 'fetch';
+            $.ajax({
+                type: 'POST',
+                contentType: "application/json",
+                url: url,
+                data: JSON.stringify(criteria),
+                success: function (data, status) {
+                    showResult(data);
+                },
+                error: function (err) {
+                    showErrors(err);
+                }
+            });
+        };
+        var testResult = function () {
+            var url = address + 'result';
+            $.ajax({
+                type: 'get',
+                contentType: "text/html",
+                url: url,
+                success: function (data, status) {
+                    showResult(data);
+                },
+                error: function (err) {
+                    showErrors(err);
+                }
+            });
+        };
+        var salesOrder = null;
+        var testFetchSalesOrder = function () {
+            var url = address + 'fetchSalesOrder?token=hahaha';
+            $.ajax({
+                type: 'POST',
+                contentType: "application/json",
+                url: url,
+                data: JSON.stringify(criteria),
+                success: function (data, status) {
+                    showResult(data);
+                    salesOrder = data.ResultObjects[0];
+                },
+                error: function (err) {
+                    showErrors(err);
+                }
+            });
+        };
+        var testSaveSalesOrder = function () {
+            var url = address + 'saveSalesOrder?token=hahaha';
+            $.ajax({
+                type: 'POST',
+                contentType: "application/json",
+                url: url,
+                data: JSON.stringify(salesOrder),
+                success: function (data, status) {
+                    showResult(data);
+                },
+                error: function (err) {
+                    showErrors(err);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+	<div>
+		 <input type="button" value="wadl" onclick="getWadl();" />
+	</div>
+    <br />
+    <div>
+        <input type="button" value="hello" onclick="testHello();" />
+        <input type="button" value="create" onclick="testCreate();" />
+        <input type="button" value="fetch" onclick="testFetch();" />
+        <input type="button" value="result" onclick="testResult();" />
+        <input type="button" value="fetchSalesOrder" onclick="testFetchSalesOrder();" />
+        <input type="button" value="saveSalesOrder" onclick="testSaveSalesOrder();" />
+    </div>
+    <br />
+    <div>
+        <label>code:</label>
+        <label id="rsltCode"></label>
+        <br />
+        <label>messages:</label>
+        <label id="rsltMsg"></label>
+        <br />
+        <label>count:</label>
+        <label id="rsltCount"></label>
+        <br />
+        <br />
+        <label id="rsltValues"></label>
+    </div>
+</body>
+</html>

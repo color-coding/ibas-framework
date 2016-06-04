@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE configuration>
+<ns2:configuration xmlns:ns2="http://colorcoding.org/bobas/configuration">
+	<appSettings>
+		<!--配置项目-是否开启调试模式-->
+		<add key="DebugMode" value="false" />
+		<!-- 配置项目-工作目录 -->
+		<add key="WorkFolder" value="" />
+		<!-- 配置项目-数据库类型 -->
+		<add key="DbType" value="PGSQL" />
+		<!-- 配置项目-数据库地址-->
+		<add key="DbServer" value="192.168.3.53:5432" />
+		<!-- 配置项目-数据库名称 -->
+		<add key="DbName" value="ibas_demo" />
+		<!-- 配置项目-数据库用户名称 -->
+		<add key="DbUserID" value="postgres" />
+		<!-- 配置项目-数据库用户密码 -->
+		<add key="DbUserPassword" value="1q2w3e" />
+		<!-- 配置项目-数据库类型 -->
+		<add key="MasterDbType" value="PGSQL" />
+		<!-- 配置项目-数据库地址-->
+		<add key="MasterDbServer" value="192.168.3.53:5432" />
+		<!-- 配置项目-数据库名称 -->
+		<add key="MasterDbName" value="ibas_demo" />
+		<!-- 配置项目-数据库用户名称 -->
+		<add key="MasterDbUserID" value="postgres" />
+		<!-- 配置项目-数据库用户密码 -->
+		<add key="MasterDbUserPassword" value="1q2w3e" />
+		<!-- 配置项目-数据库类型 -->
+		<add key="ReadonlyDbType" value="PGSQL" />
+		<!-- 配置项目-数据库地址-->
+		<add key="ReadonlyDbServer" value="192.168.3.53:5432" />
+		<!-- 配置项目-数据库名称 -->
+		<add key="ReadonlyDbName" value="ibas_demo" />
+		<!-- 配置项目-数据库用户名称 -->
+		<add key="ReadonlyDbUserID" value="postgres" />
+		<!-- 配置项目-数据库用户密码 -->
+		<add key="ReadonlyDbUserPassword" value="1q2w3e" />
+		<!-- 配置项目-国际化文件路径 -->
+		<add key="I18nPath"
+			value="/src/main/resources/i18n/" />
+		<!-- 配置项目-国际化文件名称模板 -->
+		<add key="I18nFileTemplate" value="locale.bobs%s.properties" />
+		<!-- 配置项目-语言编码 -->
+		<add key="LanguageCode" value="" />
+		
+	</appSettings>
+</ns2:configuration>

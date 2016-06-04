@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE configuration>
+<ns2:configuration xmlns:ns2="http://colorcoding.org/bobas/configuration">
+	<appSettings>
+		<add key="DebugMode" value="false" />
+		<add key="DbType" value="MYSQL" />
+		<add key="DbServer" value="192.168.3.53:3306" />
+		<add key="DbName" value="ibas_demo" />
+		<add key="DbUserID" value="root" />
+		<add key="DbUserPassword" value="1q2w3e" />
+		<add key="MasterDbType" value="MYSQL" />
+		<add key="MasterDbServer" value="192.168.3.53:3306" />
+		<add key="MasterDbName" value="ibas_demo" />
+		<add key="MasterDbUserID" value="root" />
+		<add key="MasterDbUserPassword" value="1q2w3e" />
+		<add key="ReadonlyDbType" value="MYSQL" />
+		<add key="ReadonlyDbServer" value="192.168.3.53:3306" />
+		<add key="ReadonlyDbName" value="ibas_demo" />
+		<add key="ReadonlyDbUserID" value="root" />
+		<add key="ReadonlyDbUserPassword" value="1q2w3e" />
+		<add key="I18nPath" value="/src/main/resources/i18n/" />
+		<add key="I18nFileTemplate" value="locale.bobs%s.properties" />
+		<add key="LanguageCode" value="" />
+	</appSettings>
+</ns2:configuration>
