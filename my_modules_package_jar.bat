@@ -28,7 +28,7 @@ call mvn clean install >>%LOGFILE%
 
 echo --start packing.
 if not exist %WORK_FOLDER%release md %WORK_FOLDER%release
-if exist %WORK_FOLDER%release del /f /s /q %WORK_FOLDER%release\*.*
+if exist %WORK_FOLDER%release del /f /s /q %WORK_FOLDER%release\*.* >>%LOGFILE%
 
 for /f %%m in (%WORKFOLDER%compile_order.txt) DO (
 if exist %WORK_FOLDER%%%m\pom.xml (
