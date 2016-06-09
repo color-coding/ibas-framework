@@ -1,15 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.colorcoding.ibas</groupId>
 	<artifactId>bobas.businessobjectscommon</artifactId>
-	<version>0.1.1</version>
 	<name>bobas.businessobjectscommon</name>
 	<url>http://colorcoding.org/ibas/bobas/</url>
 	<organization>
 		<name>Color Coding</name>
 		<url>http://colorcoding.org</url>
 	</organization>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 	<repositories>
 		<repository>
 			<id>ibas-dev</id>
@@ -42,4 +43,9 @@
 			<version>4.12</version>
 		</dependency>
 	</dependencies>
+	<parent>
+		<groupId>org.colorcoding.ibas</groupId>
+		<artifactId>bobas.businessobjectscommon.parent</artifactId>
+		<version>0.1.1</version>
+	</parent>
 </project>

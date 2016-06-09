@@ -1,9 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.colorcoding.ibas</groupId>
 	<artifactId>btulz.modelstransformer</artifactId>
-	<version>0.1.0</version>
 	<packaging>jar</packaging>
 	<name>btulz.modelstransformer</name>
 	<url>http://colorcoding.org/ibas/btulz/modelstransformer</url>
@@ -11,6 +9,9 @@
 		<url>http://colorcoding.org</url>
 		<name>Color Coding</name>
 	</organization>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 	<build>
 		<plugins>
 			<plugin>
@@ -32,4 +33,6 @@
 			<version>4.12</version>
 		</dependency>
 	</dependencies>
+	<groupId>org.colorcoding.ibas</groupId>
+	<version>0.1.1</version>
 </project>

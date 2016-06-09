@@ -6,6 +6,9 @@
 	<version>0.1.1</version>
 	<name>bobas.businessobjectscommon.demo</name>
 	<url>http://colorcoding.org/ibas/bobas/demo</url>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 	<repositories>
 		<repository>
 			<id>ibas-dev</id>
