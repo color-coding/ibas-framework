@@ -24,8 +24,7 @@
 		</servlet-class>
 		<init-param>
 			<param-name>jersey.config.server.provider.packages</param-name>
-			<param-value>bobas.businessobjectscommon.demo.repository
-			</param-value>
+			<param-value>org.colorcoding.ibas.demo.repository</param-value>
 		</init-param>
 		<init-param>
 			<param-name>jersey.config.server.provider.classnames</param-name>
@@ -34,6 +33,10 @@
 		</init-param>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>bobas.demo</servlet-name>
 		<url-pattern>/services/*</url-pattern>
