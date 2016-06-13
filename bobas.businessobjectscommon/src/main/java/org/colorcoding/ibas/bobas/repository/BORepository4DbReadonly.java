@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.repository;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.Criteria;
@@ -59,6 +60,14 @@ class BORepository4DbReadonly extends BORepositoryBase implements IBORepository4
 	private String dbType = null;
 
 	protected String getDbType() {
+		if (this.dbType == null || this.dbType == "") {
+			if (this.getDbSign() != null && this.getDbSign() != "") {
+				// 设置连接配置类型
+				String configItem = this.getDbSign() + MyConfiguration.CONFIG_ITEM_DB_TYPE;
+				this.dbType = MyConfiguration.getConfigValue(configItem);
+			}
+
+		}
 		return this.dbType;
 	}
 

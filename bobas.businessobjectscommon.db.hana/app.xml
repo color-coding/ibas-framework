@@ -3,21 +3,11 @@
 <ns2:configuration xmlns:ns2="http://colorcoding.org/ibas/bobas/configuration">
 	<appSettings>
 		<add key="DebugMode" value="False" />
-		<add key="DbType" value="HANA" />
-		<add key="DbServer" value="122.5.6.90:30015" />
-		<add key="DbName" value="IBAS_DEMO" />
-		<add key="DbUserID" value="SYSTEM" />
-		<add key="DbUserPassword" value="HANAavatech2012" />
 		<add key="MasterDbType" value="HANA" />
 		<add key="MasterDbServer" value="122.5.6.90:30015" />
 		<add key="MasterDbName" value="IBAS_DEMO" />
 		<add key="MasterDbUserID" value="SYSTEM" />
 		<add key="MasterDbUserPassword" value="HANAavatech2012" />
-		<add key="ReadonlyDbType" value="HANA" />
-		<add key="ReadonlyDbServer" value="122.5.6.90:30015" />
-		<add key="ReadonlyDbName" value="IBAS_DEMO" />
-		<add key="ReadonlyDbUserID" value="SYSTEM" />
-		<add key="ReadonlyDbUserPassword" value="HANAavatech2012" />
 		<add key="I18nPath" value="/src/main/resources/i18n/" />
 		<add key="I18nFileTemplate" value="locale.bobs%s.properties" />
 		<add key="LanguageCode" value="" />
