@@ -21,11 +21,4 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.m2e.core.maven2Nature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>java</name>
-			<type>2</type>
-			<location>E:/usr/share/eclipse/C::/usr/share/eclipse/E::/usr/share/eclipse/C::/usr/local/bin/eclipse/E::/MyWorks/AVA/Code/ibas/BasisLibrary/BOBas.BusinessObjectsCommon/J4/bobas.businessobjectscommon/src/main/java</location>
-		</link>
-	</linkedResources>
 </projectDescription>
