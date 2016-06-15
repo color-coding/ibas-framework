@@ -59,9 +59,5 @@ cd /d %WORK_FOLDER%
 )
 cd /d %WORK_FOLDER%
 
-echo --rename packages.
-for /f "tokens=1,2,* delims=- " %%a in ('dir /b %WORK_FOLDER%release\') do (
-if exist "%WORK_FOLDER%release\*-.jar" ren "%WORK_FOLDER%release\%%a-%%b-%%c" "%%a.%%b.jar" >>%LOGFILE%
-)
 echo --see [%LOGFILE%] for details.
 echo --done.
