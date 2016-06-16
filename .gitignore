@@ -12,7 +12,7 @@
 hs_err_pid*
 
 # log file
-my_modules_packing_log_*.txt
+*_log_*.txt
 
 # release folder
 /release

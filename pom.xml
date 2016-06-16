@@ -53,11 +53,4 @@
 			<version>4.12</version>
 		</dependency>
 	</dependencies>
-    <modules>
-        <module>bobas.businessobjectscommon</module>
-        <module>bobas.businessobjectscommon.db.mssql</module>
-        <module>bobas.businessobjectscommon.db.mysql</module>
-        <module>bobas.businessobjectscommon.db.pgsql</module>
-        <module>bobas.businessobjectscommon.db.hana</module>
-   </modules>
 </project>
