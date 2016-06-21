@@ -35,7 +35,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 数据库表
 	 */
-	public final static String DB_TABLE_NAME = "AVA_TT_RDR1";
+	public final static String DB_TABLE_NAME = "CC_TT_RDR1";
 
 	/**
 	 * 业务对象编码

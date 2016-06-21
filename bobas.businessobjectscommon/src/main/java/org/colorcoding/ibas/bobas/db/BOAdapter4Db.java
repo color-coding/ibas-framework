@@ -14,6 +14,7 @@ import org.colorcoding.ibas.bobas.bo.IBOSimpleLine;
 import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.bo.IBOUserFields;
 import org.colorcoding.ibas.bobas.bo.ICustomPrimaryKeys;
+import org.colorcoding.ibas.bobas.bo.IFieldMaxValueKey;
 import org.colorcoding.ibas.bobas.bo.UserField;
 import org.colorcoding.ibas.bobas.bo.UserFieldInfo;
 import org.colorcoding.ibas.bobas.bo.UserFieldInfoList;
@@ -271,6 +272,76 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 		} catch (Exception e) {
 			throw new BOParseException(e);
 		}
+	}
+
+	/**
+	 * 修正查询条件（包括：db字段名，类型）
+	 * 
+	 * @param conditions
+	 *            查询条件
+	 * @param pInfoList
+	 *            属性列表
+	 * @return
+	 */
+	protected IConditions fixConditions(IConditions conditions, PropertyInfoList pInfoList) {
+		DbField dbField = null;
+		for (int i = 0; i < pInfoList.size(); i++) {
+			PropertyInfo<?> cProperty = (PropertyInfo<?>) pInfoList.get(i);
+			if (cProperty.getName() == null || cProperty.getName().equals("")) {
+				continue;
+			}
+			Object annotation = cProperty.getAnnotation(DbField.class);
+			if (annotation != null) {
+				// 绑定数据库的字段
+				dbField = (DbField) annotation;
+				if (dbField.name() == null || dbField.name().equals("")) {
+					continue;
+				}
+				// 修正查询条件的字段名称
+				for (ICondition condition : conditions) {
+					if (cProperty.getName().equals(condition.getAlias())) {
+						condition.setAlias(dbField.name());
+						DbFieldType dbFieldType = dbField.type();
+						condition.setAliasDataType(dbFieldType);
+					}
+				}
+			}
+		}
+		return conditions;
+	}
+
+	/**
+	 * 修正排序条件
+	 * 
+	 * @param sorts
+	 *            排序
+	 * @param pInfoList
+	 *            属性列表
+	 * @return
+	 */
+	protected ISorts fixSorts(ISorts sorts, PropertyInfoList pInfoList) {
+		DbField dbField = null;
+		for (int i = 0; i < pInfoList.size(); i++) {
+			PropertyInfo<?> cProperty = (PropertyInfo<?>) pInfoList.get(i);
+			if (cProperty.getName() == null || cProperty.getName().equals("")) {
+				continue;
+			}
+			Object annotation = cProperty.getAnnotation(DbField.class);
+			if (annotation != null) {
+				// 绑定数据库的字段
+				dbField = (DbField) annotation;
+				if (dbField.name() == null || dbField.name().equals("")) {
+					continue;
+				}
+				// 修正排序的字段名称
+				for (ISort sort : sorts) {
+					if (cProperty.getName().equals(sort.getAlias())) {
+						sort.setAlias(dbField.name());
+					}
+				}
+			}
+		}
+		return sorts;
 	}
 
 	@Override
@@ -804,11 +875,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				throw new SqlScriptsException(i18n.prop("msg_bobas_invaild_sql_scripts"));
 			}
 			ArrayList<KeyValue> keys = new ArrayList<KeyValue>();
-			if (bo instanceof ICustomPrimaryKeys) {
-				// 自定义主键
-				// ICustomPrimaryKeys item = (ICustomPrimaryKeys) bo;
-				// TODO 自定义主键获取逻辑
-			} else if (bo instanceof IBODocument) {
+			if (bo instanceof IBODocument) {
 				// 业务单据主键
 				IBODocument item = (IBODocument) bo;
 				IDbDataReader reader = command.executeReader(sqlScripts.getBOPrimaryKeyQuery(item.getObjectCode()));
@@ -916,8 +983,37 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 
 			} else {
 				// 没有指定主键的获取方式
-				throw new SqlScriptsException(
-						i18n.prop("msg_bobas_not_specify_primary_keys_obtaining_method", bo.getClass().getName()));
+				/*
+				 * throw new SqlScriptsException( i18n.prop(
+				 * "msg_bobas_not_specify_primary_keys_obtaining_method",
+				 * bo.getClass().getName()));
+				 */
+			}
+			// 额外主键获取
+			if (bo instanceof ICustomPrimaryKeys) {
+				// 自定义主键
+				if (bo instanceof IFieldMaxValueKey) {
+					// 字段最大值
+					IFieldMaxValueKey maxValueKey = (IFieldMaxValueKey) bo;
+					IFieldDataDb dbField = maxValueKey.getMaxValueField();
+					String table = String.format(sqlScripts.getDbObjectSign(), dbField.getDbTable());
+					String field = String.format(sqlScripts.getDbObjectSign(), dbField.getDbField());
+					PropertyInfoList pInfoList = PropertyInfoManager.getPropertyInfoList(bo.getClass());
+					IConditions conditions = this.fixConditions(maxValueKey.getMaxValueConditions(), pInfoList);
+					String where = this.parseSqlQuery(conditions).getQueryString();
+					IDbDataReader reader = command.executeReader(sqlScripts.groupMaxValueQuery(field, table, where));
+
+					if (reader.next()) {
+						dbField.setValue(reader.getInt(1) + 1);
+						reader.close();
+						keys.add(new KeyValue(dbField.getName(), dbField.getValue()));
+					} else {
+						reader.close();
+						throw new SqlScriptsException(
+								i18n.prop("msg_bobas_not_found_bo_primary_keys", bo.getClass().getName()));
+					}
+
+				}
 			}
 			return keys.toArray(new KeyValue[] {});
 		} catch (Exception e) {

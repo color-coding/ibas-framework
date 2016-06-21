@@ -6,7 +6,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
+import org.colorcoding.ibas.bobas.bo.IFieldMaxValueKey;
+import org.colorcoding.ibas.bobas.common.Criteria;
+import org.colorcoding.ibas.bobas.common.ICondition;
+import org.colorcoding.ibas.bobas.common.IConditions;
+import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
+import org.colorcoding.ibas.bobas.core.fields.IFieldDataDb;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
@@ -30,7 +36,7 @@ import org.colorcoding.ibas.bobas.mapping.db.DbFieldType;
 @XmlType(name = "SalesOrder")
 @XmlRootElement(name = "SalesOrder")
 @BOCode(SalesOrder.BUSINESS_OBJECT_CODE)
-public class SalesOrder extends BusinessObject<SalesOrder> implements ISalesOrder {
+public class SalesOrder extends BusinessObject<SalesOrder> implements ISalesOrder,IFieldMaxValueKey {
 
 	/**
 	 * 序列化版本标记
@@ -45,7 +51,7 @@ public class SalesOrder extends BusinessObject<SalesOrder> implements ISalesOrde
 	/**
 	 * 数据库表
 	 */
-	public final static String DB_TABLE_NAME = "AVA_TT_ORDR";
+	public final static String DB_TABLE_NAME = "CC_TT_ORDR";
 
 	/**
 	 * 业务对象编码
@@ -2194,5 +2200,20 @@ public class SalesOrder extends BusinessObject<SalesOrder> implements ISalesOrde
 	@Override
 	public final void setCycle(Time value) {
 		this.setProperty(CycleProperty, value);
+	}
+
+	@Override
+	public IFieldDataDb getMaxValueField() {
+		return (IFieldDataDb)this.getField(DocNumProperty.getName());
+	}
+
+	@Override
+	public IConditions getMaxValueConditions() {
+		ICriteria criteria = new Criteria();
+		ICondition condition  = criteria.getConditions().create();
+		condition.setAlias(CustomerCodeProperty.getName());
+		condition.setCondVal(this.getCustomerCode());
+		
+		return criteria.getConditions();
 	}
 }

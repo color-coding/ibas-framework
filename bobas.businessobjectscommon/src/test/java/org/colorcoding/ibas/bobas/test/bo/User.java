@@ -35,12 +35,12 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 数据库表
 	 */
-	public final static String DB_TABLE_NAME = "AVA_SYS_USER";
+	public final static String DB_TABLE_NAME = "CC_TT_USER";
 
 	/**
 	 * 业务对象编码
 	 */
-	public final static String BUSINESS_OBJECT_CODE = "CC_SYS_USER";
+	public final static String BUSINESS_OBJECT_CODE = "CC_TT_USER";
 
 	/**
 	 * 编码 属性
