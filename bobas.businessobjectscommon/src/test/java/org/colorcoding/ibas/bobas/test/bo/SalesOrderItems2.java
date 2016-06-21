@@ -1,8 +1,4 @@
-package org.colorcoding.ibas.bobas.test.logics;
-
-import org.colorcoding.ibas.bobas.test.bo.ISalesOrder;
-import org.colorcoding.ibas.bobas.test.bo.ISalesOrderItem;
-import org.colorcoding.ibas.bobas.test.bo.SalesOrderItems;
+package org.colorcoding.ibas.bobas.test.bo;
 
 public class SalesOrderItems2 extends SalesOrderItems {
 

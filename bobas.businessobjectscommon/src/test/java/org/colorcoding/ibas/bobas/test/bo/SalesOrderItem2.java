@@ -1,6 +1,6 @@
-package org.colorcoding.ibas.bobas.test.logics;
+package org.colorcoding.ibas.bobas.test.bo;
 
-import org.colorcoding.ibas.bobas.test.bo.SalesOrderItem;
+import org.colorcoding.ibas.bobas.test.logics.IMaterialsIssueContract;
 
 public class SalesOrderItem2 extends SalesOrderItem implements IMaterialsIssueContract {
 

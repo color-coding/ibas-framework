@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.bobas.test.logics;
+package org.colorcoding.ibas.bobas.test.bo;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -6,8 +6,6 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.mapping.db.DbField;
 import org.colorcoding.ibas.bobas.mapping.db.DbFieldType;
-import org.colorcoding.ibas.bobas.test.bo.ISalesOrderItems;
-import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 
 public class SalesOrder2 extends SalesOrder {
 
