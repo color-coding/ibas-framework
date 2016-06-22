@@ -4,6 +4,7 @@ import java.sql.ResultSetMetaData;
 
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
+import org.colorcoding.ibas.bobas.data.IDataTable;
 
 /**
  * 数据库数据读取

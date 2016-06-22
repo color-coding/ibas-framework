@@ -2,6 +2,8 @@ package org.colorcoding.ibas.bobas.db;
 
 import java.sql.ResultSet;
 
+import org.colorcoding.ibas.bobas.data.IDataTable;
+
 /**
  * 
  * @author Niuren.Zhu

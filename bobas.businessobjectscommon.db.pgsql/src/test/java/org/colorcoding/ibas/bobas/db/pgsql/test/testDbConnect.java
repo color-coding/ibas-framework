@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.db.pgsql.test;
 
-import org.colorcoding.ibas.bobas.db.DataTable;
+import org.colorcoding.ibas.bobas.data.DataTable;
 import org.colorcoding.ibas.bobas.db.DbConnection;
 import org.colorcoding.ibas.bobas.db.IDbCommand;
 import org.colorcoding.ibas.bobas.db.IDbConnection;

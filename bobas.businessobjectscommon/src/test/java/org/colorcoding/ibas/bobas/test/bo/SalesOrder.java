@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.test.bo;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -33,6 +35,7 @@ import org.colorcoding.ibas.bobas.mapping.db.DbFieldType;
  * 获取-销售订单
  * 
  */
+@XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "SalesOrder")
 @XmlRootElement(name = "SalesOrder")
 @BOCode(SalesOrder.BUSINESS_OBJECT_CODE)

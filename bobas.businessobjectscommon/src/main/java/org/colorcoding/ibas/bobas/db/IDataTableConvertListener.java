@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.db;
 
+import org.colorcoding.ibas.bobas.data.IDataTableRow;
+
 /**
  * 转过程监听者
  * 
