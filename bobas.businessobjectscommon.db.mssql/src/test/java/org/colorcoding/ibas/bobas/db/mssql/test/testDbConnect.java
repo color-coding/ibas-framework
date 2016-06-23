@@ -6,6 +6,14 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 
+import org.colorcoding.ibas.bobas.data.IDataTable;
+import org.colorcoding.ibas.bobas.db.DbAdapterFactory;
+import org.colorcoding.ibas.bobas.db.DbException;
+import org.colorcoding.ibas.bobas.db.IDbAdapter;
+import org.colorcoding.ibas.bobas.db.IDbCommand;
+import org.colorcoding.ibas.bobas.db.IDbConnection;
+import org.colorcoding.ibas.bobas.db.IDbDataReader;
+
 import junit.framework.TestCase;
 
 public class testDbConnect extends TestCase {
@@ -24,7 +32,7 @@ public class testDbConnect extends TestCase {
 			Connection dbConn = DriverManager.getConnection(dbURL, userName, userPwd);
 			System.out.println("连接成功");
 			Statement stmt = dbConn.createStatement();
-			ResultSet rs = stmt.executeQuery("select * from CC_sys_user");
+			ResultSet rs = stmt.executeQuery("select * from cc_tt_user");
 			ResultSetMetaData rsmd = rs.getMetaData();
 			System.out.println(rsmd.getColumnName(0));
 			System.out.println(String.format("row count:%s | colunm count:%s ", rs.getRow(), rsmd.getColumnCount()));
@@ -64,5 +72,18 @@ public class testDbConnect extends TestCase {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void testToDataTable() throws DbException {
+		IDbAdapter dbAdapter = DbAdapterFactory.createAdapter();
+		IDbConnection dbConnection = dbAdapter.createDbConnection();
+		IDbCommand dbCommand = dbConnection.createCommand();
+		IDbDataReader dbDataReader = dbCommand.executeReader("select * from cc_tt_oitm");
+		IDataTable dataTable = dbDataReader.toDataTable();
+
+		System.out.println("toString xml");
+		System.out.println(dataTable.toString("xml"));
+		System.out.println("toString json");
+		System.out.println(dataTable.toString("json"));
 	}
 }

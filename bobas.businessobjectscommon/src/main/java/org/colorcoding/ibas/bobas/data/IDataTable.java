@@ -17,7 +17,19 @@ public interface IDataTable {
 	 * @param name
 	 */
 	void setName(String name);
+	/**
+	 * 获取-描述
+	 * 
+	 * @return
+	 */
+	String getDescription();
 
+	/**
+	 * 设置-描述
+	 * 
+	 * @param description
+	 */
+	void setDescription(String description);
 	/**
 	 * 获取-列集合
 	 * 
@@ -45,4 +57,10 @@ public interface IDataTable {
 	 * @param rows
 	 */
 	void setRows(IDataTableRows rows);
+	
+	/**
+	 * 格式化字符串输出
+	 * @return
+	 */
+	String toString(String type);
 }

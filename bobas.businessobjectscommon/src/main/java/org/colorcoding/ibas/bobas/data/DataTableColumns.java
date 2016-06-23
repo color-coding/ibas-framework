@@ -1,6 +1,5 @@
 package org.colorcoding.ibas.bobas.data;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -12,6 +11,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.util.ArrayList;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "DataTableColumns", namespace = MyConsts.NAMESPACE_BOBAS_DATA)

@@ -10,6 +10,10 @@ import org.colorcoding.ibas.bobas.MyConsts;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "DataTableColumn", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
 public class DataTableColumn implements IDataTableColumn {
+	public DataTableColumn() {
+		
+	}
+	
 	private String name;
 
 	@XmlElement(name = "Name")

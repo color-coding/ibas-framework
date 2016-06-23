@@ -32,14 +32,6 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	 * 
 	 */
 	private static final long serialVersionUID = -8485128824221654376L;
-	/**
-	 * 输出字符串类型，XML
-	 */
-	public final static String OUT_TYPE_XML = "xml";
-	/**
-	 * 输出化字符串类型，JSON
-	 */
-	public final static String OUT_TYPE_JSON = "json";
 
 	public BusinessObject() {
 		super();
@@ -112,24 +104,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 
 	@Override
 	public String toString(String type) {
-		if (OUT_TYPE_XML.equals(type)) {
-			return ObjectCloner.toXmlString(this, false);
-		} else if (OUT_TYPE_JSON.equals(type)) {
-
-		}
-		return this.toString();
-	}
-
-	@Override
-	public String getSchema(String type) {
-		if (OUT_TYPE_XML.equals(type)) {
-			return this.getXMLSchema();
-		}
-		return null;
-	}
-
-	public String getXMLSchema() {
-		return null;
+		return ObjectCloner.toString(type, this, false);
 	}
 
 	/*

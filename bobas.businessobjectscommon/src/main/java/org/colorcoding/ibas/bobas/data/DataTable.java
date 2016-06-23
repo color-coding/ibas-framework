@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.core.ObjectCloner;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "DataTable", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
@@ -24,6 +25,19 @@ public class DataTable implements IDataTable {
 	@Override
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	private String description;
+
+	@XmlElement(name = "Description")
+	@Override
+	public String getDescription() {
+		return this.description;
+	}
+
+	@Override
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	private IDataTableColumns columns;
@@ -66,6 +80,11 @@ public class DataTable implements IDataTable {
 	@Override
 	public void setRows(IDataTableRows rows) {
 		this.rows = rows;
+	}
+
+	@Override
+	public String toString(String type) {
+		return ObjectCloner.toString(type, this, false);
 	}
 
 }

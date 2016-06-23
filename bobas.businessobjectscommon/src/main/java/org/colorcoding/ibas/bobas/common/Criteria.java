@@ -18,14 +18,6 @@ import org.colorcoding.ibas.bobas.core.ObjectCloner;
 @XmlType(name = "Criteria", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
 @XmlRootElement(name = "Criteria", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
 public class Criteria implements ICriteria {
-	/**
-	 * 输出类型，xml
-	 */
-	public final static String OUT_TYPE_XML = "xml";
-	/**
-	 * 输出类型，json
-	 */
-	public final static String OUT_TYPE_JSON = "json";
 
 	public static ICriteria create() {
 		return new Criteria();
@@ -142,12 +134,7 @@ public class Criteria implements ICriteria {
 
 	@Override
 	public String toString(String type) {
-		if (OUT_TYPE_XML.equalsIgnoreCase(type)) {
-			return ObjectCloner.toXmlString(this, true);
-		} else if (OUT_TYPE_JSON.equalsIgnoreCase(type)) {
-
-		}
-		return this.toString();
+		return ObjectCloner.toString(type,this, true);
 	}
 
 	@Override

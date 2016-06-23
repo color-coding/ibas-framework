@@ -134,7 +134,11 @@ public class testBusinessObjects extends TestCase {
 		// System.out.println(string);
 		// }
 		// assertEquals("clone bo is not same", diStrings.length, 0);
-
+		
+		System.out.println("toString xml：");
+		System.out.println(order.toString("xml"));
+		System.out.println("toString json：");
+		System.out.println(order.toString("json"));
 	}
 
 	public void testBOInherit() {

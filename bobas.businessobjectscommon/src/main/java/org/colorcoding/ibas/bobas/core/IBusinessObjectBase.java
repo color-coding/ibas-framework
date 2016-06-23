@@ -32,12 +32,4 @@ public interface IBusinessObjectBase extends ITrackStatus, Cloneable, Serializab
 	 */
 	String toString(String type);
 
-	/**
-	 * 获取格式
-	 * 
-	 * @param type
-	 *            类型
-	 * @return
-	 */
-	String getSchema(String type);
 }

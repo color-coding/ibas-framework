@@ -41,12 +41,12 @@ public class testDataTable extends TestCase {
 		row.setValue("col_3", Decimal.valueOf("1.99"));
 		row = table.getRows().create();
 		row.setValue(column_1, "第三行");
-		row.setValue(column_2, 9);
+		row.setValue(column_2, 19);
 		row.setValue(column_3, DateTime.getNow());
 		row.setValue(column_4, Decimal.valueOf("1.99"));
 
 		// 测试业务对象序列化
-		JAXBContext context = JAXBContext.newInstance(table.getClass(), DateTime.class, Decimal.class);
+		JAXBContext context = JAXBContext.newInstance(table.getClass());
 		Marshaller marshaller = context.createMarshaller();
 		marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");// //编码格式
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);// 是否格式化生成的xml串
@@ -56,6 +56,16 @@ public class testDataTable extends TestCase {
 		String oldXML = writer.toString();
 		System.out.println("序列化输出：");
 		System.out.println(oldXML);
+		
+
+		System.out.println("toString xml：");
+		System.out.println(table.toString("xml"));
+		
+
+		System.out.println("toString json：");
+		System.out.println(table.toString("json"));
+		
+		
 	}
 
 }
