@@ -2,6 +2,7 @@ package org.colorcoding.ibas.bobas.data;
 
 /**
  * 数据表列
+ * 
  * @author Niuren.Zhu
  *
  */
@@ -34,4 +35,17 @@ public interface IDataTableColumn {
 	 */
 	void setDataType(Class<?> type);
 
+	/**
+	 * 获取-描述
+	 * 
+	 * @return
+	 */
+	String getDescription();
+
+	/**
+	 * 设置-描述
+	 * 
+	 * @param description
+	 */
+	void setDescription(String description);
 }

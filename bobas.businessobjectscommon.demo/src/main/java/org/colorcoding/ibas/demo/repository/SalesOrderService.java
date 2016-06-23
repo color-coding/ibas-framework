@@ -8,16 +8,20 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.colorcoding.ibas.bobas.common.Criteria;
+import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.OperationResult;
+import org.colorcoding.ibas.bobas.common.SqlQuery;
+import org.colorcoding.ibas.bobas.data.DataTable;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.measurement.Time;
 import org.colorcoding.ibas.bobas.data.measurement.emTimeUnit;
 import org.colorcoding.ibas.bobas.mapping.db.DbFieldType;
+import org.colorcoding.ibas.bobas.repository.BORepository4DbReadonly;
+import org.colorcoding.ibas.bobas.repository.IBORepository4DbReadonly;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrderItem;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
-import org.colorcoding.ibas.bobas.test.bo.User;
 
 @Path("/")
 public class SalesOrderService {
@@ -36,8 +40,6 @@ public class SalesOrderService {
 		order.setDeliveryDate(DateTime.getToday());
 		order.setDocumentStatus(emDocumentStatus.Released);
 		order.setDocumentTotal(new Decimal("99.99"));
-		order.setDocumentUser(new User());
-		order.setTeamUsers(new User[] { new User(), new User() });
 		order.setCycle(new Time(1.05, emTimeUnit.hour));
 
 		order.getUserFields().addUserField("U_OrderType", DbFieldType.db_Alphanumeric);
@@ -58,7 +60,7 @@ public class SalesOrderService {
 		orderItem.setQuantity(10);
 		orderItem.setPrice(199.99);
 
-		order.setDocumentUser(new User());
+		// order.setDocumentUser(new User());
 		// 此处json序列化存在问题，可能是jersey导致
 		// order.setTeamUsers(new User[] { new User(), new User() });
 		operationResult.addResultObjects(order);
@@ -72,5 +74,26 @@ public class SalesOrderService {
 	public String saveSalesOrder(SalesOrder bo, @QueryParam("token") String token) {
 		System.out.println(bo.toString("xml"));
 		return "ok";
+	}
+
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/querySalesOrder")
+	public OperationResult<DataTable> querySalesOrder(@QueryParam("token") String token) {
+		OperationResult<DataTable> operationResult = new OperationResult<DataTable>();
+		try {
+
+			IBORepository4DbReadonly boRepository = new BORepository4DbReadonly();
+			boRepository.connectDb("mssql", "localhost", "ibas_demo", "sa", "1q2w3e");
+			ISqlQuery sqlQuery = new SqlQuery();
+			sqlQuery.setQueryString("select * from cc_tt_ordr");
+
+			operationResult.copy(boRepository.query(sqlQuery));
+
+		} catch (Exception e) {
+			operationResult.setError(e);
+		}
+		return operationResult;
 	}
 }

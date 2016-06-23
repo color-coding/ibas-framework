@@ -39,5 +39,16 @@ public class DataTableColumn implements IDataTableColumn {
 	public void setDataType(Class<?> type) {
 		this.dataType = type;
 	}
+	private String description;
 
+	@XmlElement(name = "Description")
+	@Override
+	public String getDescription() {
+		return this.description;
+	}
+
+	@Override
+	public void setDescription(String description) {
+		this.description = description;
+	}
 }

@@ -150,6 +150,21 @@
                 }
             });
         }
+        var testQuerySalesOrder = function () {
+            var url = address + 'querySalesOrder?token=hahaha';
+            $.ajax({
+                type: 'POST',
+                contentType: "application/json",
+                url: url,
+                data: JSON.stringify(salesOrder),
+                success: function (data, status) {
+                    showResult(data);
+                },
+                error: function (err) {
+                    showErrors(err);
+                }
+            });
+        }
     </script>
 </head>
 <body>
@@ -164,6 +179,7 @@
         <input type="button" value="result" onclick="testResult();" />
         <input type="button" value="fetchSalesOrder" onclick="testFetchSalesOrder();" />
         <input type="button" value="saveSalesOrder" onclick="testSaveSalesOrder();" />
+        <input type="button" value="querySalesOrder" onclick="testQuerySalesOrder();" />
     </div>
     <br />
     <div>

@@ -3,6 +3,8 @@
 	<name>bobas.businessobjectscommon.demo</name>
 	<comment></comment>
 	<projects>
+		<project>bobas.businessobjectscommon.db.mssql</project>
+		<project>bobas.businessobjectscommon</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
