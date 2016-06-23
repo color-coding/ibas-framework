@@ -25,7 +25,7 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 /**
  * 基本数据库仓库-读写
  */
-class BORepository4Db extends BORepository4DbReadonly implements IBORepository4Db {
+public class BORepository4Db extends BORepository4DbReadonly implements IBORepository4Db {
 
 	public BORepository4Db() {
 	}

@@ -16,7 +16,7 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 /**
  * 业务对象仓库-缓存
  */
-class BORepository4Cache extends BORepositoryBase implements IBORepository4Cache {
+public class BORepository4Cache extends BORepositoryBase implements IBORepository4Cache {
 
 	@Override
 	public DateTime getServerTime() {

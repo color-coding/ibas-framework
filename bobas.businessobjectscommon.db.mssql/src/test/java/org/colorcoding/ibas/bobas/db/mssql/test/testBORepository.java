@@ -8,9 +8,14 @@ import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.ISort;
+import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.SortType;
+import org.colorcoding.ibas.bobas.common.SqlQuery;
 import org.colorcoding.ibas.bobas.data.DateTime;
+import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
+import org.colorcoding.ibas.bobas.repository.BORepository4DbReadonly;
+import org.colorcoding.ibas.bobas.repository.IBORepository4DbReadonly;
 import org.colorcoding.ibas.bobas.repository.InvalidRepositoryException;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrder;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrderItem;
@@ -224,4 +229,16 @@ public class testBORepository extends TestCase {
 		}
 	}
 
+	public void testQuery() {
+		IBORepository4DbReadonly boRepository = new BORepository4DbReadonly();
+		ISqlQuery sqlQuery = new SqlQuery();
+		sqlQuery.setQueryString("select * from cc_tt_ordr");
+
+		IOperationResult<IDataTable> operationResult = boRepository.query(sqlQuery);
+		System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
+				operationResult.getMessage(), operationResult.getResultObjects().size()));
+		assertEquals(operationResult.getResultCode(), 0);
+		System.out.println(operationResult.getResultObjects().firstOrDefault().toString("json"));
+
+	}
 }

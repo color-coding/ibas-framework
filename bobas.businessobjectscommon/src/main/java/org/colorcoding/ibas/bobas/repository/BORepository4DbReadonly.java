@@ -22,6 +22,7 @@ import org.colorcoding.ibas.bobas.core.fields.FieldRelation;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.data.DateTime;
+import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.SingleValue;
 import org.colorcoding.ibas.bobas.db.BOParseException;
 import org.colorcoding.ibas.bobas.db.DbAdapterFactory;
@@ -42,7 +43,7 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
  * @author Niuren.Zhu
  *
  */
-class BORepository4DbReadonly extends BORepositoryBase implements IBORepository4DbReadonly {
+public class BORepository4DbReadonly extends BORepositoryBase implements IBORepository4DbReadonly {
 
 	public BORepository4DbReadonly() {
 	}
@@ -492,6 +493,37 @@ class BORepository4DbReadonly extends BORepositoryBase implements IBORepository4
 				this.closeDbConnection();// 关闭数据库连接
 			}
 		}
+	}
+
+	@Override
+	public IOperationResult<IDataTable> query(ISqlQuery sqlQuery) {
+		OperationResult<IDataTable> operationResult = new OperationResult<IDataTable>();
+		try {
+			IDbDataReader reader = null;
+			IDbCommand command = null;
+			boolean myOpenedDb = false;// 自己打开的数据库
+			try {
+				myOpenedDb = this.openDbConnection();
+				command = this.getDbConnection().createCommand();
+				reader = command.executeReader(sqlQuery);
+				IDataTable dataTable = reader.toDataTable();
+				operationResult.addResultObjects(dataTable);
+			} finally {
+				if (reader != null) {
+					reader.close();
+				}
+				if (command != null) {
+					command.close();
+				}
+				if (myOpenedDb) {
+					// 自己开打自己关闭
+					this.closeDbConnection();// 关闭数据库连接
+				}
+			}
+		} catch (Exception e) {
+			operationResult.setError(e);
+		}
+		return operationResult;
 	}
 
 }

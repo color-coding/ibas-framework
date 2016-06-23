@@ -4,6 +4,7 @@ import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
+import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.SingleValue;
 import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.db.IDbAdapter;
@@ -115,4 +116,13 @@ public interface IBORepository4DbReadonly extends IBORepositoryReadonly {
 	 * @return 操作结果及查询第一行第一列
 	 */
 	IOperationResult<SingleValue> fetch(ISqlQuery sqlQuery);
+
+	/**
+	 * 运行查询语句
+	 * 
+	 * @param sqlQuery
+	 *            查询语句
+	 * @return 操作结果及查询结果
+	 */
+	IOperationResult<IDataTable> query(ISqlQuery sqlQuery);
 }
