@@ -5,6 +5,9 @@
 	<projects>
 		<project>bobas.businessobjectscommon.db.mssql</project>
 		<project>bobas.businessobjectscommon</project>
+		<project>bobas.businessobjectscommon.db.pgsql</project>
+		<project>bobas.businessobjectscommon.db.mysql</project>
+		<project>bobas.businessobjectscommon.db.hana</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
