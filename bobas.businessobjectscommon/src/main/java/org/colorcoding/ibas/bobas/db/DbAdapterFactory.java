@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
-import org.colorcoding.ibas.bobas.core.BOFactory;
 import org.colorcoding.ibas.bobas.core.BOFactoryException;
 import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
@@ -37,12 +36,9 @@ public class DbAdapterFactory extends ConfigurableFactory {
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
-	protected static IDbAdapter newAdapter(String dbType)
+	private static IDbAdapter newAdapter(String dbType)
 			throws BOFactoryException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-		String className = null;
-		String packageName = String.format("%s.%s", DbAdapterFactory.class.getPackage().getName(), dbType);
-		className = String.format("%s.DbAdapter", packageName);
-		Class<?> adapterClass = BOFactory.create().getClass(className);
+		Class<?> adapterClass = getInstance(DbAdapterFactory.class, dbType, "DbAdapter");
 		if (adapterClass == null) {
 			throw new ClassNotFoundException("msg_bobas_not_found_db_adapter");
 		}
@@ -50,7 +46,7 @@ public class DbAdapterFactory extends ConfigurableFactory {
 		if (adapter == null) {
 			throw new NullPointerException("msg_bobas_not_found_db_adapter");
 		}
-		RuntimeLog.log(RuntimeLog.MSG_DB_ADAPTER_CREATED, className);
+		RuntimeLog.log(RuntimeLog.MSG_DB_ADAPTER_CREATED, adapterClass.getName());
 		return adapter;
 	}
 

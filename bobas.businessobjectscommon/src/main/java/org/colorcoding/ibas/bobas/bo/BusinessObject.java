@@ -11,7 +11,7 @@ import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.core.BusinessObjectBase;
-import org.colorcoding.ibas.bobas.core.ObjectCloner;
+import org.colorcoding.ibas.bobas.core.Serializer;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.data.DateTime;
@@ -73,8 +73,12 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 		return criteria;
 	}
 
-	@Override
-	public String toString() {
+	/**
+	 * 获取识别码
+	 * 
+	 * @return
+	 */
+	public String getIdentifiers() {
 		String boCode = null;
 		StringBuilder stringBuilder = new StringBuilder();
 		if (this instanceof IBOStorageTag) {
@@ -103,8 +107,13 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	}
 
 	@Override
+	public String toString() {
+		return this.getIdentifiers();
+	}
+
+	@Override
 	public String toString(String type) {
-		return ObjectCloner.toString(type, this, false);
+		return Serializer.toString(type, this, false);
 	}
 
 	/*
@@ -116,7 +125,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	@Override
 	public T clone() {
 		@SuppressWarnings("unchecked")
-		T nBO = (T) ObjectCloner.Clone(this);
+		T nBO = (T) Serializer.Clone(this);
 		if (nBO instanceof BusinessObject<?>) {
 			BusinessObject<?> bo = (BusinessObject<?>) nBO;
 			bo.resetStatus();

@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.test.i18n;
 
-import org.colorcoding.ibas.bobas.core.ObjectCloner;
+import org.colorcoding.ibas.bobas.core.Serializer;
 import org.colorcoding.ibas.bobas.i18n.ILanguageItem;
 import org.colorcoding.ibas.bobas.i18n.ILanguageItemContent;
 import org.colorcoding.ibas.bobas.i18n.ILanguageItems;
@@ -49,7 +49,7 @@ public class testI18N extends TestCase {
 		itemContent1.setContent("你好");
 		item1.addContent("en-US", "Hello");
 
-		System.out.println(ObjectCloner.toXmlString(items, true));
+		System.out.println(Serializer.toXmlString(items, true));
 
 	}
 

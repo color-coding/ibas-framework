@@ -2,6 +2,11 @@ package org.colorcoding.ibas.bobas.organization;
 
 import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
 
+/**
+ * 组织管理员
+ * @author Niuren.Zhu
+ *
+ */
 public abstract class OrganizationManager extends ConfigurableFactory {
 
 	public OrganizationManager() {

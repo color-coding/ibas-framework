@@ -35,6 +35,10 @@ public class MyConfiguration extends Configuration {
 	 */
 	public static String CONFIG_ITEM_BO_DISABLED_BUSINESS_LOGICS = "DisabledBusinessLogics";
 	/**
+	 * 配置项目-关闭业务对象审批
+	 */
+	public static String CONFIG_ITEM_BO_DISABLED_BUSINESS_APPROVAL = "DisabledBusinessApproval";
+	/**
 	 * 配置项目-业务对象缓存用发
 	 */
 	public static String CONFIG_ITEM_BO_REPOSITORY_DATA_CACHE_USAGE = "BOCacheUsage";
@@ -101,4 +105,9 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-日志文件输出频率(毫秒,默认5000)
 	 */
 	public static String CONFIG_ITEM_LOG_OUT_FREQUENCY = "LogOutFrequency";
+	
+	/**
+	 * 配置项目-审批类型
+	 */
+	public static String CONFIG_ITEM_APPROVAL_TYPE = "ApprovalType";
 }

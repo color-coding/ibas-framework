@@ -16,11 +16,14 @@ public interface ISorts extends Collection<ISort> {
 	 */
 	ISort create();
 
+
 	/**
-	 * 添加集合
-	 *
-	 * @param collection
+	 * 获取查询排序
+	 * 
+	 * @param index
+	 *            索引
+	 * @return
 	 */
-	// void addRange(Iterable<ISort> collection);
+	ISort get(int index);
 
 }

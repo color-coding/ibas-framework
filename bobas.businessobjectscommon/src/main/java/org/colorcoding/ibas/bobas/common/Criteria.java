@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
-import org.colorcoding.ibas.bobas.core.ObjectCloner;
+import org.colorcoding.ibas.bobas.core.Serializer;
 
 /**
  * 查询
@@ -18,9 +18,64 @@ import org.colorcoding.ibas.bobas.core.ObjectCloner;
 @XmlType(name = "Criteria", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
 @XmlRootElement(name = "Criteria", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
 public class Criteria implements ICriteria {
-
+	/**
+	 * 创建实例
+	 * 
+	 * @return
+	 */
 	public static ICriteria create() {
 		return new Criteria();
+	}
+
+	/**
+	 * 创建实例
+	 * 
+	 * @param value
+	 *            值
+	 * @return
+	 */
+	public static ICriteria create(String value) {
+		if (value == null || value.equals("")) {
+			return null;
+		}
+		if (value.startsWith("{[") && value.endsWith("]}")) {
+			// 对象识别码
+			return fromIdentifiers(value);
+		} else if (value.startsWith("<?xml")) {
+			// xml
+			return (ICriteria) Serializer.fromXmlString(value, Criteria.class, Conditions.class, Condition.class,
+					Sorts.class, Sort.class, ChildCriterias.class, ChildCriteria.class);
+		} else if (value.startsWith("{") && value.endsWith("}")) {
+			// json
+			return (ICriteria) Serializer.fromJsonString(value, Criteria.class, Conditions.class, Condition.class,
+					Sorts.class, Sort.class, ChildCriterias.class, ChildCriteria.class);
+		}
+		return null;
+	}
+
+	/**
+	 * 根据识别码创建查询
+	 * 
+	 * {[CC_TT_SALESORDER].[DocEntry = 1]&[LineId = 2]}
+	 * 
+	 * @param identifiers
+	 * @return
+	 */
+	private static ICriteria fromIdentifiers(String identifiers) {
+		Criteria criteria = new Criteria();
+		String[] tmps = identifiers.split("\\]\\.\\[");
+		criteria.setBusinessObjectCode(tmps[0].replace("{[", ""));
+		tmps = tmps[1].split("\\]\\&\\[");
+		for (int i = 0; i < tmps.length; i++) {
+			String[] tmpFields = tmps[i].split("=");
+			if (tmpFields.length != 2) {
+				continue;
+			}
+			ICondition condition = criteria.getConditions().create();
+			condition.setAlias(tmpFields[0].replace("[", "").trim());
+			condition.setCondVal(tmpFields[1].replace("]", "").replace("}", "").trim());
+		}
+		return criteria;
 	}
 
 	private String businessObjectCode = "";
@@ -129,12 +184,12 @@ public class Criteria implements ICriteria {
 
 	@Override
 	public final ICriteria clone() {
-		return (ICriteria) ObjectCloner.Clone(this);
+		return (ICriteria) Serializer.Clone(this);
 	}
 
 	@Override
 	public String toString(String type) {
-		return ObjectCloner.toString(type,this, true);
+		return Serializer.toString(type, this, true);
 	}
 
 	@Override

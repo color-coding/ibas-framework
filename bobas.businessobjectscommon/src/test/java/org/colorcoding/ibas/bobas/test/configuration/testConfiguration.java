@@ -4,7 +4,7 @@ import org.colorcoding.ibas.bobas.configuration.Configuration;
 import org.colorcoding.ibas.bobas.configuration.ConfigurationElement;
 import org.colorcoding.ibas.bobas.configuration.ConfigurationElements;
 import org.colorcoding.ibas.bobas.configuration.IConfigurationElement;
-import org.colorcoding.ibas.bobas.core.ObjectCloner;
+import org.colorcoding.ibas.bobas.core.Serializer;
 
 import junit.framework.TestCase;
 
@@ -47,7 +47,7 @@ public class testConfiguration extends TestCase {
 		IConfigurationElement element1 = elements.create();
 		element1.setKey("name1");
 		element1.setValue("XXOO1");
-		System.out.println(ObjectCloner.toXmlString(elements, true));
+		System.out.println(Serializer.toXmlString(elements, true));
 	}
 
 }

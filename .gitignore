@@ -15,4 +15,5 @@ hs_err_pid*
 *_log_*.txt
 
 # release folder
-/release
+/release/
+/.vs/

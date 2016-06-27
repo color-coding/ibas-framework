@@ -17,17 +17,19 @@ public interface IConditions extends Collection<ICondition> {
 	ICondition create();
 
 	/**
-	 * 添加条件集合
-	 *
-	 * @param collection
-	 *            条件集合
-	 */
-	// void addRange(Iterable<ICondition> collection);
-
-	/**
 	 * 获取sql字符串（仅示意）
 	 *
 	 * @return sql字符串
 	 */
 	String getSqlString();
+
+	/**
+	 * 获取条件
+	 * 
+	 * @param index
+	 *            索引
+	 * @return
+	 */
+	ICondition get(int index);
+
 }

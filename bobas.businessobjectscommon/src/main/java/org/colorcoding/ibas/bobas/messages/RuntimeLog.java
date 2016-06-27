@@ -43,6 +43,7 @@ public class RuntimeLog {
 	public static final String MSG_TRANSACTION_SP_VALUES = "transaction: sp [%s] [%s] [%s - %s]";
 	public static final String MSG_USER_FIELDS_REGISTER = "user fields: register type [%s]'s user fields, count [%s].";
 	public static final String MSG_USER_SET_FIELD_VALUE = "user fields: set field [%s]'s value [%s].";
+	public static final String MSG_APPROVAL_PROCESS_MANAGER_CREATED = "ap manager: created approval process manager [%s].";
 
 	/**
 	 * 单例模式

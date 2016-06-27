@@ -8,12 +8,7 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
  * 业务对象基础
  */
 public interface IBusinessObjectBase extends ITrackStatus, Cloneable, Serializable {
-	/**
-	 * 获取对象查询条件
-	 * 
-	 * @return 当前的查询条件
-	 */
-	ICriteria getCriteria();
+
 
 	/**
 	 * 转换为字符串
@@ -32,4 +27,10 @@ public interface IBusinessObjectBase extends ITrackStatus, Cloneable, Serializab
 	 */
 	String toString(String type);
 
+	/**
+	 * 获取对象查询条件
+	 * 
+	 * @return 当前的查询条件
+	 */
+	ICriteria getCriteria();
 }

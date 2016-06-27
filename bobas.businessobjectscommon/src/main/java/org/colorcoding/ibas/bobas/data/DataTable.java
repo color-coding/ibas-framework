@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
-import org.colorcoding.ibas.bobas.core.ObjectCloner;
+import org.colorcoding.ibas.bobas.core.Serializer;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "DataTable", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
@@ -84,7 +84,7 @@ public class DataTable implements IDataTable {
 
 	@Override
 	public String toString(String type) {
-		return ObjectCloner.toString(type, this, false);
+		return Serializer.toString(type, this, false);
 	}
 
 }

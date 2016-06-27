@@ -578,6 +578,8 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 
 	/**
 	 * 监听对象保存事件
+	 * 
+	 * 每个对象保存都会触发，包括对象的子属性
 	 */
 	@Override
 	public boolean actionsNotification(SaveActionsEvent event) {

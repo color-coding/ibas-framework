@@ -30,6 +30,13 @@ public interface IApprovalData extends ITrackStatus {
 	emApprovalStatus getApprovalStatus();
 
 	/**
+	 * 获取识别码
+	 * 
+	 * @return
+	 */
+	String getIdentifiers();
+
+	/**
 	 * 获取数据查询条件
 	 * 
 	 * @return

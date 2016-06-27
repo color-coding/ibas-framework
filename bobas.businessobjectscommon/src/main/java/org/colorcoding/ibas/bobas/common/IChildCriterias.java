@@ -17,11 +17,13 @@ public interface IChildCriterias extends Collection<IChildCriteria> {
 	IChildCriteria create();
 
 	/**
-	 * 添加子项查询
+	 * 获取子对象查询
 	 * 
-	 * @param collection
+	 * @param index
+	 *            索引
+	 * @return
 	 */
-	// void addRange(Iterable<IChildCriteria> collection);
+	IChildCriteria get(int index);
 
 	/**
 	 * 获取子项查询
