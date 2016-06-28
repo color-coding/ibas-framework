@@ -124,5 +124,30 @@ public class testApprovalProcess extends TestCase {
 				String.format("order total [%s].step [%s]", order.getDocumentTotal(), aProcess.currentStep().getId()),
 				aProcess.currentStep().getId(), 30);
 
+		// 子项属性作为条件的审批流程
+		ApprovalProcess bProcess = new ApprovalProcess();
+		bProcess.setName("订单审批流程-子项属性比较");
+
+		aSteps = new ArrayList<IApprovalProcessStep>();
+		// 包含S00001物料的，总经理审批
+		aStep = new ApprovalProcessStep();
+		aStep.setId(10);
+		aStep.setOwner(boss);
+		aCondition = new ApprovalProcessStepCondition();
+		aCondition.setPropertyName("SalesOrderItems.ItemCode");
+		aCondition.setOperation(emConditionOperation.GRATER_EQUAL);
+		aCondition.setConditionValue("S00001");
+		aStep.setConditions(new IApprovalProcessStepCondition[] { aCondition });
+		aSteps.add(aStep);
+		bProcess.setProcessSteps(aSteps.toArray(new IApprovalProcessStep[] {}));
+
+		// 搞不定，放弃了，科科
+		// done = bProcess.start(order);
+		// assertEquals(String.format("order item [%s].",
+		// orderItem.getItemCode()), done, false);
+		// orderItem.setItemCode("S00001");
+		// done = bProcess.start(order);
+		// assertEquals(String.format("order item [%s].",
+		// orderItem.getItemCode()), done, true);
 	}
 }

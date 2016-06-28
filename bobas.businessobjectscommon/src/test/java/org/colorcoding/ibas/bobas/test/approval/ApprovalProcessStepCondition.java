@@ -5,6 +5,11 @@ import org.colorcoding.ibas.bobas.data.emConditionOperation;
 import org.colorcoding.ibas.bobas.data.emConditionRelationship;
 
 public class ApprovalProcessStepCondition implements IApprovalProcessStepCondition {
+	public ApprovalProcessStepCondition() {
+		this.setOperation(emConditionOperation.EQUAL);
+		this.setRelation(emConditionRelationship.AND);
+	}
+
 	private String propertyName;
 
 	@Override

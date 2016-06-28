@@ -22,7 +22,16 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
 	protected abstract void setFinishedTime(DateTime value);
 
 	protected abstract void setJudgment(String value);
-	
+
+	/**
+	 * 恢复为初始状态
+	 */
+	void restore() {
+		this.setStatus(emApprovalStepStatus.Pending);
+		this.setStartedTime(DateTime.getMaxValue());
+		this.setFinishedTime(DateTime.getMaxValue());
+		this.setJudgment("");
+	}
 
 	/**
 	 * 开始进入审批
