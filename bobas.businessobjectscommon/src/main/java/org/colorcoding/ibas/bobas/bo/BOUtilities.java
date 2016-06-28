@@ -78,4 +78,55 @@ public class BOUtilities {
 		return difs.toArray(new String[] {});
 	}
 
+	/**
+	 * 获取业务对象的属性值
+	 * 
+	 * @param bo
+	 *            对象
+	 * @param path
+	 *            属性路径，例如：Customer;SalesOrderLine.ItemCode
+	 * @param index
+	 *            数组类属性的索引
+	 * @return
+	 * @throws BOException
+	 * @throws SecurityException
+	 * @throws NoSuchMethodException
+	 */
+	public static Object getPropertyValue(IBusinessObject bo, String path, int... indexs) throws BOException {
+		try {
+			if (bo instanceof IManageFields) {
+				IManageFields boFields = (IManageFields) bo;
+				String property = path;
+				if (path.indexOf(".") > 1) {
+					property = path.split("\\.")[0];
+				}
+				for (int i = 0; i < boFields.getFields().length; i++) {
+					IFieldData fieldData = boFields.getFields()[i];
+					if (fieldData.getName().equals(property)) {
+						if (path.indexOf(".") > 1) {
+							// 路径继续
+							String cPath = path.substring(property.length() + 1, path.length());
+							int[] cIndex = null;
+							if (indexs != null && indexs.length > 0) {
+								cIndex = new int[indexs.length - 1];
+								// 复制数组未使用部分
+								for (int j = 1; j < indexs.length; j++) {
+									cIndex[j - 1] = indexs[j];
+								}
+							}
+							IBusinessObjects<?, ?> boValues = (IBusinessObjects<?, ?>) fieldData.getValue();
+							return getPropertyValue((IBusinessObject) boValues.get(indexs[0]), cPath, cIndex);
+						} else {
+							// 路径终止
+							return fieldData.getValue();
+						}
+					}
+				}
+			}
+			return null;
+		} catch (Exception e) {
+			throw new BOException(i18n.prop("msg_bobas_not_found_property_path_value", path), e);
+		}
+	}
+
 }

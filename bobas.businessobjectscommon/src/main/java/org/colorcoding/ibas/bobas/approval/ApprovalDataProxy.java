@@ -34,14 +34,14 @@ public class ApprovalDataProxy extends TrackableBase implements IApprovalData {
 		this.objectCode = value;
 	}
 
-	private int dataOwner;
+	private Integer dataOwner;
 
 	@Override
-	public int getDataOwner() {
+	public Integer getDataOwner() {
 		return this.dataOwner;
 	}
 
-	public void setDataOwner(int value) {
+	public void setDataOwner(Integer value) {
 		this.dataOwner = value;
 	}
 

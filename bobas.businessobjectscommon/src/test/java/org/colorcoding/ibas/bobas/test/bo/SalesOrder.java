@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IFieldMaxValueKey;
 import org.colorcoding.ibas.bobas.common.Criteria;
@@ -39,7 +40,7 @@ import org.colorcoding.ibas.bobas.mapping.db.DbFieldType;
 @XmlType(name = "SalesOrder")
 @XmlRootElement(name = "SalesOrder")
 @BOCode(SalesOrder.BUSINESS_OBJECT_CODE)
-public class SalesOrder extends BusinessObject<SalesOrder> implements ISalesOrder,IFieldMaxValueKey {
+public class SalesOrder extends BusinessObject<SalesOrder> implements ISalesOrder,IFieldMaxValueKey,IApprovalData {
 
 	/**
 	 * 序列化版本标记

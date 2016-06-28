@@ -20,7 +20,7 @@ public interface IApprovalData extends ITrackStatus {
 	 * 
 	 * @return
 	 */
-	int getDataOwner();
+	Integer getDataOwner();
 
 	/**
 	 * 获取-审批状态

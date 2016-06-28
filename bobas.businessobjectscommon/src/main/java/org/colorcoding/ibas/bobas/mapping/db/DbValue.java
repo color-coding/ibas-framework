@@ -11,9 +11,13 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface DbValue {
-	// 值
+	/**
+	 * 值
+	 */
 	public String value();
 
-	// 描述
+	/**
+	 * 描述
+	 */
 	public String description() default "";
 }

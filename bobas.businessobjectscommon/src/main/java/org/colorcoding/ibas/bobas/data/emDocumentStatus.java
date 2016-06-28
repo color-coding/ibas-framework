@@ -5,15 +5,28 @@ import javax.xml.bind.annotation.XmlType;
 import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.mapping.db.DbValue;
 
+/**
+ * 单据状态
+ * @author Niuren.Zhu
+ *
+ */
 @XmlType(name = "emDocumentStatus", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
 public enum emDocumentStatus {
-	// 计划
+	/**
+	 * 计划
+	 */ 
 	@DbValue(value = "P") Planned,
-	// 下达
+	/**
+	 * 下达
+	 */ 
 	@DbValue(value = "R") Released,
-	// 完成
+	/**
+	 * 完成
+	 */ 
 	@DbValue(value = "F") Finished,
-	// 结算
+	/**
+	 * 结算
+	 */ 
 	@DbValue(value = "C") Closed;
 
 	public int getValue() {

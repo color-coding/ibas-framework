@@ -5,11 +5,21 @@ import javax.xml.bind.annotation.XmlType;
 import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.mapping.db.DbValue;
 
+/**
+ * 是否
+ * 
+ * @author Niuren.Zhu
+ *
+ */
 @XmlType(name = "emYesNo", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
 public enum emYesNo {
-	// 否
+	/**
+	 * 否
+	 */
 	@DbValue(value = "N") No,
-	// 是
+	/**
+	 * 是
+	 */
 	@DbValue(value = "Y") Yes;
 
 	public int getValue() {
