@@ -6,6 +6,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
 import org.colorcoding.ibas.bobas.common.OperationResult;
+import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
@@ -134,11 +135,16 @@ public class testBusinessObjects extends TestCase {
 		// System.out.println(string);
 		// }
 		// assertEquals("clone bo is not same", diStrings.length, 0);
-		
+
 		System.out.println("toString xml：");
 		System.out.println(order.toString("xml"));
 		System.out.println("toString json：");
 		System.out.println(order.toString("json"));
+
+		IFieldData fieldData = order.getField("CustomerCode");
+		assertEquals("get field CustomerCode faild.", fieldData.getName(), "CustomerCode");
+		fieldData = order.getField("DocumentUser.UserCode");
+		assertEquals("get field DocumentUser.UserCode faild.", fieldData.getName(), "UserCode");
 	}
 
 	public void testBOInherit() {
@@ -184,6 +190,5 @@ public class testBusinessObjects extends TestCase {
 		assertEquals("Property [ItemCode] faild. ", orderItem.getItemCode(), "A00002");
 		assertEquals("Property [Quantity] faild. ", orderItem.getQuantity().toString(), "10");
 	}
-
 
 }

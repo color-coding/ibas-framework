@@ -24,16 +24,16 @@ public enum emApprovalResult {
 	/**
 	 * 重置为进行中
 	 */
-	@DbValue(value = "P") Processing,
-	/**
-	 * 退回
-	 */
-	@DbValue(value = "P") Returned,
-	/**
-	 * 取消
-	 */
-	@DbValue(value = "P") Cancelled;
-	
+	@DbValue(value = "P") Processing;
+	// /**
+	// * 退回
+	// */
+	// @DbValue(value = "P") Returned,
+	// /**
+	// * 取消
+	// */
+	// @DbValue(value = "P") Cancelled;
+
 	public int getValue() {
 		return this.ordinal();
 	}

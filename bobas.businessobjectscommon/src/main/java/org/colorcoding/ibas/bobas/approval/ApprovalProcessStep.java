@@ -23,6 +23,11 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
 
 	protected abstract void setJudgment(String value);
 
+	@Override
+	public String toString() {
+		return String.format("ap step [%s] [%s]", this.getId(), this.getStatus());
+	}
+
 	/**
 	 * 恢复为初始状态
 	 */
@@ -86,7 +91,7 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
 	 * @throws UnlogicalException
 	 */
 	void reset() throws UnlogicalException {
-		if (this.getStatus() != emApprovalStepStatus.Approved || this.getStatus() == emApprovalStepStatus.Rejected) {
+		if (this.getStatus() != emApprovalStepStatus.Approved && this.getStatus() != emApprovalStepStatus.Rejected) {
 			throw new UnlogicalException();
 		}
 		this.setFinishedTime(DateTime.getNow());

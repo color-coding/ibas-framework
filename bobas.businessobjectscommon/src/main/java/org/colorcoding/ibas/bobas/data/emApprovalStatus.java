@@ -33,16 +33,14 @@ public enum emApprovalStatus {
 	 * 已拒绝
 	 */
 	@DbValue(value = "R") Rejected,
-
+	// /**
+	// * 已退回
+	// */
+	// @DbValue(value = "T") Returned,
 	/**
 	 * 已取消
 	 */
-	@DbValue(value = "C") Cancelled,
-
-	/**
-	 * 已退回
-	 */
-	@DbValue(value = "T") Returned;
+	@DbValue(value = "C") Cancelled;
 
 	public int getValue() {
 		return this.ordinal();

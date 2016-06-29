@@ -82,14 +82,25 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 
 	/**
 	 * 获取主键字段
-	 * 
+	 * @param name 属性名称（Property;BO.Property）
 	 * @return 主键字段
 	 */
 	@Override
 	public IFieldData getField(String name) {
-		for (IFieldData iFieldData : this.fieldManager) {
-			if (iFieldData.getName().equals(name)) {
-				return iFieldData;
+		if (name.indexOf(".") > 0) {
+			// 包括属性路径的，BO.Property
+			String cName = name.split("\\.")[0];
+			IFieldData cFieldData = this.getField(cName);
+			if (cFieldData.getValue() instanceof IManageFields) {
+				IManageFields sBO = (IManageFields) cFieldData.getValue();
+				return sBO.getField(name.substring(cName.length() + 1, name.length()));
+			}
+		} else {
+			// 没有属性路径的，Property
+			for (IFieldData iFieldData : this.fieldManager) {
+				if (iFieldData.getName().equals(name)) {
+					return iFieldData;
+				}
 			}
 		}
 		return null;

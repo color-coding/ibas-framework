@@ -2,8 +2,10 @@ package org.colorcoding.ibas.bobas.approval;
 
 import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.data.DateTime;
+import org.colorcoding.ibas.bobas.data.emApprovalResult;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.organization.IUser;
+import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
 
 /**
  * 审批流程
@@ -70,12 +72,6 @@ public interface IApprovalProcess {
 	IApprovalProcessStep currentStep();
 
 	/**
-	 * 下一个步骤
-	 * 
-	 */
-	void nextStep();
-
-	/**
 	 * 开始流程
 	 * 
 	 * @param data
@@ -83,6 +79,34 @@ public interface IApprovalProcess {
 	 * @return 是否成功开始流程
 	 */
 	boolean start(IApprovalData data);
+
+	/**
+	 * 批准流程
+	 * 
+	 * @param stepId
+	 *            步骤ID
+	 * @param apResult
+	 *            结果
+	 * @param authorizationCode
+	 *            授权码
+	 * @param judgment
+	 *            意见
+	 * @throws ApprovalProcessException
+	 * @throws InvalidAuthorizationException 
+	 */
+	void approval(int stepId, emApprovalResult apResult, String authorizationCode, String judgment)
+			throws ApprovalProcessException, InvalidAuthorizationException;
+
+	/**
+	 * 取消流程
+	 * 
+	 * @param authorizationCode
+	 *            授权码
+	 * @param remarks
+	 *            备注
+	 * @throws InvalidAuthorizationException 
+	 */
+	void cancel(String authorizationCode, String remarks) throws ApprovalProcessException, InvalidAuthorizationException;
 
 	/**
 	 * 保存审批流程

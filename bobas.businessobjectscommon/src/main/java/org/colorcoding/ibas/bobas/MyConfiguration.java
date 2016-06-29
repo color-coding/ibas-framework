@@ -105,9 +105,14 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-日志文件输出频率(毫秒,默认5000)
 	 */
 	public static String CONFIG_ITEM_LOG_OUT_FREQUENCY = "LogOutFrequency";
-	
+
 	/**
-	 * 配置项目-审批类型
+	 * 配置项目-审批方式
 	 */
-	public static String CONFIG_ITEM_APPROVAL_TYPE = "ApprovalType";
+	public static String CONFIG_ITEM_APPROVAL_WAY = "ApprovalWay";
+
+	/**
+	 * 配置项目-组织方式
+	 */
+	public static String CONFIG_ITEM_ORGANIZATION_WAY = "OrganizationWay";
 }

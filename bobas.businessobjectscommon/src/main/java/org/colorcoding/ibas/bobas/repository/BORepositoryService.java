@@ -19,9 +19,9 @@ import org.colorcoding.ibas.bobas.core.SaveActionsType;
 import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
 import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
-import org.colorcoding.ibas.bobas.organization.IOrganization;
+import org.colorcoding.ibas.bobas.organization.IOrganizationManager;
 import org.colorcoding.ibas.bobas.organization.IUser;
-import org.colorcoding.ibas.bobas.organization.OrganizationManager;
+import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
 import org.colorcoding.ibas.bobas.organization.UnknownUser;
 import org.colorcoding.ibas.bobas.ownership.DataOwnershipFactory;
 import org.colorcoding.ibas.bobas.ownership.IDataOwnership;
@@ -174,8 +174,8 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 
 	public void setCurrentUser(String token) throws InvalidTokenException {
 		try {
-			IOrganization organization = OrganizationManager.createOrganization();
-			IUser user = organization.getUser(token);
+			IOrganizationManager orgManager = OrganizationFactory.createManager();
+			IUser user = orgManager.getUser(token);
 			if (user == null) {
 				// 没有用户匹配次口令
 				throw new InvalidTokenException(i18n.prop("msg_bobas_no_user_match_the_token"));

@@ -29,7 +29,7 @@ public class ApprovalFactory extends ConfigurableFactory {
 					// 尝试初始化
 					try {
 						defaultManager = newManager(MyConfiguration
-								.getConfigValue(MyConfiguration.CONFIG_ITEM_APPROVAL_TYPE, "").toLowerCase());
+								.getConfigValue(MyConfiguration.CONFIG_ITEM_APPROVAL_WAY, "").toLowerCase());
 					} catch (Exception e) {
 						throw new ApprovalException(i18n.prop("msg_bobas_create_approval_process_manager_falid"), e);
 					}

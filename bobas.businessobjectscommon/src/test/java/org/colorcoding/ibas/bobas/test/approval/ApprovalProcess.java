@@ -75,6 +75,10 @@ public class ApprovalProcess extends org.colorcoding.ibas.bobas.approval.Approva
 		return this.owner;
 	}
 
+	public void setOwner(IUser value) {
+		this.owner = value;
+	}
+
 	private IApprovalProcessStep[] processSteps;
 
 	@Override
