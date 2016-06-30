@@ -262,4 +262,14 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	protected void onStatusChanged() {
 
 	}
+
+	@Override
+	public void checkToSave(IUser user) throws UnauthorizedException {
+		// 流程未开始，所有者可以修改数据
+		if (this.getProcessSteps() == null || this.getProcessSteps().length == 0) {
+			return;
+		}
+
+	}
+
 }

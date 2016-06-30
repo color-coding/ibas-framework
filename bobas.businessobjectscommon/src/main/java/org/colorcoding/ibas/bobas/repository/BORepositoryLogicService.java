@@ -23,15 +23,23 @@ public class BORepositoryLogicService extends BORepositoryService {
 	@Override
 	public boolean actionsNotification(SaveActionsEvent event) {
 		try {
-			// 先执行审批逻辑，可能对bo的状态有影响
-			if (!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_BUSINESS_APPROVAL, false)) {
-				// 触发审批流程
-				this.triggerApprovals(event.getBO());
+			// 审批流程相关
+			if (event.getType() == SaveActionsType.before_adding || event.getType() == SaveActionsType.before_deleting
+					|| event.getType() == SaveActionsType.before_updating) {
+				// 先执行审批逻辑，可能对bo的状态有影响
+				if (!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_BUSINESS_APPROVAL, false)) {
+					// 触发审批流程
+					this.triggerApprovals(event.getBO());
+				}
 			}
-			// 最后执行业务逻辑，因为要求状态可用
-			if (!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_BUSINESS_LOGICS, false)) {
-				// 执行业务逻辑
-				this.runLogics(event.getType(), event.getBO());
+			// 业务逻辑相关
+			if (event.getType() == SaveActionsType.added || event.getType() == SaveActionsType.deleted
+					|| event.getType() == SaveActionsType.updated) {
+				// 最后执行业务逻辑，因为要求状态可用
+				if (!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_BUSINESS_LOGICS, false)) {
+					// 执行业务逻辑
+					this.runLogics(event.getType(), event.getBO());
+				}
 			}
 			// 运行基类方法
 			return super.actionsNotification(event);
@@ -59,6 +67,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 		if (approvalProcess != null) {
 			// 创建了流程实例
 			// 保存流程实例，使用当前仓库以保证事务完整
+			approvalProcess.checkToSave(this.getCurrentUser());// 检查用户是否有权限保存
 			approvalProcess.save(this.getRepository());
 		}
 	}

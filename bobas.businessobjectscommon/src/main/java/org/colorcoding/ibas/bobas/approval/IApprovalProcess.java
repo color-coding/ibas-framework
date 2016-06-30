@@ -92,7 +92,7 @@ public interface IApprovalProcess {
 	 * @param judgment
 	 *            意见
 	 * @throws ApprovalProcessException
-	 * @throws InvalidAuthorizationException 
+	 * @throws InvalidAuthorizationException
 	 */
 	void approval(int stepId, emApprovalResult apResult, String authorizationCode, String judgment)
 			throws ApprovalProcessException, InvalidAuthorizationException;
@@ -104,15 +104,26 @@ public interface IApprovalProcess {
 	 *            授权码
 	 * @param remarks
 	 *            备注
-	 * @throws InvalidAuthorizationException 
+	 * @throws InvalidAuthorizationException
 	 */
-	void cancel(String authorizationCode, String remarks) throws ApprovalProcessException, InvalidAuthorizationException;
+	void cancel(String authorizationCode, String remarks)
+			throws ApprovalProcessException, InvalidAuthorizationException;
 
 	/**
 	 * 保存审批流程
 	 * 
 	 * @param boRepository
 	 *            保存到的业务仓库
+	 * @throws InvalidAuthorizationException
 	 */
-	void save(IBORepository boRepository);
+	void save(IBORepository boRepository) throws ApprovalProcessException;
+
+	/**
+	 * 检查保存权限
+	 * 
+	 * @param user
+	 *            操作用户
+	 * @throws ApprovalProcessException
+	 */
+	void checkToSave(IUser user) throws ApprovalProcessException;
 }

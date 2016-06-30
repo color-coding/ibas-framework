@@ -11,15 +11,28 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
  * @author Niuren.Zhu
  *
  */
-public class ApprovalProcessManager implements IApprovalProcessManager {
+public abstract class ApprovalProcessManager implements IApprovalProcessManager {
 
 	@Override
 	public IApprovalProcess checkProcess(IApprovalData data) {
-		if (!this.checkDataStatus(data)) {
-			// 状态检测未通过
+		if (data == null) {
 			return null;
 		}
-
+		if (data.isNew()) {
+			// 新数据
+			if (!this.checkDataStatus(data)) {
+				// 状态检测未通过
+				return null;
+			}
+			// 创建审批流程并尝试开始
+			IApprovalProcess aProcess = this.createApprovalProcess(data.getObjectCode());
+			if (aProcess.start(data))
+				return aProcess;// 审批流程开始
+		} else {
+			// 不是新建的数据
+			IApprovalProcess aProcess = this.loadApprovalProcess(data.getIdentifiers());
+			return aProcess;
+		}
 		return null;
 	}
 
@@ -53,4 +66,20 @@ public class ApprovalProcessManager implements IApprovalProcessManager {
 		return true;
 	}
 
+	/**
+	 * 创建审批流程
+	 * 
+	 * @param boCode
+	 *            业务对象编码
+	 * @return
+	 */
+	protected abstract IApprovalProcess createApprovalProcess(String boCode);
+
+	/**
+	 * 加载审批流程
+	 * 
+	 * @param boCode
+	 * @return
+	 */
+	protected abstract IApprovalProcess loadApprovalProcess(String boKey);
 }
