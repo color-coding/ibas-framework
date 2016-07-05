@@ -30,6 +30,13 @@ public interface IApprovalData extends ITrackStatus {
 	emApprovalStatus getApprovalStatus();
 
 	/**
+	 * 设置-审批状态
+	 * 
+	 * @param value
+	 */
+	void setApprovalStatus(emApprovalStatus value);
+
+	/**
 	 * 获取识别码
 	 * 
 	 * @return
