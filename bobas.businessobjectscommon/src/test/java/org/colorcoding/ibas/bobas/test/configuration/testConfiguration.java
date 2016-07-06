@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.test.configuration;
 
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.configuration.Configuration;
 import org.colorcoding.ibas.bobas.configuration.ConfigurationElement;
 import org.colorcoding.ibas.bobas.configuration.ConfigurationElements;
@@ -50,4 +51,9 @@ public class testConfiguration extends TestCase {
 		System.out.println(Serializer.toXmlString(elements, true));
 	}
 
+	public void testGetWorkFolder() {	
+		System.out.println(MyConfiguration.getWorkFolder());
+		System.out.println(MyConfiguration.getURL("i18n"));
+		System.out.println(MyConfiguration.getURL("app.xml"));
+	}
 }

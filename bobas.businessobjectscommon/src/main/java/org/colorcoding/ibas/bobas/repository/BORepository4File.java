@@ -166,7 +166,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 					// 自己打开的事务
 					this.rollbackTransaction();// 关闭事务
 				}
-				throw new DbException(i18n.prop("msg_bobas_save_bo_faild", e.getMessage()), e);
+				throw new DbException(i18n.prop("msg_bobas_to_save_bo_faild", e.getMessage()), e);
 			}
 		}
 		return bo;

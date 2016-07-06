@@ -43,10 +43,6 @@ public class MyConfiguration extends Configuration {
 	 */
 	public static String CONFIG_ITEM_BO_REPOSITORY_DATA_CACHE_USAGE = "BOCacheUsage";
 	/**
-	 * 配置项目-工作目录
-	 */
-	public static String CONFIG_ITEM_WORK_FOLDER = "WorkFolder";
-	/**
 	 * 配置项目-开启只读业务仓库
 	 */
 	public static String CONFIG_ITEM_ENABLED_READONLY_REPOSITORY = "EnabledReadonlyRepository";
@@ -115,4 +111,8 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-组织方式
 	 */
 	public static String CONFIG_ITEM_ORGANIZATION_WAY = "OrganizationWay";
+	/**
+	 * 配置项目-业务逻辑方式
+	 */
+	public static String CONFIG_ITEM_BUSINESS_LOGICS_WAY = "BizLogicsWay";
 }

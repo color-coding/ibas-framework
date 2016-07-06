@@ -12,14 +12,19 @@ import org.colorcoding.ibas.bobas.MyConsts;
 @XmlType(name = "LanguageItemContent", namespace = MyConsts.NAMESPACE_BOBAS_I18N)
 @XmlRootElement(name = "LanguageItemContent", namespace = MyConsts.NAMESPACE_BOBAS_I18N)
 public class LanguageItemContent implements ILanguageItemContent {
+	public LanguageItemContent() {
 
-	/**
-	 * 存储语言类型
-	 */
+	}
+
+	public LanguageItemContent(String langCode, String content) {
+		this.setLanguageCode(langCode);
+		this.setContent(content);
+	}
+
 	private String languageCode;
 
 	@Override
-	@XmlElement(name = "languageCode")
+	@XmlElement(name = "LanguageCode")
 	public String getLanguageCode() {
 		return languageCode;
 	}
@@ -29,13 +34,10 @@ public class LanguageItemContent implements ILanguageItemContent {
 		this.languageCode = languageCode;
 	}
 
-	/**
-	 * 存储相应语言对应的相应文本
-	 */
 	private String content;
 
 	@Override
-	@XmlElement(name = "content")
+	@XmlElement(name = "Content")
 	public String getContent() {
 		return content;
 	}

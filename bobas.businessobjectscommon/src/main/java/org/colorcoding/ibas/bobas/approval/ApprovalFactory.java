@@ -14,7 +14,7 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
  */
 public class ApprovalFactory extends ConfigurableFactory {
 
-	volatile private static IApprovalProcessManager defaultManager = null;
+	private volatile static IApprovalProcessManager defaultManager = null;
 
 	/**
 	 * 创建流程管理员实例
@@ -46,6 +46,16 @@ public class ApprovalFactory extends ConfigurableFactory {
 
 	private static IApprovalProcessManager newManager(String type)
 			throws BOFactoryException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+		if (type == null || type == "") {
+			// 没有指定实现方式，则使用代理
+			return new IApprovalProcessManager() {
+				@Override
+				public IApprovalProcess checkProcess(IApprovalData data) {
+					return null;
+				}
+			};
+		}
+		// 创建实现的实例
 		Class<?> managerClass = getInstance(ApprovalFactory.class, type, "ApprovalProcessManager");
 		if (managerClass == null) {
 			throw new ClassNotFoundException("msg_bobas_not_found_approval_process_manager");

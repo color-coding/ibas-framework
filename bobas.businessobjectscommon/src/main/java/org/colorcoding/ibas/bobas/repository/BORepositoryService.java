@@ -6,7 +6,6 @@ import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
-import org.colorcoding.ibas.bobas.common.NotSupportedException;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
@@ -95,7 +94,8 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 			if (this.getRepository() instanceof IBORepository4Db) {
 				return ((IBORepository4Db) this.getRepository()).openDbConnection();
 			}
-			throw new NotSupportedException(i18n.prop("msg_bobas_not_supported"));
+			//throw new NotSupportedException(i18n.prop("msg_bobas_not_supported"));
+			return false;
 		} catch (Exception e) {
 			throw new RepositoryException(e);
 		}

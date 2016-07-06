@@ -1,9 +1,6 @@
 package org.colorcoding.ibas.bobas.i18n;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -12,20 +9,18 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.util.ArrayList;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "LanguageItem", namespace = MyConsts.NAMESPACE_BOBAS_I18N)
 @XmlRootElement(name = "LanguageItem", namespace = MyConsts.NAMESPACE_BOBAS_I18N)
 public class LanguageItem implements ILanguageItem {
-	/**
-	 * 获取翻译文本的key 值
-	 */
+
 	private String key;
 
 	@Override
-	@XmlElement(name = "key")
+	@XmlElement(name = "Key")
 	public String getKey() {
 		return key;
 	}
@@ -35,11 +30,11 @@ public class LanguageItem implements ILanguageItem {
 		this.key = key;
 	}
 
-	private List<ILanguageItemContent> languageItemContents;
+	private ArrayList<ILanguageItemContent> languageItemContents;
 
 	@XmlElementWrapper(name = "LanguageItemContents")
 	@XmlElement(name = "LanguageItemContent", type = LanguageItemContent.class)
-	public List<ILanguageItemContent> getLanguageItemContents() {
+	protected ArrayList<ILanguageItemContent> getLanguageItemContents() {
 		if (languageItemContents == null) {
 			languageItemContents = new ArrayList<ILanguageItemContent>();
 		}
@@ -47,64 +42,28 @@ public class LanguageItem implements ILanguageItem {
 	}
 
 	@Override
-	public ILanguageItemContent create() {
-		ILanguageItemContent itemContent = new LanguageItemContent();
-		getLanguageItemContents().add(itemContent);
-		return itemContent;
-	}
-
-	/**
-	 * 获取最后添加进来的翻译文本内容
-	 * 
-	 * @return 若存在返回结果，不存在返回空
-	 */
-	@Override
-	public String getContent() {
-		String langCode = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LANGUAGE_CODE);
-		if (langCode == null || langCode.equals("")) {
-			Locale locale = Locale.getDefault();
-			langCode = String.format("%s-%s", locale.getLanguage(), locale.getCountry());
-		}
-		return this.getContent(langCode);
-	}
-
-	/**
-	 * 根据语言类型 获取翻译文本内容
-	 * 
-	 * @param langcode
-	 *            语言类型
-	 * 
-	 * @return 若存在返回结果，不存在返回空
-	 */
-	@Override
 	public String getContent(String langcode) {
-		String result = "";
-		ILanguageItemContent itemContent = this.getItemContent(langcode);
-		if (itemContent == null)
-			return result;
-		return itemContent.getContent();
-	}
-
-	/**
-	 * 根据语言类型获取翻译文本内容实体
-	 * 
-	 * @param langcode
-	 *            语言类型
-	 * @return 翻译文本
-	 */
-	private ILanguageItemContent getItemContent(String langcode) {
-		if (langcode == null || langcode.equals(""))
-			return null;
-		if (languageItemContents == null)
-			return null;
-		ILanguageItemContent itemContent = null;
-		for (ILanguageItemContent languageItemContent : languageItemContents) {
-			if (langcode.equals(languageItemContent.getLanguageCode())) {
-				itemContent = languageItemContent;
-				break;
+		if (langcode != null && !langcode.equals("")) {
+			for (ILanguageItemContent item : this.getLanguageItemContents()) {
+				if (langcode.equals(item.getLanguageCode())) {
+					return item.getContent();
+				}
 			}
 		}
-		return itemContent;
+		return this.getContent();
+	}
+
+	/**
+	 * 默认值
+	 * 
+	 * @return
+	 */
+	public String getContent() {
+		ILanguageItemContent content = this.getLanguageItemContents().firstOrDefault();
+		if (content != null) {
+			return content.getContent();
+		}
+		return String.format("[%s]", this.getKey());
 	}
 
 	/**
@@ -120,12 +79,15 @@ public class LanguageItem implements ILanguageItem {
 		if (content == null || langcode.equals(""))
 			return;
 		// 添加或者更新值
-		ILanguageItemContent itemContent = this.getItemContent(langcode);
+		ILanguageItemContent itemContent = null;
+		for (ILanguageItemContent item : this.getLanguageItemContents()) {
+			if (langcode.equals(item.getLanguageCode())) {
+				itemContent = item;
+				break;
+			}
+		}
 		if (itemContent == null) {
-			LanguageItemContent instance = new LanguageItemContent();
-			instance.setContent(content);
-			instance.setLanguageCode(langcode);
-			this.getLanguageItemContents().add(instance);
+			this.getLanguageItemContents().add(new LanguageItemContent(langcode, content));
 		} else {
 			itemContent.setContent(content);
 		}

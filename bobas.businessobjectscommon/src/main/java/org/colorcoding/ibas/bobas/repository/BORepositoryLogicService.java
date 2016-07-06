@@ -44,7 +44,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 			// 运行基类方法
 			return super.actionsNotification(event);
 		} catch (Exception e) {
-			throw new BusinessLogicsException(e);
+			throw new ActionsEventException(e);
 		}
 	}
 
@@ -85,5 +85,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 			// 没有业务逻辑契约，退出处理
 			return;
 		}
+		
+		
 	}
 }

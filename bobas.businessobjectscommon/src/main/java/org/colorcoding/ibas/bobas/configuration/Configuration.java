@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.configuration;
 
 import java.io.File;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -84,6 +85,46 @@ public class Configuration {
 		return getConfiguration().getValue(key);
 	}
 
+	/**
+	 * 配置项目-工作目录
+	 */
+	public static String CONFIG_ITEM_WORK_FOLDER = "WorkFolder";
+
+	private volatile static String workFolder = null;
+
+	/**
+	 * 获取工作目录
+	 * 
+	 * @param type
+	 *            类型（i18n）
+	 * @return
+	 */
+	public static String getWorkFolder() {
+		if (workFolder == null) {
+			synchronized (Configuration.class) {
+				if (workFolder == null) {
+					String path = Configuration.getConfigValue(CONFIG_ITEM_WORK_FOLDER);
+					if (path == null || path.equals("")) {
+						// 没有配置工作目录
+						File file = new File(Thread.currentThread().getContextClassLoader().getResource("").getPath());
+						if (file.getParentFile().isDirectory() && file.getParentFile().getName().equals("WEB-INF")) {
+							// web路径
+							path = file.getParentFile().getPath();
+						} else {
+							path = System.getProperty("user.dir");
+						}
+					}
+					workFolder = (new File(path)).getPath();
+				}
+			}
+		}
+		return workFolder;
+	}
+
+	public static URL getURL(String type) {
+		return Thread.currentThread().getContextClassLoader().getResource(type);
+	}
+		
 	/**
 	 * 获取配置的值
 	 * 

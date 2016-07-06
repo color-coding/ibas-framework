@@ -1,34 +1,40 @@
 package org.colorcoding.ibas.bobas.i18n;
 
+/**
+ * 语言项目-内容
+ * 
+ * @author Niuren.Zhu
+ *
+ */
 public interface ILanguageItemContent {
 	/**
-	 * 获取语言版本
+	 * 获取-语言编码
 	 * 
-	 * @return 返回语言信息
+	 * @return
 	 */
 	String getLanguageCode();
 
 	/**
-	 * 设置语言版本
+	 * 设置-语言编码
 	 * 
 	 * @param languageCode
-	 *            语言类型
+	 * 
 	 */
 
 	void setLanguageCode(String languageCode);
 
 	/**
-	 * 得到相应内容
+	 * 获取-内容
 	 * 
-	 * @return 返回内容
+	 * @return
 	 */
 	String getContent();
 
 	/**
-	 * 设置相应内容
+	 * 设置-内容
 	 * 
 	 * @param content
-	 *            资源内容
+	 * 
 	 */
 	void setContent(String content);
 

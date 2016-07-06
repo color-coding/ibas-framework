@@ -17,11 +17,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/bobas.businessobjectscommon/target/classes" sourcepath="/bobas.businessobjectscommon">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/classes"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/bobas.businessobjectscommon/target/classes" sourcepath="/bobas.businessobjectscommon"/>
 	<classpathentry exported="true" kind="lib" path="/bobas.businessobjectscommon/target/test-classes">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/classes"/>

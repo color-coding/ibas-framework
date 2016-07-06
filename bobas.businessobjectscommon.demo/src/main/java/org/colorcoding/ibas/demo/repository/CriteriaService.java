@@ -16,6 +16,7 @@ import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
+import org.colorcoding.ibas.bobas.i18n.i18n;
 
 @Path("/")
 public class CriteriaService {
@@ -23,6 +24,7 @@ public class CriteriaService {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/hello")
 	public String sayHello() {
+		System.out.println(i18n.prop("msg_bobas_operation_successful"));
 		return "Hello Jersey";
 	}
 
@@ -32,6 +34,7 @@ public class CriteriaService {
 	@Path("/fetch")
 	public String fetch(Criteria criteria) {
 		System.out.println(criteria.toString("xml"));
+		System.out.println(i18n.prop("msg_bobas_operation_successful"));
 		return "ok.";
 	}
 
