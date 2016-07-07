@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.i18n;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -70,20 +71,24 @@ public class LanguageItemManager implements ILanguageItemManager {
 	 */
 	protected String getWorkFolder() {
 		if (workFolder == null || workFolder.equals("")) {
-			workFolder = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_I18N_PATH);
-			if (workFolder == null || workFolder.equals("") || !(new File(workFolder)).exists()) {
+			String path = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_I18N_PATH);
+			if (path == null || path.equals("") || !(new File(path)).exists()) {
 				// 配置的路径不存在
-				workFolder = MyConfiguration.getResource("i18n").getPath();
-				if (workFolder == null || workFolder.indexOf("!") > 0) {
+				URL url = MyConfiguration.getResource("i18n");
+				if (url != null) {
+					path = url.getPath();
+				}
+				if (path == null || path.indexOf("!") > 0) {
 					// 无效的路径
-					workFolder = MyConfiguration.getWorkFolder();
-					if (workFolder.endsWith("WEB-INF")) {
-						workFolder = String.format("%s%sresources%si18n", (new File(workFolder)).getParent(),
+					path = MyConfiguration.getWorkFolder();
+					if (path.endsWith("WEB-INF")) {
+						path = String.format("%s%sresources%si18n", (new File(path)).getParentFile().getPath(),
 								File.separator, File.separator);
 					}
 				}
-				RuntimeLog.log(RuntimeLog.MSG_I18N_RESOURCES_FOLDER, workFolder);
 			}
+			workFolder = new File(path).getPath();
+			RuntimeLog.log(RuntimeLog.MSG_I18N_RESOURCES_FOLDER, workFolder);
 		}
 		return workFolder;
 	}

@@ -25,7 +25,7 @@ public class testLogics extends TestCase {
 		materials02.setItemDescription("Disk 5T");
 		// 保存物料到文件系统
 		IBORepository4File fileRepository = new BORepository4File();
-		fileRepository.setRepositoryFolder("D:\\WorkTemp\\borepository");
+		//fileRepository.setRepositoryFolder("D:\\WorkTemp\\borepository");
 		BORepositoryTest boRepository = new BORepositoryTest();
 		boRepository.setRepository(fileRepository);
 		IOperationResult<?> operationResult;

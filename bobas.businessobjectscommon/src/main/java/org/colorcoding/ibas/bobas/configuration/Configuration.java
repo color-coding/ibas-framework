@@ -50,17 +50,27 @@ public class Configuration {
 	 * @return
 	 */
 	public static String getStartupFolder() {
-		String path;
-		File file = new File(Thread.currentThread().getContextClassLoader().getResource("").getPath());
-		if (file.getParentFile().isDirectory() && file.getParentFile().getName().equals("WEB-INF")) {
-			// web路径
-			path = file.getParentFile().getPath();
-		} else if (file.isDirectory()) {
-			path = file.getPath();
-		} else {
+		File file = null;
+		URL url = Thread.currentThread().getContextClassLoader().getResource(".");
+		String path = url.getPath();
+		if (path.split(":").length > 2) {
+			path = path.substring(path.indexOf(":") + 1, path.length());
+		}
+		if (path.indexOf("!") > 0) {
+			path = path.substring(0, path.indexOf("!"));
+		}
+		if (path == null) {
 			path = System.getProperty("user.dir");
 		}
-		return path;
+		file = new File(path);
+		if (file.isFile()) {
+			file = file.getParentFile();
+		}
+		if (file.getParentFile().isDirectory() && file.getParentFile().getName().equals("WEB-INF")) {
+			// web路径
+			file = file.getParentFile();
+		}
+		return file.getPath();
 	}
 
 	/**
