@@ -134,14 +134,14 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 						boCode = boTag.getObjectCode().toLowerCase();
 					}
 				}
-				String boFolder = String.format("%s\\%s", this.getRepositoryFolder(), boCode);
+				String boFolder = this.getRepositoryFolder() + File.separator + boCode;
 				// 开始保存数据
 				myTrans = this.beginTransaction();
 				this.tagStorage(bo);// 存储标记
 				if (bo.isNew()) {
 					// 新建的对象
 					this.notifyActions(SaveActionsType.before_adding, bo);
-					String fileName = String.format("%s\\%s.bo", boFolder, this.getFileName(bo));
+					String fileName = String.format("%s%s%s.bo", boFolder, File.separator, this.getFileName(bo));
 					this.writeBOFile(bo, fileName);
 					this.notifyActions(SaveActionsType.added, bo);
 				} else if (bo.isDeleted()) {
@@ -153,7 +153,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 					// 修改对象，先删除数据，再添加新的实例
 					this.notifyActions(SaveActionsType.before_updating, bo);
 					this.deleteBOFile(bo);
-					String fileName = String.format("%s\\%s.bo", boFolder, this.getFileName(bo));
+					String fileName = String.format("%s%s%s.bo", boFolder, File.separator, this.getFileName(bo));
 					this.writeBOFile(bo, fileName);
 					this.notifyActions(SaveActionsType.updated, bo);
 				}
@@ -186,7 +186,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 
 	private boolean deleteBOFile(IBusinessObjectBase bo) throws RepositoryException, BOFactoryException, JAXBException {
 		BOFile boFile = this.getBOFile(bo);
-		File file = new File(String.format("%s\\%s", this.getRepositoryFolder(), boFile.getFilePath()));
+		File file = new File(this.getRepositoryFolder() + File.separator + boFile.getFilePath());
 		if (file.exists()) {
 			RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_DELETED_DATA_FILE, file.getPath());
 			return file.delete();

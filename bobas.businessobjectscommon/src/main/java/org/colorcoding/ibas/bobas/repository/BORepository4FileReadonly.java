@@ -12,6 +12,7 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationInformation;
 import org.colorcoding.ibas.bobas.common.OperationResult;
+import org.colorcoding.ibas.bobas.configuration.Configuration;
 import org.colorcoding.ibas.bobas.core.BOFactoryException;
 import org.colorcoding.ibas.bobas.core.BORepositoryBase;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
@@ -30,7 +31,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 	@Override
 	public String getRepositoryFolder() {
 		if (this.repositoryFolder == null || this.repositoryFolder.equals("")) {
-			String workFolder = System.getProperty("user.dir");
+			String workFolder = Configuration.getWorkFolder() + File.separator + "borepository";
 			workFolder = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_FILE_REPOSITORY_FOLDER, workFolder);
 			File file = new File(workFolder);
 			if (!file.exists() && !file.isDirectory()) {
@@ -99,8 +100,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 		if (criteria.getBusinessObjectCode() == null || criteria.getBusinessObjectCode().equals("")) {
 			criteria.setBusinessObjectCode(this.getBOFactory().getBOCode(boType));
 		}
-		String boFolder = String.format("%s\\%s", this.getRepositoryFolder(),
-				criteria.getBusinessObjectCode().toLowerCase());
+		String boFolder = this.getRepositoryFolder() + File.separator + criteria.getBusinessObjectCode().toLowerCase();
 		File file = new File(boFolder);
 		if (!file.isDirectory() || !file.exists()) {
 			throw new RepositoryException(

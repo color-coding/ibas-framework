@@ -107,8 +107,6 @@ public class Configuration {
 	/**
 	 * 获取工作目录
 	 * 
-	 * @param type
-	 *            类型（i18n）
 	 * @return
 	 */
 	public static String getWorkFolder() {

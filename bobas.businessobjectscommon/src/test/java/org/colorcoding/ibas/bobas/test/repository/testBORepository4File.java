@@ -29,7 +29,7 @@ public class testBORepository4File extends TestCase {
 		item.setPrice(99.00);
 
 		IBORepository4File boRepository = new BORepository4File();
-		boRepository.setRepositoryFolder("D:\\WorkTemp\\borepository");
+		//boRepository.setRepositoryFolder("D:\\WorkTemp\\borepository");
 
 		IOperationResult<?> operationResult = boRepository.saveEx(order);
 		System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
@@ -53,7 +53,7 @@ public class testBORepository4File extends TestCase {
 		ICriteria criteria = new Criteria();
 		criteria.setResultCount(100);
 		IBORepository4File boRepository = new BORepository4File();
-		boRepository.setRepositoryFolder("D:\\WorkTemp\\borepository");
+		//boRepository.setRepositoryFolder("D:\\WorkTemp\\borepository");
 
 		IOperationResult<?> operationResult = boRepository.fetchEx(criteria, SalesOrder.class);
 		System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),

@@ -5,7 +5,7 @@ import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.configuration.Configuration;
 import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.mapping.BOCode;
 
@@ -25,12 +25,6 @@ public class BOFactory implements IBOFactory {
 
 	private BOFactory() {
 
-	}
-
-	public String getWorkFolder() {
-		String workFoder = System.getProperty("user.dir");
-		workFoder = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_WORK_FOLDER, workFoder);
-		return workFoder;
 	}
 
 	/**
@@ -68,10 +62,9 @@ public class BOFactory implements IBOFactory {
 		URL url = null;
 		try {
 			String fullPath = path;
-			String fileSeparator = System.getProperty("file.separator");
-			if (fullPath != null && (fullPath.indexOf(fileSeparator) < 0)) {
+			if (fullPath != null && (fullPath.indexOf(File.separator) < 0)) {
 				// 不是完整路径(目录 分隔符 文件名称)
-				fullPath = String.format("%s%s%s", getWorkFolder(), fileSeparator, fullPath);
+				fullPath = String.format("%s%s%s", Configuration.getWorkFolder(), File.separator, fullPath);
 			}
 			url = new File(path).toURI().toURL();
 		} catch (Exception e) {
