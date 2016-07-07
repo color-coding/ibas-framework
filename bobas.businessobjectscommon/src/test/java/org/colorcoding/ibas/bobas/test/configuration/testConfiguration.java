@@ -1,59 +1,44 @@
 package org.colorcoding.ibas.bobas.test.configuration;
 
+import java.io.File;
+import java.io.IOException;
+
+import javax.xml.bind.JAXBException;
+
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.configuration.Configuration;
-import org.colorcoding.ibas.bobas.configuration.ConfigurationElement;
-import org.colorcoding.ibas.bobas.configuration.ConfigurationElements;
-import org.colorcoding.ibas.bobas.configuration.IConfigurationElement;
-import org.colorcoding.ibas.bobas.core.Serializer;
+import org.colorcoding.ibas.bobas.configuration.ConfigurationManager;
+import org.colorcoding.ibas.bobas.configuration.IConfigurationManager;
 
 import junit.framework.TestCase;
 
-/**
- * 测试 配置类 测试 范围：读取配置项，增加配置项，删除配置项，加载另外的配置文件，保存所有配置项到最后加载的配置文件路径
- * 
- * @author Eric Peng
- *
- */
 public class testConfiguration extends TestCase {
 
-	public void testGetConfigvalue() {
-		Configuration configuration = Configuration.getConfiguration();
-		String value_test = "";
-		String value = Configuration.getConfigValue("I18nPath");
-		System.out.println(value);
-		ConfigurationElement appSetting = new ConfigurationElement();
-		appSetting.setKey("test");
-		appSetting.setValue("ceshi配置文件");
-		configuration.addSetting(appSetting);// 添加配置项
-		value_test = Configuration.getConfigValue("test");
-		System.out.println(value_test);
-		configuration.setSetting("test", "修改ceshi配置项");// 修改配置项
-		value_test = Configuration.getConfigValue("test");
-		System.out.println(value_test);
-		configuration.deleteConfigElement("test");// 删除配置项
-		value_test = Configuration.getConfigValue("test");
-		System.out.println(value_test);
-		configuration.putSettings(configuration.loadConfigFile("D:/app.xml"));// 加载新的配置文件
-		value_test = Configuration.getConfigValue("MasterDbServer");
-		System.out.println(value_test);
-		configuration.saveSettings("D:/app_T.xml");// 保存配置项
+	public void testCreate() throws JAXBException, IOException {
+		IConfigurationManager manager = new ConfigurationManager();
+		manager.addSetting("DbType", "MSSQL");
+		manager.addSetting("DbServer", "localhost");
+		manager.addSetting("DbName", "ibas_demo");
+		manager.addSetting("DbUserID", "sa");
+		manager.addSetting("DbUserPassword", "1q2w3e");
+
+		String filePath = String.format("%s%s~app.xml", Configuration.getStartupFolder(), File.separator);
+		System.out.println(String.format("configuration save to [%s].", filePath));
+		manager.saveSettings(filePath);
+
+		IConfigurationManager manager1 = ConfigurationManager.create(filePath);
+		assertEquals("config value not equal.", manager.getValue("DbType"), manager1.getValue("DbType"));
+		assertEquals("config value not equal.", manager.getValue("DbServer"), manager1.getValue("DbServer"));
+		assertEquals("config value not equal.", manager.getValue("DbName"), manager1.getValue("DbName"));
+		assertEquals("config value not equal.", manager.getValue("DbUserID"), manager1.getValue("DbUserID"));
+		assertEquals("config value not equal.", manager.getValue("DbUserPassword"),
+				manager1.getValue("DbUserPassword"));
+
 	}
 
-	public void testConfigurationSerialize() {
-		ConfigurationElements elements = new ConfigurationElements();
-		IConfigurationElement element = elements.create();
-		element.setKey("name");
-		element.setValue("XXOO");
-		IConfigurationElement element1 = elements.create();
-		element1.setKey("name1");
-		element1.setValue("XXOO1");
-		System.out.println(Serializer.toXmlString(elements, true));
-	}
-
-	public void testGetWorkFolder() {	
+	public void testGetWorkFolder() {
 		System.out.println(MyConfiguration.getWorkFolder());
-		System.out.println(MyConfiguration.getURL("i18n"));
-		System.out.println(MyConfiguration.getURL("app.xml"));
+		System.out.println(MyConfiguration.getResource("i18n"));
+		System.out.println(MyConfiguration.getResource("app.xml"));
 	}
 }

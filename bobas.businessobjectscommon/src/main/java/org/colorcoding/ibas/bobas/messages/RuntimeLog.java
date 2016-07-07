@@ -47,6 +47,7 @@ public class RuntimeLog {
 	public static final String MSG_BUSINESS_LOGICS_MANAGER_CREATED = "bl manager: created business logics manager [%s].";
 	public static final String MSG_I18N_READ_FILE_DATA = "i18n: read file's data [%s].";
 	public static final String MSG_I18N_RESOURCES_FOLDER = "i18n: use folder [%s].";
+	public static final String MSG_CONFIG_READ_FILE_DATA = "config: read file's data [%s].";
 	/**
 	 * 单例模式
 	 */

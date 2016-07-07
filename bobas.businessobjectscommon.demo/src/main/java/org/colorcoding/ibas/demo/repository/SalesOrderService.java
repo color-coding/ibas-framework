@@ -85,7 +85,8 @@ public class SalesOrderService {
 		try {
 
 			IBORepository4DbReadonly boRepository = new BORepository4DbReadonly();
-			boRepository.connectDb("mssql", "localhost", "ibas_demo", "sa", "1q2w3e");
+			// boRepository.connectDb("mssql", "localhost", "ibas_demo", "sa",
+			// "1q2w3e");
 			ISqlQuery sqlQuery = new SqlQuery();
 			sqlQuery.setQueryString("select * from cc_tt_ordr");
 

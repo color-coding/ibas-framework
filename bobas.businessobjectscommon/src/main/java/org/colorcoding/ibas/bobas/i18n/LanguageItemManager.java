@@ -73,7 +73,7 @@ public class LanguageItemManager implements ILanguageItemManager {
 			workFolder = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_I18N_PATH);
 			if (workFolder == null || workFolder.equals("") || !(new File(workFolder)).exists()) {
 				// 配置的路径不存在
-				workFolder = MyConfiguration.getURL("i18n").getPath();
+				workFolder = MyConfiguration.getResource("i18n").getPath();
 				if (workFolder == null || workFolder.indexOf("!") > 0) {
 					// 无效的路径
 					workFolder = MyConfiguration.getWorkFolder();

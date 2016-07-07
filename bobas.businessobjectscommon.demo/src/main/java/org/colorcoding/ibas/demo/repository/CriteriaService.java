@@ -24,7 +24,6 @@ public class CriteriaService {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/hello")
 	public String sayHello() {
-		System.out.println(i18n.prop("msg_bobas_operation_successful"));
 		return "Hello Jersey";
 	}
 

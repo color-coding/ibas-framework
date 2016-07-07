@@ -1,7 +1,7 @@
 package org.colorcoding.ibas.bobas.configuration;
 
 /**
- * 配置项接口
+ * 配置项
  * 
  */
 public interface IConfigurationElement {
