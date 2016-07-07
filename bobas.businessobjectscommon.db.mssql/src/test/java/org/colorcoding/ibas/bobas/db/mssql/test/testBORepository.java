@@ -75,7 +75,8 @@ public class testBORepository extends TestCase {
 
 	public void testFetchBO() throws InvalidRepositoryException {
 		BORepositoryTest boRepository = new BORepositoryTest();
-		boRepository.connectRepository("MSSQL", "localhost", "ibas_demo", "sa", "1q2w3e");
+		// boRepository.connectRepository("MSSQL", "localhost", "ibas_demo",
+		// "sa", "1q2w3e");
 		boRepository.setUserToken("");
 		ICriteria criteria = new Criteria();
 		criteria.setResultCount(100);

@@ -24,10 +24,16 @@ public class Configuration {
 			synchronized (Configuration.class) {
 				if (configuration == null) {
 					try {
-						String configFile = String.format("%s%sapp.xml", getStartupFolder(), File.separator);
+						String folder = getStartupFolder();
+						if (folder.endsWith("target" + File.separator + "test-classes")) {
+							// 测试脚本 target\test-classes
+							folder = (new File(folder)).getParentFile().getParentFile().getPath();
+						}
+						String configFile = String.format("%s%sapp.xml", folder, File.separator);
 						configuration = ConfigurationManager.create(configFile);
 					} catch (FileNotFoundException | JAXBException e) {
-						RuntimeLog.log(e);
+						// 读取配置文件出错
+						e.printStackTrace();
 					}
 					if (configuration == null) {
 						configuration = new ConfigurationManager();

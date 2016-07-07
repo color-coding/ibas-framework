@@ -2,11 +2,17 @@
 <!DOCTYPE configuration>
 <ns2:configuration xmlns:ns2="http://colorcoding.org/ibas/bobas/configuration">
 	<appSettings>
-		<add key="DebugMode" value="true" />
+		<!--配置项目-是否开启调试模式-->
+		<add key="DebugMode" value="false" />
+		<!-- 配置项目-数据库类型 -->
 		<add key="DbType" value="MSSQL" />
+		<!-- 配置项目-数据库地址-->
 		<add key="DbServer" value="localhost" />
+		<!-- 配置项目-数据库名称 -->
 		<add key="DbName" value="ibas_demo" />
+		<!-- 配置项目-数据库用户名称 -->
 		<add key="DbUserID" value="sa" />
+		<!-- 配置项目-数据库用户密码 -->
 		<add key="DbUserPassword" value="1q2w3e" />
 	</appSettings>
 </ns2:configuration>

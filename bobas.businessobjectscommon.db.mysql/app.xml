@@ -8,8 +8,5 @@
 		<add key="MasterDbName" value="ibcp_demo" />
 		<add key="MasterDbUserID" value="root" />
 		<add key="MasterDbUserPassword" value="1q2w3e" />
-		<add key="I18nPath" value="/src/main/resources/i18n/" />
-		<add key="I18nFileTemplate" value="locale.bobs%s.properties" />
-		<add key="LanguageCode" value="" />
 	</appSettings>
 </ns2:configuration>
