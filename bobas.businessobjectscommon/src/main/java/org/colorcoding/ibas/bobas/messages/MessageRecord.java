@@ -17,20 +17,20 @@ import org.colorcoding.ibas.bobas.data.DateTime;
  * @author Niuren.Zhu
  *
  */
-public class RuntimeLogRecord {
+public class MessageRecord implements IMessageRecord {
 
 	/**
 	 * 单例模式---始终用一个队列 记录日志
 	 */
-	private static volatile RuntimeLogRecord instance;
+	private static volatile MessageRecord instance;
 
-	public static RuntimeLogRecord create() {
+	public static MessageRecord create() {
 		if (!enableLog())
 			return null;
 		if (instance == null) {
-			synchronized (RuntimeLogRecord.class) {
+			synchronized (MessageRecord.class) {
 				if (instance == null) {
-					instance = new RuntimeLogRecord();
+					instance = new MessageRecord();
 				}
 			}
 		}
@@ -50,7 +50,7 @@ public class RuntimeLogRecord {
 					@SuppressWarnings("static-access")
 					public void run() {
 						try {
-							create().writeLog();
+							create().writeRecord();
 							Thread.currentThread().sleep(logOutFrequency());
 							run();
 						} catch (InterruptedException e) {
@@ -88,7 +88,7 @@ public class RuntimeLogRecord {
 		if (logFilePath == null || logFilePath.equals("")) {
 			logFilePath = "";
 			// 将日志文件记录到启动路径的相对位置。
-			String startPath = MyConfiguration.getStartupFolder();// 尾部不带文件路径分隔
+			String startPath = MyConfiguration.getWorkFolder();// 尾部不带文件路径分隔
 			logFilePath = String.format("%s%s%s%s", startPath, File.separator, "log", File.separator);
 			File file_classPath = new File(logFilePath);
 			if (!file_classPath.exists()) {
@@ -99,7 +99,15 @@ public class RuntimeLogRecord {
 		return logFilePath;
 	}
 
-	protected RuntimeLogRecord() {
+	@Override
+	public void setFilePath(String filePath) {
+		if (filePath == null || filePath.equals("")) {
+			return;
+		}
+		this.logFilePath = filePath;
+	}
+
+	protected MessageRecord() {
 
 	}
 
@@ -138,7 +146,8 @@ public class RuntimeLogRecord {
 	/**
 	 * 将日志消息写入到文本中
 	 */
-	protected void writeLog() {
+	@Override
+	public void writeRecord() {
 		if (this.getMessageQueue().isEmpty()) {
 			return;
 		}
@@ -148,7 +157,7 @@ public class RuntimeLogRecord {
 			String fileName = String.format("ibas_%s.log", DateTime.getNow().toString("yyyyMMdd"));
 			String pattern = String.format("%s%s%s", filePath, File.separator, fileName);
 			fileHandler = new FileHandler(pattern, true);
-			Logger log = Logger.getLogger("NIUREN");
+			Logger log = Logger.getLogger("IBAS");
 			log.setUseParentHandlers(false);
 			fileHandler.setFormatter(new Formatter() {
 				@Override
@@ -169,4 +178,5 @@ public class RuntimeLogRecord {
 			}
 		}
 	}
+
 }
