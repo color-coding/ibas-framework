@@ -6,6 +6,7 @@ import org.colorcoding.ibas.bobas.approval.UnauthorizedException;
 import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
+import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.organization.IUser;
 
 public class ApprovalProcess extends org.colorcoding.ibas.bobas.approval.ApprovalProcess {
@@ -93,12 +94,12 @@ public class ApprovalProcess extends org.colorcoding.ibas.bobas.approval.Approva
 
 	@Override
 	public void checkToSave(IUser user) throws UnauthorizedException {
-
+		
 	}
+
 	@Override
 	public void save(IBORepository boRepository) {
-		// TODO Auto-generated method stub
-
+		throw new RuntimeException(i18n.prop("msg_bobas_not_implemented_method"));
 	}
 
 }
