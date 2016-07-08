@@ -17,3 +17,7 @@ hs_err_pid*
 # release folder
 /release/
 /.vs/
+/.metadata/
+/.recommenders/
+/RemoteSystemsTempFiles/
+/Servers/

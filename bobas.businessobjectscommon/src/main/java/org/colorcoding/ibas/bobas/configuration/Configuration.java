@@ -51,8 +51,10 @@ public class Configuration {
 	 */
 	public static String getStartupFolder() {
 		File file = null;
-		URL url = Thread.currentThread().getContextClassLoader().getResource(".");
+		URL url = Thread.currentThread().getContextClassLoader().getResource("");
 		String path = url.getPath();
+		// file:/E:/WorkTemp/ibas/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/ibcp.systemcenter.service/WEB-INF/classes/
+		// 取到的值如上
 		if (path.split(":").length > 2) {
 			path = path.substring(path.indexOf(":") + 1, path.length());
 		}

@@ -32,11 +32,11 @@ public class OrganizationFactory extends ConfigurableFactory {
 						defaultManager = newManager(MyConfiguration
 								.getConfigValue(MyConfiguration.CONFIG_ITEM_ORGANIZATION_WAY, "").toLowerCase());
 					} catch (Exception e) {
-						throw new RuntimeException(i18n.prop("msg_bobas_create_approval_process_manager_falid"), e);
+						throw new RuntimeException(i18n.prop("msg_bobas_create_organization_manager_falid"), e);
 					}
 					if (defaultManager == null) {
 						// 初始化后仍然无效
-						throw new RuntimeException(i18n.prop("msg_bobas_create_approval_process_manager_falid"));
+						throw new RuntimeException(i18n.prop("msg_bobas_create_organization_manager_falid"));
 					}
 				}
 			}
