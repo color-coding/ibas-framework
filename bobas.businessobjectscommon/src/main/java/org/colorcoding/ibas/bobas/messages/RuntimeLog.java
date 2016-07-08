@@ -3,6 +3,8 @@ package org.colorcoding.ibas.bobas.messages;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import org.colorcoding.ibas.bobas.MyConfiguration;
+
 /**
  * 运行日志
  * 
@@ -38,6 +40,7 @@ public class RuntimeLog {
 	public static final String MSG_I18N_READ_FILE_DATA = "i18n: read file's data [%s].";
 	public static final String MSG_I18N_RESOURCES_FOLDER = "i18n: use folder [%s].";
 	public static final String MSG_CONFIG_READ_FILE_DATA = "config: read file's data [%s].";
+
 	/**
 	 * 记录系统错误
 	 * 
@@ -48,12 +51,11 @@ public class RuntimeLog {
 		if (e == null) {
 			return;
 		}
-		e.printStackTrace();
 		try {
 			StringWriter stringWriter = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(stringWriter);
 			e.printStackTrace(printWriter);
-			log(stringWriter.toString());
+			log(MessageLevel.error, stringWriter.toString());
 		} catch (Exception e2) {
 			e2.printStackTrace();
 		}
@@ -67,11 +69,20 @@ public class RuntimeLog {
 	 *            传递过来的消息
 	 */
 	public static void log(IMessage message) {
-		RuntimeLogRecord runtimeLogRecord = RuntimeLogRecord.create();
-		if (runtimeLogRecord != null) {
-			runtimeLogRecord.addMessage(message);
+		if (message == null) {
+			return;
 		}
-		System.out.println(message.outString());
+		if (MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DEBUG_MODE, false)) {
+			IMessageRecord messageRecord = new MessageRecord();
+			if (messageRecord != null) {
+				messageRecord.addMessage(message);
+			}
+		}
+		if (message.getLevel() == MessageLevel.error) {
+			System.err.println(message.outString());
+		} else {
+			System.out.println(message.outString());
+		}
 	}
 
 	public static void log(String message) {
