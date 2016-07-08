@@ -21,4 +21,12 @@ public interface IMessageRecord {
 	 */
 	void writeRecord();
 
+	/**
+	 * 添加消息到消息队列
+	 * 
+	 * @param message
+	 *            消息
+	 */
+	void addMessage(IMessage message);
+
 }

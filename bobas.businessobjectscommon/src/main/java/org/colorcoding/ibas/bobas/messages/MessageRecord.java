@@ -135,7 +135,8 @@ public class MessageRecord implements IMessageRecord {
 	 * @param message
 	 *            消息
 	 */
-	protected void addMessage(IMessage message) {
+	@Override
+	public void addMessage(IMessage message) {
 		if (message == null) {
 			return;
 		}
