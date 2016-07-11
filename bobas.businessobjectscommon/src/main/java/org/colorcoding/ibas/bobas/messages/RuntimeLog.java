@@ -41,25 +41,41 @@ public class RuntimeLog {
 	public static final String MSG_I18N_RESOURCES_FOLDER = "i18n: use folder [%s].";
 	public static final String MSG_CONFIG_READ_FILE_DATA = "config: read file's data [%s].";
 
-	/**
-	 * 记录系统错误
-	 * 
-	 * @param exception
-	 *            异常
-	 */
-	public static void log(Exception e) {
-		if (e == null) {
-			return;
-		}
-		try {
-			StringWriter stringWriter = new StringWriter();
-			PrintWriter printWriter = new PrintWriter(stringWriter);
-			e.printStackTrace(printWriter);
-			log(MessageLevel.error, stringWriter.toString());
-		} catch (Exception e2) {
-			e2.printStackTrace();
-		}
+	private static long debugMode = -1;// log类型线程安全
 
+	/**
+	 * 是否处于debug模式
+	 * 
+	 * @return
+	 */
+	protected static boolean isDebugMode() {
+		// 访问频繁，提高下性能
+		if (debugMode == -1) {
+			synchronized (RuntimeLog.class) {
+				if (debugMode == -1) {
+					boolean value = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DEBUG_MODE, false);
+					if (value) {
+						debugMode = 1;
+					} else {
+						debugMode = 0;
+					}
+				}
+			}
+		}
+		return debugMode == 1 ? true : false;
+	}
+
+	private static IMessageRecorder recorder;
+
+	protected static IMessageRecorder getRecorder() {
+		if (recorder == null) {
+			synchronized (RuntimeLog.class) {
+				if (recorder == null) {
+					recorder = RecorderFactory.createRecorder();
+				}
+			}
+		}
+		return recorder;
 	}
 
 	/**
@@ -72,40 +88,86 @@ public class RuntimeLog {
 		if (message == null) {
 			return;
 		}
-		if (MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DEBUG_MODE, false)) {
-			IMessageRecord messageRecord = new MessageRecord();
-			if (messageRecord != null) {
-				messageRecord.addMessage(message);
-			}
-		}
-		if (message.getLevel() == MessageLevel.error) {
-			System.err.println(message.outString());
-		} else {
-			System.out.println(message.outString());
+		if (isDebugMode()) {
+			getRecorder().record(message);
 		}
 	}
 
+	/**
+	 * 记录消息
+	 * 
+	 * @param level
+	 *            消息级别
+	 * @param message
+	 *            消息内容
+	 * @param tag
+	 *            消息标签
+	 */
+	public static void log(MessageLevel level, String message, String tag) {
+		log(Message.create(level, message, tag));
+	}
+
+	/**
+	 * 记录消息
+	 * 
+	 * @param message
+	 *            消息内容
+	 */
 	public static void log(String message) {
 		log(MessageLevel.information, message, "");
 	}
 
+	/**
+	 * 记录消息
+	 * 
+	 * @param level
+	 *            消息级别
+	 * @param message
+	 *            消息内容
+	 */
 	public static void log(MessageLevel level, String message) {
-
 		log(level, message, "");
 	}
 
-	public static void log(MessageLevel level, String message, String tag) {
-
-		log(Message.create(level, message, tag));
-	}
-
+	/**
+	 * 记录消息，带格式参数（message %s.）
+	 * 
+	 * @param message
+	 *            消息内容及格式
+	 * @param args
+	 *            格式中的参数
+	 */
 	public static void log(String message, Object... args) {
-
 		log(MessageLevel.information, message, args);
 	}
 
+	/**
+	 * 记录消息，带格式参数（message %s.）
+	 * 
+	 * @param level
+	 *            消息级别
+	 * @param message
+	 *            消息内容及格式
+	 * @param args
+	 *            格式中的参数
+	 */
 	public static void log(MessageLevel level, String message, Object... args) {
-
 		log(level, String.format(message, args), "");
+	}
+
+	/**
+	 * 记录消息
+	 * 
+	 * @param exception
+	 *            异常
+	 */
+	public static void log(Exception e) {
+		if (e == null) {
+			return;
+		}
+		StringWriter stringWriter = new StringWriter();
+		PrintWriter printWriter = new PrintWriter(stringWriter);
+		e.printStackTrace(printWriter);
+		log(MessageLevel.error, stringWriter.toString());
 	}
 }

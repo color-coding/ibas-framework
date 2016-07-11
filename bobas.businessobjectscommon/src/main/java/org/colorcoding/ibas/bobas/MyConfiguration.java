@@ -81,17 +81,14 @@ public class MyConfiguration extends Configuration {
 	public static String CONFIG_ITEM_I18N_PATH = "I18nPath";
 
 	/**
-	 * 配置项目-国际化文件名称模板(locale.bobs%s.properties)
-	 * 
-	 * locale.bobs.properties 默认语言；locale.bobs_en-US.properties 英语
-	 */
-	public static String CONFIG_ITEM_I18N_FILENAME = "I18nFileTemplate";
-
-	/**
 	 * 配置项目-语言编码
 	 */
 	public static String CONFIG_ITEM_LANGUAGE_CODE = "LanguageCode";
 
+	/**
+	 * 配置项目-消息记录方式
+	 */
+	public static String CONFIG_ITEM_MESSAGE_RECORDER_WAY = "RecorderWay";
 	/**
 	 * 配置项目-日志文件保存路径
 	 */
