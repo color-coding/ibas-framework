@@ -65,13 +65,13 @@ public class RuntimeLog {
 		return debugMode == 1 ? true : false;
 	}
 
-	private static IMessageRecorder recorder;
+	private volatile static IMessageRecorder recorder;
 
 	protected static IMessageRecorder getRecorder() {
 		if (recorder == null) {
 			synchronized (RuntimeLog.class) {
 				if (recorder == null) {
-					recorder = RecorderFactory.createRecorder();
+					recorder = RecorderFactory.createRecorder("ibas_runtime_%s.log");
 				}
 			}
 		}

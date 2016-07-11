@@ -3,10 +3,6 @@ package org.colorcoding.ibas.bobas.messages;
 import java.io.File;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.FileHandler;
-import java.util.logging.Formatter;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.DateTime;
@@ -18,6 +14,13 @@ import org.colorcoding.ibas.bobas.data.DateTime;
  *
  */
 public class MessageRecorder4File extends MessageRecorder implements IMessageRecorder4File {
+	public MessageRecorder4File() {
+
+	}
+
+	public MessageRecorder4File(String sign) {
+		this.setFileSign(sign);
+	}
 
 	private volatile Queue<IMessage> messageQueue;
 
@@ -45,7 +48,7 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 	public String getWorkFolder() {
 		if (this.workFolder == null || this.workFolder.equals("")) {
 			String folder = MyConfiguration.getWorkFolder();// 尾部不带文件路径分隔
-			this.setWorkFolder(String.format("%s%s%s%s", folder, File.separator, "log", File.separator));
+			this.setWorkFolder(String.format("%s%s%s", folder, File.separator, "log"));
 		}
 		return this.workFolder;
 	}
@@ -87,9 +90,9 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 		// 调用基类，消息记录到控制台
 		super.record(message);
 		// 消息记录到其他
-		if (this.getMessageQueue().isEmpty()) {
-			return;
-		}
+		this.getMessageQueue().add(message);
+		System.err.println("log: " + this.getFileName());
+		/*
 		FileHandler fileHandler = null;
 		try {
 			fileHandler = new FileHandler(this.getFileName(), true);
@@ -113,6 +116,7 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 				fileHandler.close();
 			}
 		}
+		*/
 	}
 
 }

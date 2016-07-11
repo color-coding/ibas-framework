@@ -11,27 +11,32 @@ import org.colorcoding.ibas.bobas.core.BOFactoryException;
  *
  */
 public class RecorderFactory extends ConfigurableFactory {
-
 	/**
 	 * 创建流程管理员实例
 	 * 
+	 * @param sign
+	 *            类型标记
 	 * @return
 	 */
-	public synchronized static IMessageRecorder createRecorder() {
+	public synchronized static IMessageRecorder createRecorder(String sign) {
+		IMessageRecorder recorder = null;
 		String type = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_MESSAGE_RECORDER_WAY);
 		if (type != null && !type.equals("")) {
 			// 创建实现的实例
 			try {
 				Class<?> recorderClass = getInstance(RecorderFactory.class, "", type);
 				if (recorderClass != null) {
-					return (IMessageRecorder) recorderClass.newInstance();
+					recorder = (IMessageRecorder) recorderClass.newInstance();
 				}
 			} catch (BOFactoryException | InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
 		}
+		if (recorder == null) {
+			recorder = new MessageRecorder4File(sign);			
+		}
 		// 未配置则使用默认的
-		return new MessageRecorder4File();
+		return recorder;
 	}
 
 }
