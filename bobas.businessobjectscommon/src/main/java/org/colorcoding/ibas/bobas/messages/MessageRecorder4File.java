@@ -101,7 +101,7 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 		super.record(message);
 		// 消息记录到其他
 		this.getMessageQueue().offer(message);
-		System.err.println("log: " + this.getFileName());
+		// System.err.println("log: " + this.getFileName());
 		if (ThreadCount == -1) {
 			enableThread();
 			if (ThreadCount == 1)
