@@ -3,6 +3,8 @@ package org.colorcoding.ibas.bobas.messages;
 import java.io.File;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
@@ -102,52 +104,34 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 		// 消息记录到其他
 		this.getMessageQueue().offer(message);
 		// System.err.println("log: " + this.getFileName());
-		if (ThreadCount == -1) {
-			enableThread();
-			if (ThreadCount == 1)
-				this.createOutThread();
-		}
-	}
-
-	private static long ThreadCount = -1;// 确保只有一个写线程
-	/*
-	 * 访问频繁，提高性能
-	 */
-
-	private static long enableThread() {
-		if (ThreadCount == -1) {
-			synchronized (MessageRecorder4File.class) {
-				if (ThreadCount == -1) {
-					ThreadCount = 1;
-				}
-			}
-		}
-		return ThreadCount;
-	}
-
-	/**
-	 * 创建写文件线程
-	 */
-	private void createOutThread() {
-		Thread outThread = new Thread(new Runnable() {
+		this.getWriteThreads().execute(new Runnable() {
 			@Override
 			public void run() {
-				try {
-					out4File();
-					Thread.sleep(1000);
-					run();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+				write4File();
 			}
 		});
-		outThread.start();
+	}
+
+	private ExecutorService writeThreads;
+
+	/**
+	 * 获得写文件线程
+	 * 
+	 * @return 获得写文件线程池中的一个线程。
+	 */
+	private ExecutorService getWriteThreads() {
+		if (writeThreads == null) {
+			synchronized (MessageRecorder4File.class) {
+				writeThreads = Executors.newSingleThreadExecutor();
+			}
+		}
+		return writeThreads;
 	}
 
 	/**
 	 * 输出消息到文件
 	 */
-	public void out4File() {
+	public void write4File() {
 
 		FileHandler fileHandler = null;
 		try {

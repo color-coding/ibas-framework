@@ -14,7 +14,7 @@ import junit.framework.TestCase;
 public class testRuntimeLog extends TestCase {
 
 	public void testMultiLogSave() throws InterruptedException {
-		int theadCount = 1000;
+		int theadCount = 999;
 		Thread[] threads = new Thread[theadCount];
 
 		for (int i = 0; i < theadCount; i++) {
@@ -29,6 +29,7 @@ public class testRuntimeLog extends TestCase {
 		for (int i = 0; i < threads.length; i++) {
 			threads[i].join();
 		}
+		Thread.sleep(15000);
 	}
 
 	public void testRuntimeLogSave() {
