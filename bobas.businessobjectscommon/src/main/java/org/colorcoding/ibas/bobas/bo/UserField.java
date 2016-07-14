@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.core.fields.IFieldDataDb;
-import org.colorcoding.ibas.bobas.mapping.db.DbFieldType;
+import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 /**
  * 自定义字段元素

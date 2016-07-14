@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.common;
 
-import org.colorcoding.ibas.bobas.mapping.db.DbFieldType;
+import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 /**
  * 查询条件

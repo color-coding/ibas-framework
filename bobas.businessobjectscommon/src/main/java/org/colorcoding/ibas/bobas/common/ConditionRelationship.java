@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.common;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
-import org.colorcoding.ibas.bobas.mapping.db.DbValue;
+import org.colorcoding.ibas.bobas.mapping.DbValue;
 
 /**
  * 条件之间关系

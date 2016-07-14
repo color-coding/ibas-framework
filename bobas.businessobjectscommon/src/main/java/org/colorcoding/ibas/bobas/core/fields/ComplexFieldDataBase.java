@@ -8,7 +8,7 @@ import java.util.NoSuchElementException;
 import org.colorcoding.ibas.bobas.core.BOFactory;
 import org.colorcoding.ibas.bobas.core.BOFactoryException;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
-import org.colorcoding.ibas.bobas.mapping.db.ComplexField;
+import org.colorcoding.ibas.bobas.mapping.ComplexField;
 
 /**
  * 复合字段基类

@@ -1,7 +1,7 @@
 package org.colorcoding.ibas.bobas.core.fields;
 
-import org.colorcoding.ibas.bobas.mapping.db.DbField;
-import org.colorcoding.ibas.bobas.mapping.db.DbFieldType;
+import org.colorcoding.ibas.bobas.mapping.DbField;
+import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 public abstract class FieldDataDbBase<T> extends FieldDataBase<T> implements IFieldDataDb {
 

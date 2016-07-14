@@ -9,6 +9,7 @@ import javax.xml.bind.JAXBException;
 import org.colorcoding.ibas.bobas.bo.UserFieldProxy;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.OperationResult;
+import org.colorcoding.ibas.bobas.data.DataTable;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 import org.colorcoding.ibas.bobas.test.bo.User;
 
@@ -25,7 +26,7 @@ public class OperationResultResolver implements ContextResolver<JAXBContext> {
 			if (type == OperationResult.class) {
 				if (jaxbContext == null) {
 					jaxbContext = JAXBContext.newInstance(Criteria.class, SalesOrder.class, User.class,
-							UserFieldProxy.class, OperationResult.class);
+							UserFieldProxy.class, OperationResult.class, DataTable.class);
 				}
 			}
 		} catch (JAXBException e) {

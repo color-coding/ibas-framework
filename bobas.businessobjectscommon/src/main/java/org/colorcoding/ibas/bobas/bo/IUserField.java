@@ -2,7 +2,7 @@ package org.colorcoding.ibas.bobas.bo;
 
 import java.io.Serializable;
 
-import org.colorcoding.ibas.bobas.mapping.db.DbFieldType;
+import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 /**
  * 用户字段

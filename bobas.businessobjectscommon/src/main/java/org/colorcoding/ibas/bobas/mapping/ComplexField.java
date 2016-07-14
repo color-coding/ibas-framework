@@ -1,16 +1,21 @@
-package org.colorcoding.ibas.bobas.mapping.db;
+package org.colorcoding.ibas.bobas.mapping;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * 复合类型字段（多个DbField组成）
+ * 
+ * @author Niuren.Zhu
+ *
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface DbField {
-
+public @interface ComplexField {
 	/**
-	 * 字段名称
+	 * 组字段名称
 	 * 
 	 * @return
 	 */
@@ -21,7 +26,7 @@ public @interface DbField {
 	 * 
 	 * @return
 	 */
-	public DbFieldType type();
+	public ComplexFieldType type();
 
 	/**
 	 * 表名称
@@ -31,17 +36,16 @@ public @interface DbField {
 	public String table() default "";
 
 	/**
-	 * 是否主键？
-	 * 
-	 * @return
-	 */
-	public boolean primaryKey() default false;
-
-	/**
 	 * 是否保存？
 	 * 
 	 * @return
 	 */
 	public boolean savable() default true;
 
+	/**
+	 * 索引 顺序
+	 * 
+	 * @return
+	 */
+	public int order() default -1;
 }

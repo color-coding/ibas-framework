@@ -34,10 +34,18 @@ public interface IBusinessLogicsChain {
 	void useRepository(IBORepository boRepository);
 
 	/**
-	 * 运行
+	 * 正向执行逻辑
 	 * 
 	 * @param bo
 	 *            契约数据
 	 */
-	void run(IBusinessObjectBase bo);
+	void forwardLogics(IBusinessObjectBase bo);
+
+	/**
+	 * 反向执行逻辑
+	 * 
+	 * @param bo
+	 *            契约数据
+	 */
+	void reverseLogics(IBusinessObjectBase bo);
 }

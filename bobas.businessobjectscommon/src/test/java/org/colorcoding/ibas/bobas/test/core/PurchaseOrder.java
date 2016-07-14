@@ -9,8 +9,8 @@ import org.colorcoding.ibas.bobas.core.fields.NotRegisterTypeException;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
-import org.colorcoding.ibas.bobas.mapping.db.DbField;
-import org.colorcoding.ibas.bobas.mapping.db.DbFieldType;
+import org.colorcoding.ibas.bobas.mapping.DbField;
+import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 @XmlRootElement(name = "PurchaseOrder", namespace = "httpL//ibas.club/bobas/test")
 public class PurchaseOrder extends BusinessObjectBase<PurchaseOrder> {

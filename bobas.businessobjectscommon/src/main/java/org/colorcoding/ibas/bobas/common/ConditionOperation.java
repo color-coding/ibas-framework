@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.data.IEnumItem;
-import org.colorcoding.ibas.bobas.mapping.db.DbValue;
+import org.colorcoding.ibas.bobas.mapping.DbValue;
 
 /**
  * 对比条件

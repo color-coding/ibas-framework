@@ -34,7 +34,7 @@ import org.colorcoding.ibas.bobas.db.IDbConnection;
 import org.colorcoding.ibas.bobas.db.IDbDataReader;
 import org.colorcoding.ibas.bobas.db.SqlScriptsException;
 import org.colorcoding.ibas.bobas.i18n.i18n;
-import org.colorcoding.ibas.bobas.mapping.db.AssociationMode;
+import org.colorcoding.ibas.bobas.mapping.AssociationMode;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**

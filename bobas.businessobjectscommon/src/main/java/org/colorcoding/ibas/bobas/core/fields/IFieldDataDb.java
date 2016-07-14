@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.core.fields;
 
-import org.colorcoding.ibas.bobas.mapping.db.DbFieldType;
+import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 public interface IFieldDataDb extends IFieldData {
 	/**

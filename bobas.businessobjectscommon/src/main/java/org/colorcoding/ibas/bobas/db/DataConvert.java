@@ -6,7 +6,7 @@ import java.lang.reflect.Field;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.IEnumItem;
-import org.colorcoding.ibas.bobas.mapping.db.DbValue;
+import org.colorcoding.ibas.bobas.mapping.DbValue;
 
 public class DataConvert extends org.colorcoding.ibas.bobas.data.DataConvert {
 

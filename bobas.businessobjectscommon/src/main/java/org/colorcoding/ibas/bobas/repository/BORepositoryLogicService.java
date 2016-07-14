@@ -36,13 +36,13 @@ public class BORepositoryLogicService extends BORepositoryService {
 				}
 			}
 			// 业务逻辑相关
-			if (event.getType() == SaveActionsType.added || event.getType() == SaveActionsType.deleted
-					|| event.getType() == SaveActionsType.updated) {
+			if (event.getType() != SaveActionsType.before_adding && event.getType() != SaveActionsType.updated) {
 				// 最后执行业务逻辑，因为要求状态可用
 				if (!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_BUSINESS_LOGICS, false)) {
 					// 执行业务逻辑
 					this.runLogics(event.getType(), event.getBO());
 				}
+
 			}
 			// 运行基类方法
 			return super.actionsNotification(event);
@@ -98,6 +98,12 @@ public class BORepositoryLogicService extends BORepositoryService {
 			logicsChain.useRepository(this.getRepository());
 		}
 		// 执行逻辑
-		logicsChain.run(bo);
+		if (type == SaveActionsType.added || type == SaveActionsType.updated) {
+			// 新建数据，正向逻辑
+			logicsChain.forwardLogics(bo);
+		} else if (type == SaveActionsType.before_deleting || type == SaveActionsType.before_updating) {
+			// 删除更新数据前，反向逻辑
+			logicsChain.reverseLogics(bo);
+		}
 	}
 }

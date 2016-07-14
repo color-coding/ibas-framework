@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.bo;
 
-import org.colorcoding.ibas.bobas.mapping.db.DbFieldType;
+import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 public class UserFieldInfo {
 

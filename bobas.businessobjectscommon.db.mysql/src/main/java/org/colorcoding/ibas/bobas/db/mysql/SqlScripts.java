@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.db.mysql;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.SqlQuery;
 import org.colorcoding.ibas.bobas.db.SqlScriptsException;
-import org.colorcoding.ibas.bobas.mapping.db.DbFieldType;
+import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.util.StringBuilder;
 
 public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {

@@ -1,8 +1,8 @@
 package org.colorcoding.ibas.bobas.core.fields;
 
-import org.colorcoding.ibas.bobas.mapping.db.AssociatedField;
-import org.colorcoding.ibas.bobas.mapping.db.AssociationMode;
-import org.colorcoding.ibas.bobas.mapping.db.Associations;
+import org.colorcoding.ibas.bobas.mapping.AssociatedField;
+import org.colorcoding.ibas.bobas.mapping.AssociationMode;
+import org.colorcoding.ibas.bobas.mapping.Associations;
 
 /**
  * 关联字段基类

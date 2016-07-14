@@ -7,11 +7,11 @@ import org.colorcoding.ibas.bobas.core.PropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.i18n.i18n;
-import org.colorcoding.ibas.bobas.mapping.db.AssociationMode;
-import org.colorcoding.ibas.bobas.mapping.db.Associations;
-import org.colorcoding.ibas.bobas.mapping.db.ComplexField;
-import org.colorcoding.ibas.bobas.mapping.db.ComplexFieldType;
-import org.colorcoding.ibas.bobas.mapping.db.DbField;
+import org.colorcoding.ibas.bobas.mapping.AssociationMode;
+import org.colorcoding.ibas.bobas.mapping.Associations;
+import org.colorcoding.ibas.bobas.mapping.ComplexField;
+import org.colorcoding.ibas.bobas.mapping.ComplexFieldType;
+import org.colorcoding.ibas.bobas.mapping.DbField;
 
 public class FieldsFactory {
 	private FieldsFactory() {

@@ -115,12 +115,12 @@ public class BORepositorySmartService extends BORepositoryLogicService implement
 			IBORepositoryReadonly repository = this.getReadonlyRepository();
 			if (repository != null || !(repository instanceof IBORepository4Invalid)) {
 				// 只读库有效
-				RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_FETCHING_IN_READONLY_DB, boType.getName());
+				RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_FETCHING_IN_READONLY_REPOSITORY, boType.getName());
 				return this.fetch(this.getReadonlyRepository(), criteria, token, boType);
 			}
 		}
 		// 处于事务中或只读库无效，则使用主库
-		RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_FETCHING_IN_MASTER_DB, boType.getName());
+		RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_FETCHING_IN_MASTER_REPOSITORY, boType.getName());
 		return this.fetch(this.getRepository(), criteria, token, boType);
 	}
 

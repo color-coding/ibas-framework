@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.data.KeyText;
-import org.colorcoding.ibas.bobas.mapping.db.DbValue;
+import org.colorcoding.ibas.bobas.mapping.DbValue;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
 /**

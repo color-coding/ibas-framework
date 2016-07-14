@@ -20,8 +20,8 @@ public class RuntimeLog {
 	public static final String MSG_REPOSITORY_FETCH_AND_FILTERING = "repository: fetch [%s] [%s] times, result [%s] filtering [%s].";
 	public static final String MSG_REPOSITORY_FETCHING_IN_CACHE = "repository: fetching [%s] in cache repository.";
 	public static final String MSG_REPOSITORY_FETCHING_IN_DB = "repository: fetching [%s] in db repository.";
-	public static final String MSG_REPOSITORY_FETCHING_IN_READONLY_DB = "repository: fetching [%s] in readonly db repository.";
-	public static final String MSG_REPOSITORY_FETCHING_IN_MASTER_DB = "repository: fetching [%s] in master db repository.";
+	public static final String MSG_REPOSITORY_FETCHING_IN_READONLY_REPOSITORY = "repository: fetching [%s] in readonly repository.";
+	public static final String MSG_REPOSITORY_FETCHING_IN_MASTER_REPOSITORY = "repository: fetching [%s] in master repository.";
 	public static final String MSG_REPOSITORY_DELETED_DATA_FILE = "repository: deleted data file [%s].";
 	public static final String MSG_REPOSITORY_WRITED_DATA_FILE = "repository: writed data in file [%s].";
 	public static final String MSG_REPOSITORY_CHANGED_USER = "repository: changed user [%s].";
@@ -40,7 +40,9 @@ public class RuntimeLog {
 	public static final String MSG_I18N_READ_FILE_DATA = "i18n: read file's data [%s].";
 	public static final String MSG_I18N_RESOURCES_FOLDER = "i18n: use folder [%s].";
 	public static final String MSG_CONFIG_READ_FILE_DATA = "config: read file's data [%s].";
-	public static final String MSG_LOGICS_CHAIN_RUN = "logic: chain [%s] goto running by data [%s].";
+	public static final String MSG_LOGICS_RUNNING_LOGIC_FORWARD = "logics: forward logic [%s] by data [%s].";
+	public static final String MSG_LOGICS_RUNNING_LOGIC_REVERSE = "logics: reverse logic [%s] by data [%s].";
+	public static final String MSG_LOGICS_EXISTING_CONTRACT = "logics: class [%s] existing contract [%s].";
 
 	private static long debugMode = -1;// log类型线程安全
 

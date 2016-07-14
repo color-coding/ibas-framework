@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.repository;
 
-import org.colorcoding.ibas.bobas.mapping.db.DbValue;
+import org.colorcoding.ibas.bobas.mapping.DbValue;
 
 /**
  * 事务类型

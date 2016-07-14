@@ -4,7 +4,7 @@ import org.colorcoding.ibas.bobas.core.BOFactory;
 import org.colorcoding.ibas.bobas.core.BOFactoryException;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.measurement.IMeasurement;
-import org.colorcoding.ibas.bobas.mapping.db.DbFieldType;
+import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?>> {
 

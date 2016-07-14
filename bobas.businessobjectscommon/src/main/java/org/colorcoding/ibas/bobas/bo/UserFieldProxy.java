@@ -9,7 +9,7 @@ import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
-import org.colorcoding.ibas.bobas.mapping.db.DbFieldType;
+import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "UserFieldProxy", namespace = MyConsts.NAMESPACE_BOBAS_BO)

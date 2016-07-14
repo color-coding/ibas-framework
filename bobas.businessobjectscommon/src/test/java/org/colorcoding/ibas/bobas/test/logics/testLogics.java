@@ -70,5 +70,14 @@ public class testLogics extends TestCase {
 		assertEquals(String.format("wrong matrials [%s] order quantity.", materials02.getItemCode()),
 				materials02.getOnOrder().add(item02.getQuantity()), materials02s.getOnOrder());
 
+		// 修改数量
+		item02.setQuantity(20);
+		operationResult = boRepository.saveSalesOrder(order);
+		if (operationResult.getResultCode() != 0) {
+			System.err.println(operationResult.getMessage());
+		}
+		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
+		assertEquals(String.format("wrong matrials [%s] order quantity.", materials02.getItemCode()),
+				materials02.getOnOrder().add(item02.getQuantity()), materials02s.getOnOrder());
 	}
 }

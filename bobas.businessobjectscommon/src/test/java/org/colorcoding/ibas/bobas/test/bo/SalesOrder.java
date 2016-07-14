@@ -23,14 +23,14 @@ import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.data.measurement.Time;
+import org.colorcoding.ibas.bobas.mapping.AssociatedField;
+import org.colorcoding.ibas.bobas.mapping.AssociationMode;
+import org.colorcoding.ibas.bobas.mapping.Associations;
 import org.colorcoding.ibas.bobas.mapping.BOCode;
-import org.colorcoding.ibas.bobas.mapping.db.AssociatedField;
-import org.colorcoding.ibas.bobas.mapping.db.AssociationMode;
-import org.colorcoding.ibas.bobas.mapping.db.Associations;
-import org.colorcoding.ibas.bobas.mapping.db.ComplexField;
-import org.colorcoding.ibas.bobas.mapping.db.ComplexFieldType;
-import org.colorcoding.ibas.bobas.mapping.db.DbField;
-import org.colorcoding.ibas.bobas.mapping.db.DbFieldType;
+import org.colorcoding.ibas.bobas.mapping.ComplexField;
+import org.colorcoding.ibas.bobas.mapping.ComplexFieldType;
+import org.colorcoding.ibas.bobas.mapping.DbField;
+import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 /**
  * 获取-销售订单

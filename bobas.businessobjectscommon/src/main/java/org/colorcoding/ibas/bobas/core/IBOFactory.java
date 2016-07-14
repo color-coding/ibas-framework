@@ -25,17 +25,6 @@ public interface IBOFactory {
 	void loadPackage(URL url) throws BOFactoryException;
 
 	/**
-	 * 创建业务对象实例
-	 * 
-	 * @param boCode
-	 *            业务对象编码
-	 * 
-	 * @return 业务对象实例
-	 * @throws BOFactoryException
-	 */
-	Object createBO(String boCode) throws BOFactoryException;
-
-	/**
 	 * 获取业务对象类型
 	 * 
 	 * @param boCode
@@ -58,16 +47,6 @@ public interface IBOFactory {
 	<P> P createInstance(Class<P> type) throws BOFactoryException;
 
 	/**
-	 * 创建实例
-	 * 
-	 * @param className
-	 *            类型名称
-	 * @return 实例
-	 * @throws BOFactoryException
-	 */
-	Object createInstance(String className) throws BOFactoryException;
-
-	/**
 	 * 获取类型
 	 * 
 	 * @param className
@@ -85,7 +64,7 @@ public interface IBOFactory {
 	 * @return 类型数组
 	 * @throws BOFactoryException
 	 */
-	Class<?>[] getClasses(String packageName) throws BOFactoryException;
+	Class<?>[] getClasses(String packageName);
 
 	/**
 	 * 获取业务对象编码

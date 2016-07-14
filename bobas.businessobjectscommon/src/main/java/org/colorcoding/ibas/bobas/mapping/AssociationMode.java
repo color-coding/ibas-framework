@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.bobas.mapping.db;
+package org.colorcoding.ibas.bobas.mapping;
 
 /**
  * 关联方式

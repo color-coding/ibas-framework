@@ -24,4 +24,14 @@ public interface IBusinessLogicsManager {
 	 * @return
 	 */
 	IBusinessLogicsChain createChain(String transId);
+
+	/**
+	 * 创建业务逻辑实例
+	 * 
+	 * @param contract
+	 *            契约
+	 * @return
+	 * @throws NotFoundBusinessLogicsException
+	 */
+	IBusinessLogic createLogic(Class<?> contract) throws NotFoundBusinessLogicsException;
 }
