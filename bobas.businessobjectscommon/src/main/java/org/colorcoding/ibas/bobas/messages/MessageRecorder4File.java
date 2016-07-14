@@ -112,7 +112,7 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 		});
 	}
 
-	private ExecutorService writeThreads;
+	private volatile ExecutorService writeThreads;
 
 	/**
 	 * 获得写文件线程
@@ -122,7 +122,9 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 	private ExecutorService getWriteThreads() {
 		if (writeThreads == null) {
 			synchronized (MessageRecorder4File.class) {
-				writeThreads = Executors.newSingleThreadExecutor();
+				if (writeThreads == null) {
+					writeThreads = Executors.newSingleThreadExecutor();
+				}
 			}
 		}
 		return writeThreads;

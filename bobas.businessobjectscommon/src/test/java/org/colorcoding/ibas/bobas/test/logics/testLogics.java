@@ -8,7 +8,6 @@ import org.colorcoding.ibas.bobas.test.bo.IMaterials;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrder;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrderItem;
 import org.colorcoding.ibas.bobas.test.bo.Materials;
-import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 import org.colorcoding.ibas.bobas.test.repository.BORepositoryTest;
 
 import junit.framework.TestCase;
@@ -36,7 +35,7 @@ public class testLogics extends TestCase {
 		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
 
 		// 创建销售订单
-		ISalesOrder order = new SalesOrder();
+		ISalesOrder order = new SalesOrderEx();
 		order.setCustomerCode("C00001");
 		order.setCustomerName("宇宙无敌影业");
 		ISalesOrderItem item01 = order.getSalesOrderItems().create();

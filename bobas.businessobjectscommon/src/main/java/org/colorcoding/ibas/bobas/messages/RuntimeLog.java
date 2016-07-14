@@ -40,6 +40,7 @@ public class RuntimeLog {
 	public static final String MSG_I18N_READ_FILE_DATA = "i18n: read file's data [%s].";
 	public static final String MSG_I18N_RESOURCES_FOLDER = "i18n: use folder [%s].";
 	public static final String MSG_CONFIG_READ_FILE_DATA = "config: read file's data [%s].";
+	public static final String MSG_LOGICS_CHAIN_RUN = "logic: chain [%s] goto running by data [%s].";
 
 	private static long debugMode = -1;// log类型线程安全
 

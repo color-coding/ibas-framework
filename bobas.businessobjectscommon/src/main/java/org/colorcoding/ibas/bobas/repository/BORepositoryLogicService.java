@@ -6,10 +6,13 @@ import org.colorcoding.ibas.bobas.approval.ApprovalFactory;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcess;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcessManager;
+import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.SaveActionsEvent;
 import org.colorcoding.ibas.bobas.core.SaveActionsType;
-import org.colorcoding.ibas.bobas.logics.IBusinessLogicContract;
+import org.colorcoding.ibas.bobas.logics.BusinessLogicsFactory;
+import org.colorcoding.ibas.bobas.logics.IBusinessLogicsChain;
+import org.colorcoding.ibas.bobas.logics.IBusinessLogicsManager;
 
 /**
  * 业务仓库服务，带业务逻辑处理
@@ -81,11 +84,20 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 *            业务数据
 	 */
 	private void runLogics(SaveActionsType type, IBusinessObjectBase bo) {
-		if (!(bo instanceof IBusinessLogicContract)) {
-			// 没有业务逻辑契约，退出处理
-			return;
+		String transId = null;// 事务链标记
+		if (bo instanceof IBOStorageTag) {
+			IBOStorageTag tagBO = (IBOStorageTag) bo;
+			transId = bo.isNew() ? tagBO.getCreateActionId() : tagBO.getUpdateActionId();
 		}
-		
-		
+		IBusinessLogicsManager logicsManager = BusinessLogicsFactory.createManager();
+		IBusinessLogicsChain logicsChain = logicsManager.getChain(transId);
+		if (logicsChain == null) {
+			// 没有已存在的，创建个新的
+			logicsChain = logicsManager.createChain(transId);
+			// 传递仓库
+			logicsChain.useRepository(this.getRepository());
+		}
+		// 执行逻辑
+		logicsChain.run(bo);
 	}
 }
