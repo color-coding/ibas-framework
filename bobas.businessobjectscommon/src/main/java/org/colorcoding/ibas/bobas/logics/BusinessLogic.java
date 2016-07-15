@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.logics;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
+import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
@@ -35,8 +36,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
-	public final void setContract(IBusinessLogicContract contract) {
+	final void setContract(IBusinessLogicContract contract) {
 		this.contract = (L) contract;
 	}
 
@@ -51,8 +51,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		return this.repository;
 	}
 
-	@Override
-	public final void setRepository(IBORepository repository) {
+	final void setRepository(IBORepository repository) {
 		this.repository = repository;
 	}
 
@@ -156,6 +155,10 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		// 执行正向逻辑
 		RuntimeLog.log(RuntimeLog.MSG_LOGICS_RUNNING_LOGIC_FORWARD, this.getClass().getName(),
 				this.getContract().getIdentifiers());
+		if (this.beAffected == null) {
+			// 加载被影响的数据
+			this.beAffected = this.fetchBeAffected(this.getContract());
+		}
 		this.impact(this.getContract());
 	}
 
@@ -169,16 +172,16 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		// 执行撤销逻辑
 		RuntimeLog.log(RuntimeLog.MSG_LOGICS_RUNNING_LOGIC_REVERSE, this.getClass().getName(),
 				this.getContract().getIdentifiers());
+		if (this.beAffected == null) {
+			// 加载被影响的数据
+			this.beAffected = this.fetchBeAffected(this.getContract());
+		}
 		this.revoke(this.getOldContract());
 	}
 
 	private B beAffected;
 
 	public B getBeAffected() {
-		if (this.beAffected == null) {
-			this.beAffected = this.fetchBeAffected(this.getContract());
-
-		}
 		return this.beAffected;
 	}
 
@@ -191,14 +194,42 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 
 	@Override
 	public void commit() {
-		IOperationResult<?> operationResult = this.getRepository().saveEx(this.getBeAffected());
-		if (operationResult.getError() != null) {
-			throw new BusinessLogicsException(operationResult.getError());
-		}
-		if (operationResult.getResultCode() != 0) {
-			throw new BusinessLogicsException(operationResult.getMessage());
+		if (this.getBeAffected() != null) {
+			IOperationResult<?> operationResult = this.getRepository().saveEx(this.getBeAffected());
+			if (operationResult.getError() != null) {
+				throw new BusinessLogicsException(operationResult.getError());
+			}
+			if (operationResult.getResultCode() != 0) {
+				throw new BusinessLogicsException(operationResult.getMessage());
+			}
 		}
 		this.done = true;
+	}
+
+	IBusinessLogicsChain logicsChain;
+
+	IBusinessLogicsChain getLogicsChain() {
+		return this.logicsChain;
+	}
+
+	void setLogicsChain(IBusinessLogicsChain value) {
+		this.logicsChain = value;
+	}
+
+	/**
+	 * 在逻辑所处仓库中查询被影响数据
+	 * 
+	 * @param criteria
+	 *            查询
+	 * @param type
+	 *            数据类型（即返回值类型）
+	 * @return
+	 */
+	protected B fetchBeAffected(ICriteria criteria, Class<B> type) {
+		if (this.getLogicsChain() == null) {
+			return null;
+		}
+		return this.getLogicsChain().fetchBeAffected(criteria, type);
 	}
 
 	/**

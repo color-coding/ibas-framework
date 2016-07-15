@@ -1,6 +1,5 @@
 package org.colorcoding.ibas.bobas.logics;
 
-import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 
 /**
@@ -10,20 +9,6 @@ import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
  *
  */
 public interface IBusinessLogic<B extends IBusinessObjectBase> {
-
-	/**
-	 * 设置-契约
-	 * 
-	 * @param contract
-	 */
-	void setContract(IBusinessLogicContract contract);
-
-	/**
-	 * 设置-仓库
-	 * 
-	 * @param boRepository
-	 */
-	void setRepository(IBORepository repository);
 
 	/**
 	 * 正向执行逻辑

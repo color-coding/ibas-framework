@@ -48,6 +48,11 @@ public class testLogics extends TestCase {
 		item02.setItemDescription(materials02.getItemDescription());
 		item02.setQuantity(2);
 		item02.setPrice(99.00);
+		ISalesOrderItem item03 = order.getSalesOrderItems().create();
+		item03.setItemCode(materials02.getItemCode());
+		item03.setItemDescription(materials02.getItemDescription());
+		item03.setQuantity(9);
+		item03.setPrice(99.00);
 
 		operationResult = boRepository.saveSalesOrder(order);
 		if (operationResult.getResultCode() != 0) {
@@ -62,44 +67,32 @@ public class testLogics extends TestCase {
 		assertEquals("materials not same.", materials01.getItemCode(), materials01s.getItemCode());
 		// 订购数量是否增加
 		assertEquals(String.format("wrong matrials [%s] order quantity.", materials01.getItemCode()),
-				materials01.getOnOrder().add(item01.getQuantity()), materials01s.getOnOrder());
+				materials01.getOnOrder().add(item01.getQuantity()).floatValue(),
+				materials01s.getOnOrder().floatValue());
 		operationResult = boRepository.fetchMaterials(materials02.getCriteria());
 		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
 		IMaterials materials02s = (IMaterials) operationResult.getResultObjects().firstOrDefault();
 		assertEquals("materials not same.", materials02.getItemCode(), materials02s.getItemCode());
 		assertEquals(String.format("wrong matrials [%s] order quantity.", materials02.getItemCode()),
-				materials02.getOnOrder().add(item02.getQuantity()), materials02s.getOnOrder());
+				materials02.getOnOrder().add(item02.getQuantity().add(item03.getQuantity())).floatValue(),
+				materials02s.getOnOrder().floatValue());
 
 		// 修改数量
-		item02.setQuantity(20);
-		operationResult = boRepository.saveSalesOrder(order);
-		if (operationResult.getResultCode() != 0) {
-			System.err.println(operationResult.getMessage());
-		}
-		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
-		operationResult = boRepository.fetchMaterials(materials02.getCriteria());
-		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
-		materials02s = (IMaterials) operationResult.getResultObjects().firstOrDefault();
-		assertEquals(String.format("wrong matrials [%s] order quantity.", materials02.getItemCode()),
-				materials02.getOnOrder().add(item02.getQuantity()), materials02s.getOnOrder());
-
-		ISalesOrderItem item03 = order.getSalesOrderItems().create();
-		item03.setItemCode(materials02.getItemCode());
-		item03.setItemDescription(materials02.getItemDescription());
-		item03.setQuantity(9);
-		item03.setPrice(99.00);
-		operationResult = boRepository.saveSalesOrder(order);
-		if (operationResult.getResultCode() != 0) {
-			System.err.println(operationResult.getMessage());
-		}
-		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
-
-		operationResult = boRepository.fetchMaterials(materials02.getCriteria());
-		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
-		materials02s = (IMaterials) operationResult.getResultObjects().firstOrDefault();
-
-		assertEquals(String.format("wrong matrials [%s] order quantity.", materials02.getItemCode()),
-				materials02.getOnOrder().add(item02.getQuantity().add(item03.getQuantity())),
-				materials02s.getOnOrder());
+		/*
+		 * item02.setQuantity(20); operationResult =
+		 * boRepository.saveSalesOrder(order); if
+		 * (operationResult.getResultCode() != 0) {
+		 * System.err.println(operationResult.getMessage()); }
+		 * assertEquals(operationResult.getMessage(),
+		 * operationResult.getResultCode(), 0); operationResult =
+		 * boRepository.fetchMaterials(materials02.getCriteria());
+		 * assertEquals(operationResult.getMessage(),
+		 * operationResult.getResultCode(), 0); materials02s = (IMaterials)
+		 * operationResult.getResultObjects().firstOrDefault();
+		 * assertEquals(String.format("wrong matrials [%s] order quantity.",
+		 * materials02.getItemCode()),
+		 * materials02.getOnOrder().add(item02.getQuantity()).floatValue(),
+		 * materials02s.getOnOrder().floatValue());
+		 */
 	}
 }

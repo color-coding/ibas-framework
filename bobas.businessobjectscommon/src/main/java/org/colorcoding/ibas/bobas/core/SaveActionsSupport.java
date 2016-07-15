@@ -21,11 +21,22 @@ public class SaveActionsSupport {
 			this.listeners = new SaveActionsListener[array_extension_step];
 		}
 		boolean done = false;
+		// 检查是否已监听
 		for (int i = 0; i < this.listeners.length; i++) {
-			if (this.listeners[i] == null) {
-				this.listeners[i] = listener;
+			if (this.listeners[i] == listener) {
 				done = true;
 				break;
+			}
+		}
+		if (!done) {
+			// 没有监听
+			done = false;
+			for (int i = 0; i < this.listeners.length; i++) {
+				if (this.listeners[i] == null) {
+					this.listeners[i] = listener;
+					done = true;
+					break;
+				}
 			}
 		}
 		if (!done) {
@@ -49,7 +60,6 @@ public class SaveActionsSupport {
 		for (int i = 0; i < this.listeners.length; i++) {
 			if (this.listeners[i] == listener) {
 				this.listeners[i] = null;
-				break;
 			}
 		}
 	}

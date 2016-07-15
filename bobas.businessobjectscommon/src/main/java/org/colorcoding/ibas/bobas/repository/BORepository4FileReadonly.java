@@ -13,13 +13,18 @@ import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationInformation;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.configuration.Configuration;
+import org.colorcoding.ibas.bobas.core.BOFactory;
 import org.colorcoding.ibas.bobas.core.BOFactoryException;
 import org.colorcoding.ibas.bobas.core.BORepositoryBase;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
+import org.colorcoding.ibas.bobas.core.IBusinessObjectListBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
+import org.colorcoding.ibas.bobas.core.fields.IFieldData;
+import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.expressions.ExpressionFactory;
 import org.colorcoding.ibas.bobas.expressions.JudgmentLinks;
+import org.colorcoding.ibas.bobas.expressions.JudmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.util.ArrayList;
@@ -106,7 +111,9 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 			throw new RepositoryException(
 					i18n.prop("msg_bobas_invaild_bo_repository_folder", criteria.getBusinessObjectCode()));
 		}
-		JAXBContext context = JAXBContext.newInstance(boType);
+		ArrayList<Class<?>> types = this.getTypes(file);
+		types.add(boType);
+		JAXBContext context = JAXBContext.newInstance(types.toArray(new Class<?>[] {}));
 		Unmarshaller unmarshaller = context.createUnmarshaller();
 		JudgmentLinks judgmentLinks = null;
 		if (criteria.getConditions().size() > 0) {
@@ -120,6 +127,9 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 			if (!file.isFile()) {
 				continue;
 			}
+			if (!file.getName().endsWith(".bo")) {
+				continue;
+			}
 			if (boFiles.size() >= criteria.getResultCount() && criteria.getResultCount() >= 0) {
 				// 数据已够
 				break;
@@ -127,14 +137,83 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 			try {
 				FileInputStream fileStream = new FileInputStream(file);
 				IBusinessObjectBase nBO = (IBusinessObjectBase) unmarshaller.unmarshal(fileStream);
-				if (judgmentLinks == null || judgmentLinks.judge(nBO)) {
-					boFiles.add(new BOFile(file.getPath().replace(this.getRepositoryFolder(), ""), nBO));
+				if (nBO.getClass().equals(boType)) {
+					if (judgmentLinks == null || judgmentLinks.judge(nBO)) {
+						boFiles.add(new BOFile(file.getPath().replace(this.getRepositoryFolder(), ""), nBO));
+					}
+				} else {
+					// 对象类型与查找类型不符，则尝试比较属性
+					// 匹配的属性实例返回
+					for (IBusinessObjectBase item : this.match(nBO, judgmentLinks, boType)) {
+						boFiles.add(new BOFile(file.getPath().replace(this.getRepositoryFolder(), ""), item));
+					}
 				}
 			} catch (Exception e) {
 				RuntimeLog.log(e);
 			}
 		}
 		return boFiles.toArray(new BOFile[] {});
+	}
+
+	private IBusinessObjectBase[] match(IBusinessObjectBase bo, JudgmentLinks judgmentLinks, Class<?> type) {
+		ArrayList<IBusinessObjectBase> bos = new ArrayList<>();
+		if (bo instanceof IManageFields) {
+			IManageFields boFields = (IManageFields) bo;
+			for (IFieldData field : boFields.getFields()) {
+				if (field.getValue() == null) {
+					continue;
+				}
+				if (type.isInstance(field.getValue())) {
+					try {
+						if (judgmentLinks == null || judgmentLinks.judge(bo)) {
+							bos.add(bo);
+						}
+					} catch (JudmentOperationException e) {
+						RuntimeLog.log(e);
+					}
+				} else if (IBusinessObjectBase.class.isInstance(field.getValue())) {
+					bos.addAll((match(bo, judgmentLinks, type)));
+				} else if (IBusinessObjectListBase.class.isInstance(field.getValue())) {
+					for (IBusinessObjectBase item : ((IBusinessObjectListBase<?>) field.getValue())) {
+						if (type.isInstance(item)) {
+							try {
+								if (judgmentLinks == null || judgmentLinks.judge(item)) {
+									bos.add(item);
+								}
+							} catch (JudmentOperationException e) {
+								RuntimeLog.log(e);
+							}
+						} else {
+							bos.addAll((match(item, judgmentLinks, type)));
+						}
+					}
+				}
+			}
+		}
+		return bos.toArray(new IBusinessObjectBase[] {});
+	}
+
+	/**
+	 * 获取业务对象目录指定的对象类型
+	 * 
+	 * @param boFolder
+	 * @return
+	 */
+	protected ArrayList<Class<?>> getTypes(File boFolder) {
+		ArrayList<Class<?>> types = new ArrayList<>();
+		for (File item : boFolder.listFiles()) {
+			if (item.isFile()) {
+				if (item.getName().endsWith(".type")) {
+					try {
+						types.add(BOFactory.create()
+								.getClass(item.getName().substring(0, item.getName().lastIndexOf("."))));
+					} catch (BOFactoryException e) {
+						RuntimeLog.log(e);
+					}
+				}
+			}
+		}
+		return types;
 	}
 
 	protected class BOFile {

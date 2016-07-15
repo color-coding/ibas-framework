@@ -4,7 +4,6 @@
 	<comment></comment>
 	<projects>
 		<project>bobas.businessobjectscommon</project>
-		<project>bobas.businessobjectscommon.db.mssql</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

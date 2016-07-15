@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.logics;
 
+import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 
@@ -53,4 +54,15 @@ public interface IBusinessLogicsChain {
 	 * 提交逻辑
 	 */
 	void commit(IBusinessObjectBase bo);
+
+	/**
+	 * 检索被影响的数据
+	 * 
+	 * @param criteria
+	 *            条件
+	 * @param type
+	 *            数据类型
+	 * @return
+	 */
+	<B> B fetchBeAffected(ICriteria criteria, Class<B> type);
 }

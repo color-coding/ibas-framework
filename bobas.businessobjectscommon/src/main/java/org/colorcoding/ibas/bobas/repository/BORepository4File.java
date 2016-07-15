@@ -254,6 +254,12 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 		}
 		out.write(bo.toString("xml").getBytes("utf-8"));
 		out.close();
+		String type = String.format("%s%s%s.type", file.getParentFile().getPath(), File.separator,
+				bo.getClass().getName());
+		file = new File(type);
+		if (!file.exists()) {
+			file.createNewFile();
+		}
 		RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_WRITED_DATA_FILE, path);
 	}
 }

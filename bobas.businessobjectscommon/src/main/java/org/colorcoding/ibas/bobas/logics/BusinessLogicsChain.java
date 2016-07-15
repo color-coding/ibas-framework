@@ -2,11 +2,15 @@ package org.colorcoding.ibas.bobas.logics;
 
 import java.util.HashMap;
 
+import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectListBase;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
+import org.colorcoding.ibas.bobas.expressions.ExpressionFactory;
+import org.colorcoding.ibas.bobas.expressions.JudgmentLinks;
+import org.colorcoding.ibas.bobas.expressions.JudmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.util.ArrayList;
@@ -95,8 +99,12 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 						if (logic == null) {
 							throw new NotFoundBusinessLogicsException(item.getName());
 						}
-						logic.setContract((IBusinessLogicContract) bo);
-						logic.setRepository(this.getRepository());
+						if (logic instanceof BusinessLogic<?, ?>) {
+							BusinessLogic<?, ?> aLogic = (BusinessLogic<?, ?>) logic;
+							aLogic.setContract((IBusinessLogicContract) bo);
+							aLogic.setRepository(this.getRepository());
+							aLogic.setLogicsChain(this);
+						}
 						contracts.add(logic);
 					}
 				}
@@ -170,5 +178,33 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 		for (IBusinessLogic<?> logic : logics) {
 			logic.commit();
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <B> B fetchBeAffected(ICriteria criteria, Class<B> type) {
+		JudgmentLinks judgmentLinks = ExpressionFactory.create().createJudgmentLinks(criteria.getConditions());
+		for (IBusinessLogic<?>[] logics : this.getLogics().values()) {
+			for (IBusinessLogic<?> logic : logics) {
+				if (logic.getBeAffected() == null) {
+					continue;
+				}
+				boolean match = false;
+				if (type.isInstance(logic.getBeAffected())) {
+					match = true;
+				}
+				if (match) {
+					// 类型相符
+					try {
+						if (judgmentLinks.judge(logic.getBeAffected())) {
+							return (B) logic.getBeAffected();
+						}
+					} catch (JudmentOperationException e) {
+						RuntimeLog.log(e);
+					}
+				}
+			}
+		}
+		return null;
 	}
 }

@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.mapping.BOCode;
@@ -14,6 +15,7 @@ import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "SalesOrderEx")
 @XmlRootElement(name = "SalesOrderEx")
+@XmlSeeAlso({ SalesOrderItemsEx.class, SalesOrderItemEx.class })
 @BOCode(SalesOrder.BUSINESS_OBJECT_CODE)
 public class SalesOrderEx extends SalesOrder {
 
@@ -27,7 +29,6 @@ public class SalesOrderEx extends SalesOrder {
 	 */
 	@SuppressWarnings("unused")
 	private final static Class<?> MY_CLASS = SalesOrderEx.class;
-	
 
 	@Override
 	@XmlElementWrapper(name = "SalesOrderItems")
