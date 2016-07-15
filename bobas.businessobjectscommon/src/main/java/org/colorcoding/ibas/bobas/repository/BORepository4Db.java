@@ -38,7 +38,10 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	public boolean beginTransaction() throws RepositoryException {
 		try {
 			boolean done = this.getDbConnection().beginTransaction();
-			this.setTransactionId();
+			if (done) {
+				// 开启新的事物才创建新的id
+				this.setTransactionId();
+			}
 			return done;
 		} catch (DbException e) {
 			throw new RepositoryException(e);

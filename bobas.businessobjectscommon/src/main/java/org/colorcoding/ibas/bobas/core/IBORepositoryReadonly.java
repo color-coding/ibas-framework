@@ -48,19 +48,11 @@ public interface IBORepositoryReadonly {
 	DateTime getServerTime();
 
 	/**
-	 * 查找对象
+	 * 获取事务ID
 	 * 
-	 * @param criteria
-	 *            查询条件
-	 * 
-	 * @param container
-	 *            查询结果的容器
-	 * 
-	 * @return 操作结果及新对象实例
-	 * 
-	 *         IOperationResult<?> fetch(ICriteria criteria, IBusinessObjectBase
-	 *         container);
+	 * @return
 	 */
+	String getTransactionId();
 
 	/**
 	 * 查询对象

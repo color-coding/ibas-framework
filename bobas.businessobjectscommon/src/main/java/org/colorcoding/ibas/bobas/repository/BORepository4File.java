@@ -30,17 +30,20 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 			return false;
 		}
 		this.inTransaction = true;
+		this.setTransactionId();// 创建新的事物，才创建新id
 		return true;
 	}
 
 	@Override
 	public void rollbackTransaction() throws RepositoryException {
 		this.inTransaction = false;
+		this.setTransactionId(null);
 	}
 
 	@Override
 	public void commitTransaction() throws RepositoryException {
 		this.inTransaction = false;
+		this.setTransactionId(null);
 	}
 
 	private boolean inTransaction;

@@ -2,9 +2,9 @@ package org.colorcoding.ibas.bobas.logics;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
-import java.util.UUID;
 
 import org.colorcoding.ibas.bobas.core.BOFactory;
+import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.mapping.LogicContract;
 
 /**
@@ -26,14 +26,25 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 	}
 
 	@Override
-	public IBusinessLogicsChain createChain(String transId) {
-		IBusinessLogicsChain chain = new BusinessLogicsChain();
+	public IBusinessLogicsChain registerChain(String transId) {
 		if (transId == null || transId.equals("")) {
-			transId = UUID.randomUUID().toString();
+			throw new BusinessLogicsException(i18n.prop("msg_bobas_invalid_data"));
 		}
+		IBusinessLogicsChain chain = new BusinessLogicsChain();
 		chain.setId(transId);
 		this.getLogicsChains().put(chain.getId(), chain);
 		return chain;
+	}
+
+	@Override
+	public boolean closeChain(String transId) {
+		if (transId != null) {
+			if (this.getLogicsChains().containsKey(transId)) {
+				this.getLogicsChains().remove(transId);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private volatile HashMap<String, IBusinessLogicsChain> logicsChains;

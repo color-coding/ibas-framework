@@ -6,8 +6,8 @@ import org.colorcoding.ibas.bobas.approval.ApprovalFactory;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcess;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcessManager;
-import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
+import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.core.SaveActionsEvent;
 import org.colorcoding.ibas.bobas.core.SaveActionsType;
 import org.colorcoding.ibas.bobas.logics.BusinessLogicsFactory;
@@ -84,16 +84,12 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 *            业务数据
 	 */
 	private void runLogics(SaveActionsType type, IBusinessObjectBase bo) {
-		String transId = null;// 事务链标记
-		if (bo instanceof IBOStorageTag) {
-			IBOStorageTag tagBO = (IBOStorageTag) bo;
-			transId = bo.isNew() ? tagBO.getCreateActionId() : tagBO.getUpdateActionId();
-		}
+		String transId = this.getRepository().getTransactionId();// 事务链标记，结束事务时关闭
 		IBusinessLogicsManager logicsManager = BusinessLogicsFactory.createManager();
 		IBusinessLogicsChain logicsChain = logicsManager.getChain(transId);
 		if (logicsChain == null) {
-			// 没有已存在的，创建个新的
-			logicsChain = logicsManager.createChain(transId);
+			// 没有已存在的，创建并注册
+			logicsChain = logicsManager.registerChain(transId);
 			// 传递仓库
 			logicsChain.useRepository(this.getRepository());
 		}
@@ -105,5 +101,19 @@ public class BORepositoryLogicService extends BORepositoryService {
 			// 删除更新数据前，反向逻辑
 			logicsChain.reverseLogics(bo);
 		}
+	}
+
+	@Override
+	protected void rollbackTransaction() throws RepositoryException {
+		// 关闭业务链
+		BusinessLogicsFactory.createManager().closeChain(this.getRepository().getTransactionId());
+		super.rollbackTransaction();
+	}
+
+	@Override
+	protected void commitTransaction() throws RepositoryException {
+		// 关闭业务链
+		BusinessLogicsFactory.createManager().closeChain(this.getRepository().getTransactionId());
+		super.commitTransaction();
 	}
 }

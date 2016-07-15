@@ -95,8 +95,7 @@ public class BOFactory implements IBOFactory {
 
 	@Override
 	public Class<?> getBOClass(String boCode) throws BOFactoryException {
-		// TODO Auto-generated method stub
-		// 业务对象标记了BOCode注释
+		// TODO 根据boCode获取class
 		return null;
 	}
 

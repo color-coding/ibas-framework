@@ -23,7 +23,16 @@ public interface IBusinessLogicsManager {
 	 *            事务标记
 	 * @return
 	 */
-	IBusinessLogicsChain createChain(String transId);
+	IBusinessLogicsChain registerChain(String transId);
+
+	/**
+	 * 关闭逻辑链
+	 * 
+	 * @param transId
+	 *            事务标记
+	 * @return 成功移出，true；不成功或不存在，false
+	 */
+	boolean closeChain(String transId);
 
 	/**
 	 * 创建业务逻辑实例
