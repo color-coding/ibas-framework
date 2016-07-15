@@ -25,6 +25,7 @@ public class SaveActionsSupport {
 			if (this.listeners[i] == null) {
 				this.listeners[i] = listener;
 				done = true;
+				break;
 			}
 		}
 		if (!done) {
@@ -48,6 +49,7 @@ public class SaveActionsSupport {
 		for (int i = 0; i < this.listeners.length; i++) {
 			if (this.listeners[i] == listener) {
 				this.listeners[i] = null;
+				break;
 			}
 		}
 	}
@@ -57,6 +59,9 @@ public class SaveActionsSupport {
 			return true;
 		}
 		for (SaveActionsListener item : this.listeners) {
+			if (item == null) {
+				continue;
+			}
 			boolean value = item.actionsNotification(new SaveActionsEvent(this.source, type, bo));
 			if (!value) {
 				// 返回为false，直接退出

@@ -94,12 +94,22 @@ public class BORepositoryLogicService extends BORepositoryService {
 			logicsChain.useRepository(this.getRepository());
 		}
 		// 执行逻辑
-		if (type == SaveActionsType.added || type == SaveActionsType.updated) {
+		if (type == SaveActionsType.added) {
 			// 新建数据，正向逻辑
 			logicsChain.forwardLogics(bo);
-		} else if (type == SaveActionsType.before_deleting || type == SaveActionsType.before_updating) {
-			// 删除更新数据前，反向逻辑
+			logicsChain.commit(bo);
+		} else if (type == SaveActionsType.before_deleting) {
+			// 删除数据前，反向逻辑
 			logicsChain.reverseLogics(bo);
+			logicsChain.commit(bo);
+		} else if (type == SaveActionsType.before_updating) {
+			// 更新数据前，反向逻辑
+			logicsChain.reverseLogics(bo);
+			// 等待更新完成提交
+		} else if (type == SaveActionsType.updated) {
+			// 更新数据后，正向逻辑
+			logicsChain.forwardLogics(bo);
+			logicsChain.commit(bo);
 		}
 	}
 

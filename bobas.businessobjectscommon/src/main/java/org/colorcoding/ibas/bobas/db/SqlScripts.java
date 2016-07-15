@@ -13,14 +13,14 @@ import org.colorcoding.ibas.bobas.util.StringBuilder;
 public class SqlScripts implements ISqlScripts {
 
 	private String companyId = null;
-	protected String getCompanyId()
-	{
-		if(companyId ==null)
-			companyId = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_COMPANY_ID,"CC");
-			return companyId;
+
+	protected String getCompanyId() {
+		if (companyId == null)
+			companyId = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_COMPANY_ID, "CC");
+		return companyId;
 	}
-	
-	@Override 
+
+	@Override
 	public ISqlQuery getServerTimeScript() {
 		return new SqlQuery("SELECT GETDATE() 'NOW'");
 	}
@@ -189,14 +189,13 @@ public class SqlScripts implements ISqlScripts {
 	@Override
 	public String getBOPrimaryKeyQuery(String boCode) throws SqlScriptsException {
 		return String.format("SELECT \"AutoKey\" FROM \"%s_SYS_ONNM\" WITH (UPDLOCK) WHERE \"ObjectCode\" = '%s'",
-				this.getCompanyId(),boCode);
+				this.getCompanyId(), boCode);
 	}
 
 	@Override
 	public String getUpdateBOPrimaryKeyScript(String boCode) throws SqlScriptsException {
 		return String.format("UPDATE \"%s_SYS_ONNM\" SET \"AutoKey\" = \"AutoKey\" + 1 WHERE \"ObjectCode\" = '%s'",
-				this.getCompanyId(),
-				boCode);
+				this.getCompanyId(), boCode);
 	}
 
 	@Override
@@ -207,8 +206,8 @@ public class SqlScripts implements ISqlScripts {
 	@Override
 	public String getBOTransactionNotificationScript(String boCode, String type, int keyCount, String keyNames,
 			String keyValues) throws SqlScriptsException {
-		return String.format("EXEC \"%s_SP_TRANSACTION_NOTIFICATION\" N'%s', N'%s', %s, N'%s', N'%s'", 	this.getCompanyId(),boCode, type,
-				keyCount, keyNames, keyValues);
+		return String.format("EXEC \"%s_SP_TRANSACTION_NOTIFICATION\" N'%s', N'%s', %s, N'%s', N'%s'",
+				this.getCompanyId(), boCode, type, keyCount, keyNames, keyValues);
 	}
 
 }

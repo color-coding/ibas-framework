@@ -7,5 +7,10 @@ package org.colorcoding.ibas.bobas.logics;
  *
  */
 public interface IBusinessLogicContract {
-
+	/**
+	 * 标记
+	 * 
+	 * @return
+	 */
+	String getIdentifiers();
 }

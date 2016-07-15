@@ -42,5 +42,5 @@ public interface IBusinessLogicsManager {
 	 * @return
 	 * @throws NotFoundBusinessLogicsException
 	 */
-	IBusinessLogic createLogic(Class<?> contract) throws NotFoundBusinessLogicsException;
+	IBusinessLogic<?> createLogic(Class<?> contract) throws NotFoundBusinessLogicsException;
 }

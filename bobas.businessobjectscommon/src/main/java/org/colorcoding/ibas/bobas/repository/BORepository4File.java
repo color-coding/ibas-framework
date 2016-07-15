@@ -1,12 +1,19 @@
 package org.colorcoding.ibas.bobas.repository;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Properties;
 import java.util.UUID;
 
 import javax.xml.bind.JAXBException;
 
+import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.bo.IBODocument;
+import org.colorcoding.ibas.bobas.bo.IBOMasterData;
+import org.colorcoding.ibas.bobas.bo.IBOSimple;
 import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
@@ -143,6 +150,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 				this.tagStorage(bo);// 存储标记
 				if (bo.isNew()) {
 					// 新建的对象
+					this.usePrimaryKeys(bo);
 					this.notifyActions(SaveActionsType.before_adding, bo);
 					String fileName = String.format("%s%s%s.bo", boFolder, File.separator, this.getFileName(bo));
 					this.writeBOFile(bo, fileName);
@@ -175,6 +183,42 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 		return bo;
 	}
 
+	protected void usePrimaryKeys(IBusinessObjectBase bo) throws IOException {
+		if (bo instanceof IBOStorageTag) {
+			IBOStorageTag tagBO = (IBOStorageTag) bo;
+			String companyId = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_COMPANY_ID, "CC")
+					.toLowerCase();
+			File file = new File(this.getRepositoryFolder() + File.separator + companyId + "_sys" + File.separator
+					+ "bo_keys.properties");
+			if (!file.exists()) {
+				file.getParentFile().mkdirs();
+				file.createNewFile();
+			}
+			Properties props = new Properties();
+			props.load(new FileInputStream(file));
+			String value = props.getProperty(tagBO.getObjectCode());
+			if (value == null || value.equals("")) {
+				value = "1";
+			}
+			int key = 1, nextKey = 1;
+			key = Integer.parseInt(value);
+			nextKey = key + 1;
+			if (bo instanceof IBODocument) {
+				IBODocument item = (IBODocument) bo;
+				item.setDocEntry(key);
+			} else if (bo instanceof IBOMasterData) {
+				IBOMasterData item = (IBOMasterData) bo;
+				item.setDocEntry(key);
+			} else if (bo instanceof IBOSimple) {
+				IBOSimple item = (IBOSimple) bo;
+				item.setObjectKey(key);
+			}
+			OutputStream fos = new FileOutputStream(file);
+			props.setProperty(tagBO.getObjectCode(), String.valueOf(nextKey));
+			props.store(fos, String.format("fixed by transaction [%s].", this.getTransactionId()));
+		}
+	}
+
 	private String getFileName(IBusinessObjectBase bo) {
 		return UUID.randomUUID().toString();// bo.toString();
 	}
@@ -204,6 +248,10 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 			file.createNewFile();
 		}
 		FileOutputStream out = new FileOutputStream(file, false);
+		if (bo instanceof ITrackStatusOperator) {
+			ITrackStatusOperator operator = (ITrackStatusOperator) bo;
+			operator.markOld(true);
+		}
 		out.write(bo.toString("xml").getBytes("utf-8"));
 		out.close();
 		RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_WRITED_DATA_FILE, path);

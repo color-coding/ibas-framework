@@ -61,10 +61,7 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 	}
 
 	private volatile HashMap<Class<?>, Class<?>> logicClasses;
-
-	/**
-	 * 存储多语言资源
-	 */
+	
 	protected HashMap<Class<?>, Class<?>> getLogicClasses() {
 		if (logicClasses == null) {
 			synchronized (BusinessLogicsManager.class) {
@@ -77,7 +74,7 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 	}
 
 	@Override
-	public IBusinessLogic createLogic(Class<?> contract) {
+	public IBusinessLogic<?> createLogic(Class<?> contract) {
 		if (contract == null) {
 			return null;
 		}
@@ -109,7 +106,7 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 		if (logicClass != null) {
 			// 创建实例
 			try {
-				return (IBusinessLogic) logicClass.newInstance();
+				return (IBusinessLogic<?>) logicClass.newInstance();
 			} catch (Exception e) {
 				throw new NotFoundBusinessLogicsException(e);
 			}

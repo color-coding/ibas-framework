@@ -20,7 +20,7 @@ public class testLogics extends TestCase {
 		materials01.setItemCode(String.format("A%s", DateTime.getNow().getTime()));
 		materials01.setItemDescription("CPU i7");
 		IMaterials materials02 = new Materials();
-		materials02.setItemCode(String.format("A%s", DateTime.getNow().getTime()));
+		materials02.setItemCode(String.format("B%s", DateTime.getNow().getTime()));
 		materials02.setItemDescription("Disk 5T");
 		// 保存物料到文件系统
 		IBORepository4File fileRepository = new BORepository4File();
@@ -77,7 +77,29 @@ public class testLogics extends TestCase {
 			System.err.println(operationResult.getMessage());
 		}
 		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
+		operationResult = boRepository.fetchMaterials(materials02.getCriteria());
+		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
+		materials02s = (IMaterials) operationResult.getResultObjects().firstOrDefault();
 		assertEquals(String.format("wrong matrials [%s] order quantity.", materials02.getItemCode()),
 				materials02.getOnOrder().add(item02.getQuantity()), materials02s.getOnOrder());
+
+		ISalesOrderItem item03 = order.getSalesOrderItems().create();
+		item03.setItemCode(materials02.getItemCode());
+		item03.setItemDescription(materials02.getItemDescription());
+		item03.setQuantity(9);
+		item03.setPrice(99.00);
+		operationResult = boRepository.saveSalesOrder(order);
+		if (operationResult.getResultCode() != 0) {
+			System.err.println(operationResult.getMessage());
+		}
+		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
+
+		operationResult = boRepository.fetchMaterials(materials02.getCriteria());
+		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
+		materials02s = (IMaterials) operationResult.getResultObjects().firstOrDefault();
+
+		assertEquals(String.format("wrong matrials [%s] order quantity.", materials02.getItemCode()),
+				materials02.getOnOrder().add(item02.getQuantity().add(item03.getQuantity())),
+				materials02s.getOnOrder());
 	}
 }

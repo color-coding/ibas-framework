@@ -48,4 +48,9 @@ public interface IBusinessLogicsChain {
 	 *            契约数据
 	 */
 	void reverseLogics(IBusinessObjectBase bo);
+
+	/**
+	 * 提交逻辑
+	 */
+	void commit(IBusinessObjectBase bo);
 }

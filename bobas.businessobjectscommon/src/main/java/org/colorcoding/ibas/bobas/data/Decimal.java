@@ -2,6 +2,7 @@ package org.colorcoding.ibas.bobas.data;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 import java.math.RoundingMode;
 
 import javax.xml.bind.annotation.XmlType;
@@ -142,6 +143,173 @@ public class Decimal extends BigDecimal {
 
 	public Decimal multiply(long multiplicand) {
 		return new Decimal(super.multiply(new Decimal(multiplicand)));
+	}
+
+	public Decimal add(Decimal augend) {
+		return new Decimal(super.add(augend));
+	}
+
+	public Decimal add(Decimal augend, MathContext mc) {
+		return new Decimal(super.add(augend, mc));
+	}
+
+	public Decimal subtract(Decimal subtrahend) {
+		return new Decimal(super.subtract(subtrahend));
+	}
+
+	public Decimal subtract(Decimal subtrahend, MathContext mc) {
+		return new Decimal(super.subtract(subtrahend, mc));
+	}
+
+	public Decimal multiply(Decimal multiplicand, MathContext mc) {
+		return new Decimal(super.multiply(multiplicand, mc));
+	}
+
+	public Decimal divide(Decimal divisor, int scale, int roundingMode) {
+		return new Decimal(super.divide(divisor, scale, roundingMode));
+	}
+
+	public Decimal divide(Decimal divisor, int scale, RoundingMode roundingMode) {
+		return new Decimal(super.divide(divisor, scale, roundingMode));
+	}
+
+	public Decimal divide(Decimal divisor, int roundingMode) {
+		return new Decimal(super.divide(divisor, roundingMode));
+	}
+
+	public Decimal divide(Decimal divisor, RoundingMode roundingMode) {
+		return new Decimal(super.divide(divisor, roundingMode));
+	}
+
+	public Decimal divide(Decimal divisor, MathContext mc) {
+		return new Decimal(super.divide(divisor, mc));
+	}
+
+	public Decimal divideToIntegralValue(Decimal divisor) {
+		return new Decimal(super.divideToIntegralValue(divisor));
+	}
+
+	public Decimal divideToIntegralValue(Decimal divisor, MathContext mc) {
+		return new Decimal(super.divideToIntegralValue(divisor, mc));
+	}
+
+	public Decimal remainder(Decimal divisor) {
+		return new Decimal(super.remainder(divisor));
+	}
+
+	public Decimal remainder(Decimal divisor, MathContext mc) {
+		return new Decimal(super.remainder(divisor, mc));
+	}
+
+	public Decimal[] divideAndRemainder(Decimal divisor) {
+		BigDecimal[] bValues = super.divideAndRemainder(divisor);
+		Decimal[] values = new Decimal[bValues.length];
+		for (int i = 0; i < values.length; i++) {
+			values[i] = new Decimal(bValues[i]);
+		}
+		return values;
+	}
+
+	public Decimal[] divideAndRemainder(Decimal divisor, MathContext mc) {
+		BigDecimal[] bValues = super.divideAndRemainder(divisor, mc);
+		Decimal[] values = new Decimal[bValues.length];
+		for (int i = 0; i < values.length; i++) {
+			values[i] = new Decimal(bValues[i]);
+		}
+		return values;
+	}
+
+	@Override
+	public Decimal pow(int n) {
+		return new Decimal(super.pow(n));
+	}
+
+	@Override
+	public Decimal pow(int n, MathContext mc) {
+		return new Decimal(super.pow(n, mc));
+	}
+
+	@Override
+	public Decimal abs() {
+		return new Decimal(super.abs());
+	}
+
+	@Override
+	public Decimal abs(MathContext mc) {
+		return new Decimal(super.abs(mc));
+	}
+
+	@Override
+	public Decimal negate() {
+		return new Decimal(super.negate());
+	}
+
+	@Override
+	public Decimal negate(MathContext mc) {
+		return new Decimal(super.negate(mc));
+	}
+
+	@Override
+	public Decimal plus() {
+		return new Decimal(super.plus());
+	}
+
+	@Override
+	public Decimal plus(MathContext mc) {
+		return new Decimal(super.plus(mc));
+	}
+
+	@Override
+	public Decimal round(MathContext mc) {
+		return new Decimal(super.round(mc));
+	}
+
+	@Override
+	public Decimal setScale(int newScale, RoundingMode roundingMode) {
+		return new Decimal(super.setScale(newScale, roundingMode));
+	}
+
+	@Override
+	public Decimal setScale(int newScale, int roundingMode) {
+		return new Decimal(super.setScale(newScale, roundingMode));
+	}
+
+	@Override
+	public Decimal setScale(int newScale) {
+		return new Decimal(super.setScale(newScale));
+	}
+
+	@Override
+	public Decimal movePointLeft(int n) {
+		return new Decimal(super.movePointLeft(n));
+	}
+
+	@Override
+	public Decimal movePointRight(int n) {
+		return new Decimal(super.movePointRight(n));
+	}
+
+	@Override
+	public Decimal scaleByPowerOfTen(int n) {
+		return new Decimal(super.scaleByPowerOfTen(n));
+	}
+
+	@Override
+	public Decimal stripTrailingZeros() {
+		return new Decimal(super.stripTrailingZeros());
+	}
+
+	public Decimal min(Decimal val) {
+		return new Decimal(super.min(val));
+	}
+
+	public Decimal max(Decimal val) {
+		return new Decimal(super.max(val));
+	}
+
+	@Override
+	public BigDecimal ulp() {
+		return new Decimal(super.ulp());
 	}
 
 }

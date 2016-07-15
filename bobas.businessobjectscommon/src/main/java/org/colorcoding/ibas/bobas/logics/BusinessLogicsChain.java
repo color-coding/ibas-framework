@@ -52,8 +52,8 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 	 *            数据
 	 * @return 具有的契约
 	 */
-	protected IBusinessLogic[] analyzeContracts(IBusinessObjectBase bo) {
-		ArrayList<IBusinessLogic> contracts = new ArrayList<>();
+	protected IBusinessLogic<?>[] analyzeContracts(IBusinessObjectBase bo) {
+		ArrayList<IBusinessLogic<?>> contracts = new ArrayList<>();
 		if (bo == null) {
 			return contracts.toArray(new IBusinessLogic[] {});
 		}
@@ -91,7 +91,7 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 						// 存在契约，创建契约对应的逻辑实例
 						RuntimeLog.log(RuntimeLog.MSG_LOGICS_EXISTING_CONTRACT, bo.getClass().getName(),
 								item.getName());
-						IBusinessLogic logic = logicsManager.createLogic(item);
+						IBusinessLogic<?> logic = logicsManager.createLogic(item);
 						if (logic == null) {
 							throw new NotFoundBusinessLogicsException(item.getName());
 						}
@@ -104,19 +104,19 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 				tmpClass = tmpClass.getSuperclass();
 			}
 		}
-		return contracts.toArray(new IBusinessLogic[] {});
+		return contracts.toArray(new IBusinessLogic<?>[] {});
 	}
 
-	private HashMap<IBusinessObjectBase, IBusinessLogic[]> logics;
+	private HashMap<IBusinessObjectBase, IBusinessLogic<?>[]> logics;
 
 	/**
 	 * 业务逻辑列表
 	 * 
 	 * @return
 	 */
-	private HashMap<IBusinessObjectBase, IBusinessLogic[]> getLogics() {
+	private HashMap<IBusinessObjectBase, IBusinessLogic<?>[]> getLogics() {
 		if (this.logics == null) {
-			this.logics = new HashMap<IBusinessObjectBase, IBusinessLogic[]>();
+			this.logics = new HashMap<IBusinessObjectBase, IBusinessLogic<?>[]>();
 		}
 		return this.logics;
 	}
@@ -128,13 +128,13 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 	 *            对象
 	 * @return
 	 */
-	protected IBusinessLogic[] getLogics(IBusinessObjectBase bo) {
+	protected IBusinessLogic<?>[] getLogics(IBusinessObjectBase bo) {
 		if (this.getLogics().containsKey(bo)) {
 			// 已存在bo的业务逻辑
 			return this.getLogics().get(bo);
 		}
 		// 不存在bo的业务逻辑
-		IBusinessLogic[] logics = this.analyzeContracts(bo);
+		IBusinessLogic<?>[] logics = this.analyzeContracts(bo);
 		this.getLogics().put(bo, logics);
 		return logics;
 	}
@@ -144,8 +144,8 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 		if (bo == null) {
 			return;
 		}
-		IBusinessLogic[] logics = this.getLogics(bo);
-		for (IBusinessLogic logic : logics) {
+		IBusinessLogic<?>[] logics = this.getLogics(bo);
+		for (IBusinessLogic<?> logic : logics) {
 			logic.forward();
 		}
 	}
@@ -155,9 +155,20 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 		if (bo == null) {
 			return;
 		}
-		IBusinessLogic[] logics = this.getLogics(bo);
-		for (IBusinessLogic logic : logics) {
+		IBusinessLogic<?>[] logics = this.getLogics(bo);
+		for (IBusinessLogic<?> logic : logics) {
 			logic.reverse();
+		}
+	}
+
+	@Override
+	public void commit(IBusinessObjectBase bo) {
+		if (bo == null) {
+			return;
+		}
+		IBusinessLogic<?>[] logics = this.getLogics(bo);
+		for (IBusinessLogic<?> logic : logics) {
+			logic.commit();
 		}
 	}
 }

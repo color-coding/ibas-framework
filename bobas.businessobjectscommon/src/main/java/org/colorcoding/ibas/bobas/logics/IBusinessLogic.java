@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.logics;
 
 import org.colorcoding.ibas.bobas.core.IBORepository;
+import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 
 /**
  * 业务逻辑
@@ -8,7 +9,7 @@ import org.colorcoding.ibas.bobas.core.IBORepository;
  * @author Niuren.Zhu
  *
  */
-public interface IBusinessLogic {
+public interface IBusinessLogic<B extends IBusinessObjectBase> {
 
 	/**
 	 * 设置-契约
@@ -35,4 +36,23 @@ public interface IBusinessLogic {
 	 * 
 	 */
 	void reverse();
+
+	/**
+	 * 被影响的对象
+	 * 
+	 * @return
+	 */
+	B getBeAffected();
+
+	/**
+	 * 是否完成
+	 * 
+	 * @return
+	 */
+	boolean isDone();
+
+	/**
+	 * 提交逻辑
+	 */
+	void commit();
 }
