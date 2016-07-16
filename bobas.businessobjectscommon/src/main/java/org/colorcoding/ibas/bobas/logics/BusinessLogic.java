@@ -16,6 +16,10 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 /**
  * 业务逻辑
  * 
+ * 注意：
+ * 
+ * 1. fetchBeAffected()方法中要先调用fetchBeAffected(ICriteria,Class <?>)没有返回值后再重新查询。
+ * 
  * @author Niuren.Zhu
  *
  * @param <L>
@@ -218,6 +222,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 
 	/**
 	 * 在逻辑所处仓库中查询被影响数据
+	 * 
+	 * 多逻辑影响同一个对象时，不能让每个逻辑中的对象为单独实例，此方法是从逻辑链中查询已存在的对象
 	 * 
 	 * @param criteria
 	 *            查询

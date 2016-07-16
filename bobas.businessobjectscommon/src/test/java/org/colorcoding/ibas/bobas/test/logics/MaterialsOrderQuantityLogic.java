@@ -34,6 +34,7 @@ public class MaterialsOrderQuantityLogic extends BusinessLogic<IMaterialsOrderQu
 			// 事务中不存在
 			BORepositoryTest boRepositry = new BORepositoryTest();
 			// boRepositry.setRepository(this.getRepository());
+			// TODO 此处存在事件监听多次，导致业务逻辑执行多次问题
 			boRepositry.setRepository(new BORepository4File());
 			IOperationResult<IMaterials> operationResult = boRepositry.fetchMaterials(criteria);
 			if (operationResult.getError() != null) {
