@@ -24,7 +24,7 @@ import org.colorcoding.ibas.bobas.logics.IBusinessLogicsManager;
 public class BORepositoryLogicService extends BORepositoryService {
 
 	@Override
-	public boolean actionsNotification(SaveActionsEvent event) {
+	public boolean onActionsEvent(SaveActionsEvent event) {
 		try {
 			// 审批流程相关
 			if (event.getType() == SaveActionsType.before_adding || event.getType() == SaveActionsType.before_deleting
@@ -45,7 +45,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 
 			}
 			// 运行基类方法
-			return super.actionsNotification(event);
+			return super.onActionsEvent(event);
 		} catch (Exception e) {
 			throw new ActionsEventException(e);
 		}

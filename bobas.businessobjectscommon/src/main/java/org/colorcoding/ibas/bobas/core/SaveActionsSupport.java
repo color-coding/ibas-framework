@@ -72,7 +72,7 @@ public class SaveActionsSupport {
 			if (item == null) {
 				continue;
 			}
-			boolean value = item.actionsNotification(new SaveActionsEvent(this.source, type, bo));
+			boolean value = item.noticeActions(new SaveActionsEvent(this.source, type, bo));
 			if (!value) {
 				// 返回为false，直接退出
 				return value;

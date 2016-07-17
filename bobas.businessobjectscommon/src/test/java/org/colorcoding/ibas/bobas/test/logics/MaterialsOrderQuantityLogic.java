@@ -8,7 +8,6 @@ import org.colorcoding.ibas.bobas.logics.BusinessLogic;
 import org.colorcoding.ibas.bobas.logics.BusinessLogicsException;
 import org.colorcoding.ibas.bobas.mapping.LogicContract;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
-import org.colorcoding.ibas.bobas.repository.BORepository4File;
 import org.colorcoding.ibas.bobas.test.bo.IMaterials;
 import org.colorcoding.ibas.bobas.test.bo.Materials;
 import org.colorcoding.ibas.bobas.test.repository.BORepositoryTest;
@@ -33,9 +32,7 @@ public class MaterialsOrderQuantityLogic extends BusinessLogic<IMaterialsOrderQu
 		if (materials == null) {
 			// 事务中不存在
 			BORepositoryTest boRepositry = new BORepositoryTest();
-			// boRepositry.setRepository(this.getRepository());
-			// TODO 此处存在事件监听多次，导致业务逻辑执行多次问题
-			boRepositry.setRepository(new BORepository4File());
+			boRepositry.setRepository(this.getRepository());
 			IOperationResult<IMaterials> operationResult = boRepositry.fetchMaterials(criteria);
 			if (operationResult.getError() != null) {
 				throw new BusinessLogicsException(operationResult.getError());

@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.repository;
 
+import java.util.LinkedList;
+
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.common.Criteria;
@@ -94,7 +96,8 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 			if (this.getRepository() instanceof IBORepository4Db) {
 				return ((IBORepository4Db) this.getRepository()).openDbConnection();
 			}
-			//throw new NotSupportedException(i18n.prop("msg_bobas_not_supported"));
+			// throw new
+			// NotSupportedException(i18n.prop("msg_bobas_not_supported"));
 			return false;
 		} catch (Exception e) {
 			throw new RepositoryException(e);
@@ -449,7 +452,9 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 				myDbTrans = this.beginTransaction();
 			}
 			// 保存BO
+			this.getProcessing().add(bo);
 			IOperationResult<?> operationResult = boRepository.saveEx(bo);
+			this.getProcessing().remove(bo);
 			// 其他
 			if (operationResult.getError() != null) {
 				throw operationResult.getError();
@@ -467,7 +472,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 				} else if (toAdd) {
 					type = TransactionType.Add;
 				}
-				this.postBOTransactionNotification(type, bo);
+				this.noticeTransaction(type, bo);
 				// 结束事务
 				if (myDbTrans) {
 					this.commitTransaction();
@@ -512,6 +517,24 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 		}
 	}
 
+	private LinkedList<IBusinessObjectBase> processing;
+
+	/**
+	 * 处理中的数据
+	 * 
+	 * @return
+	 */
+	private LinkedList<IBusinessObjectBase> getProcessing() {
+		if (processing == null) {
+			synchronized (this) {
+				if (processing == null) {
+					processing = new LinkedList<>();
+				}
+			}
+		}
+		return processing;
+	}
+
 	/**
 	 * 通知业务对象的事务
 	 * 
@@ -521,8 +544,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	 *            对象
 	 * @throws BOTransactionException
 	 */
-	protected void postBOTransactionNotification(TransactionType type, IBusinessObjectBase bo)
-			throws BOTransactionException {
+	private void noticeTransaction(TransactionType type, IBusinessObjectBase bo) throws BOTransactionException {
 		// 通知事务
 		try {
 			if (this.getRepository() instanceof IBORepository4Db) {
@@ -576,16 +598,25 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 		return this.save(this.getRepository(), bo, token);
 	}
 
+	@Override
+	public final boolean noticeActions(SaveActionsEvent event) {
+		if (event == null) {
+			return true;
+		}
+		if (!this.getProcessing().contains(event.getBO())) {
+			// 不是自己导致的事件
+			return true;
+		}
+		return this.onActionsEvent(event);
+	}
+
 	/**
 	 * 监听对象保存事件
 	 * 
 	 * 每个对象保存都会触发，包括对象的子属性
 	 */
-	@Override
-	public boolean actionsNotification(SaveActionsEvent event) {
-		if (event == null) {
-			return true;
-		}
+	protected boolean onActionsEvent(SaveActionsEvent event) {
+
 		if (event.getType() == SaveActionsType.before_updating) {
 			if (!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_VERSION_CHECK, false)) {
 				// 更新前，检查版本是否有效
