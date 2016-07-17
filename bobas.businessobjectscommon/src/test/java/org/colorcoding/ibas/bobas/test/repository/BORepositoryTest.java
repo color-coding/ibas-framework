@@ -16,6 +16,7 @@ import org.colorcoding.ibas.bobas.test.bo.IMaterials;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrder;
 import org.colorcoding.ibas.bobas.test.bo.Materials;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
+import org.colorcoding.ibas.bobas.test.logics.PurchaseOrder;
 
 /**
  * 业务对象仓库（测试）
@@ -88,43 +89,54 @@ public class BORepositoryTest extends BORepositoryServiceApplication
 	public IOperationResult<ISalesOrder> saveSalesOrder(ISalesOrder bo) {
 		return new OperationResult<ISalesOrder>(this.saveSalesOrder((SalesOrder) bo, this.getUserToken()));
 	}
-	   /**
-     * 查询-物料主数据
-     * @param criteria 查询
-     * @param token 口令
-     * @return 操作结果
-     */
-    public OperationResult<Materials> fetchMaterials(ICriteria criteria, String token) {
-        return super.fetch(criteria, token, Materials.class);
-    }
 
-    /**
-     * 查询-物料主数据（提前设置用户口令）
-     * @param criteria 查询
-     * @return 操作结果
-     */
-    public IOperationResult<IMaterials> fetchMaterials(ICriteria criteria) {
-        return new OperationResult<IMaterials>(this.fetchMaterials(criteria, this.getUserToken()));
-    }
+	/**
+	 * 查询-物料主数据
+	 * 
+	 * @param criteria
+	 *            查询
+	 * @param token
+	 *            口令
+	 * @return 操作结果
+	 */
+	public OperationResult<Materials> fetchMaterials(ICriteria criteria, String token) {
+		return super.fetch(criteria, token, Materials.class);
+	}
 
-    /**
-     * 保存-物料主数据
-     * @param bo 对象实例
-     * @param token 口令
-     * @return 操作结果
-     */
-    public OperationResult<Materials> saveMaterials(Materials bo, String token) {
-        return super.save(bo, token);
-    }
+	/**
+	 * 查询-物料主数据（提前设置用户口令）
+	 * 
+	 * @param criteria
+	 *            查询
+	 * @return 操作结果
+	 */
+	public IOperationResult<IMaterials> fetchMaterials(ICriteria criteria) {
+		return new OperationResult<IMaterials>(this.fetchMaterials(criteria, this.getUserToken()));
+	}
 
-    /**
-     * 保存-物料主数据（提前设置用户口令）
-     * @param bo 对象实例
-     * @return 操作结果
-     */
-    public IOperationResult<IMaterials> saveMaterials(IMaterials bo) {
-        return new OperationResult<IMaterials>(this.saveMaterials((Materials) bo, this.getUserToken()));
-    }
+	/**
+	 * 保存-物料主数据
+	 * 
+	 * @param bo
+	 *            对象实例
+	 * @param token
+	 *            口令
+	 * @return 操作结果
+	 */
+	public OperationResult<Materials> saveMaterials(Materials bo, String token) {
+		return super.save(bo, token);
+	}
+
+	/**
+	 * 保存-物料主数据（提前设置用户口令）
+	 * 
+	 * @param bo
+	 *            对象实例
+	 * @return 操作结果
+	 */
+	public IOperationResult<IMaterials> saveMaterials(IMaterials bo) {
+		return new OperationResult<IMaterials>(this.saveMaterials((Materials) bo, this.getUserToken()));
+	}
 
 	@Permission(defaultValue = PermissionValue.available) // 权限标记，如果没有配置，则使用默认权限值
 	public OperationMessages closeOrders(String token) {
@@ -162,5 +174,56 @@ public class BORepositoryTest extends BORepositoryServiceApplication
 			operationResult.setError(e);
 		}
 		return operationResult;
+	}
+	// --------------------------------------------------------------------------------------------//
+
+	/**
+	 * 查询-销售订单
+	 * 
+	 * @param criteria
+	 *            查询
+	 * @param token
+	 *            口令
+	 * @return 操作结果
+	 */
+	public OperationResult<PurchaseOrder> fetchPurchaseOrder(ICriteria criteria, String token) {
+		return super.fetch(criteria, token, PurchaseOrder.class);
+	}
+
+	/**
+	 * 查询-销售订单
+	 * 
+	 * @param criteria
+	 *            查询
+	 * @return 操作结果
+	 */
+	@Override
+	public IOperationResult<PurchaseOrder> fetchPurchaseOrder(ICriteria criteria) {
+		return new OperationResult<PurchaseOrder>(this.fetchPurchaseOrder(criteria, this.getUserToken()));
+	}
+
+	/**
+	 * 保存-销售订单
+	 * 
+	 * @param bo
+	 *            对象实例
+	 * @param token
+	 *            口令
+	 * @return 操作结果
+	 */
+	public OperationResult<PurchaseOrder> savePurchaseOrder(PurchaseOrder bo, String token) {
+		return super.save(bo, token);
+	}
+
+	/**
+	 * 保存-销售订单，仅内部可用
+	 * 
+	 * @param bo
+	 *            对象实例
+	 * @return 操作结果
+	 */
+	@Override
+	public IOperationResult<PurchaseOrder> savePurchaseOrder(PurchaseOrder bo) {
+		return new OperationResult<PurchaseOrder>(this.savePurchaseOrder((PurchaseOrder) bo, this.getUserToken()));
 	}
 }

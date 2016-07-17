@@ -5,6 +5,8 @@ import java.io.StringWriter;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
+import org.colorcoding.ibas.bobas.bo.BusinessObject;
+import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.data.DateTime;
@@ -148,6 +150,16 @@ public class testBusinessObjects extends TestCase {
 	}
 
 	public void testBOInherit() {
+
+		System.out.println(SalesOrder.class.isAssignableFrom(IBusinessObject.class));
+		System.out.println(SalesOrder.class.isAssignableFrom(ISalesOrder.class));
+		System.out.println(ISalesOrder.class.isAssignableFrom(IBusinessObject.class));
+		System.out.println(SalesOrder.class.isAssignableFrom(BusinessObject.class));
+
+		System.out.println(BusinessObject.class.isAssignableFrom(SalesOrder.class));
+		System.out.println(IBusinessObject.class.isAssignableFrom(SalesOrder.class));
+		System.out.println(ISalesOrder.class.isAssignableFrom(SalesOrder.class));
+
 		SalesOrder order = new SalesOrder2();
 
 		order.setDocEntry(1);
@@ -189,6 +201,7 @@ public class testBusinessObjects extends TestCase {
 		System.out.println(orderItem.toString());
 		assertEquals("Property [ItemCode] faild. ", orderItem.getItemCode(), "A00002");
 		assertEquals("Property [Quantity] faild. ", orderItem.getQuantity().toString(), "10");
+
 	}
 
 }

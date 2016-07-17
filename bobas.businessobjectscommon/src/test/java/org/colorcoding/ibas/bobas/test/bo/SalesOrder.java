@@ -40,7 +40,7 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 @XmlType(name = "SalesOrder")
 @XmlRootElement(name = "SalesOrder")
 @BOCode(SalesOrder.BUSINESS_OBJECT_CODE)
-public class SalesOrder extends BusinessObject<SalesOrder> implements ISalesOrder,IFieldMaxValueKey,IApprovalData {
+public class SalesOrder extends BusinessObject<SalesOrder> implements ISalesOrder, IFieldMaxValueKey, IApprovalData {
 
 	/**
 	 * 序列化版本标记
@@ -2208,16 +2208,16 @@ public class SalesOrder extends BusinessObject<SalesOrder> implements ISalesOrde
 
 	@Override
 	public IFieldDataDb getMaxValueField() {
-		return (IFieldDataDb)this.getField(DocNumProperty.getName());
+		return (IFieldDataDb) this.getField(DocNumProperty.getName());
 	}
 
 	@Override
 	public IConditions getMaxValueConditions() {
 		ICriteria criteria = new Criteria();
-		ICondition condition  = criteria.getConditions().create();
+		ICondition condition = criteria.getConditions().create();
 		condition.setAlias(CustomerCodeProperty.getName());
 		condition.setCondVal(this.getCustomerCode());
-		
+
 		return criteria.getConditions();
 	}
 }

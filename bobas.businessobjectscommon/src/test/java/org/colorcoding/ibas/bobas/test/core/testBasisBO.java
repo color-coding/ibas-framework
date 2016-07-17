@@ -9,7 +9,7 @@ import junit.framework.TestCase;
 public class testBasisBO extends TestCase {
 
 	public void testUseBO() {
-		PurchaseOrder order = new PurchaseOrder();
+		Order order = new Order();
 		order.setDocEntry(1);
 		order.setSuppler("C00001");
 		order.setDueDate(DateTime.getToday());

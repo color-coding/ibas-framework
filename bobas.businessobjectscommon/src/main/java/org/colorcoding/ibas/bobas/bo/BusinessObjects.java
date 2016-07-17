@@ -11,7 +11,6 @@ import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.SortType;
-import org.colorcoding.ibas.bobas.core.BOFactory;
 import org.colorcoding.ibas.bobas.core.BusinessObjectListBase;
 import org.colorcoding.ibas.bobas.core.IBindableBase;
 import org.colorcoding.ibas.bobas.core.ITrackStatusOperator;
@@ -269,7 +268,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 			return null;
 		}
 		ICriteria criteria = this.parent.getCriteria();
-		if (BOFactory.create().isDerivedFrom(this.getElementType(), IBOLine.class)) {
+		if (IBOLine.class.isAssignableFrom(this.getElementType())) {
 			// 元素类型是行类型，则添加排序字段
 			ISort sort = criteria.getSorts().create();
 			sort.setAlias("LineId");

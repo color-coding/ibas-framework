@@ -5,28 +5,23 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.colorcoding.ibas.bobas.core.BusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
-import org.colorcoding.ibas.bobas.core.fields.NotRegisterTypeException;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.mapping.DbField;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
-@XmlRootElement(name = "PurchaseOrder", namespace = "httpL//ibas.club/bobas/test")
-public class PurchaseOrder extends BusinessObjectBase<PurchaseOrder> {
+@XmlRootElement(name = "Order", namespace = "httpL//ibas.club/bobas/test")
+public class Order extends BusinessObjectBase<Order> {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 4771656989360317386L;
 
-	public PurchaseOrder() throws NotRegisterTypeException {
-		super();
-	}
-
 	/**
 	 * 当前类型 java的泛型是擦除机制，不能在运行期间获取到泛型信息
 	 */
-	private final static Class<?> MY_CLASS = PurchaseOrder.class;
+	private final static Class<?> MY_CLASS = Order.class;
 	/**
 	 * 数据库表
 	 */

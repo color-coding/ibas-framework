@@ -52,9 +52,9 @@ public class FieldsFactory {
 			return new FieldDataBoolean(type);
 		} else if (type.isEnum()) {// 判断是否为枚举
 			return new FieldDataEnum(type);
-		} else if (this.isAssignableFrom(type, IBusinessObjectBase.class)) {
+		} else if (IBusinessObjectBase.class.isAssignableFrom(type)) {
 			return new FieldDataBO(type);
-		} else if (this.isAssignableFrom(type, IBusinessObjectListBase.class)) {
+		} else if (IBusinessObjectListBase.class.isAssignableFrom(type)) {
 			return new FieldDataBOs(type);
 		} else {
 			throw new NotSupportTypeException(i18n.prop("msg_bobas_data_type_not_support", type));
@@ -78,27 +78,6 @@ public class FieldsFactory {
 		} else {
 			throw new NotSupportTypeException(i18n.prop("msg_bobas_association_mode_not_support", type));
 		}
-	}
-
-	boolean isAssignableFrom(Class<?> child, Class<?> parent) {
-		// 非法数据
-		if (child == null || parent == null) {
-			return false;
-		}
-		boolean inherited = false;
-		// 本层是否继承
-		inherited = child.isAssignableFrom(parent);
-		if (inherited) {
-			return inherited;
-		}
-		// 判断上层是否继承
-		for (Class<?> item : child.getInterfaces()) {
-			inherited = isAssignableFrom(item, parent);
-			if (inherited) {
-				return inherited;
-			}
-		}
-		return false;
 	}
 
 	public FieldDataDbBase<?> createDbField(Class<?> type) throws NotSupportTypeException {

@@ -76,15 +76,4 @@ public interface IBOFactory {
 	 */
 	String getBOCode(Class<?> type) throws BOFactoryException;
 
-	/**
-	 * 判断是否派生自类型
-	 * 
-	 * @param child
-	 *            类型
-	 * @param parent
-	 *            基础类型
-	 * @return true；false
-	 */
-	boolean isDerivedFrom(Class<?> child, Class<?> parent);
-
 }

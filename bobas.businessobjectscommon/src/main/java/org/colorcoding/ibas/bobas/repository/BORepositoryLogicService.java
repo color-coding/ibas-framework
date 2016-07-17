@@ -36,7 +36,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 				}
 			}
 			// 业务逻辑相关
-			if (event.getType() != SaveActionsType.before_adding && event.getType() != SaveActionsType.updated) {
+			if (event.getType() != SaveActionsType.before_adding && event.getType() != SaveActionsType.deleted) {
 				// 最后执行业务逻辑，因为要求状态可用
 				if (!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_BUSINESS_LOGICS, false)) {
 					// 执行业务逻辑

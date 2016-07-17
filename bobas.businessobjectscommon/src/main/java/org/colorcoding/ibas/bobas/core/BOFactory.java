@@ -37,36 +37,6 @@ public class BOFactory implements IBOFactory {
 
 	}
 
-	/**
-	 * 判断是否派生自
-	 * 
-	 * @param child
-	 *            派生类
-	 * @param parent
-	 *            基础类
-	 */
-	@Override
-	public boolean isDerivedFrom(Class<?> child, Class<?> parent) {
-		// 非法数据
-		if (child == null || parent == null) {
-			return false;
-		}
-		boolean inherited = false;
-		// 本层是否继承
-		inherited = child.isAssignableFrom(parent);
-		if (inherited) {
-			return inherited;
-		}
-		// 判断上层是否继承
-		for (Class<?> item : child.getInterfaces()) {
-			inherited = this.isDerivedFrom(item, parent);
-			if (inherited) {
-				return inherited;
-			}
-		}
-		return false;
-	}
-
 	@Override
 	public void loadPackage(String path) throws BOFactoryException {
 		URL url = null;
