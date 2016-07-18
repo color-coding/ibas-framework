@@ -9,6 +9,7 @@ import org.colorcoding.ibas.bobas.approval.IApprovalProcessManager;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.core.SaveActionsEvent;
+import org.colorcoding.ibas.bobas.core.SaveActionsException;
 import org.colorcoding.ibas.bobas.core.SaveActionsType;
 import org.colorcoding.ibas.bobas.logics.BusinessLogicsFactory;
 import org.colorcoding.ibas.bobas.logics.IBusinessLogicsChain;
@@ -47,7 +48,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 			// 运行基类方法
 			return super.onActionsEvent(event);
 		} catch (Exception e) {
-			throw new ActionsEventException(e);
+			throw new SaveActionsException(e);
 		}
 	}
 

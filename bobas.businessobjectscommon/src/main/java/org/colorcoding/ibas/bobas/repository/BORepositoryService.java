@@ -599,7 +599,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	}
 
 	@Override
-	public final boolean noticeActions(SaveActionsEvent event) {
+	public final boolean noticeActionsEvent(SaveActionsEvent event) {
 		if (event == null) {
 			return true;
 		}

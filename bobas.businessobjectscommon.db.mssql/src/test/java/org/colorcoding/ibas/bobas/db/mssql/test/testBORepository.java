@@ -328,6 +328,22 @@ public class testBORepository extends TestCase {
 		assertEquals(String.format("wrong matrials [%s] order quantity.", materials01.getItemCode()),
 				materials01.getOnOrder().add(item01.getQuantity()).floatValue(),
 				materials01s.getOnOrder().floatValue());
+		// 删除单据，物料订购数量均为0
+		order.delete();
+		operationResult = boRepository.savePurchaseOrder(order);
+		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
+
+		operationResult = boRepository.fetchMaterials(materials01.getCriteria());
+		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
+		materials01s = (IMaterials) operationResult.getResultObjects().firstOrDefault();
+		assertEquals(String.format("wrong matrials [%s] order quantity.", materials01.getItemCode()), 0.0f,
+				materials01s.getOnOrder().floatValue());
+
+		operationResult = boRepository.fetchMaterials(materials02.getCriteria());
+		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
+		materials02s = (IMaterials) operationResult.getResultObjects().firstOrDefault();
+		assertEquals(String.format("wrong matrials [%s] order quantity.", materials02.getItemCode()), 0.0f,
+				materials02s.getOnOrder().floatValue());
 
 	}
 
