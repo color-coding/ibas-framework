@@ -47,6 +47,7 @@ public class SaveActionsSupport {
 				tmps[i] = this.listeners[i];
 			}
 			tmps[i] = listener;
+			this.listeners = tmps;
 		}
 	}
 

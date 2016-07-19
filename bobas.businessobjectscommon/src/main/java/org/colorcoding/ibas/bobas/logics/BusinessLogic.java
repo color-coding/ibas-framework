@@ -7,6 +7,7 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
+import org.colorcoding.ibas.bobas.core.ITrackStatus;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
@@ -69,6 +70,13 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 	 * @return 有效，true；无效，false
 	 */
 	protected boolean checkDataStatus(Object data) {
+		if (data instanceof ITrackStatus) {
+			// 标记删除的数据无效
+			ITrackStatus status = (ITrackStatus) data;
+			if (status.isDeleted()) {
+				return false;
+			}
+		}
 		if (data instanceof IApprovalData) {
 			// 审批数据
 			IApprovalData apData = (IApprovalData) data;
@@ -199,7 +207,10 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 	@Override
 	public void commit() {
 		if (this.getBeAffected() != null) {
-			IOperationResult<?> operationResult = this.getRepository().saveEx(this.getBeAffected());
+			BusinessLogicsRepository logicRepository = new BusinessLogicsRepository();
+			logicRepository.setRepository(this.getRepository());
+			IOperationResult<?> operationResult = logicRepository.save(this.getBeAffected());
+			this.getRepository().removeSaveActionsListener(logicRepository);// 移出监听
 			if (operationResult.getError() != null) {
 				throw new BusinessLogicsException(operationResult.getError());
 			}

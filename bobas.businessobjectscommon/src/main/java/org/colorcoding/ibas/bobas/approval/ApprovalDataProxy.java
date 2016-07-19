@@ -72,4 +72,9 @@ public class ApprovalDataProxy extends TrackableBase implements IApprovalData {
 	public ICriteria getCriteria() {
 		return Criteria.create(this.getIdentifiers());
 	}
+
+	@Override
+	public void clearDeleted() {
+
+	}
 }

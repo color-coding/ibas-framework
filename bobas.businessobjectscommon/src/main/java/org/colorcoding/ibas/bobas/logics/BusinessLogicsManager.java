@@ -61,7 +61,7 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 	}
 
 	private volatile HashMap<Class<?>, Class<?>> logicClasses;
-	
+
 	protected HashMap<Class<?>, Class<?>> getLogicClasses() {
 		if (logicClasses == null) {
 			synchronized (BusinessLogicsManager.class) {
@@ -95,7 +95,9 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 						if (tmpClass.equals(BusinessLogic.class)) {
 							// 有效的业务逻辑类
 							this.getLogicClasses().put(((LogicContract) annotation).value(), item);
-							logicClass = item;
+							if (logicClass == null && contract.equals(((LogicContract) annotation).value())) {
+								logicClass = item;
+							}
 							break;
 						}
 						tmpClass = tmpClass.getSuperclass();

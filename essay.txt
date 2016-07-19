@@ -10,3 +10,31 @@
 009. 网站启动后的路径设置tomcat的server.xml
 010. tomcat运行不起来，检查maven库是否添加引用，引用的项目是否添加。
 011. 所有的路径不带结尾的文件夹分隔符（\），如：D:\workspace||/home/workspace
+012. 业务逻辑执行结构。
+      01. 业务逻辑概念，出库单据会减少库存，入库单据会增加库存。
+      02. 物料有个一个属性，为库存数量。出库单据行指定了什么物料出库多少。
+            matrials ItemCode,onOrder
+            OrderItem ItemCode,Quantity
+      03. 业务逻辑执行结构，一个数据契约（接口）对应一个逻辑（服务）。
+            契约接口：org.colorcoding.ibas.bobas.logics.IBusinessLogicContract
+	        逻辑接口：org.colorcoding.ibas.bobas.logics.IBusinessLogic
+	        实现的基类，使用时直接继承
+            契约：org.colorcoding.ibas.bobas.logics.BusinessLogicContract
+            逻辑：org.colorcoding.ibas.bobas.logics.BusinessLogic
+      04. 契约命名方式，I + 影响的对象类型 + 内容 + Contract，例如：IMaterialsOrderQuantityContract
+            内容定义需要使用的关键数据属性即可。
+      05. 逻辑的命名方式，即契约名称去I并且该Contract为Logic，例如：MaterialsOrderQuantityLogic
+            逻辑是带泛型参数的类型，第一个参数是对应的契约数据。第二个是影响的对象类型。
+	        逻辑类需要标记注释，@LogicContract(契约的数据类型)	  
+	        @LogicContract(IMaterialsOrderQuantityContract.class)
+      	  public class MaterialsOrderQuantityLogic extends BusinessLogic<IMaterialsOrderQuantityContract, IMaterials>
+      06. 逻辑实现，需要实现3个方法。
+          01) fetchBeAffected，获取被影响的对象，例如：物料。
+	          此方法中需要先从，事务缓存中获取，不存在再重新查询。（一个事务内，多逻辑同时影响一个对象，保证业务逻辑完整，所以先从缓存获取。）
+	          从缓存获取数据方法， super.fetchBeAffected(criteria, IMaterials.class);
+	      	  然后再从业务仓库中查询。
+	      	  如果业务仓库中不存在，根据需求是否重新创建对象实例。
+      	  02) 正向业务逻辑。
+          03) 反向业务逻辑，数据回滚时使用。
+      07. 要保证契约与逻辑处于同一个命名空间下。	
+      08. 详见测试脚本。

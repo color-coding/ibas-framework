@@ -82,7 +82,9 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 
 	/**
 	 * 获取主键字段
-	 * @param name 属性名称（Property;BO.Property）
+	 * 
+	 * @param name
+	 *            属性名称（Property;BO.Property）
 	 * @return 主键字段
 	 */
 	@Override
@@ -306,6 +308,48 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 						Object childItem = Array.get(data, i);
 						if (childItem instanceof ITrackStatusOperator) {
 							((ITrackStatusOperator) childItem).markDeleted(true);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * 清理标记删除的数据
+	 * 
+	 * @param forced
+	 *            包括子项及属性
+	 */
+	@Override
+	public final void clearDeleted() {
+		for (IFieldData item : this.fieldManager) {
+			Object data = item.getValue();
+			if (data == null) {
+				continue;
+			}
+			if (data instanceof ITrackStatus) {
+				// 值是业务对象
+				if (((ITrackStatus) data).isDeleted()) {
+					item.setValue(null);
+				}
+			} else if (data instanceof IBusinessObjectListBase<?>) {
+				// 值是业务对象列表
+				IBusinessObjectListBase<?> boList = (IBusinessObjectListBase<?>) data;
+				for (int i = boList.size() - 1; i >= 0; i--) {
+					IBusinessObjectBase childItem = boList.get(i);
+					if (childItem.isDeleted()) {
+						boList.remove(childItem);
+					}
+				}
+			} else if (data.getClass().isArray()) {
+				// 值是数组
+				int length = Array.getLength(data);
+				for (int i = 0; i < length; i++) {
+					Object childItem = Array.get(data, i);
+					if (childItem instanceof ITrackStatus) {
+						if (((ITrackStatus) childItem).isDeleted()) {
+							Array.set(data, i, null);
 						}
 					}
 				}

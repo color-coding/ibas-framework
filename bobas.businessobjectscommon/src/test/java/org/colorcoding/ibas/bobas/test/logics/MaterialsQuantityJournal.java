@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.bobas.test.bo;
+package org.colorcoding.ibas.bobas.test.logics;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -7,53 +7,43 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
+import org.colorcoding.ibas.bobas.bo.IBOSimple;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
-import org.colorcoding.ibas.bobas.data.emApprovalStatus;
-import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.mapping.BOCode;
 import org.colorcoding.ibas.bobas.mapping.DbField;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 /**
- * 获取-物料主数据
+ * 获取-物料数量交易记录
  * 
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "Materials")
-@XmlRootElement(name = "Materials")
-@BOCode(Materials.BUSINESS_OBJECT_CODE)
-public class Materials extends BusinessObject<Materials> implements IMaterials {
-
+@XmlType(name = "MaterialsQuantityJournal")
+@XmlRootElement(name = "MaterialsQuantityJournal")
+@BOCode(MaterialsQuantityJournal.BUSINESS_OBJECT_CODE)
+public class MaterialsQuantityJournal extends BusinessObject<MaterialsQuantityJournal>
+		implements IBOSimple, IMaterialsInventoryQuantityContract {
 	/**
-	 * 序列化版本标记
+	 * 
 	 */
-	private static final long serialVersionUID = 5256857080069993005L;
-
-	/**
-	 * 当前类型
-	 */
-	private final static Class<?> MY_CLASS = Materials.class;
+	private static final long serialVersionUID = -8245732403829473241L;
 
 	/**
 	 * 数据库表
 	 */
-	public final static String DB_TABLE_NAME = "CC_TT_OITM";
+	public final static String DB_TABLE_NAME = "CC_TT_OINM";
 
 	/**
 	 * 业务对象编码
 	 */
-	public final static String BUSINESS_OBJECT_CODE = "CC_TT_MATERIALS";
+	public final static String BUSINESS_OBJECT_CODE = "CC_TT_MATERIALSJOURNAL";
 
 	/**
-	 * 创建实例
-	 * 
-	 * @return 物料主数据实例
+	 * 当前类型
 	 */
-	public static IMaterials create() {
-		return new Materials();
-	}
+	private final static Class<?> MY_CLASS = MaterialsQuantityJournal.class;
 
 	/**
 	 * 物料编号 属性
@@ -82,195 +72,140 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	}
 
 	/**
-	 * 物料描述 属性
+	 * 数量 属性
 	 */
-	@DbField(name = "ItemName", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
-	public final static IPropertyInfo<String> ItemDescriptionProperty = registerProperty("ItemDescription",
+	@DbField(name = "Quantity", type = DbFieldType.db_Decimal, table = DB_TABLE_NAME, primaryKey = false)
+	public final static IPropertyInfo<Decimal> QuantityProperty = registerProperty("Quantity", Decimal.class, MY_CLASS);
+
+	/**
+	 * 获取-数量
+	 * 
+	 * @return 值
+	 */
+	@XmlElement(name = "Quantity")
+	public final Decimal getQuantity() {
+		return this.getProperty(QuantityProperty);
+	}
+
+	/**
+	 * 设置-数量
+	 * 
+	 * @param value
+	 *            值
+	 */
+	public final void setQuantity(Decimal value) {
+		this.setProperty(QuantityProperty, value);
+	}
+
+	/**
+	 * 设置-数量
+	 * 
+	 * @param value
+	 *            值
+	 */
+	public final void setQuantity(String value) {
+		this.setQuantity(new Decimal(value));
+	}
+
+	/**
+	 * 设置-数量
+	 * 
+	 * @param value
+	 *            值
+	 */
+	public final void setQuantity(int value) {
+		this.setQuantity(new Decimal(value));
+	}
+
+	/**
+	 * 设置-数量
+	 * 
+	 * @param value
+	 *            值
+	 */
+	public final void setQuantity(double value) {
+		this.setQuantity(new Decimal(value));
+	}
+
+	/**
+	 * 基本单据类型 属性
+	 */
+	@DbField(name = "BaseType", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	public final static IPropertyInfo<String> BaseDocumentTypeProperty = registerProperty("BaseDocumentType",
 			String.class, MY_CLASS);
 
 	/**
-	 * 获取-物料描述
+	 * 获取-基本单据类型
 	 * 
 	 * @return 值
 	 */
-	@XmlElement(name = "ItemDescription")
-	public final String getItemDescription() {
-		return this.getProperty(ItemDescriptionProperty);
+	@XmlElement(name = "BaseDocumentType")
+	public final String getBaseDocumentType() {
+		return this.getProperty(BaseDocumentTypeProperty);
 	}
 
 	/**
-	 * 设置-物料描述
+	 * 设置-基本单据类型
 	 * 
 	 * @param value
 	 *            值
 	 */
-	public final void setItemDescription(String value) {
-		this.setProperty(ItemDescriptionProperty, value);
+	public final void setBaseDocumentType(String value) {
+		this.setProperty(BaseDocumentTypeProperty, value);
 	}
 
 	/**
-	 * 外文描述 属性
+	 * 基本单据内部标识 属性
 	 */
-	@DbField(name = "FrgnName", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
-	public final static IPropertyInfo<String> ForeignDescriptionProperty = registerProperty("ForeignDescription",
-			String.class, MY_CLASS);
+	@DbField(name = "BaseEntry", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+	public final static IPropertyInfo<Integer> BaseDocumentEntryProperty = registerProperty("BaseDocumentEntry",
+			Integer.class, MY_CLASS);
 
 	/**
-	 * 获取-外文描述
+	 * 获取-基本单据内部标识
 	 * 
 	 * @return 值
 	 */
-	@XmlElement(name = "ForeignDescription")
-	public final String getForeignDescription() {
-		return this.getProperty(ForeignDescriptionProperty);
+	@XmlElement(name = "BaseDocumentEntry")
+	public final Integer getBaseDocumentEntry() {
+		return this.getProperty(BaseDocumentEntryProperty);
 	}
 
 	/**
-	 * 设置-外文描述
+	 * 设置-基本单据内部标识
 	 * 
 	 * @param value
 	 *            值
 	 */
-	public final void setForeignDescription(String value) {
-		this.setProperty(ForeignDescriptionProperty, value);
+	public final void setBaseDocumentEntry(Integer value) {
+		this.setProperty(BaseDocumentEntryProperty, value);
 	}
 
 	/**
-	 * 物料组 属性
+	 * 基本凭证中的行编号 属性
 	 */
-	@DbField(name = "ItmsGrpCod", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
-	public final static IPropertyInfo<String> ItemGroupProperty = registerProperty("ItemGroup", String.class, MY_CLASS);
+	@DbField(name = "BaseLinNum", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+	public final static IPropertyInfo<Integer> BaseDocumentLineIdProperty = registerProperty("BaseDocumentLineId",
+			Integer.class, MY_CLASS);
 
 	/**
-	 * 获取-物料组
+	 * 获取-基本凭证中的行编号
 	 * 
 	 * @return 值
 	 */
-	@XmlElement(name = "ItemGroup")
-	public final String getItemGroup() {
-		return this.getProperty(ItemGroupProperty);
+	@XmlElement(name = "BaseDocumentLineId")
+	public final Integer getBaseDocumentLineId() {
+		return this.getProperty(BaseDocumentLineIdProperty);
 	}
 
 	/**
-	 * 设置-物料组
+	 * 设置-基本凭证中的行编号
 	 * 
 	 * @param value
 	 *            值
 	 */
-	public final void setItemGroup(String value) {
-		this.setProperty(ItemGroupProperty, value);
-	}
-
-	/**
-	 * 订单数量 属性
-	 */
-	@DbField(name = "OnOrder", type = DbFieldType.db_Decimal, table = DB_TABLE_NAME, primaryKey = false)
-	public final static IPropertyInfo<Decimal> OnOrderProperty = registerProperty("OnOrder", Decimal.class, MY_CLASS);
-
-	/**
-	 * 获取-订单数量
-	 * 
-	 * @return 值
-	 */
-	@XmlElement(name = "OnOrder")
-	public final Decimal getOnOrder() {
-		return this.getProperty(OnOrderProperty);
-	}
-
-	/**
-	 * 设置-订单数量
-	 * 
-	 * @param value
-	 *            值
-	 */
-	public final void setOnOrder(Decimal value) {
-		this.setProperty(OnOrderProperty, value);
-	}
-
-	/**
-	 * 设置-订单数量
-	 * 
-	 * @param value
-	 *            值
-	 */
-	public final void setOnOrder(String value) {
-		this.setOnOrder(new Decimal(value));
-	}
-
-	/**
-	 * 设置-订单数量
-	 * 
-	 * @param value
-	 *            值
-	 */
-	public final void setOnOrder(int value) {
-		this.setOnOrder(new Decimal(value));
-	}
-
-	/**
-	 * 设置-订单数量
-	 * 
-	 * @param value
-	 *            值
-	 */
-	public final void setOnOrder(double value) {
-		this.setOnOrder(new Decimal(value));
-	}
-
-	/**
-	 * 库存 属性
-	 */
-	@DbField(name = "OnHand", type = DbFieldType.db_Decimal, table = DB_TABLE_NAME, primaryKey = false)
-	public final static IPropertyInfo<Decimal> OnHandProperty = registerProperty("OnHand", Decimal.class, MY_CLASS);
-
-	/**
-	 * 获取-库存
-	 * 
-	 * @return 值
-	 */
-	@XmlElement(name = "OnHand")
-	public final Decimal getOnHand() {
-		return this.getProperty(OnHandProperty);
-	}
-
-	/**
-	 * 设置-库存
-	 * 
-	 * @param value
-	 *            值
-	 */
-	public final void setOnHand(Decimal value) {
-		this.setProperty(OnHandProperty, value);
-	}
-
-	/**
-	 * 设置-库存
-	 * 
-	 * @param value
-	 *            值
-	 */
-	public final void setOnHand(String value) {
-		this.setOnHand(new Decimal(value));
-	}
-
-	/**
-	 * 设置-库存
-	 * 
-	 * @param value
-	 *            值
-	 */
-	public final void setOnHand(int value) {
-		this.setOnHand(new Decimal(value));
-	}
-
-	/**
-	 * 设置-库存
-	 * 
-	 * @param value
-	 *            值
-	 */
-	public final void setOnHand(double value) {
-		this.setOnHand(new Decimal(value));
+	public final void setBaseDocumentLineId(Integer value) {
+		this.setProperty(BaseDocumentLineIdProperty, value);
 	}
 
 	/**
@@ -324,7 +259,6 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	 * @param value
 	 *            值
 	 */
-	@Override
 	public final void setObjectCode(String value) {
 		this.setProperty(ObjectCodeProperty, value);
 	}
@@ -623,33 +557,6 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	}
 
 	/**
-	 * 审批状态 属性
-	 */
-	@DbField(name = "ApvlStatus", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
-	public final static IPropertyInfo<emApprovalStatus> ApprovalStatusProperty = registerProperty("ApprovalStatus",
-			emApprovalStatus.class, MY_CLASS);
-
-	/**
-	 * 获取-审批状态
-	 * 
-	 * @return 值
-	 */
-	@XmlElement(name = "ApprovalStatus")
-	public final emApprovalStatus getApprovalStatus() {
-		return this.getProperty(ApprovalStatusProperty);
-	}
-
-	/**
-	 * 设置-审批状态
-	 * 
-	 * @param value
-	 *            值
-	 */
-	public final void setApprovalStatus(emApprovalStatus value) {
-		this.setProperty(ApprovalStatusProperty, value);
-	}
-
-	/**
 	 * 数据所有者 属性
 	 */
 	@DbField(name = "DataOwner", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
@@ -677,113 +584,6 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	}
 
 	/**
-	 * 团队成员 属性
-	 */
-	@DbField(name = "TeamMembers", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
-	public final static IPropertyInfo<String> TeamMembersProperty = registerProperty("TeamMembers", String.class,
-			MY_CLASS);
-
-	/**
-	 * 获取-团队成员
-	 * 
-	 * @return 值
-	 */
-	@XmlElement(name = "TeamMembers")
-	public final String getTeamMembers() {
-		return this.getProperty(TeamMembersProperty);
-	}
-
-	/**
-	 * 设置-团队成员
-	 * 
-	 * @param value
-	 *            值
-	 */
-	public final void setTeamMembers(String value) {
-		this.setProperty(TeamMembersProperty, value);
-	}
-
-	/**
-	 * 数据所属组织 属性
-	 */
-	@DbField(name = "OrgCode", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
-	public final static IPropertyInfo<String> OrganizationProperty = registerProperty("Organization", String.class,
-			MY_CLASS);
-
-	/**
-	 * 获取-数据所属组织
-	 * 
-	 * @return 值
-	 */
-	@XmlElement(name = "Organization")
-	public final String getOrganization() {
-		return this.getProperty(OrganizationProperty);
-	}
-
-	/**
-	 * 设置-数据所属组织
-	 * 
-	 * @param value
-	 *            值
-	 */
-	public final void setOrganization(String value) {
-		this.setProperty(OrganizationProperty, value);
-	}
-
-	/**
-	 * 已引用 属性
-	 */
-	@DbField(name = "Refed", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
-	public final static IPropertyInfo<emYesNo> ReferencedProperty = registerProperty("Referenced", emYesNo.class,
-			MY_CLASS);
-
-	/**
-	 * 获取-已引用
-	 * 
-	 * @return 值
-	 */
-	@XmlElement(name = "Referenced")
-	public final emYesNo getReferenced() {
-		return this.getProperty(ReferencedProperty);
-	}
-
-	/**
-	 * 设置-已引用
-	 * 
-	 * @param value
-	 *            值
-	 */
-	public final void setReferenced(emYesNo value) {
-		this.setProperty(ReferencedProperty, value);
-	}
-
-	/**
-	 * 已删除 属性
-	 */
-	@DbField(name = "Deleted", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
-	public final static IPropertyInfo<emYesNo> DeletedProperty = registerProperty("Deleted", emYesNo.class, MY_CLASS);
-
-	/**
-	 * 获取-已删除
-	 * 
-	 * @return 值
-	 */
-	@XmlElement(name = "Deleted")
-	public final emYesNo getDeleted() {
-		return this.getProperty(DeletedProperty);
-	}
-
-	/**
-	 * 设置-已删除
-	 * 
-	 * @param value
-	 *            值
-	 */
-	public final void setDeleted(emYesNo value) {
-		this.setProperty(DeletedProperty, value);
-	}
-
-	/**
 	 * 初始化数据
 	 */
 	@Override
@@ -792,5 +592,4 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 		this.setObjectCode(BUSINESS_OBJECT_CODE);
 
 	}
-
 }

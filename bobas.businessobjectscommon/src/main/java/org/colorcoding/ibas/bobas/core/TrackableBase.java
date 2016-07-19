@@ -118,7 +118,7 @@ public abstract class TrackableBase extends BindableBase implements ITrackStatus
 	public final void markOld() {
 		this.setNew(false);
 		this.setDirty(false);
-		this.setDeleted(false);
+		// this.setDeleted(false);// 删除标记不去除
 	}
 
 	@Override

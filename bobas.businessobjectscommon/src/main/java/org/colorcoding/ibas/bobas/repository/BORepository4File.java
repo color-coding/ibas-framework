@@ -250,6 +250,9 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 		FileOutputStream out = new FileOutputStream(file, false);
 		if (bo instanceof ITrackStatusOperator) {
 			ITrackStatusOperator operator = (ITrackStatusOperator) bo;
+			// 清理标记删除的数据
+			operator.clearDeleted();
+			// 重置状态
 			operator.markOld(true);
 		}
 		out.write(bo.toString("xml").getBytes("utf-8"));

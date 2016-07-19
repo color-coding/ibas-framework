@@ -42,4 +42,9 @@ public interface ITrackStatusOperator {
 	 * @param 真是删除
 	 */
 	void markDeleted(boolean forced);
+
+	/**
+	 * 清理标记删除的数据
+	 */
+	void clearDeleted();
 }

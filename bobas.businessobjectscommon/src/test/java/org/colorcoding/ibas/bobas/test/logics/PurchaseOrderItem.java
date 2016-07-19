@@ -20,7 +20,7 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
  */
 @XmlType(name = "PurchaseOrderItem")
 public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
-		implements IBODocumentLine, IMaterialsOrderQuantityContract {
+		implements IBODocumentLine, IMaterialsOrderQuantityContract, IMaterialsJournalContract {
 
 	/**
 	 * 序列化版本标记
@@ -757,6 +757,19 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 		super.initialize();
 		this.setObjectCode(BUSINESS_OBJECT_CODE);
 
+	}
+
+	// --IMaterialsJournalContract
+	public String getDocumentType() {
+		return this.getObjectCode();
+	}
+
+	public Integer getDocumentEntry() {
+		return this.getDocEntry();
+	}
+
+	public Integer getDocumentLineId() {
+		return this.getLineId();
 	}
 
 }

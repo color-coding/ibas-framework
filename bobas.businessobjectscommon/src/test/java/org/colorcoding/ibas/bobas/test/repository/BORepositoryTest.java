@@ -16,6 +16,7 @@ import org.colorcoding.ibas.bobas.test.bo.IMaterials;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrder;
 import org.colorcoding.ibas.bobas.test.bo.Materials;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
+import org.colorcoding.ibas.bobas.test.logics.MaterialsQuantityJournal;
 import org.colorcoding.ibas.bobas.test.logics.PurchaseOrder;
 
 /**
@@ -178,7 +179,7 @@ public class BORepositoryTest extends BORepositoryServiceApplication
 	// --------------------------------------------------------------------------------------------//
 
 	/**
-	 * 查询-销售订单
+	 * 查询-采购订单
 	 * 
 	 * @param criteria
 	 *            查询
@@ -191,7 +192,7 @@ public class BORepositoryTest extends BORepositoryServiceApplication
 	}
 
 	/**
-	 * 查询-销售订单
+	 * 查询-采购订单
 	 * 
 	 * @param criteria
 	 *            查询
@@ -203,7 +204,7 @@ public class BORepositoryTest extends BORepositoryServiceApplication
 	}
 
 	/**
-	 * 保存-销售订单
+	 * 保存-采购订单
 	 * 
 	 * @param bo
 	 *            对象实例
@@ -216,7 +217,7 @@ public class BORepositoryTest extends BORepositoryServiceApplication
 	}
 
 	/**
-	 * 保存-销售订单，仅内部可用
+	 * 保存-采购订单，仅内部可用
 	 * 
 	 * @param bo
 	 *            对象实例
@@ -225,5 +226,56 @@ public class BORepositoryTest extends BORepositoryServiceApplication
 	@Override
 	public IOperationResult<PurchaseOrder> savePurchaseOrder(PurchaseOrder bo) {
 		return new OperationResult<PurchaseOrder>(this.savePurchaseOrder((PurchaseOrder) bo, this.getUserToken()));
+	}// --------------------------------------------------------------------------------------------//
+
+	/**
+	 * 查询-物料交易记录
+	 * 
+	 * @param criteria
+	 *            查询
+	 * @param token
+	 *            口令
+	 * @return 操作结果
+	 */
+	public OperationResult<MaterialsQuantityJournal> fetchMaterialsQuantityJournal(ICriteria criteria, String token) {
+		return super.fetch(criteria, token, MaterialsQuantityJournal.class);
+	}
+
+	/**
+	 * 查询-物料交易记录
+	 * 
+	 * @param criteria
+	 *            查询
+	 * @return 操作结果
+	 */
+	public IOperationResult<MaterialsQuantityJournal> fetchMaterialsQuantityJournal(ICriteria criteria) {
+		return new OperationResult<MaterialsQuantityJournal>(
+				this.fetchMaterialsQuantityJournal(criteria, this.getUserToken()));
+	}
+
+	/**
+	 * 保存-物料交易记录
+	 * 
+	 * @param bo
+	 *            对象实例
+	 * @param token
+	 *            口令
+	 * @return 操作结果
+	 */
+	public OperationResult<MaterialsQuantityJournal> saveMaterialsQuantityJournal(MaterialsQuantityJournal bo,
+			String token) {
+		return super.save(bo, token);
+	}
+
+	/**
+	 * 保存-物料交易记录，仅内部可用
+	 * 
+	 * @param bo
+	 *            对象实例
+	 * @return 操作结果
+	 */
+	public IOperationResult<MaterialsQuantityJournal> saveMaterialsQuantityJournal(MaterialsQuantityJournal bo) {
+		return new OperationResult<MaterialsQuantityJournal>(
+				this.saveMaterialsQuantityJournal((MaterialsQuantityJournal) bo, this.getUserToken()));
 	}
 }

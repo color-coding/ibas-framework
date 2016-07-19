@@ -107,7 +107,10 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 		}
 		String boFolder = this.getRepositoryFolder() + File.separator + criteria.getBusinessObjectCode().toLowerCase();
 		File file = new File(boFolder);
-		if (!file.isDirectory() || !file.exists()) {
+		if (!file.exists()) {
+			return new BOFile[] {};
+		}
+		if (!file.isDirectory()) {
 			throw new RepositoryException(
 					i18n.prop("msg_bobas_invaild_bo_repository_folder", criteria.getBusinessObjectCode()));
 		}
