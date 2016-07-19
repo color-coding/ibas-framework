@@ -51,7 +51,7 @@ public class OrganizationFactory extends ConfigurableFactory {
 		if (managerClass == null) {
 			throw new ClassNotFoundException("msg_bobas_not_found_organization_manager");
 		}
-		IOrganizationManager manager = (IOrganizationManager) managerClass.newInstance();// 审批流程管理员
+		IOrganizationManager manager = (IOrganizationManager) managerClass.newInstance();
 		if (manager == null) {
 			throw new NullPointerException("msg_bobas_not_found_organization_manager");
 		}

@@ -10,7 +10,6 @@ public class testRepository extends TestCase {
 
 	public void testPermissions() {
 		BORepositoryTest boRepository = new BORepositoryTest();
-
 		OperationResult<PermissionItem> operationResult = boRepository.getPermissions();
 		assertEquals("permissions error.", operationResult.getResultCode(), 0);
 		for (PermissionItem item : operationResult.getResultObjects()) {

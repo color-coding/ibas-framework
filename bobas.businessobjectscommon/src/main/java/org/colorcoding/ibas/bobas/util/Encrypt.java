@@ -3,10 +3,17 @@ package org.colorcoding.ibas.bobas.util;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.colorcoding.ibas.bobas.MyConfiguration;
+
 public class Encrypt {
 	// 十六进制下数字到字符的映射数组
 	private final static String[] hexDigits = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D",
 			"E", "F" };
+	// 要使用生成URL的字符
+	private final static String[] chars = new String[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l",
+			"m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6",
+			"7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R",
+			"S", "T", "U", "V", "W", "X", "Y", "Z" };
 
 	/**
 	 * 把inputString加密
@@ -31,24 +38,6 @@ public class Encrypt {
 			stringBuilder.append(string);
 		}
 		return md5(stringBuilder.toString());
-	}
-
-	/**
-	 * 验证输入的密码是否正确
-	 * 
-	 * @param password
-	 *            真正的密码（加密后的真密码）
-	 * @param inputString
-	 *            输入的字符串
-	 * @return 验证结果，boolean类型
-	 * @throws Exception
-	 */
-	public static boolean authenticatePassword(String password, String inputString) throws Exception {
-		if (password.equals(encodeByMD5(inputString))) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	/**
@@ -99,16 +88,16 @@ public class Encrypt {
 	}
 
 	/**
-	 * 获取短字符
+	 * 加密字符串
 	 * 
 	 * @param text
-	 *            待处理字符串
-	 * 
+	 *            字符串
 	 * @param chars
-	 *            使用的字符串
-	 * 
+	 *            密文内容
 	 * @param key
-	 *            加密字符
+	 *            混淆字符
+	 * @return
+	 * @throws Exception
 	 */
 	public static String shortText(String text, String[] chars, String key) throws Exception {
 		String hex = Encrypt.md5(key + text);
@@ -140,33 +129,44 @@ public class Encrypt {
 	}
 
 	/**
-	 * 获取短字符
+	 * 加密字符串
 	 * 
 	 * @param text
-	 *            待处理字符串
-	 * 
-	 * @param chars
-	 *            使用的字符串
-	 * 
+	 *            字符串
+	 * @param key
+	 *            混淆字符
+	 * @return
+	 * @throws Exception
 	 */
-	public static String shortText(String text, String[] chars) throws Exception {
-		String key = "ibas.club";
+	public static String shortText(String text, String key) throws Exception {
 		return shortText(text, chars, key);
 	}
 
 	/**
-	 * 获取短字符
+	 * 加密字符串
 	 * 
 	 * @param text
-	 *            待处理字符串
+	 *            字符串
+	 * @param chars
+	 *            密文字符
+	 * @return
+	 * @throws Exception
+	 */
+	public static String shortText(String text, String[] chars) throws Exception {
+		String key = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_COMPANY_ID, "CC");
+		return shortText(text, chars, key);
+	}
+
+	/**
+	 * 加密字符串
 	 * 
+	 * @param text
+	 *            字符串
+	 * @return
+	 * @throws Exception
 	 */
 	public static String shortText(String text) throws Exception {
 		// 自定义生成MD5加密字符串前的混合KEY
-		String[] chars = new String[] { // 要使用生成URL的字符
-				"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u",
-				"v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F",
-				"G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
 		return shortText(text, chars);
 	}
 

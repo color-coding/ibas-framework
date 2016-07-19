@@ -55,6 +55,7 @@ public class Configuration {
 		String path = url.getPath();
 		// file:/E:/WorkTemp/ibas/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/ibcp.systemcenter.service/WEB-INF/classes/
 		// 取到的值如上
+		path = path.replace("%20", " ");// 去除空格
 		if (path.split(":").length > 2) {
 			path = path.substring(path.indexOf(":") + 1, path.length());
 		}
