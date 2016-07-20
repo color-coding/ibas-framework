@@ -8,5 +8,6 @@
 		<add key="DbName" value="ibas_demo" />
 		<add key="DbUserID" value="sa" />
 		<add key="DbUserPassword" value="1q2w3e" />
+		<add key="LanguageCode" value="en-US" />
 	</appSettings>
 </ns2:configuration>

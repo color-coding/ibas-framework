@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
-import org.colorcoding.ibas.bobas.util.Encrypt;
+import org.colorcoding.ibas.bobas.util.EncryptMD5;
 
 /**
  * 数据库适配器
@@ -87,7 +87,7 @@ public abstract class DbAdapter implements IDbAdapter {
 
 	private String encrypt(String... args) {
 		try {
-			return Encrypt.md5(args);
+			return EncryptMD5.md5(args);
 		} catch (Exception e) {
 			return null;
 		}

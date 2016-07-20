@@ -78,7 +78,7 @@ public class MyConfiguration extends Configuration {
 	/**
 	 * 配置项目-国际化文件路径
 	 */
-	public static String CONFIG_ITEM_I18N_PATH = "I18nPath";
+	public static String CONFIG_ITEM_I18N_PATH = "i18nFolder";
 
 	/**
 	 * 配置项目-语言编码
@@ -92,7 +92,7 @@ public class MyConfiguration extends Configuration {
 	/**
 	 * 配置项目-日志文件保存路径
 	 */
-	public static String CONFIG_ITEM_LOG_PATH = "LogPath";
+	public static String CONFIG_ITEM_LOG_PATH = "LogFolder";
 
 	/**
 	 * 配置项目-日志文件输出频率(毫秒,默认5000)

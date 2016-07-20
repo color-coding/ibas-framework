@@ -159,7 +159,11 @@ public class Configuration {
 	 * @throws URISyntaxException
 	 */
 	public static URI getResource(String name) throws URISyntaxException {
-		return Thread.currentThread().getContextClassLoader().getResource(name).toURI();
+		URL url = Thread.currentThread().getContextClassLoader().getResource(name);
+		if (url == null) {
+			return null;
+		}
+		return url.toURI();
 	}
 
 }

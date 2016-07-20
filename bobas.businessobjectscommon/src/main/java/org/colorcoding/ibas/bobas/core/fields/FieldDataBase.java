@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.core.fields;
 import java.util.UUID;
 
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
-import org.colorcoding.ibas.bobas.util.Encrypt;
+import org.colorcoding.ibas.bobas.util.EncryptMD5;
 
 /**
  * 字段基础类
@@ -48,7 +48,7 @@ public abstract class FieldDataBase<T> implements IFieldData {
 	public final String getName() {
 		if (this.name == "" || this.name == null) {
 			try {
-				this.setName(Encrypt.shortText(UUID.randomUUID().toString()));
+				this.setName(EncryptMD5.shortText(UUID.randomUUID().toString()));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

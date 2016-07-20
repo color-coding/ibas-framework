@@ -21,6 +21,10 @@ public class StringBuilder {
 		this.stringBuilder.append(str);
 	}
 
+	public void append(int str) {
+		this.stringBuilder.append(str);
+	}
+
 	public void insert(int offset, String str) {
 		this.stringBuilder.insert(offset, str);
 	}

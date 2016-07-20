@@ -2,7 +2,11 @@ package org.colorcoding.ibas.bobas.i18n;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -29,7 +33,7 @@ public class LanguageItemManager implements ILanguageItemManager {
 			String langCode = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LANGUAGE_CODE);
 			if (langCode == null || langCode.equals("")) {
 				// 获取当前系统语言编码
-				langCode = Locale.getDefault().toString();
+				langCode = Locale.getDefault().toLanguageTag();
 			}
 			// 设置语言编码
 			this.setLanguageCode(langCode);
@@ -78,6 +82,7 @@ public class LanguageItemManager implements ILanguageItemManager {
 				try {
 					URI uri = MyConfiguration.getResource("i18n");
 					if (uri != null) {
+						// 存在资源文件
 						path = uri.getPath();
 					}
 				} catch (URISyntaxException e) {
@@ -98,8 +103,31 @@ public class LanguageItemManager implements ILanguageItemManager {
 		return workFolder;
 	}
 
+	public void loadResources(String name) {
+		if (name == null) {
+			return;
+		}
+		InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
+		if (stream != null) {
+			ILanguageItem[] languageItems;
+			try {
+				languageItems = this.loadFileContent(new InputStreamReader(stream, "UTF-8"));
+				for (ILanguageItem item : languageItems) {
+					this.getLanguageItems().put(item.getKey(), item);
+				}
+				if (languageItems.length > 0) {
+					RuntimeLog.log(RuntimeLog.MSG_I18N_READ_FILE_DATA, "!" + name);
+				}
+			} catch (UnsupportedEncodingException e) {
+				RuntimeLog.log(e);
+			}
+		}
+	}
+
 	@Override
 	public void readResources() {
+		this.loadResources("i18n/locale.bobas.properties");
+		this.loadResources(String.format("i18n/locale.bobas_%s.properties", this.getLanguageCode()));
 		this.readResources(this.getWorkFolder());
 	}
 
@@ -174,28 +202,40 @@ public class LanguageItemManager implements ILanguageItemManager {
 	}
 
 	protected ILanguageItem[] loadFileContent(String file) {
-		ArrayList<ILanguageItem> languageItems = new ArrayList<ILanguageItem>();
 		try {
 			InputStreamReader reader = new InputStreamReader(new FileInputStream(file), "UTF-8");
-			Properties props = new Properties();
-			props.load(reader);
-			Enumeration<?> enumeration = props.propertyNames();
-			while (enumeration.hasMoreElements()) {
-				String key = (String) enumeration.nextElement();
-				// 去掉注释
-				if (key == null || key.equals(""))
-					continue;
-				key = key.trim();// 去掉两端的空格
-				String property = props.getProperty(key);
-				if (property == null || property.equals(""))
-					continue;
-				// 判断是否存在含有key 的 item
-				ILanguageItem item = new LanguageItem();
-				item.setKey(key);
-				item.addContent(this.getLanguageCode(), property);
-				languageItems.add(item);
-			}
+			ILanguageItem[] languageItems = this.loadFileContent(reader);
 			RuntimeLog.log(RuntimeLog.MSG_I18N_READ_FILE_DATA, file);
+			return languageItems;
+		} catch (UnsupportedEncodingException | FileNotFoundException e) {
+			RuntimeLog.log(e);
+		}
+		return new ILanguageItem[] {};
+	}
+
+	protected ILanguageItem[] loadFileContent(Reader reader) {
+		ArrayList<ILanguageItem> languageItems = new ArrayList<ILanguageItem>();
+		try {
+			if (reader != null) {
+				Properties props = new Properties();
+				props.load(reader);
+				Enumeration<?> enumeration = props.propertyNames();
+				while (enumeration.hasMoreElements()) {
+					String key = (String) enumeration.nextElement();
+					// 去掉注释
+					if (key == null || key.equals(""))
+						continue;
+					key = key.trim();// 去掉两端的空格
+					String property = props.getProperty(key);
+					if (property == null || property.equals(""))
+						continue;
+					// 判断是否存在含有key 的 item
+					ILanguageItem item = new LanguageItem();
+					item.setKey(key);
+					item.addContent(this.getLanguageCode(), property);
+					languageItems.add(item);
+				}
+			}
 		} catch (Exception e) {
 			RuntimeLog.log(e);
 		}
