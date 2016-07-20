@@ -2,6 +2,8 @@ package org.colorcoding.ibas.bobas.configuration;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.xml.bind.JAXBException;
@@ -50,30 +52,34 @@ public class Configuration {
 	 * @return
 	 */
 	public static String getStartupFolder() {
-		File file = null;
-		URL url = Thread.currentThread().getContextClassLoader().getResource("");
-		String path = url.getPath();
-		// file:/E:/WorkTemp/ibas/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/ibcp.systemcenter.service/WEB-INF/classes/
-		// 取到的值如上
-		path = path.replace("%20", " ");// 去除空格
-		if (path.split(":").length > 2) {
-			path = path.substring(path.indexOf(":") + 1, path.length());
+		try {
+			File file = null;
+			URL url = Thread.currentThread().getContextClassLoader().getResource("");
+			String path;
+			path = url.toURI().getPath();
+			// file:/E:/WorkTemp/ibas/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/ibcp.systemcenter.service/WEB-INF/classes/
+			// 取到的值如上
+			if (path.split(":").length > 2) {
+				path = path.substring(path.indexOf(":") + 1, path.length());
+			}
+			if (path.indexOf("!") > 0) {
+				path = path.substring(0, path.indexOf("!"));
+			}
+			if (path == null) {
+				path = System.getProperty("user.dir");
+			}
+			file = new File(path);
+			if (file.isFile()) {
+				file = file.getParentFile();
+			}
+			if (file.getParentFile().isDirectory() && file.getParentFile().getName().equals("WEB-INF")) {
+				// web路径
+				file = file.getParentFile();
+			}
+			return file.getPath();
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
 		}
-		if (path.indexOf("!") > 0) {
-			path = path.substring(0, path.indexOf("!"));
-		}
-		if (path == null) {
-			path = System.getProperty("user.dir");
-		}
-		file = new File(path);
-		if (file.isFile()) {
-			file = file.getParentFile();
-		}
-		if (file.getParentFile().isDirectory() && file.getParentFile().getName().equals("WEB-INF")) {
-			// web路径
-			file = file.getParentFile();
-		}
-		return file.getPath();
 	}
 
 	/**
@@ -149,10 +155,11 @@ public class Configuration {
 	 * 
 	 * @param type
 	 *            资源名称
-	 * @return
+	 * @return 统一格式（此对象避免路径的中文问题）
+	 * @throws URISyntaxException
 	 */
-	public static URL getResource(String name) {
-		return Thread.currentThread().getContextClassLoader().getResource(name);
+	public static URI getResource(String name) throws URISyntaxException {
+		return Thread.currentThread().getContextClassLoader().getResource(name).toURI();
 	}
 
 }

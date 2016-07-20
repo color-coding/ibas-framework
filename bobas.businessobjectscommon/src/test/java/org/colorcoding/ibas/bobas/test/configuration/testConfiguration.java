@@ -2,6 +2,7 @@ package org.colorcoding.ibas.bobas.test.configuration;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import javax.xml.bind.JAXBException;
 
@@ -36,9 +37,13 @@ public class testConfiguration extends TestCase {
 
 	}
 
-	public void testGetWorkFolder() {
+	public void testGetWorkFolder() throws URISyntaxException {
+		File folder = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI().getPath());
+		System.out.println(folder.isFile());
+		System.out.println(folder.isDirectory());
+		System.out.println(MyConfiguration.getStartupFolder());
 		System.out.println(MyConfiguration.getWorkFolder());
 		System.out.println(MyConfiguration.getResource("i18n"));
-		System.out.println(MyConfiguration.getResource("app.xml"));
+		// System.out.println(MyConfiguration.getResource("app.xml"));//null
 	}
 }

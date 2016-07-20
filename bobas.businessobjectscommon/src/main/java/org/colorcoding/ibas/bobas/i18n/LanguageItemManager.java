@@ -3,7 +3,8 @@ package org.colorcoding.ibas.bobas.i18n;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -74,9 +75,13 @@ public class LanguageItemManager implements ILanguageItemManager {
 			String path = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_I18N_PATH);
 			if (path == null || path.equals("") || !(new File(path)).exists()) {
 				// 配置的路径不存在
-				URL url = MyConfiguration.getResource("i18n");
-				if (url != null) {
-					path = url.getPath();
+				try {
+					URI uri = MyConfiguration.getResource("i18n");
+					if (uri != null) {
+						path = uri.getPath();
+					}
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
 				}
 				if (path == null || path.indexOf("!") > 0) {
 					// 无效的路径
