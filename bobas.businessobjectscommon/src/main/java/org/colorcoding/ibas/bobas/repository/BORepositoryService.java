@@ -24,9 +24,9 @@ import org.colorcoding.ibas.bobas.organization.IOrganizationManager;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
 import org.colorcoding.ibas.bobas.organization.UnknownUser;
-import org.colorcoding.ibas.bobas.ownership.DataOwnershipFactory;
 import org.colorcoding.ibas.bobas.ownership.IDataOwnership;
-import org.colorcoding.ibas.bobas.ownership.IOwnershipJudge;
+import org.colorcoding.ibas.bobas.ownership.IOwnershipJudger;
+import org.colorcoding.ibas.bobas.ownership.OwnershipFactory;
 import org.colorcoding.ibas.bobas.ownership.UnauthorizedException;
 
 /**
@@ -215,13 +215,13 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 		return "I'm supper man.";
 	}
 
-	private IOwnershipJudge ownershipJudge = null;
+	private IOwnershipJudger ownershipJudger = null;
 
-	final IOwnershipJudge getOwnershipJudge() {
-		if (this.ownershipJudge == null) {
-			this.ownershipJudge = DataOwnershipFactory.createJudge();
+	final IOwnershipJudger getOwnershipJudger() {
+		if (this.ownershipJudger == null) {
+			this.ownershipJudger = OwnershipFactory.createJudger();
 		}
-		return this.ownershipJudge;
+		return this.ownershipJudger;
 	}
 
 	/**
@@ -266,19 +266,17 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 				}
 				fetchCount += opRslt.getResultObjects().size();
 				// 数据权限过滤
-				if (this.getOwnershipJudge() != null) {
+				if (this.getOwnershipJudger() != null) {
 					for (Object item : opRslt.getResultObjects()) {
-						// 没有继承数据权限
-						if (!(item instanceof IDataOwnership)) {
-							continue;
+						if ((item instanceof IDataOwnership)) {
+							// 有继承数据权限
+							if (!this.getOwnershipJudger().canRead((IDataOwnership) item, this.getCurrentUser())) {
+								// 没读取权限，过滤数量加1
+								filterCount++;
+								continue;
+							}
 						}
-						if (this.getOwnershipJudge().canRead((IDataOwnership) item, this.getCurrentUser())) {
-							// 有权限读取
-							operationResult.addResultObjects(item);
-						} else {
-							// 没读取权限，过滤数量加1
-							filterCount++;
-						}
+						operationResult.addResultObjects(item);
 					}
 				} else {
 					operationResult.addResultObjects(opRslt.getResultObjects());
@@ -296,7 +294,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 			} while (!dataFull);
 			if (filterCount > 0) {
 				// 发生数据过滤，返回过滤信息
-				operationResult.addInformations(DataOwnershipFactory.createOwnershipJudgeInfo(fetchTime, filterCount));
+				operationResult.addInformations(OwnershipFactory.createOwnershipJudgeInfo(fetchTime, filterCount));
 			}
 			RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_FETCH_AND_FILTERING, boType.getName(), fetchTime, fetchCount,
 					filterCount);
@@ -415,9 +413,9 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 		OperationResult<P> operationResult = new OperationResult<P>();
 		try {
 			this.setCurrentUser(token);// 解析并设置当前用户
-			if (this.getOwnershipJudge() != null && bo instanceof IDataOwnership) {
+			if (this.getOwnershipJudger() != null && bo instanceof IDataOwnership) {
 				// 数据权限过滤
-				if (this.getOwnershipJudge().cansave((IDataOwnership) bo, this.getCurrentUser(), true)) {
+				if (this.getOwnershipJudger().cansave((IDataOwnership) bo, this.getCurrentUser(), true)) {
 					// 有权限保存
 					operationResult.addResultObjects(this.save(boRepository, bo));
 				} else {

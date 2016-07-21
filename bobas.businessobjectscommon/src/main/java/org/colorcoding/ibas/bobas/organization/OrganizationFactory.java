@@ -47,6 +47,20 @@ public class OrganizationFactory extends ConfigurableFactory {
 
 	private static IOrganizationManager newManager(String type)
 			throws BOFactoryException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+		if (type == null || type == "") {
+			// 没有指定实现方式，则使用代理
+			return new IOrganizationManager() {
+				@Override
+				public IUser getUser(String token) {
+					return new UnknownUser();
+				}
+
+				@Override
+				public IUser getUser(int id) {
+					return new UnknownUser();
+				}
+			};
+		}
 		Class<?> managerClass = getInstance(OrganizationFactory.class, type, "OrganizationManager");
 		if (managerClass == null) {
 			throw new ClassNotFoundException("msg_bobas_not_found_organization_manager");

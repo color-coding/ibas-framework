@@ -96,11 +96,11 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 		if (this.getCurrentUser() == null) {
 			throw new UnauthorizedException(i18n.prop("msg_bobas_invalid_user"));
 		}
-		if (this.getOwnershipJudge() != null) {
+		if (this.getOwnershipJudger() != null) {
 			Class<?> type = this.getClass();
 			try {
 				try {
-					this.getOwnershipJudge().canCall(type.getName(), name, this.getCurrentUser());
+					this.getOwnershipJudger().canCall(type.getName(), name, this.getCurrentUser());
 				} catch (NotConfiguredException e) {
 					// 没有配置权限，获取默认值
 					Method[] methods = this.getClass().getDeclaredMethods();

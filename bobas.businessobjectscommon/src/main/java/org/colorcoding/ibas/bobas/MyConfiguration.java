@@ -112,4 +112,8 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-业务逻辑方式
 	 */
 	public static String CONFIG_ITEM_BUSINESS_LOGICS_WAY = "BizLogicsWay";
+	/**
+	 * 配置项目-权限判断方式
+	 */
+	public static String CONFIG_ITEM_OWNERSHIP_WAY = "OwnershipWay";
 }

@@ -17,7 +17,7 @@ public interface IDataOwnership {
 	 * 
 	 * @return
 	 */
-	int getDataOwner();
+	Integer getDataOwner();
 
 	/**
 	 * 获取-数据所属组织

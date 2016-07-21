@@ -3,12 +3,12 @@ package org.colorcoding.ibas.bobas.ownership;
 import org.colorcoding.ibas.bobas.organization.IUser;
 
 /**
- * 权限判断
+ * 方法权限判断员
  * 
  * @author Niuren.Zhu
  *
  */
-public interface IPermissionsJudge {
+public interface IPermissionsJudger {
 	/**
 	 * 
 	 * 是否有权限调用

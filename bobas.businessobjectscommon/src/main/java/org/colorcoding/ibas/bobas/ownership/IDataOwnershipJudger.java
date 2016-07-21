@@ -3,9 +3,9 @@ package org.colorcoding.ibas.bobas.ownership;
 import org.colorcoding.ibas.bobas.organization.IUser;
 
 /**
- * 数据权限判官
+ * 数据权限判员
  */
-public interface IDataOwnershipJudge {
+public interface IDataOwnershipJudger {
 	/**
 	 * 判断用户是否有权限读取数据
 	 * 

@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.organization;
 
-public class InvalidAuthorizationException extends Exception {
+public class InvalidAuthorizationException extends OrganizationException {
 
 	/**
 	 * 
@@ -9,10 +9,6 @@ public class InvalidAuthorizationException extends Exception {
 
 	public InvalidAuthorizationException() {
 		super();
-	}
-
-	public InvalidAuthorizationException(String arg0, Throwable arg1, boolean arg2, boolean arg3) {
-		super(arg0, arg1, arg2, arg3);
 	}
 
 	public InvalidAuthorizationException(String arg0, Throwable arg1) {
