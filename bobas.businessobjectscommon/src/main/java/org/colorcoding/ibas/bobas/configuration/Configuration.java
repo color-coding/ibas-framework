@@ -55,15 +55,25 @@ public class Configuration {
 		try {
 			File file = null;
 			URL url = Thread.currentThread().getContextClassLoader().getResource("");
-			String path;
-			path = url.toURI().getPath();
+			String path = null;
+			if (url != null) {
+				URI uri = url.toURI();
+				if (uri != null) {
+					path = uri.getPath();
+				}
+				if (path == null) {
+					path = url.getPath();
+				}
+			}
 			// file:/E:/WorkTemp/ibas/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/ibcp.systemcenter.service/WEB-INF/classes/
 			// 取到的值如上
-			if (path.split(":").length > 2) {
-				path = path.substring(path.indexOf(":") + 1, path.length());
-			}
-			if (path.indexOf("!") > 0) {
-				path = path.substring(0, path.indexOf("!"));
+			if (path != null) {
+				if (path.split(":").length > 2) {
+					path = path.substring(path.indexOf(":") + 1, path.length());
+				}
+				if (path.indexOf("!") > 0) {
+					path = path.substring(0, path.indexOf("!"));
+				}
 			}
 			if (path == null) {
 				path = System.getProperty("user.dir");
