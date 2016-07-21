@@ -17,8 +17,8 @@ public interface IUser {
 	 * 
 	 * @param authorizationCode
 	 *            授权码
-	 * @return 通过，true；不通过，false；
 	 * @throws InvalidAuthorizationException
+	 *             不通过报错
 	 */
-	boolean checkAuthorization(String authorizationCode) throws InvalidAuthorizationException;
+	void checkAuthorization(String authorizationCode) throws InvalidAuthorizationException;
 }

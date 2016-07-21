@@ -44,8 +44,8 @@ public class testApprovalProcess extends TestCase {
 			}
 
 			@Override
-			public boolean checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
-				return true;
+			public void checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
+
 			}
 		};
 		IUser manager = new IUser() {
@@ -55,8 +55,8 @@ public class testApprovalProcess extends TestCase {
 			}
 
 			@Override
-			public boolean checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
-				return true;
+			public void checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
+
 			}
 		};
 		IUser boss = new IUser() {
@@ -66,8 +66,8 @@ public class testApprovalProcess extends TestCase {
 			}
 
 			@Override
-			public boolean checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
-				return true;
+			public void checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
+
 			}
 		};
 		// 创建审批流程
@@ -193,8 +193,8 @@ public class testApprovalProcess extends TestCase {
 			}
 
 			@Override
-			public boolean checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
-				return true;
+			public void checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
+
 			}
 		};
 		IUser leader = new IUser() {
@@ -204,8 +204,8 @@ public class testApprovalProcess extends TestCase {
 			}
 
 			@Override
-			public boolean checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
-				return true;
+			public void checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
+
 			}
 		};
 		IUser manager = new IUser() {
@@ -215,8 +215,8 @@ public class testApprovalProcess extends TestCase {
 			}
 
 			@Override
-			public boolean checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
-				return true;
+			public void checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
+
 			}
 		};
 		IUser boss = new IUser() {
@@ -226,8 +226,8 @@ public class testApprovalProcess extends TestCase {
 			}
 
 			@Override
-			public boolean checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
-				return true;
+			public void checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
+
 			}
 		};
 		// 创建审批流程
@@ -319,9 +319,9 @@ public class testApprovalProcess extends TestCase {
 		aProcess.approval(step30.getId(), emApprovalResult.Processing, "", "");
 		assertEquals("ap step 20 was not Processing.", step30.getStatus(), emApprovalStepStatus.Processing);
 		assertEquals("ap was not Processing.", aProcess.getStatus(), emApprovalStatus.Processing);
-		
+
 		aProcess.setOwner(salse);
 		aProcess.cancel("", "");
-		
+
 	}
 }

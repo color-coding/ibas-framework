@@ -20,7 +20,7 @@ public class UnknownUser implements IUser {
 	}
 
 	@Override
-	public boolean checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
+	public void checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
 		throw new InvalidAuthorizationException(i18n.prop("msg_bobas_not_exist_user"));
 	}
 }
