@@ -33,7 +33,7 @@ public interface IBOFactory {
 	 * @return 业务对象的类型
 	 * @throws BOFactoryException
 	 */
-	Class<?> getBOClass(String boCode) throws BOFactoryException;
+	Class<?> getBOClass(String boCode);
 
 	/**
 	 * 创建业务对象实例
@@ -67,6 +67,15 @@ public interface IBOFactory {
 	Class<?>[] getClasses(String packageName);
 
 	/**
+	 * 获取已加载的所有类型
+	 * 
+	 * @param packageName
+	 *            命名空间，null为全部
+	 * @return 类型数组
+	 */
+	Class<?>[] getKnownClasses(String packageName);
+
+	/**
 	 * 获取业务对象编码
 	 * 
 	 * @param type
@@ -76,4 +85,13 @@ public interface IBOFactory {
 	 */
 	String getBOCode(Class<?> type) throws BOFactoryException;
 
+	/**
+	 * 注册业务对象编码
+	 * 
+	 * @param types
+	 *            对象类型
+	 * @return 成功注册业务对象编码个数
+	 * @throws BOFactoryException
+	 */
+	int registerBOCode(Class<?>[] types);
 }

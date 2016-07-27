@@ -6,25 +6,25 @@ package org.colorcoding.ibas.bobas.core;
  * @author Niuren.Zhu
  *
  */
-public class ClassNotDefinedBOCode extends BOFactoryException {
+public class NoBusinessObjectCode extends BOFactoryException {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 7466593944696537181L;
 
-	public ClassNotDefinedBOCode() {
+	public NoBusinessObjectCode() {
 	}
 
-	public ClassNotDefinedBOCode(String message) {
+	public NoBusinessObjectCode(String message) {
 		super(message);
 	}
 
-	public ClassNotDefinedBOCode(String message, Throwable exception) {
+	public NoBusinessObjectCode(String message, Throwable exception) {
 		super(message, exception);
 	}
 
-	public ClassNotDefinedBOCode(Throwable exception) {
+	public NoBusinessObjectCode(Throwable exception) {
 		super(exception);
 	}
 

@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.test.logics;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -18,6 +20,7 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
  * 获取-采购订单-行
  * 
  */
+@XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "PurchaseOrderItem")
 public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 		implements IBODocumentLine, IMaterialsOrderQuantityContract, IMaterialsJournalContract {

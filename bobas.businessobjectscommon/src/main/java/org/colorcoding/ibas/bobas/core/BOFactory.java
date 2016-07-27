@@ -4,13 +4,16 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -18,6 +21,7 @@ import org.colorcoding.ibas.bobas.configuration.Configuration;
 import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.mapping.BOCode;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.util.ArrayList;
 
 public class BOFactory implements IBOFactory {
 	volatile private static IBOFactory instance = null;
@@ -63,9 +67,88 @@ public class BOFactory implements IBOFactory {
 		}
 	}
 
+	private volatile HashMap<String, Class<?>> boMaps;
+
+	protected HashMap<String, Class<?>> getBOMaps() {
+		if (boMaps == null) {
+			synchronized (this) {
+				if (boMaps == null) {
+					boMaps = new HashMap<String, Class<?>>();
+				}
+			}
+		}
+		return boMaps;
+	}
+
 	@Override
-	public Class<?> getBOClass(String boCode) throws BOFactoryException {
-		// TODO 根据boCode获取class
+	public int registerBOCode(Class<?>[] types) {
+		if (types == null) {
+			return 0;
+		}
+		int boCount = 0;
+		for (Class<?> type : types) {
+			try {
+				String boCode = this.getBOCode(type);
+				if (boCode == null || boCode.equals("")) {
+					continue;
+				}
+				if (this.getBOMaps().containsKey(boCode)) {
+					continue;
+				}
+				this.getBOMaps().put(boCode, type);
+				boCount++;
+				RuntimeLog.log(RuntimeLog.MSG_BO_FACTORY_REGISTER_BO_CODE, boCode, type.getName());
+			} catch (Exception e) {
+			}
+		}
+		return boCount;
+	}
+
+	@Override
+	public Class<?>[] getKnownClasses(String packageName) {
+		ArrayList<Class<?>> knownClass = new ArrayList<Class<?>>();
+		// 根据boCode获取class
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		// 获取根类型
+		Class<?> rootClass = classLoader.getClass();
+		while (rootClass != ClassLoader.class)
+			rootClass = rootClass.getSuperclass();
+		try {
+			if (rootClass != null) {
+				// 反射根类型，并设置已加载类可见
+				Field field = rootClass.getDeclaredField("classes");
+				field.setAccessible(true);
+				// 获取已加载的类
+				Vector<?> v = (Vector<?>) field.get(classLoader);
+				// 遍历并分析类型
+				for (int i = 0; i < v.size(); i++) {
+					Class<?> type = (Class<?>) v.get(i);
+					if (packageName != null && !packageName.equals("")) {
+						// 过滤命名空间
+						if (!type.getName().startsWith(packageName))
+							continue;
+					}
+					knownClass.add(type);
+				}
+			}
+		} catch (Exception e) {
+			RuntimeLog.log(e);
+		}
+		return knownClass.toArray(new Class<?>[] {});
+	}
+
+	@Override
+	public Class<?> getBOClass(String boCode) {
+		if (this.getBOMaps().containsKey(boCode)) {
+			// 已缓存数据
+			return this.getBOMaps().get(boCode);
+		}
+		// 获取已加载类并分析boCode
+		this.registerBOCode(this.getKnownClasses(""));
+		if (this.getBOMaps().containsKey(boCode)) {
+			// 已缓存数据
+			return this.getBOMaps().get(boCode);
+		}
 		return null;
 	}
 
@@ -79,7 +162,7 @@ public class BOFactory implements IBOFactory {
 		} catch (Exception e) {
 			throw e;
 		}
-		throw new ClassNotDefinedBOCode(i18n.prop("msg_bobas_not_found_bo_code", type.getName()));
+		throw new NoBusinessObjectCode(i18n.prop("msg_bobas_not_found_bo_code", type.getName()));
 	}
 
 	@Override
@@ -226,4 +309,5 @@ public class BOFactory implements IBOFactory {
 			}
 		}
 	}
+
 }
