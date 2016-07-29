@@ -41,6 +41,7 @@ public class RuntimeLog {
 	public static final String MSG_I18N_READ_FILE_DATA = "i18n: read file's data [%s].";
 	public static final String MSG_I18N_RESOURCES_FOLDER = "i18n: use folder [%s].";
 	public static final String MSG_CONFIG_READ_FILE_DATA = "config: read file's data [%s].";
+	public static final String MSG_CONFIG_READ_FILE_DATA_FAILD = "config: read file's data [%s] faild.";
 	public static final String MSG_LOGICS_RUNNING_LOGIC_FORWARD = "logics: forward logic [%s] by data [%s].";
 	public static final String MSG_LOGICS_RUNNING_LOGIC_REVERSE = "logics: reverse logic [%s] by data [%s].";
 	public static final String MSG_LOGICS_EXISTING_CONTRACT = "logics: class [%s] existing contract [%s].";

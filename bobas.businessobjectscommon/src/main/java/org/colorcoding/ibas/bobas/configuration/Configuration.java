@@ -25,20 +25,26 @@ public class Configuration {
 		if (configuration == null) {
 			synchronized (Configuration.class) {
 				if (configuration == null) {
+					String configFile = null;
 					try {
 						String folder = getStartupFolder();
 						if (folder.endsWith("target" + File.separator + "test-classes")) {
 							// 测试脚本 target\test-classes
 							folder = (new File(folder)).getParentFile().getParentFile().getPath();
 						}
-						String configFile = String.format("%s%sapp.xml", folder, File.separator);
+						configFile = String.format("%s%sapp.xml", folder, File.separator);
 						configuration = ConfigurationManager.create(configFile);
 					} catch (FileNotFoundException | JAXBException e) {
 						// 读取配置文件出错
 						e.printStackTrace();
 					}
 					if (configuration == null) {
+						// 读取配置文件失败
+						System.err.println(String.format(RuntimeLog.MSG_CONFIG_READ_FILE_DATA_FAILD, configFile));
 						configuration = new ConfigurationManager();
+					} else {
+						// 读取配置文件成功
+						RuntimeLog.log(RuntimeLog.MSG_CONFIG_READ_FILE_DATA, configFile);
 					}
 				}
 			}
@@ -62,7 +68,10 @@ public class Configuration {
 					path = uri.getPath();
 				}
 				if (path == null) {
+					// 此处存在中文路径识别异常风险
 					path = url.getPath();
+					if (path != null)
+						path = path.replace("%20", " ");// 处理空格
 				}
 			}
 			// file:/E:/WorkTemp/ibas/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/ibcp.systemcenter.service/WEB-INF/classes/

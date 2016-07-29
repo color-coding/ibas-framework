@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
@@ -117,6 +118,37 @@ public class Serializer {
 	}
 
 	/**
+	 * 创建json序列化类
+	 * 
+	 * @param types
+	 *            已知类型
+	 * @return
+	 * @throws JAXBException
+	 */
+	private static JAXBContext createJAXBContextJson(Class<?>... types) throws JAXBException {
+		String factoryKey = "javax.xml.bind.context.factory";
+		String factoryValue = System.getProperty(factoryKey);
+		try {
+			// 重置序列化工厂
+			System.setProperty(factoryKey, "org.eclipse.persistence.jaxb.JAXBContextFactory");
+			Map<String, Object> properties = new HashMap<String, Object>(2);
+			// 指定格式为json，避免引用此处没有静态变量
+			properties.put("eclipselink.media-type", "application/json");
+			// json数组不要前缀类型
+			properties.put("eclipselink.json.wrapper-as-array-name", true);
+			JAXBContext context = JAXBContext.newInstance(types, properties);
+			return context;
+		} finally {
+			// 还原工厂参数
+			if (factoryValue == null) {
+				System.clearProperty(factoryKey);
+			} else {
+				System.setProperty(factoryKey, factoryValue);
+			}
+		}
+	}
+
+	/**
 	 * 格式化json字符串
 	 * 
 	 * @param object
@@ -125,14 +157,7 @@ public class Serializer {
 	 */
 	public static String toJsonString(Object object, boolean formated) {
 		try {
-			// 重置序列化工厂
-			System.setProperty("javax.xml.bind.context.factory", "org.eclipse.persistence.jaxb.JAXBContextFactory");
-			Map<String, Object> properties = new HashMap<String, Object>(2);
-			// 指定格式为json，避免引用此处没有静态变量
-			properties.put("eclipselink.media-type", "application/json");
-			// json数组不要前缀类型
-			properties.put("eclipselink.json.wrapper-as-array-name", true);
-			JAXBContext context = JAXBContext.newInstance(new Class[] { object.getClass() }, properties);
+			JAXBContext context = createJAXBContextJson(new Class[] { object.getClass() });
 
 			StringWriter writer = new StringWriter();
 			Marshaller marshaller = context.createMarshaller();
@@ -155,14 +180,7 @@ public class Serializer {
 	 */
 	public static Object fromJsonString(String value, Class<?>... types) {
 		try {
-			// 重置序列化工厂
-			System.setProperty("javax.xml.bind.context.factory", "org.eclipse.persistence.jaxb.JAXBContextFactory");
-			Map<String, Object> properties = new HashMap<String, Object>(2);
-			// 指定格式为json，避免引用此处没有静态变量
-			properties.put("eclipselink.media-type", "application/json");
-			// json数组不要前缀类型
-			properties.put("eclipselink.json.wrapper-as-array-name", true);
-			JAXBContext context = JAXBContext.newInstance(types, properties);
+			JAXBContext context = createJAXBContextJson(types);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			ByteArrayInputStream inputStream = new ByteArrayInputStream(value.getBytes());
 			return unmarshaller.unmarshal(inputStream);
