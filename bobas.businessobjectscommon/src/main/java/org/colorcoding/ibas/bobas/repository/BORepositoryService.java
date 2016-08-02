@@ -256,7 +256,14 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 			}
 			do {
 				// 循环查询数据，直至填满或没有新的数据
-				IOperationResult<?> opRslt = boRepository.fetchEx(criteria, boType);
+				IOperationResult<?> opRslt;
+				if (criteria.getNotLoadedChildren()) {
+					// 不加载子项
+					opRslt = boRepository.fetch(criteria, boType);
+				} else {
+					// 加载子项
+					opRslt = boRepository.fetchEx(criteria, boType);
+				}
 				fetchTime++;// 查询计数加1
 				if (opRslt.getError() != null) {
 					throw opRslt.getError();

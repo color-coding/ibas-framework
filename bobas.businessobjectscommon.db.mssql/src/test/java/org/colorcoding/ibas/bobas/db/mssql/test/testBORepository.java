@@ -4,6 +4,7 @@ import org.colorcoding.ibas.bobas.bo.IBOUserFields;
 import org.colorcoding.ibas.bobas.bo.IUserField;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.Criteria;
+import org.colorcoding.ibas.bobas.common.IChildCriteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
@@ -24,6 +25,7 @@ import org.colorcoding.ibas.bobas.test.bo.ISalesOrderItem;
 import org.colorcoding.ibas.bobas.test.bo.IUser;
 import org.colorcoding.ibas.bobas.test.bo.Materials;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
+import org.colorcoding.ibas.bobas.test.bo.SalesOrderItem;
 import org.colorcoding.ibas.bobas.test.bo.User;
 import org.colorcoding.ibas.bobas.test.logics.MaterialsQuantityJournal;
 import org.colorcoding.ibas.bobas.test.logics.PurchaseOrder;
@@ -35,6 +37,52 @@ import junit.framework.TestCase;
 public class testBORepository extends TestCase {
 
 	public boolean details_out = true;
+
+	public void testCriteria() throws InvalidRepositoryException {
+		ICriteria criteria = new Criteria();
+		criteria.setNotLoadedChildren(true);
+		criteria.setResultCount(100);
+		// ("DocStatus" = 'P' OR "DocStatus" = 'F')
+		ICondition condition = criteria.getConditions().create();
+		condition.setBracketOpenNum(1);
+		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
+		condition.setCondVal(emDocumentStatus.Planned);
+		condition = criteria.getConditions().create();
+		condition.setBracketCloseNum(1);
+		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
+		condition.setCondVal(emDocumentStatus.Released);
+		condition.setRelationship(ConditionRelationship.cr_OR);
+		// ORDER BY "DocEntry" DESC, "CardCode" ASC
+		ISort sort = criteria.getSorts().create();
+		sort.setAlias(SalesOrder.DocEntryProperty.getName());
+		sort.setSortType(SortType.st_Descending);
+		sort = criteria.getSorts().create();
+		sort.setAlias(SalesOrder.CustomerCodeProperty.getName());
+		sort.setSortType(SortType.st_Ascending);
+
+		BORepositoryTest boRepository = new BORepositoryTest();
+		boRepository.setUserToken("");
+		IOperationResult<?> operationResult = boRepository.fetchSalesOrder(criteria);
+		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
+		System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
+				operationResult.getMessage(), operationResult.getResultObjects().size()));
+
+		criteria.setNotLoadedChildren(false);
+		// 查询子项
+		IChildCriteria childCriteria = criteria.getChildCriterias().create();
+		childCriteria.setPropertyPath(SalesOrder.SalesOrderItemsProperty.getName());
+		condition = childCriteria.getConditions().create();
+		condition.setAlias(SalesOrderItem.LineStatusProperty.getName());
+		condition.setCondVal(emDocumentStatus.Finished);
+
+		boRepository = new BORepositoryTest();
+		boRepository.setUserToken("");
+		operationResult = boRepository.fetchSalesOrder(criteria);
+		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
+		System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
+				operationResult.getMessage(), operationResult.getResultObjects().size()));
+
+	}
 
 	public void testConnectBORepository() {
 		// System.out.println(System.getProperty("java.class.path"));

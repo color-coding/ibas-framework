@@ -17,10 +17,16 @@ public class BOCacheContainers implements Iterable<IBOCacheContainer> {
 	 * @return true，加入缓存；false，未加入缓存
 	 */
 	public boolean add(IBOCacheContainer container) {
-		for (IBOCacheContainer item : cacheList) {
+		for (int i = 0; i < this.cacheList.size(); i++) {
+			IBOCacheContainer item = this.cacheList.get(i);
 			if (item.getDataKey().equals(container.getDataKey())) {
 				if (item.getCacheTime().after(container.getCacheTime())) {
+					// 晚于已缓存的数据时间，退出
 					return false;
+				} else {
+					// 新于已缓存的数据时间，替换
+					this.cacheList.set(i, container);
+					return true;
 				}
 			}
 		}

@@ -29,7 +29,7 @@ public class ChildCriteria extends Criteria implements IChildCriteria {
 		this.propertyPath = value;
 	}
 
-	private boolean fatherMustHasResluts = false;
+	private boolean fatherMustHasResluts = true;
 
 	@Override
 	@XmlElement(name = "FatherMustHasResluts")
