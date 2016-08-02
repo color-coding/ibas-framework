@@ -194,17 +194,95 @@ public class Criteria implements ICriteria {
 
 	@Override
 	public final ICriteria nextResultCriteria(IBusinessObjectBase lastBO) {
+		if (lastBO != null) {
+			ICriteria boCriteria = lastBO.getCriteria();
+			if (boCriteria == null) {
+				return null;
+			}
+			for (ICondition condition : boCriteria.getConditions()) {
+				condition.setOperation(ConditionOperation.co_GRATER_THAN);
+			}
+			return this.copyFrom(boCriteria);
+		}
 		return null;
 	}
 
 	@Override
 	public final ICriteria previousResultCriteria(IBusinessObjectBase firstBO) {
+		if (firstBO != null) {
+			ICriteria boCriteria = firstBO.getCriteria();
+			if (boCriteria == null) {
+				return null;
+			}
+			for (ICondition condition : boCriteria.getConditions()) {
+				condition.setOperation(ConditionOperation.co_LESS_THAN);
+			}
+			return this.copyFrom(boCriteria);
+		}
 		return null;
 	}
 
 	@Override
 	public final ICriteria copyFrom(ICriteria criteria) {
-		return null;
+		ICriteria nCriteria = this.clone();
+		if (criteria != null) {
+			ICriteria tmpCriteria = criteria.clone();
+			// 复制子项查询
+			for (IChildCriteria tmpChildCriteria : tmpCriteria.getChildCriterias()) {
+				if (tmpChildCriteria.getPropertyPath() == null) {
+					continue;
+				}
+				boolean isNew = true;
+				for (IChildCriteria myChildCriteria : this.getChildCriterias()) {
+					if (myChildCriteria.getPropertyPath() == null) {
+						continue;
+					}
+					if (myChildCriteria.getPropertyPath().equals(tmpChildCriteria.getPropertyPath())) {
+						isNew = false;
+						break;
+					}
+				}
+				if (isNew) {
+					this.getChildCriterias().add(tmpChildCriteria);
+				}
+			}
+			// 复制查询条件
+			if (nCriteria.getConditions().size() > 0) {
+				// 原始条件括号括起
+				ICondition condition = nCriteria.getConditions().get(0);
+				condition.setBracketOpenNum(condition.getBracketOpenNum() + 1);
+				condition = nCriteria.getConditions().get(nCriteria.getConditions().size() - 1);
+				condition.setBracketCloseNum(condition.getBracketCloseNum() + 1);
+			}
+			if (tmpCriteria.getConditions().size() > 0) {
+				// 拷贝条件括号括起
+				ICondition condition = tmpCriteria.getConditions().get(0);
+				condition.setBracketOpenNum(condition.getBracketOpenNum() + 1);
+				condition = tmpCriteria.getConditions().get(tmpCriteria.getConditions().size() - 1);
+				condition.setBracketCloseNum(condition.getBracketCloseNum() + 1);
+			}
+			nCriteria.getConditions().addAll(tmpCriteria.getConditions());
+			// 复制排序条件
+			for (ISort tmpSort : tmpCriteria.getSorts()) {
+				if (tmpSort.getAlias() == null) {
+					continue;
+				}
+				boolean isNew = true;
+				for (ISort mySort : this.getSorts()) {
+					if (mySort.getAlias() == null) {
+						continue;
+					}
+					if (mySort.getAlias().equals(tmpSort.getAlias())) {
+						isNew = false;
+						break;
+					}
+				}
+				if (isNew) {
+					this.getSorts().add(tmpSort);
+				}
+			}
+		}
+		return nCriteria;
 	}
 
 }

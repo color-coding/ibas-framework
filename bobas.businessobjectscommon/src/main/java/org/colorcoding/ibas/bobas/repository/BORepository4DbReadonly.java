@@ -7,6 +7,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.Criteria;
+import org.colorcoding.ibas.bobas.common.IChildCriteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
@@ -36,6 +37,7 @@ import org.colorcoding.ibas.bobas.db.SqlScriptsException;
 import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.mapping.AssociationMode;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.util.ArrayList;
 
 /**
  * 业务对象仓库-只读数据库
@@ -221,13 +223,15 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 */
 	@Override
 	public IOperationResult<?> fetchEx(ICriteria criteria, Class<? extends IBusinessObjectBase> boType) {
+		OperationResult<?> operationResult = new OperationResult<Object>();
 		try {
-			IBOAdapter4Db adapter4Db = this.createDbAdapter().createBOAdapter();
-			ISqlQuery sqlQuery = adapter4Db.parseSqlQuery(criteria, boType);
-			return this.fetchEx(sqlQuery, boType);
+			IBusinessObjectBase[] bos = this.myFetchEx(criteria, boType);
+			operationResult.addResultObjects(bos);
 		} catch (Exception e) {
-			return new OperationResult<Object>(e);
+			operationResult.setError(e);
+			RuntimeLog.log(e);
 		}
+		return operationResult;
 	}
 
 	/**
@@ -348,6 +352,55 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	/**
 	 * 查询，并填充子项
 	 * 
+	 * @param criteria
+	 *            查询
+	 * @param boType
+	 *            填充对象
+	 * @return 操作结果
+	 * @throws RepositoryException
+	 * @throws DbException
+	 * @throws SQLException
+	 * @throws BOParseException
+	 * @throws SqlScriptsException
+	 * @throws ClassNotFoundException
+	 * @throws BOFactoryException
+	 */
+	private final IBusinessObjectBase[] myFetchEx(ICriteria criteria, Class<?> boType)
+			throws RepositoryException, DbException, SQLException, BOParseException, SqlScriptsException,
+			ClassNotFoundException, BOFactoryException {
+		if (boType == null) {
+			throw new RepositoryException(i18n.prop("msg_bobas_not_specify_bo_type"));
+		}
+		boolean myOpenedDb = false;// 自己打开的数据库
+		try {
+			myOpenedDb = this.openDbConnection();
+			IBOAdapter4Db adapter4Db = this.createDbAdapter().createBOAdapter();
+			ISqlQuery sqlQuery = adapter4Db.parseSqlQuery(criteria, boType);
+			IBusinessObjectBase[] mainBOs = this.myFetch(sqlQuery, boType);
+			this.myFetchEx(mainBOs, criteria);// 加载子项
+			if (criteria.getChildCriterias().size() > 0) {
+				// 存在子项过滤状况，移出可能为空的返回值
+				ArrayList<IBusinessObjectBase> tmpList = new ArrayList<>();
+				for (IBusinessObjectBase bo : mainBOs) {
+					if (bo == null) {
+						continue;
+					}
+					tmpList.add(bo);
+				}
+				mainBOs = tmpList.toArray(new IBusinessObjectBase[] {});
+			}
+			return mainBOs;
+		} finally {
+			if (myOpenedDb) {
+				// 自己开打自己关闭
+				this.closeDbConnection();// 关闭数据库连接
+			}
+		}
+	}
+
+	/**
+	 * 查询，并填充子项
+	 * 
 	 * @param sqlQuery
 	 *            语句
 	 * @param boType
@@ -367,14 +420,11 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 		if (boType == null) {
 			throw new RepositoryException(i18n.prop("msg_bobas_not_specify_bo_type"));
 		}
-		if (sqlQuery == null) {
-			throw new RepositoryException(i18n.prop("msg_bobas_invalid_sql_query"));
-		}
 		boolean myOpenedDb = false;// 自己打开的数据库
 		try {
 			myOpenedDb = this.openDbConnection();
 			IBusinessObjectBase[] mainBOs = this.myFetch(sqlQuery, boType);
-			this.myFetchEx(mainBOs);// 加载子项
+			this.myFetchEx(mainBOs, null);// 加载子项
 			return mainBOs;
 		} finally {
 			if (myOpenedDb) {
@@ -389,13 +439,15 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 * 
 	 * @param bos
 	 *            已知对象
+	 * @param criteria
+	 *            可能存在的子项查询
 	 * @throws DbException
 	 * @throws SqlScriptsException
 	 * @throws BOParseException
 	 * @throws ClassNotFoundException
 	 * @throws BOFactoryException
 	 */
-	private final void myFetchEx(IBusinessObjectBase[] bos)
+	private final void myFetchEx(IBusinessObjectBase[] bos, ICriteria criteria)
 			throws DbException, SqlScriptsException, BOParseException, ClassNotFoundException, BOFactoryException {
 		boolean myOpenedDb = false;// 自己打开的数据库
 		IDbDataReader reader = null;
@@ -406,7 +458,8 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 				return;
 			}
 			myOpenedDb = this.openDbConnection();
-			for (IBusinessObjectBase bo : bos) {
+			for (int i = 0; i < bos.length; i++) {
+				IBusinessObjectBase bo = bos[i];
 				// 遍历BO
 				if (!(bo instanceof IManageFields)) {
 					// 不能解析的对象
@@ -422,11 +475,28 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 						ICriteria childCriteria = listField.getElementCriteria();
 						if (childCriteria != null) {
 							// 获取到了子项查询
+							IChildCriteria tmpCriteria = null;
+							if (criteria != null) {
+								// 添加子查询条件
+								tmpCriteria = criteria.getChildCriterias().getCriteria(fieldData.getName());
+								if (tmpCriteria != null) {
+									// 设置了此属性的查询
+									childCriteria = childCriteria.copyFrom(tmpCriteria);
+								}
+							}
 							ISqlQuery childSqlQuery = adapter4Db.parseSqlQuery(childCriteria, childBoType);
 							command = this.getDbConnection().createCommand();
 							reader = command.executeReader(childSqlQuery);
 							IBusinessObjectBase[] childs = adapter4Db.parseBOs(reader, listField);
-							this.myFetchEx(childs);
+							if (tmpCriteria != null && (childs == null || childs.length == 0)) {
+								// 没有匹配的子项数据
+								if (tmpCriteria.getFatherMustHasResluts()) {
+									// 要求父项必须有结果，但此时没有结果，则设置返回数组为空
+									bos[i] = null;
+									break;// 退出当前数据处理
+								}
+							}
+							this.myFetchEx(childs, tmpCriteria);
 						}
 					} else if (fieldData instanceof AssociatedFieldDataBase<?>) {
 						// 关联对象类型
@@ -466,14 +536,14 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 								// 一对多关系
 								assoFieldData.setValue(cBOs);
 								// 查询填充后对象的子项
-								this.myFetchEx(cBOs);
+								this.myFetchEx(cBOs, null);
 							} else if (assoFieldData.getAssociationMode() == AssociationMode.OneToOne
 									|| assoFieldData.getAssociationMode() == AssociationMode.OneToZero) {
 								// 一对一
 								IBusinessObjectBase cBO = cBOs[0];// 仅取第一个
 								assoFieldData.setValue(cBO);
 								// 查询填充后对象的子项
-								this.myFetchEx(new IBusinessObjectBase[] { cBO });
+								this.myFetchEx(new IBusinessObjectBase[] { cBO }, null);
 							}
 						} else {
 							// 没有结果

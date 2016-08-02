@@ -33,7 +33,10 @@ public final class ChildCriterias extends ArrayList<IChildCriteria> implements I
 	@Override
 	public IChildCriteria getCriteria(String propertyPath) {
 		for (IChildCriteria item : this) {
-			if (item.getPropertyPath() == propertyPath) {
+			if (item.getPropertyPath() == null) {
+				continue;
+			}
+			if (item.getPropertyPath().equals(propertyPath)) {
 				return item;
 			}
 		}

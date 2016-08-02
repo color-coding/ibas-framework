@@ -71,6 +71,7 @@ public class testBORepository extends TestCase {
 		// 查询子项
 		IChildCriteria childCriteria = criteria.getChildCriterias().create();
 		childCriteria.setPropertyPath(SalesOrder.SalesOrderItemsProperty.getName());
+		// childCriteria.setFatherMustHasResluts(false);//父项必须有返回值
 		condition = childCriteria.getConditions().create();
 		condition.setAlias(SalesOrderItem.LineStatusProperty.getName());
 		condition.setCondVal(emDocumentStatus.Finished);

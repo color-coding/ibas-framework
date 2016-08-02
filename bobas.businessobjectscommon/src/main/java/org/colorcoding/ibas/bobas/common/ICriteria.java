@@ -110,6 +110,8 @@ public interface ICriteria {
 	/**
 	 * 计算下一结果集的查询条件
 	 * 
+	 * 注意BO多主键情况下，请自行修正。
+	 * 
 	 * @param lastBO
 	 *            起始业务对象
 	 * @return 查询
@@ -118,6 +120,8 @@ public interface ICriteria {
 
 	/**
 	 * 计算上一个结果集的查询条件
+	 * 
+	 * 注意BO多主键情况下，请自行修正。
 	 * 
 	 * @param firstBO
 	 *            起始业务对象
