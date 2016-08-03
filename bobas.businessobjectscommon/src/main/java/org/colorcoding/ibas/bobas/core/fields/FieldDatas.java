@@ -15,7 +15,7 @@ class FieldDataInteger extends FieldDataBase<Integer> {
 		this.setValueType(valueType);
 	}
 
-	private Integer _value = 0;
+	private int _value = 0;
 
 	@Override
 	public Integer getValue() {
@@ -23,6 +23,9 @@ class FieldDataInteger extends FieldDataBase<Integer> {
 	}
 
 	public boolean setValue(Integer value) {
+		if (value == null) {
+			value = 0;
+		}
 		if (this._value == value) {
 			return false;
 		}
@@ -47,7 +50,7 @@ class FieldDataShort extends FieldDataBase<Short> {
 		this.setValueType(valueType);
 	}
 
-	private Short _value = 0;
+	private short _value = 0;
 
 	@Override
 	public Short getValue() {
@@ -55,6 +58,9 @@ class FieldDataShort extends FieldDataBase<Short> {
 	}
 
 	public boolean setValue(Short value) {
+		if (value == null) {
+			value = 0;
+		}
 		if (this._value == value) {
 			return false;
 		}
@@ -208,7 +214,7 @@ class FieldDataFloat extends FieldDataBase<Float> {
 		this.setValueType(valueType);
 	}
 
-	private Float _value = 0.0f;
+	private float _value = 0.0f;
 
 	@Override
 	public Float getValue() {
@@ -216,6 +222,9 @@ class FieldDataFloat extends FieldDataBase<Float> {
 	}
 
 	public boolean setValue(Float value) {
+		if (value == null) {
+			value = 0.0f;
+		}
 		if (this._value == value) {
 			return false;
 		}
@@ -239,7 +248,7 @@ class FieldDataDouble extends FieldDataBase<Double> {
 		this.setValueType(valueType);
 	}
 
-	private Double _value = 0.0;
+	private double _value = 0.0;
 
 	@Override
 	public Double getValue() {
@@ -247,6 +256,9 @@ class FieldDataDouble extends FieldDataBase<Double> {
 	}
 
 	public boolean setValue(Double value) {
+		if (value == null) {
+			value = 0.0;
+		}
 		if (this._value == value) {
 			return false;
 		}

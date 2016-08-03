@@ -26,5 +26,7 @@ public class testBasisBO extends TestCase {
 		assertEquals("Property [Activted] faild. ", (boolean) order.getActivted(), true);
 		assertTrue("Property [DocumentTotal] faild. ", order.getDocumentTotal().toString().equals("99.99"));
 
+		order.setDocEntry(null);
+		System.out.println(order.getDocEntry());
 	}
 }
