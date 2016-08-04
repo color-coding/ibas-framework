@@ -226,25 +226,17 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	 * @return 查询的结果
 	 */
 	<P extends IBusinessObjectBase> OperationResult<P> fetch(IBORepositoryReadonly boRepository, ICriteria criteria,
-			String token, Class<P> boType) {
+			Class<P> boType) {
 		OperationResult<P> operationResult = new OperationResult<P>();
-		try {
-			this.setCurrentUser(token);// 解析并设置当前用户
-			if (criteria == null) {
-				criteria = new Criteria();
-			}
-			IOperationResult<?> opRslt;
-			if (criteria.getNotLoadedChildren()) {
-				// 不加载子项
-				opRslt = boRepository.fetch(criteria, boType);
-			} else {
-				// 加载子项
-				opRslt = boRepository.fetchEx(criteria, boType);
-			}
-			operationResult.addResultObjects(opRslt.getResultObjects());
-			return operationResult;
-		} catch (Exception e) {
-			operationResult.setError(e);
+		if (criteria == null) {
+			criteria = new Criteria();
+		}
+		if (criteria.getNotLoadedChildren()) {
+			// 不加载子项
+			operationResult.copy(boRepository.fetch(criteria, boType));
+		} else {
+			// 加载子项
+			operationResult.copy(boRepository.fetchEx(criteria, boType));
 		}
 		return operationResult;
 	}
@@ -261,10 +253,10 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	 * @return 查询的结果
 	 * @throws InvalidTokenException
 	 */
-	<P extends IBusinessObjectBase> OperationResult<P> fetchInDb(ICriteria criteria, String token, Class<P> boType) {
+	<P extends IBusinessObjectBase> OperationResult<P> fetchInDb(ICriteria criteria, Class<P> boType) {
 		// 在数据库中查询
 		RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_FETCHING_IN_DB, boType.getName());
-		return this.fetch(this.getRepository(), criteria, token, boType);
+		return this.fetch(this.getRepository(), criteria, boType);
 	}
 
 	/**
@@ -279,10 +271,10 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	 * @return 查询的结果
 	 * @throws InvalidTokenException
 	 */
-	<P extends IBusinessObjectBase> OperationResult<P> fetchInCache(ICriteria criteria, String token, Class<P> boType) {
+	<P extends IBusinessObjectBase> OperationResult<P> fetchInCache(ICriteria criteria, Class<P> boType) {
 		// 在缓冲中查询
 		RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_FETCHING_IN_CACHE, boType.getName());
-		return this.fetch(this.getCacheRepository(), criteria, token, boType);
+		return this.fetch(this.getCacheRepository(), criteria, boType);
 	}
 
 	/**
@@ -298,12 +290,19 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	 */
 	protected final <P extends IBusinessObjectBase> OperationResult<P> fetch(ICriteria criteria, String token,
 			Class<P> boType) {
+		try {
+			this.setCurrentUser(token);// 解析并设置当前用户
+		} catch (InvalidTokenException e) {
+			OperationResult<P> operationResult = new OperationResult<P>();
+			operationResult.setError(e);
+			RuntimeLog.log(e);
+		}
 		if (this.getDataCacheUsage() == DataCacheUsage.ONLY_USE) {
 			// 仅使用缓存数据
-			return this.fetchInCache(criteria, token, boType);
+			return this.fetchInCache(criteria, boType);
 		} else if (this.getDataCacheUsage() == DataCacheUsage.FIRST_USE) {
 			// 优先使用缓存数据
-			OperationResult<P> operationResult = this.fetchInCache(criteria, token, boType);
+			OperationResult<P> operationResult = this.fetchInCache(criteria, boType);
 			if (operationResult.getResultCode() == 0
 					&& operationResult.getResultObjects().size() >= criteria.getResultCount()
 					&& criteria.getResultCount() > 0) {
@@ -313,7 +312,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 				// 缓存中不存在数据，从数据库中查找
 				ICriteria nCriteria = criteria.clone();// 不满足查询的部分
 				nCriteria.setResultCount(criteria.getResultCount() - operationResult.getResultObjects().size());// 仅查询不够部分
-				OperationResult<P> dbOpRslt = this.fetchInDb(nCriteria, token, boType);
+				OperationResult<P> dbOpRslt = this.fetchInDb(nCriteria, boType);
 				if (dbOpRslt.getError() != null) {
 					operationResult.setError(dbOpRslt.getError());
 					return operationResult;
@@ -334,32 +333,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 				return operationResult;
 			}
 		}
-		return this.fetchInDb(criteria, token, boType);
-	}
-
-	/**
-	 * 保存业务对象
-	 * 
-	 * @param boRepository
-	 *            业务对象仓库
-	 * 
-	 * @param bo
-	 *            业务对象
-	 * 
-	 * @param token
-	 *            口令
-	 * 
-	 * @return 查询的结果
-	 */
-	<P extends IBusinessObjectBase> OperationResult<P> save(IBORepository boRepository, P bo, String token) {
-		OperationResult<P> operationResult = new OperationResult<P>();
-		try {
-			this.setCurrentUser(token);// 解析并设置当前用户
-			operationResult.addResultObjects(this.save(boRepository, bo));
-		} catch (Exception e) {
-			operationResult.setError(e);
-		}
-		return operationResult;
+		return this.fetchInDb(criteria, boType);
 	}
 
 	/**
@@ -373,7 +347,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	 * @return 注意删除时返回null
 	 * @throws Exception
 	 */
-	final IBusinessObjectBase save(IBORepository boRepository, IBusinessObjectBase bo) throws Exception {
+	IBusinessObjectBase save(IBORepository boRepository, IBusinessObjectBase bo) throws Exception {
 		boolean post = false;
 		boolean myDbTrans = false;
 		boolean myOpened = false;
@@ -523,16 +497,25 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	 * @return 查询的结果
 	 */
 	protected final <P extends IBusinessObjectBase> OperationResult<P> save(P bo, String token) {
-		if (this.getDataCacheUsage() == DataCacheUsage.FIRST_USE
-				|| this.getDataCacheUsage() == DataCacheUsage.ONLY_USE) {
-			// 删除已缓存的数据
-			try {
-				this.getCacheRepository().clearData(bo);
-			} catch (Exception e) {
-				RuntimeLog.log(e);
+		OperationResult<P> operationResult = new OperationResult<P>();
+		try {
+			this.setCurrentUser(token);// 解析并设置当前用户
+
+			if (this.getDataCacheUsage() == DataCacheUsage.FIRST_USE
+					|| this.getDataCacheUsage() == DataCacheUsage.ONLY_USE) {
+				// 删除已缓存的数据
+				try {
+					this.getCacheRepository().clearData(bo);
+				} catch (Exception e) {
+					RuntimeLog.log(e);
+				}
 			}
+			operationResult.addResultObjects(this.save(this.getRepository(), bo));
+		} catch (Exception e) {
+			operationResult.setError(e);
+			RuntimeLog.log(e);
 		}
-		return this.save(this.getRepository(), bo, token);
+		return operationResult;
 	}
 
 	@Override

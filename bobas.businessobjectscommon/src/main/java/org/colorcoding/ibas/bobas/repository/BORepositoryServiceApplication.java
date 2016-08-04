@@ -72,10 +72,9 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 	 */
 	@Override
 	<P extends IBusinessObjectBase> OperationResult<P> fetch(IBORepositoryReadonly boRepository, ICriteria criteria,
-			String token, Class<P> boType) {
+			Class<P> boType) {
 		OperationResult<P> operationResult = new OperationResult<P>();
 		try {
-			this.setCurrentUser(token);// 解析并设置当前用户
 			if (criteria == null) {
 				criteria = new Criteria();
 			}
@@ -89,14 +88,8 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 			}
 			do {
 				// 循环查询数据，直至填满或没有新的数据
-				IOperationResult<?> opRslt;
-				if (criteria.getNotLoadedChildren()) {
-					// 不加载子项
-					opRslt = boRepository.fetch(criteria, boType);
-				} else {
-					// 加载子项
-					opRslt = boRepository.fetchEx(criteria, boType);
-				}
+				IOperationResult<P> opRslt = super.fetch(boRepository, criteria, boType);
+
 				fetchTime++;// 查询计数加1
 				if (opRslt.getError() != null) {
 					throw opRslt.getError();
@@ -157,28 +150,17 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 	 *            口令
 	 * 
 	 * @return 查询的结果
+	 * @throws Exception
 	 */
 	@Override
-	<P extends IBusinessObjectBase> OperationResult<P> save(IBORepository boRepository, P bo, String token) {
-		OperationResult<P> operationResult = new OperationResult<P>();
-		try {
-			this.setCurrentUser(token);// 解析并设置当前用户
-			if (this.getOwnershipJudger() != null && bo instanceof IDataOwnership) {
-				// 数据权限过滤
-				if (this.getOwnershipJudger().canSave((IDataOwnership) bo, this.getCurrentUser(), true)) {
-					// 有权限保存
-					operationResult.addResultObjects(this.save(boRepository, bo));
-				} else {
-					throw new UnauthorizedException(i18n.prop("msg_bobas_to_save_bo_unauthorized", bo.toString()));
-				}
-			} else {
-				// 没有限制权限
-				operationResult.addResultObjects(this.save(boRepository, bo));
+	IBusinessObjectBase save(IBORepository boRepository, IBusinessObjectBase bo) throws Exception {
+		if (this.getOwnershipJudger() != null && bo instanceof IDataOwnership) {
+			// 数据权限过滤
+			if (!this.getOwnershipJudger().canSave((IDataOwnership) bo, this.getCurrentUser(), true)) {
+				throw new UnauthorizedException(i18n.prop("msg_bobas_to_save_bo_unauthorized", bo.toString()));
 			}
-		} catch (Exception e) {
-			operationResult.setError(e);
 		}
-		return operationResult;
+		return super.save(boRepository, bo);
 	}
 
 	/**

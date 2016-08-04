@@ -108,19 +108,19 @@ public class BORepositorySmartService extends BORepositoryLogicService implement
 	 * 重写数据库查询（处于事务中使用主库查询；非事务中使用只读库）
 	 */
 	@Override
-	<P extends IBusinessObjectBase> OperationResult<P> fetchInDb(ICriteria criteria, String token, Class<P> boType) {
+	<P extends IBusinessObjectBase> OperationResult<P> fetchInDb(ICriteria criteria, Class<P> boType) {
 		if (!this.inTransaction() && this.isEnabledReadonlyRepository()) {
 			// 没在事务中，则使用只读库
 			IBORepositoryReadonly repository = this.getReadonlyRepository();
 			if (repository != null || !(repository instanceof IBORepository4Invalid)) {
 				// 只读库有效
 				RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_FETCHING_IN_READONLY_REPOSITORY, boType.getName());
-				return this.fetch(this.getReadonlyRepository(), criteria, token, boType);
+				return this.fetch(this.getReadonlyRepository(), criteria, boType);
 			}
 		}
 		// 处于事务中或只读库无效，则使用主库
 		RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_FETCHING_IN_MASTER_REPOSITORY, boType.getName());
-		return this.fetch(this.getRepository(), criteria, token, boType);
+		return this.fetch(this.getRepository(), criteria, boType);
 	}
 
 }

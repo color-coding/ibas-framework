@@ -76,7 +76,7 @@ public class testBORepository extends TestCase {
 		condition.setAlias(SalesOrderItem.LineStatusProperty.getName());
 		condition.setCondVal(emDocumentStatus.Finished);
 
-		boRepository = new BORepositoryTest();
+		boRepository = new BORepositoryTest();// 重新构造后缓存失效
 		boRepository.setUserToken("");
 		operationResult = boRepository.fetchSalesOrder(criteria);
 		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
