@@ -15,7 +15,7 @@ public interface IDataOwnershipJudger {
 	 * @param user
 	 *            用户
 	 * 
-	 * @return 是否具有权限（布尔值）
+	 * @return true，可读；false，不可读
 	 */
 	boolean canRead(IDataOwnership bo, IUser user);
 
@@ -28,7 +28,13 @@ public interface IDataOwnershipJudger {
 	 * @param user
 	 *            用户
 	 * 
-	 * @return 是否具有权限（布尔值）
+	 * @param throwError
+	 *            是否抛出不可读异常
+	 * 
+	 * @return true，可读；false，不可读
+	 * 
+	 * @throws UnauthorizedException
+	 *             未授权异常
 	 */
 	boolean canRead(IDataOwnership bo, IUser user, boolean throwError) throws UnauthorizedException;
 
@@ -41,9 +47,9 @@ public interface IDataOwnershipJudger {
 	 * @param user
 	 *            用户
 	 * 
-	 * @return 是否具有权限（布尔值）
+	 * @return true，可写；false，不可写
 	 */
-	boolean cansave(IDataOwnership bo, IUser user);
+	boolean canSave(IDataOwnership bo, IUser user);
 
 	/**
 	 * 判断用户是否有权限读取数据
@@ -53,8 +59,12 @@ public interface IDataOwnershipJudger {
 	 * 
 	 * @param user
 	 *            用户
-	 * 
-	 * @return 是否具有权限（布尔值） 及权限错误
+	 * @param throwError
+	 *            是否抛出不可写异常
+	 * @return true，可写；false，不可写
+	 *
+	 * @throws UnauthorizedException
+	 *             未授权异常
 	 */
-	boolean cansave(IDataOwnership bo, IUser user, boolean throwError) throws UnauthorizedException;
+	boolean canSave(IDataOwnership bo, IUser user, boolean throwError) throws UnauthorizedException;
 }

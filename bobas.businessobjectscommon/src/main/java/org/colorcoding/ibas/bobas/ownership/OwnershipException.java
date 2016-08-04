@@ -1,6 +1,11 @@
 package org.colorcoding.ibas.bobas.ownership;
 
-
+/**
+ * 所有权异常
+ * 
+ * @author Niuren.Zhu
+ *
+ */
 public class OwnershipException extends Exception {
 
 	/**

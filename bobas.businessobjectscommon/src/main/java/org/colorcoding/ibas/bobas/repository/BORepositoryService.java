@@ -24,10 +24,6 @@ import org.colorcoding.ibas.bobas.organization.IOrganizationManager;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
 import org.colorcoding.ibas.bobas.organization.UnknownUser;
-import org.colorcoding.ibas.bobas.ownership.IDataOwnership;
-import org.colorcoding.ibas.bobas.ownership.IOwnershipJudger;
-import org.colorcoding.ibas.bobas.ownership.OwnershipFactory;
-import org.colorcoding.ibas.bobas.ownership.UnauthorizedException;
 
 /**
  * 业务仓库服务
@@ -215,15 +211,6 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 		return "I'm supper man.";
 	}
 
-	private IOwnershipJudger ownershipJudger = null;
-
-	final IOwnershipJudger getOwnershipJudger() {
-		if (this.ownershipJudger == null) {
-			this.ownershipJudger = OwnershipFactory.createJudger();
-		}
-		return this.ownershipJudger;
-	}
-
 	/**
 	 * 查询业务对象
 	 * 
@@ -238,73 +225,24 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	 * 
 	 * @return 查询的结果
 	 */
-	protected final <P extends IBusinessObjectBase> OperationResult<P> fetch(IBORepositoryReadonly boRepository,
-			ICriteria criteria, String token, Class<P> boType) {
+	<P extends IBusinessObjectBase> OperationResult<P> fetch(IBORepositoryReadonly boRepository, ICriteria criteria,
+			String token, Class<P> boType) {
 		OperationResult<P> operationResult = new OperationResult<P>();
 		try {
 			this.setCurrentUser(token);// 解析并设置当前用户
 			if (criteria == null) {
 				criteria = new Criteria();
 			}
-			Integer filterCount = 0;// 过滤的数量
-			Integer fetchTime = 0;// 查询的次数
-			Integer fetchCount = 0;// 查询的数量
-			boolean dataFull = true;// 数据填充满
-			if (criteria.getResultCount() > 0) {
-				// 有结果数量约束
-				dataFull = false;
+			IOperationResult<?> opRslt;
+			if (criteria.getNotLoadedChildren()) {
+				// 不加载子项
+				opRslt = boRepository.fetch(criteria, boType);
+			} else {
+				// 加载子项
+				opRslt = boRepository.fetchEx(criteria, boType);
 			}
-			do {
-				// 循环查询数据，直至填满或没有新的数据
-				IOperationResult<?> opRslt;
-				if (criteria.getNotLoadedChildren()) {
-					// 不加载子项
-					opRslt = boRepository.fetch(criteria, boType);
-				} else {
-					// 加载子项
-					opRslt = boRepository.fetchEx(criteria, boType);
-				}
-				fetchTime++;// 查询计数加1
-				if (opRslt.getError() != null) {
-					throw opRslt.getError();
-				}
-				if (opRslt.getResultCode() != 0) {
-					throw new RepositoryException(opRslt.getMessage(), opRslt.getError());
-				}
-				fetchCount += opRslt.getResultObjects().size();
-				// 数据权限过滤
-				if (this.getOwnershipJudger() != null) {
-					for (Object item : opRslt.getResultObjects()) {
-						if ((item instanceof IDataOwnership)) {
-							// 有继承数据权限
-							if (!this.getOwnershipJudger().canRead((IDataOwnership) item, this.getCurrentUser())) {
-								// 没读取权限，过滤数量加1
-								filterCount++;
-								continue;
-							}
-						}
-						operationResult.addResultObjects(item);
-					}
-				} else {
-					operationResult.addResultObjects(opRslt.getResultObjects());
-				}
-				if (operationResult.getResultObjects().size() >= criteria.getResultCount()
-						|| opRslt.getResultObjects().size() < criteria.getResultCount()) {
-					// 结果数量大于要求数量或此次查询结果不够应返回数量
-					dataFull = true;// 标记满
-				}
-				if (!dataFull) {
-					// 结果数量不满足，进行下一组数据查询
-					IBusinessObjectBase lastBO = operationResult.getResultObjects().lastOrDefault();
-					criteria = criteria.nextResultCriteria(lastBO);// 下组数据的查询条件
-				}
-			} while (!dataFull);
-			if (filterCount > 0) {
-				// 发生数据过滤，返回过滤信息
-				operationResult.addInformations(OwnershipFactory.createOwnershipJudgeInfo(fetchTime, filterCount));
-			}
-			RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_FETCH_AND_FILTERING, boType.getName(), fetchTime, fetchCount,
-					filterCount);
+			operationResult.addResultObjects(opRslt.getResultObjects());
+			return operationResult;
 		} catch (Exception e) {
 			operationResult.setError(e);
 		}
@@ -323,8 +261,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	 * @return 查询的结果
 	 * @throws InvalidTokenException
 	 */
-	protected <P extends IBusinessObjectBase> OperationResult<P> fetchInDb(ICriteria criteria, String token,
-			Class<P> boType) {
+	<P extends IBusinessObjectBase> OperationResult<P> fetchInDb(ICriteria criteria, String token, Class<P> boType) {
 		// 在数据库中查询
 		RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_FETCHING_IN_DB, boType.getName());
 		return this.fetch(this.getRepository(), criteria, token, boType);
@@ -342,8 +279,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	 * @return 查询的结果
 	 * @throws InvalidTokenException
 	 */
-	protected <P extends IBusinessObjectBase> OperationResult<P> fetchInCache(ICriteria criteria, String token,
-			Class<P> boType) {
+	<P extends IBusinessObjectBase> OperationResult<P> fetchInCache(ICriteria criteria, String token, Class<P> boType) {
 		// 在缓冲中查询
 		RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_FETCHING_IN_CACHE, boType.getName());
 		return this.fetch(this.getCacheRepository(), criteria, token, boType);
@@ -415,23 +351,11 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	 * 
 	 * @return 查询的结果
 	 */
-	private final <P extends IBusinessObjectBase> OperationResult<P> save(IBORepository boRepository, P bo,
-			String token) {
+	<P extends IBusinessObjectBase> OperationResult<P> save(IBORepository boRepository, P bo, String token) {
 		OperationResult<P> operationResult = new OperationResult<P>();
 		try {
 			this.setCurrentUser(token);// 解析并设置当前用户
-			if (this.getOwnershipJudger() != null && bo instanceof IDataOwnership) {
-				// 数据权限过滤
-				if (this.getOwnershipJudger().cansave((IDataOwnership) bo, this.getCurrentUser(), true)) {
-					// 有权限保存
-					operationResult.addResultObjects(this.save(boRepository, bo));
-				} else {
-					throw new UnauthorizedException(i18n.prop("msg_bobas_to_save_bo_unauthorized", bo.toString()));
-				}
-			} else {
-				// 没有限制权限
-				operationResult.addResultObjects(this.save(boRepository, bo));
-			}
+			operationResult.addResultObjects(this.save(boRepository, bo));
 		} catch (Exception e) {
 			operationResult.setError(e);
 		}
@@ -449,7 +373,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	 * @return 注意删除时返回null
 	 * @throws Exception
 	 */
-	private final IBusinessObjectBase save(IBORepository boRepository, IBusinessObjectBase bo) throws Exception {
+	final IBusinessObjectBase save(IBORepository boRepository, IBusinessObjectBase bo) throws Exception {
 		boolean post = false;
 		boolean myDbTrans = false;
 		boolean myOpened = false;

@@ -108,8 +108,7 @@ public class BORepositorySmartService extends BORepositoryLogicService implement
 	 * 重写数据库查询（处于事务中使用主库查询；非事务中使用只读库）
 	 */
 	@Override
-	protected <P extends IBusinessObjectBase> OperationResult<P> fetchInDb(ICriteria criteria, String token,
-			Class<P> boType) {
+	<P extends IBusinessObjectBase> OperationResult<P> fetchInDb(ICriteria criteria, String token, Class<P> boType) {
 		if (!this.inTransaction() && this.isEnabledReadonlyRepository()) {
 			// 没在事务中，则使用只读库
 			IBORepositoryReadonly repository = this.getReadonlyRepository();

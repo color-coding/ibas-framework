@@ -19,11 +19,11 @@ public interface IPermissionsJudger {
 	 *            方法名称
 	 * @param user
 	 *            用户
-	 * @return 是否可用
+	 * @return true，可用；false，不可用
 	 * @throws NotConfiguredException
-	 *             未配置此项权限
+	 *             未配置此项权限异常
 	 * @throws UnauthorizedException
-	 *             未授权
+	 *             未授权异常
 	 */
 	boolean canCall(String className, String methodName, IUser user)
 			throws NotConfiguredException, UnauthorizedException;

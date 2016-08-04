@@ -14,6 +14,7 @@ import org.colorcoding.ibas.bobas.organization.IUser;
  * 所有权管理员工厂
  */
 public class OwnershipFactory extends ConfigurableFactory {
+
 	private OwnershipFactory() {
 
 	}
@@ -86,17 +87,17 @@ public class OwnershipFactory extends ConfigurableFactory {
 
 				@Override
 				public boolean canRead(IDataOwnership bo, IUser user, boolean throwError) throws UnauthorizedException {
+					return this.canRead(bo, user);
+				}
+
+				@Override
+				public boolean canSave(IDataOwnership bo, IUser user) {
 					return true;
 				}
 
 				@Override
-				public boolean cansave(IDataOwnership bo, IUser user) {
-					return true;
-				}
-
-				@Override
-				public boolean cansave(IDataOwnership bo, IUser user, boolean throwError) throws UnauthorizedException {
-					return true;
+				public boolean canSave(IDataOwnership bo, IUser user, boolean throwError) throws UnauthorizedException {
+					return this.canSave(bo, user);
 				}
 
 				@Override
@@ -115,7 +116,7 @@ public class OwnershipFactory extends ConfigurableFactory {
 		if (judger == null) {
 			throw new NullPointerException("msg_bobas_not_found_data_ownership_judger");
 		}
-		RuntimeLog.log(RuntimeLog.MSG_DATA_OWNERSHIP_JUDGER_CREATED, managerClass.getName());
+		RuntimeLog.log(RuntimeLog.MSG_OWNERSHIP_JUDGER_CREATED, managerClass.getName());
 		return judger;
 	}
 }
