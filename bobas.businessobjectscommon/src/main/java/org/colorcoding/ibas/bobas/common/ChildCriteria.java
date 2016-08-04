@@ -19,7 +19,7 @@ public class ChildCriteria extends Criteria implements IChildCriteria {
 	private String propertyPath = "";
 
 	@Override
-	@XmlElement(name = "ChildCriteria")
+	@XmlElement(name = "PropertyPath")
 	public final String getPropertyPath() {
 		return this.propertyPath;
 	}
