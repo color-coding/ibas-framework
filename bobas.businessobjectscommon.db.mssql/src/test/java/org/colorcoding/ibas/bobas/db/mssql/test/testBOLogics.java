@@ -22,7 +22,6 @@ public class testBOLogics extends TestCase {
 		IMaterials material_1 = new Materials();
 		material_1.setItemCode(String.format("A%s", sign));
 		material_1.setItemDescription(String.format("CPU [%s]", sign));
-		material_1.setForeignDescription("业务逻辑测试专用");
 		IOperationResult<?> operationResult = boRepository.saveMaterials(material_1);
 		System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
 				operationResult.getMessage(), operationResult.getResultObjects().size()));
@@ -31,7 +30,6 @@ public class testBOLogics extends TestCase {
 		IMaterials material_2 = new Materials();
 		material_2.setItemCode(String.format("A%s", sign));
 		material_2.setItemDescription(String.format("CPU [%s]", sign));
-		material_2.setForeignDescription("业务逻辑测试专用");
 		operationResult = boRepository.saveMaterials(material_2);
 		System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
 				operationResult.getMessage(), operationResult.getResultObjects().size()));

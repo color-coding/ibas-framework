@@ -119,6 +119,10 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	}
 
 	protected boolean inTransaction() {
+		if (this.repository == null) {
+			// 未初始化主仓库，则不存在事务
+			return false;
+		}
 		return this.getRepository().inTransaction();
 	}
 
@@ -195,10 +199,10 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 
 	private void setCurrentUser(IUser user) {
 		this.currentUser = user;
-		if (this.getRepository() != null) {
+		if (this.repository != null) {
 			this.getRepository().setCurrentUser(this.getCurrentUser());
 		}
-		if (this.getCacheRepository() != null) {
+		if (this.cacheRepository != null) {
 			this.getCacheRepository().setCurrentUser(this.getCurrentUser());
 		}
 		RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_CHANGED_USER, this.getCurrentUser());

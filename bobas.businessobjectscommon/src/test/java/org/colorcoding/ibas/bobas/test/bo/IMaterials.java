@@ -43,36 +43,6 @@ public interface IMaterials extends IBOSimple {
 	void setItemDescription(String value);
 
 	/**
-	 * 获取-外文描述
-	 * 
-	 * @return 值
-	 */
-	String getForeignDescription();
-
-	/**
-	 * 设置-外文描述
-	 * 
-	 * @param value
-	 *            值
-	 */
-	void setForeignDescription(String value);
-
-	/**
-	 * 获取-物料组
-	 * 
-	 * @return 值
-	 */
-	String getItemGroup();
-
-	/**
-	 * 设置-物料组
-	 * 
-	 * @param value
-	 *            值
-	 */
-	void setItemGroup(String value);
-
-	/**
 	 * 获取-订单数量
 	 * 
 	 * @return 值

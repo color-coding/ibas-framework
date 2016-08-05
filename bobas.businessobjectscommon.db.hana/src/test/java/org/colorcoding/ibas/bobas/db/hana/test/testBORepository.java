@@ -149,7 +149,7 @@ public class testBORepository extends TestCase {
 		assertEquals(operationResult.getResultCode(), 0);
 		order.setCustomerName("宇宙无敌影业--");
 		ISalesOrderItem item_Upadte = order.getSalesOrderItems().firstOrDefault();
-		item_Upadte.setBarCode("XXXtiao码");
+		item_Upadte.setReference1("up kaka.");
 		operationResult = boRepository.saveSalesOrder(order);
 		System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
 				operationResult.getMessage(), operationResult.getResultObjects().size()));

@@ -31,9 +31,6 @@ public class BORepositorySmartService extends BORepositoryLogicService implement
 	 * @return
 	 */
 	public final boolean isEnabledReadonlyRepository() {
-		if (this.readonlyRepository == null) {
-			this.enabledReadonlyRepository = false;
-		}
 		return enabledReadonlyRepository;
 	}
 

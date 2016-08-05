@@ -183,7 +183,8 @@ public class testBORepository extends TestCase {
 
 	public void testSaveBO() throws InvalidRepositoryException {
 		BORepositoryTest boRepository = new BORepositoryTest();
-		boRepository.connectRepository("MSSQL", "localhost", "ibas_demo", "sa", "1q2w3e");
+		// boRepository.connectRepository("MSSQL", "localhost", "ibas_demo",
+		// "sa", "1q2w3e");
 		boRepository.setUserToken("");
 		ISalesOrder order = new SalesOrder();
 		order.setDocumentUser(new User());
@@ -222,7 +223,8 @@ public class testBORepository extends TestCase {
 
 	public void testBOAssociations() throws InvalidRepositoryException {
 		BORepositoryTest boRepository = new BORepositoryTest();
-		boRepository.connectRepository("MSSQL", "localhost", "ibas_demo", "sa", "1q2w3e");
+		// boRepository.connectRepository("MSSQL", "localhost", "ibas_demo",
+		// "sa", "1q2w3e");
 		boRepository.setUserToken("");
 		ICriteria criteria = new Criteria();
 

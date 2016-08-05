@@ -109,59 +109,6 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	}
 
 	/**
-	 * 外文描述 属性
-	 */
-	@DbField(name = "FrgnName", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
-	public final static IPropertyInfo<String> ForeignDescriptionProperty = registerProperty("ForeignDescription",
-			String.class, MY_CLASS);
-
-	/**
-	 * 获取-外文描述
-	 * 
-	 * @return 值
-	 */
-	@XmlElement(name = "ForeignDescription")
-	public final String getForeignDescription() {
-		return this.getProperty(ForeignDescriptionProperty);
-	}
-
-	/**
-	 * 设置-外文描述
-	 * 
-	 * @param value
-	 *            值
-	 */
-	public final void setForeignDescription(String value) {
-		this.setProperty(ForeignDescriptionProperty, value);
-	}
-
-	/**
-	 * 物料组 属性
-	 */
-	@DbField(name = "ItmsGrpCod", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
-	public final static IPropertyInfo<String> ItemGroupProperty = registerProperty("ItemGroup", String.class, MY_CLASS);
-
-	/**
-	 * 获取-物料组
-	 * 
-	 * @return 值
-	 */
-	@XmlElement(name = "ItemGroup")
-	public final String getItemGroup() {
-		return this.getProperty(ItemGroupProperty);
-	}
-
-	/**
-	 * 设置-物料组
-	 * 
-	 * @param value
-	 *            值
-	 */
-	public final void setItemGroup(String value) {
-		this.setProperty(ItemGroupProperty, value);
-	}
-
-	/**
 	 * 订单数量 属性
 	 */
 	@DbField(name = "OnOrder", type = DbFieldType.db_Decimal, table = DB_TABLE_NAME, primaryKey = false)

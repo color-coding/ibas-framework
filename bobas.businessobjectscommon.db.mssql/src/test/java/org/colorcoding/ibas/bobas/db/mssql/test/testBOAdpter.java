@@ -28,7 +28,7 @@ public class testBOAdpter extends TestCase {
 	public void testCriteria() throws BOParseException {
 
 		String sqlString = "SELECT TOP 100 * FROM \"CC_TT_ORDR\""
-				+ " WHERE (\"DocStatus\" = N'P' OR \"DocStatus\" = N'F') AND \"CardCode\" IS NOT NULL AND CAST(\"DocEntry\" AS NVARCHAR) LIKE N'2%' AND \"DocEntry\" > 2000 AND \"DocEntry\" <> CAST(\"B1DocEntry\" AS INT)"
+				+ " WHERE (\"DocStatus\" = N'P' OR \"DocStatus\" = N'F') AND \"CardCode\" IS NOT NULL AND CAST(\"DocEntry\" AS NVARCHAR) LIKE N'2%' AND \"DocEntry\" > 2000 AND \"DocEntry\" <> CAST(\"DocEntry\" AS INT)"
 				+ " ORDER BY \"DocEntry\" DESC, \"CardCode\" ASC";
 
 		ICriteria criteria = new Criteria();
@@ -58,7 +58,7 @@ public class testBOAdpter extends TestCase {
 		condition = criteria.getConditions().create();
 		condition.setAlias(SalesOrder.DocEntryProperty.getName());
 		condition.setOperation(ConditionOperation.co_NOT_EQUAL);
-		condition.setComparedAlias(SalesOrder.B1DocEntryProperty.getName());
+		condition.setComparedAlias(SalesOrder.DocEntryProperty.getName());
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC
 		ISort sort = criteria.getSorts().create();
 		sort.setAlias(SalesOrder.DocEntryProperty.getName());

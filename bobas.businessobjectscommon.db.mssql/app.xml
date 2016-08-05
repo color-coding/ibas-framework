@@ -8,7 +8,7 @@
 		<add key="MasterDbName" value="ibas_demo" />
 		<add key="MasterDbUserID" value="sa" />
 		<add key="MasterDbUserPassword" value="1q2w3e" />
-		<add key="EnabledReadonlyRepository" value="true" />
+		<add key="EnabledReadonlyRepository" value="false" />
 		<add key="ReadonlyDbType" value="MSSQL" />
 		<add key="ReadonlyDbServer" value="localhost" />
 		<add key="ReadonlyDbName" value="ibas_demo" />

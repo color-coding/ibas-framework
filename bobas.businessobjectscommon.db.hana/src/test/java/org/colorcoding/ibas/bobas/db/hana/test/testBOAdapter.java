@@ -55,7 +55,7 @@ public class testBOAdapter extends TestCase {
 		condition = criteria.getConditions().create();
 		condition.setAlias(SalesOrder.DocEntryProperty.getName());
 		condition.setOperation(ConditionOperation.co_NOT_EQUAL);
-		condition.setComparedAlias(SalesOrder.B1DocEntryProperty.getName());
+		condition.setComparedAlias(SalesOrder.DocEntryProperty.getName());
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC
 		ISort sort = criteria.getSorts().create();
 		sort.setAlias(SalesOrder.DocEntryProperty.getName());
