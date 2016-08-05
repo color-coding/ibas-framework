@@ -28,9 +28,9 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                      <includes>
+<!--                       <includes>
                         <include>**/*.class</include>
-                      </includes>
+                      </includes> -->
                 </configuration>
             </plugin>
         </plugins>
