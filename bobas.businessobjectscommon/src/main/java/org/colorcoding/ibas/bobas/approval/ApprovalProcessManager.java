@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.approval;
 
+import java.util.Iterator;
+
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
@@ -25,9 +27,12 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
 				return null;
 			}
 			// 创建审批流程并尝试开始
-			IApprovalProcess aProcess = this.createApprovalProcess(data.getObjectCode());
-			if (aProcess.start(data))
-				return aProcess;// 审批流程开始
+			Iterator<IApprovalProcess> iteratorProcess = this.createApprovalProcess(data.getObjectCode());
+			while (iteratorProcess.hasNext()) {
+				IApprovalProcess aProcess = iteratorProcess.next();
+				if (aProcess.start(data))
+					return aProcess;// 审批流程开始
+			}
 		} else {
 			// 不是新建的数据
 			IApprovalProcess aProcess = this.loadApprovalProcess(data.getIdentifiers());
@@ -73,7 +78,7 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
 	 *            业务对象编码
 	 * @return
 	 */
-	protected abstract IApprovalProcess createApprovalProcess(String boCode);
+	protected abstract Iterator<IApprovalProcess> createApprovalProcess(String boCode);
 
 	/**
 	 * 加载审批流程
