@@ -45,5 +45,6 @@ public class testConfiguration extends TestCase {
 		System.out.println(MyConfiguration.getWorkFolder());
 		System.out.println(MyConfiguration.getResource("i18n"));
 		// System.out.println(MyConfiguration.getResource("app.xml"));//null
+		MyConfiguration.update();
 	}
 }

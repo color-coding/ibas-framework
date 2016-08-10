@@ -19,6 +19,9 @@ public class BOCacheContainers implements Iterable<IBOCacheContainer> {
 	public boolean add(IBOCacheContainer container) {
 		for (int i = 0; i < this.cacheList.size(); i++) {
 			IBOCacheContainer item = this.cacheList.get(i);
+			if (item == null) {
+				continue;
+			}
 			if (item.getDataKey().equals(container.getDataKey())) {
 				if (item.getCacheTime().after(container.getCacheTime())) {
 					// 晚于已缓存的数据时间，退出
@@ -34,9 +37,41 @@ public class BOCacheContainers implements Iterable<IBOCacheContainer> {
 		return true;
 	}
 
+	/**
+	 * 遍历有效的缓存容器（未过期的）
+	 */
 	@Override
 	public Iterator<IBOCacheContainer> iterator() {
-		return this.cacheList.iterator();
+
+		return new Iterator<IBOCacheContainer>() {
+			int cursor = -1;
+			int lastRet = 0;
+
+			@Override
+			public boolean hasNext() {
+				for (int i = lastRet + 1; i < cacheList.size(); i++) {
+					IBOCacheContainer item = cacheList.get(i);
+					if (item != null) {
+						if (!item.isExpired()) {
+							cursor = i;
+							return true;
+						}
+					}
+				}
+				return false;
+			}
+
+			@Override
+			public IBOCacheContainer next() {
+				if (cursor >= cacheList.size()) {
+					return null;
+				}
+				lastRet = cursor;
+				return cacheList.get(cursor);
+			}
+
+		};
+		// return this.cacheList.iterator();
 	}
 
 	public void remove(IBOCacheContainer container) {
@@ -45,6 +80,9 @@ public class BOCacheContainers implements Iterable<IBOCacheContainer> {
 
 	public void remove(IBusinessObjectBase data) {
 		for (IBOCacheContainer item : cacheList) {
+			if (item == null) {
+				continue;
+			}
 			if (item.getDataKey().equals(data.toString())) {
 				this.remove(item);
 			}

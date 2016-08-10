@@ -13,6 +13,13 @@ public interface IUser {
 	int getId();
 
 	/**
+	 * 获取-用户归属
+	 * 
+	 * @return
+	 */
+	String getBelong();
+
+	/**
 	 * 检查授权
 	 * 
 	 * @param authorizationCode

@@ -111,4 +111,26 @@ public class ConfigurationManager implements IConfigurationManager {
 		element.setValue(value);
 	}
 
+	@Override
+	public synchronized void update(String filePath) {
+		if (filePath == null || filePath.equals(""))
+			return;
+		File file = new File(filePath);
+		if (!file.exists())
+			return;
+		try {
+			InputStream stream = new FileInputStream(file);
+			JAXBContext context = JAXBContext.newInstance(ConfigurationManager.class);
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			ConfigurationManager tmpManager = (ConfigurationManager) unmarshaller.unmarshal(stream);
+			for (ConfigurationElement item : tmpManager.getConfigurationElements()) {
+				this.addSetting(item.getKey(), item.getValue());
+			}
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

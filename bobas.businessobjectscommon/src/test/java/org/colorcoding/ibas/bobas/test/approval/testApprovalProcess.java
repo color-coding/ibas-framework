@@ -47,6 +47,11 @@ public class testApprovalProcess extends TestCase {
 			public void checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
 
 			}
+
+			@Override
+			public String getBelong() {
+				return null;
+			}
 		};
 		IUser manager = new IUser() {
 			@Override
@@ -58,6 +63,11 @@ public class testApprovalProcess extends TestCase {
 			public void checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
 
 			}
+
+			@Override
+			public String getBelong() {
+				return null;
+			}
 		};
 		IUser boss = new IUser() {
 			@Override
@@ -68,6 +78,11 @@ public class testApprovalProcess extends TestCase {
 			@Override
 			public void checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
 
+			}
+
+			@Override
+			public String getBelong() {
+				return null;
 			}
 		};
 		// 创建审批流程
@@ -196,6 +211,11 @@ public class testApprovalProcess extends TestCase {
 			public void checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
 
 			}
+
+			@Override
+			public String getBelong() {
+				return null;
+			}
 		};
 		IUser leader = new IUser() {
 			@Override
@@ -206,6 +226,11 @@ public class testApprovalProcess extends TestCase {
 			@Override
 			public void checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
 
+			}
+
+			@Override
+			public String getBelong() {
+				return null;
 			}
 		};
 		IUser manager = new IUser() {
@@ -218,6 +243,11 @@ public class testApprovalProcess extends TestCase {
 			public void checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
 
 			}
+
+			@Override
+			public String getBelong() {
+				return null;
+			}
 		};
 		IUser boss = new IUser() {
 			@Override
@@ -228,6 +258,11 @@ public class testApprovalProcess extends TestCase {
 			@Override
 			public void checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
 
+			}
+
+			@Override
+			public String getBelong() {
+				return null;
 			}
 		};
 		// 创建审批流程

@@ -6,6 +6,7 @@ import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.organization.UnknownUser;
+import org.colorcoding.ibas.bobas.ownership.IDataOwnership;
 
 public abstract class BORepositoryBase implements IBORepositoryReadonly {
 
@@ -89,6 +90,12 @@ public abstract class BORepositoryBase implements IBORepositoryReadonly {
 			bo.setCreateUserSign(this.getCurrentUser().getId());
 			bo.setCreateActionId(this.getTransactionId());
 			bo.setLogInst(1);
+			if (bo instanceof IDataOwnership) {
+				// 数据所有者标记
+				IDataOwnership data = (IDataOwnership) bo;
+				data.setDataOwner(this.getCurrentUser().getId());
+				data.setOrganization(this.getCurrentUser().getBelong());
+			}
 		} else {
 			// 更新对象
 			bo.setUpdateDate(DateTime.getToday());

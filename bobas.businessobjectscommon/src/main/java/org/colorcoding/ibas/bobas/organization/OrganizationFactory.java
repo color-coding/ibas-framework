@@ -37,6 +37,9 @@ public class OrganizationFactory extends ConfigurableFactory {
 					if (defaultManager == null) {
 						// 初始化后仍然无效
 						throw new RuntimeException(i18n.prop("msg_bobas_create_organization_manager_falid"));
+					} else {
+						// 有效数据，进行初始化
+						defaultManager.initialize();
 					}
 				}
 			}
@@ -58,6 +61,10 @@ public class OrganizationFactory extends ConfigurableFactory {
 				@Override
 				public IUser getUser(int id) {
 					return new UnknownUser();
+				}
+
+				@Override
+				public void initialize() {
 				}
 			};
 		}

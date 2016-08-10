@@ -13,16 +13,32 @@ public interface IDataOwnership {
 	String getObjectCode();
 
 	/**
-	 * 获取-数据所有人
+	 * 获取-数据所有者
 	 * 
-	 * @return
+	 * @return 值
 	 */
 	Integer getDataOwner();
 
 	/**
+	 * 设置-数据所有者
+	 * 
+	 * @param value
+	 *            值
+	 */
+	void setDataOwner(Integer value);
+
+	/**
 	 * 获取-数据所属组织
 	 * 
-	 * @return
+	 * @return 值
 	 */
 	String getOrganization();
+
+	/**
+	 * 设置-数据所属组织
+	 * 
+	 * @param value
+	 *            值
+	 */
+	void setOrganization(String value);
 }

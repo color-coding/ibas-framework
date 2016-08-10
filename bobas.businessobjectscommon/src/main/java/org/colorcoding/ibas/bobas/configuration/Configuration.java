@@ -185,4 +185,17 @@ public class Configuration {
 		return url.toURI();
 	}
 
+	/**
+	 * 从配置文件重新加载配置项目
+	 */
+	public static void update() {
+		String folder = getStartupFolder();
+		if (folder.endsWith("target" + File.separator + "test-classes")) {
+			// 测试脚本 target\test-classes
+			folder = (new File(folder)).getParentFile().getParentFile().getPath();
+		}
+		String configFile = String.format("%s%sapp.xml", folder, File.separator);
+		getInstance().update(configFile);
+		RuntimeLog.log(RuntimeLog.MSG_CONFIG_READ_FILE_DATA, configFile);
+	}
 }

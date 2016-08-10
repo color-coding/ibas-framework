@@ -8,6 +8,11 @@ package org.colorcoding.ibas.bobas.organization;
  */
 public interface IOrganizationManager {
 	/**
+	 * 初始化
+	 */
+	void initialize();
+
+	/**
 	 * 获取用户
 	 * 
 	 * @param token

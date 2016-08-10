@@ -4,6 +4,7 @@ import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.data.ComputeException;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.measurement.emTimeUnit;
+import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**
  * 业务对象缓存容器
@@ -62,7 +63,7 @@ class BOCacheContainer implements IBOCacheContainer {
 				return true;
 			}
 		} catch (ComputeException e) {
-			e.printStackTrace();
+			RuntimeLog.log(e);
 		}
 		return false;
 	}

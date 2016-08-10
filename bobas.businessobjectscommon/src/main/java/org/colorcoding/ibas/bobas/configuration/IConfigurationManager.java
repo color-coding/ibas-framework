@@ -35,4 +35,12 @@ public interface IConfigurationManager {
 	 * @param value
 	 */
 	void addSetting(String key, String value);
+
+	/**
+	 * 更新配置项目
+	 * 
+	 * @param filePath
+	 *            配置文件路径
+	 */
+	void update(String filePath);
 }
