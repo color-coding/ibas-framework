@@ -64,9 +64,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 		if (this.repository != null) {
 			// 同步用户信息
 			if (this.getCurrentUser() != null) {
-				if (this.repository.getCurrentUser() == null) {
-					this.repository.setCurrentUser(this.getCurrentUser());
-				}
+				this.repository.setCurrentUser(this.getCurrentUser());
 			} else {
 				if (this.repository.getCurrentUser() != null) {
 					this.setCurrentUser(this.repository.getCurrentUser());

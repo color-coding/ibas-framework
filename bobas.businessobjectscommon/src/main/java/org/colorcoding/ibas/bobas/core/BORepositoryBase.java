@@ -93,8 +93,10 @@ public abstract class BORepositoryBase implements IBORepositoryReadonly {
 			if (bo instanceof IDataOwnership) {
 				// 数据所有者标记
 				IDataOwnership data = (IDataOwnership) bo;
-				data.setDataOwner(this.getCurrentUser().getId());
-				data.setOrganization(this.getCurrentUser().getBelong());
+				if (data.getDataOwner() == null || data.getDataOwner() == 0)
+					data.setDataOwner(this.getCurrentUser().getId());
+				if (data.getOrganization() == null || data.getOrganization().equals(""))
+					data.setOrganization(this.getCurrentUser().getBelong());
 			}
 		} else {
 			// 更新对象

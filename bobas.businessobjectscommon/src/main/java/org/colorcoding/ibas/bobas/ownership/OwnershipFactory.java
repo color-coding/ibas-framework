@@ -108,7 +108,7 @@ public class OwnershipFactory extends ConfigurableFactory {
 
 			};
 		}
-		Class<?> managerClass = getInstance(OwnershipFactory.class, type, "DataOwnershipJudger");
+		Class<?> managerClass = getInstance(OwnershipFactory.class, type, "OwnershipJudger");
 		if (managerClass == null) {
 			throw new ClassNotFoundException("msg_bobas_not_found_data_ownership_judger");
 		}
