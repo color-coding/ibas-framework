@@ -190,7 +190,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	 *            用户口令
 	 * @throws InvalidTokenException
 	 */
-	protected void setCurrentUser(String token) throws InvalidTokenException {
+	void setCurrentUser(String token) throws InvalidTokenException {
 		try {
 			IOrganizationManager orgManager = OrganizationFactory.createManager();
 			IUser user = orgManager.getUser(token);
@@ -297,9 +297,8 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 		try {
 			this.setCurrentUser(token);// 解析并设置当前用户
 		} catch (InvalidTokenException e) {
-			OperationResult<P> operationResult = new OperationResult<P>();
-			operationResult.setError(e);
 			RuntimeLog.log(e);
+			return new OperationResult<P>(e);
 		}
 		if (this.getDataCacheUsage() == DataCacheUsage.ONLY_USE) {
 			// 仅使用缓存数据

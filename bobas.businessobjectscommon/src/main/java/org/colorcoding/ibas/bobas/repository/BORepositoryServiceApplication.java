@@ -47,6 +47,12 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 		this.userToken = userToken;
 	}
 
+	@Override
+	void setCurrentUser(String token) throws InvalidTokenException {
+		this.setUserToken(token);
+		super.setCurrentUser(token);
+	}
+
 	private IOwnershipJudger ownershipJudger = null;
 
 	private final IOwnershipJudger getOwnershipJudger() {
@@ -200,9 +206,12 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 	/**
 	 * 检查调用方法权限
 	 * 
+	 * @throws InvalidTokenException
+	 * 
 	 * @throws OwnershipException
 	 */
-	protected void checkMethodPermissions() throws UnauthorizedException {
+	protected void checkMethodPermissions() throws UnauthorizedException, InvalidTokenException {
+		this.setCurrentUser(this.getUserToken());
 		StackTraceElement[] yste = Thread.currentThread().getStackTrace();
 		if (yste == null || yste.length < 3) {
 			throw new RuntimeException(i18n.prop("msg_bobas_not_found_method_name"));

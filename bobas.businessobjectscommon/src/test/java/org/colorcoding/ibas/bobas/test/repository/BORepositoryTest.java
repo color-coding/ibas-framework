@@ -143,7 +143,7 @@ public class BORepositoryTest extends BORepositoryServiceApplication
 	public OperationMessages closeOrders(String token) {
 		OperationMessages operationMessages = new OperationMessages();
 		try {
-			this.setCurrentUser(token);
+			this.setUserToken(token);
 			this.checkMethodPermissions();
 		} catch (OwnershipException e) {
 			operationMessages.setError(e);
@@ -157,7 +157,7 @@ public class BORepositoryTest extends BORepositoryServiceApplication
 	public OperationMessages openOrders(String token) {
 		OperationMessages operationMessages = new OperationMessages();
 		try {
-			this.setCurrentUser(token);
+			this.setUserToken(token);
 			this.checkMethodPermissions();
 		} catch (OwnershipException e) {
 			operationMessages.setError(e);
