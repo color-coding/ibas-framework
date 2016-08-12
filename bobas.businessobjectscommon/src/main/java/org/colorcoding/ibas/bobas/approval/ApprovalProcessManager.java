@@ -27,9 +27,9 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
 				return null;
 			}
 			// 创建审批流程并尝试开始
-			Iterator<IApprovalProcess> iteratorProcess = this.createApprovalProcess(data.getObjectCode());
-			while (iteratorProcess.hasNext()) {
-				IApprovalProcess aProcess = iteratorProcess.next();
+			Iterator<IApprovalProcess> process = this.createApprovalProcess(data.getObjectCode());
+			while (process != null && process.hasNext()) {
+				IApprovalProcess aProcess = process.next();
 				if (aProcess.start(data))
 					return aProcess;// 审批流程开始
 			}
@@ -83,7 +83,8 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
 	/**
 	 * 加载审批流程
 	 * 
-	 * @param boCode
+	 * @param boKey
+	 *            业务对象标记
 	 * @return
 	 */
 	protected abstract IApprovalProcess loadApprovalProcess(String boKey);

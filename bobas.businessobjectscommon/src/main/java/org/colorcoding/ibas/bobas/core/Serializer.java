@@ -12,7 +12,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 /**
- * 对象深度克隆
+ * 序列化对象
  */
 public class Serializer {
 	/**
@@ -32,9 +32,14 @@ public class Serializer {
 	 * 
 	 * @return 克隆的对象实例
 	 */
-	public static Object Clone(Object object) {
+	public static Object Clone(Object object, Class<?>... types) {
 		try {
-			JAXBContext context = JAXBContext.newInstance(object.getClass());
+			Class<?>[] knownTypes = new Class[types.length + 1];
+			knownTypes[0] = object.getClass();
+			for (int i = 0; i < types.length; i++) {
+				knownTypes[i + 1] = types[0];
+			}
+			JAXBContext context = JAXBContext.newInstance(knownTypes);
 			Marshaller marshaller = context.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");// //编码格式
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);// 是否格式化生成的xml串
@@ -61,11 +66,11 @@ public class Serializer {
 	 *            是否缩进
 	 * @return
 	 */
-	public static String toString(String type, Object object, boolean formated) {
+	public static String toString(String type, Object object, boolean formated, Class<?>... types) {
 		if (OUT_TYPE_XML.equals(type)) {
-			return toXmlString(object, false);
+			return toXmlString(object, formated, types);
 		} else if (OUT_TYPE_JSON.equals(type)) {
-			return toJsonString(object, false);
+			return toJsonString(object, formated, types);
 		}
 		return object.toString();
 	}
@@ -79,9 +84,14 @@ public class Serializer {
 	 *            是否格式化
 	 * @return 对象的字符串
 	 */
-	public static String toXmlString(Object object, boolean formated) {
+	public static String toXmlString(Object object, boolean formated, Class<?>... types) {
 		try {
-			JAXBContext context = JAXBContext.newInstance(object.getClass());
+			Class<?>[] knownTypes = new Class[types.length + 1];
+			knownTypes[0] = object.getClass();
+			for (int i = 0; i < types.length; i++) {
+				knownTypes[i + 1] = types[0];
+			}
+			JAXBContext context = JAXBContext.newInstance(knownTypes);
 			Marshaller marshaller = context.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");// 编码格式
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);// 是否格式化生成的xml串
@@ -152,12 +162,21 @@ public class Serializer {
 	 * 格式化json字符串
 	 * 
 	 * @param object
+	 *            数据
 	 * @param formated
+	 *            是否带格式
+	 * @param types
+	 *            已知的类型
 	 * @return
 	 */
-	public static String toJsonString(Object object, boolean formated) {
+	public static String toJsonString(Object object, boolean formated, Class<?>... types) {
 		try {
-			JAXBContext context = createJAXBContextJson(new Class[] { object.getClass() });
+			Class<?>[] knownTypes = new Class[types.length + 1];
+			knownTypes[0] = object.getClass();
+			for (int i = 0; i < types.length; i++) {
+				knownTypes[i + 1] = types[0];
+			}
+			JAXBContext context = createJAXBContextJson(knownTypes);
 
 			StringWriter writer = new StringWriter();
 			Marshaller marshaller = context.createMarshaller();
