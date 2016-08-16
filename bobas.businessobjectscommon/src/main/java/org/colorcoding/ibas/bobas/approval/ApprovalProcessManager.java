@@ -6,6 +6,7 @@ import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
+import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**
  * 默认流程管理员
@@ -22,21 +23,25 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
 		}
 		if (data.isNew()) {
 			// 新数据
-			if (!this.checkDataStatus(data)) {
-				// 状态检测未通过
-				return null;
-			}
-			// 创建审批流程并尝试开始
-			Iterator<IApprovalProcess> process = this.createApprovalProcess(data.getObjectCode());
-			while (process != null && process.hasNext()) {
-				IApprovalProcess aProcess = process.next();
-				if (aProcess.start(data))
-					return aProcess;// 审批流程开始
+			if (this.checkDataStatus(data)) {
+				// 状态检测通过
+				// 创建审批流程并尝试开始
+				Iterator<IApprovalProcess> process = this.createApprovalProcess(data.getObjectCode());
+				while (process != null && process.hasNext()) {
+					IApprovalProcess aProcess = process.next();
+					if (aProcess.start(data)) {
+						RuntimeLog.log(RuntimeLog.MSG_APPROVAL_PROCESS_STARTED, data, aProcess.getName());
+						return aProcess;// 审批流程开始
+					}
+				}
 			}
 		} else {
 			// 不是新建的数据
-			IApprovalProcess aProcess = this.loadApprovalProcess(data.getIdentifiers());
-			return aProcess;
+			if (this.checkDataStatus(data)) {
+				// 状态检测通过
+				IApprovalProcess aProcess = this.loadApprovalProcess(data.getIdentifiers());
+				return aProcess;
+			}
 		}
 		return null;
 	}

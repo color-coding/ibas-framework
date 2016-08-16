@@ -6,11 +6,14 @@ import org.colorcoding.ibas.bobas.approval.ApprovalFactory;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcess;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcessManager;
+import org.colorcoding.ibas.bobas.bo.IBOReferenced;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.core.SaveActionsEvent;
 import org.colorcoding.ibas.bobas.core.SaveActionsException;
 import org.colorcoding.ibas.bobas.core.SaveActionsType;
+import org.colorcoding.ibas.bobas.data.emYesNo;
+import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.logics.BusinessLogicsFactory;
 import org.colorcoding.ibas.bobas.logics.IBusinessLogicsChain;
 import org.colorcoding.ibas.bobas.logics.IBusinessLogicsManager;
@@ -29,6 +32,16 @@ public class BORepositoryLogicService extends BORepositoryService {
 	@Override
 	public boolean onActionsEvent(SaveActionsEvent event) {
 		try {
+			if (event.getType() == SaveActionsType.before_deleting) {
+				// 删除前检查
+				if (event.getBO() instanceof IBOReferenced) {
+					IBOReferenced bo = (IBOReferenced) event.getBO();
+					if (bo.getReferenced() == emYesNo.Yes) {
+						// 被引用的数据，不允许删除，可以标记删除
+						throw new Exception(i18n.prop("msg_bobas_not_allow_delete_referenced_bo", event.getBO()));
+					}
+				}
+			}
 			if (event.getType() == SaveActionsType.before_adding || event.getType() == SaveActionsType.before_deleting
 					|| event.getType() == SaveActionsType.before_updating) {
 				// 业务规则检查
@@ -91,7 +104,10 @@ public class BORepositoryLogicService extends BORepositoryService {
 		if (approvalProcess != null) {
 			// 创建了流程实例
 			// 保存流程实例，使用当前仓库以保证事务完整
-			approvalProcess.checkToSave(this.getCurrentUser());// 检查用户是否有权限保存
+			if (!bo.isNew()) {
+				// 非新建时，检查用户是否有权限保存修改
+				approvalProcess.checkToSave(this.getCurrentUser());
+			}
 			approvalProcess.save(this.getRepository());
 		}
 	}

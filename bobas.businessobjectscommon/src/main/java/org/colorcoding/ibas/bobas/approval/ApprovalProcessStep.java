@@ -9,7 +9,6 @@ import org.colorcoding.ibas.bobas.data.emApprovalStepStatus;
 public abstract class ApprovalProcessStep implements IApprovalProcessStep {
 
 	public ApprovalProcessStep() {
-		this.setStatus(emApprovalStepStatus.Pending);
 
 	}
 

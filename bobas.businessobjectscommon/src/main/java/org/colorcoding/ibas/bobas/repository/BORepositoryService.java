@@ -35,9 +35,10 @@ import org.colorcoding.ibas.bobas.organization.UnknownUser;
 public class BORepositoryService implements IBORepositoryService, SaveActionsListener {
 
 	public BORepositoryService() {
-		DataCacheUsage dataCacheUsage = MyConfiguration
-				.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_REPOSITORY_DATA_CACHE_USAGE, DataCacheUsage.FIRST_USE);
-		this.setDataCacheUsage(dataCacheUsage);
+		this.setDataCacheUsage(MyConfiguration
+				.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_REPOSITORY_DATA_CACHE_USAGE, DataCacheUsage.FIRST_USE));
+		this.setRefetchAfterSave(
+				!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_REFETCH, false));
 	}
 
 	/**
@@ -169,6 +170,16 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 
 	public final void setDataCacheUsage(DataCacheUsage dataCacheUsage) {
 		this.dataCacheUsage = dataCacheUsage;
+	}
+
+	private boolean refetchAfterSave;
+
+	public boolean isRefetchAfterSave() {
+		return refetchAfterSave;
+	}
+
+	public void setRefetchAfterSave(boolean refetchAfterSave) {
+		this.refetchAfterSave = refetchAfterSave;
 	}
 
 	private IUser currentUser = null;
@@ -356,7 +367,6 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 			post = !MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_POST_TRANSACTION, false);
 			boolean toDelete = bo.isDeleted();
 			boolean toAdd = bo.isNew();
-			boolean refetch = !MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_REFETCH, false);
 			IBusinessObjectBase rBO = null;
 			if (post) {
 				// 需要通知业务对象事务，打开数据库事务
@@ -395,7 +405,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 				rBO = null;
 			} else {
 				// 非删除操作
-				if (refetch) {
+				if (this.isRefetchAfterSave()) {
 					// 要求重新查询
 					try {
 						operationResult = boRepository.fetchCopyEx(rBO);

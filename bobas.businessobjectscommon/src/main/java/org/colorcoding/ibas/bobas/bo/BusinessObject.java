@@ -151,6 +151,12 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 			tagBO.setUpdateTime((short) 0);
 			tagBO.setUpdateUserSign(UnknownUser.UNKNOWN_USER_SIGN);
 		}
+		// 重置引用状态
+		if (this instanceof IBOReferenced) {
+			IBOReferenced refBO = (IBOReferenced) this;
+			refBO.setDeleted(emYesNo.No);
+			refBO.setReferenced(emYesNo.No);
+		}
 		// 重置对象状态
 		if (this instanceof IBODocument) {
 			IBODocument docBO = (IBODocument) this;
@@ -262,6 +268,17 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	 * 删除数据
 	 */
 	public void delete() {
-		this.markDeleted(true);
+		if (!this.isNew()) {
+			// 非新建状态删除可用
+			if (this instanceof IBOReferenced) {
+				IBOReferenced refBO = (IBOReferenced) this;
+				if (refBO.getReferenced() == emYesNo.Yes) {
+					// 被引用的数据，不允许删除
+					refBO.setDeleted(emYesNo.Yes);
+					return;
+				}
+			}
+			this.markDeleted(true);
+		}
 	}
 }
