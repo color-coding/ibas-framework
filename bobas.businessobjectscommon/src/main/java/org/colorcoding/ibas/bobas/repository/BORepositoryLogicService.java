@@ -29,6 +29,33 @@ import org.colorcoding.ibas.bobas.rules.ICheckRules;
  */
 public class BORepositoryLogicService extends BORepositoryService {
 
+	public BORepositoryLogicService() {
+		this.setCheckRules(
+				!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_BUSINESS_LOGICS, false));
+		this.setCheckApprovalProcess(
+				!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_BUSINESS_APPROVAL, false));
+	}
+
+	private boolean checkRules;
+
+	protected boolean isCheckRules() {
+		return checkRules;
+	}
+
+	protected void setCheckRules(boolean value) {
+		this.checkRules = value;
+	}
+
+	private boolean checkApprovalProcess;
+
+	protected boolean isCheckApprovalProcess() {
+		return checkApprovalProcess;
+	}
+
+	protected void setCheckApprovalProcess(boolean value) {
+		this.checkApprovalProcess = value;
+	}
+
 	@Override
 	public boolean onActionsEvent(SaveActionsEvent event) {
 		try {
@@ -45,19 +72,19 @@ public class BORepositoryLogicService extends BORepositoryService {
 			if (event.getType() == SaveActionsType.before_adding || event.getType() == SaveActionsType.before_deleting
 					|| event.getType() == SaveActionsType.before_updating) {
 				// 业务规则检查
-				if (!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_BUSINESS_LOGICS, false)) {
+				if (this.isCheckRules()) {
 					// 检查规则
 					this.checkRules(event.getType(), event.getBO());
 				}
 				// 审批流程相关，先执行审批逻辑，可能对bo的状态有影响
-				if (!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_BUSINESS_APPROVAL, false)) {
+				if (this.isCheckApprovalProcess()) {
 					// 触发审批流程
 					this.triggerApprovals(event.getBO());
 				}
 			}
 			if (event.getType() != SaveActionsType.before_adding && event.getType() != SaveActionsType.deleted) {
 				// 业务逻辑相关，最后执行业务逻辑，因为要求状态可用
-				if (!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_BUSINESS_LOGICS, false)) {
+				if (this.isCheckRules()) {
 					// 执行业务逻辑
 					this.runLogics(event.getType(), event.getBO());
 				}

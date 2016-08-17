@@ -57,7 +57,11 @@ public class ApprovalDataProxy extends TrackableBase implements IApprovalData {
 	}
 
 	public void setApprovalStatus(emApprovalStatus value) {
+		if (this.approvalStatus == value) {
+			return;
+		}
 		this.approvalStatus = value;
+		this.markDirty();
 	}
 
 	private String identifiers;

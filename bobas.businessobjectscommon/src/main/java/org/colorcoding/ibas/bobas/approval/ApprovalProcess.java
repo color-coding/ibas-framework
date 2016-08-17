@@ -354,7 +354,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	 * @param boRepository
 	 */
 	private void saveData(ApprovalProcessRepository apRepository) throws Exception {
-		if (!this.getApprovalData().isNew()) {
+		if (!this.getApprovalData().isNew() && this.getApprovalData().isDirty()) {
 			// 审批数据类型不是业务对象，且数据不是新的（新数据在保存时触发的审批流程）。
 			if (!(this.getApprovalData() instanceof IBusinessObject)) {
 				// 审批数据不是业务对象，则查询实际业务对象
