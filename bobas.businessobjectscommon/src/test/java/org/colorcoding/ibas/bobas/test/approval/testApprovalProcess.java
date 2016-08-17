@@ -355,6 +355,8 @@ public class testApprovalProcess extends TestCase {
 		assertEquals("ap step 20 was not Processing.", step30.getStatus(), emApprovalStepStatus.Processing);
 		assertEquals("ap was not Processing.", aProcess.getStatus(), emApprovalStatus.Processing);
 
+		// aProcess.approval(step10.getId(), emApprovalResult.Processing, "",
+		// "");// 跳步骤重置，此处应报错
 		aProcess.setOwner(salse);
 		aProcess.cancel("", "");
 

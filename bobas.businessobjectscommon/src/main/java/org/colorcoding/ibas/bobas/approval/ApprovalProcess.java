@@ -101,13 +101,15 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 				preStep = item;
 			}
 		} else if (this.getStatus() == emApprovalStatus.Approved) {
-			for (IApprovalProcessStep item : this.getProcessSteps()) {
+			for (int i = this.getProcessSteps().length - 1; i >= 0; i--) {
+				IApprovalProcessStep item = this.getProcessSteps()[i];
 				if (item.getStatus() == emApprovalStepStatus.Approved) {
 					return item;
 				}
 			}
 		} else if (this.getStatus() == emApprovalStatus.Rejected) {
-			for (IApprovalProcessStep item : this.getProcessSteps()) {
+			for (int i = this.getProcessSteps().length - 1; i >= 0; i--) {
+				IApprovalProcessStep item = this.getProcessSteps()[i];
 				if (item.getStatus() == emApprovalStepStatus.Rejected) {
 					return item;
 				}
@@ -234,6 +236,10 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 				this.setFinishedTime(DateTime.getMaxValue());
 				this.setStatus(emApprovalStatus.Processing);
 				this.onStatusChanged();
+			} else {
+				// 操作的步骤不是正在进行的步骤
+				throw new ApprovalProcessException(
+						i18n.prop("msg_bobas_next_approval_process_step_was_stated", stepId));
 			}
 		} else {
 			// 当前步骤操作
