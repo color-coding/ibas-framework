@@ -16,7 +16,6 @@ import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.repository.BORepository4DbReadonly;
-import org.colorcoding.ibas.bobas.repository.DataCacheUsage;
 import org.colorcoding.ibas.bobas.repository.IBORepository4DbReadonly;
 import org.colorcoding.ibas.bobas.repository.InvalidRepositoryException;
 import org.colorcoding.ibas.bobas.test.bo.IMaterials;
@@ -309,7 +308,7 @@ public class testBORepository extends TestCase {
 		materials02.setItemCode(String.format("B%s", DateTime.getNow().getTime()));
 		materials02.setItemDescription("Disk 5T");
 		BORepositoryTest boRepository = new BORepositoryTest();
-		boRepository.setDataCacheUsage(DataCacheUsage.NOT_USE);// 缓存会导致数据检索不到
+		boRepository.setUseCache(false);// 缓存会导致数据检索不到
 		IOperationResult<?> operationResult;
 
 		operationResult = boRepository.saveMaterials(materials01);
@@ -405,7 +404,7 @@ public class testBORepository extends TestCase {
 		materials02.setItemDescription("Disk 5T");
 		// 保存物料到文件系统
 		BORepositoryTest boRepository = new BORepositoryTest();
-		boRepository.setDataCacheUsage(DataCacheUsage.NOT_USE);// 缓存会导致数据检索不到
+		boRepository.setUseCache(false);// 缓存会导致数据检索不到
 		IOperationResult<?> operationResult;
 
 		operationResult = boRepository.saveMaterials(materials01);

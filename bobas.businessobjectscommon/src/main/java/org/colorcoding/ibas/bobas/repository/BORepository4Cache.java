@@ -11,7 +11,6 @@ import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.expressions.ExpressionFactory;
 import org.colorcoding.ibas.bobas.expressions.JudgmentLinks;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**
  * 业务对象仓库-缓存
@@ -124,7 +123,6 @@ public class BORepository4Cache extends BORepositoryBase implements IBORepositor
 			}
 		} catch (Exception e) {
 			operationResult.setError(e);
-			RuntimeLog.log(e);
 		}
 		return operationResult;
 	}

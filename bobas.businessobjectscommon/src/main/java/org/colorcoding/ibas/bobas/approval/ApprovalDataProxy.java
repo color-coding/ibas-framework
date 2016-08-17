@@ -13,6 +13,10 @@ import org.colorcoding.ibas.bobas.data.emApprovalStatus;
  */
 public class ApprovalDataProxy extends TrackableBase implements IApprovalData {
 
+	public ApprovalDataProxy() {
+		this.markOld();
+	}
+
 	@Override
 	public void markOld(boolean forced) {
 		this.markOld();

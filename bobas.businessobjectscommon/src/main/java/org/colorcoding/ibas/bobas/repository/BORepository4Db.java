@@ -20,7 +20,6 @@ import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
 import org.colorcoding.ibas.bobas.db.IDbCommand;
 import org.colorcoding.ibas.bobas.db.IDbDataReader;
 import org.colorcoding.ibas.bobas.i18n.i18n;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**
  * 基本数据库仓库-读写
@@ -136,7 +135,6 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 			operationResult.addResultObjects(nBO);
 		} catch (Exception e) {
 			operationResult.setError(e);
-			RuntimeLog.log(e);
 		}
 		return operationResult;
 	}
@@ -154,7 +152,6 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 			operationResult.addResultObjects(nBO);
 		} catch (Exception e) {
 			operationResult.setError(e);
-			RuntimeLog.log(e);
 		}
 		return operationResult;
 	}

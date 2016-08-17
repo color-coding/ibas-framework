@@ -11,19 +11,19 @@ class AssociatedFieldDataBO extends AssociatedFieldDataBase<Object> {
 		super(assoCount);
 	}
 
-	private Object _value = null;
+	private Object value = null;
 
 	@Override
 	public Object getValue() {
-		return this._value;
+		return this.value;
 	}
 
 	@Override
 	public boolean setValue(Object value) {
-		if (this._value != null && this._value.equals(value)) {
+		if (this.value != null && this.value.equals(value)) {
 			return false;
 		}
-		this._value = value;
+		this.value = value;
 		this.setDirty(true);
 		return true;
 	}
@@ -38,22 +38,22 @@ class AssociatedFieldDataArray extends AssociatedFieldDataBase<Object> {
 		super(assoCount);
 	}
 
-	private Object _value;
+	private Object value;
 
 	@Override
 	public Object getValue() {
-		return this._value;
+		return this.value;
 	}
 
 	@Override
 	public boolean setValue(Object value) {
 		if (value == null) {
 			// 置空
-			this._value = null;
+			this.value = null;
 			this.setDirty(true);
 			return true;
 		}
-		if (this._value != null && this._value.equals(value)) {
+		if (this.value != null && this.value.equals(value)) {
 			// 无变化
 			return false;
 		}
@@ -64,7 +64,7 @@ class AssociatedFieldDataArray extends AssociatedFieldDataBase<Object> {
 			for (int i = 0; i < length; i++) {
 				Array.set(newValue, i, Array.get(value, i));
 			}
-			this._value = newValue;
+			this.value = newValue;
 			this.setDirty(true);
 			return true;
 		}

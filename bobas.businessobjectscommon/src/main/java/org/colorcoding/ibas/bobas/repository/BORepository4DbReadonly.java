@@ -78,10 +78,10 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 		this.dbType = value;
 	}
 
-	private IDbConnection dbConnection = null;
+	private volatile IDbConnection dbConnection = null;
 
 	@Override
-	public IDbConnection getDbConnection() throws DbException {
+	public synchronized IDbConnection getDbConnection() throws DbException {
 		if (this.dbConnection == null) {
 			this.dbConnection = this.createDbAdapter().createDbConnection(this.getDbSign());
 		} else if (this.dbConnection.isClosed()) {
@@ -229,7 +229,6 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 			operationResult.addResultObjects(bos);
 		} catch (Exception e) {
 			operationResult.setError(e);
-			RuntimeLog.log(e);
 		}
 		return operationResult;
 	}
@@ -245,7 +244,6 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 			operationResult.addResultObjects(bos);
 		} catch (Exception e) {
 			operationResult.setError(e);
-			RuntimeLog.log(e);
 		}
 		return operationResult;
 	}
@@ -261,7 +259,6 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 			operationResult.addResultObjects(bos);
 		} catch (Exception e) {
 			operationResult.setError(e);
-			RuntimeLog.log(e);
 		}
 		return operationResult;
 	}

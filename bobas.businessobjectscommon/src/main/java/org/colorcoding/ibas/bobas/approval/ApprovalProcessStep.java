@@ -47,9 +47,7 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
 			throw new UnlogicalException();
 		}
 		this.setStartedTime(DateTime.getNow());
-		this.setFinishedTime(DateTime.getNow());
 		this.setStatus(emApprovalStepStatus.Processing);
-
 	}
 
 	/**
@@ -93,7 +91,7 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
 		if (this.getStatus() != emApprovalStepStatus.Approved && this.getStatus() != emApprovalStepStatus.Rejected) {
 			throw new UnlogicalException();
 		}
-		this.setFinishedTime(DateTime.getNow());
+		this.setFinishedTime(DateTime.getMaxValue());
 		this.setStatus(emApprovalStepStatus.Processing);
 		this.setJudgment("");
 	}

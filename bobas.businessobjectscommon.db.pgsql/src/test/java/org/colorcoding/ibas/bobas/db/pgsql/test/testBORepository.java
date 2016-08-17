@@ -11,7 +11,6 @@ import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
-import org.colorcoding.ibas.bobas.repository.DataCacheUsage;
 import org.colorcoding.ibas.bobas.repository.InvalidRepositoryException;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrder;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrderItem;
@@ -102,7 +101,7 @@ public class testBORepository extends TestCase {
 				operationResult.getMessage(), operationResult.getResultObjects().size()));
 		assertEquals(operationResult.getResultCode(), 0);
 		for (int i = 0; i < 3; i++) {
-			boRepository.setDataCacheUsage(DataCacheUsage.NOT_USE);
+			boRepository.setUseCache(false);
 			operationResult = boRepository.fetchSalesOrder(criteria);
 			System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
 					operationResult.getMessage(), operationResult.getResultObjects().size()));

@@ -104,10 +104,9 @@ public class BORepositoryLogicService extends BORepositoryService {
 		if (approvalProcess != null) {
 			// 创建了流程实例
 			// 保存流程实例，使用当前仓库以保证事务完整
-			if (!bo.isNew()) {
+			if (!bo.isNew())
 				// 非新建时，检查用户是否有权限保存修改
 				approvalProcess.checkToSave(this.getCurrentUser());
-			}
 			approvalProcess.save(this.getRepository());
 		}
 	}

@@ -31,6 +31,10 @@ public class MyConfiguration extends Configuration {
 	 */
 	public static String CONFIG_ITEM_BO_DISABLED_REFETCH = "DisabledRefetch";
 	/**
+	 * 配置项目-关闭仓库缓存
+	 */
+	public static String CONFIG_ITEM_BO_REPOSITORY_DISABLED_CACHE = "DisabledCache";
+	/**
 	 * 配置项目-关闭业务对象业务逻辑
 	 */
 	public static String CONFIG_ITEM_BO_DISABLED_BUSINESS_LOGICS = "DisabledBusinessLogics";
@@ -38,10 +42,6 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-关闭业务对象审批
 	 */
 	public static String CONFIG_ITEM_BO_DISABLED_BUSINESS_APPROVAL = "DisabledBusinessApproval";
-	/**
-	 * 配置项目-业务对象缓存用发
-	 */
-	public static String CONFIG_ITEM_BO_REPOSITORY_DATA_CACHE_USAGE = "BOCacheUsage";
 	/**
 	 * 配置项目-开启只读业务仓库
 	 */

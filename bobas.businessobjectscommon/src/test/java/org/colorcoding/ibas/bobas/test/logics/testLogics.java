@@ -6,7 +6,6 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.repository.BORepository4File;
-import org.colorcoding.ibas.bobas.repository.DataCacheUsage;
 import org.colorcoding.ibas.bobas.repository.IBORepository4File;
 import org.colorcoding.ibas.bobas.test.bo.IMaterials;
 import org.colorcoding.ibas.bobas.test.bo.Materials;
@@ -28,7 +27,7 @@ public class testLogics extends TestCase {
 		IBORepository4File fileRepository = new BORepository4File();
 		// fileRepository.setRepositoryFolder("D:\\WorkTemp\\borepository");
 		BORepositoryTest boRepository = new BORepositoryTest();
-		boRepository.setDataCacheUsage(DataCacheUsage.NOT_USE);// 缓存会导致数据检索不到
+		boRepository.setUseCache(false);// 缓存会导致数据检索不到
 		boRepository.setRepository(fileRepository);
 		IOperationResult<?> operationResult;
 
@@ -126,7 +125,7 @@ public class testLogics extends TestCase {
 		// 保存物料到文件系统
 		IBORepository4File fileRepository = new BORepository4File();
 		BORepositoryTest boRepository = new BORepositoryTest();
-		boRepository.setDataCacheUsage(DataCacheUsage.NOT_USE);// 缓存会导致数据检索不到
+		boRepository.setUseCache(false);// 缓存会导致数据检索不到
 		boRepository.setRepository(fileRepository);
 		IOperationResult<?> operationResult;
 

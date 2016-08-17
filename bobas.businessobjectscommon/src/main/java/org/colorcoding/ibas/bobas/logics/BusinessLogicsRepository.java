@@ -12,6 +12,11 @@ import org.colorcoding.ibas.bobas.repository.BORepositoryLogicService;
  */
 class BusinessLogicsRepository extends BORepositoryLogicService {
 
+	public BusinessLogicsRepository() {
+		this.setRefetchAfterSave(false);// 保存后不检索数据
+		this.setUseCache(false);// 不使用缓存数据
+	}
+
 	public IOperationResult<?> save(IBusinessObjectBase bo) {
 
 		return super.save(bo, null);

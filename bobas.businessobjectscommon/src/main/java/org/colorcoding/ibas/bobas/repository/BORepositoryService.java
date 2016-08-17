@@ -35,10 +35,15 @@ import org.colorcoding.ibas.bobas.organization.UnknownUser;
 public class BORepositoryService implements IBORepositoryService, SaveActionsListener {
 
 	public BORepositoryService() {
-		this.setDataCacheUsage(MyConfiguration
-				.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_REPOSITORY_DATA_CACHE_USAGE, DataCacheUsage.FIRST_USE));
+		// 是否使用缓存
+		this.setUseCache(
+				!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_REPOSITORY_DISABLED_CACHE, false));
+		// 是否保存后检索新实例
 		this.setRefetchAfterSave(
 				!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_REFETCH, false));
+		// 是否通知事务
+		this.setPostTransaction(
+				!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_POST_TRANSACTION, false));
 	}
 
 	/**
@@ -162,28 +167,58 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 		}
 	}
 
-	private DataCacheUsage dataCacheUsage = DataCacheUsage.FIRST_USE;
+	private boolean useCache;
 
-	public final DataCacheUsage getDataCacheUsage() {
-		return dataCacheUsage;
+	/**
+	 * 是否使用缓存
+	 * 
+	 * @return
+	 */
+	public final boolean isUseCache() {
+		return useCache;
 	}
 
-	public final void setDataCacheUsage(DataCacheUsage dataCacheUsage) {
-		this.dataCacheUsage = dataCacheUsage;
+	public final void setUseCache(boolean value) {
+		this.useCache = value;
 	}
 
 	private boolean refetchAfterSave;
 
+	/**
+	 * 保存后是否重新查询数据
+	 * 
+	 * @return
+	 */
 	public boolean isRefetchAfterSave() {
 		return refetchAfterSave;
 	}
 
-	public void setRefetchAfterSave(boolean refetchAfterSave) {
-		this.refetchAfterSave = refetchAfterSave;
+	public void setRefetchAfterSave(boolean value) {
+		this.refetchAfterSave = value;
+	}
+
+	private boolean postTransaction;
+
+	/**
+	 * 是否通知事务
+	 * 
+	 * @return
+	 */
+	public boolean isPostTransaction() {
+		return postTransaction;
+	}
+
+	public void setPostTransaction(boolean value) {
+		this.postTransaction = value;
 	}
 
 	private IUser currentUser = null;
 
+	/**
+	 * 当前用户
+	 * 
+	 * @return
+	 */
 	public IUser getCurrentUser() {
 		if (this.currentUser == null) {
 			// 未设置用户则为未知用户
@@ -309,10 +344,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 			RuntimeLog.log(e);
 			return new OperationResult<P>(e);
 		}
-		if (this.getDataCacheUsage() == DataCacheUsage.ONLY_USE) {
-			// 仅使用缓存数据
-			return this.fetchInCache(criteria, boType);
-		} else if (this.getDataCacheUsage() == DataCacheUsage.FIRST_USE) {
+		if (this.isUseCache()) {
 			// 优先使用缓存数据
 			OperationResult<P> operationResult = this.fetchInCache(criteria, boType);
 			if (operationResult.getResultCode() == 0
@@ -360,33 +392,27 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	 * @throws Exception
 	 */
 	IBusinessObjectBase save(IBORepository boRepository, IBusinessObjectBase bo) throws Exception {
-		boolean post = false;
 		boolean myDbTrans = false;
 		boolean myOpened = false;
 		try {
-			post = !MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_POST_TRANSACTION, false);
 			boolean toDelete = bo.isDeleted();
 			boolean toAdd = bo.isNew();
-			IBusinessObjectBase rBO = null;
-			if (post) {
-				// 需要通知业务对象事务，打开数据库事务
-				myOpened = this.openRepository();
-				myDbTrans = this.beginTransaction();
-			}
-			// 保存BO
-			this.getProcessing().add(bo);
-			IOperationResult<?> operationResult = boRepository.saveEx(bo);
-			this.getProcessing().remove(bo);
+			IBusinessObjectBase returnBO = null;// 返回的数据
+			myOpened = this.openRepository();// 打开仓库
+			myDbTrans = this.beginTransaction(); // 打开事务
+			this.getProcessing().add(bo);// 添加待处理数据到列表
+			IOperationResult<?> operationResult = boRepository.saveEx(bo); // 保存BO
+			this.getProcessing().remove(bo);// 移出带处理数据
 			// 其他
 			if (operationResult.getError() != null) {
 				throw operationResult.getError();
 			}
 			if (operationResult.getResultCode() != 0) {
-				throw new RuntimeException(operationResult.getMessage());
+				throw new Exception(operationResult.getMessage());
 			}
 			// 成功保存
-			rBO = (IBusinessObjectBase) operationResult.getResultObjects().firstOrDefault();
-			if (post) {
+			returnBO = (IBusinessObjectBase) operationResult.getResultObjects().firstOrDefault();
+			if (this.isPostTransaction()) {
 				// 通知事务
 				TransactionType type = TransactionType.Update;
 				if (toDelete) {
@@ -395,47 +421,41 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 					type = TransactionType.Add;
 				}
 				this.noticeTransaction(type, bo);
-				// 结束事务
-				if (myDbTrans) {
-					this.commitTransaction();
-				}
+				if (myDbTrans)
+					this.commitTransaction();// 结束事务
 			}
 			if (toDelete) {
 				// 删除操作，不返回实例
-				rBO = null;
+				returnBO = null;
 			} else {
 				// 非删除操作
 				if (this.isRefetchAfterSave()) {
 					// 要求重新查询
 					try {
-						operationResult = boRepository.fetchCopyEx(rBO);
+						operationResult = boRepository.fetchCopyEx(returnBO);
 						if (operationResult.getError() != null) {
 							throw operationResult.getError();
 						}
 						if (operationResult.getResultCode() != 0) {
-							throw new RuntimeException(operationResult.getMessage());
+							throw new Exception(operationResult.getMessage());
 						}
 						if (operationResult.getResultObjects().size() == 0) {
-							throw new RuntimeException();
+							throw new Exception(i18n.prop("msg_bobas_not_found_bo_copy", returnBO));
 						}
-						rBO = (IBusinessObjectBase) operationResult.getResultObjects().firstOrDefault();
+						returnBO = (IBusinessObjectBase) operationResult.getResultObjects().firstOrDefault();
 					} catch (Exception e) {
-						throw new RuntimeException(i18n.prop("msg_bobas_fetch_bo_copy_faild", rBO));
+						throw new Exception(i18n.prop("msg_bobas_fetch_bo_copy_faild", returnBO));
 					}
 				}
 			}
-			return rBO;
+			return returnBO;
 		} catch (Exception e) {
-			if (myDbTrans) {
-				// 自己打开的事务自己关闭
-				this.rollbackTransaction();
-			}
+			if (myDbTrans)
+				this.rollbackTransaction();// 自己打开的事务自己关闭
 			throw e;
 		} finally {
-			if (myOpened) {
-				// 自己打开的连接，自己关闭
-				this.closeRepository();
-			}
+			if (myOpened)
+				this.closeRepository();// 自己打开的连接，自己关闭
 		}
 	}
 
@@ -479,16 +499,16 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 					throw spOpRslt.getError();
 				}
 				if (spOpRslt.getResultCode() != 0) {
-					throw new RuntimeException(spOpRslt.getMessage());
+					throw new Exception(spOpRslt.getMessage());
 				}
 				TransactionMessage message = (TransactionMessage) spOpRslt.getResultObjects().firstOrDefault();
 				if (message == null) {
-					throw new RuntimeException(i18n.prop("msg_bobas_invaild_bo_transaction_message"));
+					throw new Exception(i18n.prop("msg_bobas_invaild_bo_transaction_message"));
 				}
 				if (message.getCode() != 0) {
 					RuntimeLog.log(RuntimeLog.MSG_TRANSACTION_SP_VALUES, type.toString(), bo.toString(),
 							message.getCode(), message.getMessage());
-					throw new RuntimeException(message.getMessage());
+					throw new Exception(message.getMessage());
 				}
 			}
 		} catch (Exception e) {
@@ -511,9 +531,8 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 		OperationResult<P> operationResult = new OperationResult<P>();
 		try {
 			this.setCurrentUser(token);// 解析并设置当前用户
-
-			if (this.getDataCacheUsage() == DataCacheUsage.FIRST_USE
-					|| this.getDataCacheUsage() == DataCacheUsage.ONLY_USE) {
+			operationResult.addResultObjects(this.save(this.getRepository(), bo));
+			if (this.isUseCache() && operationResult.getResultCode() == 0) {
 				// 删除已缓存的数据
 				try {
 					this.getCacheRepository().clearData(bo);
@@ -521,7 +540,6 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 					RuntimeLog.log(e);
 				}
 			}
-			operationResult.addResultObjects(this.save(this.getRepository(), bo));
 		} catch (Exception e) {
 			operationResult.setError(e);
 			RuntimeLog.log(e);

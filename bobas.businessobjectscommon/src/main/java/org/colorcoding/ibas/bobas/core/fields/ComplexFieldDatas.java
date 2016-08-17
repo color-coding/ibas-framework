@@ -8,11 +8,11 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?>> {
 
-	private IMeasurement<?, ?> _value = null;
+	private IMeasurement<?, ?> value = null;
 
 	@Override
 	public IMeasurement<?, ?> getValue() {
-		if (this._value == null) {
+		if (this.value == null) {
 			// 如果未初始化，则尝试自动初始化
 			try {
 				this.setValue(BOFactory.create().createInstance(this.getValueType()));
@@ -20,7 +20,7 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 				e.printStackTrace();
 			}
 		}
-		return this._value;
+		return this.value;
 	}
 
 	@Override
@@ -29,24 +29,24 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 	}
 
 	public boolean setValue(IMeasurement<?, ?> value) {
-		if (this._value != null && this._value.equals(value)) {
+		if (this.value != null && this.value.equals(value)) {
 			return false;
 		}
-		if (this._value != null) {
+		if (this.value != null) {
 			// 移出事件监听
-			this._value.removePropertyChangeListener(this);
+			this.value.removePropertyChangeListener(this);
 		}
-		this._value = value;
+		this.value = value;
 		if (this.getDbFields() != null) {
 			for (FieldDataDb4Complex<?> item : this.getDbFields()) {
-				item.setData(this._value);
+				item.setData(this.value);
 			}
 		} else {
 			this.mapping();
 		}
-		if (this._value != null) {
+		if (this.value != null) {
 			// 添加事件监听
-			this._value.addPropertyChangeListener(this);
+			this.value.addPropertyChangeListener(this);
 		}
 		this.setDirty(true);
 		return true;
@@ -54,11 +54,11 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 
 	@Override
 	protected FieldDataDb4Complex<?>[] createDbFields(String name, String table) {
-		if (this._value == null) {
+		if (this.value == null) {
 			return null;
 		}
 		FieldDataDb4Complex<?>[] fieldDataDbs = new FieldDataDb4Complex<?>[2];
-		FieldData4Value fdValue = new FieldData4Value(this._value);
+		FieldData4Value fdValue = new FieldData4Value(this.value);
 		String fieldName = name;
 		fdValue.setName(fieldName);
 		fdValue.setPrimaryKey(false);
@@ -78,8 +78,8 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 		fdUnit.setDbField(fieldName);
 		fdUnit.setDbTable(table);
 		fdUnit.setFieldType(DbFieldType.db_Alphanumeric);
-		if (this._value.getUnit() != null) {
-			fdUnit.setValueType(this._value.getUnit().getClass());
+		if (this.value.getUnit() != null) {
+			fdUnit.setValueType(this.value.getUnit().getClass());
 		}
 		fieldDataDbs[1] = fdUnit;
 		return fieldDataDbs;

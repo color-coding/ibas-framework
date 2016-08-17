@@ -104,6 +104,7 @@ public interface IApprovalProcess {
 	 *            授权码
 	 * @param remarks
 	 *            备注
+	 * @throws ApprovalProcessException
 	 * @throws InvalidAuthorizationException
 	 */
 	void cancel(String authorizationCode, String remarks)
@@ -114,7 +115,7 @@ public interface IApprovalProcess {
 	 * 
 	 * @param boRepository
 	 *            保存到的业务仓库
-	 * @throws InvalidAuthorizationException
+	 * @throws ApprovalProcessException
 	 */
 	void save(IBORepository boRepository) throws ApprovalProcessException;
 

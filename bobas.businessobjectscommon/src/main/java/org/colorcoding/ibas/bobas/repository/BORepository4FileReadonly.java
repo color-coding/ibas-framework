@@ -95,7 +95,6 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 			}
 		} catch (Exception e) {
 			operationResult.setError(e);
-			RuntimeLog.log(e);
 		}
 		return operationResult;
 	}

@@ -69,7 +69,7 @@ public class DbConnection implements IDbConnection {
 		lock.lock();
 		try {
 			if (this.opened) {
-				// 已打开数据库连接
+				// 已打开数据库连接，或打开事务
 				return false;
 			}
 			this.recycled = false;
@@ -185,6 +185,7 @@ public class DbConnection implements IDbConnection {
 
 	@Override
 	public IDbCommand createCommand() throws DbException {
+		lock.lock();
 		try {
 			if (this.isClosed()) {
 				throw new DbException(i18n.prop("msg_bobas_database_connection_is_closed"));
@@ -193,6 +194,8 @@ public class DbConnection implements IDbConnection {
 			return new DbCommand(statement);
 		} catch (Exception e) {
 			throw new DbException(e.getMessage(), e);
+		} finally {
+			lock.unlock();
 		}
 	}
 
@@ -207,7 +210,7 @@ public class DbConnection implements IDbConnection {
 			if (this.inTransaction()) {
 				return false;
 			}
-			this._inTransaction = true;
+			this.inTransaction = true;
 			return true;
 		} catch (Exception e) {
 			throw new DbException(e.getMessage(), e);
@@ -224,7 +227,7 @@ public class DbConnection implements IDbConnection {
 				throw new DbException(i18n.prop("msg_bobas_database_connection_is_closed"));
 			}
 			this.dbConnection.rollback();
-			this._inTransaction = false;
+			this.inTransaction = false;
 		} catch (Exception e) {
 			throw new DbException(e.getMessage(), e);
 		} finally {
@@ -240,7 +243,7 @@ public class DbConnection implements IDbConnection {
 				throw new DbException(i18n.prop("msg_bobas_database_connection_is_closed"));
 			}
 			this.dbConnection.commit();
-			this._inTransaction = false;
+			this.inTransaction = false;
 		} catch (Exception e) {
 			throw new DbException(e.getMessage(), e);
 		} finally {
@@ -248,11 +251,11 @@ public class DbConnection implements IDbConnection {
 		}
 	}
 
-	private volatile boolean _inTransaction = false;
+	private volatile boolean inTransaction = false;
 
 	@Override
 	public boolean inTransaction() {
-		return this._inTransaction;
+		return this.inTransaction;
 	}
 
 }

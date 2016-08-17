@@ -37,6 +37,7 @@ public class RuntimeLog {
 	public static final String MSG_USER_SET_FIELD_VALUE = "user fields: set field [%s]'s value [%s].";
 	public static final String MSG_APPROVAL_PROCESS_MANAGER_CREATED = "ap manager: created approval process manager [%s].";
 	public static final String MSG_APPROVAL_PROCESS_STARTED = "approval process: data [%s]'s approval process was started, name [%s].";
+	public static final String MSG_APPROVAL_PROCESS_STATUS_CHANGED = "approval process: [%s]'s status change to [%s].";
 	public static final String MSG_OWNERSHIP_JUDGER_CREATED = "judger: created ownership judger [%s].";
 	public static final String MSG_BUSINESS_LOGICS_MANAGER_CREATED = "bl manager: created business logics manager [%s].";
 	public static final String MSG_I18N_READ_FILE_DATA = "i18n: read file's data [%s].";

@@ -23,6 +23,14 @@ import org.colorcoding.ibas.bobas.mapping.BOCode;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
+/**
+ * 业务对象工厂
+ * 
+ * 注意：使用BOCode获取Class需要提前加载命名空间的类
+ * 
+ * @author Niuren.Zhu
+ *
+ */
 public class BOFactory implements IBOFactory {
 	volatile private static IBOFactory instance = null;
 
