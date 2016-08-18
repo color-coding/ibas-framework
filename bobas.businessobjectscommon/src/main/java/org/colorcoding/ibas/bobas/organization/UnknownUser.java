@@ -23,6 +23,11 @@ public class UnknownUser implements IUser {
 	}
 
 	@Override
+	public String getToken() {
+		return null;
+	}
+
+	@Override
 	public void checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
 		// throw new
 		// InvalidAuthorizationException(i18n.prop("msg_bobas_not_exist_user"));

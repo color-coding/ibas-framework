@@ -20,6 +20,11 @@ public interface IUser {
 	String getBelong();
 
 	/**
+	 * 获取-授权码
+	 */
+	String getToken();
+
+	/**
 	 * 检查授权
 	 * 
 	 * @param authorizationCode

@@ -52,6 +52,11 @@ public class testApprovalProcess extends TestCase {
 			public String getBelong() {
 				return null;
 			}
+
+			@Override
+			public String getToken() {
+				return null;
+			}
 		};
 		IUser manager = new IUser() {
 			@Override
@@ -68,6 +73,11 @@ public class testApprovalProcess extends TestCase {
 			public String getBelong() {
 				return null;
 			}
+
+			@Override
+			public String getToken() {
+				return null;
+			}
 		};
 		IUser boss = new IUser() {
 			@Override
@@ -82,6 +92,11 @@ public class testApprovalProcess extends TestCase {
 
 			@Override
 			public String getBelong() {
+				return null;
+			}
+
+			@Override
+			public String getToken() {
 				return null;
 			}
 		};
@@ -216,6 +231,11 @@ public class testApprovalProcess extends TestCase {
 			public String getBelong() {
 				return null;
 			}
+
+			@Override
+			public String getToken() {
+				return null;
+			}
 		};
 		IUser leader = new IUser() {
 			@Override
@@ -230,6 +250,11 @@ public class testApprovalProcess extends TestCase {
 
 			@Override
 			public String getBelong() {
+				return null;
+			}
+
+			@Override
+			public String getToken() {
 				return null;
 			}
 		};
@@ -248,6 +273,11 @@ public class testApprovalProcess extends TestCase {
 			public String getBelong() {
 				return null;
 			}
+
+			@Override
+			public String getToken() {
+				return null;
+			}
 		};
 		IUser boss = new IUser() {
 			@Override
@@ -262,6 +292,11 @@ public class testApprovalProcess extends TestCase {
 
 			@Override
 			public String getBelong() {
+				return null;
+			}
+
+			@Override
+			public String getToken() {
 				return null;
 			}
 		};

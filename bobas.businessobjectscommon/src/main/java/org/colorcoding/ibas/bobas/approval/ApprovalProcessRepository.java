@@ -60,7 +60,7 @@ class ApprovalProcessRepository extends BORepositoryLogicService {
 			}
 			@SuppressWarnings("unchecked")
 			Class<P> boType = (Class<P>) boClass;
-			String token = null;
+			String token = this.getCurrentUser().getToken();
 			return super.fetch(criteria, token, boType);
 		} catch (Exception e) {
 			return new OperationResult<>(e);
@@ -75,7 +75,7 @@ class ApprovalProcessRepository extends BORepositoryLogicService {
 	 * @return
 	 */
 	public OperationResult<?> save(IBusinessObject bo) {
-		String token = null;
+		String token = this.getCurrentUser().getToken();
 		return super.save(bo, token);
 	}
 }

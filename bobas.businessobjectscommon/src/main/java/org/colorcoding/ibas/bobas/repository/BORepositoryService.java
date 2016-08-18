@@ -69,10 +69,11 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 		this.repository = repository;
 		if (this.repository != null) {
 			// 同步用户信息
-			if (this.getCurrentUser() != null) {
-				this.repository.setCurrentUser(this.getCurrentUser());
+			if (this.currentUser != null && !(this.currentUser instanceof UnknownUser)) {
+				this.repository.setCurrentUser(this.currentUser);
 			} else {
-				if (this.repository.getCurrentUser() != null) {
+				if (this.repository.getCurrentUser() != null
+						&& !(this.repository.getCurrentUser() instanceof UnknownUser)) {
 					this.setCurrentUser(this.repository.getCurrentUser());
 				}
 			}
@@ -162,8 +163,8 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 
 	public final void setCacheRepository(IBORepository4Cache repository) {
 		this.cacheRepository = repository;
-		if (this.cacheRepository != null) {
-			this.cacheRepository.setCurrentUser(this.getCurrentUser());
+		if (this.cacheRepository != null && this.currentUser != null && !(this.currentUser instanceof UnknownUser)) {
+			this.cacheRepository.setCurrentUser(this.currentUser);
 		}
 	}
 
