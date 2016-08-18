@@ -307,18 +307,25 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 							IBusinessObjectListBase<?> childs = (IBusinessObjectListBase<?>) fdValue;
 							if (this.isSmartPrimaryKeys() && bo.isNew()) {
 								// 新对象，子项主键自动从1开始。
-								for (int i = 0; i < childs.size(); i++) {
-									IBusinessObjectBase childBO = childs.get(i);
-									if (childBO.isNew() && childBO instanceof IBOLine) {
-										IBOLine line = (IBOLine) childBO;
-										if (line.getLineId() == null || line.getLineId() != 1 + i) {
-											line.setLineId(1 + i);
+								if (childs.firstOrDefault() instanceof IBOLine) {
+									IBOLine firstLine = (IBOLine) childs.firstOrDefault();
+									// 必须要从数据库获取此行号，主子孙结构需要
+									this.createDbAdapter().createBOAdapter().usePrimaryKeys(childs.firstOrDefault(),
+											this.getDbConnection().createCommand());
+									for (int i = 0; i < childs.size(); i++) {
+										IBusinessObjectBase childBO = childs.get(i);
+										if (childBO.isNew() && childBO instanceof IBOLine) {
+											IBOLine line = (IBOLine) childBO;
+											if (line.getLineId() == null
+													|| line.getLineId() != firstLine.getLineId() + i) {
+												line.setLineId(firstLine.getLineId() + i);
+											}
+											this.mySaveEx(childBO, false);
+											continue;
 										}
-										this.mySaveEx(childBO, false);
-										continue;
+										// 不能自动处理主键对象保存
+										this.mySaveEx(childBO, true);
 									}
-									// 不能自动处理主键对象保存
-									this.mySaveEx(childBO, true);
 								}
 							} else {
 								// 每个子项保存时，自主获取主键
