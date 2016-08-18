@@ -211,6 +211,9 @@ public class DbConnection implements IDbConnection {
 				return false;
 			}
 			this.inTransaction = true;
+			if (!this.opened) {
+				this.open();
+			}
 			return true;
 		} catch (Exception e) {
 			throw new DbException(e.getMessage(), e);

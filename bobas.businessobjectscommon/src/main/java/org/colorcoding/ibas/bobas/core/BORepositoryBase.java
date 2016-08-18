@@ -11,6 +11,11 @@ import org.colorcoding.ibas.bobas.ownership.IDataOwnership;
 public abstract class BORepositoryBase implements IBORepositoryReadonly {
 
 	public BORepositoryBase() {
+		this.initialize();
+	}
+
+	protected void initialize() {
+
 	}
 
 	private IBOFactory boFactory = null;

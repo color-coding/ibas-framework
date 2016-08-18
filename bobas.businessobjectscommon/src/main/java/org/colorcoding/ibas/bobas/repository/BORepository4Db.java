@@ -2,6 +2,8 @@ package org.colorcoding.ibas.bobas.repository;
 
 import java.lang.reflect.Array;
 
+import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.bo.IBOLine;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.OperationResult;
@@ -31,6 +33,29 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 
 	public BORepository4Db(String sign) {
 		super(sign);
+	}
+
+	@Override
+	protected void initialize() {
+		this.setSmartPrimaryKeys(
+				!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_SMART_PRIMARY_KEY, false));
+	}
+
+	private boolean isSmartPrimaryKeys;
+
+	/**
+	 * 智能主键处理
+	 * 
+	 * 不重复获取子项主键
+	 * 
+	 * @return
+	 */
+	public boolean isSmartPrimaryKeys() {
+		return isSmartPrimaryKeys;
+	}
+
+	public void setSmartPrimaryKeys(boolean value) {
+		this.isSmartPrimaryKeys = value;
 	}
 
 	@Override
@@ -126,7 +151,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	public IOperationResult<?> save(IBusinessObjectBase bo) {
 		OperationResult<?> operationResult = new OperationResult<Object>();
 		try {
-			IBusinessObjectBase nBO = this.mySave(bo);
+			IBusinessObjectBase nBO = this.mySave(bo, true);
 			if (nBO instanceof ITrackStatusOperator) {
 				// 保存成功，标记对象为OLD
 				ITrackStatusOperator operator = (ITrackStatusOperator) nBO;
@@ -143,7 +168,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	public IOperationResult<?> saveEx(IBusinessObjectBase bo) {
 		OperationResult<?> operationResult = new OperationResult<Object>();
 		try {
-			IBusinessObjectBase nBO = this.mySaveEx(bo);
+			IBusinessObjectBase nBO = this.mySaveEx(bo, true);
 			if (nBO instanceof ITrackStatusOperator) {
 				// 保存成功，标记对象为OLD
 				ITrackStatusOperator operator = (ITrackStatusOperator) nBO;
@@ -161,10 +186,12 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	 * 
 	 * @param bo
 	 *            对象
+	 * @param updateKeys
+	 *            更新主键
 	 * @return 保存的对象
 	 * @throws Exception
 	 */
-	private final IBusinessObjectBase mySave(IBusinessObjectBase bo) throws Exception {
+	private final IBusinessObjectBase mySave(IBusinessObjectBase bo, boolean updateKeys) throws Exception {
 		if (bo == null) {
 			throw new RepositoryException(i18n.prop("msg_bobas_invalid_bo"));
 		}
@@ -184,7 +211,8 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 				this.tagStorage(bo);// 存储标记
 				if (bo.isNew()) {
 					// 新建的对象
-					adapter4Db.usePrimaryKeys(bo, command);// 获取并更新主键
+					if (updateKeys)
+						adapter4Db.usePrimaryKeys(bo, command);// 获取并更新主键
 					this.notifyActions(SaveActionsType.before_adding, bo);
 					sqlQuery = adapter4Db.parseSqlInsert(bo);
 				} else if (bo.isDeleted()) {
@@ -242,10 +270,12 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	 * 
 	 * @param bo
 	 *            对象
+	 * @param updateKeys
+	 *            更新主键
 	 * @return 保存的对象
 	 * @throws Exception
 	 */
-	private final IBusinessObjectBase mySaveEx(IBusinessObjectBase bo) throws Exception {
+	private final IBusinessObjectBase mySaveEx(IBusinessObjectBase bo, boolean updateKeys) throws Exception {
 		if (bo == null) {
 			throw new RepositoryException(i18n.prop("msg_bobas_invalid_bo"));
 		}
@@ -258,7 +288,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 				myOpenedDb = this.openDbConnection();
 				myTrans = this.beginTransaction();
 				// 保存主对象
-				this.mySave(bo);
+				this.mySave(bo, updateKeys);
 				// 保存子项
 				if (bo instanceof IManageFields) {
 					IManageFields boFields = (IManageFields) bo;
@@ -275,12 +305,30 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 						if (fdValue instanceof IBusinessObjectListBase<?>) {
 							// 对象列表
 							IBusinessObjectListBase<?> childs = (IBusinessObjectListBase<?>) fdValue;
-							for (IBusinessObjectBase childBO : childs) {
-								this.mySaveEx(childBO);// 继续带子项的保存
+							if (this.isSmartPrimaryKeys() && bo.isNew()) {
+								// 新对象，子项主键自动从1开始。
+								for (int i = 0; i < childs.size(); i++) {
+									IBusinessObjectBase childBO = childs.get(i);
+									if (childBO.isNew() && childBO instanceof IBOLine) {
+										IBOLine line = (IBOLine) childBO;
+										if (line.getLineId() == null || line.getLineId() != 1 + i) {
+											line.setLineId(1 + i);
+										}
+										this.mySaveEx(childBO, false);
+										continue;
+									}
+									// 不能自动处理主键对象保存
+									this.mySaveEx(childBO, true);
+								}
+							} else {
+								// 每个子项保存时，自主获取主键
+								for (IBusinessObjectBase childBO : childs) {
+									this.mySaveEx(childBO, true);
+								}
 							}
 						} else if (fdValue instanceof IBusinessObjectBase) {
 							// 对象属性
-							this.mySaveEx((IBusinessObjectBase) fdValue);// 继续带子项的保存
+							this.mySaveEx((IBusinessObjectBase) fdValue, true);// 继续带子项的保存
 						} else if (fdValue.getClass().isArray()) {
 							// 对象数组
 							int length = Array.getLength(fdValue);
@@ -288,7 +336,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 								Object child = Array.get(fdValue, i);
 								if (child instanceof IBusinessObjectBase) {
 									IBusinessObjectBase childBO = (IBusinessObjectBase) child;
-									this.mySaveEx(childBO);// 继续带子项的保存
+									this.mySaveEx(childBO, true);// 继续带子项的保存
 								}
 							}
 						}

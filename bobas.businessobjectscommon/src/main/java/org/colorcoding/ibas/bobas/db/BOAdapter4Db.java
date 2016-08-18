@@ -51,6 +51,27 @@ import org.colorcoding.ibas.bobas.util.ArrayList;
 import org.colorcoding.ibas.bobas.util.StringBuilder;
 
 public abstract class BOAdapter4Db implements IBOAdapter4Db {
+
+	public BOAdapter4Db() {
+		this.setEnabledUserFields(
+				MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_ENABLED_USER_FIELDS, true));
+	}
+
+	private boolean isEnabledUserFields;
+
+	/**
+	 * 是否启用自定义字段
+	 * 
+	 * @return
+	 */
+	public boolean isEnabledUserFields() {
+		return isEnabledUserFields;
+	}
+
+	public void setEnabledUserFields(boolean value) {
+		this.isEnabledUserFields = value;
+	}
+
 	/**
 	 * 复合字段开始索引（必须小于0）
 	 */
@@ -670,7 +691,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			}
 		}
 		// 处理自定义字段
-		if (hasUserFields && MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_ENABLED_USER_FIELDS, true)) {
+		if (hasUserFields && this.isEnabledUserFields()) {
 			if (bo instanceof IBOUserFields) {
 				ISqlScripts sqlScripts = this.getSqlScripts();
 				if (sqlScripts == null) {

@@ -4,6 +4,7 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationMessages;
 import org.colorcoding.ibas.bobas.common.OperationResult;
+import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.ownership.OwnershipException;
 import org.colorcoding.ibas.bobas.ownership.Permission;
@@ -28,6 +29,14 @@ import org.colorcoding.ibas.bobas.test.logics.PurchaseOrder;
 @PermissionGroup("Test") // 权限分组的名称
 public class BORepositoryTest extends BORepositoryServiceApplication
 		implements IBORepositoryTestSvc, IBORepositoryTestApp {
+
+	public boolean beginTransaction() throws RepositoryException {
+		return super.beginTransaction();
+	}
+
+	public void commitTransaction() throws RepositoryException {
+		super.commitTransaction();
+	}
 
 	/**
 	 * 获取服务器时间

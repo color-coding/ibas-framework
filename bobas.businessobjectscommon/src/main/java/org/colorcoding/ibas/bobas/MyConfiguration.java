@@ -43,6 +43,10 @@ public class MyConfiguration extends Configuration {
 	 */
 	public static String CONFIG_ITEM_BO_DISABLED_BUSINESS_APPROVAL = "DisabledBusinessApproval";
 	/**
+	 * 配置项目-关闭业务对象智能主键
+	 */
+	public static String CONFIG_ITEM_BO_DISABLED_SMART_PRIMARY_KEY = "DisabledSmartKey";
+	/**
 	 * 配置项目-开启只读业务仓库
 	 */
 	public static String CONFIG_ITEM_ENABLED_READONLY_REPOSITORY = "EnabledReadonlyRepository";

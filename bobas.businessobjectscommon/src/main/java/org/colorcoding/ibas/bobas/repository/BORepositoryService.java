@@ -422,9 +422,9 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 					type = TransactionType.Add;
 				}
 				this.noticeTransaction(type, bo);
-				if (myDbTrans)
-					this.commitTransaction();// 结束事务
 			}
+			if (myDbTrans)
+				this.commitTransaction();// 结束事务
 			if (toDelete) {
 				// 删除操作，不返回实例
 				returnBO = null;

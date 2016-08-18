@@ -12,9 +12,12 @@ import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.common.SqlQuery;
+import org.colorcoding.ibas.bobas.core.RepositoryException;
+import org.colorcoding.ibas.bobas.data.ComputeException;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
+import org.colorcoding.ibas.bobas.data.measurement.emTimeUnit;
 import org.colorcoding.ibas.bobas.repository.BORepository4DbReadonly;
 import org.colorcoding.ibas.bobas.repository.IBORepository4DbReadonly;
 import org.colorcoding.ibas.bobas.repository.InvalidRepositoryException;
@@ -517,4 +520,58 @@ public class testBORepository extends TestCase {
 
 	}
 
+	public void testWriteBO2DB() throws ComputeException, RepositoryException {
+		/**
+		 * 测试写入速度，建议添加以下配置项
+		 * 
+		 * <add key="DisabledRefetch" value="true" />
+		 * <add key="DisabledBusinessLogics" value="true" />
+		 * <add key="DisabledBusinessApproval" value="true" />
+		 * <add key="DisabledCache" value="true" />
+		 * <add key="DisabledVersionCheck" value="true" />
+		 * <add key="DisabledPostTransaction" value="true" />
+		 * <add key="EnabledUserFields" value="false" />
+		 */
+		BORepositoryTest boRepository = new BORepositoryTest();
+		// boRepository.beginTransaction();
+		DateTime start = DateTime.getNow();
+		int count = 1000;
+		for (int i = 0; i < count; i++) {
+			SalesOrder order = new SalesOrder();
+			order.setCustomerName("大量数据写入");
+			ISalesOrderItem line = order.getSalesOrderItems().create();
+			line.setItemDescription("鬼知道的物料1");
+			line = order.getSalesOrderItems().create();
+			line.setItemDescription("鬼知道的物料2");
+			IOperationResult<?> operationResult = boRepository.saveSalesOrder(order);
+			if (operationResult.getResultCode() != 0) {
+				System.err.println(operationResult.getMessage());
+				break;
+			}
+		}
+		// boRepository.commitTransaction();
+		// boRepository.dispose();
+		DateTime finish = DateTime.getNow();
+		System.out.println(String.format("写入[%s]条数据，从[%s]到[%s]共[%s]秒，平均%s条/秒。", count, start.toString("HH:mm:ss"),
+				finish.toString("HH:mm:ss"), DateTime.interval(start, finish, emTimeUnit.second),
+				count / DateTime.interval(start, finish, emTimeUnit.second)));
+		SalesOrder order = new SalesOrder();
+		order.setCustomerName("大量数据写入");
+		ISalesOrderItem line = order.getSalesOrderItems().create();
+		line.setItemDescription("鬼知道的物料1");
+		line = order.getSalesOrderItems().create();
+		line.setItemDescription("鬼知道的物料2");
+		IOperationResult<?> operationResult = boRepository.saveSalesOrder(order);
+		if (operationResult.getResultCode() != 0) {
+			System.err.println(operationResult.getMessage());
+		}
+		line = order.getSalesOrderItems().create();
+		line.setItemDescription("鬼知道的物料3");
+		line = order.getSalesOrderItems().create();
+		line.setItemDescription("鬼知道的物料4");
+		operationResult = boRepository.saveSalesOrder(order);
+		if (operationResult.getResultCode() != 0) {
+			System.err.println(operationResult.getMessage());
+		}
+	}
 }

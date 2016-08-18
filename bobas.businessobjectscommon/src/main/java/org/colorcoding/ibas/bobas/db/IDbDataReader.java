@@ -16,16 +16,6 @@ public interface IDbDataReader {
 	IDataTable toDataTable() throws DbException;
 
 	/**
-	 * 转换为数据表
-	 * 
-	 * @param listener
-	 *            转换事件监听
-	 * @return
-	 * @throws DbException
-	 */
-	IDataTable toDataTable(IDataTableConvertListener listener) throws DbException;
-
-	/**
 	 * 关闭结果集
 	 */
 	void close() throws DbException;
