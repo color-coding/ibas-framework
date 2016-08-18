@@ -2,11 +2,12 @@
 <!DOCTYPE configuration>
 <ns2:configuration xmlns:ns2="http://colorcoding.org/ibas/bobas/configuration">
 	<appSettings>
-		<add key="DebugMode" value="true" />
+		<add key="DebugMode" value="false" />
 		<add key="MasterDbType" value="MYSQL" />
 		<add key="MasterDbServer" value="192.168.3.53" />
 		<add key="MasterDbName" value="ibas_demo" />
 		<add key="MasterDbUserID" value="root" />
 		<add key="MasterDbUserPassword" value="1q2w3e" />
+		<add key="DisabledRefetch" value="true" />
 	</appSettings>
 </ns2:configuration>

@@ -132,13 +132,27 @@ public class Configuration {
 	}
 
 	/**
-	 * 静态方法，供直接调用
+	 * 获取配置项的值
 	 * 
 	 * @param key
+	 *            配置项
 	 * @return
 	 */
 	public static String getConfigValue(String key) {
 		return getInstance().getValue(key);
+	}
+
+	/**
+	 * 添加配置项，存在则替换
+	 * 
+	 * @param key
+	 *            项
+	 * @param value
+	 *            值
+	 */
+	public static void addConfigValue(String key, Object value) {
+		String tmpValue = String.valueOf(value);
+		getInstance().addSetting(key, tmpValue);
 	}
 
 	/**
