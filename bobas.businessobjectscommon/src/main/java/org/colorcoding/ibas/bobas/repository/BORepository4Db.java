@@ -2,7 +2,6 @@ package org.colorcoding.ibas.bobas.repository;
 
 import java.lang.reflect.Array;
 
-import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBOLine;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
@@ -17,6 +16,7 @@ import org.colorcoding.ibas.bobas.core.SaveActionsSupport;
 import org.colorcoding.ibas.bobas.core.SaveActionsType;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
+import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
 import org.colorcoding.ibas.bobas.db.IDbCommand;
@@ -33,29 +33,6 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 
 	public BORepository4Db(String sign) {
 		super(sign);
-	}
-
-	@Override
-	protected void initialize() {
-		this.setSmartPrimaryKeys(
-				!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_SMART_PRIMARY_KEY, false));
-	}
-
-	private boolean isSmartPrimaryKeys;
-
-	/**
-	 * 智能主键处理
-	 * 
-	 * 不重复获取子项主键
-	 * 
-	 * @return
-	 */
-	public boolean isSmartPrimaryKeys() {
-		return isSmartPrimaryKeys;
-	}
-
-	public void setSmartPrimaryKeys(boolean value) {
-		this.isSmartPrimaryKeys = value;
 	}
 
 	@Override
@@ -305,33 +282,58 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 						if (fdValue instanceof IBusinessObjectListBase<?>) {
 							// 对象列表
 							IBusinessObjectListBase<?> childs = (IBusinessObjectListBase<?>) fdValue;
-							if (this.isSmartPrimaryKeys() && bo.isNew()) {
-								// 新对象，子项主键自动从1开始。
-								if (childs.firstOrDefault() instanceof IBOLine) {
-									IBOLine firstLine = (IBOLine) childs.firstOrDefault();
-									// 必须要从数据库获取此行号，主子孙结构需要
-									this.createDbAdapter().createBOAdapter().usePrimaryKeys(childs.firstOrDefault(),
-											this.getDbConnection().createCommand());
-									for (int i = 0; i < childs.size(); i++) {
-										IBusinessObjectBase childBO = childs.get(i);
-										if (childBO.isNew() && childBO instanceof IBOLine) {
-											IBOLine line = (IBOLine) childBO;
-											if (line.getLineId() == null
-													|| line.getLineId() != firstLine.getLineId() + i) {
-												line.setLineId(firstLine.getLineId() + i);
+							if (!childs.isSmartPrimaryKeys() && bo.isNew()) {
+								// 不启用智能主键且对象是新建的，需要手工维护集合子项主键
+								for (IBusinessObjectBase childBO : childs) {
+									this.mySaveEx(childBO, false);
+								}
+								continue;
+							} else {
+								if (childs.isSmartPrimaryKeys()) {
+									// 智能处理子项主键
+									IBOLine firstLine = null;
+									for (IBusinessObjectBase item : childs) {
+										if (item.isNew()) {
+											if (item instanceof IBOLine) {
+												firstLine = (IBOLine) item;
 											}
-											this.mySaveEx(childBO, false);
-											continue;
 										}
-										// 不能自动处理主键对象保存
-										this.mySaveEx(childBO, true);
+									}
+									// 获取到第一个新建的子项
+									if (firstLine != null) {
+										KeyValue[] keys = this.createDbAdapter().createBOAdapter()
+												.parsePrimaryKeys(firstLine, this.getDbConnection().createCommand());
+										KeyValue lineKey = null;// LineId的值
+										for (KeyValue keyValue : keys) {
+											if ("LineId".equals(keyValue.key)) {
+												lineKey = keyValue;
+											}
+										}
+										if (lineKey != null && lineKey.value instanceof Integer) {
+											// 获取到了LineId的值
+											int lineValue = (int) lineKey.value;
+											for (IBusinessObjectBase childBO : childs) {
+												if (childBO instanceof IBOLine) {
+													// IBOLine的处理主键
+													IBOLine line = (IBOLine) childBO;
+													if (line.isNew()) {
+														line.setLineId(lineValue);
+														lineValue++;
+													}
+													this.mySaveEx(childBO, false);
+												} else {
+													// 其他对象类型
+													this.mySaveEx(childBO, true);
+												}
+											}
+											continue;// 完成处理，退出操作
+										}
 									}
 								}
-							} else {
-								// 每个子项保存时，自主获取主键
-								for (IBusinessObjectBase childBO : childs) {
-									this.mySaveEx(childBO, true);
-								}
+							}
+							// 每个子项保存时，自主获取主键
+							for (IBusinessObjectBase childBO : childs) {
+								this.mySaveEx(childBO, true);
 							}
 						} else if (fdValue instanceof IBusinessObjectBase) {
 							// 对象属性

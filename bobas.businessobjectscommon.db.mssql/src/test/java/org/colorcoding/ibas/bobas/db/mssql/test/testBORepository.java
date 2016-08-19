@@ -211,6 +211,14 @@ public class testBORepository extends TestCase {
 				operationResult.getMessage(), operationResult.getResultObjects().size()));
 		assertEquals(operationResult.getResultCode(), 0);
 		order.setCustomerName("宇宙无敌影业--");
+		order.getSalesOrderItems().get(0).delete();
+		item = order.getSalesOrderItems().get(1);
+		item.setQuantity(20);
+		item = order.getSalesOrderItems().create();
+		item.setItemCode("S003");
+		item.setItemDescription("绝地武士-头盔");
+		item.setQuantity(3);
+		item.setPrice(299.00);
 		operationResult = boRepository.saveSalesOrder(order);
 		System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
 				operationResult.getMessage(), operationResult.getResultObjects().size()));
@@ -220,7 +228,6 @@ public class testBORepository extends TestCase {
 		System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
 				operationResult.getMessage(), operationResult.getResultObjects().size()));
 		assertEquals(operationResult.getResultCode(), 0);
-
 	}
 
 	public void testBOAssociations() throws InvalidRepositoryException {

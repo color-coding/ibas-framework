@@ -22,10 +22,12 @@ public class testExtremeTask extends TestCase {
 
 	public void writeBO2DB() throws ComputeException, RepositoryException {
 		// 向数据库中写入100万数据
+		// 已优化app.xml：禁止重新检索，业务逻辑，审批逻辑
+		// 已优化SalesOrder对象：子项主键自己管理；
 		BORepositoryTest boRepository = new BORepositoryTest();
 		DateTime start = DateTime.getNow();
 		boRepository.beginTransaction();
-		int count = 1000;
+		int count = 10000;
 		for (int i = 0; i < count; i++) {
 			SalesOrder order = new SalesOrder();
 			order.setCustomerName("大量数据写入");
@@ -61,7 +63,7 @@ public class testExtremeTask extends TestCase {
 		connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 		connection.setAutoCommit(false);// 手动事务
 
-		int count = 1000;
+		int count = 10000;
 		for (int i = 0; i < count; i++) {
 			Statement stmt = connection.createStatement();
 			ResultSet rSet = stmt.executeQuery(
@@ -91,6 +93,15 @@ public class testExtremeTask extends TestCase {
 	}
 
 	public void testDataTable2BO() throws Exception {
+
+		String server = MyConfiguration.getConfigValue("Master" + MyConfiguration.CONFIG_ITEM_DB_SERVER);
+		String dbName = MyConfiguration.getConfigValue("Master" + MyConfiguration.CONFIG_ITEM_DB_NAME);
+		String userName = MyConfiguration.getConfigValue("Master" + MyConfiguration.CONFIG_ITEM_DB_USER_ID);
+		String userPwd = MyConfiguration.getConfigValue("Master" + MyConfiguration.CONFIG_ITEM_DB_USER_PASSWORD);
+		String dbURL = String.format("jdbc:mysql://%s/%s?useUnicode=true&characterEncoding=UTF-8", server, dbName);
+		String driverName = "com.mysql.jdbc.Driver";
+		Class.forName(driverName);
+		Connection connection = DriverManager.getConnection(dbURL, userName, userPwd);
 		this.writeSQL2DB();
 		this.writeBO2DB();
 		/*

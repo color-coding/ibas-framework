@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.bo;
 
-public interface IBOLine {
+public interface IBOLine extends IBusinessObject {
 
 	/**
 	 * 获取-行编号 主键

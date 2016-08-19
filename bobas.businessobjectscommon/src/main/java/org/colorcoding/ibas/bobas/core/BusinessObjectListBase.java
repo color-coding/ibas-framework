@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
@@ -16,6 +17,14 @@ public abstract class BusinessObjectListBase<E extends IBusinessObjectBase> exte
 	 * 
 	 */
 	private static final long serialVersionUID = -5212226199781937273L;
+
+	private static boolean smartPrimaryKeys = MyConfiguration
+			.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_SMART_PRIMARY_KEY, true);
+
+	@Override
+	public boolean isSmartPrimaryKeys() {
+		return smartPrimaryKeys;
+	}
 
 	@Override
 	public boolean add(E item) {

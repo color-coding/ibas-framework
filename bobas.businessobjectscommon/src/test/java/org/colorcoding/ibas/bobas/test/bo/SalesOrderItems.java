@@ -18,6 +18,13 @@ public class SalesOrderItems extends BusinessObjects<ISalesOrderItem, ISalesOrde
 	private static final long serialVersionUID = 5296887996825885427L;
 
 	/**
+	 * 关闭此项，则不再处理集合主键，可提升性能
+	 */
+	public boolean isSmartPrimaryKeys() {
+		return false;
+	}
+
+	/**
 	 * 构造方法
 	 */
 	public SalesOrderItems() {
