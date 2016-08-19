@@ -12,9 +12,11 @@ import org.colorcoding.ibas.bobas.mapping.DbValue;
 public enum SortType {
 
 	/** 降序 */
-	@DbValue(value = "D") st_Descending,
+	@DbValue(value = "D")
+	st_Descending,
 	/** 升序 */
-	@DbValue(value = "A") st_Ascending;
+	@DbValue(value = "A")
+	st_Ascending;
 
 	public int getValue() {
 		return this.ordinal();

@@ -12,13 +12,18 @@ import org.colorcoding.ibas.bobas.mapping.DbValue;
 @XmlType(name = "emLengthUnit", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
 public enum emLengthUnit {
 	// 毫米
-	@DbValue(value = "mm") millimeter(0),
+	@DbValue(value = "mm")
+	millimeter(0),
 	// 厘米
-	@DbValue(value = "cm") centimeter(1),
+	@DbValue(value = "cm")
+	centimeter(1),
 	// 米
-	@DbValue(value = "m") meter(2),
+	@DbValue(value = "m")
+	meter(2),
 	// 千米
-	@DbValue(value = "km") kilometer(5);
+	@DbValue(value = "km")
+	kilometer(5);
+
 	private int intValue;
 	private static java.util.HashMap<Integer, emLengthUnit> mappings;
 

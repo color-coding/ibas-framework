@@ -4,8 +4,10 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.mapping.DbValue;
+
 /**
  * 方向
+ * 
  * @author Niuren.Zhu
  *
  */
@@ -13,12 +15,14 @@ import org.colorcoding.ibas.bobas.mapping.DbValue;
 public enum emDirection {
 	/**
 	 * 入
-	 */ 
-	@DbValue(value = "I") In,
+	 */
+	@DbValue(value = "I")
+	In,
 	/**
 	 * 出
-	 */ 
-	@DbValue(value = "O") Out;
+	 */
+	@DbValue(value = "O")
+	Out;
 
 	public int getValue() {
 		return this.ordinal();

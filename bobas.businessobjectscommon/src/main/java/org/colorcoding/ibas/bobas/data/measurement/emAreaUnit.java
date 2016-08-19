@@ -14,19 +14,23 @@ public enum emAreaUnit {
 	/**
 	 * 平方毫米
 	 */
-	@DbValue(value = "mm²") square_millimeter(0),
+	@DbValue(value = "mm²")
+	square_millimeter(0),
 	/**
 	 * 平方厘米
 	 */
-	@DbValue(value = "cm²") square_centimeter(1),
+	@DbValue(value = "cm²")
+	square_centimeter(1),
 	/**
 	 * 平方米
 	 */
-	@DbValue(value = "m²") square_metre(2),
+	@DbValue(value = "m²")
+	square_metre(2),
 	/**
 	 * 平方千米
 	 */
-	@DbValue(value = "km²") square_kilometer(5);
+	@DbValue(value = "km²")
+	square_kilometer(5);
 
 	private int intValue;
 	private static java.util.HashMap<Integer, emAreaUnit> mappings;

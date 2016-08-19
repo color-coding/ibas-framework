@@ -13,56 +13,55 @@ import org.colorcoding.ibas.bobas.mapping.DbValue;
 @XmlType(name = "ConditionOperation", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
 public enum ConditionOperation implements IEnumItem {
 	/** 无 */
-	@DbValue(value = "NONE") co_NONE(0),
+	@DbValue(value = "NONE")
+	co_NONE,
 	/** 等于(=) */
-	@DbValue(value = "EQUAL") co_EQUAL(1),
+	@DbValue(value = "EQUAL")
+	co_EQUAL,
 	/** 大于(>) */
-	@DbValue(value = "GRATER_THAN") co_GRATER_THAN(2),
+	@DbValue(value = "GRATER_THAN")
+	co_GRATER_THAN,
 	/** 小于(<) */
-	@DbValue(value = "LESS_THAN") co_LESS_THAN(3),
+	@DbValue(value = "LESS_THAN")
+	co_LESS_THAN,
 	/** 大于等于(>=) */
-	@DbValue(value = "GRATER_EQUAL") co_GRATER_EQUAL(4),
+	@DbValue(value = "GRATER_EQUAL")
+	co_GRATER_EQUAL,
 	/** 小于等于(<=) */
-	@DbValue(value = "LESS_EQUAL") co_LESS_EQUAL(5),
+	@DbValue(value = "LESS_EQUAL")
+	co_LESS_EQUAL,
 	/** 不等于(<>) */
-	@DbValue(value = "NOT_EQUAL") co_NOT_EQUAL(6),
+	@DbValue(value = "NOT_EQUAL")
+	co_NOT_EQUAL,
 	/** 包含Like (%) */
-	@DbValue(value = "CONTAIN") co_CONTAIN(7),
+	@DbValue(value = "CONTAIN")
+	co_CONTAIN,
 	/** 不包含Not like (%) */
-	@DbValue(value = "NOT_CONTAIN") co_NOT_CONTAIN(8),
+	@DbValue(value = "NOT_CONTAIN")
+	co_NOT_CONTAIN,
 	/** 开始为(...%) */
-	@DbValue(value = "START") co_START(9),
+	@DbValue(value = "START")
+	co_START,
 	/** 结束为(%...) */
-	@DbValue(value = "END") co_END(10),
+	@DbValue(value = "END")
+	co_END,
 	// 包含于((A1...An))
-	// @DbValue(value = "BETWEEN") co_BETWEEN(11),
+	// @DbValue(value = "BETWEEN") co_BETWEEN,
 	// // 不包含((A1...An))
-	// @DbValue(value = "NOT_BETWEEN") co_NOT_BETWEEN(12),
+	// @DbValue(value = "NOT_BETWEEN") co_NOT_BETWEEN,
 	/** 是空 */
-	@DbValue(value = "IS_NULL") co_IS_NULL(13),
+	@DbValue(value = "IS_NULL")
+	co_IS_NULL,
 	/** 非空 */
-	@DbValue(value = "NOT_NULL") co_NOT_NULL(14);
-
-	private int intValue;
-	private static java.util.HashMap<Integer, ConditionOperation> mappings;
-
-	private synchronized static java.util.HashMap<Integer, ConditionOperation> getMappings() {
-		if (mappings == null) {
-			mappings = new java.util.HashMap<Integer, ConditionOperation>();
-		}
-		return mappings;
-	}
-
-	private ConditionOperation(int value) {
-		intValue = value;
-		ConditionOperation.getMappings().put(value, this);
-	}
+	@DbValue(value = "NOT_NULL")
+	co_NOT_NULL;
 
 	public int getValue() {
-		return intValue;
+		return this.ordinal();
 	}
 
 	public static ConditionOperation forValue(int value) {
-		return getMappings().get(value);
+		return values()[value];
 	}
+
 }

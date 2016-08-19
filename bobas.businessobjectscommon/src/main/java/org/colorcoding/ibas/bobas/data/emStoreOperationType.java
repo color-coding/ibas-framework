@@ -16,28 +16,34 @@ public enum emStoreOperationType {
 	/**
 	 * 添加
 	 */
-	@DbValue(value = "A") Add,
+	@DbValue(value = "A")
+	Add,
 	/**
 	 * 更新
 	 */
-	@DbValue(value = "U") Update,
+	@DbValue(value = "U")
+	Update,
 
 	/**
 	 * 删除
 	 */
-	@DbValue(value = "D") Delete,
+	@DbValue(value = "D")
+	Delete,
 	/**
 	 * 删除前
 	 */
-	@DbValue(value = "X") BeforeDelete,
+	@DbValue(value = "X")
+	BeforeDelete,
 	/**
 	 * 添加前
 	 */
-	@DbValue(value = "Y") BeforeAdd,
+	@DbValue(value = "Y")
+	BeforeAdd,
 	/**
 	 * 更新前
 	 */
-	@DbValue(value = "Z") BeforeUpdate;
+	@DbValue(value = "Z")
+	BeforeUpdate;
 
 	public int getValue() {
 		return this.ordinal();

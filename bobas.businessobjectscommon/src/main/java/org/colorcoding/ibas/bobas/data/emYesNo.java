@@ -16,11 +16,13 @@ public enum emYesNo {
 	/**
 	 * 否
 	 */
-	@DbValue(value = "N") No,
+	@DbValue(value = "N")
+	No,
 	/**
 	 * 是
 	 */
-	@DbValue(value = "Y") Yes;
+	@DbValue(value = "Y")
+	Yes;
 
 	public int getValue() {
 		return this.ordinal();

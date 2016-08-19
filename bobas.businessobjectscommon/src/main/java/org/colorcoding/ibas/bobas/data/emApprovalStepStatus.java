@@ -17,27 +17,32 @@ public enum emApprovalStepStatus {
 	/**
 	 * 挂起的
 	 */
-	@DbValue(value = "D") Pending,
+	@DbValue(value = "D")
+	Pending,
 
 	/**
 	 * 审批中
 	 */
-	@DbValue(value = "P") Processing,
-	 
+	@DbValue(value = "P")
+	Processing,
+
 	/**
 	 * 已批准
 	 */
-	@DbValue(value = "A") Approved,
- 
+	@DbValue(value = "A")
+	Approved,
+
 	/**
 	 * 已拒绝
 	 */
-	@DbValue(value = "R") Rejected,
+	@DbValue(value = "R")
+	Rejected,
 
 	/**
 	 * 已跳过
 	 */
-	@DbValue(value = "S") Skipped;
+	@DbValue(value = "S")
+	Skipped;
 
 	public int getValue() {
 		return this.ordinal();

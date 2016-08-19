@@ -7,6 +7,7 @@ import org.colorcoding.ibas.bobas.mapping.DbValue;
 
 /**
  * 条件-关系
+ * 
  * @author Niuren.Zhu
  *
  */
@@ -14,16 +15,19 @@ import org.colorcoding.ibas.bobas.mapping.DbValue;
 public enum emConditionRelationship {
 	/**
 	 * 无
-	 */ 
-	@DbValue(value = "NON") NONE,
+	 */
+	@DbValue(value = "NON")
+	NONE,
 	/**
 	 * 并且
-	 */ 
-	@DbValue(value = "AND") AND,
+	 */
+	@DbValue(value = "AND")
+	AND,
 	/**
 	 * 或者
-	 */ 
-	@DbValue(value = "OR") OR;
+	 */
+	@DbValue(value = "OR")
+	OR;
 
 	public int getValue() {
 		return this.ordinal();

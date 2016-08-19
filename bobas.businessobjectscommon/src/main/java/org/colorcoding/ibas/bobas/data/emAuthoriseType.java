@@ -16,15 +16,18 @@ public enum emAuthoriseType {
 	/**
 	 * 仅可见
 	 */
-	@DbValue(value = "V") OnlyView,
+	@DbValue(value = "V")
+	OnlyView,
 	/**
 	 * 完全
 	 */
-	@DbValue(value = "A") All,
+	@DbValue(value = "A")
+	All,
 	/**
 	 * 没有
 	 */
-	@DbValue(value = "N") None;
+	@DbValue(value = "N")
+	None;
 
 	public int getValue() {
 		return this.ordinal();

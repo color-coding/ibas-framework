@@ -16,15 +16,18 @@ public enum emApprovalResult {
 	/**
 	 * 已批准
 	 */
-	@DbValue(value = "A") Approved,
+	@DbValue(value = "A")
+	Approved,
 	/**
 	 * 拒绝的
 	 */
-	@DbValue(value = "R") Rejected,
+	@DbValue(value = "R")
+	Rejected,
 	/**
 	 * 重置为进行中
 	 */
-	@DbValue(value = "P") Processing;
+	@DbValue(value = "P")
+	Processing;
 	// /**
 	// * 退回
 	// */

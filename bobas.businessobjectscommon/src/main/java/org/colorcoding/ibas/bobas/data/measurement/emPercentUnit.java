@@ -12,7 +12,8 @@ import org.colorcoding.ibas.bobas.mapping.DbValue;
 @XmlType(name = "emPercentUnit", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
 public enum emPercentUnit {
 	// 百分百
-	@DbValue(value = "%") hundred_percent(0);
+	@DbValue(value = "%")
+	hundred_percent(0);
 
 	private int intValue;
 	private static java.util.HashMap<Integer, emPercentUnit> mappings;

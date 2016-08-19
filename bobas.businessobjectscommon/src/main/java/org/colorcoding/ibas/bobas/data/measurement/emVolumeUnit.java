@@ -14,19 +14,23 @@ public enum emVolumeUnit {
 	/**
 	 * 立方毫米
 	 */
-	@DbValue(value = "mm³") cubic_millimeter(0),
+	@DbValue(value = "mm³")
+	cubic_millimeter(0),
 	/**
 	 * 立方厘米
 	 */
-	@DbValue(value = "cm³") cubic_centimeter(1),
+	@DbValue(value = "cm³")
+	cubic_centimeter(1),
 	/**
 	 * 立方米
 	 */
-	@DbValue(value = "m³") cubic_metre(2),
+	@DbValue(value = "m³")
+	cubic_metre(2),
 	/**
 	 * 立方千米
 	 */
-	@DbValue(value = "km³") cubic_kilometer(5);
+	@DbValue(value = "km³")
+	cubic_kilometer(5);
 
 	private int intValue;
 	private static java.util.HashMap<Integer, emVolumeUnit> mappings;

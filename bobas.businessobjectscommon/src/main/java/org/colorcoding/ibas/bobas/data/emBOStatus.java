@@ -17,12 +17,14 @@ public enum emBOStatus {
 	/**
 	 * 未清
 	 */
-	@DbValue(value = "O") Open,
+	@DbValue(value = "O")
+	Open,
 
 	/**
 	 * 已清
 	 */
-	@DbValue(value = "C") Closed;
+	@DbValue(value = "C")
+	Closed;
 
 	public int getValue() {
 		return this.ordinal();

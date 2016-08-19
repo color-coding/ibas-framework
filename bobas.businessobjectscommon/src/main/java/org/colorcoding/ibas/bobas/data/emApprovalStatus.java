@@ -17,22 +17,26 @@ public enum emApprovalStatus {
 	/**
 	 * 不影响
 	 */
-	@DbValue(value = "U") Unaffected,
+	@DbValue(value = "U")
+	Unaffected,
 
 	/**
 	 * 审批中
 	 */
-	@DbValue(value = "P") Processing,
+	@DbValue(value = "P")
+	Processing,
 
 	/**
 	 * 已批准
 	 */
-	@DbValue(value = "A") Approved,
+	@DbValue(value = "A")
+	Approved,
 
 	/**
 	 * 已拒绝
 	 */
-	@DbValue(value = "R") Rejected,
+	@DbValue(value = "R")
+	Rejected,
 	// /**
 	// * 已退回
 	// */
@@ -40,7 +44,8 @@ public enum emApprovalStatus {
 	/**
 	 * 已取消
 	 */
-	@DbValue(value = "C") Cancelled;
+	@DbValue(value = "C")
+	Cancelled;
 
 	public int getValue() {
 		return this.ordinal();
