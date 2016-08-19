@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.common.Criteria;
+import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.data.ComputeException;
@@ -92,7 +94,7 @@ public class testExtremeTask extends TestCase {
 				count / DateTime.interval(start, finish, emTimeUnit.second)));
 	}
 
-	public void testDataTable2BO() throws Exception {
+	public void testWriteDatas() throws Exception {
 
 		String server = MyConfiguration.getConfigValue("Master" + MyConfiguration.CONFIG_ITEM_DB_SERVER);
 		String dbName = MyConfiguration.getConfigValue("Master" + MyConfiguration.CONFIG_ITEM_DB_NAME);
@@ -102,19 +104,25 @@ public class testExtremeTask extends TestCase {
 		String driverName = "com.mysql.jdbc.Driver";
 		Class.forName(driverName);
 		Connection connection = DriverManager.getConnection(dbURL, userName, userPwd);
+		System.out.println(connection.getSchema());
 		this.writeSQL2DB();
 		this.writeBO2DB();
-		/*
-		 * BORepositoryTest boRepository = new BORepositoryTest(); ICriteria
-		 * criteria = new Criteria(); criteria.setResultCount(1000); DateTime
-		 * start = DateTime.getNow(); IOperationResult<?> operationResult =
-		 * boRepository.fetchSalesOrder(criteria); DateTime finish =
-		 * DateTime.getNow(); System.out.println(
-		 * String.format("查询[%s]条数据，从[%s]到[%s]共[%s]秒。",
-		 * criteria.getResultCount(), start.toString("HH:mm:ss"),
-		 * finish.toString("HH:mm:ss"), DateTime.interval(start, finish,
-		 * emTimeUnit.second))); if (operationResult.getResultCode() != 0) {
-		 * System.err.println(operationResult.getMessage()); }
-		 */
+
+	}
+
+	public void testReadDatas() throws Exception {
+
+		BORepositoryTest boRepository = new BORepositoryTest();
+		ICriteria criteria = new Criteria();
+		criteria.setResultCount(10000);
+		DateTime start = DateTime.getNow();
+		IOperationResult<?> operationResult = boRepository.fetchSalesOrder(criteria);
+		DateTime finish = DateTime.getNow();
+		if (operationResult.getResultCode() != 0) {
+			System.err.println(operationResult.getMessage());
+		}
+		System.out.println(String.format("查询[%s]条数据，从[%s]到[%s]共[%s]秒。", operationResult.getResultObjects().size(),
+				start.toString("HH:mm:ss"), finish.toString("HH:mm:ss"),
+				DateTime.interval(start, finish, emTimeUnit.second)));
 	}
 }
