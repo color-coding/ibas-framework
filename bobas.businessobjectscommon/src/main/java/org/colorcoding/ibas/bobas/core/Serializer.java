@@ -51,7 +51,7 @@ public class Serializer {
 			ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
 			return unmarshaller.unmarshal(inputStream);
 		} catch (Exception e) {
-			throw new ClonerException(e);
+			throw new SerializeException(e);
 		}
 	}
 
@@ -100,7 +100,7 @@ public class Serializer {
 			marshaller.marshal(object, writer);
 			return writer.toString();
 		} catch (Exception e) {
-			throw new ClonerException(e);
+			throw new SerializeException(e);
 		}
 	}
 
@@ -123,7 +123,7 @@ public class Serializer {
 			ByteArrayInputStream inputStream = new ByteArrayInputStream(value.getBytes());
 			return unmarshaller.unmarshal(inputStream);
 		} catch (Exception e) {
-			throw new ClonerException(e);
+			throw new SerializeException(e);
 		}
 	}
 
@@ -184,7 +184,7 @@ public class Serializer {
 			marshaller.marshal(object, writer);
 			return writer.toString();
 		} catch (Exception e) {
-			throw new ClonerException(e);
+			throw new SerializeException(e);
 		}
 	}
 
@@ -204,7 +204,7 @@ public class Serializer {
 			ByteArrayInputStream inputStream = new ByteArrayInputStream(value.getBytes());
 			return unmarshaller.unmarshal(inputStream);
 		} catch (Exception e) {
-			throw new ClonerException(e);
+			throw new SerializeException(e);
 		}
 	}
 }

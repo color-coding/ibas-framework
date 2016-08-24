@@ -233,7 +233,7 @@ public class Criteria implements ICriteria {
 					continue;
 				}
 				boolean isNew = true;
-				for (IChildCriteria myChildCriteria : this.getChildCriterias()) {
+				for (IChildCriteria myChildCriteria : nCriteria.getChildCriterias()) {
 					if (myChildCriteria.getPropertyPath() == null) {
 						continue;
 					}
@@ -243,7 +243,7 @@ public class Criteria implements ICriteria {
 					}
 				}
 				if (isNew) {
-					this.getChildCriterias().add(tmpChildCriteria);
+					nCriteria.getChildCriterias().add(tmpChildCriteria);
 				}
 			}
 			// 复制查询条件
@@ -268,7 +268,7 @@ public class Criteria implements ICriteria {
 					continue;
 				}
 				boolean isNew = true;
-				for (ISort mySort : this.getSorts()) {
+				for (ISort mySort : nCriteria.getSorts()) {
 					if (mySort.getAlias() == null) {
 						continue;
 					}
@@ -278,7 +278,7 @@ public class Criteria implements ICriteria {
 					}
 				}
 				if (isNew) {
-					this.getSorts().add(tmpSort);
+					nCriteria.getSorts().add(tmpSort);
 				}
 			}
 		}
