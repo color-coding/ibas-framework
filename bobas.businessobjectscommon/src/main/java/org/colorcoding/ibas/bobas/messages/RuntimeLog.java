@@ -85,12 +85,16 @@ public class RuntimeLog {
 		if (messageLevel == -1) {
 			synchronized (RuntimeLog.class) {
 				if (messageLevel == -1) {
-					String value = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LOG_MESSAGE_LEVEL);
-					if (value != null && !value.equals("")) {
-						MessageLevel level = MessageLevel.valueOf(value.toUpperCase());
-						messageLevel = level.ordinal();
+					if (isDebugMode()) {
+						messageLevel = MessageLevel.DEBUG.ordinal();
 					} else {
-						messageLevel = MessageLevel.INFO.ordinal();
+						String value = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LOG_MESSAGE_LEVEL);
+						if (value != null && !value.equals("")) {
+							MessageLevel level = MessageLevel.valueOf(value.toUpperCase());
+							messageLevel = level.ordinal();
+						} else {
+							messageLevel = MessageLevel.INFO.ordinal();
+						}
 					}
 				}
 			}
