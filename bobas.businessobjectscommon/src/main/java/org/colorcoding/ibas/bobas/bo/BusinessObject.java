@@ -18,6 +18,7 @@ import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
+import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.organization.UnknownUser;
 import org.colorcoding.ibas.bobas.util.StringBuilder;
@@ -255,8 +256,8 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 			return;
 		}
 		for (IUserField userField : value) {
-			RuntimeLog.log(RuntimeLog.MSG_USER_SET_FIELD_VALUE, userField.getName(), userField.getValue(),
-					userField.getValueType());
+			RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_USER_SET_FIELD_VALUE, userField.getName(),
+					userField.getValue(), userField.getValueType());
 			IUserField has = this.userFields.get(userField.getName());
 			if (has != null) {
 				has.setValue(((UserFieldProxy) userField).convertValue(has.getValueType()));

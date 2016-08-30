@@ -31,6 +31,7 @@ public class RuntimeLog {
 	public static final String MSG_DB_POOL_RECYCLED_CONNECTION = "db pool: recycled connection [%s].";
 	public static final String MSG_JUDGMENT_EXPRESSION = "judgment: expression %s = [%s]";
 	public static final String MSG_JUDGMENT_RELATION = "judgment: relation %s = [%s]";
+	public static final String MSG_JUDGMENT_LINK_INFO = "judgment: judgment item count [%s].";
 	public static final String MSG_DB_ADAPTER_CREATED = "db adapter: created db adapter [%s].";
 	public static final String MSG_TRANSACTION_SP_VALUES = "transaction: sp [%s] [%s] [%s - %s]";
 	public static final String MSG_USER_FIELDS_REGISTER = "user fields: register type [%s]'s user fields, count [%s].";
@@ -50,6 +51,7 @@ public class RuntimeLog {
 	public static final String MSG_BO_FACTORY_REGISTER_BO_CODE = "factory: register [%s] for [%s].";
 
 	private static long debugMode = -1;// log类型线程安全
+	private static int messageLevel = -1;
 
 	/**
 	 * 是否处于debug模式
@@ -71,6 +73,29 @@ public class RuntimeLog {
 			}
 		}
 		return debugMode == 1 ? true : false;
+	}
+
+	/**
+	 * 是否处于debug模式
+	 * 
+	 * @return
+	 */
+	protected static int getMessageLevel() {
+		// 访问频繁，提高下性能
+		if (messageLevel == -1) {
+			synchronized (RuntimeLog.class) {
+				if (messageLevel == -1) {
+					String value = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LOG_MESSAGE_LEVEL);
+					if (value != null && !value.equals("")) {
+						MessageLevel level = MessageLevel.valueOf(value.toUpperCase());
+						messageLevel = level.ordinal();
+					} else {
+						messageLevel = MessageLevel.INFO.ordinal();
+					}
+				}
+			}
+		}
+		return messageLevel;
 	}
 
 	private volatile static IMessageRecorder recorder;
@@ -96,7 +121,7 @@ public class RuntimeLog {
 		if (message == null) {
 			return;
 		}
-		if (isDebugMode()) {
+		if (message.getLevel().ordinal() <= getMessageLevel()) {
 			getRecorder().record(message);
 		}
 	}
@@ -122,7 +147,7 @@ public class RuntimeLog {
 	 *            消息内容
 	 */
 	public static void log(String message) {
-		log(MessageLevel.information, message, "");
+		log(MessageLevel.INFO, message, "");
 	}
 
 	/**
@@ -146,7 +171,7 @@ public class RuntimeLog {
 	 *            格式中的参数
 	 */
 	public static void log(String message, Object... args) {
-		log(MessageLevel.information, message, args);
+		log(MessageLevel.INFO, message, args);
 	}
 
 	/**
@@ -176,6 +201,6 @@ public class RuntimeLog {
 		StringWriter stringWriter = new StringWriter();
 		PrintWriter printWriter = new PrintWriter(stringWriter);
 		e.printStackTrace(printWriter);
-		log(MessageLevel.error, stringWriter.toString());
+		log(MessageLevel.ERROR, stringWriter.toString());
 	}
 }

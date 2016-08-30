@@ -16,6 +16,7 @@ import java.util.Locale;
 import java.util.Properties;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**
@@ -98,7 +99,7 @@ public class LanguageItemManager implements ILanguageItemManager {
 				}
 			}
 			workFolder = new File(path).getPath();
-			RuntimeLog.log(RuntimeLog.MSG_I18N_RESOURCES_FOLDER, workFolder);
+			RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_I18N_RESOURCES_FOLDER, workFolder);
 		}
 		return workFolder;
 	}
@@ -116,7 +117,7 @@ public class LanguageItemManager implements ILanguageItemManager {
 					this.getLanguageItems().put(item.getKey(), item);
 				}
 				if (languageItems.length > 0) {
-					RuntimeLog.log(RuntimeLog.MSG_I18N_READ_FILE_DATA, "!" + name);
+					RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_I18N_READ_FILE_DATA, "!" + name);
 				}
 			} catch (UnsupportedEncodingException e) {
 				RuntimeLog.log(e);

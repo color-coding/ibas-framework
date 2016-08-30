@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.expressions;
 
 import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 import org.colorcoding.ibas.bobas.util.StringBuilder;
@@ -97,12 +98,13 @@ public abstract class JudgmentLinks {
 			return;
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.appendFormat("judgment: judgment item count [%s]", judgmentItems.length);
+		stringBuilder.appendFormat(RuntimeLog.MSG_JUDGMENT_LINK_INFO, judgmentItems.length);
+		String line = System.getProperty("line.seperator", "\n");
 		for (JudgmentLinkItem jItem : judgmentItems) {
-			stringBuilder.append('\n');
+			stringBuilder.append(line);
 			stringBuilder.appendFormat("  %s", jItem.print());
 		}
-		RuntimeLog.log(stringBuilder.toString());
+		RuntimeLog.log(MessageLevel.DEBUG, stringBuilder.toString());
 	}
 
 	/**
@@ -184,7 +186,8 @@ public abstract class JudgmentLinks {
 				currentJudExp.setOperation(jItem.getOperation());
 				currentJudExp.setRightValue(jItem.getRightOperter().getValue());
 				currentValue = currentJudExp.result();
-				RuntimeLog.log(RuntimeLog.MSG_JUDGMENT_EXPRESSION, currentJudExp.toString(), currentValue);
+				RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_JUDGMENT_EXPRESSION, currentJudExp.toString(),
+						currentValue);
 			}
 			if (rootJudExp == null) {
 				// 第一个表达式
@@ -197,7 +200,7 @@ public abstract class JudgmentLinks {
 				rootJudExp.setRightValue(currentValue);
 			}
 			currentValue = rootJudExp.result();
-			RuntimeLog.log(RuntimeLog.MSG_JUDGMENT_RELATION, rootJudExp.toString(), currentValue);
+			RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_JUDGMENT_RELATION, rootJudExp.toString(), currentValue);
 			rootJudExp.setLeftValue(currentValue);// 结果左移
 			if (!rootJudExp.result()) {
 				// 表达式不成立

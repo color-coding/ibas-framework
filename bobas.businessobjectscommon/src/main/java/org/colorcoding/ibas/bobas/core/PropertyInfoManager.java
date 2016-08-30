@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.core.fields.NotRegisterTypeException;
 import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**
@@ -26,7 +27,8 @@ public class PropertyInfoManager {
 	 *            属性
 	 */
 	public static void registerProperty(Class<?> boType, PropertyInfo<?> property) {
-		RuntimeLog.log(RuntimeLog.MSG_PROPERTIES_REGISTER_PROPERTIES, boType.getName(), property.getName());
+		RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_PROPERTIES_REGISTER_PROPERTIES, boType.getName(),
+				property.getName());
 		if (propertyInfoCache.containsKey(boType)) {
 			PropertyInfoList propertys = propertyInfoCache.get(boType);
 			synchronized (propertys) {
@@ -139,7 +141,7 @@ public class PropertyInfoManager {
 	 * @throws NotRegisterTypeException
 	 */
 	public static PropertyInfoList getPropertyInfoList(Class<?> boType) throws NotRegisterTypeException {
-		RuntimeLog.log(RuntimeLog.MSG_PROPERTIES_GET_TYPE_PROPERTIES, boType.getName());
+		RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_PROPERTIES_GET_TYPE_PROPERTIES, boType.getName());
 		synchronized (propertyInfoCache) {
 			if (propertyInfoCache.containsKey(boType)) {
 				// 已注册的类型

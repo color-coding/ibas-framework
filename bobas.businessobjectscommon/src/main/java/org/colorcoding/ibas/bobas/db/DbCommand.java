@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
+import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 public class DbCommand implements IDbCommand {
@@ -22,7 +23,7 @@ public class DbCommand implements IDbCommand {
 	@Override
 	public IDbDataReader executeReader(String sql) throws DbException {
 		try {
-			RuntimeLog.log(RuntimeLog.MSG_SQL_SCRIPTS, sql);
+			RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_SQL_SCRIPTS, sql);
 			ResultSet resultSet = this.statement.executeQuery(sql);
 			return new DbDataReader(resultSet);
 		} catch (Exception e) {
@@ -54,7 +55,7 @@ public class DbCommand implements IDbCommand {
 	@Override
 	public int executeUpdate(String sql) throws DbException {
 		try {
-			RuntimeLog.log(RuntimeLog.MSG_SQL_SCRIPTS, sql);
+			RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_SQL_SCRIPTS, sql);
 			return this.statement.executeUpdate(sql);
 		} catch (Exception e) {
 			throw new DbException(e);

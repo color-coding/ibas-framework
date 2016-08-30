@@ -27,6 +27,7 @@ import org.colorcoding.ibas.bobas.core.SaveActionsSupport;
 import org.colorcoding.ibas.bobas.core.SaveActionsType;
 import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 public class BORepository4File extends BORepository4FileReadonly implements IBORepository4File {
@@ -235,7 +236,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 		BOFile boFile = this.getBOFile(bo);
 		File file = new File(this.getRepositoryFolder() + File.separator + boFile.getFilePath());
 		if (file.exists()) {
-			RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_DELETED_DATA_FILE, file.getPath());
+			RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_REPOSITORY_DELETED_DATA_FILE, file.getPath());
 			return file.delete();
 		}
 		return false;
@@ -263,6 +264,6 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 		if (!file.exists()) {
 			file.createNewFile();
 		}
-		RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_WRITED_DATA_FILE, path);
+		RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_REPOSITORY_WRITED_DATA_FILE, path);
 	}
 }

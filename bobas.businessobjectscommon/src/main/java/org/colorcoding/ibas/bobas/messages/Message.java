@@ -26,7 +26,7 @@ public class Message implements IMessage {
 	}
 
 	public Message(String message) {
-		this(MessageLevel.information, message);
+		this(MessageLevel.INFO, message);
 	}
 
 	public Message(MessageLevel level, String message) {
@@ -56,7 +56,7 @@ public class Message implements IMessage {
 	@Override
 	public MessageLevel getLevel() {
 		if (this.level == null)
-			this.level = MessageLevel.information;
+			this.level = MessageLevel.INFO;
 		return level;
 	}
 
@@ -89,11 +89,16 @@ public class Message implements IMessage {
 	@Override
 	public String outString() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(this.getTime().toString("yyyy-MM-dd HH:mm:ss.SSS"));
-		stringBuilder.append(" ");
+		stringBuilder.append("[");
 		stringBuilder.append(this.getLevel().toString());
-		stringBuilder.append(" ");
-		stringBuilder.append(this.getTag());
+		stringBuilder.append("] [");
+		stringBuilder.append(this.getTime().toString("yyyy-MM-dd HH:mm:ss.SSS"));
+		stringBuilder.append("]");
+		if (this.getTag() != null && !this.getTag().equals("")) {
+			stringBuilder.append(" [");
+			stringBuilder.append(this.getTag());
+			stringBuilder.append("]");
+		}
 		stringBuilder.append(System.getProperty("line.separator"));
 		stringBuilder.append(this.getContent());
 		return stringBuilder.toString();

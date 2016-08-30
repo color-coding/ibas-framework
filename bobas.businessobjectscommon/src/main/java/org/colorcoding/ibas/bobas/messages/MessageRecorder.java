@@ -21,7 +21,7 @@ public class MessageRecorder implements IMessageRecorder {
 		if (message == null) {
 			return;
 		}
-		if (message.getLevel() == MessageLevel.error) {
+		if (message.getLevel() == MessageLevel.ERROR) {
 			System.err.println(message.outString());
 		} else {
 			System.out.println(message.outString());

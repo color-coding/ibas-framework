@@ -19,6 +19,7 @@ import org.colorcoding.ibas.bobas.core.SaveActionsListener;
 import org.colorcoding.ibas.bobas.core.SaveActionsType;
 import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
 import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.organization.IOrganizationManager;
 import org.colorcoding.ibas.bobas.organization.IUser;
@@ -507,8 +508,8 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 					throw new Exception(i18n.prop("msg_bobas_invaild_bo_transaction_message"));
 				}
 				if (message.getCode() != 0) {
-					RuntimeLog.log(RuntimeLog.MSG_TRANSACTION_SP_VALUES, type.toString(), bo.toString(),
-							message.getCode(), message.getMessage());
+					RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_TRANSACTION_SP_VALUES, type.toString(),
+							bo.toString(), message.getCode(), message.getMessage());
 					throw new Exception(message.getMessage());
 				}
 			}
