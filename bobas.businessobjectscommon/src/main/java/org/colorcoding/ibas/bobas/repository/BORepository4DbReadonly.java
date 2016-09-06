@@ -12,6 +12,7 @@ import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
+import org.colorcoding.ibas.bobas.common.ISqlStoredProcedure;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.BOFactory;
 import org.colorcoding.ibas.bobas.core.BOFactoryException;
@@ -591,6 +592,28 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 			operationResult.setError(e);
 		}
 		return operationResult;
+	}
+
+	@Override
+	public IOperationResult<?> fetch(ISqlStoredProcedure sp, Class<? extends IBusinessObjectBase> boType) {
+		try {
+			IBOAdapter4Db adapter4Db = this.createDbAdapter().createBOAdapter();
+			ISqlQuery sqlQuery = adapter4Db.parseSqlQuery(sp);
+			return this.fetch(sqlQuery, boType);
+		} catch (Exception e) {
+			return new OperationResult<Object>(e);
+		}
+	}
+
+	@Override
+	public IOperationResult<?> fetchEx(ISqlStoredProcedure sp, Class<? extends IBusinessObjectBase> boType) {
+		try {
+			IBOAdapter4Db adapter4Db = this.createDbAdapter().createBOAdapter();
+			ISqlQuery sqlQuery = adapter4Db.parseSqlQuery(sp);
+			return this.fetchEx(sqlQuery, boType);
+		} catch (Exception e) {
+			return new OperationResult<Object>(e);
+		}
 	}
 
 }

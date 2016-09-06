@@ -6,6 +6,7 @@ import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.common.SqlQuery;
+import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.util.StringBuilder;
@@ -208,6 +209,34 @@ public class SqlScripts implements ISqlScripts {
 			String keyValues) throws SqlScriptsException {
 		return String.format("EXEC \"%s_SP_TRANSACTION_NOTIFICATION\" N'%s', N'%s', %s, N'%s', N'%s'",
 				this.getCompanyId(), boCode, type, keyCount, keyNames, keyValues);
+	}
+
+	@Override
+	public String groupStoredProcedure(String spName, KeyValue[] parameters) throws SqlScriptsException {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("EXEC");
+		stringBuilder.append(" ");
+		stringBuilder.append("\"");
+		stringBuilder.append(spName);
+		stringBuilder.append("\" ");
+		for (int i = 0; i < parameters.length; i++) {
+			KeyValue keyValue = parameters[i];
+			if (i > 0) {
+				stringBuilder.append(", ");
+			}
+			if (keyValue.value == null) {
+				stringBuilder.append("''");
+			} else if (keyValue.value.getClass().equals(Integer.class)) {
+				stringBuilder.append(keyValue.value.toString());
+			} else if (keyValue.value.getClass().equals(Double.class)) {
+				stringBuilder.append(keyValue.value.toString());
+			} else {
+				stringBuilder.append("N'");
+				stringBuilder.append(keyValue.value.toString());
+				stringBuilder.append("'");
+			}
+		}
+		return stringBuilder.toString();
 	}
 
 }

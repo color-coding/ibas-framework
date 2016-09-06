@@ -7,7 +7,9 @@ import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
+import org.colorcoding.ibas.bobas.common.ISqlStoredProcedure;
 import org.colorcoding.ibas.bobas.common.SortType;
+import org.colorcoding.ibas.bobas.common.SqlStoredProcedure;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
@@ -115,5 +117,18 @@ public class testBOAdapter extends TestCase {
 			sqlQuery = boAdapter.parseSqlDelete(item);
 			System.out.println(sqlQuery.getQueryString());
 		}
+	}
+
+	public void testStoredProcedure() throws BOParseException {
+		ISqlStoredProcedure sqlStoredProcedure = new SqlStoredProcedure();
+		sqlStoredProcedure.setName("CC_SP_TRANSACTION_NOTIFICATION");
+		sqlStoredProcedure.addParameters("", "A");
+		sqlStoredProcedure.addParameters("", "B");
+		sqlStoredProcedure.addParameters("", 9);
+		sqlStoredProcedure.addParameters("", "C");
+		sqlStoredProcedure.addParameters("", "D");
+		IBOAdapter4Db boAdapter = new BOAdapter();
+		ISqlQuery sqlQuery = boAdapter.parseSqlQuery(sqlStoredProcedure);
+		System.out.println(sqlQuery.getQueryString());
 	}
 }

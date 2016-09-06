@@ -2,8 +2,10 @@ package org.colorcoding.ibas.bobas.db.hana;
 
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.SqlQuery;
+import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.db.SqlScriptsException;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
+import org.colorcoding.ibas.bobas.util.StringBuilder;
 
 public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 
@@ -65,4 +67,32 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 				this.getCompanyId(), this.getCompanyId(), boCode, type, keyCount, keyNames, keyValues);
 	}
 
+	@Override
+	public String groupStoredProcedure(String spName, KeyValue[] parameters) throws SqlScriptsException {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("CALL");
+		stringBuilder.append(" ");
+		stringBuilder.append("\"");
+		stringBuilder.append(spName);
+		stringBuilder.append("\"(");
+		for (int i = 0; i < parameters.length; i++) {
+			KeyValue keyValue = parameters[i];
+			if (i > 0) {
+				stringBuilder.append(", ");
+			}
+			if (keyValue.value == null) {
+				stringBuilder.append("''");
+			} else if (keyValue.value.getClass().equals(Integer.class)) {
+				stringBuilder.append(keyValue.value.toString());
+			} else if (keyValue.value.getClass().equals(Double.class)) {
+				stringBuilder.append(keyValue.value.toString());
+			} else {
+				stringBuilder.append("N'");
+				stringBuilder.append(keyValue.value.toString());
+				stringBuilder.append("'");
+			}
+		}
+		stringBuilder.append(")");
+		return stringBuilder.toString();
+	}
 }

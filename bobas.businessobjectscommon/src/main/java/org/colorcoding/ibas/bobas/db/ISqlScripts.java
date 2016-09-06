@@ -4,6 +4,7 @@ import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.SortType;
+import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 /**
@@ -113,8 +114,8 @@ public interface ISqlScripts {
 	 * 
 	 * @param boCode
 	 *            业务对象
-	 * @return 主键查询语句，例:SELECT "AutoKey" FROM "CC_SYS_ONNM" WHERE "ObjectCode"
-	 *         = '%s'
+	 * @return 主键查询语句，例:SELECT "AutoKey" FROM "CC_SYS_ONNM" WHERE "ObjectCode" =
+	 *         '%s'
 	 * @throws SqlScriptsException
 	 */
 	String getBOPrimaryKeyQuery(String boCode) throws SqlScriptsException;
@@ -125,8 +126,8 @@ public interface ISqlScripts {
 	 * @param boCode
 	 *            业务对象
 	 * 
-	 * @return 主键查询语句，例:UPDATE "CC_SYS_ONNM" SET "AutoKey" = "AutoKey" + 1
-	 *         WHERE "ObjectCode" = '%s'
+	 * @return 主键查询语句，例:UPDATE "CC_SYS_ONNM" SET "AutoKey" = "AutoKey" + 1 WHERE
+	 *         "ObjectCode" = '%s'
 	 * @throws SqlScriptsException
 	 */
 	String getUpdateBOPrimaryKeyScript(String boCode) throws SqlScriptsException;
@@ -222,4 +223,18 @@ public interface ISqlScripts {
 	 * @throws SqlScriptsException
 	 */
 	String groupMaxValueQuery(String field, String table, String partWhere) throws SqlScriptsException;
+
+	/**
+	 * 组合存储过程语句
+	 * 
+	 * @param spName
+	 *            存储过程名称
+	 * @param selects
+	 *            选择的列名称，可能为空
+	 * @param parameters
+	 *            参数
+	 * @return
+	 * @throws SqlScriptsException
+	 */
+	String groupStoredProcedure(String spName, KeyValue[] parameters) throws SqlScriptsException;
 }

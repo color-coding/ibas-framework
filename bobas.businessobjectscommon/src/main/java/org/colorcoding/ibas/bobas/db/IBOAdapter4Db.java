@@ -2,6 +2,7 @@ package org.colorcoding.ibas.bobas.db;
 
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
+import org.colorcoding.ibas.bobas.common.ISqlStoredProcedure;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectListBase;
 import org.colorcoding.ibas.bobas.data.KeyValue;
@@ -142,4 +143,14 @@ public interface IBOAdapter4Db {
 	 * @throws BOParseException
 	 */
 	ISqlQuery parseBOTransactionNotification(TransactionType type, IBusinessObjectBase bo) throws BOParseException;
+
+	/**
+	 * 解析查询
+	 * 
+	 * @param sp
+	 *            调用的存储过程信息
+	 * @return 查询对象
+	 * @throws SqlScriptsException
+	 */
+	ISqlQuery parseSqlQuery(ISqlStoredProcedure sp) throws BOParseException;
 }

@@ -2,6 +2,7 @@ package org.colorcoding.ibas.bobas.repository;
 
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
+import org.colorcoding.ibas.bobas.common.ISqlStoredProcedure;
 import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.data.IDataTable;
@@ -125,4 +126,30 @@ public interface IBORepository4DbReadonly extends IBORepositoryReadonly {
 	 * @return 操作结果及查询结果
 	 */
 	IOperationResult<IDataTable> query(ISqlQuery sqlQuery);
+
+	/**
+	 * 查询对象
+	 * 
+	 * @param sp
+	 *            调用的存储过程
+	 * 
+	 * @param boType
+	 *            对象类型
+	 * 
+	 * @return 操作结果及新对象实例
+	 */
+	IOperationResult<?> fetch(ISqlStoredProcedure sp, Class<? extends IBusinessObjectBase> boType);
+
+	/**
+	 * 查询对象包括子项
+	 * 
+	 * @param sp
+	 *            调用的存储过程
+	 * 
+	 * @param boType
+	 *            对象类型
+	 * 
+	 * @return 操作结果及新对象实例
+	 */
+	IOperationResult<?> fetchEx(ISqlStoredProcedure sp, Class<? extends IBusinessObjectBase> boType);
 }

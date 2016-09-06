@@ -27,6 +27,7 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.ISorts;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
+import org.colorcoding.ibas.bobas.common.ISqlStoredProcedure;
 import org.colorcoding.ibas.bobas.common.SqlQuery;
 import org.colorcoding.ibas.bobas.core.BOFactory;
 import org.colorcoding.ibas.bobas.core.IBOFactory;
@@ -1114,4 +1115,20 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 		}
 	}
 
+	@Override
+	public ISqlQuery parseSqlQuery(ISqlStoredProcedure sp) throws BOParseException {
+		if (sp == null) {
+			return null;
+		}
+		try {
+			ISqlScripts sqlScripts = this.getSqlScripts();
+			if (sqlScripts == null) {
+				throw new SqlScriptsException(i18n.prop("msg_bobas_invaild_sql_scripts"));
+			}
+			return new SqlQuery(
+					sqlScripts.groupStoredProcedure(sp.getName(), sp.getParameters().toArray(new KeyValue[] {})));
+		} catch (Exception e) {
+			throw new BOParseException(e);
+		}
+	}
 }
