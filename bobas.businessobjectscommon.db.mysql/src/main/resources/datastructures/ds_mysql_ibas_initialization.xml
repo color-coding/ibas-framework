@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE DataStructureOrchestration>
+<ns2:DataStructureOrchestration
+    xmlns:ns2="http://colorcoding.org/btulz/transformers">
+    <Name>ds_mysql_ibas_initialization</Name>
+    <Description>基于MYSQL的结构映射说明</Description>
+    <Integrated>true</Integrated>
+    <DriverName>com.mysql.jdbc.Driver</DriverName>
+    <DbUrl>jdbc:mysql://${DbServer}:${DbPort}/mysql?useUnicode=true&amp;characterEncoding=utf8</DbUrl>
+    <DbUser>${DbUser}</DbUser>
+    <DbPassword>${DbPassword}</DbPassword>
+    <Action Name="create db" Isolated="true">
+        <Step Name="check and create db">
+            <Script>
+                create database if not exists `${DbName}` character set utf8
+            </Script>
+        </Step>
+    </Action>
+	<Action Name="create stored procedures">
+		<Step Name="check and drop exists stored procedures">
+			<Script>				
+			    DROP PROCEDURE IF EXISTS `${DbName}`.`${Company}_SP_TRANSACTION_NOTIFICATION`;
+			</Script>
+		</Step>
+		<Step Name="create stored procedures">
+			<Script>
+				CREATE PROCEDURE `${DbName}`.`${Company}_SP_TRANSACTION_NOTIFICATION`(
+				    _object_type varchar(20),                 -- BO Code
+ 				   _transaction_type char(1),                -- [A]dd, [U]pdate, [D]elete
+ 				   _num_of_cols_in_key int,                   -- Key Count
+ 				   _list_of_key_cols_tab_del varchar(255),   -- Key Names, split by ','
+				    _list_of_cols_val_tab_del varchar(255)    -- Key Values, split by ','
+				)
+				BEGIN
+				declare _error int;                             -- return code, 0 is sucessful.
+				declare _error_message varchar(200);           -- return message
+				set _error = 0;
+				set _error_message = N'OK';
+				/*----------------------------------------------------------------------------------------------------------------------------*/
+				-- ADD YOUR CODE HERE
+				/* ----------------------------------------------------------------------------------------------------------------------------*/
+				-- return
+				select _error, _error_message;
+				END
+			</Script>
+		</Step>
+	</Action>
+</ns2:DataStructureOrchestration>

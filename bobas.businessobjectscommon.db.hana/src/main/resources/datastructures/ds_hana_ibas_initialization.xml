@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE DataStructureOrchestration>
+<ns2:DataStructureOrchestration
+    xmlns:ns2="http://colorcoding.org/btulz/transformers">
+    <Name>ds_hana_ibas_initialization</Name>
+    <Description>基于HANA的结构映射说明</Description>
+    <Integrated>true</Integrated>
+    <DriverName>com.sap.db.jdbc.Driver</DriverName>
+    <DbUrl>jdbc:sap://${DbServer}:${DbPort}</DbUrl>
+    <DbUser>${DbUser}</DbUser>
+    <DbPassword>${DbPassword}</DbPassword>
+    <Action Name="create db" Isolated="true">
+        <Step Name="check db exists">
+            <Script>
+                select count(0) from "SCHEMAS" where "SCHEMA_NAME" = '${DbName}'
+            </Script>
+        </Step>
+        <Step Name="create db" RunOnValue="0">
+            <Script>
+                 create schema "${DbName}"
+            </Script>
+        </Step>
+    </Action>
+	<Action Name="create stored procedures">
+		<Step Name="check stored procedures exists">
+			<Script>
+				select count(0) from "PROCEDURES" where "SCHEMA_NAME" = '${DbName}' and "PROCEDURE_NAME" = '${Company}_SP_TRANSACTION_NOTIFICATION'
+			</Script>
+		</Step>
+		<Step Name="create stored procedures" RunOnValue="0">
+			<Script>
+				CREATE PROCEDURE "${DbName}"."${Company}_SP_TRANSACTION_NOTIFICATION"
+				(
+				    IN _object_type nvarchar(30),                       --对象类型（BOCode）
+				    IN _transaction_type nvarchar(1),                   --业务类型（Add:A-添加, Update:U-更新, Delete:D-删除）
+				    IN _num_of_cols_in_key integer,                     --主键个数
+				    IN _list_of_key_cols_tab_del nvarchar(255),         --主键名称
+				    IN _list_of_cols_val_tab_del nvarchar(255)          --主键值
+				)
+				LANGUAGE SQLSCRIPT AS
+				BEGIN
+				--返回值
+				DECLARE _error integer;
+				--返回值(0 无错误)
+				DECLARE _error_message nvarchar(200);
+				--返回的消息
+				SELECT 0 INTO _error FROM  dummy;
+				SELECT 'OK' INTO _error_message FROM dummy;
+				--------------------------------------------------------------------------------------------------------------------------------
+				--ADD YOUR CODE HERE
+				--------------------------------------------------------------------------------------------------------------------------------
+				--返回结果
+				SELECT TO_INTEGER(_error) "code", _error_message "message" FROM dummy;
+				END
+			</Script>
+		</Step>
+	</Action>
+</ns2:DataStructureOrchestration>

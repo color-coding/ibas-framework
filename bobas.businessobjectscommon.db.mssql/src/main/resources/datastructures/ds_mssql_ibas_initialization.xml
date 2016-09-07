@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE DataStructureOrchestration>
+<ns2:DataStructureOrchestration
+    xmlns:ns2="http://colorcoding.org/btulz/transformers">
+    <Name>ds_mssql_ibas_initialization</Name>
+    <Description>基于MSSQL的结构映射说明</Description>
+    <Integrated>true</Integrated>
+    <DriverName>com.microsoft.sqlserver.jdbc.SQLServerDriver</DriverName>
+    <DbUrl>jdbc:sqlserver://${DbServer}:${DbPort};DatabaseName=master;ApplicationName=${AppName}</DbUrl>
+    <DbUser>${DbUser}</DbUser>
+    <DbPassword>${DbPassword}</DbPassword>
+    <Action Name="create db" Isolated="true">
+        <Step Name="check db exists">
+            <Script>
+                select count(0) from sys.databases where name = '${DbName}'
+            </Script>
+        </Step>
+        <Step Name="create db" RunOnValue="0">
+            <Script>
+                 create database "${DbName}" 
+            </Script>
+        </Step>
+    </Action>
+	<Action Name="create stored procedures" Isolated="true" DbUrl="jdbc:sqlserver://${DbServer}:${DbPort};DatabaseName=${DbName};ApplicationName=${AppName}">
+		<Step Name="check stored procedures exists">
+			<Script>
+				select count(0) from sys.sysobjects where name = '${Company}_SP_TRANSACTION_NOTIFICATION' AND type = 'P'
+			</Script>
+		</Step>
+		<Step Name="create stored procedures" RunOnValue="0">
+			<Script>
+				CREATE PROCEDURE ${Company}_SP_TRANSACTION_NOTIFICATION
+				    @object_type nvarchar(20),                 -- BO Code
+				    @transaction_type nchar(1),                -- [A]dd, [U]pdate, [D]elete
+				    @num_of_cols_in_key int,                   -- Key Count
+				    @list_of_key_cols_tab_del nvarchar(255),   -- Key Names, split by ','
+				    @list_of_cols_val_tab_del nvarchar(255)    -- Key Values, split by ','
+				AS
+				begin
+				declare @error int                             -- return code, 0 is sucessful.
+				declare @error_message nvarchar(200)           -- return message
+				select @error = 0
+				select @error_message = N'OK'
+				--------------------------------------------------------------------------------------------------------------------------------
+				--ADD YOUR CODE HERE
+				--------------------------------------------------------------------------------------------------------------------------------
+				--return
+				select @error "Code", @error_message "Message"
+				end
+			</Script>
+		</Step>
+	</Action>
+</ns2:DataStructureOrchestration>

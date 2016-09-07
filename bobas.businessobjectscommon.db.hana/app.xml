@@ -4,9 +4,9 @@
 	<appSettings>
 		<add key="DebugMode" value="true" />
 		<add key="MasterDbType" value="HANA" />
-		<add key="MasterDbServer" value="122.5.6.90:30015" />
+		<add key="MasterDbServer" value="ibas-dev-hana:30015" />
 		<add key="MasterDbName" value="IBAS_DEMO" />
 		<add key="MasterDbUserID" value="SYSTEM" />
-		<add key="MasterDbUserPassword" value="HANAavatech2012" />
+		<add key="MasterDbUserPassword" value="AVAtech2015!" />
 	</appSettings>
 </ns2:configuration>

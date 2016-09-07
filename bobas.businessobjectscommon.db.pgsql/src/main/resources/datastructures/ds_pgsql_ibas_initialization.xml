@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE DataStructureOrchestration>
+<ns2:DataStructureOrchestration
+    xmlns:ns2="http://colorcoding.org/btulz/transformers">
+    <Name>ds_pgsql_ibas_initialization</Name>
+    <Description>基于PGSQL的结构映射说明</Description>
+    <Integrated>true</Integrated>
+    <DriverName>org.postgresql.Driver</DriverName>
+    <DbUrl>jdbc:postgresql://${DbServer}:${DbPort}/${DbName}</DbUrl>
+    <DbUser>${DbUser}</DbUser>
+    <DbPassword>${DbPassword}</DbPassword>
+    <Action Name="create db" Isolated="true" DbUrl="jdbc:postgresql://${DbServer}:${DbPort}/postgres">
+        <Step Name="check db exists">
+            <Script>
+                select count(0) from pg_database where datname = '${DbName}'
+            </Script>
+        </Step>
+        <Step Name="create db" RunOnValue="0">
+            <Script>
+                 create database "${DbName}"
+            </Script>
+        </Step>
+    </Action>
+	<Action Name="create stored procedures">
+		<Step Name="check and drop exists stored procedures">
+			<Script>
+				DROP FUNCTION IF EXISTS "${Company}_SP_TRANSACTION_NOTIFICATION"(character varying, character, integer, character varying, character varying);
+			</Script>
+		</Step>
+		<Step Name="check and drop exists return type">
+			<Script>
+				DROP TYPE IF EXISTS "RESULT_TYPE_${Company}_SP_TRANSACTION_NOTIFICATION";
+			</Script>
+		</Step>
+		<Step Name="create return type">
+			<Script>
+				CREATE TYPE "RESULT_TYPE_${Company}_SP_TRANSACTION_NOTIFICATION" AS("Error" integer,"Message" varchar(200));
+			</Script>
+		</Step>
+		<Step Name="create stored procedures">
+			<Script>
+				CREATE OR REPLACE FUNCTION "${Company}_SP_TRANSACTION_NOTIFICATION"
+				(
+				   _object_type character varying,                             /*对象类型（BOCode）*/
+ 				   _transaction_type character,                                /*业务类型（Add:A-添加, Update:U-更新, Delete:D-删除）*/
+ 				   _num_of_cols_in_key integer,                                /*主键个数*/
+ 				   _list_of_key_cols_tab_del character varying,                /*主键名称*/
+  				  _list_of_cols_val_tab_del character varying                  /*主键值*/
+				) RETURNS SETOF "RESULT_TYPE_CC_SP_TRANSACTION_NOTIFICATION" AS $_$
+				declare 
+ 				   _error  integer;                                            /*返回值(0 无错误)*/
+  				  _error_message varchar (200);                                /*返回的消息*/
+   				 _result record;
+				BEGIN
+				/* 返回值 */
+				_error = 0;
+				_error_message = N'OK';
+				/*--------------------------------------------------------------------------------------------------------------------------------*/
+				/*ADD YOUR CODE HERE*/
+				/*--------------------------------------------------------------------------------------------------------------------------------*/
+				/*return*/
+				for _result in select _error "error",_error_message "message" loop 
+				return next _result; 
+				end loop;
+				END;
+				$_$ LANGUAGE plpgsql;
+			</Script>
+		</Step>
+	</Action>
+</ns2:DataStructureOrchestration>
