@@ -152,4 +152,13 @@ public interface IBORepository4DbReadonly extends IBORepositoryReadonly {
 	 * @return 操作结果及新对象实例
 	 */
 	IOperationResult<?> fetchEx(ISqlStoredProcedure sp, Class<? extends IBusinessObjectBase> boType);
+
+	/**
+	 * 运行存储过程，并返回值
+	 * 
+	 * @param sp
+	 *            查询语句
+	 * @return 操作结果及查询第一行第一列
+	 */
+	IOperationResult<SingleValue> fetch(ISqlStoredProcedure sp);
 }

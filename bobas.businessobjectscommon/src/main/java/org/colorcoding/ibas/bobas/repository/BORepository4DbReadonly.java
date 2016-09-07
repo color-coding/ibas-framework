@@ -616,4 +616,14 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 		}
 	}
 
+	@Override
+	public IOperationResult<SingleValue> fetch(ISqlStoredProcedure sp) {
+		try {
+			IBOAdapter4Db adapter4Db = this.createDbAdapter().createBOAdapter();
+			ISqlQuery sqlQuery = adapter4Db.parseSqlQuery(sp);
+			return this.fetch(sqlQuery);
+		} catch (Exception e) {
+			return new OperationResult<SingleValue>(e);
+		}
+	}
 }
