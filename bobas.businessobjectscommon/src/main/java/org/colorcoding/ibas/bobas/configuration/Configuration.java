@@ -69,11 +69,9 @@ public class Configuration {
 					path = uri.getPath();
 				}
 				if (path == null) {
-					// 此处存在中文路径识别异常风险
 					path = url.getPath();
 					if (path != null)
 						path = java.net.URLDecoder.decode(path, "UTF-8");
-					// path.replace("%20", "");// 处理空格
 				}
 			}
 			// file:/E:/WorkTemp/ibas/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/ibcp.systemcenter.service/WEB-INF/classes/
@@ -98,9 +96,7 @@ public class Configuration {
 				file = file.getParentFile();
 			}
 			return file.getPath();
-		} catch (URISyntaxException e) {
-			throw new RuntimeException(e);
-		} catch (UnsupportedEncodingException e) {
+		} catch (URISyntaxException | UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
 	}
