@@ -32,12 +32,12 @@ public abstract class ConfigurableFactory {
 		// 基础命名空间
 		className.append(factory.getPackage().getName());
 		// 类型实现命名空间
-		if (type != null && !type.equals("")) {
+		if (type != null && !type.isEmpty()) {
 			className.append(".");
 			className.append(type);
 		}
 		// 类名称
-		if (name != null && !name.equals("")) {
+		if (name != null && !name.isEmpty()) {
 			className.append(".");
 			className.append(name);
 		}

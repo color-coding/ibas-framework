@@ -86,7 +86,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 			IBOStorageTag tagBO = (IBOStorageTag) this;
 			boCode = tagBO.getObjectCode();
 		}
-		if (boCode == null || boCode.equals("")) {
+		if (boCode == null || boCode.isEmpty()) {
 			return super.toString();
 		}
 		stringBuilder.appendFormat("{");

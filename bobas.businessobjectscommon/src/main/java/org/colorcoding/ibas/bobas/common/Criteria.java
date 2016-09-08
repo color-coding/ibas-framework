@@ -35,7 +35,7 @@ public class Criteria implements ICriteria {
 	 * @return
 	 */
 	public static ICriteria create(String value) {
-		if (value == null || value.equals("")) {
+		if (value == null || value.isEmpty()) {
 			return null;
 		}
 		if (value.startsWith("{[") && value.endsWith("]}")) {

@@ -53,7 +53,7 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 
 	@Override
 	public String getWorkFolder() {
-		if (this.workFolder == null || this.workFolder.equals("")) {
+		if (this.workFolder == null || this.workFolder.isEmpty()) {
 			String folder = MyConfiguration.getWorkFolder();// 尾部不带文件路径分隔
 			this.setWorkFolder(String.format("%s%s%s", folder, File.separator, "log"));
 			File file = new File(this.workFolder);

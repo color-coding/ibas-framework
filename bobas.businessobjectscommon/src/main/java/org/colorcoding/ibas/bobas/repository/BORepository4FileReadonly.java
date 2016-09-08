@@ -35,7 +35,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 
 	@Override
 	public String getRepositoryFolder() {
-		if (this.repositoryFolder == null || this.repositoryFolder.equals("")) {
+		if (this.repositoryFolder == null || this.repositoryFolder.isEmpty()) {
 			String workFolder = Configuration.getWorkFolder() + File.separator + "borepository";
 			workFolder = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_FILE_REPOSITORY_FOLDER, workFolder);
 			File file = new File(workFolder);
@@ -101,7 +101,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 
 	BOFile[] myFetchEx(ICriteria criteria, Class<? extends IBusinessObjectBase> boType)
 			throws RepositoryException, JAXBException, BOFactoryException {
-		if (criteria.getBusinessObjectCode() == null || criteria.getBusinessObjectCode().equals("")) {
+		if (criteria.getBusinessObjectCode() == null || criteria.getBusinessObjectCode().isEmpty()) {
 			criteria.setBusinessObjectCode(this.getBOFactory().getBOCode(boType));
 		}
 		String boFolder = this.getRepositoryFolder() + File.separator + criteria.getBusinessObjectCode().toLowerCase();

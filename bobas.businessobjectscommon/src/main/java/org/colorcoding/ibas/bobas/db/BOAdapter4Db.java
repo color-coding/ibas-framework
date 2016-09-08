@@ -207,7 +207,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 					stringBuilder.appendFormat(dbObject, condition.getAlias());
 				}
 				stringBuilder.append(" ");
-				if (condition.getComparedAlias() != null && !condition.getComparedAlias().equals("")) {
+				if (condition.getComparedAlias() != null && !condition.getComparedAlias().isEmpty()) {
 					// 两字段间比较， [ItemCode] <> [ItemName]
 					if (condition.getOperation() == ConditionOperation.co_NONE
 							|| condition.getOperation() == ConditionOperation.co_START
@@ -309,14 +309,14 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 		DbField dbField = null;
 		for (int i = 0; i < pInfoList.size(); i++) {
 			PropertyInfo<?> cProperty = (PropertyInfo<?>) pInfoList.get(i);
-			if (cProperty.getName() == null || cProperty.getName().equals("")) {
+			if (cProperty.getName() == null || cProperty.getName().isEmpty()) {
 				continue;
 			}
 			Object annotation = cProperty.getAnnotation(DbField.class);
 			if (annotation != null) {
 				// 绑定数据库的字段
 				dbField = (DbField) annotation;
-				if (dbField.name() == null || dbField.name().equals("")) {
+				if (dbField.name() == null || dbField.name().isEmpty()) {
 					continue;
 				}
 				// 修正查询条件的字段名称
@@ -345,14 +345,14 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 		DbField dbField = null;
 		for (int i = 0; i < pInfoList.size(); i++) {
 			PropertyInfo<?> cProperty = (PropertyInfo<?>) pInfoList.get(i);
-			if (cProperty.getName() == null || cProperty.getName().equals("")) {
+			if (cProperty.getName() == null || cProperty.getName().isEmpty()) {
 				continue;
 			}
 			Object annotation = cProperty.getAnnotation(DbField.class);
 			if (annotation != null) {
 				// 绑定数据库的字段
 				dbField = (DbField) annotation;
-				if (dbField.name() == null || dbField.name().equals("")) {
+				if (dbField.name() == null || dbField.name().isEmpty()) {
 					continue;
 				}
 				// 修正排序的字段名称
@@ -387,14 +387,14 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				PropertyInfoList pInfoList = PropertyInfoManager.getPropertyInfoList(boType);
 				for (int i = 0; i < pInfoList.size(); i++) {
 					PropertyInfo<?> cProperty = (PropertyInfo<?>) pInfoList.get(i);
-					if (cProperty.getName() == null || cProperty.getName().equals("")) {
+					if (cProperty.getName() == null || cProperty.getName().isEmpty()) {
 						continue;
 					}
 					Object annotation = cProperty.getAnnotation(DbField.class);
 					if (annotation != null) {
 						// 绑定数据库的字段
 						dbField = (DbField) annotation;
-						if (dbField.name() == null || dbField.name().equals("")) {
+						if (dbField.name() == null || dbField.name().isEmpty()) {
 							continue;
 						}
 						if (dbField.primaryKey()) {
@@ -440,7 +440,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			} catch (Exception e) {
 				throw new SqlScriptsException(e.getMessage(), e);
 			}
-			if (table == null || table.equals("")) {
+			if (table == null || table.isEmpty()) {
 				throw new BOParseException(i18n.prop("msg_bobas_not_found_bo_table", boType.getName()));
 			}
 			int result = criteria.getResultCount();
@@ -483,7 +483,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			}
 			IManageFields boFields = (IManageFields) bo;
 			String table = this.getBOMasterTable(boFields);
-			if (table == null || table.equals("")) {
+			if (table == null || table.isEmpty()) {
 				// 没有获取到表
 				throw new BOParseException(i18n.prop("msg_bobas_not_found_bo_table", bo.getClass().getName()));
 			}
@@ -582,14 +582,14 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			}
 			IManageFields boFields = (IManageFields) bo;
 			String table = this.getBOMasterTable(boFields);
-			if (table == null || table.equals("")) {
+			if (table == null || table.isEmpty()) {
 				// 没有获取到表
 				throw new BOParseException(i18n.prop("msg_bobas_not_found_bo_table", bo.getClass().getName()));
 			}
 			table = String.format(sqlScripts.getDbObjectSign(), table);
 			String partWhere = this.getBOFieldValues(this.getDbFields(boFields.getKeyFields()),
 					sqlScripts.getAndSign());
-			if (partWhere == null || partWhere.equals("")) {
+			if (partWhere == null || partWhere.isEmpty()) {
 				// 没有条件的删除不允许执行
 				throw new BOParseException(i18n.prop("msg_bobas_not_allow_sql_scripts"));
 			}
@@ -612,14 +612,14 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			}
 			IManageFields boFields = (IManageFields) bo;
 			String table = this.getBOMasterTable(boFields);
-			if (table == null || table.equals("")) {
+			if (table == null || table.isEmpty()) {
 				// 没有获取到表
 				throw new BOParseException(i18n.prop("msg_bobas_not_found_bo_table", bo.getClass().getName()));
 			}
 			table = String.format(sqlScripts.getDbObjectSign(), table);
 			String partWhere = this.getBOFieldValues(this.getDbFields(boFields.getKeyFields()),
 					sqlScripts.getAndSign());
-			if (partWhere == null || partWhere.equals("")) {
+			if (partWhere == null || partWhere.isEmpty()) {
 				// 没有条件的删除不允许执行
 				throw new BOParseException(i18n.prop("msg_bobas_not_allow_sql_scripts"));
 			}

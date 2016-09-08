@@ -190,10 +190,10 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 					permissionItem.setGroup(permission.group());
 					permissionItem.setName(permission.name());
 					permissionItem.setValue(permission.defaultValue());
-					if (permissionItem.getGroup() == null || permissionItem.getGroup().equals("")) {
+					if (permissionItem.getGroup() == null || permissionItem.getGroup().isEmpty()) {
 						permissionItem.setGroup(group);
 					}
-					if (permissionItem.getName() == null || permissionItem.getName().equals("")) {
+					if (permissionItem.getName() == null || permissionItem.getName().isEmpty()) {
 						permissionItem.setName(method.getName());
 					}
 					permissions.add(permissionItem);

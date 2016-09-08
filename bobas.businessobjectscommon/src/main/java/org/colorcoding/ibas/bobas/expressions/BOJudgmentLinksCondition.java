@@ -38,7 +38,7 @@ public class BOJudgmentLinksCondition extends BOJudgmentLinks {
 			propertyValueOperter.setPropertyName(item.getAlias());
 			jItem.setLeftOperter(propertyValueOperter);
 			// 右边取值
-			if (item.getComparedAlias() != null && !item.getComparedAlias().equals("")) {
+			if (item.getComparedAlias() != null && !item.getComparedAlias().isEmpty()) {
 				// 与属性比较
 				propertyValueOperter = this.createPropertyValueOperter();
 				propertyValueOperter.setPropertyName(item.getComparedAlias());

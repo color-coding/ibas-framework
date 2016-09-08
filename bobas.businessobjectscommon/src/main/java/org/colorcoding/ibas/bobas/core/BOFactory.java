@@ -97,7 +97,7 @@ public class BOFactory implements IBOFactory {
 		for (Class<?> type : types) {
 			try {
 				String boCode = this.getBOCode(type);
-				if (boCode == null || boCode.equals("")) {
+				if (boCode == null || boCode.isEmpty()) {
 					continue;
 				}
 				if (this.getBOMaps().containsKey(boCode)) {
@@ -131,7 +131,7 @@ public class BOFactory implements IBOFactory {
 				// 遍历并分析类型
 				for (int i = 0; i < v.size(); i++) {
 					Class<?> type = (Class<?>) v.get(i);
-					if (packageName != null && !packageName.equals("")) {
+					if (packageName != null && !packageName.isEmpty()) {
 						// 过滤命名空间
 						if (!type.getName().startsWith(packageName))
 							continue;

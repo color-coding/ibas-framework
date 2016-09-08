@@ -36,7 +36,7 @@ public class Encrypt {
 	 * @return
 	 */
 	public static byte[] toBytes(String hexString) {
-		if (hexString == null || hexString.equals("")) {
+		if (hexString == null || hexString.isEmpty()) {
 			return null;
 		}
 		hexString = hexString.toUpperCase();

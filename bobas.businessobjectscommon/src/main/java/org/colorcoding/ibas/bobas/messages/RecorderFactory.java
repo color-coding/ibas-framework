@@ -21,7 +21,7 @@ public class RecorderFactory extends ConfigurableFactory {
 	public synchronized static IMessageRecorder createRecorder(String sign) {
 		IMessageRecorder recorder = null;
 		String type = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_MESSAGE_RECORDER_WAY);
-		if (type != null && !type.equals("")) {
+		if (type != null && !type.isEmpty()) {
 			// 创建实现的实例
 			try {
 				Class<?> recorderClass = getInstance(RecorderFactory.class, "", type);

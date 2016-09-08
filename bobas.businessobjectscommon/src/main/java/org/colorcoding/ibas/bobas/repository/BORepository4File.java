@@ -141,7 +141,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 				String boCode = "not_classified";
 				if (bo instanceof IBOStorageTag) {
 					IBOStorageTag boTag = (IBOStorageTag) bo;
-					if (boTag.getObjectCode() != null && !boTag.equals("")) {
+					if (boTag.getObjectCode() != null && !boTag.getObjectCode().isEmpty()) {
 						boCode = boTag.getObjectCode().toLowerCase();
 					}
 				}
@@ -198,7 +198,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 			Properties props = new Properties();
 			props.load(new FileInputStream(file));
 			String value = props.getProperty(tagBO.getObjectCode());
-			if (value == null || value.equals("")) {
+			if (value == null || value.isEmpty()) {
 				value = "1";
 			}
 			int key = 1, nextKey = 1;

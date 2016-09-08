@@ -43,7 +43,7 @@ public class LanguageItem implements ILanguageItem {
 
 	@Override
 	public String getContent(String langcode) {
-		if (langcode != null && !langcode.equals("")) {
+		if (langcode != null && !langcode.isEmpty()) {
 			for (ILanguageItemContent item : this.getLanguageItemContents()) {
 				if (langcode.equals(item.getLanguageCode())) {
 					return item.getContent();
@@ -74,9 +74,9 @@ public class LanguageItem implements ILanguageItem {
 	 */
 	@Override
 	public void addContent(String langcode, String content) {
-		if (langcode == null || langcode.equals(""))
+		if (langcode == null || langcode.isEmpty())
 			return;
-		if (content == null || langcode.equals(""))
+		if (content == null || langcode.isEmpty())
 			return;
 		// 添加或者更新值
 		ILanguageItemContent itemContent = null;

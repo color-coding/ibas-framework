@@ -157,10 +157,10 @@ public class SqlScripts implements ISqlScripts {
 			stringBuilder.appendFormat("SELECT %s", partSelect);
 		}
 		stringBuilder.appendFormat(" FROM %s", table);
-		if (partWhere != null && !partWhere.equals("")) {
+		if (partWhere != null && !partWhere.isEmpty()) {
 			stringBuilder.appendFormat(" WHERE %s", partWhere);
 		}
-		if (partOrder != null && !partOrder.equals("")) {
+		if (partOrder != null && !partOrder.isEmpty()) {
 			stringBuilder.appendFormat(" ORDER BY %s", partOrder);
 		}
 		return stringBuilder.toString();

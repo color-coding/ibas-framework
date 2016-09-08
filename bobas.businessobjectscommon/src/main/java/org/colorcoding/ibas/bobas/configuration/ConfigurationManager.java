@@ -31,7 +31,7 @@ import org.colorcoding.ibas.bobas.MyConsts;
 public class ConfigurationManager implements IConfigurationManager {
 
 	public static IConfigurationManager create(String filePath) throws FileNotFoundException, JAXBException {
-		if (filePath == null || filePath.equals(""))
+		if (filePath == null || filePath.isEmpty())
 			return null;
 		File file = new File(filePath);
 		if (!file.exists())
@@ -72,7 +72,7 @@ public class ConfigurationManager implements IConfigurationManager {
 
 	@Override
 	public void saveSettings(String filePath) throws JAXBException, IOException {
-		if (filePath == null || filePath.equals(""))
+		if (filePath == null || filePath.isEmpty())
 			return;
 		if (elements == null)
 			return;
@@ -113,7 +113,7 @@ public class ConfigurationManager implements IConfigurationManager {
 
 	@Override
 	public synchronized void update(String filePath) {
-		if (filePath == null || filePath.equals(""))
+		if (filePath == null || filePath.isEmpty())
 			return;
 		File file = new File(filePath);
 		if (!file.exists())

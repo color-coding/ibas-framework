@@ -76,7 +76,7 @@ public class DbAdapterFactory extends ConfigurableFactory {
 	}
 
 	public synchronized static IDbAdapter createAdapter(String type) throws DbException {
-		if (type == null || type.equals("")) {
+		if (type == null || type.isEmpty()) {
 			// 空或没有指定，则返回默认
 			return createAdapter();
 		}

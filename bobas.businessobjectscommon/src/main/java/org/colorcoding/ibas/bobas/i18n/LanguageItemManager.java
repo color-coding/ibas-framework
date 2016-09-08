@@ -30,9 +30,9 @@ public class LanguageItemManager implements ILanguageItemManager {
 	private String languageCode;
 
 	public String getLanguageCode() {
-		if (languageCode == null || languageCode.equals("")) {
+		if (languageCode == null || languageCode.isEmpty()) {
 			String langCode = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LANGUAGE_CODE);
-			if (langCode == null || langCode.equals("")) {
+			if (langCode == null || langCode.isEmpty()) {
 				// 获取当前系统语言编码
 				langCode = Locale.getDefault().toLanguageTag();
 			}
@@ -76,9 +76,9 @@ public class LanguageItemManager implements ILanguageItemManager {
 	 * @return
 	 */
 	protected String getWorkFolder() {
-		if (workFolder == null || workFolder.equals("")) {
+		if (workFolder == null || workFolder.isEmpty()) {
 			String path = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_I18N_PATH);
-			if (path == null || path.equals("") || !(new File(path)).exists()) {
+			if (path == null || path.isEmpty() || !(new File(path)).exists()) {
 				// 配置的路径不存在
 				try {
 					URI uri = MyConfiguration.getResource("i18n");
@@ -139,7 +139,7 @@ public class LanguageItemManager implements ILanguageItemManager {
 	 *            工作目录
 	 */
 	public void readResources(String fileFolder) {
-		if (fileFolder == null || fileFolder.equals(""))
+		if (fileFolder == null || fileFolder.isEmpty())
 			return;
 		File file = new File(fileFolder);
 		if (file.exists()) {
@@ -175,7 +175,7 @@ public class LanguageItemManager implements ILanguageItemManager {
 	 *            语言编码
 	 */
 	public void readResources(String fileFolder, String langCode) {
-		if (fileFolder == null || fileFolder.equals(""))
+		if (fileFolder == null || fileFolder.isEmpty())
 			return;
 		File file = new File(fileFolder);
 		if (file.exists()) {
@@ -224,11 +224,11 @@ public class LanguageItemManager implements ILanguageItemManager {
 				while (enumeration.hasMoreElements()) {
 					String key = (String) enumeration.nextElement();
 					// 去掉注释
-					if (key == null || key.equals(""))
+					if (key == null || key.isEmpty())
 						continue;
 					key = key.trim();// 去掉两端的空格
 					String property = props.getProperty(key);
-					if (property == null || property.equals(""))
+					if (property == null || property.isEmpty())
 						continue;
 					// 判断是否存在含有key 的 item
 					ILanguageItem item = new LanguageItem();

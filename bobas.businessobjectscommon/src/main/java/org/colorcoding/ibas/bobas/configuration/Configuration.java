@@ -115,7 +115,7 @@ public class Configuration {
 	@SuppressWarnings("unchecked")
 	public static <P> P getConfigValue(String key, P defaultValue) {
 		String valueString = getConfigValue(key);
-		if (valueString == null || valueString.equals("")) {
+		if (valueString == null || valueString.isEmpty()) {
 			return defaultValue;
 		} else {
 			try {
@@ -172,7 +172,7 @@ public class Configuration {
 			synchronized (Configuration.class) {
 				if (workFolder == null) {
 					String path = getConfigValue(CONFIG_ITEM_WORK_FOLDER);
-					if (path == null || path.equals("")) {
+					if (path == null || path.isEmpty()) {
 						// 没有配置工作目录
 						path = getStartupFolder();
 					}

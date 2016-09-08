@@ -66,7 +66,7 @@ public abstract class AssociatedFieldDataBase<T> extends FieldDataBase<T> {
 		this.setValueType(mapping.type());
 		for (AssociatedField assoField : mapping.value()) {
 			this.addAssociations(assoField.field(),
-					assoField.mapped().equals("") ? assoField.field() : assoField.mapped());
+					assoField.mapped().isEmpty() ? assoField.field() : assoField.mapped());
 		}
 	}
 }

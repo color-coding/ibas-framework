@@ -103,10 +103,10 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 			throws SqlScriptsException {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.appendFormat("SELECT * FROM %s", table);
-		if (partWhere != null && !partWhere.equals("")) {
+		if (partWhere != null && !partWhere.isEmpty()) {
 			stringBuilder.appendFormat(" WHERE %s", partWhere);
 		}
-		if (partOrder != null && !partOrder.equals("")) {
+		if (partOrder != null && !partOrder.isEmpty()) {
 			stringBuilder.appendFormat(" ORDER BY %s", partOrder);
 		}
 		if (result >= 0) {

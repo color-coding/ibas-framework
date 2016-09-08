@@ -27,7 +27,7 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 
 	@Override
 	public IBusinessLogicsChain registerChain(String transId) {
-		if (transId == null || transId.equals("")) {
+		if (transId == null || transId.isEmpty()) {
 			throw new BusinessLogicsException(i18n.prop("msg_bobas_invalid_data"));
 		}
 		IBusinessLogicsChain chain = new BusinessLogicsChain();

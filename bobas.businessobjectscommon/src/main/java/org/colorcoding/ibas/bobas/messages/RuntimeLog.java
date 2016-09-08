@@ -89,7 +89,7 @@ public class RuntimeLog {
 						messageLevel = MessageLevel.DEBUG.ordinal();
 					} else {
 						String value = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LOG_MESSAGE_LEVEL);
-						if (value != null && !value.equals("")) {
+						if (value != null && !value.isEmpty()) {
 							MessageLevel level = MessageLevel.valueOf(value.toUpperCase());
 							messageLevel = level.ordinal();
 						} else {

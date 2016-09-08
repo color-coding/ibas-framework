@@ -94,7 +94,7 @@ public class Message implements IMessage {
 		stringBuilder.append("] [");
 		stringBuilder.append(this.getTime().toString("yyyy-MM-dd HH:mm:ss.SSS"));
 		stringBuilder.append("]");
-		if (this.getTag() != null && !this.getTag().equals("")) {
+		if (this.getTag() != null && !this.getTag().isEmpty()) {
 			stringBuilder.append(" [");
 			stringBuilder.append(this.getTag());
 			stringBuilder.append("]");

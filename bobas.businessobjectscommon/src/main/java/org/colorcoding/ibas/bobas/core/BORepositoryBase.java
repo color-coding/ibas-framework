@@ -100,7 +100,7 @@ public abstract class BORepositoryBase implements IBORepositoryReadonly {
 				IDataOwnership data = (IDataOwnership) bo;
 				if (data.getDataOwner() == null || data.getDataOwner() == 0)
 					data.setDataOwner(this.getCurrentUser().getId());
-				if (data.getOrganization() == null || data.getOrganization().equals(""))
+				if (data.getOrganization() == null || data.getOrganization().isEmpty())
 					data.setOrganization(this.getCurrentUser().getBelong());
 			}
 		} else {
