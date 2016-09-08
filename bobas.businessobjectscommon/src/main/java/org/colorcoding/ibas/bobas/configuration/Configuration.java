@@ -2,6 +2,7 @@ package org.colorcoding.ibas.bobas.configuration;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -71,7 +72,8 @@ public class Configuration {
 					// 此处存在中文路径识别异常风险
 					path = url.getPath();
 					if (path != null)
-						path = path.replace("%20", " ");// 处理空格
+						path = java.net.URLDecoder.decode(path, "UTF-8");
+					// path.replace("%20", "");// 处理空格
 				}
 			}
 			// file:/E:/WorkTemp/ibas/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/ibcp.systemcenter.service/WEB-INF/classes/
@@ -97,6 +99,8 @@ public class Configuration {
 			}
 			return file.getPath();
 		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
 	}
