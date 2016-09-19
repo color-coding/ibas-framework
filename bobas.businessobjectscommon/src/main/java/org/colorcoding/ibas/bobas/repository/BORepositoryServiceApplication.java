@@ -12,6 +12,7 @@ import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.ownership.IDataOwnership;
 import org.colorcoding.ibas.bobas.ownership.IOwnershipJudger;
 import org.colorcoding.ibas.bobas.ownership.IPermissionItem;
@@ -48,9 +49,13 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 	}
 
 	@Override
-	void setCurrentUser(String token) throws InvalidTokenException {
-		this.setUserToken(token);
-		super.setCurrentUser(token);
+	void setCurrentUser(IUser user) {
+		super.setCurrentUser(user);
+		if (user != null) {
+			this.setUserToken(user.getToken());
+		} else {
+			this.setUserToken(null);
+		}
 	}
 
 	private IOwnershipJudger ownershipJudger = null;

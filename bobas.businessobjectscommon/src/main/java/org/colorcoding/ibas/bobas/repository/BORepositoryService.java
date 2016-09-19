@@ -238,6 +238,11 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	 */
 	void setCurrentUser(String token) throws InvalidTokenException {
 		try {
+			if (this.currentUser != null && this.currentUser.getToken() != null
+					&& this.currentUser.getToken().equals(token)) {
+				// 与当前的口令相同，不做处理
+				return;
+			}
 			IOrganizationManager orgManager = OrganizationFactory.createManager();
 			IUser user = orgManager.getUser(token);
 			if (user == null) {
@@ -250,7 +255,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 		}
 	}
 
-	private void setCurrentUser(IUser user) {
+	void setCurrentUser(IUser user) {
 		this.currentUser = user;
 		if (this.repository != null) {
 			this.getRepository().setCurrentUser(this.getCurrentUser());

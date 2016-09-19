@@ -18,7 +18,7 @@ class BusinessLogicsRepository extends BORepositoryLogicService {
 	}
 
 	public IOperationResult<?> save(IBusinessObjectBase bo) {
-
-		return super.save(bo, null);
+		String token = this.getCurrentUser().getToken();
+		return super.save(bo, token);
 	}
 }
