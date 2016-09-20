@@ -43,7 +43,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 业务对象编码
 	 */
-	public final static String BUSINESS_OBJECT_CODE = "CC_TT_PURCHASEORDER";
+	public final static String BUSINESS_OBJECT_CODE = "CC_TT_SALESORDER";
 
 	/**
 	 * 编码 属性

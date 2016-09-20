@@ -133,20 +133,6 @@ public class RuntimeLog {
 	/**
 	 * 记录消息
 	 * 
-	 * @param level
-	 *            消息级别
-	 * @param message
-	 *            消息内容
-	 * @param tag
-	 *            消息标签
-	 */
-	public static void log(MessageLevel level, String message, String tag) {
-		log(Message.create(level, message, tag));
-	}
-
-	/**
-	 * 记录消息
-	 * 
 	 * @param message
 	 *            消息内容
 	 */
@@ -163,7 +149,7 @@ public class RuntimeLog {
 	 *            消息内容
 	 */
 	public static void log(MessageLevel level, String message) {
-		log(level, message, "");
+		log(Message.create(level, message));
 	}
 
 	/**
@@ -189,7 +175,7 @@ public class RuntimeLog {
 	 *            格式中的参数
 	 */
 	public static void log(MessageLevel level, String message, Object... args) {
-		log(level, String.format(message, args), "");
+		log(level, String.format(message, args));
 	}
 
 	/**

@@ -47,7 +47,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 业务对象编码
 	 */
-	public final static String BUSINESS_OBJECT_CODE = "CC_TT_PURCHASEORDER";
+	public final static String BUSINESS_OBJECT_CODE = "CC_TT_SALESORDER";
 
 	/**
 	 * 凭证编号 属性
