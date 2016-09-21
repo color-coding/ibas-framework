@@ -46,7 +46,7 @@
  				   _num_of_cols_in_key integer,                                /*主键个数*/
  				   _list_of_key_cols_tab_del character varying,                /*主键名称*/
   				  _list_of_cols_val_tab_del character varying                  /*主键值*/
-				) RETURNS SETOF "RESULT_TYPE_CC_SP_TRANSACTION_NOTIFICATION" AS $_$
+				) RETURNS SETOF "RESULT_TYPE_${Company}_SP_TRANSACTION_NOTIFICATION" AS $_$
 				declare 
  				   _error  integer;                                            /*返回值(0 无错误)*/
   				  _error_message varchar (200);                                /*返回的消息*/
