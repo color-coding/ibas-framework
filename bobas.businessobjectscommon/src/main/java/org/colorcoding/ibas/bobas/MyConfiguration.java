@@ -74,7 +74,6 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-数据库用户密码
 	 */
 	public static String CONFIG_ITEM_DB_USER_PASSWORD = "DbUserPassword";
-
 	/**
 	 * 配置项目-数据库连接池大小
 	 */
@@ -83,12 +82,10 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-国际化文件路径
 	 */
 	public static String CONFIG_ITEM_I18N_PATH = "i18nFolder";
-
 	/**
 	 * 配置项目-语言编码
 	 */
 	public static String CONFIG_ITEM_LANGUAGE_CODE = "LanguageCode";
-
 	/**
 	 * 配置项目-消息记录方式
 	 */
@@ -105,12 +102,10 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-日志文件输出频率(毫秒,默认5000)
 	 */
 	public static String CONFIG_ITEM_LOG_OUT_FREQUENCY = "LogOutFrequency";
-
 	/**
 	 * 配置项目-审批方式
 	 */
 	public static String CONFIG_ITEM_APPROVAL_WAY = "ApprovalWay";
-
 	/**
 	 * 配置项目-组织方式
 	 */
@@ -123,4 +118,8 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-权限判断方式
 	 */
 	public static String CONFIG_ITEM_OWNERSHIP_WAY = "OwnershipWay";
+	/**
+	 * 配置项目-审批时数据比较取值方法
+	 */
+	public static String CONFIG_ITEM_APPROVAL_DATA_JUDGMENT_VALUE_WAY = "ApDjvWay";
 }
