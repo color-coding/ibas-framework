@@ -100,7 +100,6 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 			do {
 				// 循环查询数据，直至填满或没有新的数据
 				IOperationResult<P> opRslt = super.fetch(boRepository, criteria, boType);
-
 				fetchTime++;// 查询计数加1
 				if (opRslt.getError() != null) {
 					throw opRslt.getError();
@@ -109,8 +108,8 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 					throw new RepositoryException(opRslt.getMessage(), opRslt.getError());
 				}
 				fetchCount += opRslt.getResultObjects().size();
-				// 数据权限过滤
 				if (this.getOwnershipJudger() != null) {
+					// 数据权限过滤
 					for (Object item : opRslt.getResultObjects()) {
 						if ((item instanceof IDataOwnership)) {
 							// 有继承数据权限
@@ -132,7 +131,7 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 				}
 				if (!dataFull) {
 					// 结果数量不满足，进行下一组数据查询
-					IBusinessObjectBase lastBO = operationResult.getResultObjects().lastOrDefault();
+					IBusinessObjectBase lastBO = opRslt.getResultObjects().lastOrDefault();
 					criteria = criteria.nextResultCriteria(lastBO);// 下组数据的查询条件
 				}
 			} while (!dataFull);
@@ -143,6 +142,8 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 			RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_FETCH_AND_FILTERING, boType.getName(), fetchTime, fetchCount,
 					filterCount);
 		} catch (Exception e) {
+			// 如果出错，不返回处理一半的数据
+			operationResult = new OperationResult<P>();
 			operationResult.setError(e);
 		}
 		return operationResult;

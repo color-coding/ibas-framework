@@ -346,43 +346,47 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	protected final <P extends IBusinessObjectBase> OperationResult<P> fetch(ICriteria criteria, String token,
 			Class<P> boType) {
 		try {
-			this.setCurrentUser(token);// 解析并设置当前用户
-		} catch (InvalidTokenException e) {
+			// 解析并设置当前用户
+			this.setCurrentUser(token);
+			if (this.isUseCache()) {
+				// 优先使用缓存数据
+				OperationResult<P> operationResult = this.fetchInCache(criteria, boType);
+				if (operationResult.getResultCode() != 0) {
+					// 缓存中查询出现错误，重置返回值
+					RuntimeLog.log(operationResult.getError());
+					operationResult = new OperationResult<P>();
+				}
+				if (operationResult.getResultCode() == 0
+						&& operationResult.getResultObjects().size() >= criteria.getResultCount()
+						&& criteria.getResultCount() > 0) {
+					// 缓存中存在匹配数据，且结果数量满足要求
+					return operationResult;
+				} else {
+					// 缓存中不存在数据，从数据库中查找
+					ICriteria nCriteria = criteria.clone();// 不满足查询的部分
+					nCriteria.setResultCount(criteria.getResultCount() - operationResult.getResultObjects().size());// 仅查询不够部分
+					OperationResult<P> dbOpRslt = this.fetchInDb(nCriteria, boType);
+					if (dbOpRslt.getError() != null) {
+						throw dbOpRslt.getError();
+					}
+					if (dbOpRslt.getResultCode() != 0) {
+						throw new RepositoryException(dbOpRslt.getMessage());
+					}
+					// 接收数据库查询结果
+					operationResult.addResultObjects(dbOpRslt.getResultObjects());
+					operationResult.addInformations(dbOpRslt.getInformations());
+					// 缓存新的数据
+					try {
+						this.getCacheRepository().cacheData(dbOpRslt.getResultObjects());
+					} catch (Exception e) {
+						RuntimeLog.log(e);
+					}
+					return operationResult;
+				}
+			}
+		} catch (Exception e) {
 			RuntimeLog.log(e);
 			return new OperationResult<P>(e);
-		}
-		if (this.isUseCache()) {
-			// 优先使用缓存数据
-			OperationResult<P> operationResult = this.fetchInCache(criteria, boType);
-			if (operationResult.getResultCode() == 0
-					&& operationResult.getResultObjects().size() >= criteria.getResultCount()
-					&& criteria.getResultCount() > 0) {
-				// 缓存中存在匹配数据，且结果数量满足要求
-				return operationResult;
-			} else {
-				// 缓存中不存在数据，从数据库中查找
-				ICriteria nCriteria = criteria.clone();// 不满足查询的部分
-				nCriteria.setResultCount(criteria.getResultCount() - operationResult.getResultObjects().size());// 仅查询不够部分
-				OperationResult<P> dbOpRslt = this.fetchInDb(nCriteria, boType);
-				if (dbOpRslt.getError() != null) {
-					operationResult.setError(dbOpRslt.getError());
-					return operationResult;
-				}
-				if (dbOpRslt.getResultCode() != 0) {
-					operationResult.setError(new RepositoryException(dbOpRslt.getMessage()));
-					return operationResult;
-				}
-				// 接收数据库查询结果
-				operationResult.addResultObjects(dbOpRslt.getResultObjects());
-				operationResult.addInformations(dbOpRslt.getInformations());
-				// 缓存新的数据
-				try {
-					this.getCacheRepository().cacheData(dbOpRslt.getResultObjects());
-				} catch (Exception e) {
-					RuntimeLog.log(e);
-				}
-				return operationResult;
-			}
 		}
 		return this.fetchInDb(criteria, boType);
 	}

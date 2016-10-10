@@ -12,4 +12,4 @@
 ### 鸣谢 | thanks
 [牛加人等于朱](http://baike.baidu.com/view/1769.htm "NiurenZhu")<br>
 [老彭](http://baike.baidu.com/view/1828.htm "three-stones")<br>
-[Color-Coding](http://colorcoding.org/ "咔啦叩叮")<br>
+[Color-Coding](http://colorcoding.org/ "咔啦工作室")<br>
