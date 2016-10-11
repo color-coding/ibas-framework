@@ -38,4 +38,18 @@ public interface IDbConnectionPool {
 	 * @return true，回收成功；false，回收失败
 	 */
 	boolean recycling(IDbConnection connection);
+
+	/**
+	 * 获取-连接持有时间
+	 * 
+	 * @return
+	 */
+	long getHoldingTime();
+
+	/**
+	 * 设置-连接持有时间
+	 * 
+	 * @param holdingTime
+	 */
+	void setHoldingTime(long holdingTime);
 }

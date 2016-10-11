@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.db;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
-public class DbConnectionPool implements IDbConnectionPool {
+class DbConnectionPool implements IDbConnectionPool {
 
 	static int poolSize = -1;
 
@@ -47,6 +47,9 @@ public class DbConnectionPool implements IDbConnectionPool {
 			synchronized (DbConnectionPool.class) {
 				if (connectionPool == null) {
 					connectionPool = new DbConnectionPool();
+					connectionPool.setHoldingTime(
+							MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_CONNECTION_HOLDING_TIME, 30l)
+									* 1000);
 				}
 			}
 		}
@@ -102,11 +105,11 @@ public class DbConnectionPool implements IDbConnectionPool {
 
 	public DbConnectionPool() {
 		if (isEnabled()) {
-			this.availableConnections = new IDbConnection[getPoolSize()];
+			this.availableConnections = new ConnectionWrapping[getPoolSize()];
 		}
 	}
 
-	private volatile IDbConnection[] availableConnections = null;
+	private volatile ConnectionWrapping[] availableConnections = null;
 
 	@Override
 	public IDbConnection obtain(String sign) {
@@ -116,8 +119,13 @@ public class DbConnectionPool implements IDbConnectionPool {
 		if (this.availableConnections != null) {
 			for (int i = 0; i < this.availableConnections.length; i++) {
 				try {
-					IDbConnection connection = this.availableConnections[i];
+					ConnectionWrapping wrapping = this.availableConnections[i];
+					if (wrapping == null) {
+						continue;
+					}
+					IDbConnection connection = wrapping.getConnection();
 					if (connection == null) {
+						this.availableConnections[i] = null;
 						continue;
 					}
 					if (connection instanceof DbConnection) {
@@ -125,6 +133,8 @@ public class DbConnectionPool implements IDbConnectionPool {
 						if (!dbConnection.isValid()) {
 							// 不可用，移出可用列表
 							this.availableConnections[i] = null;
+							// 释放引用资源
+							dbConnection.dispose();
 							continue;
 						}
 						if (sign.equals(dbConnection.getConnectionSign())) {
@@ -158,7 +168,7 @@ public class DbConnectionPool implements IDbConnectionPool {
 			}
 			for (int i = 0; i < this.availableConnections.length; i++) {
 				if (this.availableConnections[i] == null) {
-					this.availableConnections[i] = connection;
+					this.availableConnections[i] = new ConnectionWrapping(connection);
 					return true;
 				}
 			}
@@ -178,4 +188,107 @@ public class DbConnectionPool implements IDbConnectionPool {
 		setPoolSize(value);
 	}
 
+	/**
+	 * 链接的持有时间，超过这个时间即释放
+	 */
+	private long holdingTime;
+
+	public long getHoldingTime() {
+		return holdingTime;
+	}
+
+	private Thread listener;// 监听线程
+
+	public void setHoldingTime(long holdingTime) {
+		this.holdingTime = holdingTime;
+		if (this.getHoldingTime() > 0) {
+			// 设置了连接持有时间
+			// 开启线程检查并释放连接
+			this.listener = new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					do {
+						if (availableConnections != null) {
+							synchronized (availableConnections) {
+								// 锁住可用连接集合
+								for (int i = 0; i < availableConnections.length; i++) {
+									ConnectionWrapping wrapping = availableConnections[i];
+									if (wrapping == null) {
+										continue;
+									}
+									IDbConnection connection = wrapping.getConnection();
+									if (connection == null) {
+										availableConnections[i] = null;
+										continue;
+									}
+									if ((System.currentTimeMillis() - wrapping.getStowedTime()) >= getHoldingTime()) {
+										// 超出持有时间，关闭连接
+										connection.dispose();
+										availableConnections[i] = null;
+									}
+								}
+							}
+						}
+						try {
+							Thread.sleep(getHoldingTime());
+						} catch (InterruptedException e) {
+							RuntimeLog.log(e);
+						}
+					} while (true);
+				}
+			});
+			this.listener.setName("ibas-connections-dispose");
+			this.listener.setPriority(Thread.NORM_PRIORITY);// 回收资源最低优先级
+			this.listener.setDaemon(true);// 设置为守护线程
+			this.listener.start();// 开始监听
+		}
+	}
+
+	/**
+	 * 连接的收纳盒
+	 * 
+	 * @author Niuren.Zhu
+	 *
+	 */
+	private class ConnectionWrapping {
+		public ConnectionWrapping(IDbConnection connection) {
+			this.setConnection(connection);
+		}
+
+		IDbConnection connection;
+
+		/**
+		 * 连接
+		 * 
+		 * @return
+		 */
+		public IDbConnection getConnection() {
+			return connection;
+		}
+
+		public void setConnection(IDbConnection connection) {
+			this.connection = connection;
+			if (this.connection != null)
+				this.setStowedTime(System.currentTimeMillis());
+			else
+				this.setStowedTime(-1);
+		}
+
+		long stowedTime;
+
+		/**
+		 * 收纳时间
+		 * 
+		 * @return
+		 */
+		public long getStowedTime() {
+			return stowedTime;
+		}
+
+		public void setStowedTime(long stowedTime) {
+			this.stowedTime = stowedTime;
+		}
+
+	}
 }

@@ -5,6 +5,7 @@ import java.sql.Statement;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 public class DbConnection implements IDbConnection {
 
@@ -63,6 +64,17 @@ public class DbConnection implements IDbConnection {
 	private java.sql.Connection dbConnection = null;
 	private volatile boolean opened = false;
 	private ReentrantLock lock = new ReentrantLock();
+
+	@Override
+	public void dispose() {
+		if (this.dbConnection != null) {
+			try {
+				this.dbConnection.close();
+			} catch (SQLException e) {
+				RuntimeLog.log(e);
+			}
+		}
+	}
 
 	@Override
 	public boolean open() throws DbException {

@@ -79,6 +79,10 @@ public class MyConfiguration extends Configuration {
 	 */
 	public static String CONFIG_ITEM_DB_CONNECTION_POOL_SIZE = "DbPoolSize";
 	/**
+	 * 配置项目-数据库连接的持有时间
+	 */
+	public static String CONFIG_ITEM_DB_CONNECTION_HOLDING_TIME = "DbHoldingTime";
+	/**
 	 * 配置项目-国际化文件路径
 	 */
 	public static String CONFIG_ITEM_I18N_PATH = "i18nFolder";

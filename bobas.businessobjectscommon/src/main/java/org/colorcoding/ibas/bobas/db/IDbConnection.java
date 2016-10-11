@@ -88,4 +88,9 @@ public interface IDbConnection {
 	 * 是否处于事务中
 	 */
 	boolean inTransaction();
+
+	/**
+	 * 释放引用的资源
+	 */
+	void dispose();
 }
