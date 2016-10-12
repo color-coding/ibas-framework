@@ -49,6 +49,9 @@ public class RuntimeLog {
 	public static final String MSG_LOGICS_RUNNING_LOGIC_REVERSE = "logics: reverse logic [%s] by data [%s].";
 	public static final String MSG_LOGICS_EXISTING_CONTRACT = "logics: class [%s] existing contract [%s].";
 	public static final String MSG_BO_FACTORY_REGISTER_BO_CODE = "factory: register [%s] for [%s].";
+	public static final String MSG_DAEMON_REGISTER_TASK = "daemon: register task id [%s], name [%s].";
+	public static final String MSG_DAEMON_REMOVE_TASK = "daemon: remove task id [%s], name [%s].";
+	public static final String MSG_DAEMON_RUN_TASK = "daemon: begin to run task [%s - %s], %sth running.";
 
 	private static long debugMode = -1;// log类型线程安全
 	private static int messageLevel = -1;
@@ -188,9 +191,25 @@ public class RuntimeLog {
 		if (e == null) {
 			return;
 		}
+		log(MessageLevel.ERROR, e);
+	}
+
+	/**
+	 * 记录消息
+	 * 
+	 * @param level
+	 *            消息级别
+	 * @param exception
+	 *            异常
+	 */
+	public static void log(MessageLevel level, Exception e) {
+		if (e == null) {
+			return;
+		}
 		StringWriter stringWriter = new StringWriter();
 		PrintWriter printWriter = new PrintWriter(stringWriter);
 		e.printStackTrace(printWriter);
-		log(MessageLevel.ERROR, stringWriter.toString());
+		log(level, stringWriter.toString());
 	}
+
 }

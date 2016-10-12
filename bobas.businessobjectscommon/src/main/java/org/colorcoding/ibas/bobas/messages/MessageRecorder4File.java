@@ -3,14 +3,14 @@ package org.colorcoding.ibas.bobas.messages;
 import java.io.File;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.core.Daemon;
+import org.colorcoding.ibas.bobas.core.IDaemonTask;
 import org.colorcoding.ibas.bobas.data.DateTime;
 
 /**
@@ -40,6 +40,28 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 			synchronized (this) {
 				if (this.messageQueue == null) {
 					messageQueue = new ConcurrentLinkedQueue<IMessage>();// 非阻塞队列，支持异步
+				}
+				// 注册日志输出文件任务
+				try {
+					Daemon.register(new IDaemonTask() {
+
+						@Override
+						public void run() {
+							write4File();
+						}
+
+						@Override
+						public String getName() {
+							return "write message to file.";
+						}
+
+						@Override
+						public long getInterval() {
+							return 1;
+						}
+					});
+				} catch (Exception e) {
+					RuntimeLog.log(MessageLevel.FATAL, e);
 				}
 			}
 		}
@@ -103,48 +125,26 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 		super.record(message);
 		// 消息记录到其他
 		this.getMessageQueue().offer(message);
-		// System.err.println("log: " + this.getFileName());
-		this.getWriteThreads().execute(new Runnable() {
-			@Override
-			public void run() {
-				write4File();
-			}
-		});
 	}
 
-	private volatile ExecutorService writeThreads;
-
-	/**
-	 * 获得写文件线程
-	 * 
-	 * @return 获得写文件线程池中的一个线程。
-	 */
-	private ExecutorService getWriteThreads() {
-		if (writeThreads == null) {
-			synchronized (MessageRecorder4File.class) {
-				if (writeThreads == null) {
-					writeThreads = Executors.newSingleThreadExecutor();
-				}
-			}
-		}
-		return writeThreads;
-	}
+	String line = System.getProperty("line.separator");
 
 	/**
 	 * 输出消息到文件
 	 */
 	public void write4File() {
-
+		if (this.getMessageQueue().size() <= 0) {
+			return;
+		}
 		FileHandler fileHandler = null;
 		try {
 			fileHandler = new FileHandler(this.getFileName(), true);
 			Logger logger = Logger.getLogger("ibas");
 			logger.setUseParentHandlers(false);
 			fileHandler.setFormatter(new Formatter() {
-
 				@Override
 				public String format(LogRecord record) {
-					return record.getMessage() + System.getProperty("line.separator");
+					return record.getMessage() + line;
 				}
 			});
 			logger.addHandler(fileHandler);

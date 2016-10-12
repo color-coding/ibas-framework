@@ -1,6 +1,9 @@
 package org.colorcoding.ibas.bobas.db;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.core.Daemon;
+import org.colorcoding.ibas.bobas.core.IDaemonTask;
+import org.colorcoding.ibas.bobas.core.InvalidDaemonTask;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 class DbConnectionPool implements IDbConnectionPool {
@@ -47,9 +50,9 @@ class DbConnectionPool implements IDbConnectionPool {
 			synchronized (DbConnectionPool.class) {
 				if (connectionPool == null) {
 					connectionPool = new DbConnectionPool();
-					connectionPool.setHoldingTime(
-							MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_CONNECTION_HOLDING_TIME, 30l)
-									* 1000);
+					// 设置已回收的连接保持时间
+					connectionPool.setHoldingTime(MyConfiguration
+							.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_CONNECTION_HOLDING_TIME, 30l));
 				}
 			}
 		}
@@ -197,18 +200,16 @@ class DbConnectionPool implements IDbConnectionPool {
 		return holdingTime;
 	}
 
-	private Thread listener;// 监听线程
-
 	public void setHoldingTime(long holdingTime) {
 		this.holdingTime = holdingTime;
 		if (this.getHoldingTime() > 0) {
 			// 设置了连接持有时间
-			// 开启线程检查并释放连接
-			this.listener = new Thread(new Runnable() {
+			// 开始释放连接任务
+			try {
+				Daemon.register(new IDaemonTask() {
 
-				@Override
-				public void run() {
-					do {
+					@Override
+					public void run() {
 						if (availableConnections != null) {
 							synchronized (availableConnections) {
 								// 锁住可用连接集合
@@ -230,18 +231,22 @@ class DbConnectionPool implements IDbConnectionPool {
 								}
 							}
 						}
-						try {
-							Thread.sleep(getHoldingTime());
-						} catch (InterruptedException e) {
-							RuntimeLog.log(e);
-						}
-					} while (true);
-				}
-			});
-			this.listener.setName("ibas-connections-dispose");
-			this.listener.setPriority(Thread.NORM_PRIORITY);// 回收资源最低优先级
-			this.listener.setDaemon(true);// 设置为守护线程
-			this.listener.start();// 开始监听
+					}
+
+					@Override
+					public String getName() {
+						return "idle db connection dispose.";
+					}
+
+					@Override
+					public long getInterval() {
+						return 10;// 每15秒运行次任务
+					}
+
+				});
+			} catch (InvalidDaemonTask e) {
+				RuntimeLog.log(e);
+			}
 		}
 	}
 
