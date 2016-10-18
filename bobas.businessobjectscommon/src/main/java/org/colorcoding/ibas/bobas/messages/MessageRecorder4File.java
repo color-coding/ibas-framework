@@ -3,10 +3,6 @@ package org.colorcoding.ibas.bobas.messages;
 import java.io.File;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.FileHandler;
-import java.util.logging.Formatter;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.core.Daemon;
@@ -20,6 +16,7 @@ import org.colorcoding.ibas.bobas.data.DateTime;
  *
  */
 public class MessageRecorder4File extends MessageRecorder implements IMessageRecorder4File {
+
 	public MessageRecorder4File() {
 
 	}
@@ -127,8 +124,6 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 		this.getMessageQueue().offer(message);
 	}
 
-	String line = System.getProperty("line.separator");
-
 	/**
 	 * 输出消息到文件
 	 */
@@ -138,27 +133,15 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 		}
 		FileHandler fileHandler = null;
 		try {
-			fileHandler = new FileHandler(this.getFileName(), true);
-			Logger logger = Logger.getLogger("ibas");
-			logger.setUseParentHandlers(false);
-			fileHandler.setFormatter(new Formatter() {
-				@Override
-				public String format(LogRecord record) {
-					return record.getMessage() + line;
-				}
-			});
-			logger.addHandler(fileHandler);
+			// 限定当天日志文件存储不超过2G
+			fileHandler = new FileHandler(this.getFileName(), 20480000, true);
 			while (!this.getMessageQueue().isEmpty()) {
 				IMessage message = this.getMessageQueue().poll();
-				logger.info(message.outString());
+				fileHandler.execute(message.outString());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			if (fileHandler != null) {
-				fileHandler.close();
-			}
 		}
-	}
 
+	}
 }
