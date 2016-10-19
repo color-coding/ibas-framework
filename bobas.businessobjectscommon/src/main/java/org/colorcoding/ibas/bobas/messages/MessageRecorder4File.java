@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.messages;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -131,17 +132,46 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 		if (this.getMessageQueue().size() <= 0) {
 			return;
 		}
-		FileHandler fileHandler = null;
 		try {
-			// 限定当天日志文件存储不超过2G
-			fileHandler = new FileHandler(this.getFileName(), 20480000, true);
+			FileWriter writer = new FileWriter(generateFile(this.getFileName(), 0), true);
 			while (!this.getMessageQueue().isEmpty()) {
 				IMessage message = this.getMessageQueue().poll();
-				fileHandler.execute(message.outString());
+				writer.write(message.outString());
 			}
+			writer.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
+	}
+
+	/**
+	 * 生成日志文件
+	 * 
+	 * @param filePath
+	 *            日志文件路径
+	 * @param index
+	 *            日志文件序号
+	 * @return 返回日志文件
+	 */
+	private File generateFile(String filePath, int index) {
+		if (filePath == null || filePath.equals("")) {
+			return null;
+		}
+		File file = null;
+		try {
+			file = new File(filePath);
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			if (file.length() > 20480000) {
+				index = index + 1;
+				filePath = this.getFileName() + "." + index;
+				file = generateFile(filePath, index);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return file;
 	}
 }
