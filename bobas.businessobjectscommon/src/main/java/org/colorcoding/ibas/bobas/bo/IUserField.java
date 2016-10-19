@@ -35,8 +35,8 @@ public interface IUserField extends Serializable {
 	/**
 	 * 设置-值
 	 * 
-	 * @return
+	 * @return true,改变;false,未改变
 	 */
-	void setValue(Object value);
+	boolean setValue(Object value);
 
 }

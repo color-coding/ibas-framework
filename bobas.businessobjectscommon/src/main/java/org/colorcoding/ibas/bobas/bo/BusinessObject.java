@@ -1,5 +1,8 @@
 package org.colorcoding.ibas.bobas.bo;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -47,6 +50,14 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 			// 继承了自定义字段，初始化列表
 			if (this.userFields == null) {
 				this.userFields = new UserFields(this.getClass());
+				this.userFields.addPropertyChangeListener(new PropertyChangeListener() {
+					@Override
+					public void propertyChange(PropertyChangeEvent evt) {
+						// 触发属性改变事件
+						markDirty();
+						firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getOldValue());
+					}
+				});
 			}
 		}
 	}

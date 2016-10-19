@@ -10,6 +10,7 @@ import org.colorcoding.ibas.bobas.bo.UserFieldProxy;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.data.DataTable;
+import org.colorcoding.ibas.bobas.test.bo.Materials;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 import org.colorcoding.ibas.bobas.test.bo.User;
 
@@ -22,12 +23,10 @@ public class OperationResultResolver implements ContextResolver<JAXBContext> {
 	@Override
 	public JAXBContext getContext(Class<?> type) {
 		try {
-			System.out.println(type.getName());
-			if (type == OperationResult.class) {
-				if (jaxbContext == null) {
-					jaxbContext = JAXBContext.newInstance(Criteria.class, SalesOrder.class, User.class,
-							UserFieldProxy.class, OperationResult.class, DataTable.class);
-				}
+			System.out.println(String.format("class [%s] be resolved.", type.getName()));
+			if (jaxbContext == null) {
+				jaxbContext = JAXBContext.newInstance(Criteria.class, Materials.class, SalesOrder.class, User.class,
+						UserFieldProxy.class, OperationResult.class, DataTable.class);
 			}
 		} catch (JAXBException e) {
 			e.printStackTrace();

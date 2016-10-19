@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Test Services | Xml</title>
+    <script type="text/javascript" src="./js/basis/jquery.js"></script>
+    <script>
+        var getRootUrl = function() {
+            var tmp = window.location.href;
+            return tmp.substring(0,tmp.indexOf('/test'));
+        };
+        var getWADL = function() {
+            var url = getRootUrl()  + '/services/application.wadl';
+            $.ajax({
+                type: 'get',
+                contentType: "application/xml",
+                url: url,
+                success: function (data, status) {
+                    document.location.assign(url);
+                },
+                error: function (err) {
+                    showErrors(err);
+                }
+            });
+        };
+        var address = getRootUrl() + '/services/xml';
+        var showResult = function (opRslt) {
+            $("#rsltCode").html("");
+            $("#rsltMsg").html("");
+            $("#rsltCount").html("");
+            $("#rsltValues").html("");
+            if (opRslt) {
+                if (opRslt.ResultCode) {
+                    $("#rsltCode").html(opRslt.ResultCode);
+                }
+                if (opRslt.Message) {
+                    $("#rsltMsg").html(opRslt.Message);
+                }
+                if (opRslt.ResultObjects) {
+                    $("#rsltCount").html(opRslt.ResultObjects.length);
+                }
+                $("#rsltValues").html(JSON.stringify(opRslt, null, 4));
+            }
+            else {
+                $("#rsltCode").html(-999);
+                $("#rsltMsg").html("unkown.");
+            }
+        };
+        var showErrors = function (err) {
+            $("#rsltCode").html("");
+            $("#rsltMsg").html("");
+            $("#rsltCount").html("");
+            $("#rsltValues").html("");
+            if (err) {
+                if (err.status) {
+                    $("#rsltCode").html(err.status);
+                }
+                if (err.statusText) {
+                    $("#rsltMsg").html(err.statusText);
+                }
+                $("#rsltValues").html(err.responseText);
+            }
+            else {
+                $("#rsltCode").html(-999);
+                $("#rsltMsg").html("unkown.");
+            }
+        }
+        var token = '';
+        var testCreateMaterials = function () {
+            var bo = ttborep.bo.Materials.createNew();
+            showResult(bo);
+            return bo;
+        }
+        var testFetchMaterials = function () {
+            var url = address + '/fetchMaterials?token=' + token;
+            var criteria = {};
+            $.ajax({
+                type: 'POST',
+                contentType: "application/x-www-form-urlencoded",
+                url: url,
+                data: criteria,
+                success: function (data, status) {
+                   showResult(data);
+                },
+                error: function (err) {
+                   showErrors(err);
+                }
+            });
+        }
+        var testSaveMaterials = function () {
+            var url = address + '/saveMaterials?token=' + token;
+            var data = testCreateMaterials();
+            $.ajax({
+                type: 'POST',
+                contentType: "application/x-www-form-urlencoded",
+                url: url,
+                data: data,
+                success: function (data, status) {
+                   showResult(data);
+                },
+                error: function (err) {
+                   showErrors(err);
+                }
+            });
+        };
+
+        var testCreateSalesOrder = function () {
+            var bo = ttborep.bo.SalesOrder.createNew();
+            showResult(bo);
+            return bo;
+        }
+        var testFetchSalesOrder = function () {
+            var url = address + '/fetchSalesOrder?token=' + token;
+            var criteria = {};
+            $.ajax({
+                type: 'POST',
+                contentType: "application/x-www-form-urlencoded",
+                url: url,
+                data: criteria,
+                success: function (data, status) {
+                   showResult(data);
+                },
+                error: function (err) {
+                   showErrors(err);
+                }
+            });
+        }
+        var testSaveSalesOrder = function () {
+            var url = address + '/saveSalesOrder?token=' + token;
+            var data = testCreateSalesOrder();
+            $.ajax({
+                type: 'POST',
+                contentType: "application/x-www-form-urlencoded",
+                url: url,
+                data: data,
+                success: function (data, status) {
+                   showResult(data);
+                },
+                error: function (err) {
+                   showErrors(err);
+                }
+            });
+        };
+
+    </script>
+</head>
+<body>
+    <label>test data services | xml</label>
+    <a href=""><label style="color:blue" onclick="getWADL();" >   [WADL]</label></a>
+    <br />
+    <div>
+        <table>
+            <tr>
+                <td>
+                    <label>Materials</label>
+                </td>
+                <td>
+                    <input type="button" value="create" onclick="testCreateMaterials();" />
+                </td>
+                <td>
+                    <input type="button" value="fetch" onclick="testFetchMaterials();" />
+                </td>
+                <td>
+                    <input type="button" value="save" onclick="testSaveMaterials();" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>SalesOrder</label>
+                </td>
+                <td>
+                    <input type="button" value="create" onclick="testCreateSalesOrder();" />
+                </td>
+                <td>
+                    <input type="button" value="fetch" onclick="testFetchSalesOrder();" />
+                </td>
+                <td>
+                    <input type="button" value="save" onclick="testSaveSalesOrder();" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <br />
+    <div>
+        <label>code:</label>
+        <label id="rsltCode"></label>
+        <br />
+        <label>messages:</label>
+        <label id="rsltMsg"></label>
+        <br />
+        <label>count:</label>
+        <label id="rsltCount"></label>
+        <br />
+        <label id="rsltValues" ></label>
+    </div>
+</body>
+</html>

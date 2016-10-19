@@ -51,8 +51,9 @@ public class UserFieldProxy implements IUserField {
 	}
 
 	@Override
-	public final void setValue(Object value) {
+	public final boolean setValue(Object value) {
 		this.value = DataConvert.toString(value);
+		return true;
 	}
 
 	@XmlElement(name = "Value")

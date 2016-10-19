@@ -65,8 +65,8 @@ public class UserField implements IUserField {
 	}
 
 	@Override
-	public void setValue(Object value) {
-		this.fieldData.setValue(value);
+	public boolean setValue(Object value) {
+		return this.fieldData.setValue(value);
 	}
 
 	@Override

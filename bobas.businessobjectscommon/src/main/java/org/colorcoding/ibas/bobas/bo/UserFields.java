@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.core.BindableBase;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.util.ArrayList;
@@ -22,7 +23,7 @@ import org.colorcoding.ibas.bobas.util.ArrayList;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "UserFields", namespace = MyConsts.NAMESPACE_BOBAS_BO)
 @XmlSeeAlso({ UserField.class, UserFieldProxy.class })
-public class UserFields implements Iterable<IUserField> {
+public class UserFields extends BindableBase implements Iterable<IUserField> {
 
 	public UserFields() {
 	}
@@ -176,7 +177,11 @@ public class UserFields implements Iterable<IUserField> {
 	public void setValue(String name, Object value) {
 		IUserField userField = this.get(name);
 		if (userField != null) {
-			userField.setValue(value);
+			Object oldValue = userField.getValue();
+			boolean changed = userField.setValue(value);
+			if (changed) {
+				this.firePropertyChange(userField.getName(), oldValue, userField.getValue());
+			}
 		} else {
 			throw new UserFieldException(String.format("msg_bobas_user_field_not_exist", name));
 		}
@@ -185,7 +190,11 @@ public class UserFields implements Iterable<IUserField> {
 	public void setValue(int index, Object value) {
 		IUserField userField = this.get(index);
 		if (userField != null) {
-			userField.setValue(value);
+			Object oldValue = userField.getValue();
+			boolean changed = userField.setValue(value);
+			if (changed) {
+				this.firePropertyChange(userField.getName(), oldValue, userField.getValue());
+			}
 		} else {
 			throw new UserFieldException(String.format("msg_bobas_user_field_not_exist", index));
 		}

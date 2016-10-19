@@ -8,6 +8,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.bo.IBODocument;
+import org.colorcoding.ibas.bobas.bo.IBOMasterData;
+import org.colorcoding.ibas.bobas.bo.IBOSimple;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.Serializer;
 
@@ -192,10 +195,42 @@ public class Criteria implements ICriteria {
 		return Serializer.toString(type, this, true);
 	}
 
+	protected ICriteria getBOCriteria(IBusinessObjectBase bo) {
+		ICriteria boCriteria = null;
+		// 判断BO类型，添加下个集合条件，尽量使用数值字段
+		if (bo instanceof IBOSimple) {
+			IBOSimple simple = (IBOSimple) bo;
+			boCriteria = new Criteria();
+			boCriteria.setBusinessObjectCode(simple.getObjectCode());
+			ICondition condition = boCriteria.getConditions().create();
+			condition.setAlias("ObjectKey");
+			condition.setCondVal(simple.getObjectKey());
+		} else if (bo instanceof IBODocument) {
+			IBODocument document = (IBODocument) bo;
+			boCriteria = new Criteria();
+			boCriteria.setBusinessObjectCode(document.getObjectCode());
+			ICondition condition = boCriteria.getConditions().create();
+			condition.setAlias("DocEntry");
+			condition.setCondVal(document.getDocEntry());
+
+		} else if (bo instanceof IBOMasterData) {
+			IBOMasterData master = (IBOMasterData) bo;
+			boCriteria = new Criteria();
+			boCriteria.setBusinessObjectCode(master.getObjectCode());
+			ICondition condition = boCriteria.getConditions().create();
+			condition.setAlias("DocEntry");
+			condition.setCondVal(master.getDocEntry());
+		}
+		if (boCriteria == null) {
+			boCriteria = bo.getCriteria();
+		}
+		return boCriteria;
+	}
+
 	@Override
 	public final ICriteria nextResultCriteria(IBusinessObjectBase lastBO) {
 		if (lastBO != null) {
-			ICriteria boCriteria = lastBO.getCriteria();
+			ICriteria boCriteria = this.getBOCriteria(lastBO);
 			if (boCriteria == null) {
 				return null;
 			}
@@ -215,7 +250,7 @@ public class Criteria implements ICriteria {
 	@Override
 	public final ICriteria previousResultCriteria(IBusinessObjectBase firstBO) {
 		if (firstBO != null) {
-			ICriteria boCriteria = firstBO.getCriteria();
+			ICriteria boCriteria = this.getBOCriteria(firstBO);
 			if (boCriteria == null) {
 				return null;
 			}
