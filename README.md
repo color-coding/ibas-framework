@@ -9,6 +9,10 @@
 * 国籍：日本
 * WOW ：[曼秀雷敦花絮](http://www.bilibili.com/video/av2708978/ "B站指日可待")
 
+### 说明 | instructions
+* 相关数据结构用工具btulz.transforms创建，文件位置./bobas.businessobjectscommon.demo/src/datastructures
+
+
 ### 鸣谢 | thanks
 [牛加人等于朱](http://baike.baidu.com/view/1769.htm "NiurenZhu")<br>
 [老彭](http://baike.baidu.com/view/1828.htm "three-stones")<br>
