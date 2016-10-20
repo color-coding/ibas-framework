@@ -95,6 +95,14 @@ public class MyConfiguration extends Configuration {
 	 */
 	public static String CONFIG_ITEM_MESSAGE_RECORDER_WAY = "RecorderWay";
 	/**
+	 * 配置项目-消息文件大小限制
+	 */
+	public static String CONFIG_ITEM_MESSAGE_FILE_LIMIT = "20480000";
+	/**
+	 * 配置项目-消息文件每天产生的最大数量
+	 */
+	public static String CONFIG_ITEM_MESSAGE_FILE_COUNT = "9999";
+	/**
 	 * 配置项目-日志文件保存路径
 	 */
 	public static String CONFIG_ITEM_LOG_PATH = "LogFolder";
