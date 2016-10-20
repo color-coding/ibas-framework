@@ -111,7 +111,7 @@ public class RuntimeLog {
 		if (recorder == null) {
 			synchronized (RuntimeLog.class) {
 				if (recorder == null) {
-					recorder = RecorderFactory.createRecorder("ibas_runtime_%s.log");
+					recorder = RecorderFactory.createRecorder("ibas_runtime_%s_%g.log");
 				}
 			}
 		}

@@ -1,9 +1,12 @@
 package org.colorcoding.ibas.bobas.messages;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.core.Daemon;
@@ -17,6 +20,24 @@ import org.colorcoding.ibas.bobas.data.DateTime;
  *
  */
 public class MessageRecorder4File extends MessageRecorder implements IMessageRecorder4File {
+
+	/**
+	 * 获取单个消息文件最大容量
+	 * 
+	 * @return 消息文件最大容量
+	 */
+	private int getLimit() {
+		return MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_MESSAGE_FILE_LIMIT, 20480000);
+	}
+
+	/**
+	 * 获取每天消息文件产生的最大数量
+	 * 
+	 * @return 每天消息文件产生的最大数量
+	 */
+	private int getCount() {
+		return MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_MESSAGE_FILE_COUNT, 999);
+	}
 
 	public MessageRecorder4File() {
 
@@ -95,7 +116,7 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 	public String getFileSign() {
 		if (fileSign == null || fileSign.indexOf("%s") < 0) {
 			// 文件标记格式不合法
-			fileSign = "ibas_%s.log";
+			fileSign = "ibas_runtime_%s_%g.log";
 		}
 		return fileSign;
 	}
@@ -109,9 +130,10 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 	 * 获取记录文件名称
 	 */
 	public String getFileName() {
-		// /var/log/ibas_%s.log
-		String fileName = String.format(this.getFileSign(), DateTime.getToday().toString("yyyyMMdd"));
+
+		String fileName = this.getFileSign().replace("%s", DateTime.getToday().toString("yyyyMMdd"));
 		return String.format("%s%s%s", this.getWorkFolder(), File.separator, fileName);
+
 	}
 
 	/**
@@ -125,6 +147,8 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 		this.getMessageQueue().offer(message);
 	}
 
+	String line = System.getProperty("line.separator");
+
 	/**
 	 * 输出消息到文件
 	 */
@@ -132,46 +156,28 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 		if (this.getMessageQueue().size() <= 0) {
 			return;
 		}
+		FileHandler fileHandler = null;
 		try {
-			FileWriter writer = new FileWriter(generateFile(this.getFileName(), 0), true);
+			fileHandler = new FileHandler(this.getFileName(), this.getLimit(), this.getCount(), true);
+			Logger logger = Logger.getLogger("ibas");
+			logger.setUseParentHandlers(false);
+			fileHandler.setFormatter(new Formatter() {
+				public String format(LogRecord record) {
+					return record.getMessage() + line;
+				}
+			});
+			logger.addHandler(fileHandler);
 			while (!this.getMessageQueue().isEmpty()) {
 				IMessage message = this.getMessageQueue().poll();
-				writer.write(message.outString());
-			}
-			writer.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	/**
-	 * 生成日志文件
-	 * 
-	 * @param filePath
-	 *            日志文件路径
-	 * @param index
-	 *            日志文件序号
-	 * @return 返回日志文件
-	 */
-	private File generateFile(String filePath, int index) {
-		if (filePath == null || filePath.equals("")) {
-			return null;
-		}
-		File file = null;
-		try {
-			file = new File(filePath);
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-			if (file.length() > 20480000) {
-				index = index + 1;
-				filePath = this.getFileName() + "." + index;
-				file = generateFile(filePath, index);
+				logger.info(message.outString());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			if (fileHandler != null) {
+				fileHandler.close();
+			}
 		}
-		return file;
+
 	}
 }
