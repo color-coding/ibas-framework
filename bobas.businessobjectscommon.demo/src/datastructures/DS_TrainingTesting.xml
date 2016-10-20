@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE DomainModel>
 <DomainModel Name="TrainingTesting">
   <Table Name="CC_SYS_ONNM" Description="业务对象序号" Type="bott_NoObject" PropertyName="BONumbering">
     <Field Name="ObjectCode" Description="对象编码" DataType="db_Alpha" SubType="st_None" EditSize="30" PropertyName="ObjectCode" FixedDataType="String" IsPrimaryKey="Yes" />
