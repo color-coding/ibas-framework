@@ -18,7 +18,7 @@ public class RecorderFactory extends ConfigurableFactory {
 	 *            类型标记
 	 * @return
 	 */
-	public synchronized static IMessageRecorder createRecorder(String sign) {
+	public synchronized static IMessageRecorder createRecorder() {
 		IMessageRecorder recorder = null;
 		String type = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_MESSAGE_RECORDER_WAY);
 		if (type != null && !type.isEmpty()) {
@@ -33,7 +33,7 @@ public class RecorderFactory extends ConfigurableFactory {
 			}
 		}
 		if (recorder == null) {
-			recorder = new MessageRecorder4File(sign);			
+			recorder = new MessageRecorder4File();
 		}
 		// 未配置则使用默认的
 		return recorder;

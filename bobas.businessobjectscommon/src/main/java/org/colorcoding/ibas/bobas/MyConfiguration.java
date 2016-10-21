@@ -7,6 +7,10 @@ import org.colorcoding.ibas.bobas.configuration.Configuration;
  */
 public class MyConfiguration extends Configuration {
 	/**
+	 * 配置项目-本模块名称
+	 */
+	public static String CONFIG_ITEM_MODULE_NAME = "ModuleName";
+	/**
 	 * 配置项目-公司标记
 	 */
 	public static String CONFIG_ITEM_COMPANY_ID = "CompanyId";
@@ -95,13 +99,17 @@ public class MyConfiguration extends Configuration {
 	 */
 	public static String CONFIG_ITEM_MESSAGE_RECORDER_WAY = "RecorderWay";
 	/**
-	 * 配置项目-消息文件大小限制
+	 * 配置项目-消息日志大小限制
 	 */
-	public static String CONFIG_ITEM_MESSAGE_FILE_LIMIT = "20480000";
+	public static String CONFIG_ITEM_LOG_FILE_LIMIT = "LogFileLimit";
 	/**
 	 * 配置项目-消息文件每天产生的最大数量
 	 */
-	public static String CONFIG_ITEM_MESSAGE_FILE_COUNT = "9999";
+	public static String CONFIG_ITEM_LOG_FILE_COUNT = "LogFileCount";
+	/**
+	 * 配置项目-消息文件名标示（%s 代表 年月日,%g 代表 自动生成编号,%m 代表 本模块的名称）
+	 */
+	public static String CONFIG_ITEM_LOG_FILE_SIGN = "LogFileSign";
 	/**
 	 * 配置项目-日志文件保存路径
 	 */

@@ -27,7 +27,7 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 	 * @return 消息文件最大容量
 	 */
 	private int getLimit() {
-		return MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_MESSAGE_FILE_LIMIT, 20480000);
+		return MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LOG_FILE_LIMIT, 51200000);
 	}
 
 	/**
@@ -36,11 +36,23 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 	 * @return 每天消息文件产生的最大数量
 	 */
 	private int getCount() {
-		return MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_MESSAGE_FILE_COUNT, 999);
+		return MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LOG_FILE_COUNT, 999);
 	}
 
-	public MessageRecorder4File() {
+	/**
+	 * 获取当前模块的名称
+	 * 
+	 * @return
+	 */
+	private String getModuleName() {
+		return MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_MODULE_NAME, "Common");
+	}
 
+	/**
+	 * 默认日志文件标示
+	 */
+	public MessageRecorder4File() {
+		this(MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LOG_FILE_SIGN, "ibas_runtime_%m_%s_%g.log"));
 	}
 
 	public MessageRecorder4File(String sign) {
@@ -114,9 +126,10 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 
 	@Override
 	public String getFileSign() {
-		if (fileSign == null || fileSign.indexOf("%s") < 0) {
+		if (fileSign == null || fileSign.indexOf("%s") < 0 || fileSign.indexOf("%m") < 0
+				|| fileSign.indexOf("%g") < 0) {
 			// 文件标记格式不合法
-			fileSign = "ibas_runtime_%s_%g.log";
+			fileSign = "ibas_runtime_%m_%s_%g.log";
 		}
 		return fileSign;
 	}
@@ -132,6 +145,7 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 	public String getFileName() {
 
 		String fileName = this.getFileSign().replace("%s", DateTime.getToday().toString("yyyyMMdd"));
+		fileName = fileName.replace("%m", getModuleName());
 		return String.format("%s%s%s", this.getWorkFolder(), File.separator, fileName);
 
 	}
