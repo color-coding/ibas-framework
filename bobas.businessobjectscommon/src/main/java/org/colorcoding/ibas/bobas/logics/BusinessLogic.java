@@ -106,6 +106,10 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 				// 取消的
 				return false;
 			}
+			if (lineData.getLineStatus() == emDocumentStatus.Planned) {
+				// 计划状态
+				return false;
+			}
 		}
 		return true;
 	}
