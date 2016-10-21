@@ -125,7 +125,8 @@ public class Daemon implements IDaemon {
 
 	public ExecutorService getThreadPool() {
 		if (this.threadPool == null) {
-			this.threadPool = Executors.newCachedThreadPool();
+			int cpu = Runtime.getRuntime().availableProcessors();
+			this.threadPool = Executors.newFixedThreadPool(cpu);
 		}
 		return threadPool;
 	}

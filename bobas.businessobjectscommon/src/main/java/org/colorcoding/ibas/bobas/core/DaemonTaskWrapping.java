@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.core;
 
+import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+
 /**
  * 后台任务收纳盒
  * 
@@ -163,9 +165,13 @@ class DaemonTaskWrapping {
 		if (this.getTask() != null) {
 			this.setRunning(true);// 设置状态为运行中
 			this.addRunTimes();// 运行次数+1
+			try {
+				this.getTask().run();
+			} catch (Exception e) {
+				RuntimeLog.log(e);
+			}
 			this.setLastRunTime();// 记录运行时间
 			this.setNextRunTime();// 设置下次运行时间
-			this.getTask().run();
 			this.setRunning(false);// 设置状态未运行
 		}
 	}

@@ -5,7 +5,7 @@ import java.util.LinkedList;
 
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 
-public class BOCacheContainers implements Iterable<IBOCacheContainer> {
+class BOCacheContainers implements Iterable<IBOCacheContainer> {
 
 	LinkedList<IBOCacheContainer> cacheList = new LinkedList<IBOCacheContainer>();
 
@@ -23,7 +23,7 @@ public class BOCacheContainers implements Iterable<IBOCacheContainer> {
 				continue;
 			}
 			if (item.getDataKey().equals(container.getDataKey())) {
-				if (item.getCacheTime().after(container.getCacheTime())) {
+				if (item.getCacheTime() > container.getCacheTime()) {
 					// 晚于已缓存的数据时间，退出
 					return false;
 				} else {
@@ -31,6 +31,13 @@ public class BOCacheContainers implements Iterable<IBOCacheContainer> {
 					this.cacheList.set(i, container);
 					return true;
 				}
+			}
+		}
+		for (int i = 0; i < this.cacheList.size(); i++) {
+			IBOCacheContainer item = this.cacheList.get(i);
+			if (item == null) {
+				this.cacheList.set(i, container);
+				return true;
 			}
 		}
 		this.cacheList.add(container);
@@ -71,7 +78,6 @@ public class BOCacheContainers implements Iterable<IBOCacheContainer> {
 			}
 
 		};
-		// return this.cacheList.iterator();
 	}
 
 	public void remove(IBOCacheContainer container) {
@@ -85,7 +91,21 @@ public class BOCacheContainers implements Iterable<IBOCacheContainer> {
 			}
 			if (item.getDataKey().equals(data.toString())) {
 				this.remove(item);
+				break;
 			}
+		}
+	}
+
+	/**
+	 * 清理过期的数据
+	 */
+	public void clearExpired() {
+		for (int i = 0; i < cacheList.size(); i++) {
+			IBOCacheContainer boContainer = cacheList.get(i);
+			if (boContainer == null) {
+				continue;
+			}
+			cacheList.set(i, null);
 		}
 	}
 }
