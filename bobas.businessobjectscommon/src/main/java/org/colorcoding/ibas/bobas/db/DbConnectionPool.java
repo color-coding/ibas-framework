@@ -4,6 +4,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.core.Daemon;
 import org.colorcoding.ibas.bobas.core.IDaemonTask;
 import org.colorcoding.ibas.bobas.core.InvalidDaemonTask;
+import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 class DbConnectionPool implements IDbConnectionPool {
@@ -72,7 +73,8 @@ class DbConnectionPool implements IDbConnectionPool {
 				// 启动了连接池并且有效
 				boolean done = getConnectionPool().recycling(connection);
 				if (done) {
-					RuntimeLog.log(RuntimeLog.MSG_DB_POOL_RECYCLED_CONNECTION, connection.hashCode());
+					RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_DB_POOL_RECYCLED_CONNECTION,
+							connection.hashCode());
 				}
 				return done;
 
@@ -98,7 +100,7 @@ class DbConnectionPool implements IDbConnectionPool {
 						DbConnection dbConnection = (DbConnection) connection;
 						dbConnection.setRecycled(false);
 					}
-					RuntimeLog.log(RuntimeLog.MSG_DB_POOL_USING_CONNECTION, connection.hashCode());
+					RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_DB_POOL_USING_CONNECTION, connection.hashCode());
 				}
 				return connection;
 			}
