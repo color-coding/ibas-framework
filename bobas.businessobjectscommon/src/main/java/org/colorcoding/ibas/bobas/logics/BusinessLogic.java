@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.logics;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
+import org.colorcoding.ibas.bobas.bo.IBOReferenced;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepository;
@@ -74,6 +75,13 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			// 标记删除的数据无效
 			ITrackStatus status = (ITrackStatus) data;
 			if (status.isDeleted()) {
+				return false;
+			}
+		}
+		if (data instanceof IBOReferenced) {
+			// 引用数据，已标记删除的，不影响业务逻辑
+			IBOReferenced refData = (IBOReferenced) data;
+			if (refData.getDeleted() == emYesNo.Yes) {
 				return false;
 			}
 		}
