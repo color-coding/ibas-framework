@@ -149,6 +149,8 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 			String str = this.getFileSign().replace("%s", DateTime.getToday().toString("yyyyMMdd"));
 			if (this.getModuleName() != null && this.getModuleName().length() > 0) {
 				str = str.replace("%m", "_" + this.getModuleName());
+			} else {
+				str = str.replace("%m", "");
 			}
 			this.fileName = String.format("%s%s%s", this.getWorkFolder(), File.separator, str);
 		}
