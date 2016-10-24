@@ -16,7 +16,7 @@ import org.colorcoding.ibas.bobas.mapping.LogicContract;
 public class BusinessLogicsManager implements IBusinessLogicsManager {
 
 	@Override
-	public IBusinessLogicsChain getChain(String transId) {
+	public synchronized IBusinessLogicsChain getChain(String transId) {
 		if (transId != null) {
 			if (this.getLogicsChains().containsKey(transId)) {
 				return this.getLogicsChains().get(transId);
@@ -26,7 +26,7 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 	}
 
 	@Override
-	public IBusinessLogicsChain registerChain(String transId) {
+	public synchronized IBusinessLogicsChain registerChain(String transId) {
 		if (transId == null || transId.isEmpty()) {
 			throw new BusinessLogicsException(i18n.prop("msg_bobas_invalid_data"));
 		}
@@ -37,7 +37,7 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 	}
 
 	@Override
-	public boolean closeChain(String transId) {
+	public synchronized boolean closeChain(String transId) {
 		if (transId != null) {
 			if (this.getLogicsChains().containsKey(transId)) {
 				this.getLogicsChains().remove(transId);

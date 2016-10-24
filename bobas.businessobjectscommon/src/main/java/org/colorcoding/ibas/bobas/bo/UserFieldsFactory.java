@@ -7,6 +7,7 @@ import org.colorcoding.ibas.bobas.core.fields.FieldsFactory;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
+import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 public class UserFieldsFactory {
@@ -29,7 +30,7 @@ public class UserFieldsFactory {
 		if (boType == null || fields == null) {
 			return false;
 		}
-		RuntimeLog.log(RuntimeLog.MSG_USER_FIELDS_REGISTER, boType.getName(), fields.length);
+		RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_USER_FIELDS_REGISTER, boType.getName(), fields.length);
 		if (userFieldsCache.containsKey(boType)) {
 			UserFieldInfoList infoList = userFieldsCache.get(boType);
 			synchronized (infoList) {

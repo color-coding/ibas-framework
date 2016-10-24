@@ -12,6 +12,7 @@ import org.colorcoding.ibas.bobas.expressions.ExpressionFactory;
 import org.colorcoding.ibas.bobas.expressions.JudgmentLinks;
 import org.colorcoding.ibas.bobas.expressions.JudmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
@@ -33,6 +34,20 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 	@Override
 	public String getId() {
 		return this.id;
+	}
+
+	private IBusinessObjectBase trigger;
+
+	@Override
+	public IBusinessObjectBase getTrigger() {
+		return this.trigger;
+	}
+
+	@Override
+	public void setTrigger(IBusinessObjectBase bo) {
+		// 仅可赋值一次
+		if (this.trigger == null)
+			this.trigger = bo;
 	}
 
 	private IBORepository repository;
@@ -67,11 +82,27 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 			IManageFields boFields = (IManageFields) bo;
 			for (IFieldData item : boFields.getFields()) {
 				if (item.getValue() instanceof IBusinessObjectBase) {
-					contracts.addAll(this.analyzeContracts((IBusinessObjectBase) item.getValue()));
+					IBusinessLogic<?>[] tmpLogics = this.analyzeContracts((IBusinessObjectBase) item.getValue());
+					// 记录父项
+					for (IBusinessLogic<?> tmpLogic : tmpLogics) {
+						if (tmpLogic instanceof BusinessLogic<?, ?>) {
+							BusinessLogic<?, ?> logic = (BusinessLogic<?, ?>) tmpLogic;
+							logic.setParent(bo);
+						}
+					}
+					contracts.addAll(tmpLogics);
 				} else if (item.getValue() instanceof IBusinessObjectListBase) {
 					IBusinessObjectListBase<?> bos = (IBusinessObjectListBase<?>) item.getValue();
 					for (IBusinessObjectBase boItem : bos) {
-						contracts.addAll(this.analyzeContracts(boItem));
+						IBusinessLogic<?>[] tmpLogics = this.analyzeContracts(boItem);
+						// 记录父项
+						for (IBusinessLogic<?> tmpLogic : tmpLogics) {
+							if (tmpLogic instanceof BusinessLogic<?, ?>) {
+								BusinessLogic<?, ?> logic = (BusinessLogic<?, ?>) tmpLogic;
+								logic.setParent(bo);
+							}
+						}
+						contracts.addAll(tmpLogics);
 					}
 				}
 			}
@@ -93,8 +124,8 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 					}
 					if (exists) {
 						// 存在契约，创建契约对应的逻辑实例
-						RuntimeLog.log(RuntimeLog.MSG_LOGICS_EXISTING_CONTRACT, bo.getClass().getName(),
-								item.getName());
+						RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_LOGICS_EXISTING_CONTRACT,
+								bo.getClass().getName(), item.getName());
 						IBusinessLogic<?> logic = logicsManager.createLogic(item);
 						if (logic == null) {
 							throw new NotFoundBusinessLogicsException(item.getName());

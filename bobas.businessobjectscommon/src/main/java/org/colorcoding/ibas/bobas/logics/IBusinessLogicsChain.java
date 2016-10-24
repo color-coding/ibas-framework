@@ -26,6 +26,20 @@ public interface IBusinessLogicsChain {
 	String getId();
 
 	/**
+	 * 获取-触发逻辑链对象
+	 * 
+	 * @return
+	 */
+	IBusinessObjectBase getTrigger();
+
+	/**
+	 * 设置-触发逻辑链对象
+	 * 
+	 * @param bo
+	 */
+	void setTrigger(IBusinessObjectBase bo);
+
+	/**
 	 * 改变业务对象仓库
 	 * 
 	 * @param boRepository

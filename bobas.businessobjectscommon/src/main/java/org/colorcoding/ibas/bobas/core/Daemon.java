@@ -5,6 +5,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**
@@ -145,10 +146,8 @@ public class Daemon implements IDaemon {
 			boolean done = wrapping.tryRun(time);
 			if (done) {
 				// 可以运行
-				// RuntimeLog.log(MessageLevel.DEBUG,
-				// RuntimeLog.MSG_DAEMON_RUN_TASK, wrapping.getId(),
-				// wrapping.getName(),
-				// wrapping.getRunTimes());
+				RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_DAEMON_RUN_TASK, wrapping.getId(), wrapping.getName(),
+						wrapping.getRunTimes());
 				// 从线程池中调用新的线程运行此任务
 				this.getThreadPool().execute(new Runnable() {
 
