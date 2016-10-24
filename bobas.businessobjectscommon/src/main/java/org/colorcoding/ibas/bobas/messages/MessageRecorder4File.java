@@ -21,42 +21,34 @@ import org.colorcoding.ibas.bobas.data.DateTime;
  */
 public class MessageRecorder4File extends MessageRecorder implements IMessageRecorder4File {
 
-	/**
-	 * 获取单个消息文件最大容量
-	 * 
-	 * @return 消息文件最大容量
-	 */
-	private int getLimit() {
-		return MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LOG_FILE_LIMIT, 51200000);
+	private int limit;
+
+	public int getLimit() {
+		return this.limit;
 	}
 
-	/**
-	 * 获取每天消息文件产生的最大数量
-	 * 
-	 * @return 每天消息文件产生的最大数量
-	 */
-	private int getCount() {
-		return MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LOG_FILE_COUNT, 999);
+	public void setLimit(int limit) {
+		this.limit = limit;
 	}
 
-	/**
-	 * 获取当前模块的名称
-	 * 
-	 * @return
-	 */
+	private int count = 1;
+
+	public int getCount() {
+		return this.count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+
+	private String moduleName;
+
 	private String getModuleName() {
-		return MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_MODULE_NAME, "Common");
+		return this.moduleName;
 	}
 
-	/**
-	 * 默认日志文件标示
-	 */
-	public MessageRecorder4File() {
-		this(MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LOG_FILE_SIGN, "ibas_runtime_%m_%s_%g.log"));
-	}
-
-	public MessageRecorder4File(String sign) {
-		this.setFileSign(sign);
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
 	}
 
 	private volatile Queue<IMessage> messageQueue;
@@ -126,28 +118,39 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 
 	@Override
 	public String getFileSign() {
-		if (fileSign == null || fileSign.indexOf("%s") < 0 || fileSign.indexOf("%m") < 0
-				|| fileSign.indexOf("%g") < 0) {
+		if (this.fileSign == null || this.fileSign.indexOf("%s") < 0 || this.fileSign.indexOf("%g") < 0) {
 			// 文件标记格式不合法
-			fileSign = "ibas_runtime_%m_%s_%g.log";
+			this.fileSign = "message_recorder_%s_%g.log";
 		}
-		return fileSign;
+		return this.fileSign;
 	}
 
 	@Override
 	public void setFileSign(String value) {
+
 		this.fileSign = value;
 	}
+
+	public MessageRecorder4File() {
+		this("");
+	}
+
+	public MessageRecorder4File(String sign) {
+		this.setFileSign(sign);
+	}
+
+	private String fileName;
 
 	/**
 	 * 获取记录文件名称
 	 */
 	public String getFileName() {
-
-		String fileName = this.getFileSign().replace("%s", DateTime.getToday().toString("yyyyMMdd"));
-		fileName = fileName.replace("%m", getModuleName());
-		return String.format("%s%s%s", this.getWorkFolder(), File.separator, fileName);
-
+		if (this.fileName == null || this.fileName.isEmpty()) {
+			String str = this.getFileSign().replace("%s", DateTime.getToday().toString("yyyyMMdd"));
+			str = str.replace("%m", this.getModuleName());
+			this.fileName = String.format("%s%s%s", this.getWorkFolder(), File.separator, str);
+		}
+		return fileName;
 	}
 
 	/**
@@ -172,7 +175,7 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 		}
 		FileHandler fileHandler = null;
 		try {
-			fileHandler = new FileHandler(this.getFileName(), this.getLimit(), this.getCount(), true);
+			fileHandler = new FileHandler(this.getFileName(), limit, count, true);
 			Logger logger = Logger.getLogger("ibas");
 			logger.setUseParentHandlers(false);
 			fileHandler.setFormatter(new Formatter() {
