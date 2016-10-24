@@ -48,6 +48,8 @@ public class RuntimeLog {
 	public static final String MSG_LOGICS_RUNNING_LOGIC_FORWARD = "logics: forward logic [%s] by data [%s].";
 	public static final String MSG_LOGICS_RUNNING_LOGIC_REVERSE = "logics: reverse logic [%s] by data [%s].";
 	public static final String MSG_LOGICS_EXISTING_CONTRACT = "logics: class [%s] existing contract [%s].";
+	public static final String MSG_LOGICS_CHAIN_REMOVED = "logics: chain [%s] was removed, because [%s].";
+	public static final String MSG_LOGICS_CHAIN_CREATED = "logics: chain [%s] was created, by [%s].";
 	public static final String MSG_BO_FACTORY_REGISTER_BO_CODE = "factory: register [%s] for [%s].";
 	public static final String MSG_DAEMON_REGISTER_TASK = "daemon: register task id [%s], name [%s].";
 	public static final String MSG_DAEMON_REMOVE_TASK = "daemon: remove task id [%s], name [%s].";

@@ -17,6 +17,7 @@ import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.logics.BusinessLogicsFactory;
 import org.colorcoding.ibas.bobas.logics.IBusinessLogicsChain;
 import org.colorcoding.ibas.bobas.logics.IBusinessLogicsManager;
+import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.rules.BusinessRuleException;
 import org.colorcoding.ibas.bobas.rules.ICheckRules;
 
@@ -82,7 +83,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 					this.triggerApprovals(event.getBO());
 				}
 			}
-			if (event.getType() != SaveActionsType.before_adding && event.getType() != SaveActionsType.deleted) {
+			if (event.getType() != SaveActionsType.before_adding) {
 				// 业务逻辑相关，最后执行业务逻辑，因为要求状态可用
 				if (this.isCheckRules()) {
 					// 执行业务逻辑
@@ -141,6 +142,8 @@ public class BORepositoryLogicService extends BORepositoryService {
 	/**
 	 * 执行业务逻辑
 	 * 
+	 * 根BO进入，
+	 * 
 	 * @param type
 	 *            操作类型
 	 * @param bo
@@ -155,24 +158,42 @@ public class BORepositoryLogicService extends BORepositoryService {
 			logicsChain = logicsManager.registerChain(transId);
 			// 传递仓库
 			logicsChain.useRepository(this.getRepository());
+			// 记录触发者
+			logicsChain.setTrigger(bo);
+			RuntimeLog.log(RuntimeLog.MSG_LOGICS_CHAIN_CREATED, transId, bo.toString());
 		}
-		// 执行逻辑
-		if (type == SaveActionsType.added) {
-			// 新建数据，正向逻辑
-			logicsChain.forwardLogics(bo);
-			logicsChain.commit(bo);
-		} else if (type == SaveActionsType.before_deleting) {
-			// 删除数据前，反向逻辑
-			logicsChain.reverseLogics(bo);
-			logicsChain.commit(bo);
-		} else if (type == SaveActionsType.before_updating) {
-			// 更新数据前，反向逻辑
-			logicsChain.reverseLogics(bo);
-			// 等待更新完成提交
-		} else if (type == SaveActionsType.updated) {
-			// 更新数据后，正向逻辑
-			logicsChain.forwardLogics(bo);
-			logicsChain.commit(bo);
+		try {
+			// 执行逻辑
+			if (type == SaveActionsType.added) {
+				// 新建数据，正向逻辑
+				logicsChain.forwardLogics(bo);
+				logicsChain.commit(bo);
+			} else if (type == SaveActionsType.before_deleting) {
+				// 删除数据前，反向逻辑
+				logicsChain.reverseLogics(bo);
+				logicsChain.commit(bo);
+			} else if (type == SaveActionsType.before_updating) {
+				// 更新数据前，反向逻辑
+				logicsChain.reverseLogics(bo);
+				// 等待更新完成提交
+			} else if (type == SaveActionsType.updated) {
+				// 更新数据后，正向逻辑
+				logicsChain.forwardLogics(bo);
+				logicsChain.commit(bo);
+			}
+		} catch (Exception e) {
+			// 出现错误关闭逻辑链，释放资源
+			logicsManager.closeChain(logicsChain.getId());
+			RuntimeLog.log(RuntimeLog.MSG_LOGICS_CHAIN_REMOVED, transId, e.getMessage());
+			throw e;
+		}
+		// 触发的BO完成操作，释放资源
+		if (type == SaveActionsType.added || type == SaveActionsType.updated || type == SaveActionsType.deleted) {
+			if (logicsChain != null && logicsChain.getTrigger() == bo) {
+				// 释放业务链
+				logicsManager.closeChain(logicsChain.getId());
+				RuntimeLog.log(RuntimeLog.MSG_LOGICS_CHAIN_REMOVED, transId, "done");
+			}
 		}
 	}
 

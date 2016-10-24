@@ -7,11 +7,13 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
+import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
@@ -27,7 +29,7 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 @XmlType(name = "PurchaseOrder")
 @XmlRootElement(name = "PurchaseOrder")
 @BOCode(PurchaseOrder.BUSINESS_OBJECT_CODE)
-public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBODocument {
+public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBODocument, IApprovalData {
 
 	/**
 	 * 序列化版本标记
@@ -638,13 +640,6 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	}
 
 	/**
-	 * 数据所有者 属性
-	 */
-	@DbField(name = "DataOwner", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
-	public final static IPropertyInfo<Integer> DataOwnerProperty = registerProperty("DataOwner", Integer.class,
-			MY_CLASS);
-
-	/**
 	 * 单据状态 属性
 	 */
 	@DbField(name = "DocStatus", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
@@ -869,6 +864,53 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	 */
 	public final void setDocumentTotal(double value) {
 		this.setDocumentTotal(new Decimal(value));
+	}
+
+	/**
+	 * 数据所有者 属性
+	 */
+	@DbField(name = "DataOwner", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+	public final static IPropertyInfo<Integer> DataOwnerProperty = registerProperty("DataOwner", Integer.class,
+			MY_CLASS);
+
+	/**
+	 * 获取-数据所有者
+	 * 
+	 * @return 值
+	 */
+	@Override
+	@XmlElement(name = "DataOwner")
+	public final Integer getDataOwner() {
+		return this.getProperty(DataOwnerProperty);
+	}
+
+	/**
+	 * 审批状态 属性
+	 */
+	@DbField(name = "ApvlStatus", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	public final static IPropertyInfo<emApprovalStatus> ApprovalStatusProperty = registerProperty("ApprovalStatus",
+			emApprovalStatus.class, MY_CLASS);
+
+	/**
+	 * 获取-审批状态
+	 * 
+	 * @return 值
+	 */
+	@Override
+	@XmlElement(name = "ApprovalStatus")
+	public final emApprovalStatus getApprovalStatus() {
+		return this.getProperty(ApprovalStatusProperty);
+	}
+
+	/**
+	 * 设置-审批状态
+	 * 
+	 * @param value
+	 *            值
+	 */
+	@Override
+	public final void setApprovalStatus(emApprovalStatus value) {
+		this.setProperty(ApprovalStatusProperty, value);
 	}
 
 	/**

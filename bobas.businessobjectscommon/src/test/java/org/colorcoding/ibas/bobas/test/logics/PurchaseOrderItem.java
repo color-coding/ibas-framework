@@ -759,7 +759,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	protected void initialize() {
 		super.initialize();
 		this.setObjectCode(BUSINESS_OBJECT_CODE);
-
+		this.setLineStatus(emDocumentStatus.Released);
 	}
 
 	// --IMaterialsJournalContract

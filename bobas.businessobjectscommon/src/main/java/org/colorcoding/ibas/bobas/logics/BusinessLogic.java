@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.logics;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
+import org.colorcoding.ibas.bobas.bo.IBOReferenced;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepository;
@@ -12,6 +13,7 @@ import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**
@@ -45,6 +47,21 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		this.contract = (L) contract;
 	}
 
+	private IBusinessObjectBase parent;
+
+	/**
+	 * 获取-契约数据所属父项BO
+	 * 
+	 * @return
+	 */
+	protected final IBusinessObjectBase getParent() {
+		return parent;
+	}
+
+	final void setParent(IBusinessObjectBase parent) {
+		this.parent = parent;
+	}
+
 	private IBORepository repository;
 
 	/**
@@ -65,6 +82,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 	 * 
 	 * 审批数据，批准和不影响的有效；单据，非计划和没取消的有效
 	 * 
+	 * 第一次执行，检查契约数据父项状态；第二次执行，检查契约数据状态。
+	 * 
 	 * @param data
 	 *            检查的数据
 	 * @return 有效，true；无效，false
@@ -74,6 +93,13 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			// 标记删除的数据无效
 			ITrackStatus status = (ITrackStatus) data;
 			if (status.isDeleted()) {
+				return false;
+			}
+		}
+		if (data instanceof IBOReferenced) {
+			// 引用数据，已标记删除的，不影响业务逻辑
+			IBOReferenced refData = (IBOReferenced) data;
+			if (refData.getDeleted() == emYesNo.Yes) {
 				return false;
 			}
 		}
@@ -104,6 +130,10 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			IBODocumentLine lineData = (IBODocumentLine) data;
 			if (lineData.getCanceled() == emYesNo.Yes) {
 				// 取消的
+				return false;
+			}
+			if (lineData.getLineStatus() == emDocumentStatus.Planned) {
+				// 计划状态
 				return false;
 			}
 		}
@@ -159,13 +189,18 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 
 	@Override
 	public final void forward() {
+		// 检查父项数据状态
+		if (this.getParent() != null && !this.checkDataStatus(this.getParent())) {
+			// 数据状态不通过，跳过正向逻辑执行
+			return;
+		}
 		// 检查数据状态
 		if (!this.checkDataStatus(this.getContract())) {
 			// 数据状态不通过，跳过正向逻辑执行
 			return;
 		}
 		// 执行正向逻辑
-		RuntimeLog.log(RuntimeLog.MSG_LOGICS_RUNNING_LOGIC_FORWARD, this.getClass().getName(),
+		RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_LOGICS_RUNNING_LOGIC_FORWARD, this.getClass().getName(),
 				this.getContract().getIdentifiers());
 		if (this.beAffected == null) {
 			// 加载被影响的数据
@@ -176,13 +211,18 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 
 	@Override
 	public final void reverse() {
+		// 检查父项数据状态
+		if (this.getParent() != null && !this.checkDataStatus(this.getParent())) {
+			// 数据状态不通过，跳过正向逻辑执行
+			return;
+		}
 		// 检查数据状态
 		if (!this.checkDataStatus(this.getOldContract())) {
 			// 数据状态不通过，跳过反向逻辑执行
 			return;
 		}
 		// 执行撤销逻辑
-		RuntimeLog.log(RuntimeLog.MSG_LOGICS_RUNNING_LOGIC_REVERSE, this.getClass().getName(),
+		RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_LOGICS_RUNNING_LOGIC_REVERSE, this.getClass().getName(),
 				this.getContract().getIdentifiers());
 		if (this.beAffected == null) {
 			// 加载被影响的数据

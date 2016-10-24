@@ -1,7 +1,6 @@
 package org.colorcoding.ibas.bobas.repository;
 
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
-import org.colorcoding.ibas.bobas.data.DateTime;
 
 /**
  * 业务对象缓存容器
@@ -17,12 +16,7 @@ public interface IBOCacheContainer {
 	/**
 	 * 获取缓存的时间
 	 */
-	DateTime getCacheTime();
-
-	/**
-	 * 设置缓存的时间
-	 */
-	void setCacheTime(DateTime time);
+	long getCacheTime();
 
 	/**
 	 * 获取数据
@@ -45,11 +39,9 @@ public interface IBOCacheContainer {
 	long getEffectiveTime();
 
 	/**
-	 * 设置有效时间，分钟
+	 * 设置有效时间
 	 * 
-	 * @param minute
-	 *            有效分钟
 	 */
-	void setEffectiveTime(long minute);
+	void setEffectiveTime(long value);
 
 }

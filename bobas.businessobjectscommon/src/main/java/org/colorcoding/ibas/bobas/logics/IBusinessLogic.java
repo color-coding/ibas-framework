@@ -9,7 +9,6 @@ import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
  *
  */
 public interface IBusinessLogic<B extends IBusinessObjectBase> {
-
 	/**
 	 * 正向执行逻辑
 	 * 

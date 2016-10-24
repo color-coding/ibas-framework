@@ -6,16 +6,50 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.BORepositoryBase;
+import org.colorcoding.ibas.bobas.core.Daemon;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
+import org.colorcoding.ibas.bobas.core.IDaemonTask;
+import org.colorcoding.ibas.bobas.core.InvalidDaemonTask;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.expressions.ExpressionFactory;
 import org.colorcoding.ibas.bobas.expressions.JudgmentLinks;
+import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**
  * 业务对象仓库-缓存
  */
 public class BORepository4Cache extends BORepositoryBase implements IBORepository4Cache {
+
+	public BORepository4Cache() {
+		// 创建清理缓存的任务
+		try {
+			Daemon.register(new IDaemonTask() {
+
+				@Override
+				public void run() {
+					synchronized (cacheDatas) {
+						for (BOCacheContainers cacheContainers : cacheDatas.values()) {
+							cacheContainers.clearExpired();
+						}
+					}
+				}
+
+				@Override
+				public String getName() {
+					return "idle db connection dispose.";
+				}
+
+				@Override
+				public long getInterval() {
+					return 30;// 每5秒释放缓存的数据
+				}
+
+			});
+		} catch (InvalidDaemonTask e) {
+			RuntimeLog.log(e);
+		}
+	}
 
 	@Override
 	public DateTime getServerTime() {

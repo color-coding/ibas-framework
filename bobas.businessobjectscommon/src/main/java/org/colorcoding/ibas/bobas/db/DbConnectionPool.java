@@ -4,6 +4,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.core.Daemon;
 import org.colorcoding.ibas.bobas.core.IDaemonTask;
 import org.colorcoding.ibas.bobas.core.InvalidDaemonTask;
+import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 class DbConnectionPool implements IDbConnectionPool {
@@ -72,7 +73,8 @@ class DbConnectionPool implements IDbConnectionPool {
 				// 启动了连接池并且有效
 				boolean done = getConnectionPool().recycling(connection);
 				if (done) {
-					RuntimeLog.log(RuntimeLog.MSG_DB_POOL_RECYCLED_CONNECTION, connection.hashCode());
+					RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_DB_POOL_RECYCLED_CONNECTION,
+							connection.hashCode());
 				}
 				return done;
 
@@ -98,7 +100,7 @@ class DbConnectionPool implements IDbConnectionPool {
 						DbConnection dbConnection = (DbConnection) connection;
 						dbConnection.setRecycled(false);
 					}
-					RuntimeLog.log(RuntimeLog.MSG_DB_POOL_USING_CONNECTION, connection.hashCode());
+					RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_DB_POOL_USING_CONNECTION, connection.hashCode());
 				}
 				return connection;
 			}
@@ -120,34 +122,36 @@ class DbConnectionPool implements IDbConnectionPool {
 			return null;
 		}
 		if (this.availableConnections != null) {
-			for (int i = 0; i < this.availableConnections.length; i++) {
-				try {
-					ConnectionWrapping wrapping = this.availableConnections[i];
-					if (wrapping == null) {
-						continue;
-					}
-					IDbConnection connection = wrapping.getConnection();
-					if (connection == null) {
-						this.availableConnections[i] = null;
-						continue;
-					}
-					if (connection instanceof DbConnection) {
-						DbConnection dbConnection = (DbConnection) connection;
-						if (!dbConnection.isValid()) {
-							// 不可用，移出可用列表
-							this.availableConnections[i] = null;
-							// 释放引用资源
-							dbConnection.dispose();
+			synchronized (this.availableConnections) {
+				for (int i = 0; i < this.availableConnections.length; i++) {
+					try {
+						ConnectionWrapping wrapping = this.availableConnections[i];
+						if (wrapping == null) {
 							continue;
 						}
-						if (sign.equals(dbConnection.getConnectionSign())) {
-							// 匹配的，移出可用列表并返回
+						IDbConnection connection = wrapping.getConnection();
+						if (connection == null) {
 							this.availableConnections[i] = null;
-							return connection;
+							continue;
 						}
+						if (connection instanceof DbConnection) {
+							DbConnection dbConnection = (DbConnection) connection;
+							if (!dbConnection.isValid()) {
+								// 不可用，移出可用列表
+								this.availableConnections[i] = null;
+								// 释放引用资源
+								dbConnection.dispose();
+								continue;
+							}
+							if (sign.equals(dbConnection.getConnectionSign())) {
+								// 匹配的，移出可用列表并返回
+								this.availableConnections[i] = null;
+								return connection;
+							}
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
 				}
 			}
 		}
@@ -169,10 +173,14 @@ class DbConnectionPool implements IDbConnectionPool {
 				// 已关闭，无效的
 				return false;
 			}
-			for (int i = 0; i < this.availableConnections.length; i++) {
-				if (this.availableConnections[i] == null) {
-					this.availableConnections[i] = new ConnectionWrapping(connection);
-					return true;
+			if (this.availableConnections != null) {
+				synchronized (this.availableConnections) {
+					for (int i = 0; i < this.availableConnections.length; i++) {
+						if (this.availableConnections[i] == null) {
+							this.availableConnections[i] = new ConnectionWrapping(connection);
+							return true;
+						}
+					}
 				}
 			}
 			return false;

@@ -1,10 +1,6 @@
 package org.colorcoding.ibas.bobas.repository;
 
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
-import org.colorcoding.ibas.bobas.data.ComputeException;
-import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.data.measurement.emTimeUnit;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**
  * 业务对象缓存容器
@@ -27,15 +23,14 @@ class BOCacheContainer implements IBOCacheContainer {
 		return null;
 	}
 
-	private DateTime cacheTime = DateTime.getMaxValue();
+	private long cacheTime;
 
 	@Override
-	public DateTime getCacheTime() {
+	public long getCacheTime() {
 		return this.cacheTime;
 	}
 
-	@Override
-	public void setCacheTime(DateTime time) {
+	private void setCacheTime(long time) {
 		this.cacheTime = time;
 	}
 
@@ -49,26 +44,19 @@ class BOCacheContainer implements IBOCacheContainer {
 	@Override
 	public void setData(IBusinessObjectBase data) {
 		this.data = data;
-		this.setCacheTime(DateTime.getNow());
+		this.setCacheTime(System.currentTimeMillis());
 	}
 
 	@Override
 	public boolean isExpired() {
-		// 获取与现在的间隔时间
-		long time;
-		try {
-			time = DateTime.interval(this.getCacheTime(), emTimeUnit.minute);
-			if (time >= this.getEffectiveTime()) {
-				// 超过有效时间
-				return true;
-			}
-		} catch (ComputeException e) {
-			RuntimeLog.log(e);
+		if ((this.getCacheTime() + this.getEffectiveTime()) < System.currentTimeMillis()) {
+			// 超过有效时间
+			return true;
 		}
 		return false;
 	}
 
-	private long effectiveTime = 10;
+	private long effectiveTime = 5000;
 
 	@Override
 	public void setEffectiveTime(long minute) {
