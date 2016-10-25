@@ -17,7 +17,7 @@ import org.colorcoding.ibas.bobas.expressions.JudgmentLinks;
  */
 public class BORepository4Cache extends BORepositoryBase implements IBORepository4Cache {
 
-	private long task_id = -1;
+	// private long task_id = -1;
 
 	public BORepository4Cache() {
 		// 创建清理缓存的任务，不使用也可以，对象CG时释放
