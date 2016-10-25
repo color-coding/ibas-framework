@@ -85,4 +85,11 @@ public class ApprovalDataProxy extends TrackableBase implements IApprovalData {
 	public void clearDeleted() {
 
 	}
+
+	public String toString() {
+		if (this.getIdentifiers() != null && !this.getIdentifiers().isEmpty()) {
+			return this.getIdentifiers();
+		}
+		return super.toString();
+	}
 }

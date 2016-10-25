@@ -18,6 +18,7 @@ import org.colorcoding.ibas.bobas.logics.BusinessLogicsFactory;
 import org.colorcoding.ibas.bobas.logics.IBusinessLogicsChain;
 import org.colorcoding.ibas.bobas.logics.IBusinessLogicsManager;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
 import org.colorcoding.ibas.bobas.rules.BusinessRuleException;
 import org.colorcoding.ibas.bobas.rules.ICheckRules;
 
@@ -121,8 +122,9 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 * @param bo
 	 *            业务数据
 	 * @throws ApprovalException
+	 * @throws InvalidAuthorizationException
 	 */
-	private void triggerApprovals(IBusinessObjectBase bo) throws ApprovalException {
+	private void triggerApprovals(IBusinessObjectBase bo) throws ApprovalException, InvalidAuthorizationException {
 		if (!(bo instanceof IApprovalData)) {
 			// 业务对象不是需要审批的数据，退出处理
 			return;
@@ -132,9 +134,14 @@ public class BORepositoryLogicService extends BORepositoryService {
 		if (approvalProcess != null) {
 			// 创建了流程实例
 			// 保存流程实例，使用当前仓库以保证事务完整
-			if (!bo.isNew())
+			if (!bo.isNew()) {
 				// 非新建时，检查用户是否有权限保存修改
-				approvalProcess.checkToSave(this.getCurrentUser());
+				if (bo.isDeleted())
+					// 删除数据，取消流程
+					approvalProcess.cancel(this.getCurrentUser().getToken(), "");
+				else
+					approvalProcess.checkToSave(this.getCurrentUser());
+			}
 			approvalProcess.save(this.getRepository());
 		}
 	}

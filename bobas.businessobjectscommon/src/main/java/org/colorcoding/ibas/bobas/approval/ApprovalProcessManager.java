@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
+import org.colorcoding.ibas.bobas.bo.IBOReferenced;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
@@ -68,8 +69,19 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
 		if (data instanceof IBODocumentLine) {
 			// 单据行
 			IBODocumentLine lineData = (IBODocumentLine) data;
+			if (lineData.getLineStatus() == emDocumentStatus.Planned) {
+				// 计划状态
+				return false;
+			}
 			if (lineData.getCanceled() == emYesNo.Yes) {
 				// 取消的
+				return false;
+			}
+		}
+		if (data instanceof IBOReferenced) {
+			// 引用数据，已标记删除的，不影响业务逻辑
+			IBOReferenced refData = (IBOReferenced) data;
+			if (refData.getDeleted() == emYesNo.Yes) {
 				return false;
 			}
 		}
