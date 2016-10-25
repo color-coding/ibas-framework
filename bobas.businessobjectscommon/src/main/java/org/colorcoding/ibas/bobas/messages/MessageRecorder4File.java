@@ -118,9 +118,9 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 
 	@Override
 	public String getFileSign() {
-		if (this.fileSign == null || this.fileSign.indexOf("%s") < 0 || this.fileSign.indexOf("%g") < 0) {
+		if (this.fileSign == null || this.fileSign.indexOf("%s") < 0) {
 			// 文件标记格式不合法
-			this.fileSign = "message_recorder_%s_%g.log";
+			this.fileSign = "message_recorder%s%g.log";
 		}
 		return this.fileSign;
 	}
@@ -146,12 +146,13 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 	 */
 	public String getFileName() {
 		if (this.fileName == null || this.fileName.isEmpty()) {
-			String str = this.getFileSign().replace("%s", DateTime.getToday().toString("yyyyMMdd"));
+			String str = this.getFileSign().replace("%s", "_" + DateTime.getToday().toString("yyyyMMdd"));
 			if (this.getModuleName() != null && this.getModuleName().length() > 0) {
 				str = str.replace("%m", "_" + this.getModuleName());
 			} else {
 				str = str.replace("%m", "");
 			}
+			str = str.replace("%g", "_%g");
 			this.fileName = String.format("%s%s%s", this.getWorkFolder(), File.separator, str);
 		}
 		return fileName;
