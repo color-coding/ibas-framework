@@ -54,6 +54,8 @@ public class RuntimeLog {
 	public static final String MSG_DAEMON_REGISTER_TASK = "daemon: register task id [%s], name [%s].";
 	public static final String MSG_DAEMON_REMOVE_TASK = "daemon: remove task id [%s], name [%s].";
 	public static final String MSG_DAEMON_RUN_TASK = "daemon: begin to run task [%s - %s], %sth running.";
+	public static final String MSG_DAEMON_REGISTER_VOID_TASK = "daemon: register void task.";
+	public static final String MSG_DAEMON_TASK_ALREADY_EXIST = "daemon: task [%s] already exist.";
 
 	private static long debugMode = -1;// log类型线程安全
 	private static int messageLevel = -1;

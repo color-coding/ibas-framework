@@ -116,8 +116,11 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 
 	protected void closeRepository() throws RepositoryException {
 		try {
-			if (this.getRepository() instanceof IBORepository4Db) {
+			if (this.repository instanceof IBORepository4Db) {
 				((IBORepository4Db) this.getRepository()).closeDbConnection();
+			}
+			if (this.cacheRepository != null) {
+				this.cacheRepository.dispose();
 			}
 		} catch (Exception e) {
 			throw new RepositoryException(e);
@@ -147,9 +150,11 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	public void dispose() throws RepositoryException {
 		if (this.repository != null) {
 			this.repository.dispose();
+			this.repository = null;
 		}
 		if (this.cacheRepository != null) {
 			this.cacheRepository.dispose();
+			this.cacheRepository = null;
 		}
 	}
 
@@ -433,8 +438,9 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 				}
 				this.noticeTransaction(type, bo);
 			}
-			if (myDbTrans)
+			if (myDbTrans) {
 				this.commitTransaction();// 结束事务
+			}
 			if (toDelete) {
 				// 删除操作，不返回实例
 				returnBO = null;
@@ -461,12 +467,14 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 			}
 			return returnBO;
 		} catch (Exception e) {
-			if (myDbTrans)
+			if (myDbTrans) {
 				this.rollbackTransaction();// 自己打开的事务自己关闭
+			}
 			throw e;
 		} finally {
-			if (myOpened)
+			if (myOpened) {
 				this.closeRepository();// 自己打开的连接，自己关闭
+			}
 		}
 	}
 

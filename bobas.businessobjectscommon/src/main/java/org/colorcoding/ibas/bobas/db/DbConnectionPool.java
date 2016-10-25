@@ -51,9 +51,7 @@ class DbConnectionPool implements IDbConnectionPool {
 			synchronized (DbConnectionPool.class) {
 				if (connectionPool == null) {
 					connectionPool = new DbConnectionPool();
-					// 设置已回收的连接保持时间
-					connectionPool.setHoldingTime(MyConfiguration
-							.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_CONNECTION_HOLDING_TIME, 30l));
+
 				}
 			}
 		}
@@ -109,8 +107,55 @@ class DbConnectionPool implements IDbConnectionPool {
 	}
 
 	public DbConnectionPool() {
-		if (isEnabled()) {
-			this.availableConnections = new ConnectionWrapping[getPoolSize()];
+		this.availableConnections = new ConnectionWrapping[getPoolSize()];
+		// 设置已回收的连接保持时间
+		this.setHoldingTime(
+				MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_CONNECTION_HOLDING_TIME, 30l));
+		if (this.getHoldingTime() > 0) {
+			// 设置了连接持有时间
+			// 开始释放连接任务
+			try {
+				Daemon.register(new IDaemonTask() {
+
+					@Override
+					public void run() {
+						if (availableConnections != null) {
+							synchronized (availableConnections) {
+								// 锁住可用连接集合
+								for (int i = 0; i < availableConnections.length; i++) {
+									ConnectionWrapping wrapping = availableConnections[i];
+									if (wrapping == null) {
+										continue;
+									}
+									IDbConnection connection = wrapping.getConnection();
+									if (connection == null) {
+										availableConnections[i] = null;
+										continue;
+									}
+									if ((System.currentTimeMillis() - wrapping.getStowedTime()) >= getHoldingTime()) {
+										// 超出持有时间，关闭连接
+										connection.dispose();
+										availableConnections[i] = null;
+									}
+								}
+							}
+						}
+					}
+
+					@Override
+					public String getName() {
+						return "idle db connection dispose.";
+					}
+
+					@Override
+					public long getInterval() {
+						return getHoldingTime();
+					}
+
+				});
+			} catch (InvalidDaemonTask e) {
+				RuntimeLog.log(e);
+			}
 		}
 	}
 
@@ -210,52 +255,6 @@ class DbConnectionPool implements IDbConnectionPool {
 
 	public void setHoldingTime(long holdingTime) {
 		this.holdingTime = holdingTime;
-		if (this.getHoldingTime() > 0) {
-			// 设置了连接持有时间
-			// 开始释放连接任务
-			try {
-				Daemon.register(new IDaemonTask() {
-
-					@Override
-					public void run() {
-						if (availableConnections != null) {
-							synchronized (availableConnections) {
-								// 锁住可用连接集合
-								for (int i = 0; i < availableConnections.length; i++) {
-									ConnectionWrapping wrapping = availableConnections[i];
-									if (wrapping == null) {
-										continue;
-									}
-									IDbConnection connection = wrapping.getConnection();
-									if (connection == null) {
-										availableConnections[i] = null;
-										continue;
-									}
-									if ((System.currentTimeMillis() - wrapping.getStowedTime()) >= getHoldingTime()) {
-										// 超出持有时间，关闭连接
-										connection.dispose();
-										availableConnections[i] = null;
-									}
-								}
-							}
-						}
-					}
-
-					@Override
-					public String getName() {
-						return "idle db connection dispose.";
-					}
-
-					@Override
-					public long getInterval() {
-						return 10;// 每15秒运行次任务
-					}
-
-				});
-			} catch (InvalidDaemonTask e) {
-				RuntimeLog.log(e);
-			}
-		}
 	}
 
 	/**

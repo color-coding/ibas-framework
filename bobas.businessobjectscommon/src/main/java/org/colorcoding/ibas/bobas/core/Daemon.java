@@ -94,14 +94,24 @@ public class Daemon implements IDaemon {
 
 	@Override
 	public long add(IDaemonTask task) throws InvalidDaemonTask {
-		if (task != null) {
-			DaemonTaskWrapping wrapping = new DaemonTaskWrapping(task);
-			wrapping.setId(Math.abs(UUID.randomUUID().getLeastSignificantBits()));
-			this.getWrappings().add(wrapping);
-			RuntimeLog.log(RuntimeLog.MSG_DAEMON_REGISTER_TASK, wrapping.getId(), wrapping.getName());
-			return wrapping.getId();
+		if (task != null && task.getName() != null && !task.getName().isEmpty()) {
+			synchronized (this.getWrappings()) {
+				/*
+				 * for (DaemonTaskWrapping wrapping : this.getWrappings()) { if
+				 * (wrapping == null) { continue; } if
+				 * (wrapping.getName().equals(task.getName())) {
+				 * RuntimeLog.log(RuntimeLog.MSG_DAEMON_TASK_ALREADY_EXIST,
+				 * wrapping.getName()); return -1; } }
+				 */
+				DaemonTaskWrapping wrapping = new DaemonTaskWrapping(task);
+				wrapping.setId(Math.abs(UUID.randomUUID().getLeastSignificantBits()));
+				this.getWrappings().add(wrapping);
+				RuntimeLog.log(RuntimeLog.MSG_DAEMON_REGISTER_TASK, wrapping.getId(), wrapping.getName());
+				return wrapping.getId();
+			}
+		} else {
+			throw new InvalidDaemonTask();
 		}
-		return -1;
 	}
 
 	@Override
@@ -109,15 +119,17 @@ public class Daemon implements IDaemon {
 		if (taskId < 0) {
 			return false;
 		}
-		for (int i = this.getWrappings().size() - 1; i >= 0; i--) {
-			DaemonTaskWrapping wrapping = this.getWrappings().get(i);
-			if (wrapping == null) {
-				continue;
+		synchronized (this.getWrappings()) {
+			for (int i = this.getWrappings().size() - 1; i >= 0; i--) {
+				DaemonTaskWrapping wrapping = this.getWrappings().get(i);
+				if (wrapping == null) {
+					continue;
+				}
+				if (wrapping.getId() == taskId) {
+					this.getWrappings().remove(i);
+				}
+				RuntimeLog.log(RuntimeLog.MSG_DAEMON_REMOVE_TASK, wrapping.getId(), wrapping.getName());
 			}
-			if (wrapping.getId() == taskId) {
-				this.getWrappings().remove(i);
-			}
-			RuntimeLog.log(RuntimeLog.MSG_DAEMON_REMOVE_TASK, wrapping.getId(), wrapping.getName());
 		}
 		return false;
 	}

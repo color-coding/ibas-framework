@@ -291,6 +291,7 @@ public class testBORepository extends TestCase {
 			}
 			Thread.sleep(50000);
 			flagStop = true;
+			Thread.sleep(50000);// 继续等待，资源释放
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

@@ -6,49 +6,35 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.BORepositoryBase;
-import org.colorcoding.ibas.bobas.core.Daemon;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
-import org.colorcoding.ibas.bobas.core.IDaemonTask;
-import org.colorcoding.ibas.bobas.core.InvalidDaemonTask;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.expressions.ExpressionFactory;
 import org.colorcoding.ibas.bobas.expressions.JudgmentLinks;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**
  * 业务对象仓库-缓存
  */
 public class BORepository4Cache extends BORepositoryBase implements IBORepository4Cache {
 
+	private long task_id = -1;
+
 	public BORepository4Cache() {
-		// 创建清理缓存的任务
-		try {
-			Daemon.register(new IDaemonTask() {
-
-				@Override
-				public void run() {
-					synchronized (cacheDatas) {
-						for (BOCacheContainers cacheContainers : cacheDatas.values()) {
-							cacheContainers.clearExpired();
-						}
-					}
-				}
-
-				@Override
-				public String getName() {
-					return "idle db connection dispose.";
-				}
-
-				@Override
-				public long getInterval() {
-					return 30;// 每5秒释放缓存的数据
-				}
-
-			});
-		} catch (InvalidDaemonTask e) {
-			RuntimeLog.log(e);
-		}
+		// 创建清理缓存的任务，不使用也可以，对象CG时释放
+		/*
+		 * try { task_id = Daemon.register(new IDaemonTask() {
+		 * 
+		 * @Override public void run() { synchronized (cacheDatas) { for
+		 * (BOCacheContainers cacheContainers : cacheDatas.values()) {
+		 * cacheContainers.clearExpired(); } } }
+		 * 
+		 * @Override public String getName() { return "clear repository cache.";
+		 * }
+		 * 
+		 * @Override public long getInterval() { return 30;// 每5秒释放缓存的数据 }
+		 * 
+		 * }); } catch (InvalidDaemonTask e) { RuntimeLog.log(e); }
+		 */
 	}
 
 	@Override
@@ -70,6 +56,9 @@ public class BORepository4Cache extends BORepositoryBase implements IBORepositor
 	 * @return 对象的缓存集合
 	 */
 	protected synchronized BOCacheContainers getCacheList(Class<? extends IBusinessObjectBase> boType) {
+		if (this.cacheDatas == null) {
+			cacheDatas = new HashMap<Class<? extends IBusinessObjectBase>, BOCacheContainers>();
+		}
 		if (this.cacheDatas.containsKey(boType)) {
 			return this.cacheDatas.get(boType);
 		} else {
@@ -122,6 +111,7 @@ public class BORepository4Cache extends BORepositoryBase implements IBORepositor
 	@Override
 	public void dispose() throws RepositoryException {
 		this.cacheDatas = null;
+		// Daemon.unRegister(task_id);
 	}
 
 	@Override

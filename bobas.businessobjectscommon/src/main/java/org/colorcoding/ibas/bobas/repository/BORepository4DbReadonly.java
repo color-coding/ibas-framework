@@ -153,6 +153,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	public synchronized void closeDbConnection() throws DbException {
 		if (this.dbConnection != null) {
 			this.dbConnection.close();
+			this.dbConnection = null;
 		}
 	}
 
