@@ -100,7 +100,7 @@ public class RuntimeLog {
 							MessageLevel level = MessageLevel.valueOf(value.toUpperCase());
 							messageLevel = level.ordinal();
 						} else {
-							messageLevel = MessageLevel.INFO.ordinal();
+							messageLevel = MessageLevel.ERROR.ordinal();
 						}
 					}
 				}
