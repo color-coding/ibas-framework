@@ -4,7 +4,7 @@ echo '    compile_and_package.sh                                                
 echo '                      by niuren.zhu                                         '
 echo '                           2016.06.17                                       '
 echo '  说明：                                                                    '
-echo '    1. 安装apache-maven，sudo apt-get install maven          '
+echo '    1. 安装apache-maven，sudo apt-get install maven                         '
 echo '    2. 解压apache-maven，并设置系统变量%MAVEN_HOME%为解压的程序目录。       '
 echo '    3. 添加PATH变量到%MAVEN_HOME%\bin，并检查JAVE_HOME配置是否正确。        '
 echo '    4. 运行提示符运行mvn -v 检查安装是否成功。                              '
