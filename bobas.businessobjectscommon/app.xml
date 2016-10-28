@@ -3,7 +3,7 @@
 <ns2:configuration xmlns:ns2="http://colorcoding.org/ibas/bobas/configuration">
 	<appSettings>
 		<!--配置项目-是否开启调试模式-->
-		<add key="DebugMode" value="false" />
+		<add key="DebugMode" value="true" />
 		<!--配置项目-消息级别-->
 		<add key="MsgLevel" value="info" />
 		<!-- 配置项目-数据库类型 -->
