@@ -23,6 +23,11 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			String applicationName) throws DbException {
 		String dbURL = String.format("jdbc:sqlserver://%s;DatabaseName=%s;ApplicationName=%s", server, dbName,
 				applicationName);
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		return new Connection(dbURL, userName);
 	}
 

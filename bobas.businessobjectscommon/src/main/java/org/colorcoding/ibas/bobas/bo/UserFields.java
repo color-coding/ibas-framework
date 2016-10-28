@@ -98,15 +98,13 @@ public class UserFields extends BindableBase implements Iterable<IUserField> {
 	 */
 	public void register() {
 		if (this.getUserFields() != null) {
-			synchronized (this.getUserFields()) {
-				UserFieldInfo[] fieldInfos = new UserFieldInfo[this.size()];
-				int index = 0;
-				for (IUserField item : this.getUserFields()) {
-					fieldInfos[index] = new UserFieldInfo(item.getName(), item.getValueType());
-					index++;
-				}
-				UserFieldsFactory.create().register(this.boType, fieldInfos);
+			UserFieldInfo[] fieldInfos = new UserFieldInfo[this.size()];
+			int index = 0;
+			for (IUserField item : this.getUserFields()) {
+				fieldInfos[index] = new UserFieldInfo(item.getName(), item.getValueType());
+				index++;
 			}
+			UserFieldsFactory.create().register(this.boType, fieldInfos);
 		}
 	}
 

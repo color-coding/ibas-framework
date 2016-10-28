@@ -54,7 +54,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	private IBORepository repository = null;
 
 	@Override
-	public final synchronized IBORepository getRepository() {
+	public final IBORepository getRepository() {
 		if (this.repository == null) {
 			this.setRepository(new BORepository4Db(MASTER_REPOSITORY_SIGN));
 		}
@@ -62,7 +62,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	}
 
 	@Override
-	public final synchronized void setRepository(IBORepository repository) {
+	public final void setRepository(IBORepository repository) {
 		if (this.repository != null) {
 			// 移出事件监听
 			this.repository.removeSaveActionsListener(this);
@@ -160,7 +160,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 
 	private IBORepository4Cache cacheRepository = null;
 
-	public final synchronized IBORepository4Cache getCacheRepository() {
+	public final IBORepository4Cache getCacheRepository() {
 		if (this.cacheRepository == null) {
 			this.setCacheRepository(new BORepository4Cache());
 		}
@@ -487,11 +487,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 	 */
 	private LinkedList<IBusinessObjectBase> getProcessing() {
 		if (processing == null) {
-			synchronized (this) {
-				if (processing == null) {
-					processing = new LinkedList<>();
-				}
-			}
+			processing = new LinkedList<>();
 		}
 		return processing;
 	}

@@ -82,7 +82,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	private volatile IDbConnection dbConnection = null;
 
 	@Override
-	public synchronized IDbConnection getDbConnection() throws DbException {
+	public IDbConnection getDbConnection() throws DbException {
 		if (this.dbConnection == null) {
 			this.dbConnection = this.createDbAdapter().createDbConnection(this.getDbSign());
 		} else if (this.dbConnection.isClosed()) {
@@ -139,7 +139,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 *             不能打开
 	 */
 	@Override
-	public synchronized boolean openDbConnection() throws DbException {
+	public boolean openDbConnection() throws DbException {
 		try {
 			return this.getDbConnection().open();
 		} catch (DbException e) {
@@ -150,7 +150,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	}
 
 	@Override
-	public synchronized void closeDbConnection() throws DbException {
+	public void closeDbConnection() throws DbException {
 		if (this.dbConnection != null) {
 			this.dbConnection.close();
 			this.dbConnection = null;
@@ -158,7 +158,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	}
 
 	@Override
-	public synchronized void dispose() throws RepositoryException {
+	public void dispose() throws RepositoryException {
 		try {
 			this.closeDbConnection();
 		} catch (Exception e) {

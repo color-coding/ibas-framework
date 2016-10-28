@@ -278,7 +278,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 	}
 
 	@Override
-	public synchronized void delete(E item) {
+	public void delete(E item) {
 		if (this.contains(item)) {
 			// 集合中的元素
 			if (item.isNew()) {

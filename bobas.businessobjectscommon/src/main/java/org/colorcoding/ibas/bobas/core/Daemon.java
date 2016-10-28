@@ -96,13 +96,6 @@ public class Daemon implements IDaemon {
 	public long add(IDaemonTask task) throws InvalidDaemonTask {
 		if (task != null && task.getName() != null && !task.getName().isEmpty()) {
 			synchronized (this.getWrappings()) {
-				/*
-				 * for (DaemonTaskWrapping wrapping : this.getWrappings()) { if
-				 * (wrapping == null) { continue; } if
-				 * (wrapping.getName().equals(task.getName())) {
-				 * RuntimeLog.log(RuntimeLog.MSG_DAEMON_TASK_ALREADY_EXIST,
-				 * wrapping.getName()); return -1; } }
-				 */
 				DaemonTaskWrapping wrapping = new DaemonTaskWrapping(task);
 				wrapping.setId(Math.abs(UUID.randomUUID().getLeastSignificantBits()));
 				this.getWrappings().add(wrapping);

@@ -54,13 +54,15 @@ public class testDbConnectionPool extends TestCase {
 		sort.setSortType(SortType.st_Ascending);
 
 		IOperationResult<?> operationResult = boRepository.fetchSalesOrder(criteria);
-		System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
-				operationResult.getMessage(), operationResult.getResultObjects().size()));
+		System.out.println(String.format("%s code:%s message:%s results:%s", Thread.currentThread().getName(),
+				operationResult.getResultCode(), operationResult.getMessage(),
+				operationResult.getResultObjects().size()));
 		assertEquals(operationResult.getResultCode(), 0);
 		for (int i = 0; i < 3; i++) {
 			operationResult = boRepository.fetchSalesOrder(criteria);
-			System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
-					operationResult.getMessage(), operationResult.getResultObjects().size()));
+			System.out.println(String.format("%s code:%s message:%s results:%s", Thread.currentThread().getName(),
+					operationResult.getResultCode(), operationResult.getMessage(),
+					operationResult.getResultObjects().size()));
 			assertEquals(operationResult.getResultCode(), 0);
 		}
 	}
@@ -91,8 +93,9 @@ public class testDbConnectionPool extends TestCase {
 		item.setQuantity(2);
 		item.setPrice(99.00);
 		IOperationResult<?> operationResult = boRepository.saveSalesOrder(order);
-		System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
-				operationResult.getMessage(), operationResult.getResultObjects().size()));
+		System.out.println(String.format("%s code:%s message:%s results:%s", Thread.currentThread().getName(),
+				operationResult.getResultCode(), operationResult.getMessage(),
+				operationResult.getResultObjects().size()));
 		assertEquals(operationResult.getResultCode(), 0);
 		order.setCustomerName("宇宙无敌影业--");
 		order.getSalesOrderItems().get(0).delete();
@@ -104,13 +107,15 @@ public class testDbConnectionPool extends TestCase {
 		item.setQuantity(3);
 		item.setPrice(299.00);
 		operationResult = boRepository.saveSalesOrder(order);
-		System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
-				operationResult.getMessage(), operationResult.getResultObjects().size()));
+		System.out.println(String.format("%s code:%s message:%s results:%s", Thread.currentThread().getName(),
+				operationResult.getResultCode(), operationResult.getMessage(),
+				operationResult.getResultObjects().size()));
 		assertEquals(operationResult.getResultCode(), 0);
 		order.delete();
 		operationResult = boRepository.saveSalesOrder(order);
-		System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
-				operationResult.getMessage(), operationResult.getResultObjects().size()));
+		System.out.println(String.format("%s code:%s message:%s results:%s", Thread.currentThread().getName(),
+				operationResult.getResultCode(), operationResult.getMessage(),
+				operationResult.getResultObjects().size()));
 		assertEquals(operationResult.getResultCode(), 0);
 	}
 
@@ -132,7 +137,6 @@ public class testDbConnectionPool extends TestCase {
 						}
 					}
 				};
-				ts.start();
 				Thread tf = new Thread() {
 					@Override
 					public void run() {
@@ -147,8 +151,9 @@ public class testDbConnectionPool extends TestCase {
 					}
 				};
 				tf.start();
+				ts.start();
 			}
-			Thread.sleep(80000);
+			Thread.sleep(300000);
 			flagStop = true;
 		} catch (InterruptedException e) {
 			e.printStackTrace();

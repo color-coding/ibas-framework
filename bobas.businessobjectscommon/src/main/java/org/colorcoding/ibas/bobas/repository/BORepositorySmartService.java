@@ -50,7 +50,7 @@ public class BORepositorySmartService extends BORepositoryLogicService implement
 	private IBORepositoryReadonly readonlyRepository = null;
 
 	@Override
-	public final synchronized IBORepositoryReadonly getReadonlyRepository() {
+	public final IBORepositoryReadonly getReadonlyRepository() {
 		if (this.readonlyRepository == null) {
 			if (this.isEnabledReadonlyRepository()) {
 				this.setReadonlyRepository(new BORepository4DbReadonly(READONLY_REPOSITORY_SIGN));

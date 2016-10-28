@@ -17,24 +17,7 @@ import org.colorcoding.ibas.bobas.expressions.JudgmentLinks;
  */
 public class BORepository4Cache extends BORepositoryBase implements IBORepository4Cache {
 
-	// private long task_id = -1;
-
 	public BORepository4Cache() {
-		// 创建清理缓存的任务，不使用也可以，对象CG时释放
-		/*
-		 * try { task_id = Daemon.register(new IDaemonTask() {
-		 * 
-		 * @Override public void run() { synchronized (cacheDatas) { for
-		 * (BOCacheContainers cacheContainers : cacheDatas.values()) {
-		 * cacheContainers.clearExpired(); } } }
-		 * 
-		 * @Override public String getName() { return "clear repository cache.";
-		 * }
-		 * 
-		 * @Override public long getInterval() { return 30;// 每5秒释放缓存的数据 }
-		 * 
-		 * }); } catch (InvalidDaemonTask e) { RuntimeLog.log(e); }
-		 */
 	}
 
 	@Override
@@ -55,7 +38,7 @@ public class BORepository4Cache extends BORepositoryBase implements IBORepositor
 	 * 
 	 * @return 对象的缓存集合
 	 */
-	protected synchronized BOCacheContainers getCacheList(Class<? extends IBusinessObjectBase> boType) {
+	protected BOCacheContainers getCacheList(Class<? extends IBusinessObjectBase> boType) {
 		if (this.cacheDatas == null) {
 			cacheDatas = new HashMap<Class<? extends IBusinessObjectBase>, BOCacheContainers>();
 		}

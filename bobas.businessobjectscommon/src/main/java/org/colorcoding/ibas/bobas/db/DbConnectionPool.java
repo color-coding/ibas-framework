@@ -21,7 +21,7 @@ class DbConnectionPool implements IDbConnectionPool {
 			synchronized (DbConnectionPool.class) {
 				if (poolSize == -1) {
 					// 未被初始化，默认连接池数量10
-					poolSize = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_CONNECTION_POOL_SIZE, 10);
+					poolSize = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_CONNECTION_POOL_SIZE, 15);
 				}
 			}
 		}
@@ -66,19 +66,16 @@ class DbConnectionPool implements IDbConnectionPool {
 	 * @throws DbException
 	 */
 	static boolean giveBack(IDbConnection connection) throws DbException {
-		synchronized (DbConnectionPool.class) {
-			if (isEnabled() && getConnectionPool() != null) {
-				// 启动了连接池并且有效
-				boolean done = getConnectionPool().recycling(connection);
-				if (done) {
-					RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_DB_POOL_RECYCLED_CONNECTION,
-							connection.hashCode());
-				}
-				return done;
-
+		if (isEnabled() && getConnectionPool() != null) {
+			// 启动了连接池并且有效
+			boolean done = getConnectionPool().recycling(connection);
+			if (done) {
+				RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_DB_POOL_RECYCLED_CONNECTION, connection.hashCode());
 			}
-			return false;
+			return done;
+
 		}
+		return false;
 	}
 
 	/**
@@ -89,21 +86,19 @@ class DbConnectionPool implements IDbConnectionPool {
 	 * @return 数据库连接
 	 */
 	static IDbConnection getValid(String sign) {
-		synchronized (DbConnectionPool.class) {
-			if (isEnabled() && getConnectionPool() != null) {
-				// 启动了连接池并且有效
-				IDbConnection connection = getConnectionPool().obtain(sign);
-				if (connection != null) {
-					if (connection instanceof DbConnection) {
-						DbConnection dbConnection = (DbConnection) connection;
-						dbConnection.setRecycled(false);
-					}
-					RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_DB_POOL_USING_CONNECTION, connection.hashCode());
+		if (isEnabled() && getConnectionPool() != null) {
+			// 启动了连接池并且有效
+			IDbConnection connection = getConnectionPool().obtain(sign);
+			if (connection != null) {
+				if (connection instanceof DbConnection) {
+					DbConnection dbConnection = (DbConnection) connection;
+					dbConnection.setRecycled(false);
 				}
-				return connection;
+				RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_DB_POOL_USING_CONNECTION, connection.hashCode());
 			}
-			return null;
+			return connection;
 		}
+		return null;
 	}
 
 	public DbConnectionPool() {
@@ -120,8 +115,8 @@ class DbConnectionPool implements IDbConnectionPool {
 					@Override
 					public void run() {
 						if (availableConnections != null) {
+							// 锁住可用连接集合
 							synchronized (availableConnections) {
-								// 锁住可用连接集合
 								for (int i = 0; i < availableConnections.length; i++) {
 									ConnectionWrapping wrapping = availableConnections[i];
 									if (wrapping == null) {

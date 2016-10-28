@@ -80,7 +80,7 @@ public class OperationResult<P> extends OperationMessages implements IOperationR
 		this.resultObjects = value;
 	}
 
-	public final synchronized void addResultObjects(Iterable<?> values) {
+	public final void addResultObjects(Iterable<?> values) {
 		if (this.resultObjects == null) {
 			this.resultObjects = new ArrayList<P>();
 		}
@@ -91,7 +91,7 @@ public class OperationResult<P> extends OperationMessages implements IOperationR
 		}
 	}
 
-	public final synchronized void addResultObjects(Object[] values) {
+	public final void addResultObjects(Object[] values) {
 		if (this.resultObjects == null) {
 			this.resultObjects = new ArrayList<P>();
 		}
@@ -103,7 +103,7 @@ public class OperationResult<P> extends OperationMessages implements IOperationR
 	}
 
 	@SuppressWarnings("unchecked")
-	public final synchronized void addResultObjects(Object value) {
+	public final void addResultObjects(Object value) {
 		if (this.resultObjects == null) {
 			this.resultObjects = new ArrayList<P>();
 		}

@@ -3,7 +3,6 @@ package org.colorcoding.ibas.bobas.test.db;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
-import java.util.Random;
 
 /**
  * 代理-测试用
@@ -27,21 +26,21 @@ class Statement implements java.sql.Statement {
 
 	@Override
 	public java.sql.ResultSet executeQuery(String sql) throws SQLException {
-		try {
-			Thread.sleep((new Random().nextInt(3000)));
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		// try {
+		// Thread.sleep((new Random().nextInt(3000)));
+		// } catch (InterruptedException e) {
+		// e.printStackTrace();
+		// }
 		return new ResultSet();
 	}
 
 	@Override
 	public int executeUpdate(String sql) throws SQLException {
-		try {
-			Thread.sleep((new Random().nextInt(3000)));
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		// try {
+		// Thread.sleep((new Random().nextInt(3000)));
+		// } catch (InterruptedException e) {
+		// e.printStackTrace();
+		// }
 		return 0;
 	}
 

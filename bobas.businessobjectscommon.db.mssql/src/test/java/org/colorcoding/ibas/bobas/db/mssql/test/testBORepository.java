@@ -257,7 +257,7 @@ public class testBORepository extends TestCase {
 
 	public void testExtremeTask() {
 		try {
-			for (int i = 0; i < 6; i++) {
+			for (int i = 0; i < 10; i++) {
 				Thread ts = new Thread() {
 					@Override
 					public void run() {
