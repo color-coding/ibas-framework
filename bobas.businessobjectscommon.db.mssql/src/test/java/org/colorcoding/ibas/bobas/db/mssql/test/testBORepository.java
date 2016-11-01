@@ -159,12 +159,14 @@ public class testBORepository extends TestCase {
 		System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
 				operationResult.getMessage(), operationResult.getResultObjects().size()));
 		assertEquals(operationResult.getResultCode(), 0);
+
 		for (int i = 0; i < 3; i++) {
 			operationResult = boRepository.fetchSalesOrder(criteria);
 			System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
 					operationResult.getMessage(), operationResult.getResultObjects().size()));
 			assertEquals(operationResult.getResultCode(), 0);
 		}
+
 		if (details_out) {
 			for (Object item : operationResult.getResultObjects()) {
 				if (item instanceof IBOUserFields) {

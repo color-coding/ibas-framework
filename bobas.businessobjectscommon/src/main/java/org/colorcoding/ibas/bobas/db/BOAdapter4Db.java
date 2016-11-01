@@ -709,6 +709,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 							if (name != null && name.startsWith(UserField.USER_FIELD_PREFIX_SIGN)) {
 								uBO.getUserFields().addUserField(name,
 										sqlScripts.getDbFieldType(metaData.getColumnTypeName(rCol)));
+								dfIndex[i] = bo.getFields().length - 1;// 记录自定义字段编号
 							}
 						}
 					}
