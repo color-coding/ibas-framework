@@ -78,6 +78,7 @@ public class testLogics extends TestCase {
 		assertEquals(String.format("wrong matrials [%s] order quantity.", materials01.getItemCode()),
 				materials01.getOnOrder().floatValue(), materials01s.getOnOrder().floatValue());
 
+		// 测试状态改变后，业务逻辑执行状况
 		operationResult = boRepository.fetchPurchaseOrder(order.getCriteria());
 		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
 		order = (PurchaseOrder) operationResult.getResultObjects().firstOrDefault();

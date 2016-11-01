@@ -110,12 +110,12 @@ public class testApprovalProcess extends TestCase {
 		aStep.setId(10);
 		aStep.setOwner(leader);
 		ApprovalProcessStepCondition aCondition = new ApprovalProcessStepCondition();
-		aCondition.setPropertyName("DocumentTotal");
+		aCondition.setPropertyName("DocTotal");// DocumentTotal
 		aCondition.setOperation(emConditionOperation.GRATER_EQUAL);
 		aCondition.setConditionValue("3000");
 		ApprovalProcessStepCondition bCondition = new ApprovalProcessStepCondition();
 		bCondition.setRelation(emConditionRelationship.AND);
-		bCondition.setPropertyName("DocumentTotal");
+		bCondition.setPropertyName("DocTotal");// DocumentTotal
 		bCondition.setOperation(emConditionOperation.LESS_THAN);
 		bCondition.setConditionValue("5000");
 		aStep.setConditions(new IApprovalProcessStepCondition[] { aCondition, bCondition });
@@ -125,12 +125,12 @@ public class testApprovalProcess extends TestCase {
 		aStep.setId(20);
 		aStep.setOwner(manager);
 		aCondition = new ApprovalProcessStepCondition();
-		aCondition.setPropertyName("DocumentTotal");
+		aCondition.setPropertyName("DocTotal");// DocumentTotal
 		aCondition.setOperation(emConditionOperation.GRATER_EQUAL);
 		aCondition.setConditionValue("5000");
 		bCondition = new ApprovalProcessStepCondition();
 		bCondition.setRelation(emConditionRelationship.AND);
-		bCondition.setPropertyName("DocumentTotal");
+		bCondition.setPropertyName("DocTotal");// DocumentTotal
 		bCondition.setOperation(emConditionOperation.LESS_THAN);
 		bCondition.setConditionValue("10000");
 		aStep.setConditions(new IApprovalProcessStepCondition[] { aCondition, bCondition });
@@ -140,7 +140,7 @@ public class testApprovalProcess extends TestCase {
 		aStep.setId(30);
 		aStep.setOwner(boss);
 		aCondition = new ApprovalProcessStepCondition();
-		aCondition.setPropertyName("DocumentTotal");
+		aCondition.setPropertyName("DocTotal");// DocumentTotal
 		aCondition.setOperation(emConditionOperation.GRATER_EQUAL);
 		aCondition.setConditionValue("10000");
 		aStep.setConditions(new IApprovalProcessStepCondition[] { aCondition });
@@ -310,7 +310,7 @@ public class testApprovalProcess extends TestCase {
 		step10.setId(10);
 		step10.setOwner(leader);
 		ApprovalProcessStepCondition aCondition = new ApprovalProcessStepCondition();
-		aCondition.setPropertyName("DocumentTotal");
+		aCondition.setPropertyName("DocTotal");// DocumentTotal
 		aCondition.setOperation(emConditionOperation.GRATER_EQUAL);
 		aCondition.setConditionValue("3000");
 		step10.setConditions(new IApprovalProcessStepCondition[] { aCondition });
@@ -320,12 +320,12 @@ public class testApprovalProcess extends TestCase {
 		step20.setId(20);
 		step20.setOwner(manager);
 		aCondition = new ApprovalProcessStepCondition();
-		aCondition.setPropertyName("DocumentTotal");
+		aCondition.setPropertyName("DocTotal");// DocumentTotal
 		aCondition.setOperation(emConditionOperation.GRATER_EQUAL);
 		aCondition.setConditionValue("3000");
 		ApprovalProcessStepCondition bCondition = new ApprovalProcessStepCondition();
 		bCondition.setRelation(emConditionRelationship.AND);
-		bCondition.setPropertyName("DocumentTotal");
+		bCondition.setPropertyName("DocTotal");// DocumentTotal
 		bCondition.setOperation(emConditionOperation.LESS_THAN);
 		bCondition.setConditionValue("10000");
 		step20.setConditions(new IApprovalProcessStepCondition[] { aCondition, bCondition });
@@ -335,12 +335,12 @@ public class testApprovalProcess extends TestCase {
 		step30.setId(30);
 		step30.setOwner(boss);
 		aCondition = new ApprovalProcessStepCondition();
-		aCondition.setPropertyName("DocumentTotal");
+		aCondition.setPropertyName("DocTotal");// DocumentTotal
 		aCondition.setOperation(emConditionOperation.GRATER_EQUAL);
 		aCondition.setConditionValue("3000");
 		bCondition = new ApprovalProcessStepCondition();
 		bCondition.setRelation(emConditionRelationship.AND);
-		bCondition.setPropertyName("DocumentTotal");
+		bCondition.setPropertyName("DocTotal");// DocumentTotal
 		bCondition.setOperation(emConditionOperation.LESS_THAN);
 		bCondition.setConditionValue("10000");
 		step30.setConditions(new IApprovalProcessStepCondition[] { aCondition, bCondition });

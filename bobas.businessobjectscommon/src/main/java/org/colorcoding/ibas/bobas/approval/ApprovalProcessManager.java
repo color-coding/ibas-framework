@@ -19,29 +19,23 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
 
 	@Override
 	public IApprovalProcess checkProcess(IApprovalData data) {
-		if (data == null) {
+		if (data == null || !this.checkDataStatus(data)) {
 			return null;
 		}
-		if (data.isNew()) {
-			// 新数据
-			if (this.checkDataStatus(data)) {
-				// 状态检测通过
-				// 创建审批流程并尝试开始
-				Iterator<IApprovalProcess> process = this.createApprovalProcess(data.getObjectCode());
-				while (process != null && process.hasNext()) {
-					IApprovalProcess aProcess = process.next();
-					if (aProcess.start(data)) {
-						RuntimeLog.log(RuntimeLog.MSG_APPROVAL_PROCESS_STARTED, data, aProcess.getName());
-						return aProcess;// 审批流程开始
-					}
-				}
-			}
-		} else {
-			// 不是新建的数据
-			if (this.checkDataStatus(data)) {
-				// 状态检测通过
-				IApprovalProcess aProcess = this.loadApprovalProcess(data.getIdentifiers());
+		if (!data.isNew()) {
+			// 不是新建查看是否存在审批
+			IApprovalProcess aProcess = this.loadApprovalProcess(data.getIdentifiers());
+			if (aProcess != null) {
 				return aProcess;
+			}
+		}
+		// 创建审批流程并尝试开始
+		Iterator<IApprovalProcess> process = this.createApprovalProcess(data.getObjectCode());
+		while (process != null && process.hasNext()) {
+			IApprovalProcess aProcess = process.next();
+			if (aProcess.start(data)) {
+				RuntimeLog.log(RuntimeLog.MSG_APPROVAL_PROCESS_STARTED, data, aProcess.getName());
+				return aProcess;// 审批流程开始
 			}
 		}
 		return null;
