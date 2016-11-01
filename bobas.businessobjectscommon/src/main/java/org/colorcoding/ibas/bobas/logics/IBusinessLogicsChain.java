@@ -79,4 +79,15 @@ public interface IBusinessLogicsChain {
 	 * @return
 	 */
 	<B> B fetchBeAffected(ICriteria criteria, Class<B> type);
+
+	/**
+	 * 检索父项副本
+	 * 
+	 * @param criteria
+	 *            条件
+	 * @param type
+	 *            数据类型
+	 * @return
+	 */
+	<B> B fetchOldParent(ICriteria criteria, Class<B> type);
 }

@@ -106,12 +106,12 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		if (data instanceof IApprovalData) {
 			// 审批数据
 			IApprovalData apData = (IApprovalData) data;
-			if (apData.getApprovalStatus() == emApprovalStatus.Approved
-					|| apData.getApprovalStatus() == emApprovalStatus.Unaffected) {
+			if (apData.getApprovalStatus() == emApprovalStatus.Cancelled
+					|| apData.getApprovalStatus() == emApprovalStatus.Processing
+					|| apData.getApprovalStatus() == emApprovalStatus.Rejected) {
 				// 计划状态
-				return true;
+				return false;
 			}
-			return false;
 		}
 		if (data instanceof IBODocument) {
 			// 单据类型
@@ -187,6 +187,43 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		}
 	}
 
+	private IBusinessObjectBase oldParent;
+
+	/**
+	 * 获取-旧的契约数据
+	 * 
+	 * @return
+	 */
+	final IBusinessObjectBase getOldParent() {
+		return this.oldParent;
+	}
+
+	/**
+	 * 查询已存在的父项
+	 * 
+	 * 默认实现查询业务对象副本，可重载
+	 * 
+	 * @return
+	 */
+	protected IBusinessObjectBase fetchExistingParent() {
+		try {
+			if (this.getParent() instanceof IBusinessObjectBase) {
+				IBusinessObjectBase bo = (IBusinessObjectBase) this.getParent();
+				IOperationResult<?> opRslt = this.getRepository().fetchCopy(bo);
+				if (opRslt.getError() != null) {
+					throw opRslt.getError();
+				}
+				if (opRslt.getResultCode() != 0) {
+					throw new Exception(opRslt.getMessage());
+				}
+				return (IBusinessObjectBase) opRslt.getResultObjects().firstOrDefault();
+			}
+			throw new BusinessLogicsException(i18n.prop("msg_bobas_not_supported"));
+		} catch (Exception e) {
+			throw new BusinessLogicsException(e);
+		}
+	}
+
 	@Override
 	public final void forward() {
 		// 检查父项数据状态
@@ -211,8 +248,25 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 
 	@Override
 	public final void reverse() {
+		// 加载旧的父项数据
+		if (this.getParent() != null && !this.getParent().isNew()) {
+			// 查询已存在的父项
+			// 逻辑事务中查询
+			IBusinessObjectBase tmpData = this.getLogicsChain().fetchOldParent(this.getParent().getCriteria(),
+					this.getParent().getClass());
+			if (tmpData == null) {
+				// 数据库中查询
+				tmpData = this.fetchExistingParent();
+			}
+			if (tmpData != null && tmpData.getClass().equals(this.getParent().getClass())) {
+				// 查询的数据有效
+				this.oldParent = tmpData;
+			} else {
+				throw new BusinessLogicsException(i18n.prop("msg_bobas_not_found_bo_copy", this.getParent()));
+			}
+		}
 		// 检查父项数据状态
-		if (this.getParent() != null && !this.checkDataStatus(this.getParent())) {
+		if (this.getParent() != null && !this.checkDataStatus(this.getOldParent())) {
 			// 数据状态不通过，跳过正向逻辑执行
 			return;
 		}

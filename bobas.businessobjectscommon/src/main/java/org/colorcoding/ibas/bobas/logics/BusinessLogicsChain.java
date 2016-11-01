@@ -238,4 +238,35 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 		}
 		return null;
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <B> B fetchOldParent(ICriteria criteria, Class<B> type) {
+		JudgmentLinks judgmentLinks = ExpressionFactory.create().createJudgmentLinks(criteria.getConditions());
+		for (IBusinessLogic<?>[] logics : this.getLogics().values()) {
+			for (IBusinessLogic<?> item : logics) {
+				if (item instanceof BusinessLogic<?, ?>) {
+					BusinessLogic<?, ?> logic = (BusinessLogic<?, ?>) item;
+					if (logic.getOldParent() == null) {
+						continue;
+					}
+					boolean match = false;
+					if (type.isInstance(logic.getOldParent())) {
+						match = true;
+					}
+					if (match) {
+						// 类型相符
+						try {
+							if (judgmentLinks.judge(logic.getOldParent())) {
+								return (B) logic.getOldParent();
+							}
+						} catch (JudmentOperationException e) {
+							RuntimeLog.log(e);
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
 }

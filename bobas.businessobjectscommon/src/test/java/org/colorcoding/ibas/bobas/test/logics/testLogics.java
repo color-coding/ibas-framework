@@ -77,6 +77,41 @@ public class testLogics extends TestCase {
 		// 订购数量不增加，单据状态没有执行业务逻辑
 		assertEquals(String.format("wrong matrials [%s] order quantity.", materials01.getItemCode()),
 				materials01.getOnOrder().floatValue(), materials01s.getOnOrder().floatValue());
+
+		operationResult = boRepository.fetchPurchaseOrder(order.getCriteria());
+		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
+		order = (PurchaseOrder) operationResult.getResultObjects().firstOrDefault();
+		order.setApprovalStatus(emApprovalStatus.Approved);
+		order.setDocumentStatus(emDocumentStatus.Planned);// 父项计划状态，子项逻辑不执行
+
+		operationResult = boRepository.savePurchaseOrder(order);
+		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
+		operationResult = boRepository.fetchMaterials(materials01.getCriteria());
+		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
+		materials01s = (IMaterials) operationResult.getResultObjects().firstOrDefault();
+		// 检索的物料是否一致
+		assertEquals("materials not same.", materials01.getItemCode(), materials01s.getItemCode());
+		// 订购数量不增加，单据状态没有执行业务逻辑
+		assertEquals(String.format("wrong matrials [%s] order quantity.", materials01.getItemCode()),
+				materials01.getOnOrder().floatValue(), materials01s.getOnOrder().floatValue());
+
+		operationResult = boRepository.fetchPurchaseOrder(order.getCriteria());
+		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
+		order = (PurchaseOrder) operationResult.getResultObjects().firstOrDefault();
+		order.setApprovalStatus(emApprovalStatus.Approved);
+		order.setDocumentStatus(emDocumentStatus.Released);
+		operationResult = boRepository.savePurchaseOrder(order);
+		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
+		operationResult = boRepository.fetchMaterials(materials01.getCriteria());
+		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
+		materials01s = (IMaterials) operationResult.getResultObjects().firstOrDefault();
+		// 检索的物料是否一致
+		assertEquals("materials not same.", materials01.getItemCode(), materials01s.getItemCode());
+		// 订购数量增加
+		assertEquals(String.format("wrong matrials [%s] order quantity.", materials01.getItemCode()),
+				materials01.getOnOrder().add(item01.getQuantity()).floatValue(),
+				materials01s.getOnOrder().floatValue());
+
 	}
 
 	public void testMaterialsOrderQuantity() {

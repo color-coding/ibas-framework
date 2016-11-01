@@ -19,7 +19,8 @@ public class testDataType extends TestCase {
 		System.out.println(today.toString("yyyy-MM-dd'T'HH:mm:ss.SSS"));
 		DateTime now = DateTime.getNow();
 		System.out.println(now.toString("yyyy-MM-dd'T'HH:mm:ss.SSS"));
-
+		DateTime dateTime = DateTime.valueOf("2017-01-30");
+		System.out.println(dateTime.toString("yyyy-MM-dd'T'HH:mm:ss.SSS"));
 	}
 
 	public void testMeasurement() {
