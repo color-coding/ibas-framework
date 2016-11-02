@@ -8,6 +8,6 @@
 		<add key="DbUserID" value="sa" />
 		<add key="DbUserPassword" value="1q2w3e" />
 		<add key="LanguageCode" value="en-US" />
-		<add key="MsgLevel" value="INFO" />
+		<add key="MsgLevel" value="DEBUG" />
 	</appSettings>
 </ns2:configuration>

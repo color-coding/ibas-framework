@@ -47,6 +47,12 @@ class DaemonTaskWrapping {
 		return this.getTask().getName();
 	}
 
+	public boolean isActivated() {
+		if (this.getTask() == null)
+			return false;
+		return this.getTask().isActivated();
+	}
+
 	private boolean running;
 
 	/**

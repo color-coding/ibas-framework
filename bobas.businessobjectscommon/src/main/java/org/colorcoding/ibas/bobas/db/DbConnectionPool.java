@@ -147,6 +147,22 @@ class DbConnectionPool implements IDbConnectionPool {
 						return getHoldingTime();
 					}
 
+					@Override
+					public boolean isActivated() {
+						if (availableConnections == null)
+							return false;
+						if (availableConnections.length == 0)
+							return false;
+						// 不是全空的才执行释放
+						boolean empty = true;
+						for (int i = 0; i < availableConnections.length; i++) {
+							if (availableConnections[i] != null) {
+								empty = false;
+							}
+						}
+						return !empty;
+					}
+
 				});
 			} catch (InvalidDaemonTask e) {
 				RuntimeLog.log(e);

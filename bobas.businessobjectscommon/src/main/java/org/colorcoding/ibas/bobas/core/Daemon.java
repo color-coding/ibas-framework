@@ -148,6 +148,9 @@ public class Daemon implements IDaemon {
 				// 同时仅启动一个任务
 				continue;
 			}
+			if (!wrapping.isActivated()) {
+				continue;
+			}
 			boolean done = wrapping.tryRun(time);
 			if (done) {
 				// 可以运行

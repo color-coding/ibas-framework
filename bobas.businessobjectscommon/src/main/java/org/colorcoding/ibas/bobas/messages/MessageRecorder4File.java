@@ -82,6 +82,15 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 						public long getInterval() {
 							return 1;
 						}
+
+						@Override
+						public boolean isActivated() {
+							if (messageQueue == null)
+								return false;
+							if (messageQueue.size() == 0)
+								return false;
+							return true;
+						}
 					});
 				} catch (Exception e) {
 					RuntimeLog.log(MessageLevel.FATAL, e);
