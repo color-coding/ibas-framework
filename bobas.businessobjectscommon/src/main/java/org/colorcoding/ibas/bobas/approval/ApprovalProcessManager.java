@@ -19,7 +19,7 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
 
 	@Override
 	public IApprovalProcess checkProcess(IApprovalData data) {
-		if (data == null || !this.checkDataStatus(data)) {
+		if (data == null) {
 			return null;
 		}
 		if (!data.isNew()) {
@@ -30,12 +30,14 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
 			}
 		}
 		// 创建审批流程并尝试开始
-		Iterator<IApprovalProcess> process = this.createApprovalProcess(data.getObjectCode());
-		while (process != null && process.hasNext()) {
-			IApprovalProcess aProcess = process.next();
-			if (aProcess.start(data)) {
-				RuntimeLog.log(RuntimeLog.MSG_APPROVAL_PROCESS_STARTED, data, aProcess.getName());
-				return aProcess;// 审批流程开始
+		if (this.checkDataStatus(data)) {
+			Iterator<IApprovalProcess> process = this.createApprovalProcess(data.getObjectCode());
+			while (process != null && process.hasNext()) {
+				IApprovalProcess aProcess = process.next();
+				if (aProcess.start(data)) {
+					RuntimeLog.log(RuntimeLog.MSG_APPROVAL_PROCESS_STARTED, data, aProcess.getName());
+					return aProcess;// 审批流程开始
+				}
 			}
 		}
 		return null;
@@ -48,6 +50,9 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
 	 * @return
 	 */
 	protected boolean checkDataStatus(IApprovalData data) {
+		if (data.isDeleted()) {
+			return false;
+		}
 		if (data instanceof IBODocument) {
 			// 单据类型
 			IBODocument docData = (IBODocument) data;

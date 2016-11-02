@@ -328,7 +328,10 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 			myOpend = apRepository.openRepository();
 			myTrans = apRepository.beginTransaction();// 开启事务
 			// 调用保存审批数据
-			this.saveData(apRepository);
+			if (!this.getApprovalData().isNew() && !this.isNew() && this.getApprovalData().isDirty()) {
+				// 新建数据和流程新建时，对象都是事件触发者，不用保存数据
+				this.saveData(apRepository);
+			}
 			// 调用保存审批流程
 			this.saveProcess(boRepository);
 			// 提交事务
@@ -360,39 +363,36 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	 * @param boRepository
 	 */
 	private void saveData(ApprovalProcessRepository apRepository) throws Exception {
-		if (!this.getApprovalData().isNew() && this.getApprovalData().isDirty()) {
-			// 审批数据类型不是业务对象，且数据不是新的（新数据在保存时触发的审批流程）。
-			if (!(this.getApprovalData() instanceof IBusinessObject)) {
-				// 审批数据不是业务对象，则查询实际业务对象
-				ICriteria criteria = this.getApprovalData().getCriteria();
-				if (criteria == null || criteria.getConditions().size() == 0) {
-					throw new Exception(i18n.prop("msg_bobas_approval_data_identifiers_unrecognizable",
-							this.getApprovalData().getIdentifiers()));
-				}
-				IOperationResult<IBusinessObject> opRsltFetch = apRepository.fetch(criteria);
-				if (opRsltFetch.getError() != null) {
-					throw opRsltFetch.getError();
-				}
-				if (opRsltFetch.getResultCode() != 0) {
-					throw new Exception(opRsltFetch.getMessage());
-				}
-				Object tmpBO = opRsltFetch.getResultObjects().firstOrDefault();
-				if (!(tmpBO instanceof IApprovalData)) {
-					throw new Exception(
-							i18n.prop("msg_bobas_approval_data_not_exist", this.getApprovalData().getIdentifiers()));
-				}
-				IApprovalData data = (IApprovalData) tmpBO;
-				data.setApprovalStatus(this.getApprovalData().getApprovalStatus());
-				this.setApprovalData(data);
+		if (!(this.getApprovalData() instanceof IBusinessObject)) {
+			// 审批数据不是业务对象，则查询实际业务对象
+			ICriteria criteria = this.getApprovalData().getCriteria();
+			if (criteria == null || criteria.getConditions().size() == 0) {
+				throw new Exception(i18n.prop("msg_bobas_approval_data_identifiers_unrecognizable",
+						this.getApprovalData().getIdentifiers()));
 			}
-			// 保存审批数据
-			IOperationResult<?> opRsltSave = apRepository.save((IBusinessObject) this.getApprovalData());
-			if (opRsltSave.getError() != null) {
-				throw opRsltSave.getError();
+			IOperationResult<IBusinessObject> opRsltFetch = apRepository.fetch(criteria);
+			if (opRsltFetch.getError() != null) {
+				throw opRsltFetch.getError();
 			}
-			if (opRsltSave.getResultCode() != 0) {
-				throw new Exception(opRsltSave.getMessage());
+			if (opRsltFetch.getResultCode() != 0) {
+				throw new Exception(opRsltFetch.getMessage());
 			}
+			Object tmpBO = opRsltFetch.getResultObjects().firstOrDefault();
+			if (!(tmpBO instanceof IApprovalData)) {
+				throw new Exception(
+						i18n.prop("msg_bobas_approval_data_not_exist", this.getApprovalData().getIdentifiers()));
+			}
+			IApprovalData data = (IApprovalData) tmpBO;
+			data.setApprovalStatus(this.getApprovalData().getApprovalStatus());
+			this.setApprovalData(data);
+		}
+		// 保存审批数据
+		IOperationResult<?> opRsltSave = apRepository.save((IBusinessObject) this.getApprovalData());
+		if (opRsltSave.getError() != null) {
+			throw opRsltSave.getError();
+		}
+		if (opRsltSave.getResultCode() != 0) {
+			throw new Exception(opRsltSave.getMessage());
 		}
 	}
 

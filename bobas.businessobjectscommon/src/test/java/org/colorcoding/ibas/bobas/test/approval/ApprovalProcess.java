@@ -101,4 +101,9 @@ public class ApprovalProcess extends org.colorcoding.ibas.bobas.approval.Approva
 
 	}
 
+	@Override
+	public boolean isNew() {
+		return false;
+	}
+
 }

@@ -23,6 +23,13 @@ public interface IApprovalProcess {
 	String getName();
 
 	/**
+	 * 是否新创建的审批流程
+	 * 
+	 * @return
+	 */
+	boolean isNew();
+
+	/**
 	 * 获取-状态
 	 * 
 	 * @return
