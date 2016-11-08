@@ -91,7 +91,8 @@ public class Configuration {
 			if (file.isFile()) {
 				file = file.getParentFile();
 			}
-			if (file.getParentFile().isDirectory() && file.getParentFile().getName().equals("WEB-INF")) {
+			if (file.getParentFile() != null && file.getParentFile().isDirectory()
+					&& file.getParentFile().getName().equals("WEB-INF")) {
 				// web路径
 				file = file.getParentFile();
 			}
