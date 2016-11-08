@@ -3,8 +3,11 @@ package org.colorcoding.ibas.bobas.core;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
@@ -132,7 +135,10 @@ public class Daemon implements IDaemon {
 	public ExecutorService getThreadPool() {
 		if (this.threadPool == null) {
 			int cpu = Runtime.getRuntime().availableProcessors();
-			this.threadPool = Executors.newFixedThreadPool(cpu);
+			int size = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_TASK_THREAD_POOL_SIZE, cpu);
+			// this.threadPool = Executors.newFixedThreadPool(size);
+			this.threadPool = new ThreadPoolExecutor(1, size, 1000L, TimeUnit.MILLISECONDS,
+					new LinkedBlockingQueue<Runnable>());
 		}
 		return threadPool;
 	}

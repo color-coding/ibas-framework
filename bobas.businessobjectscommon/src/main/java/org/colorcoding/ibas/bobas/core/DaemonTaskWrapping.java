@@ -169,6 +169,7 @@ class DaemonTaskWrapping {
 	 */
 	public void run() {
 		if (this.getTask() != null) {
+			Thread.currentThread().setName(String.format("ibas-task|%s", this.getName()));
 			this.setRunning(true);// 设置状态为运行中
 			this.addRunTimes();// 运行次数+1
 			try {
@@ -179,6 +180,7 @@ class DaemonTaskWrapping {
 			this.setLastRunTime();// 记录运行时间
 			this.setNextRunTime();// 设置下次运行时间
 			this.setRunning(false);// 设置状态未运行
+			Thread.currentThread().setName("ibas-task|sleeping");
 		}
 	}
 }

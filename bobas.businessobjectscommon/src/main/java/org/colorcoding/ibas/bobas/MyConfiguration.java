@@ -11,6 +11,10 @@ public class MyConfiguration extends Configuration {
 	 */
 	public static String CONFIG_ITEM_MODULE_NAME = "ModuleName";
 	/**
+	 * 配置项目-任务线程池大小
+	 */
+	public static String CONFIG_ITEM_TASK_THREAD_POOL_SIZE = "TaskThreadPoolSize";
+	/**
 	 * 配置项目-公司标记
 	 */
 	public static String CONFIG_ITEM_COMPANY_ID = "CompanyId";
