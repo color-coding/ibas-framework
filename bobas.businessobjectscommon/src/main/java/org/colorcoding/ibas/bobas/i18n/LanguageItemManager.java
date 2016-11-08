@@ -3,17 +3,21 @@ package org.colorcoding.ibas.bobas.i18n;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
@@ -64,6 +68,33 @@ public class LanguageItemManager implements ILanguageItemManager {
 	public String getContent(String key, Object... args) {
 		if (this.getLanguageItems().containsKey(key)) {
 			return String.format(this.getLanguageItems().get(key).getContent(this.getLanguageCode()), args);
+		}
+		// 没有找到资源
+		// 尝试从调用类的资源中查询
+		boolean done = false;
+		for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+			if (element.getClassName() == null) {
+				continue;
+			}
+			if (this.getClass().getName().equals(element.getClassName())) {
+				done = true;
+				continue;
+			}
+			if (!done) {
+				continue;
+			}
+			// 此类以后分析资源
+			try {
+				Class<?> type = Class.forName(element.getClassName());
+				URL url = type.getProtectionDomain().getCodeSource().getLocation();
+				this.loadResources(url, "");// 基本语言文件加载
+				this.loadResources(url, this.getLanguageCode());// 应用语言文件加载
+			} catch (Exception e) {
+				RuntimeLog.log(e);
+			}
+			if (this.getLanguageItems().containsKey(key)) {
+				return String.format(this.getLanguageItems().get(key).getContent(this.getLanguageCode()), args);
+			}
 		}
 		return String.format("[%s]", key);
 	}
@@ -123,6 +154,55 @@ public class LanguageItemManager implements ILanguageItemManager {
 				RuntimeLog.log(e);
 			}
 		}
+	}
+
+	/**
+	 * 加载jar包语言资源
+	 * 
+	 * @param file
+	 *            jar包
+	 * @param langCode
+	 *            语言编码
+	 * @throws IOException
+	 */
+	public void loadResources(URL file, String langCode) throws IOException {
+		if (file == null) {
+			return;
+		}
+		String jarFilePath = java.net.URLDecoder.decode(file.getPath(), "UTF-8");
+		if (jarFilePath == null || !jarFilePath.toLowerCase().endsWith(".jar")) {
+			return;
+		}
+		JarFile jarFile = new JarFile(jarFilePath);
+		Enumeration<JarEntry> jarEntries = jarFile.entries();
+		if (jarEntries != null) {
+			String fileTplt = langCode == null ? ".properties" : langCode + ".properties";
+			while (jarEntries.hasMoreElements()) {
+				JarEntry jarEntry = (JarEntry) jarEntries.nextElement();
+				if (jarEntry.isDirectory()) {
+					continue;
+				}
+				if (jarEntry.getName().startsWith("i18n") && jarEntry.getName().endsWith(fileTplt)) {
+					InputStream inputStream = jarFile.getInputStream(jarEntry);
+					if (inputStream != null) {
+						ILanguageItem[] languageItems;
+						try {
+							languageItems = this.loadFileContent(new InputStreamReader(inputStream, "UTF-8"));
+							for (ILanguageItem item : languageItems) {
+								this.getLanguageItems().put(item.getKey(), item);
+							}
+							if (languageItems.length > 0) {
+								RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_I18N_READ_FILE_DATA,
+										"!" + jarEntry.getName());
+							}
+						} catch (UnsupportedEncodingException e) {
+							RuntimeLog.log(e);
+						}
+					}
+				}
+			}
+		}
+		jarFile.close();
 	}
 
 	@Override
