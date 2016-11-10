@@ -6,6 +6,19 @@ import java.net.URL;
  * 业务对象的工厂
  */
 public interface IBOFactory {
+
+	/**
+	 * 获取-库目录
+	 * 
+	 * @return 路径间分号分隔
+	 */
+	String getLibraryFolder();
+
+	/**
+	 * 设置-库目录
+	 */
+	void setLibraryFolder(String libraryFolder);
+
 	/**
 	 * 加载包
 	 * 

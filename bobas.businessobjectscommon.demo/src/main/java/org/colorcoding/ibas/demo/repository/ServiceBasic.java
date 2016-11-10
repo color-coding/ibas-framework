@@ -45,6 +45,14 @@ public class ServiceBasic {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/fetch")
 	public String fetch(Criteria criteria) {
+		System.out.println("java.class.path");
+		System.out.println(System.getProperty("java.class.path").replace(";", "\n"));
+		System.out.println("java.library.path");
+		System.out.println(System.getProperty("java.library.path").replace(";", "\n"));
+		System.out.println("java.ext.dirs");
+		System.out.println(System.getProperty("java.ext.dirs").replace(";", "\n"));
+		System.out.println("user.dir");
+		System.out.println(System.getProperty("user.dir").replace(";", "\n"));
 		System.out.println(criteria.toString("xml"));
 		System.out.println(i18n.prop("msg_bobas_operation_successful"));
 		return "ok.";

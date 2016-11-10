@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -48,8 +49,6 @@ public class LanguageItemManager implements ILanguageItemManager {
 
 	public void setLanguageCode(String languageCode) {
 		this.languageCode = languageCode;
-		// 语言编码改变，读取对应的内容
-		this.readResources(this.getWorkFolder(), this.languageCode);
 	}
 
 	private HashMap<String, ILanguageItem> languageItems;
@@ -68,33 +67,6 @@ public class LanguageItemManager implements ILanguageItemManager {
 	public String getContent(String key, Object... args) {
 		if (this.getLanguageItems().containsKey(key)) {
 			return String.format(this.getLanguageItems().get(key).getContent(this.getLanguageCode()), args);
-		}
-		// 没有找到资源
-		// 尝试从调用类的资源中查询
-		boolean done = false;
-		for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
-			if (element.getClassName() == null) {
-				continue;
-			}
-			if (this.getClass().getName().equals(element.getClassName())) {
-				done = true;
-				continue;
-			}
-			if (!done) {
-				continue;
-			}
-			// 此类以后分析资源
-			try {
-				Class<?> type = Class.forName(element.getClassName());
-				URL url = type.getProtectionDomain().getCodeSource().getLocation();
-				this.loadResources(url, "");// 基本语言文件加载
-				this.loadResources(url, this.getLanguageCode());// 应用语言文件加载
-			} catch (Exception e) {
-				RuntimeLog.log(e);
-			}
-			if (this.getLanguageItems().containsKey(key)) {
-				return String.format(this.getLanguageItems().get(key).getContent(this.getLanguageCode()), args);
-			}
 		}
 		return String.format("[%s]", key);
 	}
@@ -135,27 +107,6 @@ public class LanguageItemManager implements ILanguageItemManager {
 		return workFolder;
 	}
 
-	public void loadResources(String name) {
-		if (name == null) {
-			return;
-		}
-		InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
-		if (stream != null) {
-			ILanguageItem[] languageItems;
-			try {
-				languageItems = this.loadFileContent(new InputStreamReader(stream, "UTF-8"));
-				for (ILanguageItem item : languageItems) {
-					this.getLanguageItems().put(item.getKey(), item);
-				}
-				if (languageItems.length > 0) {
-					RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_I18N_READ_FILE_DATA, "!" + name);
-				}
-			} catch (UnsupportedEncodingException e) {
-				RuntimeLog.log(e);
-			}
-		}
-	}
-
 	/**
 	 * 加载jar包语言资源
 	 * 
@@ -166,84 +117,50 @@ public class LanguageItemManager implements ILanguageItemManager {
 	 * @throws IOException
 	 */
 	public void loadResources(URL file, String langCode) throws IOException {
-		if (file == null) {
+		if (file == null || !file.getProtocol().equals("jar")) {
 			return;
 		}
-		String jarFilePath = java.net.URLDecoder.decode(file.getPath(), "UTF-8");
-		if (jarFilePath == null || !jarFilePath.toLowerCase().endsWith(".jar")) {
-			return;
-		}
-		JarFile jarFile = new JarFile(jarFilePath);
+		JarFile jarFile = ((JarURLConnection) file.openConnection()).getJarFile();
 		Enumeration<JarEntry> jarEntries = jarFile.entries();
 		if (jarEntries != null) {
-			String fileTplt = langCode == null ? ".properties" : langCode + ".properties";
 			while (jarEntries.hasMoreElements()) {
 				JarEntry jarEntry = (JarEntry) jarEntries.nextElement();
 				if (jarEntry.isDirectory()) {
 					continue;
 				}
-				if (jarEntry.getName().startsWith("i18n") && jarEntry.getName().endsWith(fileTplt)) {
-					InputStream inputStream = jarFile.getInputStream(jarEntry);
-					if (inputStream != null) {
-						ILanguageItem[] languageItems;
-						try {
-							languageItems = this.loadFileContent(new InputStreamReader(inputStream, "UTF-8"));
-							for (ILanguageItem item : languageItems) {
-								this.getLanguageItems().put(item.getKey(), item);
-							}
-							if (languageItems.length > 0) {
-								RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_I18N_READ_FILE_DATA,
-										"!" + jarEntry.getName());
-							}
-						} catch (UnsupportedEncodingException e) {
-							RuntimeLog.log(e);
+				if (!jarEntry.getName().startsWith("i18n")) {
+					continue;
+				}
+				if (!jarEntry.getName().endsWith(".properties")) {
+					continue;
+				}
+				if (langCode == null || langCode.isEmpty()) {
+					if (jarEntry.getName().indexOf("_") > 0) {
+						continue;
+					}
+				} else {
+					if (jarEntry.getName().indexOf(langCode) < 0) {
+						continue;
+					}
+				}
+				InputStream inputStream = jarFile.getInputStream(jarEntry);
+				if (inputStream != null) {
+					ILanguageItem[] languageItems;
+					try {
+						languageItems = this.loadFileContent(new InputStreamReader(inputStream, "UTF-8"));
+						for (ILanguageItem item : languageItems) {
+							this.getLanguageItems().put(item.getKey(), item);
 						}
+						if (languageItems.length > 0) {
+							RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_I18N_READ_FILE_DATA, file.toString());
+						}
+					} catch (UnsupportedEncodingException e) {
+						RuntimeLog.log(MessageLevel.DEBUG, e);
 					}
 				}
 			}
 		}
 		jarFile.close();
-	}
-
-	@Override
-	public void readResources() {
-		this.loadResources("i18n/locale.bobas.properties");
-		this.loadResources(String.format("i18n/locale.bobas_%s.properties", this.getLanguageCode()));
-		this.readResources(this.getWorkFolder());
-	}
-
-	/**
-	 * 加载默认语言，不带语言编码的
-	 * 
-	 * @param fileFolder
-	 *            工作目录
-	 */
-	public void readResources(String fileFolder) {
-		if (fileFolder == null || fileFolder.isEmpty())
-			return;
-		File file = new File(fileFolder);
-		if (file.exists()) {
-			if (file.isFile()) {
-				// 文件，加载资源
-				ILanguageItem[] languageItems = this.loadFileContent(file.getPath());
-				for (ILanguageItem item : languageItems) {
-					this.getLanguageItems().put(item.getKey(), item);
-				}
-			} else {
-				// 文件夹，遍历文件
-				for (File fileItem : file.listFiles()) {
-					if (!fileItem.getName().endsWith(".properties")) {
-						// 非语言
-						continue;
-					}
-					if (fileItem.getName().indexOf("_") > 0) {
-						// 带分隔符的，表示不是默认资源
-						continue;
-					}
-					this.readResources(fileItem.getPath());
-				}
-			}
-		}
 	}
 
 	/**
@@ -263,23 +180,45 @@ public class LanguageItemManager implements ILanguageItemManager {
 				ILanguageItem[] languageItems = this.loadFileContent(file.getPath());
 				// 添加新的语言内容
 				for (ILanguageItem item : languageItems) {
-					if (this.getLanguageItems().containsKey(item.getKey())) {
-						ILanguageItem languageItem = this.getLanguageItems().get(item.getKey());
-						languageItem.addContent(langCode, item.getContent(langCode));
-					}
+					this.getLanguageItems().put(item.getKey(), item);
 				}
 			} else {
 				for (File fileItem : file.listFiles()) {
 					if (!fileItem.getName().endsWith(".properties")) {
 						continue;
 					}
-					if (!fileItem.getName().endsWith(String.format("_%s.properties", langCode))) {
-						continue;
+					if (langCode == null || langCode.isEmpty()) {
+						if (fileItem.getName().indexOf("_") > 0) {
+							continue;
+						}
+					} else {
+						if (fileItem.getName().indexOf(langCode) < 0) {
+							continue;
+						}
 					}
-					this.readResources(fileItem.getPath());
+					this.readResources(fileItem.getPath(), langCode);
 				}
 			}
 		}
+	}
+
+	@Override
+	public void readResources() {
+		// 加载jar包中语言
+		try {
+			Enumeration<URL> dirs = Thread.currentThread().getContextClassLoader().getResources("i18n");
+			// 循环迭代下去
+			while (dirs.hasMoreElements()) {
+				// 获取下一个元素
+				URL url = dirs.nextElement();
+				this.loadResources(url, null);// 默认语言
+				this.loadResources(url, this.getLanguageCode());// 使用语言
+			}
+		} catch (IOException e) {
+			RuntimeLog.log(e);
+		}
+		this.readResources(this.getWorkFolder(), null);// 默认语言
+		this.readResources(this.getWorkFolder(), this.getLanguageCode());// 使用语言
 	}
 
 	protected ILanguageItem[] loadFileContent(String file) {

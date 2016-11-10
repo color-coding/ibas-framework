@@ -17,9 +17,11 @@ import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.configuration.Configuration;
 import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.mapping.BOCode;
+import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
@@ -47,6 +49,37 @@ public class BOFactory implements IBOFactory {
 
 	private BOFactory() {
 
+	}
+
+	private String libraryFolder;
+
+	public synchronized String getLibraryFolder() {
+		if (this.libraryFolder == null) {
+			String currentFolder = Configuration.getStartupFolder();
+			StringBuilder stringBuilder = new StringBuilder();
+			// 当前目录
+			stringBuilder.append(currentFolder);
+			stringBuilder.append(";");
+			/*
+			 * // classes stringBuilder.append(currentFolder);
+			 * stringBuilder.append(File.separator);
+			 * stringBuilder.append("classes"); stringBuilder.append(";"); //
+			 * lib stringBuilder.append(currentFolder);
+			 * stringBuilder.append(File.separator);
+			 * stringBuilder.append("lib"); stringBuilder.append(";");
+			 */
+			// 配置的额外目录
+			String tmp = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LIBRARY_FOLDER);
+			if (tmp != null && !tmp.isEmpty()) {
+				stringBuilder.append(tmp);
+			}
+			this.libraryFolder = stringBuilder.toString();
+		}
+		return libraryFolder;
+	}
+
+	public void setLibraryFolder(String libraryFolder) {
+		this.libraryFolder = libraryFolder;
 	}
 
 	@Override
@@ -146,7 +179,7 @@ public class BOFactory implements IBOFactory {
 	}
 
 	@Override
-	public Class<?> getBOClass(String boCode) {
+	public synchronized Class<?> getBOClass(String boCode) {
 		if (this.getBOMaps().containsKey(boCode)) {
 			// 已缓存数据
 			return this.getBOMaps().get(boCode);
@@ -306,13 +339,13 @@ public class BOFactory implements IBOFactory {
 				String className = file.getName().substring(0, file.getName().length() - 6);
 				try {
 					// 添加到集合中去
-					// classes.add(Class.forName(packageName + '.' +
-					// className));
+					classes.add(Class.forName(packageName + '.' + className));
 					// 经过回复同学的提醒，这里用forName有一些不好，会触发static方法，没有使用classLoader的load干净
-					classes.add(
-							Thread.currentThread().getContextClassLoader().loadClass(packageName + '.' + className));
+					// classes.add(
+					// Thread.currentThread().getContextClassLoader().loadClass(packageName
+					// + '.' + className));
 				} catch (ClassNotFoundException e) {
-					RuntimeLog.log(e);
+					RuntimeLog.log(MessageLevel.DEBUG, e);
 				}
 			}
 		}

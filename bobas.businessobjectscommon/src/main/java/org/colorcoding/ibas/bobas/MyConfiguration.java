@@ -7,6 +7,10 @@ import org.colorcoding.ibas.bobas.configuration.Configuration;
  */
 public class MyConfiguration extends Configuration {
 	/**
+	 * 配置项目-库目录
+	 */
+	public static String CONFIG_ITEM_LIBRARY_FOLDER = "LibraryFolder";
+	/**
 	 * 配置项目-本模块名称
 	 */
 	public static String CONFIG_ITEM_MODULE_NAME = "ModuleName";
