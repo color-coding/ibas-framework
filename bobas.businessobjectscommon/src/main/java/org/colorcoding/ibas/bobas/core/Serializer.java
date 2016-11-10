@@ -116,9 +116,6 @@ public class Serializer {
 	public static Object fromXmlString(String value, Class<?>... types) {
 		try {
 			JAXBContext context = JAXBContext.newInstance(types);
-			Marshaller marshaller = context.createMarshaller();
-			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");// 编码格式
-			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);// 是否省略xm头声明信息
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			ByteArrayInputStream inputStream = new ByteArrayInputStream(value.getBytes());
 			return unmarshaller.unmarshal(inputStream);

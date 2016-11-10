@@ -13,20 +13,34 @@ class DateTimeSerializer extends XmlAdapter<String, DateTime> {
 	/**
 	 * 日期格式模板
 	 */
-	public static String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+	public static String DATETIME_FORMAT_DATA = "yyyy-MM-dd";
+	public static String DATETIME_FORMAT_DATA_TIME = "yyyy-MM-dd'T'HH:mm:ss";
+	public static String DATETIME_FORMAT_DATA_SLASH = "yyyy/MM/dd";
+	public static String DATETIME_FORMAT_DATA_TIME_SLASH = "yyyy/MM/dd'T'HH:mm:ss";
 
 	@Override
-	public String marshal(DateTime arg0) throws Exception {
-		if (DateTime.getMinValue().equals(arg0) || arg0 == null) {
+	public String marshal(DateTime data) throws Exception {
+		if (DateTime.getMinValue().equals(data) || data == null) {
 			// 最小日期返回null
 			return null;
 		}
-		return arg0.toString(DATETIME_FORMAT);
+		return data.toString(DATETIME_FORMAT_DATA_TIME);
 	}
 
 	@Override
-	public DateTime unmarshal(String arg0) throws Exception {
-		return DateTime.valueOf(arg0, DATETIME_FORMAT);
+	public DateTime unmarshal(String data) throws Exception {
+		if (data.indexOf("/") > 0) {
+			// “/”分隔的日期
+			if (data.indexOf("'T'") > 0) {
+				return DateTime.valueOf(data, DATETIME_FORMAT_DATA_TIME_SLASH);
+			}
+			return DateTime.valueOf(data, DATETIME_FORMAT_DATA_SLASH);
+		}
+		// 默认分隔符
+		if (data.indexOf("'T'") > 0) {
+			return DateTime.valueOf(data, DATETIME_FORMAT_DATA_TIME);
+		}
+		return DateTime.valueOf(data, DATETIME_FORMAT_DATA);
 	}
 
 }

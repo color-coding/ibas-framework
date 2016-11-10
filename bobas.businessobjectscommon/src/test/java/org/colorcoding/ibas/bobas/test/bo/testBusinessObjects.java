@@ -8,6 +8,7 @@ import javax.xml.bind.Marshaller;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.OperationResult;
+import org.colorcoding.ibas.bobas.core.Serializer;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
@@ -204,4 +205,14 @@ public class testBusinessObjects extends TestCase {
 
 	}
 
+	public void testSerializer() {
+		Materials materials = new Materials();
+		materials.setCreateDate(DateTime.getToday());
+		System.out.println(materials.toString("xml"));
+		String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Materials><ItemCode>A0003</ItemCode><ItemDescription>A0003</ItemDescription><CreateDate>2099-11-11</CreateDate><OnHand>999.99</OnHand></Materials>";
+		IBusinessObject bo = (IBusinessObject) Serializer.fromXmlString(xml, Materials.class);
+		System.out.println(bo.toString("xml"));
+		bo = (IBusinessObject) Serializer.fromXmlString(xml.replace("2099-11-11", "2099/11/12"), Materials.class);
+		System.out.println(bo.toString("xml"));
+	}
 }
