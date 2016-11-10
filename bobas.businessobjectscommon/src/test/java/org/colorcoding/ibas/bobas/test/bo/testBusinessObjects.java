@@ -214,5 +214,7 @@ public class testBusinessObjects extends TestCase {
 		System.out.println(bo.toString("xml"));
 		bo = (IBusinessObject) Serializer.fromXmlString(xml.replace("2099-11-11", "2099/11/12"), Materials.class);
 		System.out.println(bo.toString("xml"));
+		bo = (IBusinessObject) Serializer.fromXmlString(xml.replace("2099-11-11", "2099/1/2"), Materials.class);
+		System.out.println(bo.toString("xml"));
 	}
 }
