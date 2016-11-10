@@ -19,7 +19,6 @@ import java.util.jar.JarFile;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.configuration.Configuration;
-import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.mapping.BOCode;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
@@ -51,35 +50,25 @@ public class BOFactory implements IBOFactory {
 
 	}
 
-	private String libraryFolder;
+	private String scanNamespaces;
 
-	public synchronized String getLibraryFolder() {
-		if (this.libraryFolder == null) {
-			String currentFolder = Configuration.getStartupFolder();
+	public synchronized String getScanNamespaces() {
+		if (this.scanNamespaces == null) {
 			StringBuilder stringBuilder = new StringBuilder();
-			// 当前目录
-			stringBuilder.append(currentFolder);
-			stringBuilder.append(";");
-			/*
-			 * // classes stringBuilder.append(currentFolder);
-			 * stringBuilder.append(File.separator);
-			 * stringBuilder.append("classes"); stringBuilder.append(";"); //
-			 * lib stringBuilder.append(currentFolder);
-			 * stringBuilder.append(File.separator);
-			 * stringBuilder.append("lib"); stringBuilder.append(";");
-			 */
-			// 配置的额外目录
-			String tmp = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LIBRARY_FOLDER);
+			stringBuilder.append("org.colorcoding.ibas;");
+			stringBuilder.append("cc.colorcoding.ibas;");
+			stringBuilder.append("club.ibas;");
+			String tmp = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BUSINESS_LIBRARY_SCAN_NAMESPACES);
 			if (tmp != null && !tmp.isEmpty()) {
 				stringBuilder.append(tmp);
 			}
-			this.libraryFolder = stringBuilder.toString();
+			this.scanNamespaces = stringBuilder.toString();
 		}
-		return libraryFolder;
+		return scanNamespaces;
 	}
 
-	public void setLibraryFolder(String libraryFolder) {
-		this.libraryFolder = libraryFolder;
+	public void setScanNamespaces(String value) {
+		this.scanNamespaces = value;
 	}
 
 	@Override
@@ -108,13 +97,20 @@ public class BOFactory implements IBOFactory {
 		}
 	}
 
-	private volatile HashMap<String, Class<?>> boMaps;
+	private volatile HashMap<String, String> boMaps;
 
-	protected HashMap<String, Class<?>> getBOMaps() {
+	/**
+	 * boCode对应的类名称
+	 * 
+	 * 不缓存Class，避免引用导CG不回收未使用的资源
+	 * 
+	 * @return
+	 */
+	protected HashMap<String, String> getBOMaps() {
 		if (boMaps == null) {
 			synchronized (this) {
 				if (boMaps == null) {
-					boMaps = new HashMap<String, Class<?>>();
+					boMaps = new HashMap<String, String>();
 				}
 			}
 		}
@@ -128,19 +124,16 @@ public class BOFactory implements IBOFactory {
 		}
 		int boCount = 0;
 		for (Class<?> type : types) {
-			try {
-				String boCode = this.getBOCode(type);
-				if (boCode == null || boCode.isEmpty()) {
-					continue;
-				}
-				if (this.getBOMaps().containsKey(boCode)) {
-					continue;
-				}
-				this.getBOMaps().put(boCode, type);
-				boCount++;
-				RuntimeLog.log(RuntimeLog.MSG_BO_FACTORY_REGISTER_BO_CODE, boCode, type.getName());
-			} catch (Exception e) {
+			String boCode = this.getBOCode(type);
+			if (boCode == null || boCode.isEmpty()) {
+				continue;
 			}
+			if (this.getBOMaps().containsKey(boCode)) {
+				continue;
+			}
+			this.getBOMaps().put(boCode, type.getName());
+			boCount++;
+			RuntimeLog.log(RuntimeLog.MSG_BO_FACTORY_REGISTER_BO_CODE, boCode, type.getName());
 		}
 		return boCount;
 	}
@@ -180,30 +173,40 @@ public class BOFactory implements IBOFactory {
 
 	@Override
 	public synchronized Class<?> getBOClass(String boCode) {
-		if (this.getBOMaps().containsKey(boCode)) {
-			// 已缓存数据
-			return this.getBOMaps().get(boCode);
-		}
-		// 获取已加载类并分析boCode
-		this.registerBOCode(this.getKnownClasses(""));
-		if (this.getBOMaps().containsKey(boCode)) {
-			// 已缓存数据
-			return this.getBOMaps().get(boCode);
+		try {
+			if (this.getBOMaps().containsKey(boCode)) {
+				// 已缓存数据
+				return this.getClass(this.getBOMaps().get(boCode));
+			}
+			// 获取已加载类并分析boCode
+			if (this.getScanNamespaces() != null) {
+				for (String item : this.getScanNamespaces().split(";")) {
+					if (item == null || item.isEmpty()) {
+						continue;
+					}
+					this.registerBOCode(this.getClasses(item));
+				}
+			}
+			if (this.getBOMaps().containsKey(boCode)) {
+				// 已缓存数据
+				return this.getClass(this.getBOMaps().get(boCode));
+			}
+		} catch (Exception e) {
+			RuntimeLog.log(e);
 		}
 		return null;
 	}
 
 	@Override
-	public String getBOCode(Class<?> type) throws BOFactoryException {
-		try {
-			Annotation annotation = type.getAnnotation(BOCode.class);
-			if (annotation != null) {
-				return ((BOCode) annotation).value();
-			}
-		} catch (Exception e) {
-			throw e;
+	public String getBOCode(Class<?> type) {
+		if (type == null) {
+			return null;
 		}
-		throw new NoBusinessObjectCode(i18n.prop("msg_bobas_not_found_bo_code", type.getName()));
+		Annotation annotation = type.getAnnotation(BOCode.class);
+		if (annotation != null) {
+			return ((BOCode) annotation).value();
+		}
+		return null;
 	}
 
 	@Override
@@ -231,8 +234,6 @@ public class BOFactory implements IBOFactory {
 	public Class<?>[] getClasses(String packageName) {
 		// 第一个class类的集合
 		Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
-		// 是否循环迭代
-		boolean recursive = true;
 		String packageDirName = packageName.replace('.', '/');
 		// 定义一个枚举的集合 并进行循环来处理这个目录下的things
 		Enumeration<URL> dirs;
@@ -249,7 +250,7 @@ public class BOFactory implements IBOFactory {
 					// 获取包的物理路径
 					String filePath = URLDecoder.decode(url.getFile(), "UTF-8");
 					// 以文件的方式扫描整个包下的文件 并添加到集合中
-					findAndAddClassesInPackageByFile(packageName, filePath, recursive, classes);
+					this.findClassesInPackageByFile(packageName, filePath, classes);
 				} else if ("jar".equals(protocol)) {
 					// 如果是jar包文件
 					// 定义一个JarFile
@@ -278,7 +279,7 @@ public class BOFactory implements IBOFactory {
 									packageName = name.substring(0, idx).replace('/', '.');
 								}
 								// 如果可以迭代下去 并且是一个包
-								if ((idx != -1) || recursive) {
+								if (idx != -1) {
 									// 如果是一个.class文件 而且不是目录
 									if (name.endsWith(".class") && !entry.isDirectory()) {
 										// 去掉后面的".class" 获取真正的类名
@@ -312,8 +313,7 @@ public class BOFactory implements IBOFactory {
 	 * @param recursive
 	 * @param classes
 	 */
-	private void findAndAddClassesInPackageByFile(String packageName, String packagePath, final boolean recursive,
-			Set<Class<?>> classes) {
+	private void findClassesInPackageByFile(String packageName, String packagePath, Set<Class<?>> classes) {
 		// 获取此包的目录 建立一个File
 		File dir = new File(packagePath);
 		// 如果不存在或者 也不是目录就直接返回
@@ -325,25 +325,24 @@ public class BOFactory implements IBOFactory {
 		File[] dirfiles = dir.listFiles(new FileFilter() {
 			// 自定义过滤规则 如果可以循环(包含子目录) 或则是以.class结尾的文件(编译好的java类文件)
 			public boolean accept(File file) {
-				return (recursive && file.isDirectory()) || (file.getName().endsWith(".class"));
+				return (file.isDirectory()) || (file.getName().endsWith(".class"));
 			}
 		});
 		// 循环所有文件
 		for (File file : dirfiles) {
 			// 如果是目录 则继续扫描
 			if (file.isDirectory()) {
-				findAndAddClassesInPackageByFile(packageName + "." + file.getName(), file.getAbsolutePath(), recursive,
-						classes);
+				findClassesInPackageByFile(packageName + "." + file.getName(), file.getAbsolutePath(), classes);
 			} else {
 				// 如果是java类文件 去掉后面的.class 只留下类名
 				String className = file.getName().substring(0, file.getName().length() - 6);
 				try {
 					// 添加到集合中去
-					classes.add(Class.forName(packageName + '.' + className));
+					// classes.add(Class.forName(packageName + '.' +
+					// className));
 					// 经过回复同学的提醒，这里用forName有一些不好，会触发static方法，没有使用classLoader的load干净
-					// classes.add(
-					// Thread.currentThread().getContextClassLoader().loadClass(packageName
-					// + '.' + className));
+					classes.add(
+							Thread.currentThread().getContextClassLoader().loadClass(packageName + '.' + className));
 				} catch (ClassNotFoundException e) {
 					RuntimeLog.log(MessageLevel.DEBUG, e);
 				}

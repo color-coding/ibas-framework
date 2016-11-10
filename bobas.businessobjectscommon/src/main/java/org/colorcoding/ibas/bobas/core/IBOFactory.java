@@ -8,16 +8,16 @@ import java.net.URL;
 public interface IBOFactory {
 
 	/**
-	 * 获取-库目录
+	 * 获取-扫描的命名空间
 	 * 
-	 * @return 路径间分号分隔
+	 * @return 分号分隔
 	 */
-	String getLibraryFolder();
+	String getScanNamespaces();
 
 	/**
-	 * 设置-库目录
+	 * 设置-扫描的命名空间
 	 */
-	void setLibraryFolder(String libraryFolder);
+	void setScanNamespaces(String value);
 
 	/**
 	 * 加载包
@@ -96,7 +96,7 @@ public interface IBOFactory {
 	 * @return 编码
 	 * @throws BOFactoryException
 	 */
-	String getBOCode(Class<?> type) throws BOFactoryException;
+	String getBOCode(Class<?> type);
 
 	/**
 	 * 注册业务对象编码

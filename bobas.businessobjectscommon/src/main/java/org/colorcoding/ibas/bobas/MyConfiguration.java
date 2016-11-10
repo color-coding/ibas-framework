@@ -7,9 +7,9 @@ import org.colorcoding.ibas.bobas.configuration.Configuration;
  */
 public class MyConfiguration extends Configuration {
 	/**
-	 * 配置项目-库目录
+	 * 配置项目-扫描的业务库命名空间
 	 */
-	public static String CONFIG_ITEM_LIBRARY_FOLDER = "LibraryFolder";
+	public static String CONFIG_ITEM_BUSINESS_LIBRARY_SCAN_NAMESPACES = "BizScanNamespaces";
 	/**
 	 * 配置项目-本模块名称
 	 */
