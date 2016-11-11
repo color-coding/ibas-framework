@@ -7,6 +7,7 @@ import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcess;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcessManager;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
+import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
 import org.colorcoding.ibas.bobas.bo.IBOReferenced;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
@@ -141,10 +142,22 @@ public class BORepositoryLogicService extends BORepositoryService {
 				if (bo.isDeleted()) {
 					// 删除数据，取消流程
 					approvalProcess.cancel(this.getCurrentUser().getToken(), "");
+				} else if (bo instanceof IBOReferenced) {
+					// 删除，取消流程
+					IBOReferenced referenced = (IBOReferenced) bo;
+					if (referenced.getDeleted() == emYesNo.Yes) {
+						approvalProcess.cancel(this.getCurrentUser().getToken(), "");
+					}
 				} else if (bo instanceof IBODocument) {
 					// 单据取消，取消流程
 					IBODocument document = (IBODocument) bo;
 					if (document.getCanceled() == emYesNo.Yes) {
+						approvalProcess.cancel(this.getCurrentUser().getToken(), "");
+					}
+				} else if (bo instanceof IBODocumentLine) {
+					// 单据行取消，取消流程
+					IBODocumentLine documentLine = (IBODocumentLine) bo;
+					if (documentLine.getCanceled() == emYesNo.Yes) {
 						approvalProcess.cancel(this.getCurrentUser().getToken(), "");
 					}
 				}

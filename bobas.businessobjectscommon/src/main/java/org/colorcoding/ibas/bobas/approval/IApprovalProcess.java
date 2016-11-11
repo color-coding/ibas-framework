@@ -141,4 +141,5 @@ public interface IApprovalProcess {
 	 * @throws ApprovalProcessException
 	 */
 	void checkToSave(IUser user) throws ApprovalProcessException;
+
 }
