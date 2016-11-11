@@ -65,7 +65,7 @@ public class ApprovalProcess extends org.colorcoding.ibas.bobas.approval.Approva
 	}
 
 	@Override
-	protected void setApprovalData(IApprovalData value) {
+	public void setApprovalData(IApprovalData value) {
 		this.approvalData = value;
 	}
 

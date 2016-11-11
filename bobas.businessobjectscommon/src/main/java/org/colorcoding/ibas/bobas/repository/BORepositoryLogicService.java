@@ -6,6 +6,7 @@ import org.colorcoding.ibas.bobas.approval.ApprovalFactory;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcess;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcessManager;
+import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBOReferenced;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
@@ -136,11 +137,17 @@ public class BORepositoryLogicService extends BORepositoryService {
 			// 保存流程实例，使用当前仓库以保证事务完整
 			if (!bo.isNew() && !approvalProcess.isNew()) {
 				// 非新建时，检查用户是否有权限保存修改
-				if (bo.isDeleted())
+				approvalProcess.checkToSave(this.getCurrentUser());
+				if (bo.isDeleted()) {
 					// 删除数据，取消流程
 					approvalProcess.cancel(this.getCurrentUser().getToken(), "");
-				else
-					approvalProcess.checkToSave(this.getCurrentUser());
+				} else if (bo instanceof IBODocument) {
+					// 单据取消，取消流程
+					IBODocument document = (IBODocument) bo;
+					if (document.getCanceled() == emYesNo.Yes) {
+						approvalProcess.cancel(this.getCurrentUser().getToken(), "");
+					}
+				}
 			}
 			approvalProcess.save(this.getRepository());
 		}

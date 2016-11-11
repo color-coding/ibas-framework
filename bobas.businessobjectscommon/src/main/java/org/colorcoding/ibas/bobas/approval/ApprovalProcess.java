@@ -1,5 +1,8 @@
 package org.colorcoding.ibas.bobas.approval;
 
+import org.colorcoding.ibas.bobas.bo.IBODocument;
+import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
+import org.colorcoding.ibas.bobas.bo.IBOReferenced;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
@@ -10,6 +13,7 @@ import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalResult;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emApprovalStepStatus;
+import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.expressions.JudmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
@@ -26,7 +30,7 @@ import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
  */
 public abstract class ApprovalProcess implements IApprovalProcess {
 
-	protected abstract void setApprovalData(IApprovalData value);
+	public abstract void setApprovalData(IApprovalData value);
 
 	protected abstract void setStatus(emApprovalStatus value);
 
@@ -48,7 +52,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 
 	@Override
 	public IUser getOwner() {
-		if (this.owner == null || this.owner.getId() != this.getApprovalData().getDataOwner()) {
+		if (this.owner == null || Integer.compare(this.owner.getId(), this.getApprovalData().getDataOwner()) != 0) {
 			// 通过审批数据的所有者去组织结构里找用户
 			IOrganizationManager orgManger = OrganizationFactory.createManager();
 			this.owner = orgManger.getUser((int) this.getApprovalData().getDataOwner());
@@ -292,13 +296,50 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 		this.changeApprovalDataStatus(this.getStatus());
 	}
 
+	/**
+	 * 判断用户是否有权限修改数据，可重载。
+	 * 
+	 * 默认流程未开始可以修改； 数据所有者，可以取消，删除数据，其他人不可。
+	 */
 	@Override
 	public void checkToSave(IUser user) throws UnauthorizedException {
 		// 流程未开始，所有者可以修改数据
 		if (this.getProcessSteps() == null || this.getProcessSteps().length == 0) {
 			return;
 		}
-
+		if (Integer.compare(this.getApprovalData().getDataOwner(), user.getId()) == 0) {
+			// 所有者修改数据
+			if (this.getApprovalData().isDeleted()) {
+				// 可删除数据
+				return;
+			}
+			if (this.getApprovalData() instanceof IBOReferenced) {
+				IBOReferenced referenced = (IBOReferenced) this.getApprovalData();
+				if (referenced.getDeleted() == emYesNo.Yes) {
+					// 可标记删除数据
+					return;
+				}
+			}
+			if (this.getApprovalData() instanceof IBODocument) {
+				// 单据类型
+				IBODocument document = (IBODocument) this.getApprovalData();
+				if (document.getCanceled() == emYesNo.Yes) {
+					// 可取消数据
+					return;
+				}
+			}
+			if (this.getApprovalData() instanceof IBODocumentLine) {
+				// 单据行类型
+				IBODocumentLine documentLine = (IBODocumentLine) this.getApprovalData();
+				if (documentLine.getCanceled() == emYesNo.Yes) {
+					// 可取消数据
+					return;
+				}
+			}
+		}
+		// 不允许修改数据
+		throw new UnauthorizedException(i18n.prop("msg_bobas_data_in_approval_process_not_allow_to_update",
+				this.getApprovalData().toString(), this.getName(), user.toString()));
 	}
 
 	/**
@@ -328,8 +369,8 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 			myOpend = apRepository.openRepository();
 			myTrans = apRepository.beginTransaction();// 开启事务
 			// 调用保存审批数据
-			if (!this.getApprovalData().isNew() && !this.isNew() && this.getApprovalData().isDirty()) {
-				// 新建数据和流程新建时，对象都是事件触发者，不用保存数据
+			if (!(this.getApprovalData() instanceof IBusinessObjectBase)) {
+				// 是业务对象实例时，业务对象实例已在保存队列中
 				this.saveData(apRepository);
 			}
 			// 调用保存审批流程

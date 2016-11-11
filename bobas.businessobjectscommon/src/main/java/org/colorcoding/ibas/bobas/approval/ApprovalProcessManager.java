@@ -26,6 +26,7 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
 			// 不是新建查看是否存在审批
 			IApprovalProcess aProcess = this.loadApprovalProcess(data.getIdentifiers());
 			if (aProcess != null) {
+				aProcess.setApprovalData(data);
 				return aProcess;
 			}
 		}

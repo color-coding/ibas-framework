@@ -33,4 +33,5 @@ public interface IUser {
 	 *             不通过报错
 	 */
 	void checkAuthorization(String authorizationCode) throws InvalidAuthorizationException;
+
 }

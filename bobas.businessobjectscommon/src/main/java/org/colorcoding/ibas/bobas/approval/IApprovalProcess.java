@@ -58,6 +58,13 @@ public interface IApprovalProcess {
 	IApprovalData getApprovalData();
 
 	/**
+	 * 设置审批数据
+	 * 
+	 * @param value
+	 */
+	void setApprovalData(IApprovalData value);
+
+	/**
 	 * 获取流程所有者
 	 * 
 	 * @return

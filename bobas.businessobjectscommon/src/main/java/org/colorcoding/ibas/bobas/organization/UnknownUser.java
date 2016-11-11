@@ -32,5 +32,4 @@ public class UnknownUser implements IUser {
 		// throw new
 		// InvalidAuthorizationException(i18n.prop("msg_bobas_not_exist_user"));
 	}
-
 }
