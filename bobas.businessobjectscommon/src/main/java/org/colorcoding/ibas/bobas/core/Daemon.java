@@ -97,16 +97,22 @@ public class Daemon implements IDaemon {
 
 	@Override
 	public long add(IDaemonTask task) throws InvalidDaemonTask {
-		if (task != null && task.getName() != null && !task.getName().isEmpty()) {
-			synchronized (this.getWrappings()) {
-				DaemonTaskWrapping wrapping = new DaemonTaskWrapping(task);
-				wrapping.setId(Math.abs(UUID.randomUUID().getLeastSignificantBits()));
-				this.getWrappings().add(wrapping);
-				RuntimeLog.log(RuntimeLog.MSG_DAEMON_REGISTER_TASK, wrapping.getId(), wrapping.getName());
-				return wrapping.getId();
-			}
-		} else {
+		if (task == null || task.getName() == null || task.getName().isEmpty()) {
 			throw new InvalidDaemonTask();
+		}
+		if (task instanceof ISingleDaemonTask) {
+			ISingleDaemonTask singleTask = (ISingleDaemonTask) task;
+			if (singleTask.getKeepTime() < 1 || singleTask.getLockSignature() == null
+					|| singleTask.getLockSignature().isEmpty()) {
+				throw new InvalidDaemonTask();
+			}
+		}
+		synchronized (this.getWrappings()) {
+			DaemonTaskWrapping wrapping = new DaemonTaskWrapping(task);
+			wrapping.setId(Math.abs(UUID.randomUUID().getLeastSignificantBits()));
+			this.getWrappings().add(wrapping);
+			RuntimeLog.log(RuntimeLog.MSG_DAEMON_REGISTER_TASK, wrapping.getId(), wrapping.getName());
+			return wrapping.getId();
 		}
 	}
 
@@ -146,30 +152,32 @@ public class Daemon implements IDaemon {
 	@Override
 	public void checkRun() {
 		long time = System.currentTimeMillis();
-		for (DaemonTaskWrapping wrapping : this.getWrappings()) {
-			if (wrapping == null) {
-				continue;
-			}
-			if (wrapping.isRunning()) {
-				// 同时仅启动一个任务
-				continue;
-			}
-			if (!wrapping.isActivated()) {
-				continue;
-			}
-			boolean done = wrapping.tryRun(time);
-			if (done) {
-				// 可以运行
-				RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_DAEMON_RUN_TASK, wrapping.getId(), wrapping.getName(),
-						wrapping.getRunTimes());
-				// 从线程池中调用新的线程运行此任务
-				this.getThreadPool().execute(new Runnable() {
+		synchronized (this.getWrappings()) {
+			for (DaemonTaskWrapping wrapping : this.getWrappings()) {
+				if (wrapping == null) {
+					continue;
+				}
+				if (wrapping.isRunning()) {
+					// 同时仅启动一个任务
+					continue;
+				}
+				if (!wrapping.isActivated()) {
+					continue;
+				}
+				boolean done = wrapping.tryRun(time);
+				if (done) {
+					// 可以运行
+					RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_DAEMON_RUN_TASK, wrapping.getId(),
+							wrapping.getName(), wrapping.getRunTimes());
+					// 从线程池中调用新的线程运行此任务
+					this.getThreadPool().execute(new Runnable() {
 
-					@Override
-					public void run() {
-						wrapping.run();
-					}
-				});
+						@Override
+						public void run() {
+							wrapping.run();
+						}
+					});
+				}
 			}
 		}
 	}

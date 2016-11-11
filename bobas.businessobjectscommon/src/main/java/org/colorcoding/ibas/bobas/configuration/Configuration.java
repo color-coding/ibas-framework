@@ -185,6 +185,15 @@ public class Configuration {
 	}
 
 	/**
+	 * 获取临时目录
+	 * 
+	 * @return
+	 */
+	public static String getTempFolder() {
+		return System.getProperty("java.io.tmpdir");
+	}
+
+	/**
 	 * 获取资源地址
 	 * 
 	 * @param type

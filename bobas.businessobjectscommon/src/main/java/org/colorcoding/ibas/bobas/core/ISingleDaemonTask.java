@@ -17,14 +17,16 @@ package org.colorcoding.ibas.bobas.core;
 public interface ISingleDaemonTask extends IDaemonTask {
 
 	/**
-	 * 任务预计运行的时间，即锁保持时间，单位秒。
+	 * 锁保持时间，单位秒。
 	 * 
 	 * @return
 	 */
-	long getRunningTime();
+	long getKeepTime();
 
 	/**
 	 * 标记任务锁的签名，无锁不能运行
+	 * 
+	 * 锁以文件的形式存储在java临时目录，即：java.io.tmpdir
 	 * 
 	 * @return
 	 */

@@ -1,5 +1,10 @@
 package org.colorcoding.ibas.bobas.core;
 
+import java.io.File;
+import java.io.FileWriter;
+
+import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**
@@ -144,6 +149,10 @@ class DaemonTaskWrapping {
 		return this.tryRun(System.currentTimeMillis());
 	}
 
+	private String getLockFileName(String folder, ISingleDaemonTask task) {
+		return folder + File.separator + "~ibas_" + task.getLockSignature() + ".lock";
+	}
+
 	/**
 	 * 尝试运行
 	 * 
@@ -160,7 +169,38 @@ class DaemonTaskWrapping {
 			// 未到间隔周期
 			return false;
 		}
-
+		if (this.getTask() instanceof ISingleDaemonTask) {
+			ISingleDaemonTask singleTask = (ISingleDaemonTask) this.getTask();
+			try {
+				File folder = new File(MyConfiguration.getTempFolder());
+				if (!folder.exists()) {
+					folder.mkdirs();
+				}
+				if (!folder.isDirectory()) {
+					RuntimeLog.log(MessageLevel.ERROR, RuntimeLog.MSG_DAEMON_SINGLE_TASK_WORK_FOLDER_NOT_EXISTS);
+					return false;
+				}
+				File lockFile = new File(this.getLockFileName(folder.getPath(), singleTask));
+				if (lockFile.exists()) {
+					// 存在锁文件
+					long fileTime = lockFile.lastModified();
+					if (System.currentTimeMillis() < (fileTime + singleTask.getKeepTime() * 1000)) {
+						// 处于锁的时间
+						return false;
+					}
+					// 超过锁时间，删除此文件
+					lockFile.delete();
+				}
+				FileWriter fw = new FileWriter(lockFile);
+				fw.write(String.format("ibas lock file, create by %s.", singleTask.hashCode()));
+				fw.flush();
+				fw.close();
+			} catch (Exception e) {
+				// 创建锁文件失败，任务不运行
+				RuntimeLog.log(e);
+				return false;
+			}
+		}
 		return true;
 	}
 
@@ -180,6 +220,15 @@ class DaemonTaskWrapping {
 			this.setLastRunTime();// 记录运行时间
 			this.setNextRunTime();// 设置下次运行时间
 			this.setRunning(false);// 设置状态未运行
+			if (this.getTask() instanceof ISingleDaemonTask) {
+				// 单任务结束时，删除锁文件
+				ISingleDaemonTask singleTask = (ISingleDaemonTask) this.getTask();
+				File folder = new File(MyConfiguration.getTempFolder());
+				File lockFile = new File(this.getLockFileName(folder.getPath(), singleTask));
+				if (lockFile.exists()) {
+					lockFile.delete();
+				}
+			}
 			Thread.currentThread().setName("ibas-task|sleeping");
 		}
 	}

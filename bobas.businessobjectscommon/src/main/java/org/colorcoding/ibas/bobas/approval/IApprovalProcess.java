@@ -118,10 +118,11 @@ public interface IApprovalProcess {
 	 *            授权码
 	 * @param remarks
 	 *            备注
+	 * @return true，执行取消；false，没有执行取消
 	 * @throws ApprovalProcessException
 	 * @throws InvalidAuthorizationException
 	 */
-	void cancel(String authorizationCode, String remarks)
+	boolean cancel(String authorizationCode, String remarks)
 			throws ApprovalProcessException, InvalidAuthorizationException;
 
 	/**

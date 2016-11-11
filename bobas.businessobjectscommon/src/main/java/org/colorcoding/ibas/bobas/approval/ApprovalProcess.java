@@ -13,6 +13,7 @@ import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalResult;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emApprovalStepStatus;
+import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.expressions.JudmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.i18n;
@@ -280,12 +281,17 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 		}
 	}
 
-	public final void cancel(String authorizationCode, String remarks)
+	public final boolean cancel(String authorizationCode, String remarks)
 			throws ApprovalProcessException, InvalidAuthorizationException {
-		this.getOwner().checkAuthorization(authorizationCode);
-		this.setFinishedTime(DateTime.getNow());
-		this.setStatus(emApprovalStatus.Cancelled);
-		this.onStatusChanged();
+		if (this.getStatus() == emApprovalStatus.Processing) {
+			// 仅审批中的可以取消
+			this.getOwner().checkAuthorization(authorizationCode);
+			this.setFinishedTime(DateTime.getNow());
+			this.setStatus(emApprovalStatus.Cancelled);
+			this.onStatusChanged();
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -327,12 +333,22 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 					// 可取消数据
 					return;
 				}
+				if (document.getStatus() == emBOStatus.Closed
+						&& this.getApprovalData().getApprovalStatus() == emApprovalStatus.Approved) {
+					// 可关闭数据，仅审批通过后
+					return;
+				}
 			}
 			if (this.getApprovalData() instanceof IBODocumentLine) {
 				// 单据行类型
 				IBODocumentLine documentLine = (IBODocumentLine) this.getApprovalData();
 				if (documentLine.getCanceled() == emYesNo.Yes) {
 					// 可取消数据
+					return;
+				}
+				if (documentLine.getStatus() == emBOStatus.Closed
+						&& this.getApprovalData().getApprovalStatus() == emApprovalStatus.Approved) {
+					// 可关闭数据，仅审批通过后
 					return;
 				}
 			}
