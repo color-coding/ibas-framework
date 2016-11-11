@@ -141,24 +141,28 @@ public class BORepositoryLogicService extends BORepositoryService {
 				approvalProcess.checkToSave(this.getCurrentUser());
 				if (bo.isDeleted()) {
 					// 删除数据，取消流程
-					approvalProcess.cancel(this.getCurrentUser().getToken(), "");
+					approvalProcess.cancel(this.getCurrentUser().getToken(),
+							i18n.prop("msg_bobas_user_deleted_approval_data"));
 				} else if (bo instanceof IBOReferenced) {
 					// 删除，取消流程
 					IBOReferenced referenced = (IBOReferenced) bo;
 					if (referenced.getDeleted() == emYesNo.Yes) {
-						approvalProcess.cancel(this.getCurrentUser().getToken(), "");
+						approvalProcess.cancel(this.getCurrentUser().getToken(),
+								i18n.prop("msg_bobas_user_deleted_approval_data"));
 					}
 				} else if (bo instanceof IBODocument) {
 					// 单据取消，取消流程
 					IBODocument document = (IBODocument) bo;
 					if (document.getCanceled() == emYesNo.Yes) {
-						approvalProcess.cancel(this.getCurrentUser().getToken(), "");
+						approvalProcess.cancel(this.getCurrentUser().getToken(),
+								i18n.prop("msg_bobas_user_canceled_approval_data"));
 					}
 				} else if (bo instanceof IBODocumentLine) {
 					// 单据行取消，取消流程
 					IBODocumentLine documentLine = (IBODocumentLine) bo;
 					if (documentLine.getCanceled() == emYesNo.Yes) {
-						approvalProcess.cancel(this.getCurrentUser().getToken(), "");
+						approvalProcess.cancel(this.getCurrentUser().getToken(),
+								i18n.prop("msg_bobas_user_canceled_approval_data"));
 					}
 				}
 			}
