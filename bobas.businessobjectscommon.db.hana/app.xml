@@ -5,7 +5,7 @@
 		<add key="DebugMode" value="true" />
 		<add key="MasterDbType" value="HANA" />
 		<add key="MasterDbServer" value="ibas-dev-hana:30015" />
-		<add key="MasterDbName" value="IBAS_DEMO" />
+		<add key="MasterDbName" value="ibcp_demo" />
 		<add key="MasterDbUserID" value="SYSTEM" />
 		<add key="MasterDbUserPassword" value="AVAtech2015!" />
 	</appSettings>

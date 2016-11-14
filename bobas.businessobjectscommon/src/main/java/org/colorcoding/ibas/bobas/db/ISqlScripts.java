@@ -60,12 +60,14 @@ public interface ISqlScripts {
 	/**
 	 * 获取值的语句
 	 * 
+	 * @param type
+	 *            类型
 	 * @param value
 	 *            字符串
 	 * @return 语句值 （N'%s'）
 	 * @throws SqlScriptsException
 	 */
-	String getSqlString(String value) throws SqlScriptsException;
+	String getSqlString(DbFieldType type, String value) throws SqlScriptsException;
 
 	/**
 	 * 获取条件操作符的语句

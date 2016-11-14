@@ -43,19 +43,56 @@ public class SqlScripts implements ISqlScripts {
 
 	@Override
 	public String getFieldValueCastType(DbFieldType dbFieldType) {
-		String result = "%s";
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("%s");
 		if (dbFieldType != null) {
 			if (dbFieldType == DbFieldType.db_Alphanumeric) {
-				result = "CAST(%s AS NVARCHAR)";
+				stringBuilder = new StringBuilder();
+				stringBuilder.append("CAST");
+				stringBuilder.append("(");
+				stringBuilder.append("%s");
+				stringBuilder.append(" ");
+				stringBuilder.append("AS");
+				stringBuilder.append(" ");
+				stringBuilder.append("NVARCHAR");
+				stringBuilder.append(")");
+				return stringBuilder.toString();
 			} else if (dbFieldType == DbFieldType.db_Date) {
-				result = "CAST(%s AS DATETIME)";
+				stringBuilder = new StringBuilder();
+				stringBuilder.append("CAST");
+				stringBuilder.append("(");
+				stringBuilder.append("%s");
+				stringBuilder.append(" ");
+				stringBuilder.append("AS");
+				stringBuilder.append(" ");
+				stringBuilder.append("DATETIME");
+				stringBuilder.append(")");
+				return stringBuilder.toString();
 			} else if (dbFieldType == DbFieldType.db_Numeric) {
-				result = "CAST(%s AS INT)";
+				stringBuilder = new StringBuilder();
+				stringBuilder.append("CAST");
+				stringBuilder.append("(");
+				stringBuilder.append("%s");
+				stringBuilder.append(" ");
+				stringBuilder.append("AS");
+				stringBuilder.append(" ");
+				stringBuilder.append("INT");
+				stringBuilder.append(")");
+				return stringBuilder.toString();
 			} else if (dbFieldType == DbFieldType.db_Decimal) {
-				result = "CAST(%s AS NUMERIC)";
+				stringBuilder = new StringBuilder();
+				stringBuilder.append("CAST");
+				stringBuilder.append("(");
+				stringBuilder.append("%s");
+				stringBuilder.append(" ");
+				stringBuilder.append("AS");
+				stringBuilder.append(" ");
+				stringBuilder.append("NUMERIC");
+				stringBuilder.append(")");
+				return stringBuilder.toString();
 			}
 		}
-		return result;
+		return stringBuilder.toString();
 	}
 
 	@Override
@@ -102,39 +139,126 @@ public class SqlScripts implements ISqlScripts {
 	@Override
 	public String getSqlString(ConditionOperation value, String opValue) throws SqlScriptsException {
 		if (value == ConditionOperation.co_CONTAIN) {
-			return String.format("LIKE N'%%%s%%'", opValue);
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append("LIKE");
+			stringBuilder.append(" ");
+			stringBuilder.append("N'");
+			stringBuilder.append("%");
+			stringBuilder.append("%");
+			stringBuilder.append(opValue);
+			stringBuilder.append("%");
+			stringBuilder.append("%");
+			stringBuilder.append("'");
+			return stringBuilder.toString();
 		} else if (value == ConditionOperation.co_NOT_CONTAIN) {
-			return String.format("NOT LIKE N'%%%s%%'", opValue);
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append("NOT");
+			stringBuilder.append(" ");
+			stringBuilder.append("LIKE");
+			stringBuilder.append(" ");
+			stringBuilder.append("N'");
+			stringBuilder.append("%");
+			stringBuilder.append("%");
+			stringBuilder.append(opValue);
+			stringBuilder.append("%");
+			stringBuilder.append("%");
+			stringBuilder.append("'");
+			return stringBuilder.toString();
 		} else if (value == ConditionOperation.co_END) {
-			return String.format("LIKE N'%%%s'", opValue);
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append("LIKE");
+			stringBuilder.append(" ");
+			stringBuilder.append("N'");
+			stringBuilder.append("%");
+			stringBuilder.append("%");
+			stringBuilder.append(opValue);
+			stringBuilder.append("'");
+			return stringBuilder.toString();
 		} else if (value == ConditionOperation.co_START) {
-			return String.format("LIKE N'%s%%'", opValue);
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append("LIKE");
+			stringBuilder.append(" ");
+			stringBuilder.append("N'");
+			stringBuilder.append(opValue);
+			stringBuilder.append("%");
+			stringBuilder.append("%");
+			stringBuilder.append("'");
+			return stringBuilder.toString();
 		} else if (value == ConditionOperation.co_EQUAL) {
-			return "= %s";
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append("=");
+			stringBuilder.append(" ");
+			stringBuilder.append("%s");
+			return stringBuilder.toString();
 		} else if (value == ConditionOperation.co_NOT_EQUAL) {
-			return "<> %s";
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append("<");
+			stringBuilder.append(">");
+			stringBuilder.append(" ");
+			stringBuilder.append("%s");
+			return stringBuilder.toString();
 		} else if (value == ConditionOperation.co_GRATER_EQUAL) {
-			return ">= %s";
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(">");
+			stringBuilder.append("=");
+			stringBuilder.append(" ");
+			stringBuilder.append("%s");
+			return stringBuilder.toString();
 		} else if (value == ConditionOperation.co_GRATER_THAN) {
-			return "> %s";
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(">");
+			stringBuilder.append(" ");
+			stringBuilder.append("%s");
+			return stringBuilder.toString();
 		} else if (value == ConditionOperation.co_IS_NULL) {
-			return "IS NULL";
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append("IS");
+			stringBuilder.append(" ");
+			stringBuilder.append("NULL");
+			return stringBuilder.toString();
 		} else if (value == ConditionOperation.co_NOT_NULL) {
-			return "IS NOT NULL";
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append("IS");
+			stringBuilder.append(" ");
+			stringBuilder.append("NOT");
+			stringBuilder.append(" ");
+			stringBuilder.append("NULL");
+			return stringBuilder.toString();
 		} else if (value == ConditionOperation.co_LESS_EQUAL) {
-			return "<= %s";
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append("<");
+			stringBuilder.append("=");
+			stringBuilder.append(" ");
+			stringBuilder.append("%s");
+			return stringBuilder.toString();
 		} else if (value == ConditionOperation.co_LESS_THAN) {
-			return "< %s";
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append("<");
+			stringBuilder.append(" ");
+			stringBuilder.append("%s");
+			return stringBuilder.toString();
 		}
 		throw new SqlScriptsException(i18n.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
 	}
 
 	@Override
-	public String getSqlString(String value) throws SqlScriptsException {
+	public String getSqlString(DbFieldType type, String value) throws SqlScriptsException {
 		if (value == null) {
 			return this.getNullValue();
 		}
-		return String.format("N'%s'", value);
+		StringBuilder stringBuilder = new StringBuilder();
+		if (type == DbFieldType.db_Numeric || type == DbFieldType.db_Decimal) {
+			stringBuilder.append(value);
+		} else if (type == DbFieldType.db_Date) {
+			stringBuilder.append("'");
+			stringBuilder.append(value);
+			stringBuilder.append("'");
+		} else {
+			stringBuilder.append("N'");
+			stringBuilder.append(value);
+			stringBuilder.append("'");
+		}
+		return stringBuilder.toString();
 	}
 
 	@Override
@@ -152,16 +276,33 @@ public class SqlScripts implements ISqlScripts {
 			throws SqlScriptsException {
 		StringBuilder stringBuilder = new StringBuilder();
 		if (result >= 0) {
-			stringBuilder.appendFormat("SELECT TOP %s %s", result, partSelect);
+			stringBuilder.append("SELECT");
+			stringBuilder.append(" ");
+			stringBuilder.append("TOP");
+			stringBuilder.append(" ");
+			stringBuilder.append(result);
+			stringBuilder.append(" ");
+			stringBuilder.append(partSelect);
 		} else {
-			stringBuilder.appendFormat("SELECT %s", partSelect);
+			stringBuilder.append("SELECT");
+			stringBuilder.append(" ");
+			stringBuilder.append(partSelect);
 		}
-		stringBuilder.appendFormat(" FROM %s", table);
+		stringBuilder.append(" ");
+		stringBuilder.append("FROM");
+		stringBuilder.append(" ");
+		stringBuilder.append(table);
 		if (partWhere != null && !partWhere.isEmpty()) {
-			stringBuilder.appendFormat(" WHERE %s", partWhere);
+			stringBuilder.append(" ");
+			stringBuilder.append("WHERE");
+			stringBuilder.append(" ");
+			stringBuilder.append(partWhere);
 		}
 		if (partOrder != null && !partOrder.isEmpty()) {
-			stringBuilder.appendFormat(" ORDER BY %s", partOrder);
+			stringBuilder.append(" ");
+			stringBuilder.append("ORDER BY");
+			stringBuilder.append(" ");
+			stringBuilder.append(partOrder);
 		}
 		return stringBuilder.toString();
 	}
@@ -169,46 +310,162 @@ public class SqlScripts implements ISqlScripts {
 	@Override
 	public String groupDeleteQuery(String table, String partWhere) throws SqlScriptsException {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.appendFormat("DELETE FROM %s WHERE %s", table, partWhere);
+		stringBuilder.append("DELETE");
+		stringBuilder.append(" ");
+		stringBuilder.append("FROM");
+		stringBuilder.append(" ");
+		stringBuilder.append(table);
+		stringBuilder.append(" ");
+		stringBuilder.append("WHERE");
+		stringBuilder.append(" ");
+		stringBuilder.append(partWhere);
 		return stringBuilder.toString();
 	}
 
 	@Override
 	public String groupUpdateQuery(String table, String partFieldValues, String partWhere) throws SqlScriptsException {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.appendFormat("UPDATE %s SET %s WHERE %s", table, partFieldValues, partWhere);
+		stringBuilder.append("UPDATE");
+		stringBuilder.append(" ");
+		stringBuilder.append(table);
+		stringBuilder.append(" ");
+		stringBuilder.append("SET");
+		stringBuilder.append(" ");
+		stringBuilder.append(partFieldValues);
+		stringBuilder.append(" ");
+		stringBuilder.append("WHERE");
+		stringBuilder.append(" ");
+		stringBuilder.append(partWhere);
 		return stringBuilder.toString();
 	}
 
 	@Override
 	public String groupInsertQuery(String table, String partFields, String partValues) throws SqlScriptsException {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.appendFormat("INSERT INTO %s (%s) VALUES (%s)", table, partFields, partValues);
+		stringBuilder.append("INSERT");
+		stringBuilder.append(" ");
+		stringBuilder.append("INTO");
+		stringBuilder.append(" ");
+		stringBuilder.append(table);
+		stringBuilder.append(" ");
+		stringBuilder.append("(");
+		stringBuilder.append(partFields);
+		stringBuilder.append(")");
+		stringBuilder.append(" ");
+		stringBuilder.append("VALUES");
+		stringBuilder.append(" ");
+		stringBuilder.append("(");
+		stringBuilder.append(partValues);
+		stringBuilder.append(")");
 		return stringBuilder.toString();
 	}
 
 	@Override
 	public String getBOPrimaryKeyQuery(String boCode) throws SqlScriptsException {
-		return String.format("SELECT \"AutoKey\" FROM \"%s_SYS_ONNM\" WITH (UPDLOCK) WHERE \"ObjectCode\" = '%s'",
-				this.getCompanyId(), boCode);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("SELECT");
+		stringBuilder.append(" ");
+		stringBuilder.append("\"AutoKey\"");
+		stringBuilder.append(" ");
+		stringBuilder.append("FROM");
+		stringBuilder.append(" ");
+		stringBuilder.appendFormat("\"%s_SYS_ONNM\"", this.getCompanyId());
+		stringBuilder.append(" ");
+		stringBuilder.append("WITH (UPDLOCK)");
+		stringBuilder.append(" ");
+		stringBuilder.append("WHERE");
+		stringBuilder.append(" ");
+		stringBuilder.append("\"ObjectCode\"");
+		stringBuilder.append(" ");
+		stringBuilder.append("=");
+		stringBuilder.append(" ");
+		stringBuilder.append("'");
+		stringBuilder.append(boCode);
+		stringBuilder.append("'");
+		return stringBuilder.toString();
 	}
 
 	@Override
 	public String getUpdateBOPrimaryKeyScript(String boCode) throws SqlScriptsException {
-		return String.format("UPDATE \"%s_SYS_ONNM\" SET \"AutoKey\" = \"AutoKey\" + 1 WHERE \"ObjectCode\" = '%s'",
-				this.getCompanyId(), boCode);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("UPDATE");
+		stringBuilder.append(" ");
+		stringBuilder.appendFormat("\"%s_SYS_ONNM\"", this.getCompanyId());
+		stringBuilder.append(" ");
+		stringBuilder.append("SET");
+		stringBuilder.append(" ");
+		stringBuilder.append("\"AutoKey\"");
+		stringBuilder.append(" ");
+		stringBuilder.append("=");
+		stringBuilder.append(" ");
+		stringBuilder.append("\"AutoKey\"");
+		stringBuilder.append(" ");
+		stringBuilder.append("+");
+		stringBuilder.append(" ");
+		stringBuilder.append("1");
+		stringBuilder.append(" ");
+		stringBuilder.append("WHERE");
+		stringBuilder.append(" ");
+		stringBuilder.append("\"ObjectCode\"");
+		stringBuilder.append(" ");
+		stringBuilder.append("=");
+		stringBuilder.append(" ");
+		stringBuilder.append("'");
+		stringBuilder.append(boCode);
+		stringBuilder.append("'");
+		return stringBuilder.toString();
 	}
 
 	@Override
 	public String groupMaxValueQuery(String field, String table, String partWhere) throws SqlScriptsException {
-		return String.format("SELECT MAX(%s) FROM %s WHERE %s", field, table, partWhere);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("SELECT");
+		stringBuilder.append(" ");
+		stringBuilder.append("MAX");
+		stringBuilder.append("(");
+		stringBuilder.append(field);
+		stringBuilder.append(")");
+		stringBuilder.append(" ");
+		stringBuilder.append("FROM");
+		stringBuilder.append(" ");
+		stringBuilder.append(table);
+		stringBuilder.append(" ");
+		stringBuilder.append("WHERE");
+		stringBuilder.append(" ");
+		stringBuilder.append(partWhere);
+		return stringBuilder.toString();
 	}
 
 	@Override
 	public String getBOTransactionNotificationScript(String boCode, String type, int keyCount, String keyNames,
 			String keyValues) throws SqlScriptsException {
-		return String.format("EXEC \"%s_SP_TRANSACTION_NOTIFICATION\" N'%s', N'%s', %s, N'%s', N'%s'",
-				this.getCompanyId(), boCode, type, keyCount, keyNames, keyValues);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("EXEC");
+		stringBuilder.append(" ");
+		stringBuilder.appendFormat("\"%s_SP_TRANSACTION_NOTIFICATION\"", this.getCompanyId());
+		stringBuilder.append(" ");
+		stringBuilder.append("N'");
+		stringBuilder.append(boCode);
+		stringBuilder.append("'");
+		stringBuilder.append(",");
+		stringBuilder.append(" ");
+		stringBuilder.append("N'");
+		stringBuilder.append(type);
+		stringBuilder.append("'");
+		stringBuilder.append(",");
+		stringBuilder.append(" ");
+		stringBuilder.append(keyCount);
+		stringBuilder.append(",");
+		stringBuilder.append(" ");
+		stringBuilder.append("N'");
+		stringBuilder.append(keyNames);
+		stringBuilder.append("'");
+		stringBuilder.append(",");
+		stringBuilder.append(" ");
+		stringBuilder.append("N'");
+		stringBuilder.append(keyValues);
+		stringBuilder.append("'");
+		return stringBuilder.toString();
 	}
 
 	@Override
@@ -218,11 +475,13 @@ public class SqlScripts implements ISqlScripts {
 		stringBuilder.append(" ");
 		stringBuilder.append("\"");
 		stringBuilder.append(spName);
-		stringBuilder.append("\" ");
+		stringBuilder.append("\"");
+		stringBuilder.append(" ");
 		for (int i = 0; i < parameters.length; i++) {
 			KeyValue keyValue = parameters[i];
 			if (i > 0) {
-				stringBuilder.append(", ");
+				stringBuilder.append(",");
+				stringBuilder.append(" ");
 			}
 			if (keyValue.value == null) {
 				stringBuilder.append("''");

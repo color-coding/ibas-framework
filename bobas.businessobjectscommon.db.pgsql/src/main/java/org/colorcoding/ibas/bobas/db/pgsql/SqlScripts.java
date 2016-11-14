@@ -5,7 +5,6 @@ import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.SqlQuery;
 import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.db.SqlScriptsException;
-import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.util.StringBuilder;
 
@@ -25,20 +24,56 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 
 	@Override
 	public String getFieldValueCastType(DbFieldType dbFieldType) {
-		String result = "%s";
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("%s");
 		if (dbFieldType != null) {
-
 			if (dbFieldType == DbFieldType.db_Alphanumeric) {
-				result = "CAST(%s AS VARCHAR)";
+				stringBuilder = new StringBuilder();
+				stringBuilder.append("CAST");
+				stringBuilder.append("(");
+				stringBuilder.append("%s");
+				stringBuilder.append(" ");
+				stringBuilder.append("AS");
+				stringBuilder.append(" ");
+				stringBuilder.append("VARCHAR");
+				stringBuilder.append(")");
+				return stringBuilder.toString();
 			} else if (dbFieldType == DbFieldType.db_Date) {
-				result = "CAST(%s AS TIMESTAMP)";
+				stringBuilder = new StringBuilder();
+				stringBuilder.append("CAST");
+				stringBuilder.append("(");
+				stringBuilder.append("%s");
+				stringBuilder.append(" ");
+				stringBuilder.append("AS");
+				stringBuilder.append(" ");
+				stringBuilder.append("TIMESTAMP");
+				stringBuilder.append(")");
+				return stringBuilder.toString();
 			} else if (dbFieldType == DbFieldType.db_Numeric) {
-				result = "CAST(%s AS INTEGER)";
+				stringBuilder = new StringBuilder();
+				stringBuilder.append("CAST");
+				stringBuilder.append("(");
+				stringBuilder.append("%s");
+				stringBuilder.append(" ");
+				stringBuilder.append("AS");
+				stringBuilder.append(" ");
+				stringBuilder.append("INTEGER");
+				stringBuilder.append(")");
+				return stringBuilder.toString();
 			} else if (dbFieldType == DbFieldType.db_Decimal) {
-				result = "CAST(%s AS INTEGER)";
+				stringBuilder = new StringBuilder();
+				stringBuilder.append("CAST");
+				stringBuilder.append("(");
+				stringBuilder.append("%s");
+				stringBuilder.append(" ");
+				stringBuilder.append("AS");
+				stringBuilder.append(" ");
+				stringBuilder.append("NUMERIC");
+				stringBuilder.append(")");
+				return stringBuilder.toString();
 			}
 		}
-		return result;
+		return stringBuilder.toString();
 	}
 
 	@Override
@@ -62,76 +97,151 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 
 	@Override
 	public String getSqlString(ConditionOperation value, String opValue) throws SqlScriptsException {
-		if (value == ConditionOperation.co_CONTAIN) {
-			return String.format("LIKE '%%%s%%'", opValue);
-		} else if (value == ConditionOperation.co_NOT_CONTAIN) {
-			return String.format("NOT LIKE '%%%s%%'", opValue);
-		} else if (value == ConditionOperation.co_END) {
-			return String.format("LIKE '%%%s'", opValue);
-		} else if (value == ConditionOperation.co_START) {
-			return String.format("LIKE '%s%%'", opValue);
-		} else if (value == ConditionOperation.co_EQUAL) {
-			return "= %s";
-		} else if (value == ConditionOperation.co_NOT_EQUAL) {
-			return "!= %s";
-		} else if (value == ConditionOperation.co_GRATER_EQUAL) {
-			return ">= %s";
-		} else if (value == ConditionOperation.co_GRATER_THAN) {
-			return "> %s";
-		} else if (value == ConditionOperation.co_IS_NULL) {
-			return "IS NULL";
-		} else if (value == ConditionOperation.co_NOT_NULL) {
-			return "IS NOT NULL";
-		} else if (value == ConditionOperation.co_LESS_EQUAL) {
-			return "<= %s";
-		} else if (value == ConditionOperation.co_LESS_THAN) {
-			return "< %s";
+		if (value == ConditionOperation.co_NOT_EQUAL) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append("!");
+			stringBuilder.append("=");
+			stringBuilder.append(" ");
+			stringBuilder.append("%s");
+			return stringBuilder.toString();
+		} else {
+			return super.getSqlString(value, opValue);
 		}
-		throw new SqlScriptsException(i18n.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
 	}
 
 	@Override
-	public String getSqlString(String value) throws SqlScriptsException {
-		if (value == null) {
-			return this.getNullValue();
+	public String getSqlString(DbFieldType type, String value) throws SqlScriptsException {
+		if (type == DbFieldType.db_Date && value != null) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append("'");
+			stringBuilder.append(value);
+			stringBuilder.append("'");
+			return stringBuilder.toString();
 		}
-		return String.format("'%s'", value);
+		return super.getSqlString(type, value);
 	}
 
 	@Override
 	public String groupSelectQuery(String partSelect, String table, String partWhere, String partOrder, int result)
 			throws SqlScriptsException {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.appendFormat("SELECT * FROM %s", table);
+		stringBuilder.append("SELECT");
+		stringBuilder.append(" ");
+		stringBuilder.append(partSelect);
+		stringBuilder.append(" ");
+		stringBuilder.append("FROM");
+		stringBuilder.append(" ");
+		stringBuilder.append(table);
 		if (partWhere != null && !partWhere.isEmpty()) {
-			stringBuilder.appendFormat(" WHERE %s", partWhere);
+			stringBuilder.append(" ");
+			stringBuilder.append("WHERE");
+			stringBuilder.append(" ");
+			stringBuilder.append(partWhere);
 		}
 		if (partOrder != null && !partOrder.isEmpty()) {
-			stringBuilder.appendFormat(" ORDER BY %s", partOrder);
+			stringBuilder.append(" ");
+			stringBuilder.append("ORDER BY");
+			stringBuilder.append(" ");
+			stringBuilder.append(partOrder);
 		}
 		if (result >= 0) {
-			stringBuilder.appendFormat(" LIMIT %s", result);
+			stringBuilder.append(" ");
+			stringBuilder.append("LIMIT");
+			stringBuilder.append(" ");
+			stringBuilder.append(result);
 		}
 		return stringBuilder.toString();
 	}
 
 	@Override
 	public String getBOPrimaryKeyQuery(String boCode) throws SqlScriptsException {
-		return String.format("SELECT \"AutoKey\" FROM \"%s_SYS_ONNM\" WHERE \"ObjectCode\" = '%s' FOR UPDATE",
-				this.getCompanyId(), boCode);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("SELECT");
+		stringBuilder.append(" ");
+		stringBuilder.append("\"AutoKey\"");
+		stringBuilder.append(" ");
+		stringBuilder.append("FROM");
+		stringBuilder.append(" ");
+		stringBuilder.appendFormat("\"%s_SYS_ONNM\"", this.getCompanyId());
+		stringBuilder.append(" ");
+		stringBuilder.append("WHERE");
+		stringBuilder.append(" ");
+		stringBuilder.append("\"ObjectCode\"");
+		stringBuilder.append(" ");
+		stringBuilder.append("=");
+		stringBuilder.append(" ");
+		stringBuilder.append("'");
+		stringBuilder.append(boCode);
+		stringBuilder.append("'");
+		stringBuilder.append(" ");
+		stringBuilder.append("FOR UPDATE");
+		return stringBuilder.toString();
 	}
 
 	@Override
 	public String groupMaxValueQuery(String field, String table, String partWhere) throws SqlScriptsException {
-		return String.format("SELECT Coalesce(MAX(%s),0) FROM %s WHERE %s", field, table, partWhere);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("SELECT");
+		stringBuilder.append(" ");
+		stringBuilder.append("Coalesce");
+		stringBuilder.append("(");
+		stringBuilder.append("MAX");
+		stringBuilder.append("(");
+		stringBuilder.append(field);
+		stringBuilder.append(")");
+		stringBuilder.append(",");
+		stringBuilder.append("0");
+		stringBuilder.append(")");
+		stringBuilder.append(" ");
+		stringBuilder.append("FROM");
+		stringBuilder.append(" ");
+		stringBuilder.append(table);
+		stringBuilder.append(" ");
+		stringBuilder.append("WHERE");
+		stringBuilder.append(" ");
+		stringBuilder.append(partWhere);
+		return stringBuilder.toString();
 	}
 
 	@Override
 	public String getBOTransactionNotificationScript(String boCode, String type, int keyCount, String keyNames,
 			String keyValues) throws SqlScriptsException {
-		return String.format(
-				"SELECT \"Error\",\"Message\" FROM \"%s_SP_TRANSACTION_NOTIFICATION\"(N'%s', N'%s', %s, N'%s', N'%s')",
-				this.getCompanyId(), boCode, type, keyCount, keyNames, keyValues);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("SELECT");
+		stringBuilder.append(" ");
+		stringBuilder.append("\"Error\"");
+		stringBuilder.append(",");
+		stringBuilder.append(" ");
+		stringBuilder.append("\"Message\"");
+		stringBuilder.append(" ");
+		stringBuilder.append("FROM");
+		stringBuilder.append(" ");
+		stringBuilder.appendFormat("\"%s_SP_TRANSACTION_NOTIFICATION\"", this.getCompanyId());
+		stringBuilder.append("(");
+		stringBuilder.append(" ");
+		stringBuilder.append("N'");
+		stringBuilder.append(boCode);
+		stringBuilder.append("'");
+		stringBuilder.append(",");
+		stringBuilder.append(" ");
+		stringBuilder.append("N'");
+		stringBuilder.append(type);
+		stringBuilder.append("'");
+		stringBuilder.append(",");
+		stringBuilder.append(" ");
+		stringBuilder.append(keyCount);
+		stringBuilder.append(",");
+		stringBuilder.append(" ");
+		stringBuilder.append("N'");
+		stringBuilder.append(keyNames);
+		stringBuilder.append("'");
+		stringBuilder.append(",");
+		stringBuilder.append(" ");
+		stringBuilder.append("N'");
+		stringBuilder.append(keyValues);
+		stringBuilder.append("'");
+		stringBuilder.append(")");
+		return stringBuilder.toString();
 	}
 
 	@Override

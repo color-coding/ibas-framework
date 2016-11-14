@@ -187,7 +187,9 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			String dbObject = sqlScripts.getDbObjectSign();
 			for (ICondition condition : conditions) {
 				if (stringBuilder.length() > 0) {
-					stringBuilder.appendFormat(" %s ", sqlScripts.getSqlString(condition.getRelationship()));
+					stringBuilder.append(" ");
+					stringBuilder.append(sqlScripts.getSqlString(condition.getRelationship()));
+					stringBuilder.append(" ");
 				}
 				// 开括号
 				for (int i = 0; i < condition.getBracketOpenNum(); i++) {
@@ -247,7 +249,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 						} else {
 							// 非数值类型字段
 							stringBuilder.appendFormat(sqlScripts.getSqlString(condition.getOperation()),
-									sqlScripts.getSqlString(condition.getCondVal()));
+									sqlScripts.getSqlString(condition.getAliasDataType(), condition.getCondVal()));
 						}
 					}
 				}
@@ -453,24 +455,6 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 		}
 	}
 
-	/**
-	 * 判断是否为数值类型
-	 * 
-	 * @param type
-	 *            绑定类型
-	 * @param fieldName
-	 *            字段名称
-	 * @param tableName
-	 *            表名称
-	 * @return
-	 */
-	protected boolean isNumericType(DbFieldType type, String fieldName, String tableName) {
-		if (type == DbFieldType.db_Decimal || type == DbFieldType.db_Numeric) {
-			return true;
-		}
-		return false;
-	}
-
 	@Override
 	public ISqlQuery parseSqlInsert(IBusinessObjectBase bo) throws BOParseException {
 		try {
@@ -501,10 +485,9 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				Object value = dbItem.getValue();
 				if (value == null) {
 					valuesBuilder.append(sqlScripts.getNullValue());
-				} else if (this.isNumericType(dbItem.getFieldType(), dbItem.getDbField(), dbItem.getDbTable())) {
-					valuesBuilder.append(DataConvert.toDbValue(value));
 				} else {
-					valuesBuilder.appendFormat(sqlScripts.getSqlString(DataConvert.toDbValue(value)));
+					valuesBuilder
+							.appendFormat(sqlScripts.getSqlString(dbItem.getFieldType(), DataConvert.toDbValue(value)));
 				}
 			}
 			if (fieldsBuilder.length() == 0) {
@@ -544,10 +527,9 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			Object value = dbItem.getValue();
 			if (value == null) {
 				stringBuilder.append(sqlScripts.getNullValue());
-			} else if (this.isNumericType(dbItem.getFieldType(), dbItem.getDbField(), dbItem.getDbTable())) {
-				stringBuilder.append(DataConvert.toDbValue(value));
 			} else {
-				stringBuilder.appendFormat(sqlScripts.getSqlString(DataConvert.toDbValue(value)));
+				stringBuilder
+						.appendFormat(sqlScripts.getSqlString(dbItem.getFieldType(), DataConvert.toDbValue(value)));
 			}
 		}
 		return stringBuilder.toString();

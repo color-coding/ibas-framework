@@ -20,19 +20,56 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 
 	@Override
 	public String getFieldValueCastType(DbFieldType dbFieldType) {
-		String result = "%s";
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("%s");
 		if (dbFieldType != null) {
 			if (dbFieldType == DbFieldType.db_Alphanumeric) {
-				result = "CAST(%s AS NVARCHAR)";
+				stringBuilder = new StringBuilder();
+				stringBuilder.append("CAST");
+				stringBuilder.append("(");
+				stringBuilder.append("%s");
+				stringBuilder.append(" ");
+				stringBuilder.append("AS");
+				stringBuilder.append(" ");
+				stringBuilder.append("NVARCHAR");
+				stringBuilder.append(")");
+				return stringBuilder.toString();
 			} else if (dbFieldType == DbFieldType.db_Date) {
-				result = "CAST(%s AS DATE)";
+				stringBuilder = new StringBuilder();
+				stringBuilder.append("CAST");
+				stringBuilder.append("(");
+				stringBuilder.append("%s");
+				stringBuilder.append(" ");
+				stringBuilder.append("AS");
+				stringBuilder.append(" ");
+				stringBuilder.append("DATE");
+				stringBuilder.append(")");
+				return stringBuilder.toString();
 			} else if (dbFieldType == DbFieldType.db_Numeric) {
-				result = "CAST(%s AS INTEGER)";
+				stringBuilder = new StringBuilder();
+				stringBuilder.append("CAST");
+				stringBuilder.append("(");
+				stringBuilder.append("%s");
+				stringBuilder.append(" ");
+				stringBuilder.append("AS");
+				stringBuilder.append(" ");
+				stringBuilder.append("INTEGER");
+				stringBuilder.append(")");
+				return stringBuilder.toString();
 			} else if (dbFieldType == DbFieldType.db_Decimal) {
-				result = "CAST(%s AS DECIMAL)";
+				stringBuilder = new StringBuilder();
+				stringBuilder.append("CAST");
+				stringBuilder.append("(");
+				stringBuilder.append("%s");
+				stringBuilder.append(" ");
+				stringBuilder.append("AS");
+				stringBuilder.append(" ");
+				stringBuilder.append("DECIMAL");
+				stringBuilder.append(")");
+				return stringBuilder.toString();
 			}
 		}
-		return result;
+		return stringBuilder.toString();
 	}
 
 	@Override
@@ -51,20 +88,86 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 
 	@Override
 	public String getBOPrimaryKeyQuery(String boCode) throws SqlScriptsException {
-		return String.format("SELECT \"AutoKey\" FROM \"%s_SYS_ONNM\" WHERE \"ObjectCode\" = '%s' FOR UPDATE",
-				this.getCompanyId(), boCode);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("SELECT");
+		stringBuilder.append(" ");
+		stringBuilder.append("\"AutoKey\"");
+		stringBuilder.append(" ");
+		stringBuilder.append("FROM");
+		stringBuilder.append(" ");
+		stringBuilder.appendFormat("\"%s_SYS_ONNM\"", this.getCompanyId());
+		stringBuilder.append(" ");
+		stringBuilder.append("WHERE");
+		stringBuilder.append(" ");
+		stringBuilder.append("\"ObjectCode\"");
+		stringBuilder.append(" ");
+		stringBuilder.append("=");
+		stringBuilder.append(" ");
+		stringBuilder.append("'");
+		stringBuilder.append(boCode);
+		stringBuilder.append("'");
+		stringBuilder.append(" ");
+		stringBuilder.append("FOR UPDATE");
+		return stringBuilder.toString();
 	}
 
 	@Override
 	public String groupMaxValueQuery(String field, String table, String partWhere) throws SqlScriptsException {
-		return String.format("SELECT IFNULL(MAX(%s),0) FROM %s WHERE %s", field, table, partWhere);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("SELECT");
+		stringBuilder.append(" ");
+		stringBuilder.append("IFNULL");
+		stringBuilder.append("(");
+		stringBuilder.append("MAX");
+		stringBuilder.append("(");
+		stringBuilder.append(field);
+		stringBuilder.append(")");
+		stringBuilder.append(",");
+		stringBuilder.append("0");
+		stringBuilder.append(")");
+		stringBuilder.append(" ");
+		stringBuilder.append("FROM");
+		stringBuilder.append(" ");
+		stringBuilder.append(table);
+		stringBuilder.append(" ");
+		stringBuilder.append("WHERE");
+		stringBuilder.append(" ");
+		stringBuilder.append(partWhere);
+		return stringBuilder.toString();
 	}
 
 	@Override
 	public String getBOTransactionNotificationScript(String boCode, String type, int keyCount, String keyNames,
 			String keyValues) throws SqlScriptsException {
-		return String.format("CALL \"%s_SP_TRANSACTION_NOTIFICATION\"(N'%s', N'%s', %s, N'%s', N'%s')",
-				this.getCompanyId(), this.getCompanyId(), boCode, type, keyCount, keyNames, keyValues);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("CALL");
+		stringBuilder.append(" ");
+		stringBuilder.appendFormat("\"%s_SP_TRANSACTION_NOTIFICATION\"", this.getCompanyId());
+		stringBuilder.append("(");
+		stringBuilder.append(" ");
+		stringBuilder.append("N'");
+		stringBuilder.append(boCode);
+		stringBuilder.append("'");
+		stringBuilder.append(",");
+		stringBuilder.append(" ");
+		stringBuilder.append("N'");
+		stringBuilder.append(type);
+		stringBuilder.append("'");
+		stringBuilder.append(",");
+		stringBuilder.append(" ");
+		stringBuilder.append(keyCount);
+		stringBuilder.append(",");
+		stringBuilder.append(" ");
+		stringBuilder.append("N'");
+		stringBuilder.append(keyNames);
+		stringBuilder.append("'");
+		stringBuilder.append(",");
+		stringBuilder.append(" ");
+		stringBuilder.append("N'");
+		stringBuilder.append(keyValues);
+		stringBuilder.append("'");
+		stringBuilder.append(")");
+		return stringBuilder.toString();
 	}
 
 	@Override

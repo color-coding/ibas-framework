@@ -12,7 +12,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 	public Connection createConnection(String server, String dbName, String userName, String userPwd,
 			String applicationName) throws DbException {
 		try {
-			String dbURL = String.format("jdbc:sap://%s/?currentschema=%s", server, dbName);
+			String dbURL = String.format("jdbc:sap://%s/?currentschema=\"%s\"", server, dbName);
 			String driverName = "com.sap.db.jdbc.Driver";
 			Class.forName(driverName);
 			Connection connection = new HanaConnection(dbURL, userName, userPwd);

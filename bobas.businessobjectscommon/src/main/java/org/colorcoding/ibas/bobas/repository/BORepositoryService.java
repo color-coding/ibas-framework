@@ -461,7 +461,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 						}
 						returnBO = (IBusinessObjectBase) operationResult.getResultObjects().firstOrDefault();
 					} catch (Exception e) {
-						throw new Exception(i18n.prop("msg_bobas_fetch_bo_copy_faild", returnBO));
+						throw new Exception(i18n.prop("msg_bobas_fetch_bo_copy_faild", returnBO), e);
 					}
 				}
 			}
