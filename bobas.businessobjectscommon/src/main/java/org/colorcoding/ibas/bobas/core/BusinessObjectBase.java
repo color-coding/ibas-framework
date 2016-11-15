@@ -365,7 +365,7 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 	@SuppressWarnings("unchecked")
 	@Override
 	public T clone() {
-		return (T) Serializer.Clone(this);
+		return (T) Serializer.clone(this);
 	}
 
 	/**

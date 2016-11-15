@@ -187,7 +187,7 @@ public class Criteria implements ICriteria {
 
 	@Override
 	public final ICriteria clone() {
-		return (ICriteria) Serializer.Clone(this);
+		return (ICriteria) Serializer.clone(this);
 	}
 
 	@Override
