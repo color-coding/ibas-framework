@@ -14,6 +14,8 @@ import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.core.BusinessObjectListBase;
 import org.colorcoding.ibas.bobas.core.IBindableBase;
 import org.colorcoding.ibas.bobas.core.ITrackStatusOperator;
+import org.colorcoding.ibas.bobas.core.fields.IFieldData;
+import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
@@ -295,12 +297,18 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 				} else {
 					if (this.isChangeParentStatus() && (evt.getPropertyName().equals("LineStatus")
 							|| evt.getPropertyName().equals("Canceled") || evt.getPropertyName().equals("Status"))) {
+						IFieldData parentField = null;
 						if (evt.getSource() instanceof IBODocumentLine) {
 							IBODocumentLine lineItem = (IBODocumentLine) evt.getSource();
-							if (this.getParent() instanceof IBODocument) {
+							if (this.getParent() instanceof IBODocument && this.getParent() instanceof IManageFields) {
 								// 父项是单据
 								IBODocument parent = (IBODocument) this.getParent();
 								if (evt.getPropertyName().equals("LineStatus")) {
+									// 使用字段赋值避免触发事件
+									parentField = ((IManageFields) parent).getField("DocumentStatus");
+									if (parentField == null) {
+										return;
+									}
 									emDocumentStatus boLineStatus = lineItem.getLineStatus();
 									// 子项全部为修改值，则父项也修改
 									for (E item : this) {
@@ -309,12 +317,35 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 										}
 										lineItem = (IBODocumentLine) item;
 										if (lineItem.getLineStatus() != boLineStatus) {
-											// 子项有不同值，退出
+											// 子项有不同值
+											if (parent.getDocumentStatus() == emDocumentStatus.Planned) {
+												// 父项计划状态
+												if (boLineStatus.ordinal() > emDocumentStatus.Planned.ordinal()) {
+													// 子项变为计划以上状态
+													parentField.setValue(emDocumentStatus.Released);
+												}
+											} else {
+												if (parent.getDocumentStatus().ordinal() > boLineStatus.ordinal()) {
+													// 父项高于修改状态，父项降低
+													if (boLineStatus == emDocumentStatus.Planned)
+														// 最低到Relase
+														parentField.setValue(emDocumentStatus.Released);
+													else
+														parentField.setValue(boLineStatus);
+												}
+												// 父项低于修改状态，等待全部修改
+											}
+											// 退出
 											return;
 										}
 									}
-									parent.setDocumentStatus(boLineStatus);
+									parentField.setValue(boLineStatus);
 								} else if (evt.getPropertyName().equals("Canceled")) {
+									// 使用字段赋值避免触发事件
+									parentField = ((IManageFields) parent).getField(evt.getPropertyName());
+									if (parentField == null) {
+										return;
+									}
 									emYesNo boCanceled = lineItem.getCanceled();
 									// 子项全部为修改值，则父项也修改
 									for (E item : this) {
@@ -323,12 +354,18 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 										}
 										lineItem = (IBODocumentLine) item;
 										if (lineItem.getCanceled() != boCanceled) {
-											// 子项有不同值，退出
+											// 子项有不同值，退出，优先不取消
+											parent.setCanceled(emYesNo.No);
 											return;
 										}
 									}
-									parent.setCanceled(boCanceled);
+									parentField.setValue(boCanceled);
 								} else if (evt.getPropertyName().equals("Status")) {
+									// 使用字段赋值避免触发事件
+									parentField = ((IManageFields) parent).getField(evt.getPropertyName());
+									if (parentField == null) {
+										return;
+									}
 									emBOStatus boStatus = lineItem.getStatus();
 									// 子项全部为修改值，则父项也修改
 									for (E item : this) {
@@ -337,17 +374,23 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 										}
 										lineItem = (IBODocumentLine) item;
 										if (lineItem.getStatus() != boStatus) {
-											// 子项有不同值，退出
+											// 子项有不同值，退出，优先不关闭
+											parent.setStatus(emBOStatus.Open);
 											return;
 										}
 									}
-									parent.setStatus(boStatus);
+									parentField.setValue(boStatus);
 								}
 							}
 							if (this.getParent() instanceof IBODocumentLine) {
 								// 父项是单据行
 								IBODocumentLine parent = (IBODocumentLine) this.getParent();
 								if (evt.getPropertyName().equals("LineStatus")) {
+									// 使用字段赋值避免触发事件
+									parentField = ((IManageFields) parent).getField(evt.getPropertyName());
+									if (parentField == null) {
+										return;
+									}
 									emDocumentStatus boLineStatus = lineItem.getLineStatus();
 									// 子项全部为修改值，则父项也修改
 									for (E item : this) {
@@ -356,12 +399,34 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 										}
 										lineItem = (IBODocumentLine) item;
 										if (lineItem.getLineStatus() != boLineStatus) {
-											// 子项有不同值，退出
+											if (parent.getLineStatus() == emDocumentStatus.Planned) {
+												// 父项计划状态
+												if (boLineStatus.ordinal() > emDocumentStatus.Planned.ordinal()) {
+													// 子项变为计划以上状态
+													parentField.setValue(emDocumentStatus.Released);
+												}
+											} else {
+												if (parent.getLineStatus().ordinal() > boLineStatus.ordinal()) {
+													// 父项高于修改状态，父项降低
+													if (boLineStatus == emDocumentStatus.Planned)
+														// 最低到Relase
+														parentField.setValue(emDocumentStatus.Released);
+													else
+														parentField.setValue(boLineStatus);
+												}
+												// 父项低于修改状态，等待全部修改
+											}
+											// 退出
 											return;
 										}
 									}
-									parent.setLineStatus(boLineStatus);
+									parentField.setValue(boLineStatus);
 								} else if (evt.getPropertyName().equals("Canceled")) {
+									// 使用字段赋值避免触发事件
+									parentField = ((IManageFields) parent).getField(evt.getPropertyName());
+									if (parentField == null) {
+										return;
+									}
 									emYesNo boCanceled = lineItem.getCanceled();
 									// 子项全部为修改值，则父项也修改
 									for (E item : this) {
@@ -370,12 +435,18 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 										}
 										lineItem = (IBODocumentLine) item;
 										if (lineItem.getCanceled() != boCanceled) {
-											// 子项有不同值，退出
+											// 子项有不同值，退出，优先不取消
+											parent.setCanceled(emYesNo.No);
 											return;
 										}
 									}
-									parent.setCanceled(boCanceled);
+									parentField.setValue(boCanceled);
 								} else if (evt.getPropertyName().equals("Status")) {
+									// 使用字段赋值避免触发事件
+									parentField = ((IManageFields) parent).getField(evt.getPropertyName());
+									if (parentField == null) {
+										return;
+									}
 									emBOStatus boStatus = lineItem.getStatus();
 									// 子项全部为修改值，则父项也修改
 									for (E item : this) {
@@ -384,11 +455,12 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 										}
 										lineItem = (IBODocumentLine) item;
 										if (lineItem.getStatus() != boStatus) {
-											// 子项有不同值，退出
+											// 子项有不同值，退出，优先不关闭
+											parent.setStatus(emBOStatus.Open);
 											return;
 										}
 									}
-									parent.setStatus(boStatus);
+									parentField.setValue(boStatus);
 								}
 							}
 						}

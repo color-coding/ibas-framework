@@ -235,6 +235,9 @@ public class testBusinessObjects extends TestCase {
 		}
 		System.out.println(String.format("finally [%s] canceled [%s]", order.toString(), order.getCanceled()));
 		assertEquals("status changed faild.", changedCanceled, order.getCanceled());
+		line.setCanceled(emYesNo.No);
+		assertEquals("status changed faild.", emYesNo.No, order.getCanceled());
+		System.out.println(String.format("finally [%s] status [%s]", order.toString(), order.getCanceled()));
 		emBOStatus changedStatus = emBOStatus.Closed;
 		for (ISalesOrderItem item : order.getSalesOrderItems()) {
 			item.setStatus(changedStatus);
@@ -243,6 +246,8 @@ public class testBusinessObjects extends TestCase {
 		}
 		System.out.println(String.format("finally [%s] status [%s]", order.toString(), order.getStatus()));
 		assertEquals("status changed faild.", changedStatus, order.getStatus());
+		line.setStatus(emBOStatus.Open);
+		assertEquals("status changed faild.", emBOStatus.Open, order.getStatus());
 		emDocumentStatus changedDocumentStatus = emDocumentStatus.Finished;
 		order.setDocumentStatus(changedDocumentStatus);
 		System.out.println(
@@ -252,5 +257,35 @@ public class testBusinessObjects extends TestCase {
 					item.getLineStatus(), order.getDocumentStatus()));
 			assertEquals("linestatus changed faild.", changedDocumentStatus, item.getLineStatus());
 		}
+
+		order = new SalesOrder();
+		order.setDocumentStatus(emDocumentStatus.Planned);
+		line = order.getSalesOrderItems().create();
+		line = order.getSalesOrderItems().create();
+		line = order.getSalesOrderItems().create();
+		line.setLineStatus(emDocumentStatus.Finished);
+		assertEquals("linestatus changed faild.", emDocumentStatus.Released, order.getDocumentStatus());
+		for (ISalesOrderItem item : order.getSalesOrderItems()) {
+			System.out.println(String.format("changed [%s] documentstatus [%s], parent [%s] ", item.toString(),
+					item.getLineStatus(), order.getDocumentStatus()));
+		}
+		for (ISalesOrderItem item : order.getSalesOrderItems()) {
+			item.setLineStatus(emDocumentStatus.Closed);
+			System.out.println(String.format("changed [%s] documentstatus [%s], parent [%s] ", item.toString(),
+					item.getLineStatus(), order.getDocumentStatus()));
+		}
+		System.out.println(
+				String.format("finally [%s] documentstatus [%s]", order.toString(), order.getDocumentStatus()));
+		assertEquals("status changed faild.", emDocumentStatus.Closed, order.getDocumentStatus());
+		line.setLineStatus(emDocumentStatus.Planned);
+		System.out.println(
+				String.format("finally [%s] documentstatus [%s]", order.toString(), order.getDocumentStatus()));
+		assertEquals("status changed faild.", emDocumentStatus.Released, order.getDocumentStatus());
+		line.setLineStatus(emDocumentStatus.Closed);
+		assertEquals("status changed faild.", emDocumentStatus.Closed, order.getDocumentStatus());
+		line.setLineStatus(emDocumentStatus.Finished);
+		System.out.println(
+				String.format("finally [%s] documentstatus [%s]", order.toString(), order.getDocumentStatus()));
+		assertEquals("status changed faild.", emDocumentStatus.Finished, order.getDocumentStatus());
 	}
 }
