@@ -14,6 +14,9 @@ import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.core.BusinessObjectListBase;
 import org.colorcoding.ibas.bobas.core.IBindableBase;
 import org.colorcoding.ibas.bobas.core.ITrackStatusOperator;
+import org.colorcoding.ibas.bobas.data.emBOStatus;
+import org.colorcoding.ibas.bobas.data.emDocumentStatus;
+import org.colorcoding.ibas.bobas.data.emYesNo;
 
 /**
  * 业务对象集合
@@ -36,11 +39,43 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 	private static final long serialVersionUID = 7360645136974073845L;
 
 	public BusinessObjects() {
-
+		this.setChangeElementStatus(true);
+		this.setChangeParentStatus(true);
 	}
 
 	public BusinessObjects(P parent) {
+		this();
 		this.setParent(parent);
+	}
+
+	private boolean changeElementStatus;
+
+	/**
+	 * 是否自动改变子项状态，父项变化
+	 * 
+	 * @return
+	 */
+	protected boolean isChangeElementStatus() {
+		return changeElementStatus;
+	}
+
+	protected void setChangeElementStatus(boolean value) {
+		this.changeElementStatus = value;
+	}
+
+	private boolean changeParentStatus;
+
+	/**
+	 * 是否自动改变父项状态，子项变化
+	 * 
+	 * @return
+	 */
+	protected boolean isChangeParentStatus() {
+		return changeParentStatus;
+	}
+
+	protected void setChangeParentStatus(boolean value) {
+		this.changeParentStatus = value;
 	}
 
 	private P parent = null;
@@ -94,6 +129,16 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 			if (this.getParent() instanceof IBODocument) {
 				IBODocument doc = (IBODocument) this.getParent();
 				docItem.setDocEntry(doc.getDocEntry());
+				docItem.setCanceled(doc.getCanceled());
+				docItem.setLineStatus(doc.getDocumentStatus());
+				docItem.setStatus(doc.getStatus());
+			}
+			if (this.getParent() instanceof IBODocumentLine) {
+				IBODocumentLine doc = (IBODocumentLine) this.getParent();
+				docItem.setDocEntry(doc.getDocEntry());
+				docItem.setCanceled(doc.getCanceled());
+				docItem.setLineStatus(doc.getLineStatus());
+				docItem.setStatus(doc.getStatus());
 			}
 		} else if (item instanceof IBOMasterDataLine) {
 			IBOMasterDataLine masItem = (IBOMasterDataLine) item;
@@ -133,10 +178,11 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		if (evt != null && evt.getPropertyName() != null) {
-			if (evt.getSource() == this.parent) {
+			if (evt.getSource() == this.parent && this.isChangeElementStatus()) {
 				// 父项的属性改变
 				if (evt.getPropertyName().equals("DocEntry") || evt.getPropertyName().equals("LineStatus")
-						|| evt.getPropertyName().equals("Canceled") || evt.getPropertyName().equals("DocumentStatus")) {
+						|| evt.getPropertyName().equals("Canceled") || evt.getPropertyName().equals("DocumentStatus")
+						|| evt.getPropertyName().equals("Status")) {
 					// 单据类
 					if (evt.getSource() instanceof IBODocument) {
 						// 头
@@ -152,6 +198,8 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 								lineItem.setLineStatus(parentItem.getDocumentStatus());
 							} else if (evt.getPropertyName().equals("Canceled")) {
 								lineItem.setCanceled(parentItem.getCanceled());
+							} else if (evt.getPropertyName().equals("Status")) {
+								lineItem.setStatus(parentItem.getStatus());
 							}
 						}
 					}
@@ -169,6 +217,8 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 								lineItem.setLineStatus(parentItem.getLineStatus());
 							} else if (evt.getPropertyName().equals("Canceled")) {
 								lineItem.setCanceled(parentItem.getCanceled());
+							} else if (evt.getPropertyName().equals("Status")) {
+								lineItem.setStatus(parentItem.getStatus());
 							}
 						}
 					}
@@ -241,6 +291,107 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 						// 改变父项的状态跟踪
 						ITrackStatusOperator statusOperator = (ITrackStatusOperator) this.parent;
 						statusOperator.markDirty();
+					}
+				} else {
+					if (this.isChangeParentStatus() && (evt.getPropertyName().equals("LineStatus")
+							|| evt.getPropertyName().equals("Canceled") || evt.getPropertyName().equals("Status"))) {
+						if (evt.getSource() instanceof IBODocumentLine) {
+							IBODocumentLine lineItem = (IBODocumentLine) evt.getSource();
+							if (this.getParent() instanceof IBODocument) {
+								// 父项是单据
+								IBODocument parent = (IBODocument) this.getParent();
+								if (evt.getPropertyName().equals("LineStatus")) {
+									emDocumentStatus boLineStatus = lineItem.getLineStatus();
+									// 子项全部为修改值，则父项也修改
+									for (E item : this) {
+										if (!(item instanceof IBODocumentLine)) {
+											continue;
+										}
+										lineItem = (IBODocumentLine) item;
+										if (lineItem.getLineStatus() != boLineStatus) {
+											// 子项有不同值，退出
+											return;
+										}
+									}
+									parent.setDocumentStatus(boLineStatus);
+								} else if (evt.getPropertyName().equals("Canceled")) {
+									emYesNo boCanceled = lineItem.getCanceled();
+									// 子项全部为修改值，则父项也修改
+									for (E item : this) {
+										if (!(item instanceof IBODocumentLine)) {
+											continue;
+										}
+										lineItem = (IBODocumentLine) item;
+										if (lineItem.getCanceled() != boCanceled) {
+											// 子项有不同值，退出
+											return;
+										}
+									}
+									parent.setCanceled(boCanceled);
+								} else if (evt.getPropertyName().equals("Status")) {
+									emBOStatus boStatus = lineItem.getStatus();
+									// 子项全部为修改值，则父项也修改
+									for (E item : this) {
+										if (!(item instanceof IBODocumentLine)) {
+											continue;
+										}
+										lineItem = (IBODocumentLine) item;
+										if (lineItem.getStatus() != boStatus) {
+											// 子项有不同值，退出
+											return;
+										}
+									}
+									parent.setStatus(boStatus);
+								}
+							}
+							if (this.getParent() instanceof IBODocumentLine) {
+								// 父项是单据行
+								IBODocumentLine parent = (IBODocumentLine) this.getParent();
+								if (evt.getPropertyName().equals("LineStatus")) {
+									emDocumentStatus boLineStatus = lineItem.getLineStatus();
+									// 子项全部为修改值，则父项也修改
+									for (E item : this) {
+										if (!(item instanceof IBODocumentLine)) {
+											continue;
+										}
+										lineItem = (IBODocumentLine) item;
+										if (lineItem.getLineStatus() != boLineStatus) {
+											// 子项有不同值，退出
+											return;
+										}
+									}
+									parent.setLineStatus(boLineStatus);
+								} else if (evt.getPropertyName().equals("Canceled")) {
+									emYesNo boCanceled = lineItem.getCanceled();
+									// 子项全部为修改值，则父项也修改
+									for (E item : this) {
+										if (!(item instanceof IBODocumentLine)) {
+											continue;
+										}
+										lineItem = (IBODocumentLine) item;
+										if (lineItem.getCanceled() != boCanceled) {
+											// 子项有不同值，退出
+											return;
+										}
+									}
+									parent.setCanceled(boCanceled);
+								} else if (evt.getPropertyName().equals("Status")) {
+									emBOStatus boStatus = lineItem.getStatus();
+									// 子项全部为修改值，则父项也修改
+									for (E item : this) {
+										if (!(item instanceof IBODocumentLine)) {
+											continue;
+										}
+										lineItem = (IBODocumentLine) item;
+										if (lineItem.getStatus() != boStatus) {
+											// 子项有不同值，退出
+											return;
+										}
+									}
+									parent.setStatus(boStatus);
+								}
+							}
+						}
 					}
 				}
 			}

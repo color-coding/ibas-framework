@@ -12,7 +12,9 @@ import org.colorcoding.ibas.bobas.core.Serializer;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
+import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
+import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.data.measurement.Time;
 import org.colorcoding.ibas.bobas.data.measurement.emTimeUnit;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
@@ -216,5 +218,39 @@ public class testBusinessObjects extends TestCase {
 		System.out.println(bo.toString("xml"));
 		bo = (IBusinessObject) Serializer.fromXmlString(xml.replace("2099-11-11", "2099/1/2"), Materials.class);
 		System.out.println(bo.toString("xml"));
+	}
+
+	public void testListStatus() {
+		SalesOrder order = new SalesOrder();
+		order.setDocumentStatus(emDocumentStatus.Released);
+		ISalesOrderItem line = order.getSalesOrderItems().create();
+		assertEquals("LineStatus value faild.", order.getDocumentStatus(), line.getLineStatus());
+		line = order.getSalesOrderItems().create();
+		line = order.getSalesOrderItems().create();
+		emYesNo changedCanceled = emYesNo.Yes;
+		for (ISalesOrderItem item : order.getSalesOrderItems()) {
+			item.setCanceled(changedCanceled);
+			System.out.println(String.format("changed [%s] canceled [%s], parent [%s] ", item.toString(),
+					item.getCanceled(), order.getCanceled()));
+		}
+		System.out.println(String.format("finally [%s] canceled [%s]", order.toString(), order.getCanceled()));
+		assertEquals("status changed faild.", changedCanceled, order.getCanceled());
+		emBOStatus changedStatus = emBOStatus.Closed;
+		for (ISalesOrderItem item : order.getSalesOrderItems()) {
+			item.setStatus(changedStatus);
+			System.out.println(String.format("changed [%s] status [%s], parent [%s] ", item.toString(),
+					item.getStatus(), order.getStatus()));
+		}
+		System.out.println(String.format("finally [%s] status [%s]", order.toString(), order.getStatus()));
+		assertEquals("status changed faild.", changedStatus, order.getStatus());
+		emDocumentStatus changedDocumentStatus = emDocumentStatus.Finished;
+		order.setDocumentStatus(changedDocumentStatus);
+		System.out.println(
+				String.format("changed [%s] documentstatus [%s]", order.toString(), order.getDocumentStatus()));
+		for (ISalesOrderItem item : order.getSalesOrderItems()) {
+			System.out.println(String.format("changed [%s] documentstatus [%s], parent [%s] ", item.toString(),
+					item.getLineStatus(), order.getDocumentStatus()));
+			assertEquals("linestatus changed faild.", changedDocumentStatus, item.getLineStatus());
+		}
 	}
 }
