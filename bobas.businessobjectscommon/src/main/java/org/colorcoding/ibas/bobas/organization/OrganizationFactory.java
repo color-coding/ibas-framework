@@ -70,11 +70,11 @@ public class OrganizationFactory extends ConfigurableFactory {
 		}
 		Class<?> managerClass = getInstance(OrganizationFactory.class, type, "OrganizationManager");
 		if (managerClass == null) {
-			throw new ClassNotFoundException("msg_bobas_not_found_organization_manager");
+			throw new ClassNotFoundException(i18n.prop("msg_bobas_not_found_organization_manager"));
 		}
 		IOrganizationManager manager = (IOrganizationManager) managerClass.newInstance();
 		if (manager == null) {
-			throw new NullPointerException("msg_bobas_not_found_organization_manager");
+			throw new NullPointerException(i18n.prop("msg_bobas_not_found_organization_manager"));
 		}
 		RuntimeLog.log(RuntimeLog.MSG_APPROVAL_PROCESS_MANAGER_CREATED, managerClass.getName());
 		return manager;

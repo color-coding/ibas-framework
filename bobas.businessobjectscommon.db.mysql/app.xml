@@ -5,7 +5,7 @@
 		<add key="MsgLevel" value="DEBUG" />
 		<add key="MasterDbType" value="MYSQL" />
 		<add key="MasterDbServer" value="ibas-dev-mysql" />
-		<add key="MasterDbName" value="ibcp_demo" />
+		<add key="MasterDbName" value="ibas_demo" />
 		<add key="MasterDbUserID" value="root" />
 		<add key="MasterDbUserPassword" value="1q2w3e" />
 		<add key="DisabledRefetch" value="true" />

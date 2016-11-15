@@ -110,11 +110,11 @@ public class OwnershipFactory extends ConfigurableFactory {
 		}
 		Class<?> managerClass = getInstance(OwnershipFactory.class, type, "OwnershipJudger");
 		if (managerClass == null) {
-			throw new ClassNotFoundException("msg_bobas_not_found_data_ownership_judger");
+			throw new ClassNotFoundException(i18n.prop("msg_bobas_not_found_data_ownership_judger"));
 		}
 		IOwnershipJudger judger = (IOwnershipJudger) managerClass.newInstance();
 		if (judger == null) {
-			throw new NullPointerException("msg_bobas_not_found_data_ownership_judger");
+			throw new NullPointerException(i18n.prop("msg_bobas_not_found_data_ownership_judger"));
 		}
 		RuntimeLog.log(RuntimeLog.MSG_OWNERSHIP_JUDGER_CREATED, managerClass.getName());
 		return judger;

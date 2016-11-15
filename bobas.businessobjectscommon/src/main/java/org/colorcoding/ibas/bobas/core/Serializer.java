@@ -2,6 +2,7 @@ package org.colorcoding.ibas.bobas.core;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +11,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+
+import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**
  * 序列化对象
@@ -33,6 +36,8 @@ public class Serializer {
 	 * @return 克隆的对象实例
 	 */
 	public static Object Clone(Object object, Class<?>... types) {
+		ByteArrayInputStream inputStream = null;
+		ByteArrayOutputStream outputStream = null;
 		try {
 			Class<?>[] knownTypes = new Class[types.length + 1];
 			knownTypes[0] = object.getClass();
@@ -44,14 +49,28 @@ public class Serializer {
 			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");// //编码格式
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);// 是否格式化生成的xml串
 			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);// 是否省略xm头声明信息
-
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			outputStream = new ByteArrayOutputStream();
 			marshaller.marshal(object, outputStream);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
-			ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+			inputStream = new ByteArrayInputStream(outputStream.toByteArray());
 			return unmarshaller.unmarshal(inputStream);
 		} catch (Exception e) {
 			throw new SerializeException(e);
+		} finally {
+			try {
+				if (outputStream != null) {
+					outputStream.close();
+				}
+			} catch (IOException e) {
+				RuntimeLog.log(e);
+			}
+			try {
+				if (inputStream != null) {
+					inputStream.close();
+				}
+			} catch (IOException e) {
+				RuntimeLog.log(e);
+			}
 		}
 	}
 
@@ -85,6 +104,7 @@ public class Serializer {
 	 * @return 对象的字符串
 	 */
 	public static String toXmlString(Object object, boolean formated, Class<?>... types) {
+		StringWriter writer = null;
 		try {
 			Class<?>[] knownTypes = new Class[types.length + 1];
 			knownTypes[0] = object.getClass();
@@ -96,11 +116,19 @@ public class Serializer {
 			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");// 编码格式
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);// 是否格式化生成的xml串
 			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);// 是否省略xm头声明信息
-			StringWriter writer = new StringWriter();
+			writer = new StringWriter();
 			marshaller.marshal(object, writer);
 			return writer.toString();
 		} catch (Exception e) {
 			throw new SerializeException(e);
+		} finally {
+			try {
+				if (writer != null) {
+					writer.close();
+				}
+			} catch (IOException e) {
+				RuntimeLog.log(e);
+			}
 		}
 	}
 
@@ -114,13 +142,22 @@ public class Serializer {
 	 * @return 对象实例
 	 */
 	public static Object fromXmlString(String value, Class<?>... types) {
+		ByteArrayInputStream inputStream = null;
 		try {
 			JAXBContext context = JAXBContext.newInstance(types);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
-			ByteArrayInputStream inputStream = new ByteArrayInputStream(value.getBytes());
+			inputStream = new ByteArrayInputStream(value.getBytes());
 			return unmarshaller.unmarshal(inputStream);
 		} catch (Exception e) {
 			throw new SerializeException(e);
+		} finally {
+			try {
+				if (inputStream != null) {
+					inputStream.close();
+				}
+			} catch (Exception e) {
+				RuntimeLog.log(e);
+			}
 		}
 	}
 
@@ -167,6 +204,7 @@ public class Serializer {
 	 * @return
 	 */
 	public static String toJsonString(Object object, boolean formated, Class<?>... types) {
+		StringWriter writer = null;
 		try {
 			Class<?>[] knownTypes = new Class[types.length + 1];
 			knownTypes[0] = object.getClass();
@@ -174,14 +212,21 @@ public class Serializer {
 				knownTypes[i + 1] = types[0];
 			}
 			JAXBContext context = createJAXBContextJson(knownTypes);
-
-			StringWriter writer = new StringWriter();
+			writer = new StringWriter();
 			Marshaller marshaller = context.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);
 			marshaller.marshal(object, writer);
 			return writer.toString();
 		} catch (Exception e) {
 			throw new SerializeException(e);
+		} finally {
+			try {
+				if (writer != null) {
+					writer.close();
+				}
+			} catch (Exception e) {
+				RuntimeLog.log(e);
+			}
 		}
 	}
 
@@ -195,13 +240,22 @@ public class Serializer {
 	 * @return 对象实例
 	 */
 	public static Object fromJsonString(String value, Class<?>... types) {
+		ByteArrayInputStream inputStream = null;
 		try {
 			JAXBContext context = createJAXBContextJson(types);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
-			ByteArrayInputStream inputStream = new ByteArrayInputStream(value.getBytes());
+			inputStream = new ByteArrayInputStream(value.getBytes());
 			return unmarshaller.unmarshal(inputStream);
 		} catch (Exception e) {
 			throw new SerializeException(e);
+		} finally {
+			try {
+				if (inputStream != null) {
+					inputStream.close();
+				}
+			} catch (Exception e) {
+				RuntimeLog.log(e);
+			}
 		}
 	}
 }

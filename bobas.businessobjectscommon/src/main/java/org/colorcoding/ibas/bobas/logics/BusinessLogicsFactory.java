@@ -12,7 +12,7 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
  * @author Niuren.Zhu
  *
  */
-public class BusinessLogicsFactory extends ConfigurableFactory{
+public class BusinessLogicsFactory extends ConfigurableFactory {
 	private volatile static IBusinessLogicsManager defaultManager = null;
 
 	/**
@@ -30,7 +30,8 @@ public class BusinessLogicsFactory extends ConfigurableFactory{
 						defaultManager = newManager(MyConfiguration
 								.getConfigValue(MyConfiguration.CONFIG_ITEM_BUSINESS_LOGICS_WAY, "").toLowerCase());
 					} catch (Exception e) {
-						throw new BusinessLogicsException(i18n.prop("msg_bobas_create_approval_process_manager_falid"), e);
+						throw new BusinessLogicsException(i18n.prop("msg_bobas_create_approval_process_manager_falid"),
+								e);
 					}
 					if (defaultManager == null) {
 						// 初始化后仍然无效
@@ -47,11 +48,11 @@ public class BusinessLogicsFactory extends ConfigurableFactory{
 			throws BOFactoryException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 		Class<?> managerClass = getInstance(BusinessLogicsFactory.class, type, "BusinessLogicsManager");
 		if (managerClass == null) {
-			throw new ClassNotFoundException("msg_bobas_not_found_business_logics_manager");
+			throw new ClassNotFoundException(i18n.prop("msg_bobas_not_found_business_logics_manager"));
 		}
 		IBusinessLogicsManager manager = (IBusinessLogicsManager) managerClass.newInstance();
 		if (manager == null) {
-			throw new NullPointerException("msg_bobas_not_found_business_logics_manager");
+			throw new NullPointerException(i18n.prop("msg_bobas_not_found_business_logics_manager"));
 		}
 		RuntimeLog.log(RuntimeLog.MSG_BUSINESS_LOGICS_MANAGER_CREATED, managerClass.getName());
 		return manager;

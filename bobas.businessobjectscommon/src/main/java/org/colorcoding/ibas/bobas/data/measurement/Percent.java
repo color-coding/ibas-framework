@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.KeyText;
+import org.colorcoding.ibas.bobas.i18n.i18n;
 
 /**
  * 百分百
@@ -69,7 +70,7 @@ public class Percent extends MeasurementDecimal<emPercentUnit> {
 	@Override
 	public int compareTo(IMeasurement<Decimal, emPercentUnit> o) {
 		if (!this.getUnit().equals(o.getUnit())) {
-			throw new ClassCastException("msg_bobas_measurement_unit_not_match");
+			throw new ClassCastException(i18n.prop("msg_bobas_measurement_unit_not_match"));
 		}
 		return this.getValue().compareTo(o.getValue());
 	}

@@ -523,7 +523,9 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				stringBuilder.append(split);
 			}
 			stringBuilder.appendFormat(sqlScripts.getDbObjectSign(), dbItem.getDbField());
-			stringBuilder.append(" = ");
+			stringBuilder.append(" ");
+			stringBuilder.append("=");
+			stringBuilder.append(" ");
 			Object value = dbItem.getValue();
 			if (value == null) {
 				stringBuilder.append(sqlScripts.getNullValue());
@@ -1082,10 +1084,12 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				if (keys[i] instanceof IFieldDataDb) {
 					IFieldDataDb dbItem = (IFieldDataDb) keys[i];
 					if (keyNames.length() > 0) {
-						keyNames.append(", ");
+						keyNames.append(",");
+						keyNames.append(" ");
 					}
 					if (keyValues.length() > 0) {
-						keyValues.append(", ");
+						keyNames.append(",");
+						keyNames.append(" ");
 					}
 					keyNames.append(dbItem.getDbField());
 					keyValues.append(DataConvert.toString(dbItem.getValue()));

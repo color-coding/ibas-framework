@@ -233,6 +233,8 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 				if (command != null) {
 					command.close();
 				}
+				reader = null;
+				command = null;
 				if (myOpenedDb) {
 					// 自己开打自己关闭
 					this.closeDbConnection();// 关闭数据库连接

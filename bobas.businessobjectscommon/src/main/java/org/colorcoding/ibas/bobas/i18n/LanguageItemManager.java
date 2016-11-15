@@ -157,6 +157,7 @@ public class LanguageItemManager implements ILanguageItemManager {
 					} catch (UnsupportedEncodingException e) {
 						RuntimeLog.log(MessageLevel.DEBUG, e);
 					}
+					inputStream.close();
 				}
 			}
 		}

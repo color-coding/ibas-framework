@@ -178,7 +178,7 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 		this.getMessageQueue().offer(message);
 	}
 
-	String line = System.getProperty("line.separator");
+	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
 	/**
 	 * 输出消息到文件
@@ -188,15 +188,16 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 			return;
 		}
 		FileHandler fileHandler = null;
+		Logger logger = null;
 		try {
 			fileHandler = new FileHandler(this.getFileName(), limit, count, true);
-			Logger logger = Logger.getLogger("ibas");
-			logger.setUseParentHandlers(false);
 			fileHandler.setFormatter(new Formatter() {
 				public String format(LogRecord record) {
-					return record.getMessage() + line;
+					return record.getMessage() + LINE_SEPARATOR;
 				}
 			});
+			logger = Logger.getLogger("ibas");
+			logger.setUseParentHandlers(false);
 			logger.addHandler(fileHandler);
 			while (!this.getMessageQueue().isEmpty()) {
 				IMessage message = this.getMessageQueue().poll();
@@ -208,6 +209,8 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 			if (fileHandler != null) {
 				fileHandler.close();
 			}
+			fileHandler = null;
+			logger = null;
 		}
 
 	}

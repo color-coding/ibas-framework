@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.core.BindableBase;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
+import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
@@ -159,7 +160,7 @@ public class UserFields extends BindableBase implements Iterable<IUserField> {
 		if (userField != null) {
 			return userField.getValue();
 		} else {
-			throw new UserFieldException(String.format("msg_bobas_user_field_not_exist", name));
+			throw new UserFieldException(i18n.prop("msg_bobas_user_field_not_exist", name));
 		}
 	}
 
@@ -168,7 +169,7 @@ public class UserFields extends BindableBase implements Iterable<IUserField> {
 		if (userField != null) {
 			return userField.getValue();
 		} else {
-			throw new UserFieldException(String.format("msg_bobas_user_field_not_exist", index));
+			throw new UserFieldException(i18n.prop("msg_bobas_user_field_not_exist", index));
 		}
 	}
 
@@ -181,7 +182,7 @@ public class UserFields extends BindableBase implements Iterable<IUserField> {
 				this.firePropertyChange(userField.getName(), oldValue, userField.getValue());
 			}
 		} else {
-			throw new UserFieldException(String.format("msg_bobas_user_field_not_exist", name));
+			throw new UserFieldException(i18n.prop("msg_bobas_user_field_not_exist", name));
 		}
 	}
 
@@ -194,7 +195,7 @@ public class UserFields extends BindableBase implements Iterable<IUserField> {
 				this.firePropertyChange(userField.getName(), oldValue, userField.getValue());
 			}
 		} else {
-			throw new UserFieldException(String.format("msg_bobas_user_field_not_exist", index));
+			throw new UserFieldException(i18n.prop("msg_bobas_user_field_not_exist", index));
 		}
 	}
 }

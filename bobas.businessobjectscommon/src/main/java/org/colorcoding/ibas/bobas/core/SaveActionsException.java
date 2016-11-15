@@ -1,11 +1,7 @@
 package org.colorcoding.ibas.bobas.core;
 
-
 public class SaveActionsException extends RuntimeException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 6944430098732451483L;
 
 	public SaveActionsException() {

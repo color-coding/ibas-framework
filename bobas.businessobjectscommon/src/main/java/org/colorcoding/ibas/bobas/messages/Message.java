@@ -86,21 +86,27 @@ public class Message implements IMessage {
 		this.tag = tag;
 	}
 
+	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+
 	@Override
 	public String outString() {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("[");
 		stringBuilder.append(this.getLevel().toString());
-		stringBuilder.append("] [");
+		stringBuilder.append("]");
+		stringBuilder.append(" ");
+		stringBuilder.append("[");
 		stringBuilder.append(this.getTime().toString("yyyy-MM-dd HH:mm:ss.SSS"));
 		stringBuilder.append("]");
 		if (this.getTag() != null && !this.getTag().isEmpty()) {
-			stringBuilder.append(" [");
+			stringBuilder.append(" ");
+			stringBuilder.append("[");
 			stringBuilder.append(this.getTag());
 			stringBuilder.append("]");
 		}
-		stringBuilder.append(System.getProperty("line.separator"));
+		stringBuilder.append(LINE_SEPARATOR);
 		stringBuilder.append(this.getContent());
+		// stringBuilder.append(LINE_SEPARATOR);
 		return stringBuilder.toString();
 	}
 

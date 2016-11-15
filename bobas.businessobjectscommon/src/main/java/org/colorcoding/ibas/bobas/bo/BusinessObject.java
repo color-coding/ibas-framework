@@ -103,14 +103,17 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 		stringBuilder.appendFormat("{");
 		stringBuilder.append("[");
 		stringBuilder.append(boCode);
-		stringBuilder.append("].");
+		stringBuilder.append("]");
+		stringBuilder.append(".");
 		for (IFieldData item : this.getKeyFields()) {
 			if (stringBuilder.length() > boCode.length() + 4) {
 				stringBuilder.append("&");
 			}
 			stringBuilder.append("[");
 			stringBuilder.append(item.getName());
-			stringBuilder.append(" = ");
+			stringBuilder.append(" ");
+			stringBuilder.append("=");
+			stringBuilder.append(" ");
 			stringBuilder.append(DataConvert.toString(item.getValue()));
 			stringBuilder.append("]");
 		}
