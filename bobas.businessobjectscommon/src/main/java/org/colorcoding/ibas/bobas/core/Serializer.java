@@ -35,7 +35,7 @@ public class Serializer {
 	 * 
 	 * @return 克隆的对象实例
 	 */
-	public static Object Clone(Object object, Class<?>... types) {
+	public static Object clone(Object object, Class<?>... types) {
 		ByteArrayInputStream inputStream = null;
 		ByteArrayOutputStream outputStream = null;
 		try {

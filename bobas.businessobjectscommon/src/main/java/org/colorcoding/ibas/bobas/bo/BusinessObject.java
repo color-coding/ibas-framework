@@ -140,7 +140,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	@Override
 	public T clone() {
 		@SuppressWarnings("unchecked")
-		T nBO = (T) Serializer.Clone(this);
+		T nBO = (T) Serializer.clone(this);
 		if (nBO instanceof BusinessObject<?>) {
 			BusinessObject<?> bo = (BusinessObject<?>) nBO;
 			bo.resetStatus();
