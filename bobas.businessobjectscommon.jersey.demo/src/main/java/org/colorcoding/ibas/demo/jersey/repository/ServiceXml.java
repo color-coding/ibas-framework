@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.demo.repository;
+package org.colorcoding.ibas.demo.jersey.repository;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -14,10 +14,10 @@ import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 import org.colorcoding.ibas.bobas.test.repository.BORepositoryTest;
 
 /**
- * 数据服务JSON
+ * 数据服务XML
  */
-@Path("/json/")
-public class ServiceJson extends BORepositoryTest {
+@Path("/xml/")
+public class ServiceXml extends BORepositoryTest {
 
 	// --------------------------------------------------------------------------------------------//
 	/**
@@ -30,8 +30,8 @@ public class ServiceJson extends BORepositoryTest {
 	 * @return 操作结果
 	 */
 	@POST
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_XML)
 	@Path("/fetchMaterials")
 	public OperationResult<Materials> fetchMaterials(Criteria criteria, @QueryParam("token") String token) {
 		return super.fetchMaterials(criteria, token);
@@ -47,8 +47,8 @@ public class ServiceJson extends BORepositoryTest {
 	 * @return 操作结果
 	 */
 	@POST
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_XML)
 	@Path("/saveMaterials")
 	public OperationResult<Materials> saveMaterials(Materials bo, @QueryParam("token") String token) {
 		return super.saveMaterials(bo, token);
@@ -65,8 +65,8 @@ public class ServiceJson extends BORepositoryTest {
 	 * @return 操作结果
 	 */
 	@POST
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_XML)
 	@Path("/fetchSalesOrder")
 	public OperationResult<SalesOrder> fetchSalesOrder(Criteria criteria, @QueryParam("token") String token) {
 		return super.fetchSalesOrder(criteria, token);
@@ -82,13 +82,11 @@ public class ServiceJson extends BORepositoryTest {
 	 * @return 操作结果
 	 */
 	@POST
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_XML)
 	@Path("/saveSalesOrder")
 	public OperationResult<SalesOrder> saveSalesOrder(SalesOrder bo, @QueryParam("token") String token) {
 		return super.saveSalesOrder(bo, token);
 	}
-
-	// --------------------------------------------------------------------------------------------//
 
 }

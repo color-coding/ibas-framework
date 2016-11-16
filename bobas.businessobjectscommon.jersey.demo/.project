@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>bobas.businessobjectscommon.demo</name>
+	<name>bobas.businessobjectscommon.jersey.demo</name>
 	<comment></comment>
 	<projects>
-		<project>bobas.businessobjectscommon</project>
 		<project>bobas.businessobjectscommon.db.mssql</project>
+		<project>bobas.businessobjectscommon.jersey</project>
+		<project>bobas.businessobjectscommon</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

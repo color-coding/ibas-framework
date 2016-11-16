@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
-    <wb-module deploy-name="bobas.businessobjectscommon.demo">
+    <wb-module deploy-name="bobas.businessobjectscommon.jersey.demo">
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <dependent-module archiveName="bobas.businessobjectscommon.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/bobas.businessobjectscommon/bobas.businessobjectscommon">
@@ -8,7 +8,10 @@
         <dependent-module archiveName="bobas.businessobjectscommon.db.mssql.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/bobas.businessobjectscommon.db.mssql/bobas.businessobjectscommon.db.mssql">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <property name="java-output-path" value="/bobas.businessobjectscommon.demo/target/classes"/>
+        <dependent-module archiveName="bobas.businessobjectscommon.jersey.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/bobas.businessobjectscommon/bobas.businessobjectscommon.jersey">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="java-output-path" value="/bobas.businessobjectscommon.jersey.demo/target/classes"/>
         <property name="context-root" value="demo"/>
     </wb-module>
 </project-modules>

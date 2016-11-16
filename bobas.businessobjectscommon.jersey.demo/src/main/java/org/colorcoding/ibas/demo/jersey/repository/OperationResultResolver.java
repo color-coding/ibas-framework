@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.demo.repository;
+package org.colorcoding.ibas.demo.jersey.repository;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.ext.ContextResolver;
