@@ -60,6 +60,17 @@ public interface IBOFactory {
 	<P> P createInstance(Class<P> type) throws BOFactoryException;
 
 	/**
+	 * 创建业务对象实例
+	 * 
+	 * @param className
+	 *            对象类型名称
+	 * 
+	 * @return 业务对象实例
+	 * @throws BOFactoryException
+	 */
+	Object createInstance(String className) throws BOFactoryException;
+
+	/**
 	 * 获取类型
 	 * 
 	 * @param className
@@ -107,4 +118,5 @@ public interface IBOFactory {
 	 * @throws BOFactoryException
 	 */
 	int registerBOCode(Class<?>[] types);
+
 }

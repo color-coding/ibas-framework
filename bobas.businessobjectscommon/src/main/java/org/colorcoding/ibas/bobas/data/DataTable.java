@@ -84,7 +84,7 @@ public class DataTable implements IDataTable {
 
 	@Override
 	public String toString(String type) {
-		return Serializer.toString(type, this, false);
+		return Serializer.serializeString(type, this, false);
 	}
 
 }

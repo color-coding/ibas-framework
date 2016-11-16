@@ -222,6 +222,16 @@ public class BOFactory implements IBOFactory {
 	}
 
 	@Override
+	public Object createInstance(String className) throws BOFactoryException {
+		try {
+			Class<?> type = this.getClass(className);
+			return type.newInstance();
+		} catch (Exception e) {
+			throw new BOFactoryException(e.getMessage(), e);
+		}
+	}
+
+	@Override
 	public Class<?> getClass(String className) throws BOFactoryException {
 		try {
 			return Class.forName(className);

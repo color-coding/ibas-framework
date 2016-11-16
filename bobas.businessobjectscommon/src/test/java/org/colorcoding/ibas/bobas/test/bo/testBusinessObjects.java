@@ -212,11 +212,13 @@ public class testBusinessObjects extends TestCase {
 		materials.setCreateDate(DateTime.getToday());
 		System.out.println(materials.toString("xml"));
 		String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Materials><ItemCode>A0003</ItemCode><ItemDescription>A0003</ItemDescription><CreateDate>2099-11-11</CreateDate><OnHand>999.99</OnHand></Materials>";
-		IBusinessObject bo = (IBusinessObject) Serializer.fromXmlString(xml, Materials.class);
+		IBusinessObject bo = (IBusinessObject) Serializer.deserializeString(xml, Materials.class);
 		System.out.println(bo.toString("xml"));
-		bo = (IBusinessObject) Serializer.fromXmlString(xml.replace("2099-11-11", "2099/11/12"), Materials.class);
+		bo = (IBusinessObject) Serializer.deserializeString(Serializer.DATA_TYPE_XML,
+				xml.replace("2099-11-11", "2099/11/12"), Materials.class);
 		System.out.println(bo.toString("xml"));
-		bo = (IBusinessObject) Serializer.fromXmlString(xml.replace("2099-11-11", "2099/1/2"), Materials.class);
+		bo = (IBusinessObject) Serializer.deserializeString(Serializer.DATA_TYPE_XML,
+				xml.replace("2099-11-11", "2099/1/2"), Materials.class);
 		System.out.println(bo.toString("xml"));
 	}
 

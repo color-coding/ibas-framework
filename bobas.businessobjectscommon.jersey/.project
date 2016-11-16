@@ -3,6 +3,7 @@
 	<name>bobas.businessobjectscommon.jersey</name>
 	<comment></comment>
 	<projects>
+		<project>bobas.businessobjectscommon</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

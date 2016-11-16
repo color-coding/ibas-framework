@@ -46,12 +46,14 @@ public class Criteria implements ICriteria {
 			return fromIdentifiers(value);
 		} else if (value.startsWith("<?xml")) {
 			// xml
-			return (ICriteria) Serializer.fromXmlString(value, Criteria.class, Conditions.class, Condition.class,
-					Sorts.class, Sort.class, ChildCriterias.class, ChildCriteria.class);
+			return (ICriteria) Serializer.deserializeString(Serializer.DATA_TYPE_XML, value, Criteria.class,
+					Conditions.class, Condition.class, Sorts.class, Sort.class, ChildCriterias.class,
+					ChildCriteria.class);
 		} else if (value.startsWith("{") && value.endsWith("}")) {
 			// json
-			return (ICriteria) Serializer.fromJsonString(value, Criteria.class, Conditions.class, Condition.class,
-					Sorts.class, Sort.class, ChildCriterias.class, ChildCriteria.class);
+			return (ICriteria) Serializer.deserializeString(Serializer.DATA_TYPE_JSON, value, Criteria.class,
+					Conditions.class, Condition.class, Sorts.class, Sort.class, ChildCriterias.class,
+					ChildCriteria.class);
 		}
 		return null;
 	}
@@ -192,7 +194,7 @@ public class Criteria implements ICriteria {
 
 	@Override
 	public String toString(String type) {
-		return Serializer.toString(type, this, true);
+		return Serializer.serializeString(type, this, true);
 	}
 
 	protected ICriteria getBOCriteria(IBusinessObjectBase bo) {

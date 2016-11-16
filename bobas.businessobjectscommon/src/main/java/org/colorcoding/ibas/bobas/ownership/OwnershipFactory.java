@@ -22,15 +22,15 @@ public class OwnershipFactory extends ConfigurableFactory {
 	/**
 	 * 操作信息：数据检索数量
 	 */
-	public static String OPERATION_INFORMATION_DATA_OWNERSHIP_fetch_COUNT = "DATA_OWNERSHIP_FETCH_COUNT";
+	public final static String OPERATION_INFORMATION_DATA_OWNERSHIP_fetch_COUNT = "DATA_OWNERSHIP_FETCH_COUNT";
 	/**
 	 * 操作信息：数据过滤数量
 	 */
-	public static String OPERATION_INFORMATION_DATA_OWNERSHIP_FILTER_COUNT = "DATA_OWNERSHIP_FILTER_COUNT";
+	public final static String OPERATION_INFORMATION_DATA_OWNERSHIP_FILTER_COUNT = "DATA_OWNERSHIP_FILTER_COUNT";
 	/**
 	 * 操作信息标签：权限判断
 	 */
-	public static String OPERATION_INFORMATION_DATA_OWNERSHIP_TAG = "DATA_OWNERSHIP_JUDGE";
+	public final static String OPERATION_INFORMATION_DATA_OWNERSHIP_TAG = "DATA_OWNERSHIP_JUDGE";
 
 	public static IOperationInformation[] createOwnershipJudgeInfo(Integer fetchCount, Integer filterCount) {
 		OperationInformation oifetch = new OperationInformation();

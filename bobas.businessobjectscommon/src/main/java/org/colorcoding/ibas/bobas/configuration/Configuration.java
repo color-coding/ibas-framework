@@ -159,7 +159,7 @@ public class Configuration {
 	/**
 	 * 配置项目-工作目录
 	 */
-	public static String CONFIG_ITEM_WORK_FOLDER = "WorkFolder";
+	public final static String CONFIG_ITEM_WORK_FOLDER = "WorkFolder";
 
 	private volatile static String workFolder = null;
 

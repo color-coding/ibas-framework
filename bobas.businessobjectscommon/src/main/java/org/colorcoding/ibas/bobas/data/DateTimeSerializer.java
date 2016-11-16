@@ -13,10 +13,10 @@ class DateTimeSerializer extends XmlAdapter<String, DateTime> {
 	/**
 	 * 日期格式模板
 	 */
-	public static String DATETIME_FORMAT_DATA = "yyyy-MM-dd";
-	public static String DATETIME_FORMAT_DATA_TIME = "yyyy-MM-dd'T'HH:mm:ss";
-	public static String DATETIME_FORMAT_DATA_SLASH = "yyyy/MM/dd";
-	public static String DATETIME_FORMAT_DATA_TIME_SLASH = "yyyy/MM/dd'T'HH:mm:ss";
+	public final static String DATETIME_FORMAT_DATA = "yyyy-MM-dd";
+	public final static String DATETIME_FORMAT_DATA_TIME = "yyyy-MM-dd'T'HH:mm:ss";
+	public final static String DATETIME_FORMAT_DATA_SLASH = "yyyy/MM/dd";
+	public final static String DATETIME_FORMAT_DATA_TIME_SLASH = "yyyy/MM/dd'T'HH:mm:ss";
 
 	@Override
 	public String marshal(DateTime data) throws Exception {

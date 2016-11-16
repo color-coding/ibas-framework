@@ -128,7 +128,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 
 	@Override
 	public String toString(String type) {
-		return Serializer.toString(type, this, false);
+		return Serializer.serializeString(type, this, false);
 	}
 
 	/*
