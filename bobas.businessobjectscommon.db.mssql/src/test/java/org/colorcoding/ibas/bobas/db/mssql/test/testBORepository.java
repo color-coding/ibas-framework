@@ -293,7 +293,9 @@ public class testBORepository extends TestCase {
 			}
 			Thread.sleep(50000);
 			flagStop = true;
-			Thread.sleep(50000);// 继续等待，资源释放
+			System.gc();
+			System.out.println("all done.");
+			Thread.sleep(500000);// 继续等待，资源释放
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -584,4 +586,5 @@ public class testBORepository extends TestCase {
 			System.err.println(operationResult.getMessage());
 		}
 	}
+
 }

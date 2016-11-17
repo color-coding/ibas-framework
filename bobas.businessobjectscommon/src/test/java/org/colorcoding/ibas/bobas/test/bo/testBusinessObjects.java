@@ -1,6 +1,8 @@
 package org.colorcoding.ibas.bobas.test.bo;
 
+import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Date;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -289,5 +291,72 @@ public class testBusinessObjects extends TestCase {
 		System.out.println(
 				String.format("finally [%s] documentstatus [%s]", order.toString(), order.getDocumentStatus()));
 		assertEquals("status changed faild.", emDocumentStatus.Finished, order.getDocumentStatus());
+	}
+
+	public void testGC() throws IOException, InterruptedException {
+		Runtime run = Runtime.getRuntime();
+		// System.in.read(); // 暂停程序执行
+		run.gc();
+		System.out.println("time: " + (new Date()));
+		// 获取开始时内存使用量
+		long startMem = run.totalMemory() - run.freeMemory();
+		System.out.println("S memory total:" + run.totalMemory() + " free:" + run.freeMemory() + " used:" + startMem);
+		int j = 0;
+		SalesOrder[] orders = new SalesOrder[100000];
+		for (int i = 0; i < orders.length; i++) {
+
+			SalesOrder order = new SalesOrder();
+
+			order.setDocEntry(1);
+			order.setCustomerCode("C00001");
+			order.setDeliveryDate(DateTime.getToday());
+			order.setDocumentStatus(emDocumentStatus.Released);
+			order.setDocumentTotal(new Decimal("99.99"));
+			order.setDocumentUser(new User());
+			order.setTeamUsers(new User[] { new User(), new User() });
+			order.setCycle(new Time(1.05, emTimeUnit.hour));
+			order.getCycle().setValue(0.9988);
+
+			order.getUserFields().addUserField("U_OrderType", DbFieldType.db_Alphanumeric);
+			order.getUserFields().addUserField("U_OrderId", DbFieldType.db_Numeric);
+			order.getUserFields().addUserField("U_OrderDate", DbFieldType.db_Date);
+			order.getUserFields().addUserField("U_OrderTotal", DbFieldType.db_Decimal);
+
+			order.getUserFields().setValue("U_OrderType", "S0000");
+			order.getUserFields().setValue("U_OrderId", 5768);
+			order.getUserFields().setValue("U_OrderDate", DateTime.getToday());
+			order.getUserFields().setValue("U_OrderTotal", new Decimal("999.888"));
+
+			ISalesOrderItem orderItem = order.getSalesOrderItems().create();
+			orderItem.setItemCode("A00001");
+			orderItem.setQuantity(new Decimal(10));
+			orderItem.setPrice(new Decimal(99.99));
+			orderItem = order.getSalesOrderItems().create();
+			orderItem.setItemCode("A00002");
+			orderItem.setQuantity(10);
+			orderItem.setPrice(199.99);
+
+			orders[i] = order;
+			j++;
+			if (j == 100) {
+				// Thread.sleep(300);
+				j = 0;
+			}
+		}
+
+		System.out.println("time: " + (new Date()));
+		long endMem = run.totalMemory() - run.freeMemory();
+		System.out.println("D memory total:" + run.totalMemory() + " free:" + run.freeMemory() + " used:" + endMem);
+
+		run.gc();
+		System.out.println("G memory total:" + run.totalMemory() + " free:" + run.freeMemory() + " used:"
+				+ (run.totalMemory() - run.freeMemory()));
+		orders = null;
+		run.gc();
+		long clearedMem = run.totalMemory() - run.freeMemory();
+		System.out.println("C memory total:" + run.totalMemory() + " free:" + run.freeMemory() + " used:"
+				+ (run.totalMemory() - run.freeMemory()));
+		System.out.println("memory clear:" + (endMem - clearedMem));
+		Thread.sleep(10000000);
 	}
 }
