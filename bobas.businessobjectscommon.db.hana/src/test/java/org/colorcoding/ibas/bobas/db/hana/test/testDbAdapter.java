@@ -1,6 +1,5 @@
 package org.colorcoding.ibas.bobas.db.hana.test;
 
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -9,17 +8,18 @@ import java.sql.Statement;
 
 import org.colorcoding.ibas.bobas.db.hana.DbAdapter;
 
-import com.sap.db.jdbc.ConnectionSapDBFinalize;
-
 import junit.framework.TestCase;
 
 public class testDbAdapter extends TestCase {
 
-	public void testForDbAdapter() {
+	String password = "AVAtech2015!";
+
+	String dbName = "ibas_demo_1042790962";
+
+	public void testforDbAdapter() {
 		DbAdapter dbAdapter = new DbAdapter();
 		try {
-			Connection dbConn = dbAdapter.createConnection("122.5.6.90:30015", "IBAS_DEMO", "SYSTEM", "HANAavatech2012",
-					"");
+			Connection dbConn = dbAdapter.createConnection("ibas-dev-hana:30015", dbName, "SYSTEM", password, "");
 
 			Statement stmt = dbConn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT CURRENT_SCHEMA FROM DUMMY");
@@ -36,28 +36,27 @@ public class testDbAdapter extends TestCase {
 
 	public void testHanaConnection() {
 		String driverName = "com.sap.db.jdbc.Driver";
-		String dbURL = "jdbc:sap://122.5.6.90:30015/?currentschema=IBAS_DEMO";
+		String dbURL = String.format("jdbc:sap://ibas-dev-hana:30015/?currentschema=\"%s\"", dbName);
 		String userName = "SYSTEM";
-		String userPwd = "HANAavatech2012";
+		String userPwd = password;
 		try {
 			Class.forName(driverName);
 			Connection dbConn = DriverManager.getConnection(dbURL, userName, userPwd);
-			Field[] fields = dbConn.getClass().getDeclaredFields();
-			for (int i = 0; i < fields.length; i++) {
-				System.out.println(fields[i].getName());
-				if (fields[i].getName().equals("_inner")) {
-					Field field = fields[i];
-					field.setAccessible(true);
-					ConnectionSapDBFinalize sapDBFinalize = (ConnectionSapDBFinalize) field.get(dbConn);
-					System.out.println(sapDBFinalize.getSchema());
-				}
-			}
-			// DriverManager.getDriver(dbURL)
 			System.out.println("连接成功");
 			Statement stmt = dbConn.createStatement();
-			ResultSet rs = stmt.executeQuery("select * from CC_SYS_USER");
+			ResultSet rs = stmt.executeQuery("select * from CC_TT_USER;");
 			ResultSetMetaData rsmd = rs.getMetaData();
 			System.out.println(String.format("row count:%s | colunm count:%s ", rs.getRow(), rsmd.getColumnCount()));
+			stmt.addBatch("update CC_TT_USER set \"UserName\" = \"UserCode\";");
+			stmt.addBatch("update CC_TT_USER set \"UserName\" = \"UserCode\";");
+
+			// stmt.addBatch("select * from CC_TT_USER;");// 返回结果集，不可用
+			stmt.addBatch("CALL CC_SP_TRANSACTION_NOTIFICATION('','',0,'','');");
+			stmt.addBatch("update CC_TT_USER set \"UserName\" = \"UserCode\";");
+			int[] count = stmt.executeBatch();
+			for (int i : count) {
+				System.out.println(i);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
