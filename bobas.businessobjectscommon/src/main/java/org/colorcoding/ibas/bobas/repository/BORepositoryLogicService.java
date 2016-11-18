@@ -6,9 +6,9 @@ import org.colorcoding.ibas.bobas.approval.ApprovalFactory;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcess;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcessManager;
-import org.colorcoding.ibas.bobas.bo.IBODocument;
-import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
 import org.colorcoding.ibas.bobas.bo.IBOReferenced;
+import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
+import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.core.SaveActionsEvent;
@@ -143,26 +143,19 @@ public class BORepositoryLogicService extends BORepositoryService {
 					// 删除数据，取消流程
 					approvalProcess.cancel(this.getCurrentUser().getToken(),
 							i18n.prop("msg_bobas_user_deleted_approval_data"));
-				} else if (bo instanceof IBOReferenced) {
+				} else if (bo instanceof IBOTagDeleted) {
 					// 删除，取消流程
-					IBOReferenced referenced = (IBOReferenced) bo;
+					IBOTagDeleted referenced = (IBOTagDeleted) bo;
 					if (referenced.getDeleted() == emYesNo.Yes) {
 						approvalProcess.cancel(this.getCurrentUser().getToken(),
 								i18n.prop("msg_bobas_user_deleted_approval_data"));
 					}
-				} else if (bo instanceof IBODocument) {
-					// 单据取消，取消流程
-					IBODocument document = (IBODocument) bo;
-					if (document.getCanceled() == emYesNo.Yes) {
+				} else if (bo instanceof IBOTagCanceled) {
+					// 取消，取消流程
+					IBOTagCanceled referenced = (IBOTagCanceled) bo;
+					if (referenced.getCanceled() == emYesNo.Yes) {
 						approvalProcess.cancel(this.getCurrentUser().getToken(),
-								i18n.prop("msg_bobas_user_canceled_approval_data"));
-					}
-				} else if (bo instanceof IBODocumentLine) {
-					// 单据行取消，取消流程
-					IBODocumentLine documentLine = (IBODocumentLine) bo;
-					if (documentLine.getCanceled() == emYesNo.Yes) {
-						approvalProcess.cancel(this.getCurrentUser().getToken(),
-								i18n.prop("msg_bobas_user_canceled_approval_data"));
+								i18n.prop("msg_bobas_user_deleted_approval_data"));
 					}
 				}
 			}

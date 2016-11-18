@@ -2,7 +2,8 @@ package org.colorcoding.ibas.bobas.approval;
 
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
-import org.colorcoding.ibas.bobas.bo.IBOReferenced;
+import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
+import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
@@ -319,20 +320,23 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 				// 可删除数据
 				return;
 			}
-			if (this.getApprovalData() instanceof IBOReferenced) {
-				IBOReferenced referenced = (IBOReferenced) this.getApprovalData();
+			if (this.getApprovalData() instanceof IBOTagDeleted) {
+				IBOTagDeleted referenced = (IBOTagDeleted) this.getApprovalData();
 				if (referenced.getDeleted() == emYesNo.Yes) {
 					// 可标记删除数据
+					return;
+				}
+			}
+			if (this.getApprovalData() instanceof IBOTagCanceled) {
+				IBOTagCanceled referenced = (IBOTagCanceled) this.getApprovalData();
+				if (referenced.getCanceled() == emYesNo.Yes) {
+					// 可标记取消数据
 					return;
 				}
 			}
 			if (this.getApprovalData() instanceof IBODocument) {
 				// 单据类型
 				IBODocument document = (IBODocument) this.getApprovalData();
-				if (document.getCanceled() == emYesNo.Yes) {
-					// 可取消数据
-					return;
-				}
 				if (document.getStatus() == emBOStatus.Closed
 						&& this.getApprovalData().getApprovalStatus() == emApprovalStatus.Approved) {
 					// 可关闭数据，仅审批通过后
@@ -342,10 +346,6 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 			if (this.getApprovalData() instanceof IBODocumentLine) {
 				// 单据行类型
 				IBODocumentLine documentLine = (IBODocumentLine) this.getApprovalData();
-				if (documentLine.getCanceled() == emYesNo.Yes) {
-					// 可取消数据
-					return;
-				}
 				if (documentLine.getStatus() == emBOStatus.Closed
 						&& this.getApprovalData().getApprovalStatus() == emApprovalStatus.Approved) {
 					// 可关闭数据，仅审批通过后

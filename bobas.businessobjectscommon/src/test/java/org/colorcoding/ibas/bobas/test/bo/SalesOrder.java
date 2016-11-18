@@ -234,6 +234,35 @@ public class SalesOrder extends BusinessObject<SalesOrder> implements ISalesOrde
 	/**
 	 * 取消 属性
 	 */
+	@DbField(name = "Refed", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	public final static IPropertyInfo<emYesNo> ReferencedProperty = registerProperty("Referenced", emYesNo.class,
+			MY_CLASS);
+
+	/**
+	 * 获取-取消
+	 * 
+	 * @return 值
+	 */
+	@Override
+	@XmlElement(name = "Referenced")
+	public final emYesNo getReferenced() {
+		return this.getProperty(ReferencedProperty);
+	}
+
+	/**
+	 * 设置-取消
+	 * 
+	 * @param value
+	 *            值
+	 */
+	@Override
+	public final void setReferenced(emYesNo value) {
+		this.setProperty(ReferencedProperty, value);
+	}
+
+	/**
+	 * 取消 属性
+	 */
 	@DbField(name = "Canceled", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<emYesNo> CanceledProperty = registerProperty("Canceled", emYesNo.class, MY_CLASS);
 

@@ -4,7 +4,8 @@ import java.util.Iterator;
 
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
-import org.colorcoding.ibas.bobas.bo.IBOReferenced;
+import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
+import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
@@ -61,10 +62,6 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
 				// 计划状态
 				return false;
 			}
-			if (docData.getCanceled() == emYesNo.Yes) {
-				// 取消的
-				return false;
-			}
 		}
 		if (data instanceof IBODocumentLine) {
 			// 单据行
@@ -73,15 +70,18 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
 				// 计划状态
 				return false;
 			}
-			if (lineData.getCanceled() == emYesNo.Yes) {
-				// 取消的
+		}
+		if (data instanceof IBOTagDeleted) {
+			// 引用数据，已标记删除的，不影响业务逻辑
+			IBOTagDeleted refData = (IBOTagDeleted) data;
+			if (refData.getDeleted() == emYesNo.Yes) {
 				return false;
 			}
 		}
-		if (data instanceof IBOReferenced) {
-			// 引用数据，已标记删除的，不影响业务逻辑
-			IBOReferenced refData = (IBOReferenced) data;
-			if (refData.getDeleted() == emYesNo.Yes) {
+		if (data instanceof IBOTagCanceled) {
+			// 引用数据，已标记取消的，不影响业务逻辑
+			IBOTagCanceled refData = (IBOTagCanceled) data;
+			if (refData.getCanceled() == emYesNo.Yes) {
 				return false;
 			}
 		}

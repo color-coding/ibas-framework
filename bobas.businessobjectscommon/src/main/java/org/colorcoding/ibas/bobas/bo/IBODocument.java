@@ -3,7 +3,6 @@ package org.colorcoding.ibas.bobas.bo;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
-import org.colorcoding.ibas.bobas.data.emYesNo;
 
 /**
  * 单据
@@ -67,20 +66,6 @@ public interface IBODocument extends IBusinessObject, IBOStorageTag {
 	 * @param value
 	 */
 	void setDataSource(String value);
-
-	/**
-	 * 获取-取消
-	 * 
-	 * @return
-	 */
-	emYesNo getCanceled();
-
-	/**
-	 * 设置-取消
-	 * 
-	 * @param value
-	 */
-	void setCanceled(emYesNo value);
 
 	/**
 	 * 获取-状态

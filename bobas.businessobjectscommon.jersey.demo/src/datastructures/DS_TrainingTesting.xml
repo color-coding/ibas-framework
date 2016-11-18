@@ -49,6 +49,7 @@
     <Field Name="Series" Description="服务系列" DataType="db_Numeric" SubType="st_None" EditSize="8" PropertyName="Series" FixedDataType="Integer" />
     <Field Name="Handwrtten" Description="手写" DataType="db_Alpha" SubType="st_None" EditSize="1" PropertyName="Handwritten" FixedDataType="emYesNo" DefaultValue="N" />
     <Field Name="Canceled" Description="取消" DataType="db_Alpha" SubType="st_None" EditSize="1" PropertyName="Canceled" FixedDataType="emYesNo" DefaultValue="N" />
+    <Field Name="Refed" Description="已引用" DataType="db_Alpha" SubType="st_None" EditSize="1" PropertyName="Referenced" FixedDataType="emYesNo" DefaultValue="N" />
     <Field Name="Object" Description="类型" DataType="db_Alpha" SubType="st_None" EditSize="30" PropertyName="ObjectCode" FixedDataType="String" />
     <Field Name="DataSource" Description="数据源" DataType="db_Alpha" SubType="st_None" EditSize="8" PropertyName="DataSource" FixedDataType="String" />
     <Field Name="LogInst" Description="实例号（版本）" DataType="db_Numeric" SubType="st_None" EditSize="8" PropertyName="LogInst" FixedDataType="Integer" />
@@ -90,6 +91,7 @@
     <Field Name="DataSource" Description="数据源" DataType="db_Alpha" SubType="st_None" EditSize="8" PropertyName="DataSource" FixedDataType="String" />
     <Field Name="LogInst" Description="实例号（版本）" DataType="db_Numeric" SubType="st_None" EditSize="8" PropertyName="LogInst" FixedDataType="Integer" />
     <Field Name="Canceled" Description="取消" DataType="db_Alpha" SubType="st_None" EditSize="1" PropertyName="Canceled" FixedDataType="emYesNo" DefaultValue="N" />
+    <Field Name="Refed" Description="已引用" DataType="db_Alpha" SubType="st_None" EditSize="1" PropertyName="Referenced" FixedDataType="emYesNo" DefaultValue="N" />
     <Field Name="Status" Description="状态" DataType="db_Alpha" SubType="st_None" EditSize="1" PropertyName="Status" FixedDataType="emBOStatus" DefaultValue="O" />
     <Field Name="LineStatus" Description="单据状态" DataType="db_Alpha" SubType="st_None" EditSize="1" PropertyName="LineStatus" FixedDataType="emDocumentStatus" DefaultValue="P" />
     <Field Name="CreateDate" Description="创建日期" DataType="db_Date" SubType="st_None" EditSize="8" PropertyName="CreateDate" FixedDataType="DateTime" />

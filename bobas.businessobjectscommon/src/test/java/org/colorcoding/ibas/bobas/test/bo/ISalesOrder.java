@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.test.bo;
 
 import org.colorcoding.ibas.bobas.bo.IBODocument;
+import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
 import org.colorcoding.ibas.bobas.bo.IBOUserFields;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
@@ -14,14 +15,14 @@ import org.colorcoding.ibas.bobas.data.measurement.Time;
  * 销售订单
  * 
  */
-public interface ISalesOrder extends IBODocument, IBOUserFields {
+public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields {
 
 	/**
 	 * 获取-凭证编号
 	 * 
 	 * @return 值
 	 */
-	@Override
+
 	Integer getDocEntry();
 
 	/**
@@ -30,7 +31,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * @param value
 	 *            值
 	 */
-	@Override
 	void setDocEntry(Integer value);
 
 	/**
@@ -38,7 +38,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * 
 	 * @return 值
 	 */
-	@Override
 	Integer getDocNum();
 
 	/**
@@ -47,7 +46,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * @param value
 	 *            值
 	 */
-	@Override
 	void setDocNum(Integer value);
 
 	/**
@@ -55,7 +53,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * 
 	 * @return 值
 	 */
-	@Override
 	Integer getPeriod();
 
 	/**
@@ -64,7 +61,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * @param value
 	 *            值
 	 */
-	@Override
 	void setPeriod(Integer value);
 
 	/**
@@ -117,7 +113,7 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * 
 	 * @return 值
 	 */
-	@Override
+
 	emYesNo getCanceled();
 
 	/**
@@ -126,7 +122,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * @param value
 	 *            值
 	 */
-	@Override
 	void setCanceled(emYesNo value);
 
 	/**
@@ -134,7 +129,7 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * 
 	 * @return 值
 	 */
-	@Override
+
 	String getObjectCode();
 
 	/**
@@ -150,7 +145,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * 
 	 * @return 值
 	 */
-	@Override
 	String getDataSource();
 
 	/**
@@ -159,7 +153,7 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * @param value
 	 *            值
 	 */
-	@Override
+
 	void setDataSource(String value);
 
 	/**
@@ -167,7 +161,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * 
 	 * @return 值
 	 */
-	@Override
 	Integer getLogInst();
 
 	/**
@@ -176,7 +169,7 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * @param value
 	 *            值
 	 */
-	@Override
+
 	void setLogInst(Integer value);
 
 	/**
@@ -214,7 +207,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * 
 	 * @return 值
 	 */
-	@Override
 	emBOStatus getStatus();
 
 	/**
@@ -223,7 +215,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * @param value
 	 *            值
 	 */
-	@Override
 	void setStatus(emBOStatus value);
 
 	/**
@@ -231,7 +222,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * 
 	 * @return 值
 	 */
-	@Override
 	DateTime getCreateDate();
 
 	/**
@@ -240,7 +230,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * @param value
 	 *            值
 	 */
-	@Override
 	void setCreateDate(DateTime value);
 
 	/**
@@ -248,7 +237,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * 
 	 * @return 值
 	 */
-	@Override
 	Short getCreateTime();
 
 	/**
@@ -257,7 +245,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * @param value
 	 *            值
 	 */
-	@Override
 	void setCreateTime(Short value);
 
 	/**
@@ -265,7 +252,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * 
 	 * @return 值
 	 */
-	@Override
 	DateTime getUpdateDate();
 
 	/**
@@ -274,7 +260,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * @param value
 	 *            值
 	 */
-	@Override
 	void setUpdateDate(DateTime value);
 
 	/**
@@ -282,7 +267,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * 
 	 * @return 值
 	 */
-	@Override
 	Short getUpdateTime();
 
 	/**
@@ -291,7 +275,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * @param value
 	 *            值
 	 */
-	@Override
 	void setUpdateTime(Short value);
 
 	/**
@@ -299,7 +282,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * 
 	 * @return 值
 	 */
-	@Override
 	Integer getCreateUserSign();
 
 	/**
@@ -308,7 +290,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * @param value
 	 *            值
 	 */
-	@Override
 	void setCreateUserSign(Integer value);
 
 	/**
@@ -316,7 +297,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * 
 	 * @return 值
 	 */
-	@Override
 	Integer getUpdateUserSign();
 
 	/**
@@ -325,7 +305,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * @param value
 	 *            值
 	 */
-	@Override
 	void setUpdateUserSign(Integer value);
 
 	/**
@@ -333,7 +312,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * 
 	 * @return 值
 	 */
-	@Override
 	String getCreateActionId();
 
 	/**
@@ -342,7 +320,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * @param value
 	 *            值
 	 */
-	@Override
 	void setCreateActionId(String value);
 
 	/**
@@ -350,7 +327,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * 
 	 * @return 值
 	 */
-	@Override
 	String getUpdateActionId();
 
 	/**
@@ -359,7 +335,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * @param value
 	 *            值
 	 */
-	@Override
 	void setUpdateActionId(String value);
 
 	/**
@@ -427,7 +402,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * 
 	 * @return 值
 	 */
-	@Override
 	emDocumentStatus getDocumentStatus();
 
 	/**
@@ -436,7 +410,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * @param value
 	 *            值
 	 */
-	@Override
 	void setDocumentStatus(emDocumentStatus value);
 
 	/**
@@ -444,7 +417,7 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * 
 	 * @return 值
 	 */
-	@Override
+
 	DateTime getPostingDate();
 
 	/**
@@ -453,7 +426,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * @param value
 	 *            值
 	 */
-	@Override
 	void setPostingDate(DateTime value);
 
 	/**
@@ -461,7 +433,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * 
 	 * @return 值
 	 */
-	@Override
 	DateTime getDeliveryDate();
 
 	/**
@@ -470,7 +441,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * @param value
 	 *            值
 	 */
-	@Override
 	void setDeliveryDate(DateTime value);
 
 	/**
@@ -478,7 +448,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * 
 	 * @return 值
 	 */
-	@Override
 	DateTime getDocumentDate();
 
 	/**
@@ -487,7 +456,6 @@ public interface ISalesOrder extends IBODocument, IBOUserFields {
 	 * @param value
 	 *            值
 	 */
-	@Override
 	void setDocumentDate(DateTime value);
 
 	/**

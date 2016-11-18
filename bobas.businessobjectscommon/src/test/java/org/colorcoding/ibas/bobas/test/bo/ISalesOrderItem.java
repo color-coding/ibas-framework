@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.test.bo;
 
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
+import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
@@ -11,7 +12,7 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
  * 销售订单-行
  * 
  */
-public interface ISalesOrderItem extends IBODocumentLine {
+public interface ISalesOrderItem extends IBODocumentLine, IBOTagCanceled {
 
 	/**
 	 * 获取-编码

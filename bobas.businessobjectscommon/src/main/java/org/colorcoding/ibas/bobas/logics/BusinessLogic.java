@@ -3,7 +3,8 @@ package org.colorcoding.ibas.bobas.logics;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
-import org.colorcoding.ibas.bobas.bo.IBOReferenced;
+import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
+import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepository;
@@ -96,10 +97,17 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 				return false;
 			}
 		}
-		if (data instanceof IBOReferenced) {
+		if (data instanceof IBOTagDeleted) {
 			// 引用数据，已标记删除的，不影响业务逻辑
-			IBOReferenced refData = (IBOReferenced) data;
+			IBOTagDeleted refData = (IBOTagDeleted) data;
 			if (refData.getDeleted() == emYesNo.Yes) {
+				return false;
+			}
+		}
+		if (data instanceof IBOTagCanceled) {
+			// 引用数据，已标记取消的，不影响业务逻辑
+			IBOTagCanceled refData = (IBOTagCanceled) data;
+			if (refData.getCanceled() == emYesNo.Yes) {
 				return false;
 			}
 		}
@@ -120,18 +128,10 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 				// 计划状态
 				return false;
 			}
-			if (docData.getCanceled() == emYesNo.Yes) {
-				// 取消的
-				return false;
-			}
 		}
 		if (data instanceof IBODocumentLine) {
 			// 单据行
 			IBODocumentLine lineData = (IBODocumentLine) data;
-			if (lineData.getCanceled() == emYesNo.Yes) {
-				// 取消的
-				return false;
-			}
 			if (lineData.getLineStatus() == emDocumentStatus.Planned) {
 				// 计划状态
 				return false;

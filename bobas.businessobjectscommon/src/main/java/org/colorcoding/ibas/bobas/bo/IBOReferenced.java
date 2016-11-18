@@ -24,18 +24,4 @@ public interface IBOReferenced {
 	 * @param value
 	 */
 	void setReferenced(emYesNo value);
-
-	/**
-	 * 是否标记删除
-	 * 
-	 * @return
-	 */
-	emYesNo getDeleted();
-
-	/**
-	 * 设置-删除状态
-	 * 
-	 * @param value
-	 */
-	void setDeleted(emYesNo value);
 }

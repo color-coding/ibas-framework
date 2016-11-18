@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
+import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
@@ -29,7 +30,7 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 @XmlType(name = "PurchaseOrder")
 @XmlRootElement(name = "PurchaseOrder")
 @BOCode(PurchaseOrder.BUSINESS_OBJECT_CODE)
-public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBODocument, IApprovalData {
+public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBODocument, IApprovalData, IBOTagCanceled {
 
 	/**
 	 * 序列化版本标记
@@ -240,6 +241,35 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	@Override
 	public final void setCanceled(emYesNo value) {
 		this.setProperty(CanceledProperty, value);
+	}
+
+	/**
+	 * 取消 属性
+	 */
+	@DbField(name = "Refed", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	public final static IPropertyInfo<emYesNo> ReferencedProperty = registerProperty("Referenced", emYesNo.class,
+			MY_CLASS);
+
+	/**
+	 * 获取-取消
+	 * 
+	 * @return 值
+	 */
+	@Override
+	@XmlElement(name = "Referenced")
+	public final emYesNo getReferenced() {
+		return this.getProperty(ReferencedProperty);
+	}
+
+	/**
+	 * 设置-取消
+	 * 
+	 * @param value
+	 *            值
+	 */
+	@Override
+	public final void setReferenced(emYesNo value) {
+		this.setProperty(ReferencedProperty, value);
 	}
 
 	/**

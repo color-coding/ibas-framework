@@ -2,7 +2,6 @@ package org.colorcoding.ibas.bobas.bo;
 
 import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
-import org.colorcoding.ibas.bobas.data.emYesNo;
 
 /**
  * 单据行
@@ -53,20 +52,6 @@ public interface IBODocumentLine extends IBusinessObject, IBOLine, IBOStorageTag
 	 * @param value
 	 */
 	void setVisOrder(Integer value);
-
-	/**
-	 * 获取-取消
-	 * 
-	 * @return
-	 */
-	emYesNo getCanceled();
-
-	/**
-	 * 设置-取消
-	 * 
-	 * @param value
-	 */
-	void setCanceled(emYesNo value);
 
 	/**
 	 * 获取-状态

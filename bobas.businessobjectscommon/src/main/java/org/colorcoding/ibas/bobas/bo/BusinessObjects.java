@@ -131,14 +131,12 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 			if (this.getParent() instanceof IBODocument) {
 				IBODocument doc = (IBODocument) this.getParent();
 				docItem.setDocEntry(doc.getDocEntry());
-				docItem.setCanceled(doc.getCanceled());
 				docItem.setLineStatus(doc.getDocumentStatus());
 				docItem.setStatus(doc.getStatus());
 			}
 			if (this.getParent() instanceof IBODocumentLine) {
 				IBODocumentLine doc = (IBODocumentLine) this.getParent();
 				docItem.setDocEntry(doc.getDocEntry());
-				docItem.setCanceled(doc.getCanceled());
 				docItem.setLineStatus(doc.getLineStatus());
 				docItem.setStatus(doc.getStatus());
 			}
@@ -219,9 +217,36 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 	 */
 	private void changeElementStatus(PropertyChangeEvent evt) {
 		// 父项的属性改变
+		// 可取消对象
+		if (evt.getPropertyName().equals("Canceled")) {
+			if (evt.getSource() instanceof IBOTagCanceled) {
+				// 头
+				IBOTagCanceled parentTag = (IBOTagCanceled) evt.getSource();
+				for (E item : this) {
+					if (!(item instanceof IBOTagCanceled)) {
+						continue;
+					}
+					IBOTagCanceled lineTag = (IBOTagCanceled) item;
+					lineTag.setCanceled(parentTag.getCanceled());
+				}
+			}
+		}
+		// 标记删除对象
+		if (evt.getPropertyName().equals("Deleted")) {
+			if (evt.getSource() instanceof IBOTagDeleted) {
+				// 头
+				IBOTagDeleted parentTag = (IBOTagDeleted) evt.getSource();
+				for (E item : this) {
+					if (!(item instanceof IBOTagDeleted)) {
+						continue;
+					}
+					IBOTagDeleted lineTag = (IBOTagDeleted) item;
+					lineTag.setDeleted(parentTag.getDeleted());
+				}
+			}
+		}
 		if (evt.getPropertyName().equals("DocEntry") || evt.getPropertyName().equals("LineStatus")
-				|| evt.getPropertyName().equals("Canceled") || evt.getPropertyName().equals("DocumentStatus")
-				|| evt.getPropertyName().equals("Status")) {
+				|| evt.getPropertyName().equals("DocumentStatus") || evt.getPropertyName().equals("Status")) {
 			// 单据类
 			if (evt.getSource() instanceof IBODocument) {
 				// 头
@@ -235,8 +260,6 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 						lineItem.setDocEntry(parentItem.getDocEntry());
 					} else if (evt.getPropertyName().equals("DocumentStatus")) {
 						lineItem.setLineStatus(parentItem.getDocumentStatus());
-					} else if (evt.getPropertyName().equals("Canceled")) {
-						lineItem.setCanceled(parentItem.getCanceled());
 					} else if (evt.getPropertyName().equals("Status")) {
 						lineItem.setStatus(parentItem.getStatus());
 					}
@@ -254,8 +277,6 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 						lineItem.setDocEntry(parentItem.getDocEntry());
 					} else if (evt.getPropertyName().equals("LineStatus")) {
 						lineItem.setLineStatus(parentItem.getLineStatus());
-					} else if (evt.getPropertyName().equals("Canceled")) {
-						lineItem.setCanceled(parentItem.getCanceled());
 					} else if (evt.getPropertyName().equals("Status")) {
 						lineItem.setStatus(parentItem.getStatus());
 					}
@@ -331,9 +352,61 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 	 */
 	private void changeParentStatus(PropertyChangeEvent evt) {
 		// 不是关注的属性改变退出
-		if (evt.getPropertyName().equals("LineStatus") || evt.getPropertyName().equals("Canceled")
-				|| evt.getPropertyName().equals("Status")) {
-			IFieldData parentField = null;
+		IFieldData parentField = null;
+		// 可取消
+		if (evt.getPropertyName().equals("Canceled")) {
+			if (evt.getSource() instanceof IBOTagCanceled) {
+				IBOTagCanceled lineItem = (IBOTagCanceled) evt.getSource();
+				if (this.getParent() instanceof IBOTagCanceled && this.getParent() instanceof IManageFields) {
+					parentField = ((IManageFields) parent).getField(evt.getPropertyName());
+					if (parentField == null) {
+						return;
+					}
+					emYesNo boCanceled = lineItem.getCanceled();
+					// 子项全部为修改值，则父项也修改
+					for (E item : this) {
+						if (!(item instanceof IBOTagCanceled)) {
+							continue;
+						}
+						lineItem = (IBOTagCanceled) item;
+						if (lineItem.getCanceled() != boCanceled) {
+							// 子项有不同值，退出，优先不取消
+							parentField.setValue(emYesNo.No);
+							return;
+						}
+					}
+					parentField.setValue(boCanceled);
+				}
+			}
+		}
+		// 可删除
+		if (evt.getPropertyName().equals("Deleted")) {
+			if (evt.getSource() instanceof IBOTagDeleted) {
+				IBOTagDeleted lineItem = (IBOTagDeleted) evt.getSource();
+				if (this.getParent() instanceof IBOTagDeleted && this.getParent() instanceof IManageFields) {
+					parentField = ((IManageFields) parent).getField(evt.getPropertyName());
+					if (parentField == null) {
+						return;
+					}
+					emYesNo boDeleted = lineItem.getDeleted();
+					// 子项全部为修改值，则父项也修改
+					for (E item : this) {
+						if (!(item instanceof IBOTagDeleted)) {
+							continue;
+						}
+						lineItem = (IBOTagDeleted) item;
+						if (lineItem.getDeleted() != boDeleted) {
+							// 子项有不同值，退出，优先不删除
+							parentField.setValue(emYesNo.No);
+							return;
+						}
+					}
+					parentField.setValue(boDeleted);
+				}
+			}
+		}
+		// 单据对象
+		if (evt.getPropertyName().equals("LineStatus") || evt.getPropertyName().equals("Status")) {
 			if (evt.getSource() instanceof IBODocumentLine) {
 				IBODocumentLine lineItem = (IBODocumentLine) evt.getSource();
 				if (this.getParent() instanceof IBODocument && this.getParent() instanceof IManageFields) {
@@ -376,26 +449,6 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 							}
 						}
 						parentField.setValue(boLineStatus);
-					} else if (evt.getPropertyName().equals("Canceled")) {
-						// 使用字段赋值避免触发事件
-						parentField = ((IManageFields) parent).getField(evt.getPropertyName());
-						if (parentField == null) {
-							return;
-						}
-						emYesNo boCanceled = lineItem.getCanceled();
-						// 子项全部为修改值，则父项也修改
-						for (E item : this) {
-							if (!(item instanceof IBODocumentLine)) {
-								continue;
-							}
-							lineItem = (IBODocumentLine) item;
-							if (lineItem.getCanceled() != boCanceled) {
-								// 子项有不同值，退出，优先不取消
-								parent.setCanceled(emYesNo.No);
-								return;
-							}
-						}
-						parentField.setValue(boCanceled);
 					} else if (evt.getPropertyName().equals("Status")) {
 						// 使用字段赋值避免触发事件
 						parentField = ((IManageFields) parent).getField(evt.getPropertyName());
@@ -411,7 +464,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 							lineItem = (IBODocumentLine) item;
 							if (lineItem.getStatus() != boStatus) {
 								// 子项有不同值，退出，优先不关闭
-								parent.setStatus(emBOStatus.Open);
+								parentField.setValue(emBOStatus.Open);
 								return;
 							}
 						}
@@ -457,26 +510,6 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 							}
 						}
 						parentField.setValue(boLineStatus);
-					} else if (evt.getPropertyName().equals("Canceled")) {
-						// 使用字段赋值避免触发事件
-						parentField = ((IManageFields) parent).getField(evt.getPropertyName());
-						if (parentField == null) {
-							return;
-						}
-						emYesNo boCanceled = lineItem.getCanceled();
-						// 子项全部为修改值，则父项也修改
-						for (E item : this) {
-							if (!(item instanceof IBODocumentLine)) {
-								continue;
-							}
-							lineItem = (IBODocumentLine) item;
-							if (lineItem.getCanceled() != boCanceled) {
-								// 子项有不同值，退出，优先不取消
-								parent.setCanceled(emYesNo.No);
-								return;
-							}
-						}
-						parentField.setValue(boCanceled);
 					} else if (evt.getPropertyName().equals("Status")) {
 						// 使用字段赋值避免触发事件
 						parentField = ((IManageFields) parent).getField(evt.getPropertyName());
@@ -492,7 +525,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 							lineItem = (IBODocumentLine) item;
 							if (lineItem.getStatus() != boStatus) {
 								// 子项有不同值，退出，优先不关闭
-								parent.setStatus(emBOStatus.Open);
+								parentField.setValue(emBOStatus.Open);
 								return;
 							}
 						}

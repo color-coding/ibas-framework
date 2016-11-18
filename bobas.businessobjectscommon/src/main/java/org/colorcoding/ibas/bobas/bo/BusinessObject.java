@@ -167,22 +167,26 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 			tagBO.setUpdateUserSign(UnknownUser.UNKNOWN_USER_SIGN);
 		}
 		// 重置引用状态
-		if (this instanceof IBOReferenced) {
-			IBOReferenced refBO = (IBOReferenced) this;
-			refBO.setDeleted(emYesNo.No);
-			refBO.setReferenced(emYesNo.No);
+		if (this instanceof IBOTagDeleted) {
+			IBOTagDeleted tagBO = (IBOTagDeleted) this;
+			tagBO.setDeleted(emYesNo.No);
+			tagBO.setReferenced(emYesNo.No);
+		}
+		// 重置引用状态
+		if (this instanceof IBOTagCanceled) {
+			IBOTagCanceled tagBO = (IBOTagCanceled) this;
+			tagBO.setCanceled(emYesNo.No);
+			tagBO.setReferenced(emYesNo.No);
 		}
 		// 重置对象状态
 		if (this instanceof IBODocument) {
 			IBODocument docBO = (IBODocument) this;
-			docBO.setCanceled(emYesNo.No);
 			docBO.setDocumentStatus(emDocumentStatus.Planned);
 			docBO.setStatus(emBOStatus.Open);
 			docBO.setDocNum(0);
 			docBO.setPeriod(0);
 		} else if (this instanceof IBODocumentLine) {
 			IBODocumentLine docLineBO = (IBODocumentLine) this;
-			docLineBO.setCanceled(emYesNo.No);
 			docLineBO.setStatus(emBOStatus.Open);
 			docLineBO.setLineStatus(emDocumentStatus.Planned);
 		}
@@ -285,11 +289,11 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	public void delete() {
 		if (!this.isNew()) {
 			// 非新建状态删除可用
-			if (this instanceof IBOReferenced) {
-				IBOReferenced refBO = (IBOReferenced) this;
-				if (refBO.getReferenced() == emYesNo.Yes) {
+			if (this instanceof IBOTagDeleted) {
+				IBOTagDeleted tagBO = (IBOTagDeleted) this;
+				if (tagBO.getReferenced() == emYesNo.Yes) {
 					// 被引用的数据，不允许删除
-					refBO.setDeleted(emYesNo.Yes);
+					tagBO.setDeleted(emYesNo.Yes);
 					return;
 				}
 			}
