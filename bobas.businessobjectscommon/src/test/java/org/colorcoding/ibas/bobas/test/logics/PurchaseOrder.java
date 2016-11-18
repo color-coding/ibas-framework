@@ -244,14 +244,14 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	}
 
 	/**
-	 * 取消 属性
+	 * 引用 属性
 	 */
 	@DbField(name = "Refed", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<emYesNo> ReferencedProperty = registerProperty("Referenced", emYesNo.class,
 			MY_CLASS);
 
 	/**
-	 * 获取-取消
+	 * 获取-引用
 	 * 
 	 * @return 值
 	 */
@@ -262,7 +262,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	}
 
 	/**
-	 * 设置-取消
+	 * 设置-引用
 	 * 
 	 * @param value
 	 *            值
