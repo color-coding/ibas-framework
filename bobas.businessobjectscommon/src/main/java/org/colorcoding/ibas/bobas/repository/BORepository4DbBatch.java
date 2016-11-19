@@ -1,12 +1,20 @@
 package org.colorcoding.ibas.bobas.repository;
 
+import java.lang.reflect.Array;
+
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
+import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
+import org.colorcoding.ibas.bobas.core.IBusinessObjectListBase;
 import org.colorcoding.ibas.bobas.core.ITrackStatusOperator;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
+import org.colorcoding.ibas.bobas.core.fields.IFieldData;
+import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.data.KeyValue;
+import org.colorcoding.ibas.bobas.db.BOParseException;
+import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
 import org.colorcoding.ibas.bobas.db.IDbCommand;
 import org.colorcoding.ibas.bobas.db.IDbDataReader;
@@ -50,7 +58,7 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 	public IOperationResult<?> save(IBusinessObjectBase[] bos) {
 		OperationResult<?> operationResult = new OperationResult<Object>();
 		try {
-			IBusinessObjectBase[] nBOs = this.mySave(bos);
+			IBusinessObjectBase[] nBOs = this.mySave(bos, false);
 			for (IBusinessObjectBase nBO : nBOs) {
 				if (nBO instanceof ITrackStatusOperator) {
 					// 保存成功，标记对象为OLD
@@ -67,22 +75,109 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 
 	@Override
 	public IOperationResult<?> saveEx(IBusinessObjectBase[] bos) {
-		// TODO Auto-generated method stub
-		return null;
+
+		OperationResult<?> operationResult = new OperationResult<Object>();
+		try {
+			IBusinessObjectBase[] nBOs = this.mySave(bos, true);
+			for (IBusinessObjectBase nBO : nBOs) {
+				if (nBO instanceof ITrackStatusOperator) {
+					// 保存成功，标记对象为OLD
+					ITrackStatusOperator operator = (ITrackStatusOperator) nBO;
+					operator.markOld(true);
+				}
+			}
+			operationResult.addResultObjects(nBOs);
+		} catch (Exception e) {
+			operationResult.setError(e);
+		}
+		return operationResult;
 	}
 
 	/**
-	 * 保存对象，不包括子属性
+	 * 解析对象保存语句
+	 * 
+	 * @param bo
+	 *            对象实例
+	 * @param recursion
+	 *            包含子项
+	 * @return 对象保存语句数组
+	 * @throws DbException
+	 * @throws BOParseException
+	 */
+	private ISqlQuery[] parseSaveQueries(IBusinessObjectBase bo, boolean recursion)
+			throws DbException, BOParseException {
+		IBOAdapter4Db adapter4Db = this.createDbAdapter().createBOAdapter();
+		ArrayList<ISqlQuery> sqlQueries = new ArrayList<>();
+		// 不是更新状态，不做处理
+		if (!bo.isDirty())
+			return sqlQueries.toArray(new ISqlQuery[] {});
+		// 存储标记
+		this.tagStorage(bo);
+		if (bo.isNew()) {
+			// 新建的对象
+			// 设置主键
+			sqlQueries.add(adapter4Db.parseSqlInsert(bo));
+		} else if (bo.isDeleted()) {
+			// 删除对象
+			sqlQueries.add(adapter4Db.parseSqlDelete(bo));
+		} else {
+			// 修改对象，先删除数据，再添加新的实例
+			sqlQueries.add(adapter4Db.parseSqlDelete(bo));
+			sqlQueries.add(adapter4Db.parseSqlInsert(bo));
+		}
+		if (recursion) {
+			// 处理子项
+			if (bo instanceof IManageFields) {
+				IManageFields boFields = (IManageFields) bo;
+				for (IFieldData fieldData : boFields.getFields()) {
+					if (!fieldData.isSavable()) {
+						// 不保存字段，继续下一个
+						continue;
+					}
+					Object fdValue = fieldData.getValue();
+					if (fdValue == null) {
+						// 空值，继续下一个
+						continue;
+					}
+					if (fdValue instanceof IBusinessObjectBase) {
+						// 解析BO保存语句，并添加到批量命令
+						sqlQueries.addAll(this.parseSaveQueries((IBusinessObjectBase) fdValue, true));
+					} else if (fdValue.getClass().isArray()) {
+						// 对象数组
+						int length = Array.getLength(fdValue);
+						for (int i = 0; i < length; i++) {
+							Object child = Array.get(fdValue, i);
+							if (child instanceof IBusinessObjectBase) {
+								// 解析BO保存语句，并添加到批量命令
+								sqlQueries.addAll(this.parseSaveQueries((IBusinessObjectBase) child, true));
+							}
+						}
+					} else if (fdValue instanceof IBusinessObjectListBase<?>) {
+						// 对象列表
+						IBusinessObjectListBase<?> childs = (IBusinessObjectListBase<?>) fdValue;
+						for (IBusinessObjectBase child : childs) {
+							// 解析BO保存语句，并添加到批量命令
+							sqlQueries.addAll(this.parseSaveQueries((IBusinessObjectBase) child, true));
+						}
+					}
+				}
+			}
+		}
+		return sqlQueries.toArray(new ISqlQuery[] {});
+	}
+
+	/**
+	 * 保存对象
 	 * 
 	 * @param bo
 	 *            对象
-	 * @param updateKeys
-	 *            更新主键
+	 * @param recursion
+	 *            包含子项
 	 * @return 保存的对象
 	 * @throws Exception
 	 */
-	private final IBusinessObjectBase[] mySave(IBusinessObjectBase[] bos) throws Exception {
-		if (bos == null && bos.length <= 0) {
+	private final IBusinessObjectBase[] mySave(IBusinessObjectBase[] bos, boolean recursion) throws Exception {
+		if (bos == null || bos.length <= 0) {
 			throw new RepositoryException(i18n.prop("msg_bobas_invalid_bo"));
 		}
 		IDbDataReader reader = null;
@@ -103,7 +198,6 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 					continue;
 				if (!bo.isDirty())
 					continue;
-				this.tagStorage(bo);// 存储标记
 				if (bo.isNew()) {
 					// 新建的对象
 					// 设置主键
@@ -117,32 +211,38 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 						}
 					}
 					keyUsedCount++;// 使用了主键
-					command.addBatch(adapter4Db.parseSqlInsert(bo));
-					if (this.isPostTransaction())
+				}
+				// 解析BO保存语句，并添加到批量命令
+				for (ISqlQuery sqlQuery : this.parseSaveQueries(bo, recursion)) {
+					command.addBatch(sqlQuery);
+				}
+				// 通知事务
+				if (this.isPostTransaction()) {
+					if (bo.isNew()) {
+						// 新建对象
 						command.addBatch(adapter4Db.parseBOTransactionNotification(TransactionType.Add, bo));
-				} else if (bo.isDeleted()) {
-					// 删除对象
-					command.addBatch(adapter4Db.parseSqlDelete(bo));
-					if (this.isPostTransaction())
-						command.addBatch(adapter4Db.parseBOTransactionNotification(TransactionType.Update, bo));
-				} else {
-					// 修改对象，先删除数据，再添加新的实例
-					command.addBatch(adapter4Db.parseSqlDelete(bo));
-					command.addBatch(adapter4Db.parseSqlInsert(bo));
-					if (this.isPostTransaction())
+					} else if (bo.isDeleted()) {
+						// 删除对象
 						command.addBatch(adapter4Db.parseBOTransactionNotification(TransactionType.Delete, bo));
+					} else {
+						// 更新对象
+						command.addBatch(adapter4Db.parseBOTransactionNotification(TransactionType.Update, bo));
+					}
 				}
 				savedBOs.add(bo);
 			}
 			command.executeBatch();
 			command.clearBatch();
 			// 更新主键
-			adapter4Db.updatePrimaryKeyRecords(bos[0], keyUsedCount, command);
+			if (keyUsedCount > 0)
+				adapter4Db.updatePrimaryKeyRecords(bos[0], keyUsedCount, command);
 			if (myTrans)
 				this.commitTransaction();// 自己打开的事务，关闭事务
 		} catch (Exception e) {
 			if (myTrans)
 				this.rollbackTransaction();// 自己打开的事务，关闭事务
+			// 发生错误，返回参数重置
+			savedBOs = new ArrayList<>();
 		} finally {
 			if (reader != null)
 				reader.close();
@@ -155,4 +255,5 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 		}
 		return savedBOs.toArray(new IBusinessObjectBase[] {});
 	}
+
 }

@@ -506,7 +506,46 @@ public class testBORepository extends TestCase {
 		}
 
 		BORepository4DbBatch boRepository = new BORepository4DbBatch("Master");
-		IOperationResult<?> operationResult = boRepository.save(orders.toArray(new IBusinessObjectBase[] {}));
+		IOperationResult<?> operationResult = boRepository.saveEx(orders.toArray(new IBusinessObjectBase[] {}));
+		System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
+				operationResult.getMessage(), operationResult.getResultObjects().size()));
+		assertEquals(operationResult.getResultCode(), 0);
+
+		// 测试更新
+		orders.clear();
+		boolean update = true;
+		for (Object object : operationResult.getResultObjects()) {
+			ISalesOrder order = (ISalesOrder) object;
+			if (update) {
+				order.setCustomerCode(String.valueOf(DateTime.getNow().getTime()));
+				order.getSalesOrderItems().firstOrDefault().setPrice("9.9");
+				order.getSalesOrderItems().create().setItemCode("big brid");
+				update = false;
+			} else {
+				update = true;
+				order = new SalesOrder();
+				order.setDocumentUser(new User());
+				order.getDocumentUser().setUserCode(DateTime.getNow().toString("HHmmss") + "00");
+				order.setTeamUsers(new User[] { new User(), new User() });
+				order.getTeamUsers()[0].setUserCode(DateTime.getNow().toString("HHmmss") + "01");
+				order.getTeamUsers()[1].setUserCode(DateTime.getNow().toString("HHmmss") + "02");
+				order.setCustomerCode("C00001");
+				order.setCustomerName("宇宙无敌影业");
+				ISalesOrderItem item = order.getSalesOrderItems().create();
+				item.setItemCode("T800");
+				item.setItemDescription("终结者机器人-T800");
+				item.setQuantity(1);
+				item.setPrice(999999.99);
+				item = order.getSalesOrderItems().create();
+				item.setItemCode("S001");
+				item.setItemDescription("绝地武士-剑");
+				item.setQuantity(2);
+				item.setPrice(99.00);
+			}
+			orders.add(order);
+		}
+		boRepository = new BORepository4DbBatch("Master");
+		operationResult = boRepository.saveEx(orders.toArray(new IBusinessObjectBase[] {}));
 		System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
 				operationResult.getMessage(), operationResult.getResultObjects().size()));
 		assertEquals(operationResult.getResultCode(), 0);

@@ -2,7 +2,7 @@
 <!DOCTYPE configuration>
 <ns2:configuration xmlns:ns2="http://colorcoding.org/ibas/bobas/configuration">
 	<appSettings>
-		<add key="MsgLevel" value="DEBUG" />
+ 		<add key="MsgLevel" value="DEBUG" />
 		<add key="MasterDbType" value="MYSQL" />
 		<add key="MasterDbServer" value="ibas-dev-mysql" />
 		<add key="MasterDbName" value="ibas_demo" />
