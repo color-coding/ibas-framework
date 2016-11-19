@@ -867,9 +867,81 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	}
 
 	@Override
+	public void setPrimaryKeys(IBusinessObjectBase bo, KeyValue[] keys) {
+		if (bo instanceof IBODocument) {
+			IBODocument boKey = (IBODocument) bo;
+			for (KeyValue key : keys) {
+				if (key.key.equals("DocEntry")) {
+					boKey.setDocEntry((int) (key.value));
+				}
+			}
+		} else if (bo instanceof IBODocumentLine) {
+			IBODocumentLine boKey = (IBODocumentLine) bo;
+			for (KeyValue key : keys) {
+				if (key.key.equals("DocEntry")) {
+					boKey.setDocEntry((int) (key.value));
+				} else if (key.key.equals("LineId")) {
+					boKey.setLineId((int) (key.value));
+				}
+			}
+		} else if (bo instanceof IBOMasterData) {
+			IBOMasterData boKey = (IBOMasterData) bo;
+			for (KeyValue key : keys) {
+				if (key.key.equals("DocEntry")) {
+					boKey.setDocEntry((int) (key.value));
+				} else if (key.key.equals("Code")) {
+					boKey.setCode(String.valueOf(key.value));
+				}
+			}
+		} else if (bo instanceof IBOMasterDataLine) {
+			IBOMasterDataLine boKey = (IBOMasterDataLine) bo;
+			for (KeyValue key : keys) {
+				if (key.key.equals("LineId")) {
+					boKey.setLineId((int) (key.value));
+				} else if (key.key.equals("Code")) {
+					boKey.setCode(String.valueOf(key.value));
+				}
+			}
+		} else if (bo instanceof IBOSimple) {
+			IBOSimple boKey = (IBOSimple) bo;
+			for (KeyValue key : keys) {
+				if (key.key.equals("ObjectKey")) {
+					boKey.setObjectKey((int) (key.value));
+				}
+			}
+		} else if (bo instanceof IBOSimpleLine) {
+			IBODocumentLine boKey = (IBODocumentLine) bo;
+			for (KeyValue key : keys) {
+				if (key.key.equals("ObjectKey")) {
+					boKey.setDocEntry((int) (key.value));
+				} else if (key.key.equals("LineId")) {
+					boKey.setLineId((int) (key.value));
+				}
+			}
+		} else if (bo instanceof ICustomPrimaryKeys) {
+			// 自定义主键
+			if (bo instanceof IFieldMaxValueKey) {
+				IFieldMaxValueKey maxValueKey = (IFieldMaxValueKey) bo;
+				IFieldDataDb dbField = maxValueKey.getMaxValueField();
+				for (KeyValue key : keys) {
+					if (key.key.equals(dbField.getName())) {
+						dbField.setValue(key.value);
+					}
+				}
+			}
+		}
+	}
+
+	@Override
 	public KeyValue[] usePrimaryKeys(IBusinessObjectBase bo, IDbCommand command) throws BOParseException {
-		KeyValue[] keys = null;
-		keys = this.parsePrimaryKeys(bo, command);
+		// 获取主键
+		KeyValue[] keys = this.parsePrimaryKeys(bo, command);
+		if (keys == null || keys.length == 0) {
+			throw new BOParseException(i18n.prop("msg_bobas_not_found_bo_primary_keys", bo.getClass().getName()));
+		}
+		// 主键赋值
+		this.setPrimaryKeys(bo, keys);
+		// 更新主键
 		this.updatePrimaryKeyRecords(bo, command);
 		return keys;
 	}
@@ -882,14 +954,14 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				throw new SqlScriptsException(i18n.prop("msg_bobas_invaild_sql_scripts"));
 			}
 			ArrayList<KeyValue> keys = new ArrayList<KeyValue>();
+			IDbDataReader reader = null;
 			if (bo instanceof IBODocument) {
 				// 业务单据主键
 				IBODocument item = (IBODocument) bo;
-				IDbDataReader reader = command.executeReader(sqlScripts.getBOPrimaryKeyQuery(item.getObjectCode()));
+				reader = command.executeReader(sqlScripts.getBOPrimaryKeyQuery(item.getObjectCode()));
 				if (reader.next()) {
-					item.setDocEntry(reader.getInt(1));
+					keys.add(new KeyValue("DocEntry", reader.getInt(1)));
 					reader.close();
-					keys.add(new KeyValue("DocEntry", item.getDocEntry()));
 				} else {
 					reader.close();
 					throw new SqlScriptsException(
@@ -906,12 +978,12 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				String table = String.format(sqlScripts.getDbObjectSign(), this.getBOMasterTable((IManageFields) bo));
 				String field = String.format(sqlScripts.getDbObjectSign(), "LineId");
 				String where = this.parseSqlQuery(criteria.getConditions()).getQueryString();
-				IDbDataReader reader = command.executeReader(sqlScripts.groupMaxValueQuery(field, table, where));
+				reader = command.executeReader(sqlScripts.groupMaxValueQuery(field, table, where));
 				if (reader.next()) {
-					item.setLineId(reader.getInt(1) + 1);
+					// 已知不返回 keys.add(new KeyValue("DocEntry",
+					// item.getDocEntry()));
+					keys.add(new KeyValue("LineId", reader.getInt(1) + 1));
 					reader.close();
-					keys.add(new KeyValue("DocEntry", item.getDocEntry()));
-					keys.add(new KeyValue("LineId", item.getLineId()));
 				} else {
 					reader.close();
 					throw new SqlScriptsException(
@@ -920,12 +992,11 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			} else if (bo instanceof IBOMasterData) {
 				// 主数据主键
 				IBOMasterData item = (IBOMasterData) bo;
-				IDbDataReader reader = command.executeReader(sqlScripts.getBOPrimaryKeyQuery(item.getObjectCode()));
+				reader = command.executeReader(sqlScripts.getBOPrimaryKeyQuery(item.getObjectCode()));
 				if (reader.next()) {
-					item.setDocEntry(reader.getInt(1));
+					// 已知不返回 keys.add(new KeyValue("Code", item.getCode()));
+					keys.add(new KeyValue("DocEntry", reader.getInt(1)));
 					reader.close();
-					keys.add(new KeyValue("Code", item.getCode()));
-					keys.add(new KeyValue("DocEntry", item.getDocEntry()));
 				} else {
 					reader.close();
 					throw new SqlScriptsException(
@@ -941,12 +1012,11 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				String table = String.format(sqlScripts.getDbObjectSign(), this.getBOMasterTable((IManageFields) bo));
 				String field = String.format(sqlScripts.getDbObjectSign(), "LineId");
 				String where = this.parseSqlQuery(criteria.getConditions()).getQueryString();
-				IDbDataReader reader = command.executeReader(sqlScripts.groupMaxValueQuery(field, table, where));
+				reader = command.executeReader(sqlScripts.groupMaxValueQuery(field, table, where));
 				if (reader.next()) {
-					item.setLineId(reader.getInt(1) + 1);
+					// 已知不返回 keys.add(new KeyValue("Code", item.getCode()));
+					keys.add(new KeyValue("LineId", reader.getInt(1) + 1));
 					reader.close();
-					keys.add(new KeyValue("Code", item.getCode()));
-					keys.add(new KeyValue("LineId", item.getLineId()));
 				} else {
 					reader.close();
 					throw new SqlScriptsException(
@@ -955,11 +1025,10 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			} else if (bo instanceof IBOSimple) {
 				// 简单对象主键
 				IBOSimple item = (IBOSimple) bo;
-				IDbDataReader reader = command.executeReader(sqlScripts.getBOPrimaryKeyQuery(item.getObjectCode()));
+				reader = command.executeReader(sqlScripts.getBOPrimaryKeyQuery(item.getObjectCode()));
 				if (reader.next()) {
-					item.setObjectKey(reader.getInt(1));
+					keys.add(new KeyValue("ObjectKey", reader.getInt(1)));
 					reader.close();
-					keys.add(new KeyValue("ObjectKey", item.getObjectKey()));
 				} else {
 					reader.close();
 					throw new SqlScriptsException(
@@ -976,12 +1045,11 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				String table = String.format(sqlScripts.getDbObjectSign(), this.getBOMasterTable((IManageFields) bo));
 				String field = String.format(sqlScripts.getDbObjectSign(), "LineId");
 				String where = this.parseSqlQuery(criteria.getConditions()).getQueryString();
-				IDbDataReader reader = command.executeReader(sqlScripts.groupMaxValueQuery(field, table, where));
+				reader = command.executeReader(sqlScripts.groupMaxValueQuery(field, table, where));
 				if (reader.next()) {
-					item.setLineId(reader.getInt(1) + 1);
+					//已知不返回	keys.add(new KeyValue("ObjectKey", item.getObjectKey()));
+					keys.add(new KeyValue("LineId", reader.getInt(1) + 1));
 					reader.close();
-					keys.add(new KeyValue("ObjectKey", item.getObjectKey()));
-					keys.add(new KeyValue("LineId", item.getLineId()));
 				} else {
 					reader.close();
 					throw new SqlScriptsException(
@@ -1008,18 +1076,15 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 					PropertyInfoList pInfoList = PropertyInfoManager.getPropertyInfoList(bo.getClass());
 					IConditions conditions = this.fixConditions(maxValueKey.getMaxValueConditions(), pInfoList);
 					String where = this.parseSqlQuery(conditions).getQueryString();
-					IDbDataReader reader = command.executeReader(sqlScripts.groupMaxValueQuery(field, table, where));
-
+					reader = command.executeReader(sqlScripts.groupMaxValueQuery(field, table, where));
 					if (reader.next()) {
-						dbField.setValue(reader.getInt(1) + 1);
+						keys.add(new KeyValue(dbField.getName(), reader.getInt(1) + 1));
 						reader.close();
-						keys.add(new KeyValue(dbField.getName(), dbField.getValue()));
 					} else {
 						reader.close();
 						throw new SqlScriptsException(
 								i18n.prop("msg_bobas_not_found_bo_primary_keys", bo.getClass().getName()));
 					}
-
 				}
 			}
 			return keys.toArray(new KeyValue[] {});
@@ -1030,6 +1095,12 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 
 	@Override
 	public void updatePrimaryKeyRecords(IBusinessObjectBase bo, IDbCommand command) throws BOParseException {
+		this.updatePrimaryKeyRecords(bo, 1, command);
+	}
+
+	@Override
+	public void updatePrimaryKeyRecords(IBusinessObjectBase bo, int addValue, IDbCommand command)
+			throws BOParseException {
 		try {
 			if (bo instanceof IBOLine) {
 				// 对象行，不做处理
@@ -1044,17 +1115,17 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			if (bo instanceof IBODocument) {
 				// 业务单据主键
 				IBODocument item = (IBODocument) bo;
-				nextValue = item.getDocEntry() + 1;
+				nextValue = item.getDocEntry() + addValue;
 				boCode = item.getObjectCode();
 			} else if (bo instanceof IBOMasterData) {
 				// 主数据主键
 				IBOMasterData item = (IBOMasterData) bo;
-				nextValue = item.getDocEntry() + 1;
+				nextValue = item.getDocEntry() + addValue;
 				boCode = item.getObjectCode();
 			} else if (bo instanceof IBOSimple) {
 				// 简单对象主键
 				IBOSimple item = (IBOSimple) bo;
-				nextValue = item.getObjectKey() + 1;
+				nextValue = item.getObjectKey() + addValue;
 				boCode = item.getObjectCode();
 			}
 			if (boCode == null || nextValue == 0) {
@@ -1062,7 +1133,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				throw new BOParseException(i18n.prop("msg_bobas_not_specify_primary_keys_obtaining_method"));
 			}
 			// 更新数据记录
-			command.executeUpdate(sqlScripts.getUpdateBOPrimaryKeyScript(boCode));
+			command.executeUpdate(sqlScripts.getUpdateBOPrimaryKeyScript(boCode, addValue));
 		} catch (Exception e) {
 			throw new BOParseException(e);
 		}

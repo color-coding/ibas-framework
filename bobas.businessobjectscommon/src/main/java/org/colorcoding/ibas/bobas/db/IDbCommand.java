@@ -52,4 +52,33 @@ public interface IDbCommand {
 	 * @throws DbException
 	 */
 	void close() throws DbException;
+
+	/**
+	 * 添加批量语句
+	 * 
+	 * @param sql
+	 */
+	void addBatch(String sql) throws DbException;
+
+	/**
+	 * 添加批量语句
+	 * 
+	 * @param sql
+	 */
+	void addBatch(ISqlQuery sql) throws DbException;
+
+	/**
+	 * 清除批量语句
+	 * 
+	 * @throws DbException
+	 */
+	void clearBatch() throws DbException;
+
+	/**
+	 * 运行批量语句
+	 * 
+	 * @return 影响的行数
+	 * @throws DbException
+	 */
+	int[] executeBatch() throws DbException;
 }

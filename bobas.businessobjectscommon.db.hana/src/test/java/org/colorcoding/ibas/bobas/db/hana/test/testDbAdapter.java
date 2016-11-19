@@ -44,6 +44,7 @@ public class testDbAdapter extends TestCase {
 			Connection dbConn = DriverManager.getConnection(dbURL, userName, userPwd);
 			System.out.println("连接成功");
 			Statement stmt = dbConn.createStatement();
+			System.out.println(String.format("QueryTimeout:%s", stmt.getQueryTimeout()));
 			ResultSet rs = stmt.executeQuery("select * from CC_TT_USER;");
 			ResultSetMetaData rsmd = rs.getMetaData();
 			System.out.println(String.format("row count:%s | colunm count:%s ", rs.getRow(), rsmd.getColumnCount()));

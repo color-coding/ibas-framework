@@ -70,15 +70,14 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 	 *            事务类型
 	 * @param bo
 	 *            发生业务对象
-	 * @return 是否继续执行
 	 * @throws SaveActionsException
 	 *             运行时错误
 	 */
-	protected final boolean notifyActions(SaveActionsType type, IBusinessObjectBase bo) throws SaveActionsException {
+	private void notifyActions(SaveActionsType type, IBusinessObjectBase bo) throws SaveActionsException {
 		if (this.saveActionsSupport == null) {
-			return true;
+			return;
 		}
-		return this.saveActionsSupport.fireActions(type, bo);
+		this.saveActionsSupport.fireActions(type, bo);
 	}
 
 	/**

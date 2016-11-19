@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.db;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
@@ -57,6 +58,39 @@ public class DbCommand implements IDbCommand {
 		try {
 			RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_SQL_SCRIPTS, sql);
 			return this.statement.executeUpdate(sql);
+		} catch (Exception e) {
+			throw new DbException(e);
+		}
+	}
+
+	@Override
+	public void addBatch(String sql) throws DbException {
+		try {
+			RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_SQL_SCRIPTS, sql);
+			this.statement.addBatch(sql);
+		} catch (SQLException e) {
+			throw new DbException(e);
+		}
+	}
+
+	@Override
+	public void addBatch(ISqlQuery sql) throws DbException {
+		this.addBatch(sql.getQueryString());
+	}
+
+	@Override
+	public void clearBatch() throws DbException {
+		try {
+			this.statement.clearBatch();
+		} catch (Exception e) {
+			throw new DbException(e);
+		}
+	}
+
+	@Override
+	public int[] executeBatch() throws DbException {
+		try {
+			return this.statement.executeBatch();
 		} catch (Exception e) {
 			throw new DbException(e);
 		}

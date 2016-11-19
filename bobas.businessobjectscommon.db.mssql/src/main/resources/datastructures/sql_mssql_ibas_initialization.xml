@@ -30,7 +30,7 @@
 		<Step Name="create stored procedures" RunOnValue="0">
 			<Script>
 				CREATE PROCEDURE ${Company}_SP_TRANSACTION_NOTIFICATION
-				    @object_type nvarchar(20),                 -- BO Code
+				    @object_type nvarchar(30),                 -- BO Code
 				    @transaction_type nchar(1),                -- [A]dd, [U]pdate, [D]elete
 				    @num_of_cols_in_key int,                   -- Key Count
 				    @list_of_key_cols_tab_del nvarchar(255),   -- Key Names, split by ','

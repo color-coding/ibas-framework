@@ -111,7 +111,7 @@ public interface IBOAdapter4Db {
 	KeyValue[] parsePrimaryKeys(IBusinessObjectBase bo, IDbCommand command) throws BOParseException;
 
 	/**
-	 * 更新业务对象主键记录
+	 * 更新业务对象主键记录，主键值加一。
 	 * 
 	 * @param bo
 	 *            业务对象（取值对象）
@@ -121,6 +121,20 @@ public interface IBOAdapter4Db {
 	 * @throws BOParseException
 	 */
 	void updatePrimaryKeyRecords(IBusinessObjectBase bo, IDbCommand command) throws BOParseException;
+
+	/**
+	 * 更新业务对象主键记录
+	 * 
+	 * @param bo
+	 *            业务对象（取值对象）
+	 * @param addValue
+	 *            主键增加值
+	 * @param command
+	 *            数据库命令
+	 * 
+	 * @throws BOParseException
+	 */
+	void updatePrimaryKeyRecords(IBusinessObjectBase bo, int addValue, IDbCommand command) throws BOParseException;
 
 	/**
 	 * 使用主键（查询并更新） 应考虑多线程的并发问题
@@ -133,6 +147,16 @@ public interface IBOAdapter4Db {
 	 * @throws BOParseException
 	 */
 	KeyValue[] usePrimaryKeys(IBusinessObjectBase bo, IDbCommand command) throws BOParseException;
+
+	/**
+	 * 给对象主键赋值
+	 * 
+	 * @param bo
+	 *            对象
+	 * @param keys
+	 *            主键
+	 */
+	void setPrimaryKeys(IBusinessObjectBase bo, KeyValue[] keys);
 
 	/**
 	 * 获取事务通知语句
@@ -153,4 +177,5 @@ public interface IBOAdapter4Db {
 	 * @throws SqlScriptsException
 	 */
 	ISqlQuery parseSqlQuery(ISqlStoredProcedure sp) throws BOParseException;
+
 }

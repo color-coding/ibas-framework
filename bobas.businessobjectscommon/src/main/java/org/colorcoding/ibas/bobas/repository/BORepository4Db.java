@@ -70,7 +70,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	}
 
 	@Override
-	public boolean inTransaction() {
+	public final boolean inTransaction() {
 		try {
 			return this.getDbConnection().inTransaction();
 		} catch (DbException e) {
@@ -87,15 +87,14 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	 *            事务类型
 	 * @param bo
 	 *            发生业务对象
-	 * @return 是否继续执行
 	 * @throws SaveActionsException
 	 *             运行时错误
 	 */
-	protected final boolean notifyActions(SaveActionsType type, IBusinessObjectBase bo) throws SaveActionsException {
+	private void notifyActions(SaveActionsType type, IBusinessObjectBase bo) throws SaveActionsException {
 		if (this.saveActionsSupport == null) {
-			return true;
+			return;
 		}
-		return this.saveActionsSupport.fireActions(type, bo);
+		this.saveActionsSupport.fireActions(type, bo);
 	}
 
 	/**
@@ -225,7 +224,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 					// 自己打开的事务
 					this.rollbackTransaction();// 关闭事务
 				}
-				throw new DbException(i18n.prop("msg_bobas_to_save_bo_faild", e.getMessage()), e);
+				throw new RepositoryException(i18n.prop("msg_bobas_to_save_bo_faild", e.getMessage()), e);
 			} finally {
 				if (reader != null) {
 					reader.close();

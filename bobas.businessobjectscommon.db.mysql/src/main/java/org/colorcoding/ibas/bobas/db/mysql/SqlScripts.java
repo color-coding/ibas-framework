@@ -167,7 +167,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	 * 更新主键
 	 */
 	@Override
-	public String getUpdateBOPrimaryKeyScript(String boCode) throws SqlScriptsException {
+	public String getUpdateBOPrimaryKeyScript(String boCode, int addValue) throws SqlScriptsException {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("UPDATE");
 		stringBuilder.append(" ");
@@ -183,7 +183,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 		stringBuilder.append(" ");
 		stringBuilder.append("+");
 		stringBuilder.append(" ");
-		stringBuilder.append("1");
+		stringBuilder.append(addValue);
 		stringBuilder.append(" ");
 		stringBuilder.append("WHERE");
 		stringBuilder.append(" ");

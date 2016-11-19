@@ -8,12 +8,12 @@
 		<add key="MasterDbName" value="ibas_demo" />
 		<add key="MasterDbUserID" value="root" />
 		<add key="MasterDbUserPassword" value="1q2w3e" />
-		<add key="DisabledRefetch" value="true" />
-		<add key="DisabledBusinessLogics" value="true" />
-		<add key="DisabledBusinessApproval" value="true" />
-		<add key="DisabledCache" value="true" />
-		<add key="DisabledVersionCheck" value="true" />
-		<add key="DisabledPostTransaction" value="true" />
-		<add key="EnabledUserFields" value="false" />
+<!-- 		<add key="DisabledRefetch" value="true" /> -->
+<!-- 		<add key="DisabledBusinessLogics" value="true" /> -->
+<!-- 		<add key="DisabledBusinessApproval" value="true" /> -->
+<!-- 		<add key="DisabledCache" value="true" /> -->
+<!-- 		<add key="DisabledVersionCheck" value="true" /> -->
+<!-- 		<add key="DisabledPostTransaction" value="true" /> -->
+<!-- 		<add key="EnabledUserFields" value="false" /> -->
 	</appSettings>
 </ns2:configuration>

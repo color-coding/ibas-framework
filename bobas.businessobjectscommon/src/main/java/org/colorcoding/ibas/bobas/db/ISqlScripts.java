@@ -127,12 +127,13 @@ public interface ISqlScripts {
 	 * 
 	 * @param boCode
 	 *            业务对象
-	 * 
-	 * @return 主键查询语句，例:UPDATE "CC_SYS_ONNM" SET "AutoKey" = "AutoKey" + 1 WHERE
-	 *         "ObjectCode" = '%s'
+	 * @param addValue
+	 *            增加值
+	 * @return 主键查询语句，例:UPDATE "CC_SYS_ONNM" SET "AutoKey" = "AutoKey" +
+	 *         {addValue} WHERE "ObjectCode" = '%s'
 	 * @throws SqlScriptsException
 	 */
-	String getUpdateBOPrimaryKeyScript(String boCode) throws SqlScriptsException;
+	String getUpdateBOPrimaryKeyScript(String boCode, int addValue) throws SqlScriptsException;
 
 	/**
 	 * 获取业务对象事务通知语句
