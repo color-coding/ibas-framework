@@ -196,7 +196,7 @@ public class Serializer {
 		if (DATA_TYPE_XML.equals(type)) {
 			return toXmlString(object, formated, types);
 		}
-		return object.toString();
+		throw new SerializeException(i18n.prop("msg_bobas_not_support_serialize_type", type));
 	}
 
 	/**
@@ -214,7 +214,7 @@ public class Serializer {
 		if (DATA_TYPE_XML.equals(type)) {
 			return fromXmlString(value, types);
 		}
-		throw new UnsupportedOperationException();
+		throw new SerializeException(i18n.prop("msg_bobas_not_support_serialize_type", type));
 	}
 
 	/**
