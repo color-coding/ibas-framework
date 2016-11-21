@@ -224,7 +224,7 @@ public class testBusinessObjects extends TestCase {
 		System.out.println(bo.toString("xml"));
 	}
 
-	public void testListStatus() {
+	public void testStatusChanged() {
 		SalesOrder order = new SalesOrder();
 		order.setDocumentStatus(emDocumentStatus.Released);
 		ISalesOrderItem line = order.getSalesOrderItems().create();
@@ -291,6 +291,60 @@ public class testBusinessObjects extends TestCase {
 		System.out.println(
 				String.format("finally [%s] documentstatus [%s]", order.toString(), order.getDocumentStatus()));
 		assertEquals("status changed faild.", emDocumentStatus.Finished, order.getDocumentStatus());
+	}
+
+	public void testSerializStatus() {
+		// 测试反序列化的状态变化
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+		stringBuilder.append("<SalesOrder>");
+		stringBuilder.append("<DocumentStatus>");
+		stringBuilder.append(emDocumentStatus.Closed);
+		stringBuilder.append("</DocumentStatus>");
+		stringBuilder.append("<Status>");
+		stringBuilder.append(emBOStatus.Closed);
+		stringBuilder.append("</Status>");
+		stringBuilder.append("<Canceled>");
+		stringBuilder.append(emYesNo.Yes);
+		stringBuilder.append("</Canceled>");
+		stringBuilder.append("<SalesOrderItems>");
+		stringBuilder.append("<SalesOrderItem>");
+		stringBuilder.append("<LineStatus>");
+		stringBuilder.append(emDocumentStatus.Closed);
+		stringBuilder.append("</LineStatus>");
+		stringBuilder.append("<Status>");
+		stringBuilder.append(emBOStatus.Closed);
+		stringBuilder.append("</Status>");
+		stringBuilder.append("<Canceled>");
+		stringBuilder.append(emYesNo.Yes);
+		stringBuilder.append("</Canceled>");
+		stringBuilder.append("</SalesOrderItem>");
+		stringBuilder.append("<SalesOrderItem>");
+		stringBuilder.append("<LineStatus>");
+		stringBuilder.append(emDocumentStatus.Closed);
+		stringBuilder.append("</LineStatus>");
+		stringBuilder.append("<Status>");
+		stringBuilder.append(emBOStatus.Closed);
+		stringBuilder.append("</Status>");
+		stringBuilder.append("<Canceled>");
+		stringBuilder.append(emYesNo.Yes);
+		stringBuilder.append("</Canceled>");
+		stringBuilder.append("</SalesOrderItem>");
+		stringBuilder.append("<SalesOrderItem>");
+		stringBuilder.append("<LineStatus>");
+		stringBuilder.append(emDocumentStatus.Closed);
+		stringBuilder.append("</LineStatus>");
+		stringBuilder.append("<Status>");
+		stringBuilder.append(emBOStatus.Closed);
+		stringBuilder.append("</Status>");
+		stringBuilder.append("<Canceled>");
+		stringBuilder.append(emYesNo.Yes);
+		stringBuilder.append("</Canceled>");
+		stringBuilder.append("</SalesOrderItem>");
+		stringBuilder.append("</SalesOrderItems>");
+		stringBuilder.append("</SalesOrder>");
+		IBusinessObject bo = (IBusinessObject) Serializer.deserializeString(stringBuilder.toString(), SalesOrder.class);
+		System.out.println(Serializer.serializeString(bo, true));
 	}
 
 	public void testGC() throws IOException, InterruptedException {

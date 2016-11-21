@@ -142,6 +142,7 @@
                 contentType: "application/json",
                 url: url,
                 data: JSON.stringify(salesOrder),
+                //data: '{"SalesOrder":{"DocumentStatus":"Closed","Status":"Closed","Canceled":"Yes","SalesOrderItems":[{"LineStatus":"Closed","Status":"Closed","Canceled":"Yes"},{"LineStatus":"Closed","Status":"Closed","Canceled":"Yes"},{"LineStatus":"Closed","Status":"Closed","Canceled":"Yes"}]}}',
                 success: function (data, status) {
                     showResult(data);
                 },

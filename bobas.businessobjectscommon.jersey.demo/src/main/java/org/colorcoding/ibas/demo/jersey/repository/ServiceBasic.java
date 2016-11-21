@@ -21,7 +21,9 @@ import org.colorcoding.ibas.bobas.common.SqlQuery;
 import org.colorcoding.ibas.bobas.data.DataTable;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
+import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
+import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.data.measurement.Time;
 import org.colorcoding.ibas.bobas.data.measurement.emTimeUnit;
 import org.colorcoding.ibas.bobas.i18n.i18n;
@@ -126,11 +128,17 @@ public class ServiceBasic {
 		order.getUserFields().setValue("U_OrderId", 5768);
 		order.getUserFields().setValue("U_OrderDate", DateTime.getToday());
 		order.getUserFields().setValue("U_OrderTotal", new Decimal("999.888"));
-
+		order.setCanceled(emYesNo.Yes);
+		order.setDocumentStatus(emDocumentStatus.Closed);
+		order.setStatus(emBOStatus.Closed);
 		ISalesOrderItem orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00001");
 		orderItem.setQuantity(new Decimal(10));
 		orderItem.setPrice(new Decimal(99.99));
+		orderItem = order.getSalesOrderItems().create();
+		orderItem.setItemCode("A00002");
+		orderItem.setQuantity(10);
+		orderItem.setPrice(199.99);
 		orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00002");
 		orderItem.setQuantity(10);

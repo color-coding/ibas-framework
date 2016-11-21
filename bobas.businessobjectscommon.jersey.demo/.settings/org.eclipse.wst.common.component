@@ -2,13 +2,11 @@
     <wb-module deploy-name="bobas.businessobjectscommon.jersey.demo">
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/java"/>
         <dependent-module archiveName="bobas.businessobjectscommon.db.mssql.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/bobas.businessobjectscommon.db.mssql/bobas.businessobjectscommon.db.mssql">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="bobas.businessobjectscommon.jersey.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/bobas.businessobjectscommon/bobas.businessobjectscommon.jersey">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="bobas.businessobjectscommon.jersey.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/bobas.businessobjectscommon/bobas.businessobjectscommon">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="java-output-path" value="/bobas.businessobjectscommon.jersey.demo/target/classes"/>
