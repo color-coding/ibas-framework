@@ -23,6 +23,8 @@ import org.colorcoding.ibas.bobas.util.ArrayList;
 
 /**
  * 基本数据库仓库-读写(批量)
+ * 
+ * 对象保存后调用BOTransactionNotification，可在此存储过程添加逻辑，此存储过程在某些数据库下不能有返回值。
  */
 public class BORepository4DbBatch extends BORepository4Db implements IBORepository4DbBatch {
 
@@ -241,8 +243,7 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 		} catch (Exception e) {
 			if (myTrans)
 				this.rollbackTransaction();// 自己打开的事务，关闭事务
-			// 发生错误，返回参数重置
-			savedBOs = new ArrayList<>();
+			throw e;
 		} finally {
 			if (reader != null)
 				reader.close();
