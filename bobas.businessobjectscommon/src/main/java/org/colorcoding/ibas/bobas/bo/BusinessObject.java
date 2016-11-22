@@ -3,6 +3,8 @@ package org.colorcoding.ibas.bobas.bo;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -306,22 +308,38 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	}
 
 	@Override
-	public void beforeUnmarshal(Object target, Object parent) {
+	public void beforeUnmarshal(Object parent) {
 		this.setLoading(true);
 	}
 
 	@Override
-	public void afterUnmarshal(Object target, Object parent) {
+	public void afterUnmarshal(Object parent) {
 		this.setLoading(false);
 	}
 
 	@Override
-	public void beforeMarshal(Object source) {
+	public void beforeMarshal() {
 
 	}
 
 	@Override
-	public void afterMarshal(Object source) {
+	public void afterMarshal() {
 
+	}
+
+	void beforeUnmarshal(Unmarshaller target, Object parent) {
+		this.beforeUnmarshal(parent);
+	}
+
+	void afterUnmarshal(Unmarshaller target, Object parent) {
+		this.afterUnmarshal(parent);
+	}
+
+	void beforeMarshal(Marshaller marshaller) {
+		this.beforeMarshal();
+	}
+
+	void afterMarshal(Marshaller marshaller) {
+		this.afterMarshal();
 	}
 }

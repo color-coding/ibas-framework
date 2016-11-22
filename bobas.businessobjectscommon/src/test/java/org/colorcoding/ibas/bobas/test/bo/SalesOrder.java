@@ -1381,4 +1381,5 @@ public class SalesOrder extends BusinessObject<SalesOrder> implements ISalesOrde
 
 		return criteria.getConditions();
 	}
+
 }

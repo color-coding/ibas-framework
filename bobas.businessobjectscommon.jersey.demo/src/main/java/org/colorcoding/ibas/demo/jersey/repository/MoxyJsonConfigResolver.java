@@ -12,7 +12,9 @@ public class MoxyJsonConfigResolver implements ContextResolver<MoxyJsonConfig> {
 	private final MoxyJsonConfig config;
 
 	public MoxyJsonConfigResolver() {
-		this.config = new MoxyJsonConfig().property(JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
+		MoxyJsonConfig jsonConfig = new MoxyJsonConfig();
+		jsonConfig.property(JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
+		this.config = jsonConfig;
 	}
 
 	@Override

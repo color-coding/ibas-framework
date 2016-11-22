@@ -13,7 +13,7 @@ public class UnmarshallerListener extends javax.xml.bind.Unmarshaller.Listener {
 		super.beforeUnmarshal(target, parent);
 		if (target instanceof SerializationListener) {
 			SerializationListener listener = (SerializationListener) target;
-			listener.beforeUnmarshal(target, parent);
+			listener.beforeUnmarshal(parent);
 		}
 	}
 
@@ -22,7 +22,7 @@ public class UnmarshallerListener extends javax.xml.bind.Unmarshaller.Listener {
 		super.afterUnmarshal(target, parent);
 		if (target instanceof SerializationListener) {
 			SerializationListener listener = (SerializationListener) target;
-			listener.afterUnmarshal(target, parent);
+			listener.afterUnmarshal(parent);
 		}
 	}
 

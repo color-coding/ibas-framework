@@ -13,7 +13,7 @@ public class MarshallerListener extends javax.xml.bind.Marshaller.Listener {
 		super.beforeMarshal(source);
 		if (source instanceof SerializationListener) {
 			SerializationListener listener = (SerializationListener) source;
-			listener.beforeMarshal(source);
+			listener.beforeMarshal();
 		}
 	}
 
@@ -22,7 +22,7 @@ public class MarshallerListener extends javax.xml.bind.Marshaller.Listener {
 		super.afterMarshal(source);
 		if (source instanceof SerializationListener) {
 			SerializationListener listener = (SerializationListener) source;
-			listener.afterMarshal(source);
+			listener.afterMarshal();
 		}
 	}
 

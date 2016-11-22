@@ -16,7 +16,7 @@ public interface SerializationListener {
 	 * @param parent
 	 *            目标对象所属对象
 	 */
-	void beforeUnmarshal(Object target, Object parent);
+	void beforeUnmarshal(Object parent);
 
 	/**
 	 * 反序列之后
@@ -26,7 +26,7 @@ public interface SerializationListener {
 	 * @param parent
 	 *            目标对象所属对象
 	 */
-	void afterUnmarshal(Object target, Object parent);
+	void afterUnmarshal(Object parent);
 
 	/**
 	 * 序列之前
@@ -34,7 +34,7 @@ public interface SerializationListener {
 	 * @param target
 	 *            目标对象
 	 */
-	void beforeMarshal(Object source);
+	void beforeMarshal();
 
 	/**
 	 * 序列之后
@@ -42,6 +42,6 @@ public interface SerializationListener {
 	 * @param target
 	 *            目标对象
 	 */
-	void afterMarshal(Object source);
+	void afterMarshal();
 
 }
