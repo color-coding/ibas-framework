@@ -10,9 +10,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import org.colorcoding.ibas.bobas.core.MarshallerListener;
 import org.colorcoding.ibas.bobas.core.SerializationException;
-import org.colorcoding.ibas.bobas.core.UnmarshallerListener;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**
@@ -93,7 +91,6 @@ public class Serializer extends org.colorcoding.ibas.bobas.core.Serializer {
 			writer = new StringWriter();
 			Marshaller marshaller = context.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);
-			marshaller.setListener(new MarshallerListener());
 			marshaller.marshal(object, writer);
 			return writer.toString();
 		} catch (Exception e) {
@@ -123,7 +120,6 @@ public class Serializer extends org.colorcoding.ibas.bobas.core.Serializer {
 		try {
 			JAXBContext context = createJAXBContextJson(types);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
-			unmarshaller.setListener(new UnmarshallerListener());
 			inputStream = new ByteArrayInputStream(value.getBytes());
 			return unmarshaller.unmarshal(inputStream);
 		} catch (Exception e) {

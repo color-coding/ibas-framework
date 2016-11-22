@@ -85,11 +85,9 @@ public class Serializer {
 			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");// //编码格式
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);// 是否格式化生成的xml串
 			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);// 是否省略xm头声明信息
-			marshaller.setListener(new MarshallerListener());
 			outputStream = new ByteArrayOutputStream();
 			marshaller.marshal(object, outputStream);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
-			unmarshaller.setListener(new UnmarshallerListener());
 			inputStream = new ByteArrayInputStream(outputStream.toByteArray());
 			return unmarshaller.unmarshal(inputStream);
 		} catch (Exception e) {
@@ -243,7 +241,6 @@ public class Serializer {
 			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");// 编码格式
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);// 是否格式化生成的xml串
 			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);// 是否省略xm头声明信息
-			marshaller.setListener(new MarshallerListener());
 			writer = new StringWriter();
 			marshaller.marshal(object, writer);
 			return writer.toString();
@@ -274,7 +271,6 @@ public class Serializer {
 		try {
 			JAXBContext context = JAXBContext.newInstance(types);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
-			unmarshaller.setListener(new UnmarshallerListener());
 			inputStream = new ByteArrayInputStream(value.getBytes());
 			return unmarshaller.unmarshal(inputStream);
 		} catch (Exception e) {
