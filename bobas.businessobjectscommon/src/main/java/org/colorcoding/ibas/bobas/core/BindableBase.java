@@ -25,7 +25,7 @@ public abstract class BindableBase implements IBindableBase {
 		this.propertyChangeisteners.removePropertyChangeListener(listener);
 	}
 
-	protected final void firePropertyChange(String name, Object oldValue, Object newValue) {
+	protected void firePropertyChange(String name, Object oldValue, Object newValue) {
 		this.propertyChangeisteners.firePropertyChange(name, oldValue, newValue);
 	}
 

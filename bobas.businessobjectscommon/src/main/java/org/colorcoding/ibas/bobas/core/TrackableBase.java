@@ -144,4 +144,25 @@ public abstract class TrackableBase extends BindableBase implements ITrackStatus
 		this.setDeleted(false);
 	}
 
+	private boolean loading;
+
+	/**
+	 * 数据加载中
+	 * 
+	 * 数据加载中 不触发属性改变事件
+	 * 
+	 * @return
+	 */
+	public boolean isLoading() {
+		return loading;
+	}
+
+	/**
+	 * 设置-数据加载中
+	 * 
+	 * @param value
+	 */
+	protected void setLoading(boolean value) {
+		this.loading = value;
+	}
 }

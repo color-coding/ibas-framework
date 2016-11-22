@@ -16,6 +16,8 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**
  * 序列化对象
+ * 
+ * 继承实现时，注意序列化和反序列化监听
  */
 public class Serializer {
 	/**
@@ -83,13 +85,15 @@ public class Serializer {
 			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");// //编码格式
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);// 是否格式化生成的xml串
 			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);// 是否省略xm头声明信息
+			marshaller.setListener(new MarshallerListener());
 			outputStream = new ByteArrayOutputStream();
 			marshaller.marshal(object, outputStream);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
+			unmarshaller.setListener(new UnmarshallerListener());
 			inputStream = new ByteArrayInputStream(outputStream.toByteArray());
 			return unmarshaller.unmarshal(inputStream);
 		} catch (Exception e) {
-			throw new SerializeException(e);
+			throw new SerializationException(e);
 		} finally {
 			try {
 				if (outputStream != null) {
@@ -196,7 +200,7 @@ public class Serializer {
 		if (DATA_TYPE_XML.equals(type)) {
 			return toXmlString(object, formated, types);
 		}
-		throw new SerializeException(i18n.prop("msg_bobas_not_support_serialize_type", type));
+		throw new SerializationException(i18n.prop("msg_bobas_not_support_serialize_type", type));
 	}
 
 	/**
@@ -214,7 +218,7 @@ public class Serializer {
 		if (DATA_TYPE_XML.equals(type)) {
 			return fromXmlString(value, types);
 		}
-		throw new SerializeException(i18n.prop("msg_bobas_not_support_serialize_type", type));
+		throw new SerializationException(i18n.prop("msg_bobas_not_support_serialize_type", type));
 	}
 
 	/**
@@ -239,11 +243,12 @@ public class Serializer {
 			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");// 编码格式
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);// 是否格式化生成的xml串
 			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);// 是否省略xm头声明信息
+			marshaller.setListener(new MarshallerListener());
 			writer = new StringWriter();
 			marshaller.marshal(object, writer);
 			return writer.toString();
 		} catch (Exception e) {
-			throw new SerializeException(e);
+			throw new SerializationException(e);
 		} finally {
 			try {
 				if (writer != null) {
@@ -269,10 +274,11 @@ public class Serializer {
 		try {
 			JAXBContext context = JAXBContext.newInstance(types);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
+			unmarshaller.setListener(new UnmarshallerListener());
 			inputStream = new ByteArrayInputStream(value.getBytes());
 			return unmarshaller.unmarshal(inputStream);
 		} catch (Exception e) {
-			throw new SerializeException(e);
+			throw new SerializationException(e);
 		} finally {
 			try {
 				if (inputStream != null) {

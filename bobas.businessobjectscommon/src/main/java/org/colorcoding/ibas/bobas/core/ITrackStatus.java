@@ -39,4 +39,11 @@ public interface ITrackStatus {
 	 * 
 	 */
 	boolean isBusy();
+
+	/**
+	 * 是否加载中
+	 * 
+	 * @return
+	 */
+	boolean isLoading();
 }

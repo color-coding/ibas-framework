@@ -48,6 +48,11 @@ public class SingleValue implements ISingleValue, IBusinessObjectBase {
 		return false;
 	}
 
+	@Override
+	public boolean isLoading() {
+		return false;
+	}
+
 	public ICriteria getCriteria() {
 		return null;
 	}
@@ -70,4 +75,5 @@ public class SingleValue implements ISingleValue, IBusinessObjectBase {
 	public String getSchema(String type) {
 		return null;
 	}
+
 }

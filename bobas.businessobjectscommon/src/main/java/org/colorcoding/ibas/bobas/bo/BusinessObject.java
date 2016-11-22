@@ -14,6 +14,7 @@ import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.core.BusinessObjectBase;
+import org.colorcoding.ibas.bobas.core.SerializationListener;
 import org.colorcoding.ibas.bobas.core.Serializer;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.data.DataConvert;
@@ -31,7 +32,8 @@ import org.colorcoding.ibas.bobas.util.StringBuilder;
  */
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "BusinessObject", namespace = MyConsts.NAMESPACE_BOBAS_BO)
-public abstract class BusinessObject<T extends IBusinessObject> extends BusinessObjectBase<T> {
+public abstract class BusinessObject<T extends IBusinessObject> extends BusinessObjectBase<T>
+		implements SerializationListener {
 	/**
 	 * 
 	 */
@@ -39,7 +41,9 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 
 	public BusinessObject() {
 		super();
+		this.setLoading(true);
 		this.initialize();
+		this.setLoading(false);
 	}
 
 	/**
@@ -299,5 +303,25 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 			}
 			this.markDeleted(true);
 		}
+	}
+
+	@Override
+	public void beforeUnmarshal(Object target, Object parent) {
+		this.setLoading(true);
+	}
+
+	@Override
+	public void afterUnmarshal(Object target, Object parent) {
+		this.setLoading(false);
+	}
+
+	@Override
+	public void beforeMarshal(Object source) {
+
+	}
+
+	@Override
+	public void afterMarshal(Object source) {
+
 	}
 }

@@ -53,15 +53,15 @@ public class testBusinessObject extends TestCase {
 		orderItem.setQuantity(10);
 		orderItem.setPrice(199.99);
 
-		System.out.println(order.toString("json"));
+		String json = order.toString("json");
+		System.out.println(json);
+		Serializer.deserializeString("json", json, order.getClass());
 	}
 
 	public void testSerializStatus() {
 		// 测试反序列化的状态变化
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("{\"SalesOrder\":{");
-		stringBuilder.append(String.format("\"DocumentStatus\":\"%s\",", emDocumentStatus.Closed));
-		stringBuilder.append(String.format("\"Canceled\":\"%s\",", emYesNo.Yes));
 		stringBuilder.append("\"SalesOrderItems\":[");
 		stringBuilder.append("{");
 		stringBuilder.append(String.format("\"LineStatus\":\"%s\",", emDocumentStatus.Closed));
@@ -79,6 +79,8 @@ public class testBusinessObject extends TestCase {
 		stringBuilder.append(String.format("\"Canceled\":\"%s\"", emYesNo.Yes));
 		stringBuilder.append("}");
 		stringBuilder.append("],");
+		stringBuilder.append(String.format("\"DocumentStatus\":\"%s\",", emDocumentStatus.Closed));
+		stringBuilder.append(String.format("\"Canceled\":\"%s\",", emYesNo.Yes));
 		stringBuilder.append(String.format("\"Status\":\"%s\"", emBOStatus.Closed));
 		stringBuilder.append("}}");
 		IBusinessObject bo = (IBusinessObject) Serializer.deserializeString("json", stringBuilder.toString(),

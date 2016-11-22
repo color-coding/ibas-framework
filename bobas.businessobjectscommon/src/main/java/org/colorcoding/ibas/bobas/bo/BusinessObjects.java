@@ -126,32 +126,14 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 
 	@Override
 	protected void afterAddItem(E item) {
-		if (item instanceof IBODocumentLine) {
-			IBODocumentLine docItem = (IBODocumentLine) item;
-			if (this.getParent() instanceof IBODocument) {
-				IBODocument doc = (IBODocument) this.getParent();
-				docItem.setDocEntry(doc.getDocEntry());
-				docItem.setLineStatus(doc.getDocumentStatus());
-				docItem.setStatus(doc.getStatus());
-			}
-			if (this.getParent() instanceof IBODocumentLine) {
-				IBODocumentLine doc = (IBODocumentLine) this.getParent();
-				docItem.setDocEntry(doc.getDocEntry());
-				docItem.setLineStatus(doc.getLineStatus());
-				docItem.setStatus(doc.getStatus());
-			}
-		} else if (item instanceof IBOMasterDataLine) {
-			IBOMasterDataLine masItem = (IBOMasterDataLine) item;
-			if (this.getParent() instanceof IBOMasterData) {
-				IBOMasterData mas = (IBOMasterData) this.getParent();
-				masItem.setCode(mas.getCode());
-			}
-		} else if (item instanceof IBOSimpleLine) {
-			IBOSimpleLine simItem = (IBOSimpleLine) item;
-			if (this.getParent() instanceof IBOSimple) {
-				IBOSimple sim = (IBOSimple) this.getParent();
-				simItem.setObjectKey(sim.getObjectKey());
-			}
+		if (item instanceof IBindableBase) {
+			// 监听属性改变
+			IBindableBase boItem = (IBindableBase) item;
+			boItem.addPropertyChangeListener(this);
+		}
+		if (this.getParent() == null || this.getParent().isLoading()) {
+			// 没父项，父项读取数据中，退出
+			return;
 		}
 		if (item instanceof IBOLine) {
 			IBOLine line = (IBOLine) item;
@@ -159,10 +141,35 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 				line.setLineId(this.getMaxLineId());
 			}
 		}
-		if (item instanceof IBindableBase) {
-			// 监听属性改变
-			IBindableBase boItem = (IBindableBase) item;
-			boItem.addPropertyChangeListener(this);
+		if (item instanceof IBODocumentLine) {
+			IBODocumentLine docItem = (IBODocumentLine) item;
+			if (this.getParent() instanceof IBODocument) {
+				IBODocument doc = (IBODocument) this.getParent();
+				docItem.setDocEntry(doc.getDocEntry());
+				docItem.setLineStatus(doc.getDocumentStatus());
+			} else if (this.getParent() instanceof IBODocumentLine) {
+				IBODocumentLine doc = (IBODocumentLine) this.getParent();
+				docItem.setDocEntry(doc.getDocEntry());
+				docItem.setLineStatus(doc.getLineStatus());
+			}
+		} else if (item instanceof IBOMasterDataLine) {
+			IBOMasterDataLine masItem = (IBOMasterDataLine) item;
+			if (this.getParent() instanceof IBOMasterData) {
+				IBOMasterData mas = (IBOMasterData) this.getParent();
+				masItem.setCode(mas.getCode());
+			} else if (this.getParent() instanceof IBOMasterDataLine) {
+				IBOMasterDataLine mas = (IBOMasterDataLine) this.getParent();
+				masItem.setCode(mas.getCode());
+			}
+		} else if (item instanceof IBOSimpleLine) {
+			IBOSimpleLine simItem = (IBOSimpleLine) item;
+			if (this.getParent() instanceof IBOSimple) {
+				IBOSimple sim = (IBOSimple) this.getParent();
+				simItem.setObjectKey(sim.getObjectKey());
+			} else if (this.getParent() instanceof IBOSimpleLine) {
+				IBOSimpleLine sim = (IBOSimpleLine) this.getParent();
+				simItem.setObjectKey(sim.getObjectKey());
+			}
 		}
 		// 集合元素发生变化
 		if (this.parent instanceof ITrackStatusOperator) {

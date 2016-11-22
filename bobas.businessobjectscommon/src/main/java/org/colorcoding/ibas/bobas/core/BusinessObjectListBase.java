@@ -50,7 +50,7 @@ public abstract class BusinessObjectListBase<E extends IBusinessObjectBase> exte
 	@Override
 	public E remove(int index) {
 		E item = super.remove(index);
-		this.afterAddItem(item);
+		this.afterRemoveItem(item);
 		return item;
 	}
 
