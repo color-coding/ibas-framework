@@ -54,20 +54,6 @@ public interface IBODocument extends IBusinessObject, IBOStorageTag {
 	void setPeriod(Integer value);
 
 	/**
-	 * 获取-数据源
-	 * 
-	 * @return
-	 */
-	String getDataSource();
-
-	/**
-	 * 设置-数据源
-	 * 
-	 * @param value
-	 */
-	void setDataSource(String value);
-
-	/**
 	 * 获取-状态
 	 * 
 	 * @return

@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
@@ -20,6 +21,7 @@ import org.colorcoding.ibas.bobas.core.Serializer;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.data.DateTime;
+import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
@@ -161,6 +163,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 		if (this instanceof IBOStorageTag) {
 			IBOStorageTag tagBO = (IBOStorageTag) this;
 			tagBO.setLogInst(0);
+			tagBO.setDataSource(null);
 			tagBO.setCreateActionId(null);
 			tagBO.setCreateDate(DateTime.getMinValue());
 			tagBO.setCreateTime((short) 0);
@@ -171,28 +174,37 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 			tagBO.setUpdateUserSign(UnknownUser.UNKNOWN_USER_SIGN);
 		}
 		// 重置引用状态
+		if (this instanceof IBOReferenced) {
+			IBOReferenced tagBO = (IBOReferenced) this;
+			tagBO.setReferenced(emYesNo.No);
+		}
+		// 重置删除状态
 		if (this instanceof IBOTagDeleted) {
 			IBOTagDeleted tagBO = (IBOTagDeleted) this;
 			tagBO.setDeleted(emYesNo.No);
-			tagBO.setReferenced(emYesNo.No);
 		}
-		// 重置引用状态
+		// 重置取消状态
 		if (this instanceof IBOTagCanceled) {
 			IBOTagCanceled tagBO = (IBOTagCanceled) this;
 			tagBO.setCanceled(emYesNo.No);
-			tagBO.setReferenced(emYesNo.No);
 		}
 		// 重置对象状态
 		if (this instanceof IBODocument) {
 			IBODocument docBO = (IBODocument) this;
-			docBO.setDocumentStatus(emDocumentStatus.Planned);
 			docBO.setStatus(emBOStatus.Open);
+			docBO.setDocumentStatus(emDocumentStatus.Planned);
 			docBO.setDocNum(0);
 			docBO.setPeriod(0);
-		} else if (this instanceof IBODocumentLine) {
+		}
+		if (this instanceof IBODocumentLine) {
 			IBODocumentLine docLineBO = (IBODocumentLine) this;
 			docLineBO.setStatus(emBOStatus.Open);
 			docLineBO.setLineStatus(emDocumentStatus.Planned);
+		}
+		// 重置审批状态
+		if (this instanceof IApprovalData) {
+			IApprovalData apData = (IApprovalData) this;
+			apData.setApprovalStatus(emApprovalStatus.Unaffected);
 		}
 		// 重置子项状态
 		for (IFieldData fieldData : this.getFields()) {
