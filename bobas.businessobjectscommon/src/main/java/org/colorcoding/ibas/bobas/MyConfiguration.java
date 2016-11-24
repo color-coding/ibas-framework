@@ -63,6 +63,10 @@ public class MyConfiguration extends Configuration {
 	 */
 	public final static String CONFIG_ITEM_ENABLED_READONLY_REPOSITORY = "EnabledReadonlyRepository";
 	/**
+	 * 配置项目-业务对象的文件仓库目录
+	 */
+	public final static String CONFIG_ITEM_BO_REPOSITORY_4_FILE_FOLDER = "BORepositoryFileFolder";
+	/**
 	 * 配置项目-文件仓库目录
 	 */
 	public final static String CONFIG_ITEM_FILE_REPOSITORY_FOLDER = "FileRepositoryFolder";

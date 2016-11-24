@@ -1,9 +1,10 @@
 package org.colorcoding.ibas.bobas.core;
 
 import java.util.List;
-import java.util.function.Predicate;
 
-public interface IBusinessObjectListBase<E extends IBusinessObjectBase> extends List<E> {
+import org.colorcoding.ibas.bobas.util.Collection;
+
+public interface IBusinessObjectListBase<E extends IBusinessObjectBase> extends List<E>, Collection<E> {
 	/**
 	 * 是否智能处理子项主键
 	 * 
@@ -17,34 +18,6 @@ public interface IBusinessObjectListBase<E extends IBusinessObjectBase> extends 
 	 * @return 新的元素实例
 	 */
 	E create();
-
-	/**
-	 * 第一个或默认值
-	 * 
-	 * @return 元素实例
-	 */
-	E firstOrDefault();
-
-	/**
-	 * 最后一个或默认值
-	 * 
-	 * @return 元素实例
-	 */
-	E lastOrDefault();
-
-	/**
-	 * 第一个或默认值
-	 * 
-	 * @return 元素实例
-	 */
-	E firstOrDefault(Predicate<? super E> filter);
-
-	/**
-	 * 最后一个或默认值
-	 * 
-	 * @return 元素实例
-	 */
-	E lastOrfault(Predicate<? super E> filter);
 
 	/**
 	 * 添加元素

@@ -37,7 +37,8 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 	public String getRepositoryFolder() {
 		if (this.repositoryFolder == null || this.repositoryFolder.isEmpty()) {
 			String workFolder = Configuration.getWorkFolder() + File.separator + "borepository";
-			workFolder = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_FILE_REPOSITORY_FOLDER, workFolder);
+			workFolder = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_REPOSITORY_4_FILE_FOLDER,
+					workFolder);
 			File file = new File(workFolder);
 			if (!file.exists() && !file.isDirectory()) {
 				file.mkdirs();

@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.common;
 
-import java.util.Collection;
+import org.colorcoding.ibas.bobas.util.Collection;
 
 /**
  * 查询条件集合

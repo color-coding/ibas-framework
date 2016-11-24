@@ -145,13 +145,16 @@ public class testBusinessObjects extends TestCase {
 
 		System.out.println("toString xml：");
 		System.out.println(order.toString("xml"));
-		System.out.println("toString json：");
-		System.out.println(order.toString("json"));
+		// System.out.println("toString json：");
+		// System.out.println(order.toString("json"));
 
 		IFieldData fieldData = order.getField("CustomerCode");
 		assertEquals("get field CustomerCode faild.", fieldData.getName(), "CustomerCode");
 		fieldData = order.getField("DocumentUser.UserCode");
 		assertEquals("get field DocumentUser.UserCode faild.", fieldData.getName(), "UserCode");
+
+		orderItem = order.getSalesOrderItems().firstOrDefault(item -> item.getLineId() == 2);
+		assertNotNull("collection firstOrDefault faild.", orderItem);
 	}
 
 	public void testBOInherit() {

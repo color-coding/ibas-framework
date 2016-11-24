@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.common;
 
-import java.util.Collection;
+import org.colorcoding.ibas.bobas.util.Collection;
 
 /**
  * 查询排序集合
@@ -15,7 +15,6 @@ public interface ISorts extends Collection<ISort> {
 	 * @return
 	 */
 	ISort create();
-
 
 	/**
 	 * 获取查询排序

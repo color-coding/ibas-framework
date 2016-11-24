@@ -18,7 +18,7 @@ import org.colorcoding.ibas.bobas.MyConsts;
  */
 @XmlType(name = "ArrayList", namespace = MyConsts.NAMESPACE_BOBAS_UTIL)
 @XmlRootElement(name = "ArrayList", namespace = MyConsts.NAMESPACE_BOBAS_UTIL)
-public class ArrayList<E> extends java.util.ArrayList<E> {
+public class ArrayList<E> extends java.util.ArrayList<E> implements Collection<E> {
 
 	/**
 	 * 
@@ -39,7 +39,10 @@ public class ArrayList<E> extends java.util.ArrayList<E> {
 
 	public E firstOrDefault(Predicate<? super E> filter) {
 		Objects.requireNonNull(filter);
-		for (E item : this) {
+		for (int i = 0; i < this.size(); i++) {
+			E item = this.get(i);
+			if (item == null)
+				continue;
 			if (filter.test(item))
 				return item;
 		}
@@ -48,7 +51,10 @@ public class ArrayList<E> extends java.util.ArrayList<E> {
 
 	public E lastOrfault(Predicate<? super E> filter) {
 		Objects.requireNonNull(filter);
-		for (E item : this) {
+		for (int i = this.size() - 1; i >= 0; i--) {
+			E item = this.get(i);
+			if (item == null)
+				continue;
 			if (filter.test(item))
 				return item;
 		}
