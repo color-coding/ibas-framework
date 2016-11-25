@@ -57,6 +57,6 @@ public class FileData {
 
 	@Override
 	public String toString() {
-		return String.format("{File %s@%s}", this.getFileName(), this.getLocation());
+		return String.format("{File %s}", this.getFileName());
 	}
 }

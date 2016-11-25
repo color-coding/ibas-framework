@@ -46,7 +46,7 @@ public class testFileRepository extends TestCase {
 		condition = criteria.getConditions().create();
 		condition.setAlias(FileRepository.CRITERIA_CONDITION_ALIAS_FILE_NAME);
 		condition.setOperation(ConditionOperation.co_END);
-		condition.setCondVal(".java");
+		condition.setCondVal(".class");
 		// 文件名包括BO
 		condition = criteria.getConditions().create();
 		condition.setAlias(FileRepository.CRITERIA_CONDITION_ALIAS_FILE_NAME);
