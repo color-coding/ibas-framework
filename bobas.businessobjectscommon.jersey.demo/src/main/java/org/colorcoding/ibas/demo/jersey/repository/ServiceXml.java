@@ -32,7 +32,7 @@ public class ServiceXml extends BORepositoryTest {
 	@POST
 	@Produces(MediaType.APPLICATION_XML)
 	@Consumes(MediaType.APPLICATION_XML)
-	@Path("/fetchMaterials")
+	@Path("fetchMaterials")
 	public OperationResult<Materials> fetchMaterials(Criteria criteria, @QueryParam("token") String token) {
 		return super.fetchMaterials(criteria, token);
 	}
@@ -49,7 +49,7 @@ public class ServiceXml extends BORepositoryTest {
 	@POST
 	@Produces(MediaType.APPLICATION_XML)
 	@Consumes(MediaType.APPLICATION_XML)
-	@Path("/saveMaterials")
+	@Path("saveMaterials")
 	public OperationResult<Materials> saveMaterials(Materials bo, @QueryParam("token") String token) {
 		return super.saveMaterials(bo, token);
 	}
@@ -67,7 +67,7 @@ public class ServiceXml extends BORepositoryTest {
 	@POST
 	@Produces(MediaType.APPLICATION_XML)
 	@Consumes(MediaType.APPLICATION_XML)
-	@Path("/fetchSalesOrder")
+	@Path("fetchSalesOrder")
 	public OperationResult<SalesOrder> fetchSalesOrder(Criteria criteria, @QueryParam("token") String token) {
 		return super.fetchSalesOrder(criteria, token);
 	}
@@ -84,7 +84,7 @@ public class ServiceXml extends BORepositoryTest {
 	@POST
 	@Produces(MediaType.APPLICATION_XML)
 	@Consumes(MediaType.APPLICATION_XML)
-	@Path("/saveSalesOrder")
+	@Path("saveSalesOrder")
 	public OperationResult<SalesOrder> saveSalesOrder(SalesOrder bo, @QueryParam("token") String token) {
 		return super.saveSalesOrder(bo, token);
 	}

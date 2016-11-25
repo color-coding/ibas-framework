@@ -3,7 +3,6 @@
 	<name>bobas.businessobjectscommon.jersey.demo</name>
 	<comment></comment>
 	<projects>
-		<project>bobas.businessobjectscommon.db.mssql</project>
 		<project>bobas.businessobjectscommon.jersey</project>
 		<project>bobas.businessobjectscommon</project>
 	</projects>

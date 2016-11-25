@@ -11,12 +11,12 @@ import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
 public interface IBORepositorySmartService extends IBORepositoryService {
 
 	/**
-	 * 获取-数据库业务对象仓库（只读）
+	 * 获取-业务对象仓库（只读）
 	 */
 	IBORepositoryReadonly getReadonlyRepository();
 
 	/**
-	 * 设置-数据库业务对象仓库（只读）
+	 * 设置-业务对象仓库（只读）
 	 */
 	void setReadonlyRepository(IBORepositoryReadonly repository);
 

@@ -37,7 +37,7 @@ import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 public class ServiceBasic {
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
-	@Path("/hello")
+	@Path("hello")
 	public String sayHello() {
 		return "Hello Jersey";
 	}
@@ -45,7 +45,7 @@ public class ServiceBasic {
 	@POST
 	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("/fetch")
+	@Path("fetch")
 	public String fetch(Criteria criteria) {
 		System.out.println("java.class.path");
 		System.out.println(System.getProperty("java.class.path").replace(";", "\n"));
@@ -62,7 +62,7 @@ public class ServiceBasic {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/create")
+	@Path("create")
 	public Criteria create() {
 		Criteria criteria = new Criteria();
 		criteria.setResultCount(100);
@@ -95,7 +95,7 @@ public class ServiceBasic {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/result")
+	@Path("result")
 	public OperationResult<Criteria> result() {
 		OperationResult<Criteria> operationResult = new OperationResult<Criteria>();
 		operationResult.addResultObjects(this.create());
@@ -106,7 +106,7 @@ public class ServiceBasic {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("/fetchSalesOrder")
+	@Path("fetchSalesOrder")
 	public OperationResult<SalesOrder> fetchSalesOrder(Criteria criteria, @QueryParam("token") String token) {
 		System.out.println(String.format("fetch by %s.", token));
 		System.out.println(criteria.toString("xml"));
@@ -154,7 +154,7 @@ public class ServiceBasic {
 	@POST
 	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("/saveSalesOrder")
+	@Path("saveSalesOrder")
 	public String saveSalesOrder(SalesOrder bo, @QueryParam("token") String token) {
 		System.out.println(String.format("save by %s.", token));
 		System.out.println(bo.toString("xml"));
@@ -164,7 +164,7 @@ public class ServiceBasic {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("/querySalesOrder")
+	@Path("querySalesOrder")
 	public OperationResult<DataTable> querySalesOrder(@QueryParam("token") String token) {
 		OperationResult<DataTable> operationResult = new OperationResult<DataTable>();
 		try {

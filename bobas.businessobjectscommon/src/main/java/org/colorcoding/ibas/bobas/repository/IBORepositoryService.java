@@ -8,12 +8,12 @@ import org.colorcoding.ibas.bobas.core.IBORepository;
 public interface IBORepositoryService {
 
 	/**
-	 * 获取-数据库业务对象仓库
+	 * 获取-业务对象仓库
 	 */
 	IBORepository getRepository();
 
 	/**
-	 * 设置-数据库业务对象仓库
+	 * 设置-业务对象仓库
 	 */
 	void setRepository(IBORepository repository);
 

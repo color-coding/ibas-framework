@@ -16,7 +16,7 @@ import org.colorcoding.ibas.bobas.test.bo.User;
 
 @Provider
 @Produces({ "application/xml", "application/json" })
-public class OperationResultResolver implements ContextResolver<JAXBContext> {
+public class JAXBContextResolver implements ContextResolver<JAXBContext> {
 
 	private static JAXBContext jaxbContext = null;
 
