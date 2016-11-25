@@ -124,8 +124,8 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	}
 
 	@Override
-	public IOperationResult<?> save(IBusinessObjectBase bo) {
-		OperationResult<?> operationResult = new OperationResult<Object>();
+	public <T extends IBusinessObjectBase> IOperationResult<T> save(T bo) {
+		OperationResult<T> operationResult = new OperationResult<>();
 		try {
 			IBusinessObjectBase nBO = this.mySave(bo, true);
 			if (nBO instanceof ITrackStatusOperator) {
@@ -141,8 +141,8 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	}
 
 	@Override
-	public IOperationResult<?> saveEx(IBusinessObjectBase bo) {
-		OperationResult<?> operationResult = new OperationResult<Object>();
+	public <T extends IBusinessObjectBase> IOperationResult<T> saveEx(T bo) {
+		OperationResult<T> operationResult = new OperationResult<>();
 		try {
 			IBusinessObjectBase nBO = this.mySaveEx(bo, true);
 			if (nBO instanceof ITrackStatusOperator) {

@@ -175,12 +175,11 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	public DateTime getServerTime() {
 		try {
 			IBOAdapter4Db adapter4Db = this.createDbAdapter().createBOAdapter();
-			IOperationResult<?> operationResult = this.fetch(adapter4Db.getServerTimeScript());
-			Object data = operationResult.getResultObjects().firstOrDefault();
-			if (data instanceof SingleValue) {
-				SingleValue singleValue = (SingleValue) data;
-				if (singleValue.getValue() instanceof Timestamp) {
-					Timestamp date = (Timestamp) singleValue.getValue();
+			IOperationResult<SingleValue> operationResult = this.fetch(adapter4Db.getServerTimeScript());
+			SingleValue data = operationResult.getResultObjects().firstOrDefault();
+			if (data != null) {
+				if (data.getValue() instanceof Timestamp) {
+					Timestamp date = (Timestamp) data.getValue();
 					return new DateTime(date.getTime());
 				}
 			}
@@ -194,29 +193,33 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 * 获取对象副本，不填充子项值
 	 */
 	@Override
-	public IOperationResult<?> fetchCopy(IBusinessObjectBase bo) {
-		return this.fetch(bo.getCriteria(), bo.getClass());
+	public <T extends IBusinessObjectBase> IOperationResult<T> fetchCopy(T bo) {
+		@SuppressWarnings("unchecked")
+		Class<T> boType = (Class<T>) bo.getClass();
+		return (IOperationResult<T>) this.fetch(bo.getCriteria(), boType);
 	}
 
 	/**
 	 * 获取对象副本，并填充子项值
 	 */
 	@Override
-	public IOperationResult<?> fetchCopyEx(IBusinessObjectBase bo) {
-		return this.fetchEx(bo.getCriteria(), bo.getClass());
+	public <T extends IBusinessObjectBase> IOperationResult<T> fetchCopyEx(T bo) {
+		@SuppressWarnings("unchecked")
+		Class<T> boType = (Class<T>) bo.getClass();
+		return (IOperationResult<T>) this.fetchEx(bo.getCriteria(), boType);
 	}
 
 	/**
 	 * 查询对象值，不填充子项
 	 */
 	@Override
-	public IOperationResult<?> fetch(ICriteria criteria, Class<? extends IBusinessObjectBase> boType) {
+	public <T extends IBusinessObjectBase> IOperationResult<T> fetch(ICriteria criteria, Class<T> boType) {
 		try {
 			IBOAdapter4Db adapter4Db = this.createDbAdapter().createBOAdapter();
 			ISqlQuery sqlQuery = adapter4Db.parseSqlQuery(criteria, boType);
 			return this.fetch(sqlQuery, boType);
 		} catch (Exception e) {
-			return new OperationResult<Object>(e);
+			return new OperationResult<>(e);
 		}
 	}
 
@@ -224,8 +227,8 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 * 查询对象值，并填充子项
 	 */
 	@Override
-	public IOperationResult<?> fetchEx(ICriteria criteria, Class<? extends IBusinessObjectBase> boType) {
-		OperationResult<?> operationResult = new OperationResult<Object>();
+	public <T extends IBusinessObjectBase> IOperationResult<T> fetchEx(ICriteria criteria, Class<T> boType) {
+		OperationResult<T> operationResult = new OperationResult<>();
 		try {
 			IBusinessObjectBase[] bos = this.myFetchEx(criteria, boType);
 			operationResult.addResultObjects(bos);
@@ -239,8 +242,8 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 * 查询对象值，不填充子项
 	 */
 	@Override
-	public IOperationResult<?> fetch(ISqlQuery sqlQuery, Class<? extends IBusinessObjectBase> boType) {
-		OperationResult<?> operationResult = new OperationResult<Object>();
+	public <T extends IBusinessObjectBase> IOperationResult<T> fetch(ISqlQuery sqlQuery, Class<T> boType) {
+		OperationResult<T> operationResult = new OperationResult<>();
 		try {
 			IBusinessObjectBase[] bos = this.myFetch(sqlQuery, boType);
 			operationResult.addResultObjects(bos);
@@ -254,8 +257,8 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 * 查询对象值，并填充子项
 	 */
 	@Override
-	public IOperationResult<?> fetchEx(ISqlQuery sqlQuery, Class<? extends IBusinessObjectBase> boType) {
-		OperationResult<?> operationResult = new OperationResult<Object>();
+	public <T extends IBusinessObjectBase> IOperationResult<T> fetchEx(ISqlQuery sqlQuery, Class<T> boType) {
+		OperationResult<T> operationResult = new OperationResult<>();
 		try {
 			IBusinessObjectBase[] bos = this.myFetchEx(sqlQuery, boType);
 			operationResult.addResultObjects(bos);
@@ -600,24 +603,24 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	}
 
 	@Override
-	public IOperationResult<?> fetch(ISqlStoredProcedure sp, Class<? extends IBusinessObjectBase> boType) {
+	public <T extends IBusinessObjectBase> IOperationResult<T> fetch(ISqlStoredProcedure sp, Class<T> boType) {
 		try {
 			IBOAdapter4Db adapter4Db = this.createDbAdapter().createBOAdapter();
 			ISqlQuery sqlQuery = adapter4Db.parseSqlQuery(sp);
 			return this.fetch(sqlQuery, boType);
 		} catch (Exception e) {
-			return new OperationResult<Object>(e);
+			return new OperationResult<>(e);
 		}
 	}
 
 	@Override
-	public IOperationResult<?> fetchEx(ISqlStoredProcedure sp, Class<? extends IBusinessObjectBase> boType) {
+	public <T extends IBusinessObjectBase> IOperationResult<T> fetchEx(ISqlStoredProcedure sp, Class<T> boType) {
 		try {
 			IBOAdapter4Db adapter4Db = this.createDbAdapter().createBOAdapter();
 			ISqlQuery sqlQuery = adapter4Db.parseSqlQuery(sp);
 			return this.fetchEx(sqlQuery, boType);
 		} catch (Exception e) {
-			return new OperationResult<Object>(e);
+			return new OperationResult<>(e);
 		}
 	}
 

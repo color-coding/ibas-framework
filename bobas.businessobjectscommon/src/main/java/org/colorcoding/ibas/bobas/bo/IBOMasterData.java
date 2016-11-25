@@ -2,6 +2,15 @@ package org.colorcoding.ibas.bobas.bo;
 
 public interface IBOMasterData extends IBusinessObject, IBOStorageTag {
 	/**
+	 * 主要的主键名称
+	 */
+	final static String MASTER_PRIMARY_KEY_NAME = "Code";
+	/**
+	 * 顺序号名称
+	 */
+	final static String SERIAL_NUMBER_KEY_NAME = "DocEntry";
+
+	/**
 	 * 获取-编码 主键
 	 * 
 	 * @return

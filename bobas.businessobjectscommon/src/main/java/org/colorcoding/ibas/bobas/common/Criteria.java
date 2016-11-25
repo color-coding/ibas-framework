@@ -205,14 +205,14 @@ public class Criteria implements ICriteria {
 			boCriteria = new Criteria();
 			boCriteria.setBusinessObjectCode(simple.getObjectCode());
 			ICondition condition = boCriteria.getConditions().create();
-			condition.setAlias("ObjectKey");
+			condition.setAlias(IBOSimple.MASTER_PRIMARY_KEY_NAME);
 			condition.setCondVal(simple.getObjectKey());
 		} else if (bo instanceof IBODocument) {
 			IBODocument document = (IBODocument) bo;
 			boCriteria = new Criteria();
 			boCriteria.setBusinessObjectCode(document.getObjectCode());
 			ICondition condition = boCriteria.getConditions().create();
-			condition.setAlias("DocEntry");
+			condition.setAlias(IBODocument.MASTER_PRIMARY_KEY_NAME);
 			condition.setCondVal(document.getDocEntry());
 
 		} else if (bo instanceof IBOMasterData) {
@@ -220,7 +220,7 @@ public class Criteria implements ICriteria {
 			boCriteria = new Criteria();
 			boCriteria.setBusinessObjectCode(master.getObjectCode());
 			ICondition condition = boCriteria.getConditions().create();
-			condition.setAlias("DocEntry");
+			condition.setAlias(IBOMasterData.SERIAL_NUMBER_KEY_NAME);
 			condition.setCondVal(master.getDocEntry());
 		}
 		if (boCriteria == null) {

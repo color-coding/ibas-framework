@@ -74,7 +74,7 @@ class ApprovalProcessRepository extends BORepositoryLogicService {
 	 *            业务对象
 	 * @return
 	 */
-	public OperationResult<?> save(IBusinessObject bo) {
+	public <P extends IBusinessObject> OperationResult<P> save(P bo) {
 		String token = this.getCurrentUser().getToken();
 		return super.save(bo, token);
 	}

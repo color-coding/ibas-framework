@@ -98,23 +98,23 @@ public class BORepository4Cache extends BORepositoryBase implements IBORepositor
 	}
 
 	@Override
-	public IOperationResult<?> fetchEx(ICriteria criteria, Class<? extends IBusinessObjectBase> boType) {
+	public <T extends IBusinessObjectBase> IOperationResult<T> fetchEx(ICriteria criteria, Class<T> boType) {
 		return this.fetch(criteria, boType);
 	}
 
 	@Override
-	public IOperationResult<?> fetchCopy(IBusinessObjectBase bo) {
+	public <T extends IBusinessObjectBase> IOperationResult<T> fetchCopy(T bo) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public IOperationResult<?> fetchCopyEx(IBusinessObjectBase bo) {
+	public <T extends IBusinessObjectBase> IOperationResult<T> fetchCopyEx(T bo) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public IOperationResult<?> fetch(ICriteria criteria, Class<? extends IBusinessObjectBase> boType) {
-		OperationResult<?> operationResult = new OperationResult<Object>();
+	public <T extends IBusinessObjectBase> IOperationResult<T> fetch(ICriteria criteria, Class<T> boType) {
+		OperationResult<T> operationResult = new OperationResult<>();
 		try {
 			BOCacheContainers cacheList = this.getCacheList(boType);
 			if (cacheList == null) {

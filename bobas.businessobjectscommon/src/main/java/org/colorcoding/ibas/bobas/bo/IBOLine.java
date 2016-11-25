@@ -1,5 +1,11 @@
 package org.colorcoding.ibas.bobas.bo;
 
+/**
+ * 行对象
+ * 
+ * @author Niuren.Zhu
+ *
+ */
 public interface IBOLine extends IBusinessObject {
 
 	/**

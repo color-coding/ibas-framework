@@ -417,7 +417,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 			myOpened = this.openRepository();// 打开仓库
 			myDbTrans = this.beginTransaction(); // 打开事务
 			this.getProcessing().add(bo);// 添加待处理数据到列表
-			IOperationResult<?> operationResult = boRepository.saveEx(bo); // 保存BO
+			IOperationResult<IBusinessObjectBase> operationResult = boRepository.saveEx(bo); // 保存BO
 			this.getProcessing().remove(bo);// 移出带处理数据
 			// 其他
 			if (operationResult.getError() != null) {
@@ -427,7 +427,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 				throw new Exception(operationResult.getMessage());
 			}
 			// 成功保存
-			returnBO = (IBusinessObjectBase) operationResult.getResultObjects().firstOrDefault();
+			returnBO = operationResult.getResultObjects().firstOrDefault();
 			if (this.isPostTransaction()) {
 				// 通知事务
 				TransactionType type = TransactionType.Update;

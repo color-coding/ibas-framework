@@ -2,6 +2,16 @@ package org.colorcoding.ibas.bobas.bo;
 
 public interface IBOMasterDataLine extends IBusinessObject, IBOLine, IBOStorageTag {
 	/**
+	 * 主要的主键名称
+	 */
+	final static String MASTER_PRIMARY_KEY_NAME = "Code";
+
+	/**
+	 * 主要的主键名称
+	 */
+	final static String SECONDARY_PRIMARY_KEY_NAME = "LineId";
+
+	/**
 	 * 获取-编码 主键
 	 * 
 	 * @return

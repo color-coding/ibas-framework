@@ -12,6 +12,11 @@ import org.colorcoding.ibas.bobas.data.emDocumentStatus;
  */
 public interface IBODocument extends IBusinessObject, IBOStorageTag {
 	/**
+	 * 主要的主键名称
+	 */
+	final static String MASTER_PRIMARY_KEY_NAME = "DocEntry";
+
+	/**
 	 * 获取-单据号 主键
 	 * 
 	 * @return

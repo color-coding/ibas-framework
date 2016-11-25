@@ -13,12 +13,12 @@ public interface IBORepository4DbBatch extends IBORepository4Db {
 	/**
 	 * 保存对象
 	 * 
-	 * @param bo
+	 * @param bos
 	 *            被保存的对象数组
 	 * 
 	 * @return 操作结果及对象实例
 	 */
-	IOperationResult<?> save(IBusinessObjectBase[] bos);
+	<T extends IBusinessObjectBase> IOperationResult<T> save(T[] bos);
 
 	/**
 	 * 保存对象包括子项
@@ -28,5 +28,5 @@ public interface IBORepository4DbBatch extends IBORepository4Db {
 	 * 
 	 * @return 操作结果及对象实例
 	 */
-	IOperationResult<?> saveEx(IBusinessObjectBase[] bos);
+	<T extends IBusinessObjectBase> IOperationResult<T> saveEx(T[] bos);
 }

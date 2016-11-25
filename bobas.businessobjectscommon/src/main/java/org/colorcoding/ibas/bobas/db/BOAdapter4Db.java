@@ -871,50 +871,50 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 		if (bo instanceof IBODocument) {
 			IBODocument boKey = (IBODocument) bo;
 			for (KeyValue key : keys) {
-				if (key.key.equals("DocEntry")) {
+				if (IBODocument.MASTER_PRIMARY_KEY_NAME.equals(key.key)) {
 					boKey.setDocEntry((int) (key.value));
 				}
 			}
 		} else if (bo instanceof IBODocumentLine) {
 			IBODocumentLine boKey = (IBODocumentLine) bo;
 			for (KeyValue key : keys) {
-				if (key.key.equals("DocEntry")) {
+				if (IBODocumentLine.MASTER_PRIMARY_KEY_NAME.equals(key.key)) {
 					boKey.setDocEntry((int) (key.value));
-				} else if (key.key.equals("LineId")) {
+				} else if (IBODocumentLine.SECONDARY_PRIMARY_KEY_NAME.equals(key.key)) {
 					boKey.setLineId((int) (key.value));
 				}
 			}
 		} else if (bo instanceof IBOMasterData) {
 			IBOMasterData boKey = (IBOMasterData) bo;
 			for (KeyValue key : keys) {
-				if (key.key.equals("DocEntry")) {
+				if (IBOMasterData.SERIAL_NUMBER_KEY_NAME.equals(key.key)) {
 					boKey.setDocEntry((int) (key.value));
-				} else if (key.key.equals("Code")) {
+				} else if (IBOMasterData.MASTER_PRIMARY_KEY_NAME.equals(key.key)) {
 					boKey.setCode(String.valueOf(key.value));
 				}
 			}
 		} else if (bo instanceof IBOMasterDataLine) {
 			IBOMasterDataLine boKey = (IBOMasterDataLine) bo;
 			for (KeyValue key : keys) {
-				if (key.key.equals("LineId")) {
+				if (IBOMasterDataLine.SECONDARY_PRIMARY_KEY_NAME.equals(key.key)) {
 					boKey.setLineId((int) (key.value));
-				} else if (key.key.equals("Code")) {
+				} else if (IBOMasterDataLine.MASTER_PRIMARY_KEY_NAME.equals(key.key)) {
 					boKey.setCode(String.valueOf(key.value));
 				}
 			}
 		} else if (bo instanceof IBOSimple) {
 			IBOSimple boKey = (IBOSimple) bo;
 			for (KeyValue key : keys) {
-				if (key.key.equals("ObjectKey")) {
+				if (IBOSimple.MASTER_PRIMARY_KEY_NAME.equals(key.key)) {
 					boKey.setObjectKey((int) (key.value));
 				}
 			}
 		} else if (bo instanceof IBOSimpleLine) {
-			IBODocumentLine boKey = (IBODocumentLine) bo;
+			IBOSimpleLine boKey = (IBOSimpleLine) bo;
 			for (KeyValue key : keys) {
-				if (key.key.equals("ObjectKey")) {
-					boKey.setDocEntry((int) (key.value));
-				} else if (key.key.equals("LineId")) {
+				if (IBOSimpleLine.MASTER_PRIMARY_KEY_NAME.equals(key.key)) {
+					boKey.setObjectKey((int) (key.value));
+				} else if (IBOSimpleLine.SECONDARY_PRIMARY_KEY_NAME.equals(key.key)) {
 					boKey.setLineId((int) (key.value));
 				}
 			}
@@ -924,7 +924,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				IFieldMaxValueKey maxValueKey = (IFieldMaxValueKey) bo;
 				IFieldDataDb dbField = maxValueKey.getMaxValueField();
 				for (KeyValue key : keys) {
-					if (key.key.equals(dbField.getName())) {
+					if (dbField.getName().equals(key.key)) {
 						dbField.setValue(key.value);
 					}
 				}
@@ -960,7 +960,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				IBODocument item = (IBODocument) bo;
 				reader = command.executeReader(sqlScripts.getBOPrimaryKeyQuery(item.getObjectCode()));
 				if (reader.next()) {
-					keys.add(new KeyValue("DocEntry", reader.getInt(1)));
+					keys.add(new KeyValue(IBODocument.MASTER_PRIMARY_KEY_NAME, reader.getInt(1)));
 					reader.close();
 				} else {
 					reader.close();
@@ -972,17 +972,18 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				IBODocumentLine item = (IBODocumentLine) bo;
 				ICriteria criteria = new Criteria();
 				ICondition condition = criteria.getConditions().create();
-				condition.setAlias("DocEntry");
+				condition.setAlias(IBODocumentLine.MASTER_PRIMARY_KEY_NAME);
 				condition.setAliasDataType(DbFieldType.db_Numeric);
 				condition.setCondVal(item.getDocEntry().toString());
 				String table = String.format(sqlScripts.getDbObjectSign(), this.getBOMasterTable((IManageFields) bo));
-				String field = String.format(sqlScripts.getDbObjectSign(), "LineId");
+				String field = String.format(sqlScripts.getDbObjectSign(), IBODocumentLine.SECONDARY_PRIMARY_KEY_NAME);
 				String where = this.parseSqlQuery(criteria.getConditions()).getQueryString();
 				reader = command.executeReader(sqlScripts.groupMaxValueQuery(field, table, where));
 				if (reader.next()) {
-					// 已知不返回 keys.add(new KeyValue("DocEntry",
+					// 已知不返回 keys.add(new
+					// KeyValue(IBODocumentLine.MASTER_PRIMARY_KEY_NAME,
 					// item.getDocEntry()));
-					keys.add(new KeyValue("LineId", reader.getInt(1) + 1));
+					keys.add(new KeyValue(IBODocumentLine.SECONDARY_PRIMARY_KEY_NAME, reader.getInt(1) + 1));
 					reader.close();
 				} else {
 					reader.close();
@@ -994,8 +995,10 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				IBOMasterData item = (IBOMasterData) bo;
 				reader = command.executeReader(sqlScripts.getBOPrimaryKeyQuery(item.getObjectCode()));
 				if (reader.next()) {
-					// 已知不返回 keys.add(new KeyValue("Code", item.getCode()));
-					keys.add(new KeyValue("DocEntry", reader.getInt(1)));
+					// 已知不返回 keys.add(new
+					// KeyValue(IBOMasterData.MASTER_PRIMARY_KEY_NAME,
+					// item.getCode()));
+					keys.add(new KeyValue(IBOMasterData.SERIAL_NUMBER_KEY_NAME, reader.getInt(1)));
 					reader.close();
 				} else {
 					reader.close();
@@ -1007,15 +1010,18 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				IBOMasterDataLine item = (IBOMasterDataLine) bo;
 				ICriteria criteria = new Criteria();
 				ICondition condition = criteria.getConditions().create();
-				condition.setAlias("Code");
+				condition.setAlias(IBOMasterDataLine.MASTER_PRIMARY_KEY_NAME);
 				condition.setCondVal(item.getCode());
 				String table = String.format(sqlScripts.getDbObjectSign(), this.getBOMasterTable((IManageFields) bo));
-				String field = String.format(sqlScripts.getDbObjectSign(), "LineId");
+				String field = String.format(sqlScripts.getDbObjectSign(),
+						IBOMasterDataLine.SECONDARY_PRIMARY_KEY_NAME);
 				String where = this.parseSqlQuery(criteria.getConditions()).getQueryString();
 				reader = command.executeReader(sqlScripts.groupMaxValueQuery(field, table, where));
 				if (reader.next()) {
-					// 已知不返回 keys.add(new KeyValue("Code", item.getCode()));
-					keys.add(new KeyValue("LineId", reader.getInt(1) + 1));
+					// 已知不返回 keys.add(new
+					// KeyValue(IBOMasterDataLine.MASTER_PRIMARY_KEY_NAME,
+					// item.getCode()));
+					keys.add(new KeyValue(IBOMasterDataLine.SECONDARY_PRIMARY_KEY_NAME, reader.getInt(1) + 1));
 					reader.close();
 				} else {
 					reader.close();
@@ -1027,7 +1033,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				IBOSimple item = (IBOSimple) bo;
 				reader = command.executeReader(sqlScripts.getBOPrimaryKeyQuery(item.getObjectCode()));
 				if (reader.next()) {
-					keys.add(new KeyValue("ObjectKey", reader.getInt(1)));
+					keys.add(new KeyValue(IBOSimple.MASTER_PRIMARY_KEY_NAME, reader.getInt(1)));
 					reader.close();
 				} else {
 					reader.close();
@@ -1039,16 +1045,18 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				IBOSimpleLine item = (IBOSimpleLine) bo;
 				ICriteria criteria = new Criteria();
 				ICondition condition = criteria.getConditions().create();
-				condition.setAlias("ObjectKey");
+				condition.setAlias(IBOSimpleLine.MASTER_PRIMARY_KEY_NAME);
 				condition.setAliasDataType(DbFieldType.db_Numeric);
 				condition.setCondVal(item.getObjectKey());
 				String table = String.format(sqlScripts.getDbObjectSign(), this.getBOMasterTable((IManageFields) bo));
-				String field = String.format(sqlScripts.getDbObjectSign(), "LineId");
+				String field = String.format(sqlScripts.getDbObjectSign(), IBOSimpleLine.SECONDARY_PRIMARY_KEY_NAME);
 				String where = this.parseSqlQuery(criteria.getConditions()).getQueryString();
 				reader = command.executeReader(sqlScripts.groupMaxValueQuery(field, table, where));
 				if (reader.next()) {
-					//已知不返回	keys.add(new KeyValue("ObjectKey", item.getObjectKey()));
-					keys.add(new KeyValue("LineId", reader.getInt(1) + 1));
+					// 已知不返回 keys.add(new
+					// KeyValue(IBOSimpleLine.MASTER_PRIMARY_KEY_NAME,
+					// item.getObjectKey()));
+					keys.add(new KeyValue(IBOSimpleLine.SECONDARY_PRIMARY_KEY_NAME, reader.getInt(1) + 1));
 					reader.close();
 				} else {
 					reader.close();

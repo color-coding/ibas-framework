@@ -19,6 +19,9 @@ public interface IBusinessObjects<E extends IBusinessObject, P extends IBusiness
 	 */
 	Class<?> getElementType();
 
+	/**
+	 * 添加元素
+	 */
 	boolean add(E item);
 
 	/**

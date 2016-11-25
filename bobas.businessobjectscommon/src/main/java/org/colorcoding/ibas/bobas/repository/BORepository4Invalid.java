@@ -25,39 +25,39 @@ public class BORepository4Invalid extends BORepositoryBase implements IBOReposit
 
 	}
 
-	protected IOperationResult<?> newInvalidOperationResult() {
-		OperationResult<?> operationResult = new OperationResult<Object>();
+	protected <T extends IBusinessObjectBase> IOperationResult<T> newInvalidOperationResult() {
+		OperationResult<T> operationResult = new OperationResult<>();
 		operationResult.setError(new InvalidRepositoryException());
 		return operationResult;
 	}
 
 	@Override
-	public IOperationResult<?> save(IBusinessObjectBase bo) {
+	public <T extends IBusinessObjectBase> IOperationResult<T> save(T bo) {
 		return this.newInvalidOperationResult();
 	}
 
 	@Override
-	public IOperationResult<?> saveEx(IBusinessObjectBase bo) {
+	public <T extends IBusinessObjectBase> IOperationResult<T> saveEx(T bo) {
 		return this.newInvalidOperationResult();
 	}
 
 	@Override
-	public IOperationResult<?> fetch(ICriteria criteria, Class<? extends IBusinessObjectBase> boType) {
+	public <T extends IBusinessObjectBase> IOperationResult<T> fetch(ICriteria criteria, Class<T> boType) {
 		return this.newInvalidOperationResult();
 	}
 
 	@Override
-	public IOperationResult<?> fetchEx(ICriteria criteria, Class<? extends IBusinessObjectBase> boType) {
+	public <T extends IBusinessObjectBase> IOperationResult<T> fetchEx(ICriteria criteria, Class<T> boType) {
 		return this.newInvalidOperationResult();
 	}
 
 	@Override
-	public IOperationResult<?> fetchCopy(IBusinessObjectBase bo) {
+	public <T extends IBusinessObjectBase> IOperationResult<T> fetchCopy(T bo) {
 		return this.newInvalidOperationResult();
 	}
 
 	@Override
-	public IOperationResult<?> fetchCopyEx(IBusinessObjectBase bo) {
+	public <T extends IBusinessObjectBase> IOperationResult<T> fetchCopyEx(T bo) {
 		return this.newInvalidOperationResult();
 	}
 

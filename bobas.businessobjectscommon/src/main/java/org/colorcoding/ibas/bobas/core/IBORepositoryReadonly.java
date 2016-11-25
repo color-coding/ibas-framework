@@ -65,7 +65,7 @@ public interface IBORepositoryReadonly {
 	 * 
 	 * @return 操作结果及新对象实例
 	 */
-	IOperationResult<?> fetch(ICriteria criteria, Class<? extends IBusinessObjectBase> boType);
+	<T extends IBusinessObjectBase> IOperationResult<T> fetch(ICriteria criteria, Class<T> boType);
 
 	/**
 	 * 查询对象包括子项
@@ -78,7 +78,7 @@ public interface IBORepositoryReadonly {
 	 * 
 	 * @return 操作结果及新对象实例
 	 */
-	IOperationResult<?> fetchEx(ICriteria criteria, Class<? extends IBusinessObjectBase> boType);
+	<T extends IBusinessObjectBase> IOperationResult<T> fetchEx(ICriteria criteria, Class<T> boType);
 
 	/**
 	 * 查询对象副本
@@ -88,7 +88,7 @@ public interface IBORepositoryReadonly {
 	 * 
 	 * @return
 	 */
-	IOperationResult<?> fetchCopy(IBusinessObjectBase bo);
+	<T extends IBusinessObjectBase> IOperationResult<T> fetchCopy(T bo);
 
 	/**
 	 * 查询对象副本包括子项
@@ -98,6 +98,6 @@ public interface IBORepositoryReadonly {
 	 * 
 	 * @return 操作结果及新对象实例
 	 */
-	IOperationResult<?> fetchCopyEx(IBusinessObjectBase bo);
+	<T extends IBusinessObjectBase> IOperationResult<T> fetchCopyEx(T bo);
 
 }

@@ -53,7 +53,7 @@ public class testDbConnectionPool extends TestCase {
 		sort.setAlias(SalesOrder.CustomerCodeProperty.getName());
 		sort.setSortType(SortType.st_Ascending);
 
-		IOperationResult<?> operationResult = boRepository.fetchSalesOrder(criteria);
+		IOperationResult<ISalesOrder> operationResult = boRepository.fetchSalesOrder(criteria);
 		System.out.println(String.format("%s code:%s message:%s results:%s", Thread.currentThread().getName(),
 				operationResult.getResultCode(), operationResult.getMessage(),
 				operationResult.getResultObjects().size()));
@@ -92,7 +92,7 @@ public class testDbConnectionPool extends TestCase {
 		item.setItemDescription("绝地武士-剑");
 		item.setQuantity(2);
 		item.setPrice(99.00);
-		IOperationResult<?> operationResult = boRepository.saveSalesOrder(order);
+		IOperationResult<ISalesOrder> operationResult = boRepository.saveSalesOrder(order);
 		System.out.println(String.format("%s code:%s message:%s results:%s", Thread.currentThread().getName(),
 				operationResult.getResultCode(), operationResult.getMessage(),
 				operationResult.getResultObjects().size()));

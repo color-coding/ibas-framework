@@ -57,8 +57,8 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 	}
 
 	@Override
-	public IOperationResult<?> save(IBusinessObjectBase[] bos) {
-		OperationResult<?> operationResult = new OperationResult<Object>();
+	public <T extends IBusinessObjectBase> IOperationResult<T> save(T[] bos) {
+		OperationResult<T> operationResult = new OperationResult<>();
 		try {
 			IBusinessObjectBase[] nBOs = this.mySave(bos, false);
 			for (IBusinessObjectBase nBO : nBOs) {
@@ -76,9 +76,9 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 	}
 
 	@Override
-	public IOperationResult<?> saveEx(IBusinessObjectBase[] bos) {
+	public <T extends IBusinessObjectBase> IOperationResult<T> saveEx(T[] bos) {
 
-		OperationResult<?> operationResult = new OperationResult<Object>();
+		OperationResult<T> operationResult = new OperationResult<>();
 		try {
 			IBusinessObjectBase[] nBOs = this.mySave(bos, true);
 			for (IBusinessObjectBase nBO : nBOs) {

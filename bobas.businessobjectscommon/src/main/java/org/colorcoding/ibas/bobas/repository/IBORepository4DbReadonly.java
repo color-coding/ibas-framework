@@ -94,7 +94,7 @@ public interface IBORepository4DbReadonly extends IBORepositoryReadonly {
 	 * 
 	 * @return 操作结果及新对象实例
 	 */
-	IOperationResult<?> fetch(ISqlQuery sqlQuery, Class<? extends IBusinessObjectBase> boType);
+	<T extends IBusinessObjectBase> IOperationResult<T> fetch(ISqlQuery sqlQuery, Class<T> boType);
 
 	/**
 	 * 查询对象包括子项
@@ -107,7 +107,7 @@ public interface IBORepository4DbReadonly extends IBORepositoryReadonly {
 	 * 
 	 * @return 操作结果及新对象实例
 	 */
-	IOperationResult<?> fetchEx(ISqlQuery sqlQuery, Class<? extends IBusinessObjectBase> boType);
+	<T extends IBusinessObjectBase> IOperationResult<T> fetchEx(ISqlQuery sqlQuery, Class<T> boType);
 
 	/**
 	 * 运行查询语句
@@ -138,7 +138,7 @@ public interface IBORepository4DbReadonly extends IBORepositoryReadonly {
 	 * 
 	 * @return 操作结果及新对象实例
 	 */
-	IOperationResult<?> fetch(ISqlStoredProcedure sp, Class<? extends IBusinessObjectBase> boType);
+	<T extends IBusinessObjectBase> IOperationResult<T> fetch(ISqlStoredProcedure sp, Class<T> boType);
 
 	/**
 	 * 查询对象包括子项
@@ -151,7 +151,7 @@ public interface IBORepository4DbReadonly extends IBORepositoryReadonly {
 	 * 
 	 * @return 操作结果及新对象实例
 	 */
-	IOperationResult<?> fetchEx(ISqlStoredProcedure sp, Class<? extends IBusinessObjectBase> boType);
+	<T extends IBusinessObjectBase> IOperationResult<T> fetchEx(ISqlStoredProcedure sp, Class<T> boType);
 
 	/**
 	 * 运行存储过程，并返回值

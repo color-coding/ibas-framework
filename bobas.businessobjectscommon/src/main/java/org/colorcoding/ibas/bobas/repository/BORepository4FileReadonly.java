@@ -67,26 +67,30 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 	 * 获取对象副本，不填充子项值
 	 */
 	@Override
-	public IOperationResult<?> fetchCopy(IBusinessObjectBase bo) {
-		return this.fetch(bo.getCriteria(), bo.getClass());
+	public <T extends IBusinessObjectBase> IOperationResult<T> fetchCopy(T bo) {
+		@SuppressWarnings("unchecked")
+		Class<T> boType = (Class<T>) bo.getClass();
+		return this.fetch(bo.getCriteria(), boType);
 	}
 
 	/**
 	 * 获取对象副本，并填充子项值
 	 */
 	@Override
-	public IOperationResult<?> fetchCopyEx(IBusinessObjectBase bo) {
-		return this.fetchEx(bo.getCriteria(), bo.getClass());
+	public <T extends IBusinessObjectBase> IOperationResult<T> fetchCopyEx(T bo) {
+		@SuppressWarnings("unchecked")
+		Class<T> boType = (Class<T>) bo.getClass();
+		return this.fetchEx(bo.getCriteria(), boType);
 	}
 
 	@Override
-	public IOperationResult<?> fetch(ICriteria criteria, Class<? extends IBusinessObjectBase> boType) {
+	public <T extends IBusinessObjectBase> IOperationResult<T> fetch(ICriteria criteria, Class<T> boType) {
 		return this.fetchEx(criteria, boType);// 查找全部属性
 	}
 
 	@Override
-	public IOperationResult<?> fetchEx(ICriteria criteria, Class<? extends IBusinessObjectBase> boType) {
-		OperationResult<?> operationResult = new OperationResult<Object>();
+	public <T extends IBusinessObjectBase> IOperationResult<T> fetchEx(ICriteria criteria, Class<T> boType) {
+		OperationResult<T> operationResult = new OperationResult<>();
 		try {
 			BOFile[] boFiles = this.myFetchEx(criteria, boType);
 			for (int i = 0; i < boFiles.length; i++) {

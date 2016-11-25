@@ -18,7 +18,7 @@ class BusinessLogicsRepository extends BORepositoryLogicService {
 		this.setCheckApprovalProcess(false);// 不检查审批逻辑
 	}
 
-	public IOperationResult<?> save(IBusinessObjectBase bo) {
+	public <P extends IBusinessObjectBase> IOperationResult<P> save(P bo) {
 		String token = this.getCurrentUser().getToken();
 		return super.save(bo, token);
 	}

@@ -34,4 +34,9 @@ public class KeyValue {
 	 */
 	@XmlElement(name = "Value")
 	public Object value;
+
+	@Override
+	public String toString() {
+		return String.format("{KeyValue %s %s}", this.key, this.value);
+	}
 }

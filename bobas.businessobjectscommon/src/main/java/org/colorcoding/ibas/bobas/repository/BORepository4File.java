@@ -107,13 +107,13 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 	}
 
 	@Override
-	public IOperationResult<?> save(IBusinessObjectBase bo) {
+	public <T extends IBusinessObjectBase> IOperationResult<T> save(T bo) {
 		return this.saveEx(bo);
 	}
 
 	@Override
-	public IOperationResult<?> saveEx(IBusinessObjectBase bo) {
-		OperationResult<?> operationResult = new OperationResult<Object>();
+	public <T extends IBusinessObjectBase> IOperationResult<T> saveEx(T bo) {
+		OperationResult<T> operationResult = new OperationResult<>();
 		try {
 			IBusinessObjectBase nBO = this.mySave(bo);
 			if (nBO instanceof ITrackStatusOperator) {

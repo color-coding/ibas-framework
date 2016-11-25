@@ -209,14 +209,14 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		try {
 			if (this.getParent() instanceof IBusinessObjectBase) {
 				IBusinessObjectBase bo = (IBusinessObjectBase) this.getParent();
-				IOperationResult<?> opRslt = this.getRepository().fetchCopy(bo);
+				IOperationResult<IBusinessObjectBase> opRslt = this.getRepository().fetchCopy(bo);
 				if (opRslt.getError() != null) {
 					throw opRslt.getError();
 				}
 				if (opRslt.getResultCode() != 0) {
 					throw new Exception(opRslt.getMessage());
 				}
-				return (IBusinessObjectBase) opRslt.getResultObjects().firstOrDefault();
+				return opRslt.getResultObjects().firstOrDefault();
 			}
 			throw new BusinessLogicsException(i18n.prop("msg_bobas_not_supported"));
 		} catch (Exception e) {
@@ -303,7 +303,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		if (this.getBeAffected() != null) {
 			BusinessLogicsRepository logicRepository = new BusinessLogicsRepository();
 			logicRepository.setRepository(this.getRepository());
-			IOperationResult<?> operationResult = logicRepository.save(this.getBeAffected());
+			IOperationResult<IBusinessObjectBase> operationResult = logicRepository.save(this.getBeAffected());
 			this.getRepository().removeSaveActionsListener(logicRepository);// 移出监听
 			if (operationResult.getError() != null) {
 				throw new BusinessLogicsException(operationResult.getError());

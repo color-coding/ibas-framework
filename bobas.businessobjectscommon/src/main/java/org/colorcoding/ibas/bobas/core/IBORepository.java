@@ -15,7 +15,7 @@ public interface IBORepository extends IBORepositoryReadonly {
 	 * 
 	 * @return 操作结果及新对象实例
 	 */
-	IOperationResult<?> save(IBusinessObjectBase bo);
+	<T extends IBusinessObjectBase> IOperationResult<T> save(T bo);
 
 	/**
 	 * 保存对象包括子项
@@ -25,7 +25,7 @@ public interface IBORepository extends IBORepositoryReadonly {
 	 * 
 	 * @return 操作结果及新对象实例
 	 */
-	IOperationResult<?> saveEx(IBusinessObjectBase bo);
+	<T extends IBusinessObjectBase> IOperationResult<T> saveEx(T bo);
 
 	/**
 	 * 开启事务
