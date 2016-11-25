@@ -131,26 +131,26 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 			IBindableBase boItem = (IBindableBase) item;
 			boItem.addPropertyChangeListener(this);
 		}
-		if (this.getParent() == null || this.getParent().isLoading()) {
+		if (this.getParent() == null) {
 			// 没父项，父项读取数据中，退出
 			return;
 		}
+		// 修正子项编号
 		if (item instanceof IBOLine) {
 			IBOLine line = (IBOLine) item;
 			if (line.getLineId() <= 0) {
 				line.setLineId(this.getMaxLineId());
 			}
 		}
+		// 添加子项即给子项主键赋值
 		if (item instanceof IBODocumentLine) {
 			IBODocumentLine docItem = (IBODocumentLine) item;
 			if (this.getParent() instanceof IBODocument) {
 				IBODocument doc = (IBODocument) this.getParent();
 				docItem.setDocEntry(doc.getDocEntry());
-				docItem.setLineStatus(doc.getDocumentStatus());
 			} else if (this.getParent() instanceof IBODocumentLine) {
 				IBODocumentLine doc = (IBODocumentLine) this.getParent();
 				docItem.setDocEntry(doc.getDocEntry());
-				docItem.setLineStatus(doc.getLineStatus());
 			}
 		} else if (item instanceof IBOMasterDataLine) {
 			IBOMasterDataLine masItem = (IBOMasterDataLine) item;
@@ -169,6 +169,21 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 			} else if (this.getParent() instanceof IBOSimpleLine) {
 				IBOSimpleLine sim = (IBOSimpleLine) this.getParent();
 				simItem.setObjectKey(sim.getObjectKey());
+			}
+		}
+		if (this.getParent().isLoading()) {
+			// 没父项，父项读取数据中，退出
+			return;
+		}
+		// 处理单据状态
+		if (item instanceof IBODocumentLine) {
+			IBODocumentLine docItem = (IBODocumentLine) item;
+			if (this.getParent() instanceof IBODocument) {
+				IBODocument doc = (IBODocument) this.getParent();
+				docItem.setLineStatus(doc.getDocumentStatus());
+			} else if (this.getParent() instanceof IBODocumentLine) {
+				IBODocumentLine doc = (IBODocumentLine) this.getParent();
+				docItem.setLineStatus(doc.getLineStatus());
 			}
 		}
 		// 集合元素发生变化
