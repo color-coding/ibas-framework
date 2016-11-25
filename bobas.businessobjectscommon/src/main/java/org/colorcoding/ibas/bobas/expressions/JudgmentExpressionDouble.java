@@ -15,7 +15,7 @@ public class JudgmentExpressionDouble extends JudgmentExpressionComparable<Doubl
 		super(leftValue, operation, rightValue);
 	}
 
-	private Double leftValue;
+	private double leftValue;
 
 	@Override
 	public final Double getLeftValue() {
@@ -39,7 +39,7 @@ public class JudgmentExpressionDouble extends JudgmentExpressionComparable<Doubl
 		this.leftValue = value;
 	}
 
-	private Double rightValue;
+	private double rightValue;
 
 	@Override
 	public final Double getRightValue() {

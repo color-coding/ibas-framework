@@ -120,7 +120,7 @@ public class BORepository4Cache extends BORepositoryBase implements IBORepositor
 			if (cacheList == null) {
 				return operationResult;
 			}
-			JudgmentLinks judgmentLinks = ExpressionFactory.create().createJudgmentLinks(criteria.getConditions());
+			JudgmentLinks judgmentLinks = ExpressionFactory.create().createBOJudgmentLinks(criteria.getConditions());
 			synchronized (cacheList) {
 				for (IBOCacheContainer boContainer : cacheList) {
 					if (judgmentLinks.judge(boContainer.getData())) {

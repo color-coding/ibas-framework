@@ -31,6 +31,8 @@ public class ExpressionFactory {
 			return new JudgmentExpressionString();
 		} else if (type == Integer.class) {
 			return new JudgmentExpressionInteger();
+		} else if (type == Long.class) {
+			return new JudgmentExpressionLong();
 		} else if (type == Double.class) {
 			return new JudgmentExpressionDouble();
 		} else if (type == Float.class) {
@@ -49,9 +51,29 @@ public class ExpressionFactory {
 		throw new JudmentOperationException(i18n.prop("msg_bobas_not_support_type_expression", type.getName()));
 	}
 
-	public JudgmentLinks createJudgmentLinks(IConditions conditions) {
-		BOJudgmentLinksCondition judgmentLinksCondition = new BOJudgmentLinksCondition();
-		judgmentLinksCondition.parsingConditions(conditions);
-		return judgmentLinksCondition;
+	/**
+	 * 创建业务对象判断链
+	 * 
+	 * @param conditions
+	 *            条件
+	 * @return
+	 */
+	public JudgmentLinks createBOJudgmentLinks(IConditions conditions) {
+		BOJudgmentLinksCondition judgmentLinks = new BOJudgmentLinksCondition();
+		judgmentLinks.parsingConditions(conditions);
+		return judgmentLinks;
+	}
+
+	/**
+	 * 创建文件判断链
+	 * 
+	 * @param conditions
+	 *            条件
+	 * @return
+	 */
+	public JudgmentLinks createFileJudgmentLinks(IConditions conditions) {
+		FileJudgmentLinks judgmentLinks = new FileJudgmentLinks();
+		judgmentLinks.parsingConditions(conditions);
+		return judgmentLinks;
 	}
 }

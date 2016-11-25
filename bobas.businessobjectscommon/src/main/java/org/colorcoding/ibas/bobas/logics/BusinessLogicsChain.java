@@ -214,7 +214,7 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <B> B fetchBeAffected(ICriteria criteria, Class<B> type) {
-		JudgmentLinks judgmentLinks = ExpressionFactory.create().createJudgmentLinks(criteria.getConditions());
+		JudgmentLinks judgmentLinks = ExpressionFactory.create().createBOJudgmentLinks(criteria.getConditions());
 		for (IBusinessLogic<?>[] logics : this.getLogics().values()) {
 			for (IBusinessLogic<?> logic : logics) {
 				if (logic.getBeAffected() == null) {
@@ -242,7 +242,7 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <B> B fetchOldParent(ICriteria criteria, Class<B> type) {
-		JudgmentLinks judgmentLinks = ExpressionFactory.create().createJudgmentLinks(criteria.getConditions());
+		JudgmentLinks judgmentLinks = ExpressionFactory.create().createBOJudgmentLinks(criteria.getConditions());
 		for (IBusinessLogic<?>[] logics : this.getLogics().values()) {
 			for (IBusinessLogic<?> item : logics) {
 				if (item instanceof BusinessLogic<?, ?>) {

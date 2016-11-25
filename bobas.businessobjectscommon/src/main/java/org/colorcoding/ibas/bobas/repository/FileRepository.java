@@ -21,7 +21,7 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 public class FileRepository extends FileRepositoryReadonly implements IFileRepository {
 
 	@Override
-	public IOperationResult<FileData> write(FileData fileData) {
+	public IOperationResult<FileData> save(FileData fileData) {
 		OperationResult<FileData> operationResult = new OperationResult<>();
 		try {
 			operationResult.addResultObjects(this.writeFile(fileData));
@@ -44,7 +44,10 @@ public class FileRepository extends FileRepositoryReadonly implements IFileRepos
 			throw new RepositoryException(i18n.prop("msg_bobas_invalid_data"));
 		}
 		FileData nFileData = new FileData();
-		nFileData.setFileName(UUID.randomUUID().toString());
+		if (fileData.getFileName() != null && !fileData.getFileName().isEmpty())
+			nFileData.setFileName(fileData.getFileName() + "_" + UUID.randomUUID().toString());
+		else
+			nFileData.setFileName(UUID.randomUUID().toString());
 		nFileData.setLocation(this.getRepositoryFolder() + File.separator + nFileData.getFileName());
 		OutputStream outputStream = new FileOutputStream(nFileData.getLocation());
 		try {

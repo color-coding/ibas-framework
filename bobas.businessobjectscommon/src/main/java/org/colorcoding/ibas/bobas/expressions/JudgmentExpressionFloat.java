@@ -15,7 +15,7 @@ public class JudgmentExpressionFloat extends JudgmentExpressionComparable<Float>
 		super(leftValue, operation, rightValue);
 	}
 
-	private Float leftValue;
+	private float leftValue;
 
 	@Override
 	public final Float getLeftValue() {
@@ -39,7 +39,7 @@ public class JudgmentExpressionFloat extends JudgmentExpressionComparable<Float>
 		this.leftValue = value;
 	}
 
-	private Float rightValue;
+	private float rightValue;
 
 	@Override
 	public final Float getRightValue() {

@@ -6,60 +6,60 @@ package org.colorcoding.ibas.bobas.expressions;
  * @author Niuren.Zhu
  *
  */
-public class JudgmentExpressionInteger extends JudgmentExpressionComparable<Integer> {
-	public JudgmentExpressionInteger() {
+public class JudgmentExpressionLong extends JudgmentExpressionComparable<Long> {
+	public JudgmentExpressionLong() {
 
 	}
 
-	public JudgmentExpressionInteger(int leftValue, JudmentOperations operation, int rightValue) {
+	public JudgmentExpressionLong(long leftValue, JudmentOperations operation, long rightValue) {
 		super(leftValue, operation, rightValue);
 	}
 
-	private int leftValue;
+	private long leftValue;
 
 	@Override
-	public final Integer getLeftValue() {
+	public final Long getLeftValue() {
 		return this.leftValue;
 	}
 
 	@Override
 	public final void setLeftValue(Object value) {
-		if (value instanceof Integer) {
-			this.setLeftValue((Integer) value);
+		if (value instanceof Long) {
+			this.setLeftValue((Long) value);
 		} else if (value instanceof String) {
 			this.setLeftValue((String) value);
 		}
 	}
 
 	public final void setLeftValue(String value) {
-		this.setLeftValue(Integer.valueOf(value));
+		this.setLeftValue(Long.valueOf(value));
 	}
 
-	public final void setLeftValue(Integer value) {
+	public final void setLeftValue(Long value) {
 		this.leftValue = value;
 	}
 
-	private int rightValue;
+	private long rightValue;
 
 	@Override
-	public final Integer getRightValue() {
+	public final Long getRightValue() {
 		return this.rightValue;
 	}
 
 	@Override
 	public final void setRightValue(Object value) {
-		if (value instanceof Integer) {
-			this.setRightValue((Integer) value);
+		if (value instanceof Long) {
+			this.setRightValue((Long) value);
 		} else if (value instanceof String) {
 			this.setRightValue((String) value);
 		}
 	}
 
 	public final void setRightValue(String value) {
-		this.setRightValue(Integer.valueOf(value));
+		this.setRightValue(Long.valueOf(value));
 	}
 
-	public final void setRightValue(Integer value) {
+	public final void setRightValue(Long value) {
 		this.rightValue = value;
 	}
 }

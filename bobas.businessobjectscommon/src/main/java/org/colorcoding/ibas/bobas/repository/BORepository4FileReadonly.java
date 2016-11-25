@@ -125,7 +125,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 		JudgmentLinks judgmentLinks = null;
 		if (criteria.getConditions().size() > 0) {
 			// 要求有条件
-			judgmentLinks = ExpressionFactory.create().createJudgmentLinks(criteria.getConditions());
+			judgmentLinks = ExpressionFactory.create().createBOJudgmentLinks(criteria.getConditions());
 		}
 		File[] files = file.listFiles();
 		ArrayList<BOFile> boFiles = new ArrayList<BOFile>();

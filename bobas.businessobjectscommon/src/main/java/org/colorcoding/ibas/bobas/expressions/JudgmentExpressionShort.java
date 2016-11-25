@@ -15,7 +15,7 @@ public class JudgmentExpressionShort extends JudgmentExpressionComparable<Short>
 		super(leftValue, operation, rightValue);
 	}
 
-	private Short leftValue;
+	private short leftValue;
 
 	@Override
 	public final Short getLeftValue() {
@@ -39,7 +39,7 @@ public class JudgmentExpressionShort extends JudgmentExpressionComparable<Short>
 		this.leftValue = value;
 	}
 
-	private Short rightValue;
+	private short rightValue;
 
 	@Override
 	public final Short getRightValue() {

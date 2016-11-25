@@ -509,14 +509,14 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 				IBORepository4Db dbRepository = (IBORepository4Db) this.getRepository();
 				IBOAdapter4Db adapter4Db = dbRepository.createDbAdapter().createBOAdapter();
 				ISqlQuery sqlQuery = adapter4Db.parseBOTransactionNotification(type, bo);
-				IOperationResult<?> spOpRslt = dbRepository.fetch(sqlQuery, TransactionMessage.class);
+				IOperationResult<TransactionMessage> spOpRslt = dbRepository.fetch(sqlQuery, TransactionMessage.class);
 				if (spOpRslt.getError() != null) {
 					throw spOpRslt.getError();
 				}
 				if (spOpRslt.getResultCode() != 0) {
 					throw new Exception(spOpRslt.getMessage());
 				}
-				TransactionMessage message = (TransactionMessage) spOpRslt.getResultObjects().firstOrDefault();
+				TransactionMessage message = spOpRslt.getResultObjects().firstOrDefault();
 				if (message == null) {
 					throw new Exception(i18n.prop("msg_bobas_invaild_bo_transaction_message"));
 				}

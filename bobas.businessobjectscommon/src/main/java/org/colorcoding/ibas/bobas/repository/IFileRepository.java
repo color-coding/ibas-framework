@@ -12,11 +12,11 @@ import org.colorcoding.ibas.bobas.data.FileData;
 public interface IFileRepository extends IFileRepositoryReadonly {
 
 	/**
-	 * 写文件
+	 * 保存文件数据
 	 * 
 	 * @param fileData
 	 *            文件数据
 	 * @return 操作结果
 	 */
-	IOperationResult<FileData> write(FileData fileData);
+	IOperationResult<FileData> save(FileData fileData);
 }

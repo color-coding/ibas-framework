@@ -50,7 +50,7 @@ public class JudgmentExpressionBoolean extends JudgmentExpression<Boolean> {
 		return super.result();
 	}
 
-	private Boolean leftValue;
+	private boolean leftValue;
 
 	@Override
 	public final Boolean getLeftValue() {
@@ -74,7 +74,7 @@ public class JudgmentExpressionBoolean extends JudgmentExpression<Boolean> {
 		this.leftValue = value;
 	}
 
-	private Boolean rightValue;
+	private boolean rightValue;
 
 	@Override
 	public final Boolean getRightValue() {

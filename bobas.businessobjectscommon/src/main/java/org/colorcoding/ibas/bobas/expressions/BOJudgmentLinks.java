@@ -86,7 +86,6 @@ public class BOJudgmentLinks extends JudgmentLinks {
 	 * @return true，满足条件；false，不满足
 	 * @throws JudmentOperationException
 	 */
-
 	public boolean judge(IBusinessObjectBase bo) throws JudmentOperationException {
 		return super.judge(bo);
 	}

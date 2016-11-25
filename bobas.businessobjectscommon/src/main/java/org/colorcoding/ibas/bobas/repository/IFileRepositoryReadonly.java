@@ -26,11 +26,11 @@ public interface IFileRepositoryReadonly {
 	void setRepositoryFolder(String folder);
 
 	/**
-	 * 读取文件
+	 * 查询文件数据
 	 * 
 	 * @param criteria
 	 *            读取文件的条件
 	 * @return 操作结果
 	 */
-	IOperationResult<FileData> read(ICriteria criteria);
+	IOperationResult<FileData> fetch(ICriteria criteria);
 }

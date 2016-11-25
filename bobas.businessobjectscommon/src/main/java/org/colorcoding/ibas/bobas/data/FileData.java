@@ -55,4 +55,8 @@ public class FileData {
 		this.stream = stream;
 	}
 
+	@Override
+	public String toString() {
+		return String.format("{File %s@%s}", this.getFileName(), this.getLocation());
+	}
 }
