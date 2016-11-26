@@ -13,20 +13,29 @@ import org.colorcoding.ibas.bobas.MyConsts;
 @XmlType(name = "BindableBase", namespace = MyConsts.NAMESPACE_BOBAS_CORE)
 public abstract class BindableBase implements IBindableBase {
 
-	transient private PropertyChangeSupport propertyChangeisteners = new PropertyChangeSupport(this);
+	transient private PropertyChangeSupport listeners;
 
 	@Override
 	public final void addPropertyChangeListener(PropertyChangeListener listener) {
-		this.propertyChangeisteners.addPropertyChangeListener(listener);
+		if (this.listeners == null) {
+			this.listeners = new PropertyChangeSupport(this);
+		}
+		this.listeners.addPropertyChangeListener(listener);
 	}
 
 	@Override
 	public final void removePropertyChangeListener(PropertyChangeListener listener) {
-		this.propertyChangeisteners.removePropertyChangeListener(listener);
+		if (this.listeners == null) {
+			this.listeners = new PropertyChangeSupport(this);
+		}
+		this.listeners.removePropertyChangeListener(listener);
 	}
 
 	protected void firePropertyChange(String name, Object oldValue, Object newValue) {
-		this.propertyChangeisteners.firePropertyChange(name, oldValue, newValue);
+		if (this.listeners == null) {
+			return;
+		}
+		this.listeners.firePropertyChange(name, oldValue, newValue);
 	}
 
 }

@@ -303,6 +303,12 @@ public class testBusinessObjects extends TestCase {
 		stringBuilder.append("<SalesOrder>");
 		stringBuilder.append("<SalesOrderItems>");
 		stringBuilder.append("<SalesOrderItem>");
+		stringBuilder.append("<DocEntry>");
+		stringBuilder.append(99);
+		stringBuilder.append("</DocEntry>");
+		stringBuilder.append("<LineId>");
+		stringBuilder.append(1);
+		stringBuilder.append("</LineId>");
 		stringBuilder.append("<LineStatus>");
 		stringBuilder.append(emDocumentStatus.Closed);
 		stringBuilder.append("</LineStatus>");
@@ -314,6 +320,12 @@ public class testBusinessObjects extends TestCase {
 		stringBuilder.append("</Canceled>");
 		stringBuilder.append("</SalesOrderItem>");
 		stringBuilder.append("<SalesOrderItem>");
+		stringBuilder.append("<DocEntry>");
+		stringBuilder.append(99);
+		stringBuilder.append("</DocEntry>");
+		stringBuilder.append("<LineId>");
+		stringBuilder.append(2);
+		stringBuilder.append("</LineId>");
 		stringBuilder.append("<LineStatus>");
 		stringBuilder.append(emDocumentStatus.Closed);
 		stringBuilder.append("</LineStatus>");
@@ -325,6 +337,12 @@ public class testBusinessObjects extends TestCase {
 		stringBuilder.append("</Canceled>");
 		stringBuilder.append("</SalesOrderItem>");
 		stringBuilder.append("<SalesOrderItem>");
+		stringBuilder.append("<DocEntry>");
+		stringBuilder.append(99);
+		stringBuilder.append("</DocEntry>");
+		stringBuilder.append("<LineId>");
+		stringBuilder.append(0);
+		stringBuilder.append("</LineId>");
 		stringBuilder.append("<LineStatus>");
 		stringBuilder.append(emDocumentStatus.Closed);
 		stringBuilder.append("</LineStatus>");
@@ -345,9 +363,20 @@ public class testBusinessObjects extends TestCase {
 		stringBuilder.append("<Canceled>");
 		stringBuilder.append(emYesNo.Yes);
 		stringBuilder.append("</Canceled>");
+		stringBuilder.append("<DocEntry>");
+		stringBuilder.append(99);
+		stringBuilder.append("</DocEntry>");
 		stringBuilder.append("</SalesOrder>");
-		IBusinessObject bo = (IBusinessObject) Serializer.deserializeString(stringBuilder.toString(), SalesOrder.class);
+		SalesOrder bo = (SalesOrder) Serializer.deserializeString(stringBuilder.toString(), SalesOrder.class);
 		System.out.println(Serializer.serializeString(bo, true));
+
+		System.out.println(String.format("DocEntry: %s Status: %s DocumentStatus: %s Canceled: %s", bo.getDocEntry(),
+				bo.getStatus(), bo.getDocumentStatus(), bo.getCanceled()));
+		for (ISalesOrderItem line : bo.getSalesOrderItems()) {
+			System.out.println(String.format("DocEntry: %s LineId: %s Status: %s DocumentStatus: %s Canceled: %s",
+					line.getDocEntry(), line.getLineId(), line.getStatus(), line.getLineStatus(), line.getCanceled()));
+
+		}
 	}
 
 	public void testGC() throws IOException, InterruptedException {

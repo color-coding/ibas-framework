@@ -980,9 +980,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				String where = this.parseSqlQuery(criteria.getConditions()).getQueryString();
 				reader = command.executeReader(sqlScripts.groupMaxValueQuery(field, table, where));
 				if (reader.next()) {
-					// 已知不返回 keys.add(new
-					// KeyValue(IBODocumentLine.MASTER_PRIMARY_KEY_NAME,
-					// item.getDocEntry()));
+					keys.add(new KeyValue(IBODocumentLine.MASTER_PRIMARY_KEY_NAME, item.getDocEntry()));
 					keys.add(new KeyValue(IBODocumentLine.SECONDARY_PRIMARY_KEY_NAME, reader.getInt(1) + 1));
 					reader.close();
 				} else {
@@ -995,9 +993,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				IBOMasterData item = (IBOMasterData) bo;
 				reader = command.executeReader(sqlScripts.getBOPrimaryKeyQuery(item.getObjectCode()));
 				if (reader.next()) {
-					// 已知不返回 keys.add(new
-					// KeyValue(IBOMasterData.MASTER_PRIMARY_KEY_NAME,
-					// item.getCode()));
+					keys.add(new KeyValue(IBOMasterData.MASTER_PRIMARY_KEY_NAME, item.getCode()));
 					keys.add(new KeyValue(IBOMasterData.SERIAL_NUMBER_KEY_NAME, reader.getInt(1)));
 					reader.close();
 				} else {
@@ -1018,9 +1014,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				String where = this.parseSqlQuery(criteria.getConditions()).getQueryString();
 				reader = command.executeReader(sqlScripts.groupMaxValueQuery(field, table, where));
 				if (reader.next()) {
-					// 已知不返回 keys.add(new
-					// KeyValue(IBOMasterDataLine.MASTER_PRIMARY_KEY_NAME,
-					// item.getCode()));
+					keys.add(new KeyValue(IBOMasterDataLine.MASTER_PRIMARY_KEY_NAME, item.getCode()));
 					keys.add(new KeyValue(IBOMasterDataLine.SECONDARY_PRIMARY_KEY_NAME, reader.getInt(1) + 1));
 					reader.close();
 				} else {
@@ -1053,9 +1047,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				String where = this.parseSqlQuery(criteria.getConditions()).getQueryString();
 				reader = command.executeReader(sqlScripts.groupMaxValueQuery(field, table, where));
 				if (reader.next()) {
-					// 已知不返回 keys.add(new
-					// KeyValue(IBOSimpleLine.MASTER_PRIMARY_KEY_NAME,
-					// item.getObjectKey()));
+					keys.add(new KeyValue(IBOSimpleLine.MASTER_PRIMARY_KEY_NAME, item.getObjectKey()));
 					keys.add(new KeyValue(IBOSimpleLine.SECONDARY_PRIMARY_KEY_NAME, reader.getInt(1) + 1));
 					reader.close();
 				} else {

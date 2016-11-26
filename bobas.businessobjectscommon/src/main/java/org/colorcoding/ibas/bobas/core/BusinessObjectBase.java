@@ -234,14 +234,6 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 		}
 	}
 
-	@Override
-	protected void firePropertyChange(String name, Object oldValue, Object newValue) {
-		if (!this.isLoading()) {
-			// 非加载数据时，触发事件
-			super.firePropertyChange(name, oldValue, newValue);
-		}
-	}
-
 	/**
 	 * 标记为未修改
 	 * 

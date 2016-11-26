@@ -33,7 +33,7 @@ import org.colorcoding.ibas.bobas.organization.UnknownUser;
  * @author niuren.zhu
  *
  */
-public class BORepositoryService implements IBORepositoryService, SaveActionsListener {
+public class BORepositoryService implements IBORepositoryService {
 
 	public BORepositoryService() {
 		// 是否使用缓存
@@ -61,11 +61,26 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 		return this.repository;
 	}
 
+	private BORepositoryService that = this;
+	private SaveActionsListener saveListener = new SaveActionsListener() {
+		@Override
+		public boolean actionsEvent(SaveActionsEvent event) {
+			if (event == null) {
+				return true;
+			}
+			if (!that.getProcessing().contains(event.getBO())) {
+				// 不是自己导致的事件
+				return true;
+			}
+			return that.onActionsEvent(event);
+		}
+	};
+
 	@Override
 	public final void setRepository(IBORepository repository) {
 		if (this.repository != null) {
 			// 移出事件监听
-			this.repository.removeSaveActionsListener(this);
+			this.repository.removeSaveActionsListener(this.saveListener);
 		}
 		this.repository = repository;
 		if (this.repository != null) {
@@ -79,7 +94,7 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 				}
 			}
 			// 监听对象保存动作
-			this.repository.addSaveActionsListener(this);
+			this.repository.addSaveActionsListener(this.saveListener);
 		}
 	}
 
@@ -562,25 +577,12 @@ public class BORepositoryService implements IBORepositoryService, SaveActionsLis
 		return operationResult;
 	}
 
-	@Override
-	public final boolean noticeActionsEvent(SaveActionsEvent event) {
-		if (event == null) {
-			return true;
-		}
-		if (!this.getProcessing().contains(event.getBO())) {
-			// 不是自己导致的事件
-			return true;
-		}
-		return this.onActionsEvent(event);
-	}
-
 	/**
 	 * 监听对象保存事件
 	 * 
 	 * 每个对象保存都会触发，包括对象的子属性
 	 */
 	protected boolean onActionsEvent(SaveActionsEvent event) {
-
 		if (event.getType() == SaveActionsType.before_updating) {
 			if (!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_VERSION_CHECK, false)) {
 				// 更新前，检查版本是否有效

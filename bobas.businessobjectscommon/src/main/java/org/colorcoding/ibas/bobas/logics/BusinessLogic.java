@@ -304,7 +304,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			BusinessLogicsRepository logicRepository = new BusinessLogicsRepository();
 			logicRepository.setRepository(this.getRepository());
 			IOperationResult<IBusinessObjectBase> operationResult = logicRepository.save(this.getBeAffected());
-			this.getRepository().removeSaveActionsListener(logicRepository);// 移出监听
+			logicRepository.setRepository(null);// 移出监听
 			if (operationResult.getError() != null) {
 				throw new BusinessLogicsException(operationResult.getError());
 			}

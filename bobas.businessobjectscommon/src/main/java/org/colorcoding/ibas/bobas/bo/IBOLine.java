@@ -7,6 +7,10 @@ package org.colorcoding.ibas.bobas.bo;
  *
  */
 public interface IBOLine extends IBusinessObject {
+	/**
+	 * 主要的主键名称
+	 */
+	final static String PRIMARY_KEY_NAME = "LineId";
 
 	/**
 	 * 获取-行编号 主键

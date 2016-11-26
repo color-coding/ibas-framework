@@ -14,5 +14,5 @@ public interface SaveActionsListener {
 	 *            事件参数
 	 * @return
 	 */
-	boolean noticeActionsEvent(SaveActionsEvent event);
+	boolean actionsEvent(SaveActionsEvent event);
 }

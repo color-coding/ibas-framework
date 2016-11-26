@@ -33,7 +33,7 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "BusinessObjects", namespace = MyConsts.NAMESPACE_BOBAS_BO)
 public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusinessObject>
-		extends BusinessObjectListBase<E> implements IBusinessObjects<E, P>, PropertyChangeListener {
+		extends BusinessObjectListBase<E> implements IBusinessObjects<E, P> {
 
 	/**
 	 * 
@@ -90,15 +90,49 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		if (this.parent instanceof IBindableBase) {
 			// 移出监听属性改变
 			IBindableBase boItem = (IBindableBase) this.parent;
-			boItem.removePropertyChangeListener(this);
+			boItem.removePropertyChangeListener(this.propertyListener);
 		}
 		this.parent = parent;
 		if (this.parent instanceof IBindableBase) {
 			// 监听属性改变
 			IBindableBase boItem = (IBindableBase) this.parent;
-			boItem.addPropertyChangeListener(this);
+			boItem.addPropertyChangeListener(this.propertyListener);
 		}
 	}
+
+	/**
+	 * 指向当前实例
+	 */
+	private BusinessObjects<E, P> that = this;
+	/**
+	 * 属性监听实例（隐藏接口实现）
+	 */
+	private PropertyChangeListener propertyListener = new PropertyChangeListener() {
+
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			if (evt != null && evt.getPropertyName() != null) {
+				if (evt.getSource() == that.getParent()) {
+					// 父项属性改变
+					that.onParentPropertyChanged(evt);
+				} else if (that.contains(evt.getSource())) {
+					// 此集合中的子项的属性改变
+					if (evt.getPropertyName() != null && evt.getPropertyName().equals("isDirty")
+							&& evt.getNewValue().equals(true)) {
+						// 元素状态为Dirty时修改父项状态
+						if (that.getParent() instanceof ITrackStatusOperator) {
+							// 改变父项的状态跟踪
+							ITrackStatusOperator statusOperator = (ITrackStatusOperator) that.getParent();
+							statusOperator.markDirty();
+						}
+					} else {
+						that.onElementPropertyChanged(evt);
+					}
+				}
+			}
+		}
+
+	};
 
 	@Override
 	public final boolean add(E item) {
@@ -110,7 +144,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 	 * 
 	 * @return
 	 */
-	private int getMaxLineId() {
+	private int getNextLineId() {
 		int lineId = 0;
 		for (E item : this) {
 			if (item instanceof IBOLine) {
@@ -129,103 +163,179 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		if (item instanceof IBindableBase) {
 			// 监听属性改变
 			IBindableBase boItem = (IBindableBase) item;
-			boItem.addPropertyChangeListener(this);
-		}
-		if (this.getParent() == null) {
-			// 没父项，父项读取数据中，退出
-			return;
+			boItem.addPropertyChangeListener(this.propertyListener);
 		}
 		// 修正子项编号
 		if (item instanceof IBOLine) {
 			IBOLine line = (IBOLine) item;
 			if (line.getLineId() <= 0) {
-				line.setLineId(this.getMaxLineId());
+				line.setLineId(this.getNextLineId());
 			}
+		}
+		// 没父项，退出
+		if (this.getParent() == null) {
+			return;
 		}
 		// 添加子项即给子项主键赋值
 		if (item instanceof IBODocumentLine) {
-			IBODocumentLine docItem = (IBODocumentLine) item;
+			IBODocumentLine child = (IBODocumentLine) item;
 			if (this.getParent() instanceof IBODocument) {
-				IBODocument doc = (IBODocument) this.getParent();
-				docItem.setDocEntry(doc.getDocEntry());
+				IBODocument parent = (IBODocument) this.getParent();
+				child.setDocEntry(parent.getDocEntry());
 			} else if (this.getParent() instanceof IBODocumentLine) {
-				IBODocumentLine doc = (IBODocumentLine) this.getParent();
-				docItem.setDocEntry(doc.getDocEntry());
+				IBODocumentLine parent = (IBODocumentLine) this.getParent();
+				child.setDocEntry(parent.getDocEntry());
 			}
 		} else if (item instanceof IBOMasterDataLine) {
-			IBOMasterDataLine masItem = (IBOMasterDataLine) item;
+			IBOMasterDataLine child = (IBOMasterDataLine) item;
 			if (this.getParent() instanceof IBOMasterData) {
-				IBOMasterData mas = (IBOMasterData) this.getParent();
-				masItem.setCode(mas.getCode());
+				IBOMasterData parent = (IBOMasterData) this.getParent();
+				child.setCode(parent.getCode());
 			} else if (this.getParent() instanceof IBOMasterDataLine) {
-				IBOMasterDataLine mas = (IBOMasterDataLine) this.getParent();
-				masItem.setCode(mas.getCode());
+				IBOMasterDataLine parent = (IBOMasterDataLine) this.getParent();
+				child.setCode(parent.getCode());
 			}
 		} else if (item instanceof IBOSimpleLine) {
-			IBOSimpleLine simItem = (IBOSimpleLine) item;
+			IBOSimpleLine child = (IBOSimpleLine) item;
 			if (this.getParent() instanceof IBOSimple) {
-				IBOSimple sim = (IBOSimple) this.getParent();
-				simItem.setObjectKey(sim.getObjectKey());
+				IBOSimple parent = (IBOSimple) this.getParent();
+				child.setObjectKey(parent.getObjectKey());
 			} else if (this.getParent() instanceof IBOSimpleLine) {
-				IBOSimpleLine sim = (IBOSimpleLine) this.getParent();
-				simItem.setObjectKey(sim.getObjectKey());
+				IBOSimpleLine parent = (IBOSimpleLine) this.getParent();
+				child.setObjectKey(parent.getObjectKey());
 			}
 		}
+		// 父项读取数据中，退出
 		if (this.getParent().isLoading()) {
-			// 没父项，父项读取数据中，退出
 			return;
 		}
 		// 处理单据状态
 		if (item instanceof IBODocumentLine) {
-			IBODocumentLine docItem = (IBODocumentLine) item;
+			IBODocumentLine child = (IBODocumentLine) item;
 			if (this.getParent() instanceof IBODocument) {
-				IBODocument doc = (IBODocument) this.getParent();
-				docItem.setLineStatus(doc.getDocumentStatus());
+				IBODocument parent = (IBODocument) this.getParent();
+				child.setLineStatus(parent.getDocumentStatus());
 			} else if (this.getParent() instanceof IBODocumentLine) {
-				IBODocumentLine doc = (IBODocumentLine) this.getParent();
-				docItem.setLineStatus(doc.getLineStatus());
+				IBODocumentLine parent = (IBODocumentLine) this.getParent();
+				child.setLineStatus(parent.getLineStatus());
 			}
 		}
 		// 集合元素发生变化
-		if (this.parent instanceof ITrackStatusOperator) {
+		if (this.getParent() instanceof ITrackStatusOperator) {
 			// 改变父项的状态跟踪
-			ITrackStatusOperator statusOperator = (ITrackStatusOperator) this.parent;
+			ITrackStatusOperator statusOperator = (ITrackStatusOperator) this.getParent();
 			statusOperator.markDirty();
 		}
 	}
 
 	/**
-	 * 监听父项及子项的属性改变
+	 * 当父项属性发生变化
+	 * 
+	 * @param evt
 	 */
-	@Override
-	public final void propertyChange(PropertyChangeEvent evt) {
-		if (evt != null && evt.getPropertyName() != null) {
-			if (evt.getSource() == this.parent) {
-				// 父项属性改变
-				this.onParentPropertyChanged(evt);
-			} else if (this.contains(evt.getSource())) {
-				// 此集合中的子项的属性改变
-				if (evt.getPropertyName() != null && evt.getPropertyName().equals("isDirty")
-						&& evt.getNewValue().equals(true)) {
-					// 元素状态为Dirty时修改父项状态
-					if (this.parent instanceof ITrackStatusOperator) {
-						// 改变父项的状态跟踪
-						ITrackStatusOperator statusOperator = (ITrackStatusOperator) this.parent;
-						statusOperator.markDirty();
+	protected void onParentPropertyChanged(PropertyChangeEvent evt) {
+		// 父项空，退出
+		if (this.getParent() == null) {
+			return;
+		}
+		if (IBOSimple.MASTER_PRIMARY_KEY_NAME.equals(evt.getPropertyName())) {
+			// 简单对象类
+			if (evt.getSource() instanceof IBOSimple) {
+				// 头
+				IBOSimple parentItem = (IBOSimple) evt.getSource();
+				for (E item : this) {
+					if (item instanceof IBOSimpleLine) {
+						IBOSimpleLine lineItem = (IBOSimpleLine) item;
+						lineItem.setObjectKey(parentItem.getObjectKey());
+					} else if (item instanceof IBOSimple) {
+						IBOSimple lineItem = (IBOSimple) item;
+						lineItem.setObjectKey(parentItem.getObjectKey());
 					}
-				} else {
-					this.onElementPropertyChanged(evt);
+				}
+			} else if (evt.getSource() instanceof IBOSimpleLine) {
+				// 行
+				IBOSimpleLine parentItem = (IBOSimpleLine) evt.getSource();
+				for (E item : this) {
+					if (item instanceof IBOSimpleLine) {
+						IBOSimpleLine lineItem = (IBOSimpleLine) item;
+						lineItem.setObjectKey(parentItem.getObjectKey());
+					} else if (item instanceof IBOSimple) {
+						IBOSimple lineItem = (IBOSimple) item;
+						lineItem.setObjectKey(parentItem.getObjectKey());
+					}
+				}
+			}
+
+		} else if (IBOMasterData.MASTER_PRIMARY_KEY_NAME.equals(evt.getPropertyName())) {
+			// 主数据类
+			if (evt.getSource() instanceof IBOMasterData) {
+				// 头
+				IBOMasterData parentItem = (IBOMasterData) evt.getSource();
+				for (E item : this) {
+					if (item instanceof IBOMasterDataLine) {
+						IBOMasterDataLine lineItem = (IBOMasterDataLine) item;
+						lineItem.setCode(parentItem.getCode());
+					} else if (item instanceof IBOMasterData) {
+						IBOMasterData lineItem = (IBOMasterData) item;
+						lineItem.setCode(parentItem.getCode());
+					}
+				}
+			} else if (evt.getSource() instanceof IBOMasterDataLine) {
+				// 行
+				IBOMasterDataLine parentItem = (IBOMasterDataLine) evt.getSource();
+				for (E item : this) {
+					if (item instanceof IBOMasterDataLine) {
+						IBOMasterDataLine lineItem = (IBOMasterDataLine) item;
+						lineItem.setCode(parentItem.getCode());
+					} else if (item instanceof IBOMasterData) {
+						IBOMasterData lineItem = (IBOMasterData) item;
+						lineItem.setCode(parentItem.getCode());
+					}
+				}
+			}
+		} else if (IBODocument.MASTER_PRIMARY_KEY_NAME.equals(evt.getPropertyName())) {
+			// 单据类
+			if (evt.getSource() instanceof IBODocument) {
+				// 头
+				IBODocument parentItem = (IBODocument) evt.getSource();
+				for (E item : this) {
+					if (item instanceof IBODocumentLine) {
+						IBODocumentLine lineItem = (IBODocumentLine) item;
+						lineItem.setDocEntry(parentItem.getDocEntry());
+					} else if (item instanceof IBODocument) {
+						IBODocument lineItem = (IBODocument) item;
+						lineItem.setDocEntry(parentItem.getDocEntry());
+					}
+				}
+			} else if (evt.getSource() instanceof IBODocumentLine) {
+				// 行
+				IBODocumentLine parentItem = (IBODocumentLine) evt.getSource();
+				for (E item : this) {
+					if (item instanceof IBODocumentLine) {
+						IBODocumentLine lineItem = (IBODocumentLine) item;
+						lineItem.setDocEntry(parentItem.getDocEntry());
+					} else if (item instanceof IBODocument) {
+						IBODocument lineItem = (IBODocument) item;
+						lineItem.setDocEntry(parentItem.getDocEntry());
+					}
 				}
 			}
 		}
-	}
-
-	protected void onParentPropertyChanged(PropertyChangeEvent evt) {
+		// 加载中，退出
+		if (this.getParent().isLoading()) {
+			return;
+		}
+		// 状态变化
 		if (this.isChangeElementStatus()) {
 			this.changeElementStatus(evt);
 		}
 	}
 
+	/**
+	 * 当元素属性发生变化
+	 * 
+	 * @param evt
+	 */
 	protected void onElementPropertyChanged(PropertyChangeEvent evt) {
 		if (this.isChangeParentStatus()) {
 			this.changeParentStatus(evt);
@@ -267,104 +377,51 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 				}
 			}
 		}
-		if (evt.getPropertyName().equals("DocEntry") || evt.getPropertyName().equals("LineStatus")
-				|| evt.getPropertyName().equals("DocumentStatus") || evt.getPropertyName().equals("Status")) {
+		if (evt.getPropertyName().equals("LineStatus") || evt.getPropertyName().equals("DocumentStatus")
+				|| evt.getPropertyName().equals("Status")) {
 			// 单据类
 			if (evt.getSource() instanceof IBODocument) {
 				// 头
 				IBODocument parentItem = (IBODocument) evt.getSource();
 				for (E item : this) {
-					if (!(item instanceof IBODocumentLine)) {
-						continue;
-					}
-					IBODocumentLine lineItem = (IBODocumentLine) item;
-					if (evt.getPropertyName().equals("DocEntry")) {
-						lineItem.setDocEntry(parentItem.getDocEntry());
-					} else if (evt.getPropertyName().equals("DocumentStatus")) {
-						lineItem.setLineStatus(parentItem.getDocumentStatus());
-					} else if (evt.getPropertyName().equals("Status")) {
-						lineItem.setStatus(parentItem.getStatus());
+					if (item instanceof IBODocumentLine) {
+						IBODocumentLine lineItem = (IBODocumentLine) item;
+						if (evt.getPropertyName().equals("DocumentStatus")) {
+							lineItem.setLineStatus(parentItem.getDocumentStatus());
+						} else if (evt.getPropertyName().equals("Status")) {
+							lineItem.setStatus(parentItem.getStatus());
+						}
+					} else if (item instanceof IBODocument) {
+						IBODocument lineItem = (IBODocument) item;
+						if (evt.getPropertyName().equals("DocumentStatus")) {
+							lineItem.setDocumentStatus(parentItem.getDocumentStatus());
+						} else if (evt.getPropertyName().equals("Status")) {
+							lineItem.setStatus(parentItem.getStatus());
+						}
 					}
 				}
-			}
-			if (evt.getSource() instanceof IBODocumentLine) {
+			} else if (evt.getSource() instanceof IBODocumentLine) {
 				// 行
 				IBODocumentLine parentItem = (IBODocumentLine) evt.getSource();
 				for (E item : this) {
-					if (!(item instanceof IBODocumentLine)) {
-						continue;
-					}
-					IBODocumentLine lineItem = (IBODocumentLine) item;
-					if (evt.getPropertyName().equals("DocEntry")) {
-						lineItem.setDocEntry(parentItem.getDocEntry());
-					} else if (evt.getPropertyName().equals("LineStatus")) {
-						lineItem.setLineStatus(parentItem.getLineStatus());
-					} else if (evt.getPropertyName().equals("Status")) {
-						lineItem.setStatus(parentItem.getStatus());
-					}
-				}
-			}
-		}
-		if (evt.getPropertyName().equals("ObjectKey")) {
-			// 简单对象类
-			if (evt.getSource() instanceof IBOSimple) {
-				// 头
-				IBOSimple parentItem = (IBOSimple) evt.getSource();
-				for (E item : this) {
-					if (!(item instanceof IBOSimpleLine)) {
-						continue;
-					}
-					IBOSimpleLine lineItem = (IBOSimpleLine) item;
-					if (evt.getPropertyName().equals("ObjectKey")) {
-						lineItem.setObjectKey(parentItem.getObjectKey());
-					}
-				}
-			}
-			if (evt.getSource() instanceof IBOSimpleLine) {
-				// 行
-				IBOSimpleLine parentItem = (IBOSimpleLine) evt.getSource();
-				for (E item : this) {
-					if (!(item instanceof IBOSimpleLine)) {
-						continue;
-					}
-					IBOSimpleLine lineItem = (IBOSimpleLine) item;
-					if (evt.getPropertyName().equals("ObjectKey")) {
-						lineItem.setObjectKey(parentItem.getObjectKey());
-					}
-				}
-			}
-
-		}
-		if (evt.getPropertyName().equals("Code")) {
-			// 主数据类
-			if (evt.getSource() instanceof IBOMasterData) {
-				// 头
-				IBOMasterData parentItem = (IBOMasterData) evt.getSource();
-				for (E item : this) {
-					if (!(item instanceof IBOMasterDataLine)) {
-						continue;
-					}
-					IBOMasterDataLine lineItem = (IBOMasterDataLine) item;
-					if (evt.getPropertyName().equals("Code")) {
-						lineItem.setCode(parentItem.getCode());
-					}
-				}
-			}
-			if (evt.getSource() instanceof IBOMasterDataLine) {
-				// 行
-				IBOMasterDataLine parentItem = (IBOMasterDataLine) evt.getSource();
-				for (E item : this) {
-					if (!(item instanceof IBOMasterDataLine)) {
-						continue;
-					}
-					IBOMasterDataLine lineItem = (IBOMasterDataLine) item;
-					if (evt.getPropertyName().equals("Code")) {
-						lineItem.setCode(parentItem.getCode());
+					if (item instanceof IBODocumentLine) {
+						IBODocumentLine lineItem = (IBODocumentLine) item;
+						if (evt.getPropertyName().equals("DocumentStatus")) {
+							lineItem.setLineStatus(parentItem.getLineStatus());
+						} else if (evt.getPropertyName().equals("Status")) {
+							lineItem.setStatus(parentItem.getStatus());
+						}
+					} else if (item instanceof IBODocument) {
+						IBODocument lineItem = (IBODocument) item;
+						if (evt.getPropertyName().equals("DocumentStatus")) {
+							lineItem.setDocumentStatus(parentItem.getLineStatus());
+						} else if (evt.getPropertyName().equals("Status")) {
+							lineItem.setStatus(parentItem.getStatus());
+						}
 					}
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -380,7 +437,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 			if (evt.getSource() instanceof IBOTagCanceled) {
 				IBOTagCanceled lineItem = (IBOTagCanceled) evt.getSource();
 				if (this.getParent() instanceof IBOTagCanceled && this.getParent() instanceof IManageFields) {
-					parentField = ((IManageFields) parent).getField(evt.getPropertyName());
+					parentField = ((IManageFields) this.getParent()).getField(evt.getPropertyName());
 					if (parentField == null) {
 						return;
 					}
@@ -406,7 +463,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 			if (evt.getSource() instanceof IBOTagDeleted) {
 				IBOTagDeleted lineItem = (IBOTagDeleted) evt.getSource();
 				if (this.getParent() instanceof IBOTagDeleted && this.getParent() instanceof IManageFields) {
-					parentField = ((IManageFields) parent).getField(evt.getPropertyName());
+					parentField = ((IManageFields) this.getParent()).getField(evt.getPropertyName());
 					if (parentField == null) {
 						return;
 					}
@@ -563,26 +620,26 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		if (item instanceof IBindableBase) {
 			// 移出监听属性改变
 			IBindableBase boItem = (IBindableBase) item;
-			boItem.removePropertyChangeListener(this);
+			boItem.removePropertyChangeListener(this.propertyListener);
 		}
 		// 集合元素发生变化
-		if (this.parent instanceof ITrackStatusOperator) {
+		if (this.getParent() instanceof ITrackStatusOperator) {
 			// 改变父项的状态跟踪
-			ITrackStatusOperator statusOperator = (ITrackStatusOperator) this.parent;
+			ITrackStatusOperator statusOperator = (ITrackStatusOperator) this.getParent();
 			statusOperator.markDirty();
 		}
 	}
 
 	@Override
 	public ICriteria getElementCriteria() {
-		if (this.parent == null) {
+		if (this.getParent() == null) {
 			return null;
 		}
-		ICriteria criteria = this.parent.getCriteria();
+		ICriteria criteria = this.getParent().getCriteria();
 		if (IBOLine.class.isAssignableFrom(this.getElementType())) {
 			// 元素类型是行类型，则添加排序字段
 			ISort sort = criteria.getSorts().create();
-			sort.setAlias("LineId");
+			sort.setAlias(IBOLine.PRIMARY_KEY_NAME);
 			sort.setSortType(SortType.st_Ascending);
 		}
 		return criteria;

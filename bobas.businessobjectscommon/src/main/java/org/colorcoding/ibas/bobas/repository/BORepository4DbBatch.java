@@ -192,14 +192,17 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 			myOpenedDb = this.openDbConnection();
 			myTrans = this.beginTransaction();
 			command = this.getDbConnection().createCommand();
-			// 主键处理
-			KeyValue[] keys = adapter4Db.parsePrimaryKeys(bos[0], command);
+			KeyValue[] keys = null;// 主键信息
 			int keyUsedCount = 0;// 主键使用的个数
 			for (IBusinessObjectBase bo : bos) {
 				if (bo == null)
 					continue;
 				if (!bo.isDirty())
 					continue;
+				if (keys == null) {
+					// 初始化主键
+					keys = adapter4Db.parsePrimaryKeys(bo, command);
+				}
 				if (bo.isNew()) {
 					// 新建的对象
 					// 设置主键
@@ -208,7 +211,7 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 					for (KeyValue key : keys) {
 						if (key.value instanceof Integer) {
 							key.value = Integer.sum((int) key.value, 1);
-						} else if (key.value instanceof Integer) {
+						} else if (key.value instanceof Long) {
 							key.value = Long.sum((long) key.value, 1);
 						}
 					}

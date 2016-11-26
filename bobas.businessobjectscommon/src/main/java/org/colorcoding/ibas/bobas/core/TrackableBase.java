@@ -144,7 +144,7 @@ public abstract class TrackableBase extends BindableBase implements ITrackStatus
 		this.setDeleted(false);
 	}
 
-	private boolean loading;
+	private boolean isLoading;
 
 	/**
 	 * 数据加载中
@@ -154,7 +154,7 @@ public abstract class TrackableBase extends BindableBase implements ITrackStatus
 	 * @return
 	 */
 	public boolean isLoading() {
-		return loading;
+		return isLoading;
 	}
 
 	/**
@@ -163,6 +163,6 @@ public abstract class TrackableBase extends BindableBase implements ITrackStatus
 	 * @param value
 	 */
 	protected void setLoading(boolean value) {
-		this.loading = value;
+		this.isLoading = value;
 	}
 }
