@@ -8,4 +8,5 @@ package org.colorcoding.ibas.bobas.rules;
  */
 public interface ICheckRules {
 
+    void check() throws BusinessRuleException;
 }

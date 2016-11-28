@@ -28,6 +28,7 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.organization.UnknownUser;
+import org.colorcoding.ibas.bobas.rules.IBusinessRule;
 import org.colorcoding.ibas.bobas.util.StringBuilder;
 
 /*
@@ -145,8 +146,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
      */
     @Override
     public T clone() {
-        @SuppressWarnings("unchecked")
-        T nBO = (T) Serializer.clone(this);
+        T nBO = (T) super.clone();
         if (nBO instanceof BusinessObject<?>) {
             BusinessObject<?> bo = (BusinessObject<?>) nBO;
             bo.resetStatus();
@@ -317,35 +317,82 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
         }
     }
 
+    /**
+     * 反序列化之前调用
+     * 
+     * @param parent
+     *            所属父项
+     */
     protected void beforeUnmarshal(Object parent) {
         this.setLoading(true);
     }
 
+    /**
+     * 反序列化之后调用
+     * 
+     * @param parent
+     *            所属父项
+     */
     protected void afterUnmarshal(Object parent) {
         this.setLoading(false);
     }
 
+    /**
+     * 序列化之前调用
+     */
     protected void beforeMarshal() {
 
     }
 
+    /**
+     * 序列化之后调用
+     */
     protected void afterMarshal() {
 
     }
 
-    void beforeUnmarshal(Unmarshaller target, Object parent) {
+    /**
+     * （系统）回掉方法-反序列化之前
+     * 
+     * @param target
+     * @param parent
+     */
+    final void beforeUnmarshal(Unmarshaller target, Object parent) {
         this.beforeUnmarshal(parent);
     }
 
-    void afterUnmarshal(Unmarshaller target, Object parent) {
+    /**
+     * （系统）回掉方法-反序列化之后
+     * 
+     * @param target
+     * @param parent
+     */
+    final void afterUnmarshal(Unmarshaller target, Object parent) {
         this.afterUnmarshal(parent);
     }
 
-    void beforeMarshal(Marshaller marshaller) {
+    /**
+     * （系统）回掉方法-序列化之前
+     * 
+     * @param target
+     * @param parent
+     */
+    final void beforeMarshal(Marshaller marshaller) {
         this.beforeMarshal();
     }
 
-    void afterMarshal(Marshaller marshaller) {
+    /**
+     * （系统）回掉方法-序列化之后
+     * 
+     * @param target
+     * @param parent
+     */
+    final void afterMarshal(Marshaller marshaller) {
         this.afterMarshal();
+    }
+
+    @Override
+    protected IBusinessRule[] registerRules() {
+        return null;
     }
 }

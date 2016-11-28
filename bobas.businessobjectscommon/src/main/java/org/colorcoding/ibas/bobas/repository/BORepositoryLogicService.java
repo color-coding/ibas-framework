@@ -22,6 +22,8 @@ import org.colorcoding.ibas.bobas.logics.IBusinessLogicsManager;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
 import org.colorcoding.ibas.bobas.rules.BusinessRuleException;
+import org.colorcoding.ibas.bobas.rules.BusinessRulesFactory;
+import org.colorcoding.ibas.bobas.rules.IBusinessRules;
 import org.colorcoding.ibas.bobas.rules.ICheckRules;
 
 /**
@@ -107,13 +109,18 @@ public class BORepositoryLogicService extends BORepositoryService {
      * @param bo
      *            对象
      * @throws BusinessRuleException
+     * @throws BusinessRuleExecuteException
      */
     private void checkRules(SaveActionsType type, IBusinessObjectBase bo) throws BusinessRuleException {
-        if (!(bo instanceof ICheckRules)) {
-            // 业务对象不需要逻辑检查
-            return;
+        // 运行对象业务规则
+        IBusinessRules rules = BusinessRulesFactory.createManager().getRules(bo.getClass());
+        if (rules != null)
+            rules.execute(bo);
+        if (bo instanceof ICheckRules) {
+            // 检查业务规则
+            ICheckRules checkRules = (ICheckRules) bo;
+            checkRules.check();
         }
-
     }
 
     /**
