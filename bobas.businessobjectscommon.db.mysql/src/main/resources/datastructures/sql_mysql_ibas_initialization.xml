@@ -26,9 +26,9 @@
 			<Script>
 				CREATE PROCEDURE `${DbName}`.`${Company}_SP_TRANSACTION_NOTIFICATION`(
 				    _object_type varchar(30),                 -- BO Code
- 				   _transaction_type char(1),                -- [A]dd, [U]pdate, [D]elete
- 				   _num_of_cols_in_key int,                   -- Key Count
- 				   _list_of_key_cols_tab_del varchar(255),   -- Key Names, split by ','
+ 				    _transaction_type char(1),                -- [A]dd, [U]pdate, [D]elete
+ 				    _num_of_cols_in_key int,                   -- Key Count
+ 				    _list_of_key_cols_tab_del varchar(255),   -- Key Names, split by ','
 				    _list_of_cols_val_tab_del varchar(255)    -- Key Values, split by ','
 				)
 				BEGIN
