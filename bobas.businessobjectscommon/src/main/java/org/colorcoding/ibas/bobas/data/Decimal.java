@@ -12,7 +12,7 @@ import org.colorcoding.ibas.bobas.MyConsts;
 
 @XmlType(name = "Decimal", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
 @XmlJavaTypeAdapter(DecimalSerializer.class)
-public class Decimal extends BigDecimal implements Comparable<BigDecimal> {
+public class Decimal extends BigDecimal {
     /**
      * 
      */

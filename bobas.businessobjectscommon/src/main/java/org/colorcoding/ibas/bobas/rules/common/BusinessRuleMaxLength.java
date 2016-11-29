@@ -45,7 +45,7 @@ public class BusinessRuleMaxLength extends BusinessRule {
 
     @Override
     protected String getName() {
-        return i18n.prop("msg_bobas_business_rule_required");
+        return i18n.prop("msg_bobas_business_rule_max_length");
     }
 
     @Override
@@ -55,10 +55,8 @@ public class BusinessRuleMaxLength extends BusinessRule {
                 continue;
             }
             if (String.valueOf(entry.getValue()).length() > this.getMaxLength()) {
-                if (entry.getValue() == null) {
-                    throw new Exception(i18n.prop("msg_bobas_business_rule_max_length_error", entry.getKey().getName(),
-                            entry.getValue(), this.getMaxLength()));
-                }
+                throw new Exception(i18n.prop("msg_bobas_business_rule_max_length_error", entry.getKey().getName(),
+                        entry.getValue(), this.getMaxLength()));
             }
         }
     }

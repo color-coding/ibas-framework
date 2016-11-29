@@ -18,6 +18,8 @@ import org.colorcoding.ibas.bobas.mapping.DbField;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.rules.IBusinessRule;
 import org.colorcoding.ibas.bobas.rules.common.BusinessRuleMaxLength;
+import org.colorcoding.ibas.bobas.rules.common.BusinessRuleMaxValue;
+import org.colorcoding.ibas.bobas.rules.common.BusinessRuleMinValue;
 import org.colorcoding.ibas.bobas.rules.common.BusinessRuleRequired;
 
 /**
@@ -800,8 +802,8 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
         return new IBusinessRule[] { // 注册的业务规则
                 new BusinessRuleRequired(ItemCodeProperty), // 要求有值
                 new BusinessRuleMaxLength(20, ItemCodeProperty), // 不能超过长度
-                // new BusinessRuleMinValue<Decimal>(Decimal.ZERO,
-                // QuantityProperty, PriceProperty, LineTotalProperty),// 不能低于0
+                new BusinessRuleMinValue<Decimal>(Decimal.ZERO, QuantityProperty, PriceProperty, LineTotalProperty), // 不能低于0
+                new BusinessRuleMaxValue<Integer>(100, LineIdProperty),// 不能大于100
         };
     }
 

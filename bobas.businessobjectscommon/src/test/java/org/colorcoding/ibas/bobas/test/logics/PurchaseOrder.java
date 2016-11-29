@@ -23,6 +23,7 @@ import org.colorcoding.ibas.bobas.mapping.DbField;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.rules.IBusinessRule;
 import org.colorcoding.ibas.bobas.rules.common.BusinessRuleMaxLength;
+import org.colorcoding.ibas.bobas.rules.common.BusinessRuleMinValue;
 import org.colorcoding.ibas.bobas.rules.common.BusinessRuleRequired;
 import org.colorcoding.ibas.bobas.rules.common.BusinessRuleRequiredElements;
 
@@ -996,8 +997,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
                 new BusinessRuleRequired(CustomerCodeProperty), // 要求有值
                 new BusinessRuleRequiredElements(PurchaseOrderItemsProperty), // 要求有元素
                 new BusinessRuleMaxLength(20, CustomerCodeProperty), // 不能超过长度
-                // new BusinessRuleMinValue<Decimal>(Decimal.ZERO,
-                // DocumentTotalProperty, DocumentRateProperty),// 不能低于0
+                new BusinessRuleMinValue<Decimal>(Decimal.ZERO, DocumentTotalProperty),// 不能低于0
         };
     }
 }

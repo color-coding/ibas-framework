@@ -15,7 +15,7 @@ import org.colorcoding.ibas.bobas.rules.BusinessRuleContext;
  * @param <T>
  *            值类型，需要实现Comparable
  */
-public class BusinessRuleMaxValue<T extends Comparable<T>> extends BusinessRule {
+public class BusinessRuleMaxValue<T extends Comparable<?>> extends BusinessRule {
 
     /**
      * 构造
@@ -47,7 +47,7 @@ public class BusinessRuleMaxValue<T extends Comparable<T>> extends BusinessRule 
 
     @Override
     protected String getName() {
-        return i18n.prop("msg_bobas_business_rule_required");
+        return i18n.prop("msg_bobas_business_rule_max_value");
     }
 
     @Override
@@ -62,13 +62,14 @@ public class BusinessRuleMaxValue<T extends Comparable<T>> extends BusinessRule 
             }
             @SuppressWarnings("unchecked")
             T value = (T) entry.getValue();
-            if (this.getMaxValue().compareTo(value) > 0) {
-                if (entry.getValue() == null) {
-                    throw new Exception(i18n.prop("msg_bobas_business_rule_max_value_error", entry.getKey().getName(),
-                            value, this.getMaxValue()));
-                }
+            @SuppressWarnings("unchecked")
+            Comparable<T> maxValue = (Comparable<T>) this.getMaxValue();
+            if (maxValue.compareTo(value) < 0) {
+                throw new Exception(i18n.prop("msg_bobas_business_rule_max_value_error", entry.getKey().getName(),
+                        value, this.getMaxValue()));
             }
         }
+
     }
 
 }

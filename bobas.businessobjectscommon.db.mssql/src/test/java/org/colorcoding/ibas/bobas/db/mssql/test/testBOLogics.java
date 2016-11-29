@@ -300,7 +300,7 @@ public class testBOLogics extends TestCase {
         PurchaseOrderItem item01 = order.getPurchaseOrderItems().create();// 测试点，要求有元素
         item01.setItemCode(materials01.getItemCode());// 测试点，子项检查，要求值
         item01.setItemDescription(materials01.getItemDescription());
-        item01.setQuantity(-1);// 测试点，数量大于0
+        item01.setQuantity(1);// 测试点，数量大于0
         item01.setPrice(999999.99);
 
         operationResult = boRepository.savePurchaseOrder(order);

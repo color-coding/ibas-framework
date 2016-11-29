@@ -15,7 +15,7 @@ import org.colorcoding.ibas.bobas.rules.BusinessRuleContext;
  * @param <T>
  *            值类型，需要实现Comparable
  */
-public class BusinessRuleMinValue<T extends Comparable<T>> extends BusinessRule {
+public class BusinessRuleMinValue<T extends Comparable<?>> extends BusinessRule {
 
     /**
      * 构造
@@ -48,7 +48,7 @@ public class BusinessRuleMinValue<T extends Comparable<T>> extends BusinessRule 
 
     @Override
     protected String getName() {
-        return i18n.prop("msg_bobas_business_rule_required");
+        return i18n.prop("msg_bobas_business_rule_min_value");
     }
 
     @Override
@@ -63,11 +63,11 @@ public class BusinessRuleMinValue<T extends Comparable<T>> extends BusinessRule 
             }
             @SuppressWarnings("unchecked")
             T value = (T) entry.getValue();
-            if (this.getMinValue().compareTo(value) < 0) {
-                if (entry.getValue() == null) {
-                    throw new Exception(i18n.prop("msg_bobas_business_rule_min_value_error", entry.getKey().getName(),
-                            value, this.getMinValue()));
-                }
+            @SuppressWarnings("unchecked")
+            Comparable<T> minValue = (Comparable<T>) this.getMinValue();
+            if (minValue.compareTo(value) > 0) {
+                throw new Exception(i18n.prop("msg_bobas_business_rule_min_value_error", entry.getKey().getName(),
+                        value, this.getMinValue()));
             }
         }
     }
