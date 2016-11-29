@@ -60,6 +60,7 @@ public class RuntimeLog {
     public static final String MSG_DAEMON_TASK_ALREADY_EXIST = "daemon: task [%s] already exist.";
     public static final String MSG_DAEMON_SINGLE_TASK_WORK_FOLDER_NOT_EXISTS = "daemon: single task work folder not exists.";
     public static final String MSG_BUSINESS_RULES_MANAGER_CREATED = "rules manager: created business rules manager [%s].";
+    public static final String MSG_RULES_EXECUTING_FAILD = "rules: rules executing faild, %s.";
 
     private static long debugMode = -1;// log类型线程安全
     private static int messageLevel = -1;

@@ -51,6 +51,10 @@ public class MyConfiguration extends Configuration {
      */
     public final static String CONFIG_ITEM_BO_DISABLED_BUSINESS_LOGICS = "DisabledBusinessLogics";
     /**
+     * 配置项目-关闭业务对象业务规则
+     */
+    public final static String CONFIG_ITEM_BO_DISABLED_BUSINESS_RULES = "DisabledBusinessRules";
+    /**
      * 配置项目-关闭业务对象审批
      */
     public final static String CONFIG_ITEM_BO_DISABLED_BUSINESS_APPROVAL = "DisabledBusinessApproval";

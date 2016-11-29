@@ -6,7 +6,7 @@ package org.colorcoding.ibas.bobas.rules;
  * @author Niuren.Zhu
  *
  */
-public class BusinessRuleException extends RuntimeException {
+public class BusinessRuleException extends Exception {
 
     private static final long serialVersionUID = 3107704185880165493L;
 

@@ -37,6 +37,8 @@ public class BORepositoryLogicService extends BORepositoryService {
 
     public BORepositoryLogicService() {
         this.setCheckRules(
+                !MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_BUSINESS_RULES, false));
+        this.setCheckLogics(
                 !MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_BUSINESS_LOGICS, false));
         this.setCheckApprovalProcess(
                 !MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_BUSINESS_APPROVAL, false));
@@ -52,6 +54,16 @@ public class BORepositoryLogicService extends BORepositoryService {
         this.checkRules = value;
     }
 
+    private boolean checkLogics;
+
+    protected final boolean isCheckLogics() {
+        return checkLogics;
+    }
+
+    protected final void setCheckLogics(boolean value) {
+        this.checkLogics = value;
+    }
+
     private boolean checkApprovalProcess;
 
     protected final boolean isCheckApprovalProcess() {
@@ -65,23 +77,9 @@ public class BORepositoryLogicService extends BORepositoryService {
     @Override
     protected boolean onActionsEvent(SaveActionsEvent event) {
         try {
-            if (event.getType() == SaveActionsType.before_deleting) {
-                // 删除前检查
-                if (event.getBO() instanceof IBOReferenced) {
-                    IBOReferenced bo = (IBOReferenced) event.getBO();
-                    if (bo.getReferenced() == emYesNo.Yes) {
-                        // 被引用的数据，不允许删除，可以标记删除
-                        throw new Exception(i18n.prop("msg_bobas_not_allow_delete_referenced_bo", event.getBO()));
-                    }
-                }
-            }
+            // 响应事件
             if (event.getType() == SaveActionsType.before_adding || event.getType() == SaveActionsType.before_deleting
                     || event.getType() == SaveActionsType.before_updating) {
-                // 业务规则检查
-                if (this.isCheckRules()) {
-                    // 检查规则
-                    this.checkRules(event.getType(), event.getBO());
-                }
                 // 审批流程相关，先执行审批逻辑，可能对bo的状态有影响
                 if (this.isCheckApprovalProcess()) {
                     // 触发审批流程
@@ -90,7 +88,7 @@ public class BORepositoryLogicService extends BORepositoryService {
             }
             if (event.getType() != SaveActionsType.before_adding) {
                 // 业务逻辑相关，最后执行业务逻辑，因为要求状态可用
-                if (this.isCheckRules()) {
+                if (this.isCheckLogics()) {
                     // 执行业务逻辑
                     this.runLogics(event.getType(), event.getBO());
                 }
@@ -100,6 +98,39 @@ public class BORepositoryLogicService extends BORepositoryService {
             return super.onActionsEvent(event);
         } catch (Exception e) {
             throw new SaveActionsException(e);
+        }
+    }
+
+    /**
+     * 对象的子项保存事件
+     * 
+     * @param action
+     *            事件
+     * @param bo
+     *            发生事件对象
+     * @param parent
+     *            所属的父项
+     * @throws Exception
+     */
+    protected void onActionsEvent(SaveActionsType action, IBusinessObjectBase bo, IBusinessObjectBase parent)
+            throws Exception {
+        if (action == SaveActionsType.before_deleting) {
+            // 删除前检查，子项继承父项必须继承，否则无效
+            if (bo instanceof IBOReferenced) {
+                IBOReferenced refBO = (IBOReferenced) bo;
+                if (refBO.getReferenced() == emYesNo.Yes) {
+                    // 被引用的数据，不允许删除，可以标记删除
+                    throw new Exception(i18n.prop("msg_bobas_not_allow_delete_referenced_bo", bo.toString()));
+                }
+            }
+        }
+        if (action == SaveActionsType.before_adding || action == SaveActionsType.before_deleting
+                || action == SaveActionsType.before_updating) {
+            // 业务规则检查
+            if (this.isCheckRules()) {
+                // 检查规则
+                this.checkRules(action, bo);
+            }
         }
     }
 
@@ -121,6 +152,15 @@ public class BORepositoryLogicService extends BORepositoryService {
             ICheckRules checkRules = (ICheckRules) bo;
             checkRules.check();
         }
+    }
+
+    /**
+     * 获取s
+     * 
+     * @param bo
+     */
+    private void getAllBOs(IBusinessObjectBase bo) {
+
     }
 
     /**

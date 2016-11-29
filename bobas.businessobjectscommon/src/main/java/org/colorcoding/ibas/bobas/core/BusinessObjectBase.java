@@ -12,6 +12,7 @@ import org.colorcoding.ibas.bobas.core.fields.FieldManager;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.core.fields.NotRegisterTypeException;
+import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.rules.BusinessRuleException;
 import org.colorcoding.ibas.bobas.rules.BusinessRulesFactory;
@@ -253,9 +254,15 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
                 // 触发业务逻辑运行
                 if (!this.isLoading()) {
                     // 读取数据时，不执行业务规则
-                    IBusinessRules rules = BusinessRulesFactory.createManager().getRules(this.getClass());
-                    if (rules != null)
-                        rules.execute(this, property);
+                    try {
+                        IBusinessRules rules = BusinessRulesFactory.createManager().getRules(this.getClass());
+                        if (rules != null) {
+                            rules.execute(this, property);
+                        }
+                    } catch (BusinessRuleException e) {
+                        // 运行中，仅记录错误，以被调试。
+                        RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_RULES_EXECUTING_FAILD, e.getMessage());
+                    }
                 }
             }
         }
@@ -410,12 +417,16 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
      * 
      * @throws BusinessRuleException
      */
-    private void initializeRules() throws BusinessRuleException {
-        IBusinessRulesManager manager = BusinessRulesFactory.createManager();
-        IBusinessRules rules = manager.getRules(this.getClass());
-        if (rules != null && !rules.isInitialized()) {
-            // 未初始化，则进行初始化
-            rules.registerRules(this.registerRules());
+    private void initializeRules() throws RuntimeException {
+        try {
+            IBusinessRulesManager manager = BusinessRulesFactory.createManager();
+            IBusinessRules rules = manager.getRules(this.getClass());
+            if (rules != null && !rules.isInitialized()) {
+                // 未初始化，则进行初始化
+                rules.registerRules(this.registerRules());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

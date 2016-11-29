@@ -87,7 +87,7 @@ public class BusinessRules implements IBusinessRules {
             doRules.addAll(this.getRules());
         } else {
             // 指定执行属性，仅执行有此属性的规则
-            for (IBusinessRule rule : doRules) {
+            for (IBusinessRule rule : this.getRules()) {
                 if (rule.getInputProperties().isEmpty()) {
                     // 没有规定输入属性，则一直执行
                     doRules.add(rule);

@@ -81,6 +81,9 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
         if (bo instanceof IManageFields) {
             IManageFields boFields = (IManageFields) bo;
             for (IFieldData item : boFields.getFields()) {
+                if (item == null || !item.isSavable() || item.getValue() == null) {
+                    continue;
+                }
                 if (item.getValue() instanceof IBusinessObjectBase) {
                     IBusinessLogic<?>[] tmpLogics = this.analyzeContracts((IBusinessObjectBase) item.getValue());
                     // 记录父项
