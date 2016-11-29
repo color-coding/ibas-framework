@@ -28,7 +28,7 @@ public class BusinessRules implements IBusinessRules {
         this.boType = boType;
     }
 
-    private boolean initialized;
+    private volatile boolean initialized;
 
     @Override
     public final boolean isInitialized() {
@@ -61,12 +61,12 @@ public class BusinessRules implements IBusinessRules {
         if (rules == null) {
             return;
         }
+        this.setInitialized();
         for (IBusinessRule rule : rules) {
             if (this.checkRules(rule)) {
                 this.getRules().add(rule);
             }
         }
-        this.setInitialized();
     }
 
     /**

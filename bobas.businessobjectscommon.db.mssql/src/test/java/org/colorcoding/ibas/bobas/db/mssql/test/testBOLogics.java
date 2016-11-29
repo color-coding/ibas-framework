@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.db.mssql.test;
 
+import java.math.RoundingMode;
+
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
@@ -300,9 +302,14 @@ public class testBOLogics extends TestCase {
         PurchaseOrderItem item01 = order.getPurchaseOrderItems().create();// 测试点，要求有元素
         item01.setItemCode(materials01.getItemCode());// 测试点，子项检查，要求值
         item01.setItemDescription(materials01.getItemDescription());
-        item01.setQuantity(1);// 测试点，数量大于0
+        item01.setQuantity(33);// 测试点，数量大于0
         item01.setPrice(999999.99);
-
+        System.out.println(String.format("line total %s", item01.getLineTotal()));
+        assertEquals(item01.getLineTotal().equals(item01.getQuantity().multiply(item01.getPrice())), true);
+        item01.setLineTotal(666.77);
+        System.out.println(String.format("line price %s", item01.getPrice()));
+        assertEquals(item01.getPrice().equals(item01.getLineTotal().divide(item01.getQuantity(), RoundingMode.CEILING)),
+                true);// 注意四舍五入
         operationResult = boRepository.savePurchaseOrder(order);
         if (operationResult.getResultCode() != 0) {
             System.err.println(operationResult.getMessage());

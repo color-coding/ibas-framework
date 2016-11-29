@@ -804,7 +804,8 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
                 new BusinessRuleMaxLength(20, ItemCodeProperty), // 不能超过长度
                 new BusinessRuleMinValue<Decimal>(Decimal.ZERO, QuantityProperty, PriceProperty, LineTotalProperty), // 不能低于0
                 new BusinessRuleMaxValue<Integer>(100, LineIdProperty), // 不能大于100
-                new BusinessRuleCalculateTotals(PriceProperty, QuantityProperty, LineTotalProperty),// 计算总计
+                new BusinessRuleCalculateTotals(PriceProperty, QuantityProperty, LineTotalProperty), // 计算总计
+                new BusinessRuleCalculatePrice(LineTotalProperty, QuantityProperty, PriceProperty),// 计算价格
         };
     }
 

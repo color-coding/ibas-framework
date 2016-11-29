@@ -77,8 +77,23 @@ public class BORepositoryLogicService extends BORepositoryService {
     protected boolean onSaveActionsEvent(SaveActionsType action, IBusinessObjectBase bo) {
         try {
             // 响应事件
+            if (action == SaveActionsType.before_deleting) {
+                // 删除前检查
+                if (bo instanceof IBOReferenced) {
+                    IBOReferenced refBO = (IBOReferenced) bo;
+                    if (refBO.getReferenced() == emYesNo.Yes) {
+                        // 被引用的数据，不允许删除，可以标记删除
+                        throw new Exception(i18n.prop("msg_bobas_not_allow_delete_referenced_bo", bo.toString()));
+                    }
+                }
+            }
             if (action == SaveActionsType.before_adding || action == SaveActionsType.before_deleting
                     || action == SaveActionsType.before_updating) {
+                // 业务规则检查
+                if (this.isCheckRules()) {
+                    // 检查规则
+                    this.checkRules(action, bo);
+                }
                 // 审批流程相关，先执行审批逻辑，可能对bo的状态有影响
                 if (this.isCheckApprovalProcess()) {
                     // 触发审批流程
@@ -114,7 +129,7 @@ public class BORepositoryLogicService extends BORepositoryService {
     protected boolean onSaveActionsEvent(SaveActionsType action, IBusinessObjectBase bo, IBusinessObjectBase root)
             throws Exception {
         if (action == SaveActionsType.before_deleting) {
-            // 删除前检查，子项继承父项必须继承，否则无效
+            // 删除前检查
             if (bo instanceof IBOReferenced) {
                 IBOReferenced refBO = (IBOReferenced) bo;
                 if (refBO.getReferenced() == emYesNo.Yes) {
