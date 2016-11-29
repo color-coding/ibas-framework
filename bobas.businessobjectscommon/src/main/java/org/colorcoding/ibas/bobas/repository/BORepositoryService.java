@@ -45,6 +45,9 @@ public class BORepositoryService implements IBORepositoryService {
         // 是否通知事务
         this.setPostTransaction(
                 !MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_POST_TRANSACTION, false));
+        // 是否检查版本
+        this.setCheckVersion(
+                !MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_VERSION_CHECK, false));
     }
 
     /**
@@ -68,11 +71,18 @@ public class BORepositoryService implements IBORepositoryService {
             if (event == null) {
                 return true;
             }
-            if (!that.getProcessing().contains(event.getBO())) {
-                // 不是自己导致的事件
+            try {
+                if (that.getProcessing().contains(event.getBO())) {
+                    // 根对象发生事件
+                    return that.onSaveActionsEvent(event.getType(), event.getBO());
+                } else if (event.getRootBO() != null && that.getProcessing().contains(event.getRootBO())) {
+                    // 子项对象发生事件
+                    return that.onSaveActionsEvent(event.getType(), event.getBO(), event.getRootBO());
+                }
                 return true;
+            } catch (Exception e) {
+                throw new SaveActionsException(e);
             }
-            return that.onActionsEvent(event);
         }
     };
 
@@ -232,6 +242,16 @@ public class BORepositoryService implements IBORepositoryService {
 
     public final void setPostTransaction(boolean value) {
         this.postTransaction = value;
+    }
+
+    private boolean checkVersion;
+
+    public final boolean isCheckVersion() {
+        return checkVersion;
+    }
+
+    public final void setCheckVersion(boolean checkVersion) {
+        this.checkVersion = checkVersion;
     }
 
     private IUser currentUser = null;
@@ -578,17 +598,21 @@ public class BORepositoryService implements IBORepositoryService {
     }
 
     /**
-     * 监听对象保存事件
+     * 保存事件
      * 
-     * 每个对象保存都会触发，包括对象的子属性
+     * @param action
+     *            事件类型
+     * @param bo
+     *            发生对象
+     * @return
      */
-    protected boolean onActionsEvent(SaveActionsEvent event) {
-        if (event.getType() == SaveActionsType.before_updating) {
-            if (!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_VERSION_CHECK, false)) {
+    protected boolean onSaveActionsEvent(SaveActionsType action, IBusinessObjectBase bo) throws Exception {
+        if (action == SaveActionsType.before_updating) {
+            if (this.isCheckVersion()) {
                 // 更新前，检查版本是否有效
                 try {
-                    if (event.getBO() instanceof IBOStorageTag) {
-                        IOperationResult<?> opRslt = this.getRepository().fetchCopy(event.getBO());
+                    if (bo instanceof IBOStorageTag) {
+                        IOperationResult<?> opRslt = this.getRepository().fetchCopy(bo);
                         if (opRslt.getError() != null) {
                             throw opRslt.getError();
                         }
@@ -597,20 +621,36 @@ public class BORepositoryService implements IBORepositoryService {
                         }
                         Object boCopy = opRslt.getResultObjects().firstOrDefault();
                         if (boCopy == null) {
-                            throw new Exception(i18n.prop("msg_bobas_not_found_bo_copy", event.getBO()));
+                            throw new Exception(i18n.prop("msg_bobas_not_found_bo_copy", bo));
                         }
-                        IBOStorageTag boTag = (IBOStorageTag) event.getBO();
+                        IBOStorageTag boTag = (IBOStorageTag) bo;
                         IBOStorageTag copyTag = (IBOStorageTag) boCopy;
                         if (copyTag.getLogInst() >= boTag.getLogInst()) {
                             // 数据库版本更高
-                            throw new SaveActionsException(i18n.prop("msg_bobas_bo_copy_version_is_more_new"));
+                            throw new Exception(i18n.prop("msg_bobas_bo_copy_version_is_more_new"));
                         }
                     }
                 } catch (Exception e) {
-                    throw new SaveActionsException(i18n.prop("msg_bobas_bo_version_check_faild", event.getBO()), e);
+                    throw new Exception(i18n.prop("msg_bobas_bo_version_check_faild", bo), e);
                 }
             }
         }
+        return true;
+    }
+
+    /**
+     * 保存事件
+     * 
+     * @param action
+     *            事件类型
+     * @param bo
+     *            发生对象
+     * @param root
+     *            根节点对象
+     * @return
+     */
+    protected boolean onSaveActionsEvent(SaveActionsType action, IBusinessObjectBase bo, IBusinessObjectBase root)
+            throws Exception {
         return true;
     }
 

@@ -88,11 +88,12 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
      * @throws SaveActionsException
      *             运行时错误
      */
-    private void fireSaveActions(SaveActionsType type, IBusinessObjectBase bo) throws SaveActionsException {
+    private void fireSaveActions(SaveActionsType type, IBusinessObjectBase bo, IBusinessObjectBase root)
+            throws SaveActionsException {
         if (this.saveActionsSupport == null) {
             return;
         }
-        this.saveActionsSupport.fireActions(type, bo);
+        this.saveActionsSupport.fireActions(type, bo, root);
     }
 
     /**
@@ -125,7 +126,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
     public <T extends IBusinessObjectBase> IOperationResult<T> save(T bo) {
         OperationResult<T> operationResult = new OperationResult<>();
         try {
-            IBusinessObjectBase nBO = this.mySave(bo, true);
+            IBusinessObjectBase nBO = this.mySave(bo, true, null);
             if (nBO instanceof ITrackStatusOperator) {
                 // 保存成功，标记对象为OLD
                 ITrackStatusOperator operator = (ITrackStatusOperator) nBO;
@@ -142,7 +143,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
     public <T extends IBusinessObjectBase> IOperationResult<T> saveEx(T bo) {
         OperationResult<T> operationResult = new OperationResult<>();
         try {
-            IBusinessObjectBase nBO = this.mySaveEx(bo, true);
+            IBusinessObjectBase nBO = this.mySaveEx(bo, true, null);
             if (nBO instanceof ITrackStatusOperator) {
                 // 保存成功，标记对象为OLD
                 ITrackStatusOperator operator = (ITrackStatusOperator) nBO;
@@ -162,10 +163,13 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
      *            对象
      * @param updateKeys
      *            更新主键
+     * @param root
+     *            根对象
      * @return 保存的对象
      * @throws Exception
      */
-    private final IBusinessObjectBase mySave(IBusinessObjectBase bo, boolean updateKeys) throws Exception {
+    private final IBusinessObjectBase mySave(IBusinessObjectBase bo, boolean updateKeys, IBusinessObjectBase root)
+            throws Exception {
         if (bo == null) {
             throw new RepositoryException(i18n.prop("msg_bobas_invalid_bo"));
         }
@@ -187,15 +191,15 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
                     // 新建的对象
                     if (updateKeys)
                         adapter4Db.usePrimaryKeys(bo, command);// 获取并更新主键
-                    this.fireSaveActions(SaveActionsType.before_adding, bo);
+                    this.fireSaveActions(SaveActionsType.before_adding, bo, root);
                     sqlQuery = adapter4Db.parseSqlInsert(bo);
                 } else if (bo.isDeleted()) {
                     // 删除对象
-                    this.fireSaveActions(SaveActionsType.before_deleting, bo);
+                    this.fireSaveActions(SaveActionsType.before_deleting, bo, root);
                     sqlQuery = adapter4Db.parseSqlDelete(bo);
                 } else {
                     // 修改对象，先删除数据，再添加新的实例
-                    this.fireSaveActions(SaveActionsType.before_updating, bo);
+                    this.fireSaveActions(SaveActionsType.before_updating, bo, root);
                     sqlQuery = adapter4Db.parseSqlDelete(bo);
                     command.executeUpdate(sqlQuery);// 执行删除副本
                     sqlQuery = adapter4Db.parseSqlInsert(bo);
@@ -205,13 +209,13 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
                 // 通知事务
                 if (bo.isNew()) {
                     // 新建的对象
-                    this.fireSaveActions(SaveActionsType.added, bo);
+                    this.fireSaveActions(SaveActionsType.added, bo, root);
                 } else if (bo.isDeleted()) {
                     // 删除对象
-                    this.fireSaveActions(SaveActionsType.deleted, bo);
+                    this.fireSaveActions(SaveActionsType.deleted, bo, root);
                 } else {
                     // 修改对象
-                    this.fireSaveActions(SaveActionsType.updated, bo);
+                    this.fireSaveActions(SaveActionsType.updated, bo, root);
                 }
                 if (myTrans) {
                     // 自己打开的事务
@@ -251,9 +255,14 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
      * @return 保存的对象
      * @throws Exception
      */
-    private final IBusinessObjectBase mySaveEx(IBusinessObjectBase bo, boolean updateKeys) throws Exception {
+    private final IBusinessObjectBase mySaveEx(IBusinessObjectBase bo, boolean updateKeys, IBusinessObjectBase root)
+            throws Exception {
         if (bo == null) {
             throw new RepositoryException(i18n.prop("msg_bobas_invalid_bo"));
+        }
+        if (root == null) {
+            // 设置触发事件的跟对象
+            root = bo;
         }
         if (bo.isDirty()) {
             // 仅修过的数据进行处理
@@ -264,7 +273,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
                 myOpenedDb = this.openDbConnection();
                 myTrans = this.beginTransaction();
                 // 保存主对象
-                this.mySave(bo, updateKeys);
+                this.mySave(bo, updateKeys, root);
                 // 保存子项
                 if (bo instanceof IManageFields) {
                     IManageFields boFields = (IManageFields) bo;
@@ -284,7 +293,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
                             if (!childs.isSmartPrimaryKeys() && bo.isNew()) {
                                 // 不启用智能主键且对象是新建的，需要手工维护集合子项主键
                                 for (IBusinessObjectBase childBO : childs) {
-                                    this.mySaveEx(childBO, false);
+                                    this.mySaveEx(childBO, false, root);
                                 }
                                 continue;
                             } else {
@@ -314,10 +323,10 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
                                                         line.setLineId(lineValue);
                                                         lineValue++;
                                                     }
-                                                    this.mySaveEx(childBO, false);
+                                                    this.mySaveEx(childBO, false, root);
                                                 } else {
                                                     // 其他对象类型
-                                                    this.mySaveEx(childBO, true);
+                                                    this.mySaveEx(childBO, true, root);
                                                 }
                                             }
                                             continue;// 完成处理，退出操作
@@ -327,11 +336,11 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
                             }
                             // 每个子项保存时，自主获取主键
                             for (IBusinessObjectBase childBO : childs) {
-                                this.mySaveEx(childBO, true);
+                                this.mySaveEx(childBO, true, root);
                             }
                         } else if (fdValue instanceof IBusinessObjectBase) {
                             // 对象属性
-                            this.mySaveEx((IBusinessObjectBase) fdValue, true);// 继续带子项的保存
+                            this.mySaveEx((IBusinessObjectBase) fdValue, true, root);// 继续带子项的保存
                         }
                         /*
                          * 不处理数组了
@@ -341,7 +350,8 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
                          * < length; i++) { Object child = Array.get(fdValue,
                          * i); if (child instanceof IBusinessObjectBase) {
                          * IBusinessObjectBase childBO = (IBusinessObjectBase)
-                         * child; this.mySaveEx(childBO, true);// 继续带子项的保存 } } }
+                         * child; this.mySaveEx(childBO, true, root);// 继续带子项的保存
+                         * } } }
                          */
                     }
                 }

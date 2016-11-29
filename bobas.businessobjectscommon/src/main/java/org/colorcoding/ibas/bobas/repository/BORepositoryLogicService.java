@@ -11,7 +11,6 @@ import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
 import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
-import org.colorcoding.ibas.bobas.core.SaveActionsEvent;
 import org.colorcoding.ibas.bobas.core.SaveActionsException;
 import org.colorcoding.ibas.bobas.core.SaveActionsType;
 import org.colorcoding.ibas.bobas.data.emYesNo;
@@ -75,27 +74,26 @@ public class BORepositoryLogicService extends BORepositoryService {
     }
 
     @Override
-    protected boolean onActionsEvent(SaveActionsEvent event) {
+    protected boolean onSaveActionsEvent(SaveActionsType action, IBusinessObjectBase bo) {
         try {
             // 响应事件
-            if (event.getType() == SaveActionsType.before_adding || event.getType() == SaveActionsType.before_deleting
-                    || event.getType() == SaveActionsType.before_updating) {
+            if (action == SaveActionsType.before_adding || action == SaveActionsType.before_deleting
+                    || action == SaveActionsType.before_updating) {
                 // 审批流程相关，先执行审批逻辑，可能对bo的状态有影响
                 if (this.isCheckApprovalProcess()) {
                     // 触发审批流程
-                    this.triggerApprovals(event.getBO());
+                    this.triggerApprovals(bo);
                 }
             }
-            if (event.getType() != SaveActionsType.before_adding) {
+            if (action != SaveActionsType.before_adding) {
                 // 业务逻辑相关，最后执行业务逻辑，因为要求状态可用
                 if (this.isCheckLogics()) {
                     // 执行业务逻辑
-                    this.runLogics(event.getType(), event.getBO());
+                    this.runLogics(action, bo);
                 }
-
             }
             // 运行基类方法
-            return super.onActionsEvent(event);
+            return super.onSaveActionsEvent(action, bo);
         } catch (Exception e) {
             throw new SaveActionsException(e);
         }
@@ -112,7 +110,8 @@ public class BORepositoryLogicService extends BORepositoryService {
      *            所属的父项
      * @throws Exception
      */
-    protected void onActionsEvent(SaveActionsType action, IBusinessObjectBase bo, IBusinessObjectBase parent)
+    @Override
+    protected boolean onSaveActionsEvent(SaveActionsType action, IBusinessObjectBase bo, IBusinessObjectBase root)
             throws Exception {
         if (action == SaveActionsType.before_deleting) {
             // 删除前检查，子项继承父项必须继承，否则无效
@@ -132,6 +131,7 @@ public class BORepositoryLogicService extends BORepositoryService {
                 this.checkRules(action, bo);
             }
         }
+        return true;
     }
 
     /**
@@ -152,15 +152,6 @@ public class BORepositoryLogicService extends BORepositoryService {
             ICheckRules checkRules = (ICheckRules) bo;
             checkRules.check();
         }
-    }
-
-    /**
-     * 获取s
-     * 
-     * @param bo
-     */
-    private void getAllBOs(IBusinessObjectBase bo) {
-
     }
 
     /**
