@@ -25,7 +25,8 @@ public class BusinessRuleMaxValue<T extends Comparable<?>> extends BusinessRule 
      * @param propertyInfos
      *            要求值的属性数组
      */
-    public BusinessRuleMaxValue(T maxValue, IPropertyInfo<?>... propertyInfos) {
+    @SafeVarargs
+    public BusinessRuleMaxValue(T maxValue, IPropertyInfo<T>... propertyInfos) {
         this.setMaxValue(maxValue);
         // 要输入的参数
         if (propertyInfos != null) {

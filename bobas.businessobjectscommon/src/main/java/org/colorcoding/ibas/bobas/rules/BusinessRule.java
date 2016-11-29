@@ -7,6 +7,8 @@ import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.IManageProperties;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.messages.MessageLevel;
+import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
 public abstract class BusinessRule implements IBusinessRule {
@@ -46,6 +48,8 @@ public abstract class BusinessRule implements IBusinessRule {
                 }
             }
             // 执行规则
+            RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_RULES_EXECUTING, bo, this.getClass().getName(),
+                    this.getName());
             this.execute(context);
             // 赋值输出属性
             if (bo instanceof IManageProperties) {

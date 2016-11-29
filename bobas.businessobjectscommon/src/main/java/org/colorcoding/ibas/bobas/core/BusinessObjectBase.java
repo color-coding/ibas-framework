@@ -240,8 +240,8 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
         IFieldData fieldData = this.fieldManager.getFieldData(property);
         if (fieldData == null) {
             // 没有定义的属性
-            RuntimeLog.log(RuntimeLog.MSG_PROPERTIES_NOT_FOUND_PROPERTIES, this.getClass().getName(),
-                    property.getName());
+            RuntimeLog.log(MessageLevel.ERROR, RuntimeLog.MSG_PROPERTIES_NOT_FOUND_PROPERTIES,
+                    this.getClass().getName(), property.getName());
         } else {
             Object oldValue = fieldData.getValue();// 旧值
             boolean changed = fieldData.setValue(value);
@@ -261,7 +261,8 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
                         }
                     } catch (BusinessRuleException e) {
                         // 运行中，仅记录错误，以被调试。
-                        RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_RULES_EXECUTING_FAILD, e.getMessage());
+                        RuntimeLog.log(MessageLevel.ERROR, RuntimeLog.MSG_RULES_EXECUTING_FAILD, fieldData.getName(),
+                                e.getMessage());
                     }
                 }
             }
