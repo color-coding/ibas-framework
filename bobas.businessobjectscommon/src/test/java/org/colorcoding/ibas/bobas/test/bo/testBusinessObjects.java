@@ -158,7 +158,6 @@ public class testBusinessObjects extends TestCase {
     }
 
     public void testBOInherit() {
-
         System.out.println(SalesOrder.class.isAssignableFrom(IBusinessObject.class));
         System.out.println(SalesOrder.class.isAssignableFrom(ISalesOrder.class));
         System.out.println(ISalesOrder.class.isAssignableFrom(IBusinessObject.class));

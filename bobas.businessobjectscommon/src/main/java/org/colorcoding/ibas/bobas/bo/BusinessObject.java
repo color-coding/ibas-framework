@@ -17,6 +17,7 @@ import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.core.BusinessObjectBase;
+import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.core.Serializer;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.data.DataConvert;
@@ -28,7 +29,11 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.organization.UnknownUser;
+import org.colorcoding.ibas.bobas.rules.BusinessRuleException;
+import org.colorcoding.ibas.bobas.rules.BusinessRulesFactory;
 import org.colorcoding.ibas.bobas.rules.IBusinessRule;
+import org.colorcoding.ibas.bobas.rules.IBusinessRules;
+import org.colorcoding.ibas.bobas.rules.IBusinessRulesManager;
 import org.colorcoding.ibas.bobas.util.StringBuilder;
 
 /*
@@ -44,6 +49,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 
     public BusinessObject() {
         super();
+        this.initializeRules();
         this.setLoading(true);
         this.initialize();
         this.setLoading(false);
@@ -391,8 +397,49 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
         this.afterMarshal();
     }
 
-    @Override
+    /**
+     * 注册的业务规则
+     */
     protected IBusinessRule[] registerRules() {
         return null;
+    }
+
+    /**
+     * 初始化业务规则
+     * 
+     * @throws BusinessRuleException
+     */
+    private void initializeRules() throws RuntimeException {
+        try {
+            IBusinessRulesManager manager = BusinessRulesFactory.createManager();
+            IBusinessRules rules = manager.getRules(this.getClass());
+            if (rules != null && !rules.isInitialized()) {
+                // 未初始化，则进行初始化
+                rules.registerRules(this.registerRules());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 设置属性值之后的回掉方法
+     */
+    @Override
+    protected <P> void afterSetProperty(IPropertyInfo<P> property) {
+        // 触发业务逻辑运行
+        if (!this.isLoading()) {
+            // 读取数据时，不执行业务规则
+            try {
+                IBusinessRules rules = BusinessRulesFactory.createManager().getRules(this.getClass());
+                if (rules != null) {
+                    rules.execute(this, property);
+                }
+            } catch (BusinessRuleException e) {
+                // 运行中，仅记录错误，以被调试。
+                RuntimeLog.log(MessageLevel.ERROR, RuntimeLog.MSG_RULES_EXECUTING_FAILD, property.getName(),
+                        e.getMessage());
+            }
+        }
     }
 }

@@ -10,7 +10,6 @@ import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.mapping.DbField;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
-import org.colorcoding.ibas.bobas.rules.IBusinessRule;
 
 @XmlRootElement(name = "Order", namespace = "httpL//ibas.club/bobas/test")
 public class Order extends BusinessObjectBase<Order> {
@@ -124,11 +123,6 @@ public class Order extends BusinessObjectBase<Order> {
     }
 
     public String getSchema(String type) {
-        return null;
-    }
-
-    @Override
-    protected IBusinessRule[] registerRules() {
         return null;
     }
 

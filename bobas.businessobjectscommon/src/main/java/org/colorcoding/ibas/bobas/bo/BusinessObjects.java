@@ -43,6 +43,8 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
     public BusinessObjects() {
         this.setChangeElementStatus(true);
         this.setChangeParentStatus(true);
+        // 监听自身改变事件
+        this.addPropertyChangeListener(this.propertyListener);
     }
 
     public BusinessObjects(P parent) {
@@ -128,6 +130,13 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
                     } else {
                         that.onElementPropertyChanged(evt);
                     }
+                } else if (evt.getSource() == that && evt.getPropertyName().equals(PROPERTY_NAME_SIZE)) {
+                    // 集合自身的属性改变事件
+                    if (that.getParent() instanceof ITrackStatusOperator) {
+                        // 改变父项的状态跟踪
+                        ITrackStatusOperator statusOperator = (ITrackStatusOperator) that.getParent();
+                        statusOperator.markDirty();
+                    }
                 }
             }
         }
@@ -160,6 +169,9 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 
     @Override
     protected void afterAddItem(E item) {
+        // 调用基类方法
+        super.afterAddItem(item);
+        // 额外逻辑
         if (item instanceof IBindableBase) {
             // 监听属性改变
             IBindableBase boItem = (IBindableBase) item;
@@ -638,6 +650,9 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 
     @Override
     protected void afterRemoveItem(E item) {
+        // 调用基类方法
+        super.afterRemoveItem(item);
+        // 额外逻辑
         if (item instanceof IBindableBase) {
             // 移出监听属性改变
             IBindableBase boItem = (IBindableBase) item;

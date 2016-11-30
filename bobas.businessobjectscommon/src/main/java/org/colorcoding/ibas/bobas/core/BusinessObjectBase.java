@@ -14,11 +14,6 @@ import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.core.fields.NotRegisterTypeException;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
-import org.colorcoding.ibas.bobas.rules.BusinessRuleException;
-import org.colorcoding.ibas.bobas.rules.BusinessRulesFactory;
-import org.colorcoding.ibas.bobas.rules.IBusinessRule;
-import org.colorcoding.ibas.bobas.rules.IBusinessRules;
-import org.colorcoding.ibas.bobas.rules.IBusinessRulesManager;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
 @XmlAccessorType(XmlAccessType.NONE)
@@ -69,10 +64,6 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
     public final static <P> IPropertyInfo<P> registerProperty(String name, Class<P> dataType, P defaultValue,
             Class<?> boType) {
         return PropertyInfoManager.registerProperty(boType, name, dataType, defaultValue);
-    }
-
-    public BusinessObjectBase() {
-        this.initializeRules();
     }
 
     /**
@@ -251,22 +242,20 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
                 this.markDirty();
                 // 触发属性改变事件
                 this.firePropertyChange(fieldData.getName(), oldValue, fieldData.getValue());
-                // 触发业务逻辑运行
-                if (!this.isLoading()) {
-                    // 读取数据时，不执行业务规则
-                    try {
-                        IBusinessRules rules = BusinessRulesFactory.createManager().getRules(this.getClass());
-                        if (rules != null) {
-                            rules.execute(this, property);
-                        }
-                    } catch (BusinessRuleException e) {
-                        // 运行中，仅记录错误，以被调试。
-                        RuntimeLog.log(MessageLevel.ERROR, RuntimeLog.MSG_RULES_EXECUTING_FAILD, fieldData.getName(),
-                                e.getMessage());
-                    }
-                }
+                // 调用设置值方法
+                this.afterSetProperty(property);
             }
         }
+    }
+
+    /**
+     * 设置值之后
+     * 
+     * @param property
+     *            被赋值的属性
+     */
+    protected <P> void afterSetProperty(IPropertyInfo<P> property) {
+
     }
 
     /**
@@ -412,28 +401,5 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
     public ICriteria getCriteria() {
         return null;
     }
-
-    /**
-     * 初始化业务规则
-     * 
-     * @throws BusinessRuleException
-     */
-    private void initializeRules() throws RuntimeException {
-        try {
-            IBusinessRulesManager manager = BusinessRulesFactory.createManager();
-            IBusinessRules rules = manager.getRules(this.getClass());
-            if (rules != null && !rules.isInitialized()) {
-                // 未初始化，则进行初始化
-                rules.registerRules(this.registerRules());
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * 注册业务规则
-     */
-    protected abstract IBusinessRule[] registerRules();
 
 }
