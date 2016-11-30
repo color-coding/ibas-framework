@@ -78,7 +78,7 @@ public class UserFieldProxy implements IUserField {
             return DateTime.valueOf(this.getValueString());
         } else if (type == DbFieldType.db_Decimal) {
             if (this.getValueString() == null || this.getValueString().isEmpty()) {
-                return new Decimal("0");
+                return Decimal.ZERO;
             }
             return new Decimal(this.getValueString());
         }

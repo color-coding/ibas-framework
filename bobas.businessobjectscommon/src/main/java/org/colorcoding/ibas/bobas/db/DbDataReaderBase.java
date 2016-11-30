@@ -332,7 +332,7 @@ public abstract class DbDataReaderBase implements IDbDataReader {
 		try {
 			return new Decimal(this.resultSet.getBigDecimal(columnIndex));
 		} catch (NullPointerException e) {
-			return new Decimal("0");
+			return Decimal.ZERO;
 		} catch (Exception e) {
 			throw new DbException(e.getMessage(), e);
 		}
@@ -343,7 +343,7 @@ public abstract class DbDataReaderBase implements IDbDataReader {
 		try {
 			return new Decimal(this.resultSet.getBigDecimal(columnLabel));
 		} catch (NullPointerException e) {
-			return new Decimal("0");
+			return Decimal.ZERO;
 		} catch (Exception e) {
 			throw new DbException(e.getMessage(), e);
 		}

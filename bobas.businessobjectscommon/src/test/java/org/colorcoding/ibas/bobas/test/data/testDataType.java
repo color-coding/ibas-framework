@@ -36,9 +36,11 @@ public class testDataType extends TestCase {
     }
 
     public void testDecimal() {
+        System.out.println(String.format("%09d", 0));
         Decimal zero = Decimal.ZERO;
-        Decimal zero2 = new Decimal("0.000");
+        Decimal zero2 = new Decimal("777777777777777770.00099999999999999999999999999");
         System.err.println(zero.equals(zero2));
         System.out.println(zero.toString());
+        System.out.println(zero2.round());
     }
 }

@@ -22,14 +22,16 @@ public class Decimal extends BigDecimal {
      */
     public static int RESERVED_DECIMAL_PLACES_STORAGE = 6;
 
+    private final static String DECIMAL_TEMPLATE = "%s."
+            + String.format("%0" + RESERVED_DECIMAL_PLACES_STORAGE + "d", 0);
     /**
      * 数值1
      */
-    public final static Decimal ONE = new Decimal("1");
+    public final static Decimal ONE = new Decimal(String.format(DECIMAL_TEMPLATE, 1));
     /**
      * 数值0
      */
-    public final static Decimal ZERO = new Decimal("0");
+    public final static Decimal ZERO = new Decimal(String.format(DECIMAL_TEMPLATE, 0));
 
     /**
      * 截取小数
@@ -56,7 +58,7 @@ public class Decimal extends BigDecimal {
      * @return
      */
     public static Decimal round(Decimal value, int scale) {
-        return new Decimal(value.divide(ONE, scale, RoundingMode.HALF_UP));// 仅保留6位小数
+        return new Decimal(value.divide(ONE, scale, RoundingMode.CEILING));// 仅保留6位小数
     }
 
     public static Decimal valueOf(double val) {
@@ -84,7 +86,8 @@ public class Decimal extends BigDecimal {
     }
 
     public Decimal(double val) {
-        super(String.format("%." + RESERVED_DECIMAL_PLACES_STORAGE + "f", val));
+        super(val);
+        // super(String.format("%."+RESERVED_DECIMAL_PLACES_STORAGE+"f",val));
     }
 
     public Decimal(int val) {
@@ -265,6 +268,10 @@ public class Decimal extends BigDecimal {
     @Override
     public Decimal round(MathContext mc) {
         return new Decimal(super.round(mc));
+    }
+
+    public Decimal round() {
+        return round(this, RESERVED_DECIMAL_PLACES_STORAGE);
     }
 
     @Override
