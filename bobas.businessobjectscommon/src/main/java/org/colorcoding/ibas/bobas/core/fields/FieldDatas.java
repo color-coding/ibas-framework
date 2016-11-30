@@ -183,7 +183,7 @@ class FieldDataDateTime extends FieldDataBase<DateTime> {
         this.setValueType(valueType);
     }
 
-    private DateTime value = DateTime.getMinValue();
+    private DateTime value = DateTime.minValue;
 
     @Override
     public DateTime getValue() {

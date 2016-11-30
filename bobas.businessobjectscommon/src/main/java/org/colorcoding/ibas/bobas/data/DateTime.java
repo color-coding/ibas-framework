@@ -25,14 +25,6 @@ public class DateTime extends Date implements Serializable {
      */
     private static final long serialVersionUID = 9197442988053540497L;
 
-    public DateTime() {
-        super();
-    }
-
-    public DateTime(long date) {
-        super(date);
-    }
-
     /**
      * 获取值
      * 
@@ -42,28 +34,6 @@ public class DateTime extends Date implements Serializable {
      */
     public static DateTime valueOf(String date) {
         return valueOf(date, "yyyy-MM-dd");
-    }
-
-    /**
-     * 获取值
-     * 
-     * @param date
-     *            日期字符串
-     * @param format
-     *            字符串格式
-     * @return 日期
-     */
-    public static DateTime valueOf(String date, String format) {
-        try {
-            if (date == null || format == null) {
-                return DateTime.getMinValue();
-            }
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-            Date dateValue = simpleDateFormat.parse(date);
-            return new DateTime(dateValue.getTime());
-        } catch (ParseException e) {
-            return DateTime.getMinValue();
-        }
     }
 
     /**
@@ -108,6 +78,38 @@ public class DateTime extends Date implements Serializable {
     }
 
     /**
+     * 最小日期
+     */
+    public static final DateTime minValue = getMinValue();
+
+    /**
+     * 最大日期
+     */
+    public static final DateTime maxValue = getMaxValue();
+
+    /**
+     * 获取值
+     * 
+     * @param date
+     *            日期字符串
+     * @param format
+     *            字符串格式
+     * @return 日期
+     */
+    public static DateTime valueOf(String date, String format) {
+        try {
+            if (date == null || format == null) {
+                return DateTime.minValue;
+            }
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+            Date dateValue = simpleDateFormat.parse(date);
+            return new DateTime(dateValue.getTime());
+        } catch (ParseException e) {
+            return DateTime.minValue;
+        }
+    }
+
+    /**
      * 计算间隔时间
      * 
      * @param fromTime
@@ -148,6 +150,14 @@ public class DateTime extends Date implements Serializable {
          * * 24); }
          */
         throw new ComputeException(i18n.prop("msg_bobas_not_support_the_compute"));
+    }
+
+    public DateTime() {
+        super();
+    }
+
+    public DateTime(long date) {
+        super(date);
     }
 
     @Override

@@ -12,7 +12,7 @@ public class testDataType extends TestCase {
 
     public void testDateTime() {
 
-        DateTime min = DateTime.getMinValue();
+        DateTime min = DateTime.minValue;
         System.out.println(min.toString("yyyy-MM-dd'T'HH:mm:ss.SSS"));
         DateTime max = DateTime.getMaxValue();
         System.out.println(max.toString("yyyy-MM-dd'T'HH:mm:ss.SSS"));

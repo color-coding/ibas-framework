@@ -34,7 +34,7 @@ public class DataConvert extends org.colorcoding.ibas.bobas.data.DataConvert {
 		} else if (valueType == DateTime.class) {
 			// 日期类型的，最小值认为是空
 			DateTime dateTime = (DateTime) value;
-			if (dateTime.equals(DateTime.getMinValue())) {
+			if (dateTime.equals(DateTime.minValue)) {
 				return null;
 			}
 		} else if (valueType == Decimal.class) {
