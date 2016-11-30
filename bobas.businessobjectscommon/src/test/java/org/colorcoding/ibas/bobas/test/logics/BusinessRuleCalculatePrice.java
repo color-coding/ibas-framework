@@ -37,7 +37,7 @@ public class BusinessRuleCalculatePrice extends BusinessRule {
     @Override
     protected void execute(BusinessRuleContext context) throws Exception {
         Decimal total = (Decimal) context.getInputPropertyValues().get(this.propertyTotal);
-        if (Decimal.ZERO.compareTo(total) != 0) {
+        if (Decimal.ZERO.compareTo(total) != 0) {// 等于判断，不可以用equals()
             // 总计，不为0
             Decimal quantity = (Decimal) context.getInputPropertyValues().get(this.propertyQuantity);
             Decimal price = total.divide(quantity);// 注意四舍五入

@@ -2,7 +2,6 @@ package org.colorcoding.ibas.bobas.data;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.MathContext;
 import java.math.RoundingMode;
 
 import javax.xml.bind.annotation.XmlType;
@@ -13,21 +12,31 @@ import org.colorcoding.ibas.bobas.MyConsts;
 @XmlType(name = "Decimal", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
 @XmlJavaTypeAdapter(DecimalSerializer.class)
 public class Decimal extends BigDecimal {
-    /**
-     * 
-     */
+
     private static final long serialVersionUID = -3383909107151269118L;
     /**
      * 存储时，保留小数位数
      */
     public static int RESERVED_DECIMAL_PLACES_STORAGE = 6;
 
+    /**
+     * 运行时，保留小数位数
+     */
+    public static int RESERVED_DECIMAL_PLACES_RUNNING = 9;
+
+    /**
+     * 运行时，截取小数方式
+     */
+    public static RoundingMode ROUNDING_MODE_RUNNING = RoundingMode.CEILING;
+
     private final static String DECIMAL_TEMPLATE = "%s."
             + String.format("%0" + RESERVED_DECIMAL_PLACES_STORAGE + "d", 0);
+
     /**
      * 数值1
      */
     public final static Decimal ONE = new Decimal(String.format(DECIMAL_TEMPLATE, 1));
+
     /**
      * 数值0
      */
@@ -44,7 +53,7 @@ public class Decimal extends BigDecimal {
      *            截取方式
      * @return
      */
-    public static Decimal round(Decimal value, int scale, RoundingMode mode) {
+    public static Decimal round(BigDecimal value, int scale, RoundingMode mode) {
         return new Decimal(value.divide(ONE, scale, mode));
     }
 
@@ -57,19 +66,56 @@ public class Decimal extends BigDecimal {
      *            保留小数位数
      * @return
      */
-    public static Decimal round(Decimal value, int scale) {
-        return new Decimal(value.divide(ONE, scale, RoundingMode.CEILING));// 仅保留6位小数
+    public static Decimal round(BigDecimal value, int scale) {
+        return new Decimal(value.divide(ONE, scale, RoundingMode.CEILING));
+    }
+
+    /**
+     * 四舍五入小数位
+     * 
+     * @param value
+     *            值
+     * @return
+     */
+    public static Decimal round(BigDecimal value) {
+        return new Decimal(value.divide(ONE, RESERVED_DECIMAL_PLACES_STORAGE, RoundingMode.CEILING));
     }
 
     public static Decimal valueOf(double val) {
+        if (val == 0d) {
+            return ZERO;
+        } else if (val == 1d) {
+            return ONE;
+        }
         return new Decimal(val);
     }
 
     public static Decimal valueOf(long val) {
+        if (val == 0l) {
+            return ZERO;
+        } else if (val == 1l) {
+            return ONE;
+        }
+        return new Decimal(val);
+    }
+
+    public static Decimal valueOf(int val) {
+        if (val == 0) {
+            return ZERO;
+        } else if (val == 1) {
+            return ONE;
+        }
         return new Decimal(val);
     }
 
     public static Decimal valueOf(String val) {
+        if (val != null && !val.isEmpty()) {
+            if (val.equals("0")) {
+                return ZERO;
+            } else if (val.equals("1")) {
+                return ONE;
+            }
+        }
         return new Decimal(val);
     }
 
@@ -104,27 +150,27 @@ public class Decimal extends BigDecimal {
     }
 
     public Decimal divide(Decimal divisor) {
-        return new Decimal(super.divide(divisor));
+        return new Decimal(super.divide(divisor, RESERVED_DECIMAL_PLACES_RUNNING, ROUNDING_MODE_RUNNING));
     }
 
     public Decimal divide(String divisor) {
-        return new Decimal(super.divide(new Decimal(divisor)));
+        return this.divide(new Decimal(divisor));
     }
 
     public Decimal divide(BigInteger divisor) {
-        return new Decimal(super.divide(new Decimal(divisor)));
+        return this.divide(new Decimal(divisor));
     }
 
     public Decimal divide(double divisor) {
-        return new Decimal(super.divide(new Decimal(divisor)));
+        return this.divide(new Decimal(divisor));
     }
 
     public Decimal divide(int divisor) {
-        return new Decimal(super.divide(new Decimal(divisor)));
+        return this.divide(new Decimal(divisor));
     }
 
     public Decimal divide(long divisor) {
-        return new Decimal(super.divide(new Decimal(divisor)));
+        return this.divide(new Decimal(divisor));
     }
 
     public Decimal multiply(Decimal multiplicand) {
@@ -132,43 +178,31 @@ public class Decimal extends BigDecimal {
     }
 
     public Decimal multiply(String multiplicand) {
-        return new Decimal(super.multiply(new Decimal(multiplicand)));
+        return this.multiply(new Decimal(multiplicand));
     }
 
     public Decimal multiply(BigInteger multiplicand) {
-        return new Decimal(super.multiply(new Decimal(multiplicand)));
+        return this.multiply(new Decimal(multiplicand));
     }
 
     public Decimal multiply(double multiplicand) {
-        return new Decimal(super.multiply(new Decimal(multiplicand)));
+        return this.multiply(new Decimal(multiplicand));
     }
 
     public Decimal multiply(int multiplicand) {
-        return new Decimal(super.multiply(new Decimal(multiplicand)));
+        return this.multiply(new Decimal(multiplicand));
     }
 
     public Decimal multiply(long multiplicand) {
-        return new Decimal(super.multiply(new Decimal(multiplicand)));
+        return this.multiply(new Decimal(multiplicand));
     }
 
     public Decimal add(Decimal augend) {
         return new Decimal(super.add(augend));
     }
 
-    public Decimal add(Decimal augend, MathContext mc) {
-        return new Decimal(super.add(augend, mc));
-    }
-
     public Decimal subtract(Decimal subtrahend) {
         return new Decimal(super.subtract(subtrahend));
-    }
-
-    public Decimal subtract(Decimal subtrahend, MathContext mc) {
-        return new Decimal(super.subtract(subtrahend, mc));
-    }
-
-    public Decimal multiply(Decimal multiplicand, MathContext mc) {
-        return new Decimal(super.multiply(multiplicand, mc));
     }
 
     public Decimal divide(Decimal divisor, int scale, int roundingMode) {
@@ -176,48 +210,27 @@ public class Decimal extends BigDecimal {
     }
 
     public Decimal divide(Decimal divisor, int scale, RoundingMode roundingMode) {
-        return new Decimal(super.divide(divisor, scale, roundingMode));
+        return this.divide(divisor, scale, roundingMode.ordinal());
     }
 
     public Decimal divide(Decimal divisor, int roundingMode) {
-        return new Decimal(super.divide(divisor, roundingMode));
+        return this.divide(divisor, RESERVED_DECIMAL_PLACES_RUNNING, roundingMode);
     }
 
     public Decimal divide(Decimal divisor, RoundingMode roundingMode) {
-        return new Decimal(super.divide(divisor, roundingMode));
-    }
-
-    public Decimal divide(Decimal divisor, MathContext mc) {
-        return new Decimal(super.divide(divisor, mc));
+        return this.divide(divisor, RESERVED_DECIMAL_PLACES_RUNNING, roundingMode);
     }
 
     public Decimal divideToIntegralValue(Decimal divisor) {
         return new Decimal(super.divideToIntegralValue(divisor));
     }
 
-    public Decimal divideToIntegralValue(Decimal divisor, MathContext mc) {
-        return new Decimal(super.divideToIntegralValue(divisor, mc));
-    }
-
     public Decimal remainder(Decimal divisor) {
         return new Decimal(super.remainder(divisor));
     }
 
-    public Decimal remainder(Decimal divisor, MathContext mc) {
-        return new Decimal(super.remainder(divisor, mc));
-    }
-
     public Decimal[] divideAndRemainder(Decimal divisor) {
         BigDecimal[] bValues = super.divideAndRemainder(divisor);
-        Decimal[] values = new Decimal[bValues.length];
-        for (int i = 0; i < values.length; i++) {
-            values[i] = new Decimal(bValues[i]);
-        }
-        return values;
-    }
-
-    public Decimal[] divideAndRemainder(Decimal divisor, MathContext mc) {
-        BigDecimal[] bValues = super.divideAndRemainder(divisor, mc);
         Decimal[] values = new Decimal[bValues.length];
         for (int i = 0; i < values.length; i++) {
             values[i] = new Decimal(bValues[i]);
@@ -231,18 +244,8 @@ public class Decimal extends BigDecimal {
     }
 
     @Override
-    public Decimal pow(int n, MathContext mc) {
-        return new Decimal(super.pow(n, mc));
-    }
-
-    @Override
     public Decimal abs() {
         return new Decimal(super.abs());
-    }
-
-    @Override
-    public Decimal abs(MathContext mc) {
-        return new Decimal(super.abs(mc));
     }
 
     @Override
@@ -251,32 +254,12 @@ public class Decimal extends BigDecimal {
     }
 
     @Override
-    public Decimal negate(MathContext mc) {
-        return new Decimal(super.negate(mc));
-    }
-
-    @Override
     public Decimal plus() {
         return new Decimal(super.plus());
     }
 
-    @Override
-    public Decimal plus(MathContext mc) {
-        return new Decimal(super.plus(mc));
-    }
-
-    @Override
-    public Decimal round(MathContext mc) {
-        return new Decimal(super.round(mc));
-    }
-
     public Decimal round() {
         return round(this, RESERVED_DECIMAL_PLACES_STORAGE);
-    }
-
-    @Override
-    public Decimal setScale(int newScale, RoundingMode roundingMode) {
-        return new Decimal(super.setScale(newScale, roundingMode));
     }
 
     @Override
@@ -285,8 +268,13 @@ public class Decimal extends BigDecimal {
     }
 
     @Override
+    public Decimal setScale(int newScale, RoundingMode roundingMode) {
+        return this.setScale(newScale, roundingMode.ordinal());
+    }
+
+    @Override
     public Decimal setScale(int newScale) {
-        return new Decimal(super.setScale(newScale));
+        return this.setScale(newScale, ROUNDING_MODE_RUNNING);
     }
 
     @Override
