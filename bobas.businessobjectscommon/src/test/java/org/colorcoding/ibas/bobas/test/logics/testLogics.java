@@ -363,12 +363,18 @@ public class testLogics extends TestCase {
         item01.setItemDescription(materials01.getItemDescription());
         item01.setQuantity(100);// 测试点，数量大于0
         item01.setPrice(999999.99);
-        System.out.println(String.format("line total %s", item01.getLineTotal()));
+        System.out.println(String.format("line 1 total %s", item01.getLineTotal()));
         assertEquals(item01.getLineTotal().equals(item01.getQuantity().multiply(item01.getPrice())), true);
-        item01.setLineTotal(10000);
-        System.out.println(String.format("line price %s", item01.getPrice()));
-        assertEquals(item01.getPrice().equals(item01.getLineTotal().divide(item01.getQuantity(), RoundingMode.CEILING)),
+        PurchaseOrderItem item02 = order.getPurchaseOrderItems().create();// 测试点，要求有元素
+        item02.setItemCode(materials01.getItemCode());// 测试点，子项检查，要求值
+        item02.setItemDescription(materials01.getItemDescription());
+        item02.setQuantity(33.33);// 测试点，数量大于0
+        item02.setLineTotal(10000);
+        System.out.println(String.format("line 2 price %s", item02.getPrice()));
+        assertEquals(item02.getPrice().equals(item02.getLineTotal().divide(item02.getQuantity(), RoundingMode.CEILING)),
                 true);// 注意四舍五入
+        System.out.println(String.format("line 2 total %s", item01.getLineTotal()));
+        System.out.println(String.format("document total %s", order.getDocumentTotal()));
         operationResult = boRepository.savePurchaseOrder(order);
         if (operationResult.getResultCode() != 0) {
             System.err.println(operationResult.getMessage());

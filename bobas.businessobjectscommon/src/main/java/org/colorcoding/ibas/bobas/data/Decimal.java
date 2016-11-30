@@ -18,10 +18,6 @@ public class Decimal extends BigDecimal {
      */
     private static final long serialVersionUID = -3383909107151269118L;
     /**
-     * 运行时，保留小数位数
-     */
-    public static int RESERVED_DECIMAL_PLACES_RUNTIME = 9;
-    /**
      * 存储时，保留小数位数
      */
     public static int RESERVED_DECIMAL_PLACES_STORAGE = 6;
@@ -88,7 +84,7 @@ public class Decimal extends BigDecimal {
     }
 
     public Decimal(double val) {
-        super(String.format("%." + RESERVED_DECIMAL_PLACES_RUNTIME + "f", val));
+        super(String.format("%." + RESERVED_DECIMAL_PLACES_STORAGE + "f", val));
     }
 
     public Decimal(int val) {

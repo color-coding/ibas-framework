@@ -407,7 +407,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
     /**
      * 初始化业务规则
      * 
-     * @throws BusinessRuleException
+     * @throws RuntimeException
      */
     private void initializeRules() throws RuntimeException {
         try {

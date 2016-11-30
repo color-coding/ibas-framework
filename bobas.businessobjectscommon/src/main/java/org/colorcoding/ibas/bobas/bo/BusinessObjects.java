@@ -131,11 +131,13 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
                         that.onElementPropertyChanged(evt);
                     }
                 } else if (evt.getSource() == that && evt.getPropertyName().equals(PROPERTY_NAME_SIZE)) {
-                    // 集合自身的属性改变事件
-                    if (that.getParent() instanceof ITrackStatusOperator) {
-                        // 改变父项的状态跟踪
-                        ITrackStatusOperator statusOperator = (ITrackStatusOperator) that.getParent();
-                        statusOperator.markDirty();
+                    if (that.parent != null && !that.parent.isLoading()) {
+                        // 集合自身的属性改变事件
+                        if (that.getParent() instanceof ITrackStatusOperator) {
+                            // 改变父项的状态跟踪
+                            ITrackStatusOperator statusOperator = (ITrackStatusOperator) that.getParent();
+                            statusOperator.markDirty();
+                        }
                     }
                 }
             }
@@ -231,12 +233,6 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
                 IBODocumentLine parent = (IBODocumentLine) this.getParent();
                 child.setLineStatus(parent.getLineStatus());
             }
-        }
-        // 集合元素发生变化
-        if (this.getParent() instanceof ITrackStatusOperator) {
-            // 改变父项的状态跟踪
-            ITrackStatusOperator statusOperator = (ITrackStatusOperator) this.getParent();
-            statusOperator.markDirty();
         }
     }
 
@@ -349,6 +345,10 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
      * @param evt
      */
     protected void onElementPropertyChanged(PropertyChangeEvent evt) {
+        // 加载中，退出
+        if (this.getParent() == null || this.getParent().isLoading()) {
+            return;
+        }
         if (this.isChangeParentStatus()) {
             this.changeParentStatus(evt);
         }
@@ -657,12 +657,6 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
             // 移出监听属性改变
             IBindableBase boItem = (IBindableBase) item;
             boItem.removePropertyChangeListener(this.propertyListener);
-        }
-        // 集合元素发生变化
-        if (this.getParent() instanceof ITrackStatusOperator) {
-            // 改变父项的状态跟踪
-            ITrackStatusOperator statusOperator = (ITrackStatusOperator) this.getParent();
-            statusOperator.markDirty();
         }
     }
 

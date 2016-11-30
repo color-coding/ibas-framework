@@ -48,7 +48,7 @@ public class BusinessRuleContext {
 
     public final Map<IPropertyInfo<?>, Object> getInputPropertyValues() {
         if (this.inputPropertyValues == null) {
-            this.inputPropertyValues = new HashMap<>();
+            this.inputPropertyValues = new HashMap<>(8);
         }
         return this.inputPropertyValues;
     }
@@ -57,7 +57,7 @@ public class BusinessRuleContext {
 
     public final Map<IPropertyInfo<?>, Object> getOutputPropertyValues() {
         if (this.outputPropertyValues == null) {
-            this.outputPropertyValues = new HashMap<>();
+            this.outputPropertyValues = new HashMap<>(8);
         }
         return this.outputPropertyValues;
     }

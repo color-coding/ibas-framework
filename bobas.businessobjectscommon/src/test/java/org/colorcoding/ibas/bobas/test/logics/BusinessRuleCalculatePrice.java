@@ -1,7 +1,5 @@
 package org.colorcoding.ibas.bobas.test.logics;
 
-import java.math.RoundingMode;
-
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.rules.BusinessRule;
@@ -39,10 +37,16 @@ public class BusinessRuleCalculatePrice extends BusinessRule {
     @Override
     protected void execute(BusinessRuleContext context) throws Exception {
         Decimal total = (Decimal) context.getInputPropertyValues().get(this.propertyTotal);
-        Decimal quantity = (Decimal) context.getInputPropertyValues().get(this.propertyQuantity);
-        Decimal price = total.divide(quantity, RoundingMode.CEILING);// 注意四舍五入
-        // 输出结果
-        context.getOutputPropertyValues().put(this.propertyPrice, price);
+        if (!Decimal.ZERO.equals(total)) {
+            // 总计，不为0
+            Decimal quantity = (Decimal) context.getInputPropertyValues().get(this.propertyQuantity);
+            Decimal price = total.divide(quantity);// 注意四舍五入
+            // 输出结果
+            context.getOutputPropertyValues().put(this.propertyPrice, price);
+        } else {
+            // 输出结果
+            context.getOutputPropertyValues().put(this.propertyPrice, Decimal.ZERO);
+        }
     }
 
 }
