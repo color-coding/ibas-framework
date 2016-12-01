@@ -3,6 +3,14 @@
 此架构从业务对象模型，业务规则，业务逻辑，业务对象仓库，数据权限，审批流程等方面分解业务应用系统。<br>
 [btulz.transforms](https://github.com/color-coding/btulz.transforms "业务系统工具")可实现根据模型自动生成此架构代码。<br>
 
+## 鼓励师 | encourager
+[![encourager]](http://baike.baidu.com/view/10998931.htm)  
+[encourager]:https://github.com/color-coding/ibas-framework/raw/master/encourager.gif "はしもとかんな"
+* 姓名：桥本环奈（はしもとかんな）
+* 生日：1999年2月3日
+* 国籍：日本
+* WOW ：[曼秀雷敦花絮](http://www.bilibili.com/video/av2708978/ "B站指日可待")
+
 ## 说明 | instructions
 
 ### 项目结构 | Projects
@@ -34,14 +42,6 @@
 ### 审批流程 | ApprovalProcess
 审批流程，用于业务对象发生写入时，根据配置判断是否自动发起一个审批流程。<br>
 审批流程可以配置为多步审批，全部步骤批准后业务对象置为批准状态，任意步骤拒绝则业务对象拒绝。<br>
-
-## 鼓励师 | encourager
-[![encourager]](http://baike.baidu.com/view/10998931.htm)  
-[encourager]:https://github.com/color-coding/ibas-framework/raw/master/encourager.gif "はしもとかんな"
-* 姓名：桥本环奈（はしもとかんな）
-* 生日：1999年2月3日
-* 国籍：日本
-* WOW ：[曼秀雷敦花絮](http://www.bilibili.com/video/av2708978/ "B站指日可待")
 
 ## 鸣谢 | thanks
 [牛加人等于朱](http://baike.baidu.com/view/1769.htm "NiurenZhu")<br>
