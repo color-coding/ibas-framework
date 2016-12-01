@@ -66,7 +66,7 @@ public class Volume extends MeasurementDecimal<emVolumeUnit> {
 		this.firePropertyChange("Unit", oldValue, this.unit);
 	}
 
-	private Decimal _long = new Decimal(0);
+	private Decimal _long = Decimal.ZERO;
 
 	public Decimal getLong() {
 		return this._long;
@@ -77,7 +77,7 @@ public class Volume extends MeasurementDecimal<emVolumeUnit> {
 		this.setValue(this.getLong().multiply(this.getWidth().multiply(this.getHight())));
 	}
 
-	private Decimal _width = new Decimal(0);
+	private Decimal _width = Decimal.ZERO;
 
 	public Decimal getWidth() {
 		return this._width;
@@ -88,7 +88,7 @@ public class Volume extends MeasurementDecimal<emVolumeUnit> {
 		this.setValue(this.getLong().multiply(this.getWidth().multiply(this.getHight())));
 	}
 
-	private Decimal _hight = new Decimal(0);
+	private Decimal _hight = Decimal.ZERO;
 
 	public Decimal getHight() {
 		return this._hight;

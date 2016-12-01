@@ -66,7 +66,7 @@ public class Area extends MeasurementDecimal<emAreaUnit> {
 		this.firePropertyChange("Unit", oldValue, this.unit);
 	}
 
-	private Decimal _long = new Decimal(0);
+	private Decimal _long = Decimal.ZERO;
 
 	public Decimal getLong() {
 		return this._long;
@@ -77,7 +77,7 @@ public class Area extends MeasurementDecimal<emAreaUnit> {
 		this.setValue(this.getLong().multiply(this.getWidth()));
 	}
 
-	private Decimal _width = new Decimal(0);
+	private Decimal _width = Decimal.ZERO;
 
 	public Decimal getWidth() {
 		return this._width;

@@ -58,7 +58,7 @@ public abstract class MeasurementDecimal<U> extends Measurement<Decimal, U> {
 	@XmlElement(name = "Value")
 	public Decimal getValue() {
 		if (this._value == null) {
-			this._value = new Decimal(0);
+			this._value = Decimal.ZERO;
 		}
 		return this._value;
 	}
