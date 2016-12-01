@@ -115,21 +115,13 @@ public class MyConfiguration extends Configuration {
      */
     public final static String CONFIG_ITEM_MESSAGE_RECORDER_WAY = "RecorderWay";
     /**
-     * 配置项目-消息日志大小限制
+     * 配置项目-消息日志大小限制（单位兆）
      */
-    public final static String CONFIG_ITEM_LOG_FILE_LIMIT = "LogFileLimit";
-    /**
-     * 配置项目-消息文件每天产生的最大数量
-     */
-    public final static String CONFIG_ITEM_LOG_FILE_COUNT = "LogFileCount";
-    /**
-     * 配置项目-消息文件名标示（%s 代表 年月日,%g 代表 自动生成编号,%m 代表 本模块的名称）
-     */
-    public final static String CONFIG_ITEM_LOG_FILE_SIGN = "LogFileSign";
+    public final static String CONFIG_ITEM_LOG_FILE_SIZE_LIMIT = "LogFileSize";
     /**
      * 配置项目-日志文件保存路径
      */
-    public final static String CONFIG_ITEM_LOG_PATH = "LogFolder";
+    public final static String CONFIG_ITEM_LOG_FILE_FOLDER = "LogFileFolder";
     /**
      * 序列化实现
      */
