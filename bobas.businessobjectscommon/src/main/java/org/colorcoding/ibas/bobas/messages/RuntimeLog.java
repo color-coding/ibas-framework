@@ -55,7 +55,8 @@ public class RuntimeLog {
     public static final String MSG_BO_FACTORY_REGISTER_BO_CODE = "factory: register [%s] for [%s].";
     public static final String MSG_DAEMON_REGISTER_TASK = "daemon: register task id [%s], name [%s].";
     public static final String MSG_DAEMON_REMOVE_TASK = "daemon: remove task id [%s], name [%s].";
-    public static final String MSG_DAEMON_RUN_TASK = "daemon: begin to run task [%s - %s], %sth running.";
+    public static final String MSG_DAEMON_TASK_START = "daemon: begin to run task [%s - %s], %sth running.";
+    public static final String MSG_DAEMON_TASK_COMPLETED = "daemon: end task [%s - %s] %sth running and for [%s] milliseconds.";
     public static final String MSG_DAEMON_REGISTER_VOID_TASK = "daemon: register void task.";
     public static final String MSG_DAEMON_TASK_ALREADY_EXIST = "daemon: task [%s] already exist.";
     public static final String MSG_DAEMON_SINGLE_TASK_WORK_FOLDER_NOT_EXISTS = "daemon: single task work folder not exists.";

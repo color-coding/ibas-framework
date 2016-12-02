@@ -94,7 +94,7 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 
                         @Override
                         public String getName() {
-                            return "write message to file.";
+                            return "write message to file";
                         }
 
                         @Override
