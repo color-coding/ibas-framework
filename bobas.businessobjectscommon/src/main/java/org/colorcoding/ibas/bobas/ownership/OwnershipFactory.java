@@ -22,7 +22,7 @@ public class OwnershipFactory extends ConfigurableFactory {
     /**
      * 操作信息：数据检索数量
      */
-    public final static String OPERATION_INFORMATION_DATA_OWNERSHIP_fetch_COUNT = "DATA_OWNERSHIP_FETCH_COUNT";
+    public final static String OPERATION_INFORMATION_DATA_OWNERSHIP_FETCH_COUNT = "DATA_OWNERSHIP_FETCH_COUNT";
     /**
      * 操作信息：数据过滤数量
      */
@@ -34,7 +34,7 @@ public class OwnershipFactory extends ConfigurableFactory {
 
     public static IOperationInformation[] createOwnershipJudgeInfo(Integer fetchCount, Integer filterCount) {
         OperationInformation oifetch = new OperationInformation();
-        oifetch.setName(OPERATION_INFORMATION_DATA_OWNERSHIP_fetch_COUNT);
+        oifetch.setName(OPERATION_INFORMATION_DATA_OWNERSHIP_FETCH_COUNT);
         oifetch.setTag(OPERATION_INFORMATION_DATA_OWNERSHIP_TAG);
         oifetch.setContents(i18n.prop("msg_bobas_data_ownership_fetch_count", fetchCount));
         OperationInformation oiFilter = new OperationInformation();

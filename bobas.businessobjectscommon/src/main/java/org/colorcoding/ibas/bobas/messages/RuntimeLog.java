@@ -63,30 +63,7 @@ public class RuntimeLog {
     public static final String MSG_RULES_EXECUTING = "rules: bo %s executing rule [%s - %s].";
     public static final String MSG_RULES_EXECUTING_FAILD = "rules: field [%s] triggered rules fail to run, %s.";
 
-    private static long debugMode = -1;// log类型线程安全
     private static int messageLevel = -1;
-
-    /**
-     * 是否处于debug模式
-     * 
-     * @return
-     */
-    protected static boolean isDebugMode() {
-        // 访问频繁，提高下性能
-        if (debugMode == -1) {
-            synchronized (RuntimeLog.class) {
-                if (debugMode == -1) {
-                    boolean value = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DEBUG_MODE, false);
-                    if (value) {
-                        debugMode = 1;
-                    } else {
-                        debugMode = 0;
-                    }
-                }
-            }
-        }
-        return debugMode == 1 ? true : false;
-    }
 
     /**
      * 是否处于debug模式
@@ -98,7 +75,7 @@ public class RuntimeLog {
         if (messageLevel == -1) {
             synchronized (RuntimeLog.class) {
                 if (messageLevel == -1) {
-                    if (isDebugMode()) {
+                    if (MyConfiguration.isDebugMode()) {
                         messageLevel = MessageLevel.DEBUG.ordinal();
                     } else {
                         String value = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LOG_MESSAGE_LEVEL);

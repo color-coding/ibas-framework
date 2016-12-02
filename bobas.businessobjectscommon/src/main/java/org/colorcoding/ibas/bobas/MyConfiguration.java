@@ -6,6 +6,31 @@ import org.colorcoding.ibas.bobas.configuration.Configuration;
  * 配置
  */
 public class MyConfiguration extends Configuration {
+
+    private static long debugMode = -1;// log类型线程安全
+
+    /**
+     * 是否处于debug模式
+     * 
+     * @return
+     */
+    public static boolean isDebugMode() {
+        // 访问频繁，提高下性能
+        if (debugMode == -1) {
+            synchronized (MyConfiguration.class) {
+                if (debugMode == -1) {
+                    boolean value = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DEBUG_MODE, false);
+                    if (value) {
+                        debugMode = 1;
+                    } else {
+                        debugMode = 0;
+                    }
+                }
+            }
+        }
+        return debugMode == 1 ? true : false;
+    }
+
     /**
      * 配置项目-扫描的业务库命名空间
      */
