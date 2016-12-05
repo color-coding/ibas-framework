@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.approval;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
 import org.colorcoding.ibas.bobas.core.BOFactoryException;
+import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
@@ -51,6 +52,10 @@ public class ApprovalFactory extends ConfigurableFactory {
             return new IApprovalProcessManager() {
                 @Override
                 public IApprovalProcess checkProcess(IApprovalData data) {
+                    if (data.getApprovalStatus() != emApprovalStatus.Unaffected) {
+                        // 重置数据状态
+                        data.setApprovalStatus(emApprovalStatus.Unaffected);
+                    }
                     return null;
                 }
             };

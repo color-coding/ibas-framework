@@ -8,6 +8,7 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
+import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.test.bo.IMaterials;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrderItem;
@@ -47,7 +48,7 @@ public class testBOLogics extends TestCase {
 
         order.setCustomerCode("C00001");
         order.setDocumentStatus(emDocumentStatus.Released);
-
+        order.setApprovalStatus(emApprovalStatus.Processing);
         ISalesOrderItem orderItem = order.getSalesOrderItems().create();
         orderItem.setItemCode(material_1.getItemCode());
         orderItem.setItemDescription(material_1.getItemDescription());
