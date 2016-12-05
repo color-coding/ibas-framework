@@ -13,6 +13,7 @@ import org.colorcoding.ibas.bobas.core.BOFactoryException;
  *
  */
 public class RecorderFactory extends ConfigurableFactory {
+
     /**
      * 创建流程管理员实例
      * 
@@ -46,8 +47,24 @@ public class RecorderFactory extends ConfigurableFactory {
             fileName.append("_");
             fileName.append("runtime");
             if (moduleName != null && !moduleName.isEmpty()) {
+                // 配置了模块名称
                 fileName.append("_");
                 fileName.append(moduleName);
+            } else {
+                // 未配置模块名称
+                String confName = String.format(".%s", MyConfiguration.CONFIG_ITEM_MODULE_NAME);
+                for (File file : new File(MyConfiguration.getWorkFolder()).listFiles()) {
+                    if (file.isFile()) {
+                        if (file.getName().endsWith(confName)) {
+                            // 通过文件获取模块名称
+                            fileName.append("_");
+                            int len = file.getName().lastIndexOf(confName);
+                            if (len > 0 && len < file.getName().length()) {
+                                fileName.append(file.getName().substring(0, len));
+                            }
+                        }
+                    }
+                }
             }
             fileName.append("_");
             fileName.append("%s");
