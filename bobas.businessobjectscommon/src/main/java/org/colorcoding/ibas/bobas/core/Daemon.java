@@ -29,8 +29,22 @@ public class Daemon implements IDaemon {
      * @throws InvalidDaemonTask
      */
     public static long register(IDaemonTask task) throws InvalidDaemonTask {
+        return register(task, true);
+    }
+
+    /**
+     * 注册后台任务
+     * 
+     * @param task
+     *            任务
+     * @param log
+     *            是否记录日志
+     * @return 任务ID，小于0任务注册失败
+     * @throws InvalidDaemonTask
+     */
+    public static long register(IDaemonTask task, boolean log) throws InvalidDaemonTask {
         synchronized (Daemon.class) {
-            return create().add(task);
+            return create().add(task, log);
         }
     }
 
@@ -96,7 +110,7 @@ public class Daemon implements IDaemon {
     }
 
     @Override
-    public long add(IDaemonTask task) throws InvalidDaemonTask {
+    public long add(IDaemonTask task, boolean isLog) throws InvalidDaemonTask {
         if (task == null || task.getName() == null || task.getName().isEmpty()) {
             throw new InvalidDaemonTask();
         }
@@ -109,6 +123,7 @@ public class Daemon implements IDaemon {
         }
         synchronized (this.getWrappings()) {
             DaemonTaskWrapping wrapping = new DaemonTaskWrapping(task);
+            wrapping.setLog(isLog);
             wrapping.setId(Math.abs(UUID.randomUUID().getLeastSignificantBits()));
             this.getWrappings().add(wrapping);
             RuntimeLog.log(RuntimeLog.MSG_DAEMON_REGISTER_TASK, wrapping.getId(), wrapping.getName());
@@ -169,8 +184,10 @@ public class Daemon implements IDaemon {
                     // 可以运行
                     long start = System.currentTimeMillis();
                     long times = wrapping.getRunTimes() + 1;
-                    RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_DAEMON_TASK_START, wrapping.getId(),
-                            wrapping.getName(), times);
+                    if (wrapping.isLog()) {
+                        RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_DAEMON_TASK_START, wrapping.getId(),
+                                wrapping.getName(), times);
+                    }
                     // 从线程池中调用新的线程运行此任务
                     this.getThreadPool().execute(new Runnable() {
 
@@ -178,8 +195,10 @@ public class Daemon implements IDaemon {
                         public void run() {
                             wrapping.run();
                             long end = System.currentTimeMillis();
-                            RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_DAEMON_TASK_COMPLETED, wrapping.getId(),
-                                    wrapping.getName(), times, (end - start));
+                            if (wrapping.isLog()) {
+                                RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_DAEMON_TASK_COMPLETED,
+                                        wrapping.getId(), wrapping.getName(), times, (end - start));
+                            }
                         }
                     });
                 }
