@@ -69,7 +69,7 @@ class DaemonTaskWrapping {
         return running;
     }
 
-    private void setRunning(boolean running) {
+    void setRunning(boolean running) {
         this.running = running;
     }
 
@@ -225,7 +225,6 @@ class DaemonTaskWrapping {
     public void run() {
         if (this.getTask() != null) {
             Thread.currentThread().setName(String.format("ibas-task|%s", this.getName()));
-            this.setRunning(true);// 设置状态为运行中
             this.addRunTimes();// 运行次数+1
             try {
                 this.getTask().run();

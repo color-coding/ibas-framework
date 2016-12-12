@@ -182,6 +182,7 @@ public class Daemon implements IDaemon {
                 boolean done = wrapping.tryRun(time);
                 if (done) {
                     // 可以运行
+                    wrapping.setRunning(true);// 设置状态为运行中
                     long start = System.currentTimeMillis();
                     long times = wrapping.getRunTimes() + 1;
                     if (wrapping.isLog()) {
