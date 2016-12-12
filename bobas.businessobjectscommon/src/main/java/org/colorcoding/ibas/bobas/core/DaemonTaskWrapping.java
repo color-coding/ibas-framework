@@ -58,7 +58,7 @@ class DaemonTaskWrapping {
         return this.getTask().isActivated();
     }
 
-    private boolean running;
+    private volatile boolean running;
 
     /**
      * 运行中

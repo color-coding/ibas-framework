@@ -15,15 +15,15 @@ import org.colorcoding.ibas.bobas.jersey.FileRepositoryService;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
-@Path("/files/")
+@Path("files/")
 public class ServiceFile extends FileRepositoryService {
 
-	@POST
-	@Path("upload")
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	@Produces(MediaType.APPLICATION_JSON)
-	public OperationResult<FileData> upload(@FormDataParam("file") InputStream fileStream,
-			@FormDataParam("file") FormDataContentDisposition fileDisposition, @QueryParam("token") String token) {
-		return super.save(fileStream, fileDisposition, token);
-	}
+    @POST
+    @Path("upload")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public OperationResult<FileData> upload(@FormDataParam("file") InputStream fileStream,
+            @FormDataParam("file") FormDataContentDisposition fileDisposition, @QueryParam("token") String token) {
+        return super.save(fileStream, fileDisposition, token);
+    }
 }
