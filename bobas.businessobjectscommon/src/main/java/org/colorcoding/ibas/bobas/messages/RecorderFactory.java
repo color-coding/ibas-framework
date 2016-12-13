@@ -1,7 +1,5 @@
 package org.colorcoding.ibas.bobas.messages;
 
-import java.io.File;
-
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
 import org.colorcoding.ibas.bobas.core.BOFactoryException;
@@ -40,7 +38,7 @@ public class RecorderFactory extends ConfigurableFactory {
             String moduleName = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_MODULE_NAME);
             String logFolder = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LOG_FILE_FOLDER);
             if (logFolder == null || logFolder.isEmpty()) {
-                logFolder = MyConfiguration.getWorkFolder() + File.separator + "log";
+                logFolder = MyConfiguration.getLogFolder();
             }
             StringBuilder fileName = new StringBuilder();
             fileName.append("ibas");

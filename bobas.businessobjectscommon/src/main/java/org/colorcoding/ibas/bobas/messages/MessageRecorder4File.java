@@ -47,7 +47,7 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
     @Override
     public String getWorkFolder() {
         if (this.workFolder == null || this.workFolder.isEmpty()) {
-            this.workFolder = MyConfiguration.getWorkFolder() + File.separator + "log";
+            this.workFolder = MyConfiguration.getLogFolder();
         }
         return this.workFolder;
     }
