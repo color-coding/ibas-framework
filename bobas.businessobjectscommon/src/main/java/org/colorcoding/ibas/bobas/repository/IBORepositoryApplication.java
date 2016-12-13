@@ -8,13 +8,16 @@ package org.colorcoding.ibas.bobas.repository;
  */
 public interface IBORepositoryApplication extends IBORepositorySmartService {
 
-	/**
-	 * 获取-用户口令
-	 */
-	void setUserToken(String token);
+    /**
+     * 获取-用户口令
+     */
+    String getUserToken();
 
-	/**
-	 * 设置-用户口令
-	 */
-	String getUserToken();
+    /**
+     * 设置-用户口令
+     * 
+     * @throws InvalidTokenException
+     */
+    void setUserToken(String token) throws InvalidTokenException;
+
 }

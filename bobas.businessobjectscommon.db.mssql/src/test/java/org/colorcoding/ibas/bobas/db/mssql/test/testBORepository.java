@@ -21,6 +21,7 @@ import org.colorcoding.ibas.bobas.data.measurement.emTimeUnit;
 import org.colorcoding.ibas.bobas.repository.BORepository4DbReadonly;
 import org.colorcoding.ibas.bobas.repository.IBORepository4DbReadonly;
 import org.colorcoding.ibas.bobas.repository.InvalidRepositoryException;
+import org.colorcoding.ibas.bobas.repository.InvalidTokenException;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrder;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrderItem;
 import org.colorcoding.ibas.bobas.test.bo.IUser;
@@ -35,7 +36,7 @@ public class testBORepository extends TestCase {
 
     public boolean details_out = true;
 
-    public void testCriteria() throws InvalidRepositoryException {
+    public void testCriteria() throws InvalidRepositoryException, InvalidTokenException {
         ICriteria criteria = new Criteria();
         criteria.setNotLoadedChildren(true);
         criteria.setResultCount(100);
@@ -82,16 +83,20 @@ public class testBORepository extends TestCase {
 
     }
 
-    public void testConnectBORepository() {
+    public void testConnectBORepository() throws InvalidTokenException, InvalidRepositoryException {
         // System.out.println(System.getProperty("java.class.path"));
         // System.out.println(System.getProperty("user.dir"));
         BORepositoryTest boRepository = new BORepositoryTest();
         boRepository.setUserToken("");
         DateTime dateTime = boRepository.getServerTime();
         System.out.println(dateTime.toString());
+        boRepository = new BORepositoryTest();
+        boRepository.connectRepository("MSSQL", "localhost", "ibas_demo", "sa", "1q2w3e");
+        dateTime = boRepository.getServerTime();
+        System.out.println(dateTime.toString());
     }
 
-    public void testBORepositoryTest() {
+    public void testBORepositoryTest() throws InvalidTokenException {
         BORepositoryTest boRepository = new BORepositoryTest();
         boRepository.setUserToken("");
         ISalesOrder order = new SalesOrder();
@@ -125,7 +130,7 @@ public class testBORepository extends TestCase {
 
     }
 
-    public void testFetchBO() throws InvalidRepositoryException {
+    public void testFetchBO() throws InvalidRepositoryException, InvalidTokenException {
         BORepositoryTest boRepository = new BORepositoryTest();
         // boRepository.connectRepository("MSSQL", "localhost", "ibas_demo",
         // "sa", "1q2w3e");
@@ -180,7 +185,7 @@ public class testBORepository extends TestCase {
         }
     }
 
-    public void testSaveBO() throws InvalidRepositoryException {
+    public void testSaveBO() throws InvalidRepositoryException, InvalidTokenException {
         BORepositoryTest boRepository = new BORepositoryTest();
         // boRepository.connectRepository("MSSQL", "localhost", "ibas_demo",
         // "sa", "1q2w3e");
@@ -227,7 +232,7 @@ public class testBORepository extends TestCase {
         assertEquals(operationResult.getResultCode(), 0);
     }
 
-    public void testBOAssociations() throws InvalidRepositoryException {
+    public void testBOAssociations() throws InvalidRepositoryException, InvalidTokenException {
         BORepositoryTest boRepository = new BORepositoryTest();
         // boRepository.connectRepository("MSSQL", "localhost", "ibas_demo",
         // "sa", "1q2w3e");
@@ -263,7 +268,7 @@ public class testBORepository extends TestCase {
                         while (!flagStop) {
                             try {
                                 test.testSaveBO();
-                            } catch (InvalidRepositoryException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
@@ -278,7 +283,7 @@ public class testBORepository extends TestCase {
                         while (!flagStop) {
                             try {
                                 test.testFetchBO();
-                            } catch (InvalidRepositoryException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }

@@ -7,25 +7,30 @@ package org.colorcoding.ibas.bobas.organization;
  *
  */
 public interface IOrganizationManager {
-	/**
-	 * 初始化
-	 */
-	void initialize();
+    /**
+     * 未知用户ID
+     */
+    static final int UNKNOWN_USER_SIGN = -1;
 
-	/**
-	 * 获取用户
-	 * 
-	 * @param token
-	 *            用户的口令
-	 */
-	IUser getUser(String token);
+    /**
+     * 初始化
+     */
+    void initialize();
 
-	/**
-	 * 获取用户
-	 * 
-	 * @param id
-	 *            用户ID
-	 * @return
-	 */
-	IUser getUser(int id);
+    /**
+     * 获取用户
+     * 
+     * @param token
+     *            用户的口令
+     */
+    IUser getUser(String token);
+
+    /**
+     * 获取用户
+     * 
+     * @param id
+     *            用户ID
+     * @return
+     */
+    IUser getUser(int id);
 }

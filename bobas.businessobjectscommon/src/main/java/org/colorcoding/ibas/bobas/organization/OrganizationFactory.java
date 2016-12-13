@@ -55,12 +55,12 @@ public class OrganizationFactory extends ConfigurableFactory {
             return new IOrganizationManager() {
                 @Override
                 public IUser getUser(String token) {
-                    return new UnknownUser();
+                    return UNKNOWN_USER;
                 }
 
                 @Override
                 public IUser getUser(int id) {
-                    return new UnknownUser();
+                    return UNKNOWN_USER;
                 }
 
                 @Override
@@ -79,4 +79,33 @@ public class OrganizationFactory extends ConfigurableFactory {
         RuntimeLog.log(RuntimeLog.MSG_APPROVAL_PROCESS_MANAGER_CREATED, managerClass.getName());
         return manager;
     }
+
+    public final static IUser UNKNOWN_USER = new IUser() {
+
+        @Override
+        public int getId() {
+            return IOrganizationManager.UNKNOWN_USER_SIGN;
+        }
+
+        @Override
+        public String getBelong() {
+            return null;
+        }
+
+        @Override
+        public String getToken() {
+            return null;
+        }
+
+        @Override
+        public void checkAuthorization(String token) throws InvalidAuthorizationException {
+        }
+
+        @Override
+        public String toString() {
+            return String.format("{user: %s}", this.getId());
+        }
+
+    };
+
 }

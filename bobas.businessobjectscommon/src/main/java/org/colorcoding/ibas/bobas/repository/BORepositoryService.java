@@ -24,7 +24,6 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.organization.IOrganizationManager;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
-import org.colorcoding.ibas.bobas.organization.UnknownUser;
 
 /**
  * 业务仓库服务
@@ -95,11 +94,11 @@ public class BORepositoryService implements IBORepositoryService {
         this.repository = repository;
         if (this.repository != null) {
             // 同步用户信息
-            if (this.currentUser != null && !(this.currentUser instanceof UnknownUser)) {
+            if (this.currentUser != null) {
                 this.repository.setCurrentUser(this.currentUser);
             } else {
                 if (this.repository.getCurrentUser() != null
-                        && !(this.repository.getCurrentUser() instanceof UnknownUser)) {
+                        && this.repository.getCurrentUser() != OrganizationFactory.UNKNOWN_USER) {
                     this.setCurrentUser(this.repository.getCurrentUser());
                 }
             }
@@ -194,7 +193,7 @@ public class BORepositoryService implements IBORepositoryService {
 
     public final void setCacheRepository(IBORepository4Cache repository) {
         this.cacheRepository = repository;
-        if (this.cacheRepository != null && this.currentUser != null && !(this.currentUser instanceof UnknownUser)) {
+        if (this.cacheRepository != null && this.currentUser != null) {
             this.cacheRepository.setCurrentUser(this.currentUser);
         }
     }
@@ -264,9 +263,30 @@ public class BORepositoryService implements IBORepositoryService {
     public final IUser getCurrentUser() {
         if (this.currentUser == null) {
             // 未设置用户则为未知用户
-            this.currentUser = new UnknownUser();
+            this.currentUser = OrganizationFactory.UNKNOWN_USER;
         }
         return this.currentUser;
+    }
+
+    /**
+     * 设置当前用户
+     * 
+     * @param user
+     */
+    protected final void setCurrentUser(IUser user) {
+        if (this.currentUser == user) {
+            // 相同用户，不切换
+            return;
+        }
+        this.currentUser = user;
+        if (this.repository != null) {
+            this.getRepository().setCurrentUser(this.getCurrentUser());
+        }
+        if (this.cacheRepository != null) {
+            this.getCacheRepository().setCurrentUser(this.getCurrentUser());
+        }
+        RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_CHANGED_USER, this.getCurrentUser());
+        this.onCurrentUserChanged();
     }
 
     /**
@@ -276,7 +296,7 @@ public class BORepositoryService implements IBORepositoryService {
      *            用户口令
      * @throws InvalidTokenException
      */
-    final void setCurrentUser(String token) throws InvalidTokenException {
+    protected final void setCurrentUser(String token) throws InvalidTokenException {
         try {
             if (this.currentUser != null && this.currentUser.getToken() != null
                     && this.currentUser.getToken().equals(token)) {
@@ -295,15 +315,11 @@ public class BORepositoryService implements IBORepositoryService {
         }
     }
 
-    void setCurrentUser(IUser user) {
-        this.currentUser = user;
-        if (this.repository != null) {
-            this.getRepository().setCurrentUser(this.getCurrentUser());
-        }
-        if (this.cacheRepository != null) {
-            this.getCacheRepository().setCurrentUser(this.getCurrentUser());
-        }
-        RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_CHANGED_USER, this.getCurrentUser());
+    /**
+     * 当前用户变化
+     */
+    protected void onCurrentUserChanged() {
+
     }
 
     /**
