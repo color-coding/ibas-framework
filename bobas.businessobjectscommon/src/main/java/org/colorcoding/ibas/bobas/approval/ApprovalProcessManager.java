@@ -44,7 +44,7 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
             }
         }
         // 没有符合的审批流程
-        if (data.getApprovalStatus() != emApprovalStatus.Unaffected) {
+        if (data.getApprovalStatus() != emApprovalStatus.Unaffected && data.isNew()) {
             // 重置数据状态
             data.setApprovalStatus(emApprovalStatus.Unaffected);
         }
