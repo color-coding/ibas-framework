@@ -3,8 +3,9 @@
 	<name>bobas.businessobjectscommon.demo</name>
 	<comment></comment>
 	<projects>
-		<project>bobas.businessobjectscommon.jersey</project>
 		<project>bobas.businessobjectscommon</project>
+		<project>bobas.businessobjectscommon.cxf</project>
+		<project>bobas.businessobjectscommon.jersey</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
