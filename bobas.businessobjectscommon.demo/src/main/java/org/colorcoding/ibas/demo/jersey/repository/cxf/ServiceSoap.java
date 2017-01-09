@@ -16,69 +16,76 @@ import org.colorcoding.ibas.bobas.test.repository.BORepositoryTest;
  * @author Niuren.Zhu
  *
  */
-@WebService()
+@WebService
 public class ServiceSoap extends BORepositoryTest {
-    // --------------------------------------------------------------------------------------------//
-    /**
-     * 查询-物料主数据
-     * 
-     * @param criteria
-     *            查询
-     * @param token
-     *            口令
-     * @return 操作结果
-     */
-    @WebMethod
-    public OperationResult<Materials> fetchMaterials(@WebParam(name = "criteria") Criteria criteria,
-            @WebParam(name = "token") String token) {
-        return super.fetchMaterials(criteria, token);
-    }
 
-    /**
-     * 保存-物料主数据
-     * 
-     * @param bo
-     *            对象实例
-     * @param token
-     *            口令
-     * @return 操作结果
-     */
-    @WebMethod
-    public OperationResult<Materials> saveMaterials(@WebParam(name = "bo") Materials bo,
-            @WebParam(name = "token") String token) {
-        return super.saveMaterials(bo, token);
-    }
+	@WebMethod
+	public String hello() {
+		return "hi";
+	}
 
-    // --------------------------------------------------------------------------------------------//
-    /**
-     * 查询-销售订单
-     * 
-     * @param criteria
-     *            查询
-     * @param token
-     *            口令
-     * @return 操作结果
-     */
-    @WebMethod
-    public OperationResult<SalesOrder> fetchSalesOrder(@WebParam(name = "criteria") Criteria criteria,
-            @WebParam(name = "token") String token) {
-        return super.fetchSalesOrder(criteria, token);
-    }
+	// --------------------------------------------------------------------------------------------//
 
-    /**
-     * 保存-销售订单
-     * 
-     * @param bo
-     *            对象实例
-     * @param token
-     *            口令
-     * @return 操作结果
-     */
-    @WebMethod
-    public OperationResult<SalesOrder> saveSalesOrder(@WebParam(name = "bo") SalesOrder bo,
-            @WebParam(name = "token") String token) {
-        return super.saveSalesOrder(bo, token);
-    }
+	/**
+	 * 查询-物料主数据
+	 * 
+	 * @param criteria
+	 *            查询
+	 * @param token
+	 *            口令
+	 * @return 操作结果
+	 */
+	@WebMethod
+	public OperationResult<Materials> fetchMaterials(@WebParam(name = "criteria") Criteria criteria,
+			@WebParam(name = "token") String token) {
+		return super.fetchMaterials(criteria, token);
+	}
 
-    // --------------------------------------------------------------------------------------------//
+	/**
+	 * 保存-物料主数据
+	 * 
+	 * @param bo
+	 *            对象实例
+	 * @param token
+	 *            口令
+	 * @return 操作结果
+	 */
+	@WebMethod
+	public OperationResult<Materials> saveMaterials(@WebParam(name = "bo") Materials bo,
+			@WebParam(name = "token") String token) {
+		return super.saveMaterials(bo, token);
+	}
+
+	// --------------------------------------------------------------------------------------------//
+	/**
+	 * 查询-销售订单
+	 * 
+	 * @param criteria
+	 *            查询
+	 * @param token
+	 *            口令
+	 * @return 操作结果
+	 */
+	@WebMethod
+	public OperationResult<SalesOrder> fetchSalesOrder(@WebParam(name = "criteria") Criteria criteria,
+			@WebParam(name = "token") String token) {
+		return super.fetchSalesOrder(criteria, token);
+	}
+
+	/**
+	 * 保存-销售订单
+	 * 
+	 * @param bo
+	 *            对象实例
+	 * @param token
+	 *            口令
+	 * @return 操作结果
+	 */
+	@WebMethod
+	public OperationResult<SalesOrder> saveSalesOrder(@WebParam(name = "bo") SalesOrder bo,
+			@WebParam(name = "token") String token) {
+		return super.saveSalesOrder(bo, token);
+	}
+
+	// --------------------------------------------------------------------------------------------//
 }

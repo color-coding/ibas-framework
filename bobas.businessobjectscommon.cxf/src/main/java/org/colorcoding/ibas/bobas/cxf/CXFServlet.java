@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.cxf;
 
+import javax.servlet.ServletConfig;
+
 import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
 
 /**
@@ -10,6 +12,10 @@ import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
  */
 public class CXFServlet extends CXFNonSpringServlet {
 
-    private static final long serialVersionUID = 450755718934409533L;
+	private static final long serialVersionUID = 450755718934409533L;
 
+	@Override
+	public void loadBus(ServletConfig servletConfig) {
+		super.loadBus(servletConfig);
+	}
 }

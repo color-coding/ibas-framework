@@ -32,7 +32,7 @@
   </servlet>
   <servlet>
     <servlet-name>bobas.demo.cxf</servlet-name>
-    <servlet-class>org.colorcoding.ibas.bobas.cxf.CXFServlet</servlet-class>
+    <servlet-class>org.colorcoding.ibas.demo.jersey.repository.cxf.MyCXFServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>default</servlet-name>
