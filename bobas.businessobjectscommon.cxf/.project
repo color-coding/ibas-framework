@@ -3,7 +3,7 @@
 	<name>bobas.businessobjectscommon.cxf</name>
 	<comment></comment>
 	<projects>
-		<project>bobas.businessobjectscommon</project>
+		<project>bobas.businessobjectscommon.cxf</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

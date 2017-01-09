@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>bobas.businessobjectscommon.jersey.demo</name>
+	<name>bobas.businessobjectscommon.demo</name>
 	<comment></comment>
 	<projects>
 		<project>bobas.businessobjectscommon.jersey</project>
