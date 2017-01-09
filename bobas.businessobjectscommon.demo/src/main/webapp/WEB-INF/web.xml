@@ -33,6 +33,10 @@
   <servlet>
     <servlet-name>bobas.demo.cxf</servlet-name>
     <servlet-class>org.colorcoding.ibas.demo.jersey.repository.cxf.MyCXFServlet</servlet-class>
+    <init-param>
+      <param-name>ibas.config.server.provider.packages</param-name>
+      <param-value>org.colorcoding.ibas.demo.jersey.repository.cxf</param-value>
+    </init-param>
   </servlet>
   <servlet-mapping>
     <servlet-name>default</servlet-name>
