@@ -10,7 +10,7 @@
             return tmp.substring(0,tmp.indexOf('/test'));
         };
         var getWADL = function() {
-            var url = getRootUrl()  + '/services/application.wadl';
+            var url = getRootUrl()  + '/services/jersey/application.wadl';
             $.ajax({
                 type: 'get',
                 contentType: "application/xml",
@@ -23,7 +23,7 @@
                 }
             });
         };
-        var address = getRootUrl() + '/services/json';
+        var address = getRootUrl() + '/services/jersey/json';
         var showResult = function (opRslt) {
             $("#rsltCode").html("");
             $("#rsltMsg").html("");

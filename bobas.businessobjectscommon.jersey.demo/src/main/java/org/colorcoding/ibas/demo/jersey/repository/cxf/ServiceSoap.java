@@ -1,11 +1,8 @@
-package org.colorcoding.ibas.demo.jersey.repository;
+package org.colorcoding.ibas.demo.jersey.repository.cxf;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+import javax.jws.WebService;
 
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.OperationResult;
@@ -14,11 +11,13 @@ import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 import org.colorcoding.ibas.bobas.test.repository.BORepositoryTest;
 
 /**
- * 数据服务JSON
+ * 基于soap方式的webservice
+ * 
+ * @author Niuren.Zhu
+ *
  */
-@Path("json/")
-public class ServiceJson extends BORepositoryTest {
-
+@WebService()
+public class ServiceSoap extends BORepositoryTest {
     // --------------------------------------------------------------------------------------------//
     /**
      * 查询-物料主数据
@@ -29,11 +28,9 @@ public class ServiceJson extends BORepositoryTest {
      *            口令
      * @return 操作结果
      */
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("fetchMaterials")
-    public OperationResult<Materials> fetchMaterials(Criteria criteria, @QueryParam("token") String token) {
+    @WebMethod
+    public OperationResult<Materials> fetchMaterials(@WebParam(name = "criteria") Criteria criteria,
+            @WebParam(name = "token") String token) {
         return super.fetchMaterials(criteria, token);
     }
 
@@ -46,11 +43,9 @@ public class ServiceJson extends BORepositoryTest {
      *            口令
      * @return 操作结果
      */
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("saveMaterials")
-    public OperationResult<Materials> saveMaterials(Materials bo, @QueryParam("token") String token) {
+    @WebMethod
+    public OperationResult<Materials> saveMaterials(@WebParam(name = "bo") Materials bo,
+            @WebParam(name = "token") String token) {
         return super.saveMaterials(bo, token);
     }
 
@@ -64,11 +59,9 @@ public class ServiceJson extends BORepositoryTest {
      *            口令
      * @return 操作结果
      */
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("fetchSalesOrder")
-    public OperationResult<SalesOrder> fetchSalesOrder(Criteria criteria, @QueryParam("token") String token) {
+    @WebMethod
+    public OperationResult<SalesOrder> fetchSalesOrder(@WebParam(name = "criteria") Criteria criteria,
+            @WebParam(name = "token") String token) {
         return super.fetchSalesOrder(criteria, token);
     }
 
@@ -81,14 +74,11 @@ public class ServiceJson extends BORepositoryTest {
      *            口令
      * @return 操作结果
      */
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("saveSalesOrder")
-    public OperationResult<SalesOrder> saveSalesOrder(SalesOrder bo, @QueryParam("token") String token) {
+    @WebMethod
+    public OperationResult<SalesOrder> saveSalesOrder(@WebParam(name = "bo") SalesOrder bo,
+            @WebParam(name = "token") String token) {
         return super.saveSalesOrder(bo, token);
     }
 
     // --------------------------------------------------------------------------------------------//
-
 }

@@ -13,13 +13,18 @@
 		<artifactId>bobas.businessobjectscommon.parent</artifactId>
 		<version>0.1.1</version>
 	</parent>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.colorcoding.ibas</groupId>
 			<artifactId>bobas.businessobjectscommon.jersey</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.colorcoding.ibas</groupId>
+			<artifactId>bobas.businessobjectscommon.cxf</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

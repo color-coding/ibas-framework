@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.demo.jersey.repository;
+package org.colorcoding.ibas.demo.jersey.repository.jersey;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -14,10 +14,10 @@ import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 import org.colorcoding.ibas.bobas.test.repository.BORepositoryTest;
 
 /**
- * 数据服务XML
+ * 数据服务JSON
  */
-@Path("xml/")
-public class ServiceXml extends BORepositoryTest {
+@Path("json/")
+public class ServiceJson extends BORepositoryTest {
 
     // --------------------------------------------------------------------------------------------//
     /**
@@ -30,8 +30,8 @@ public class ServiceXml extends BORepositoryTest {
      * @return 操作结果
      */
     @POST
-    @Produces(MediaType.APPLICATION_XML)
-    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("fetchMaterials")
     public OperationResult<Materials> fetchMaterials(Criteria criteria, @QueryParam("token") String token) {
         return super.fetchMaterials(criteria, token);
@@ -47,8 +47,8 @@ public class ServiceXml extends BORepositoryTest {
      * @return 操作结果
      */
     @POST
-    @Produces(MediaType.APPLICATION_XML)
-    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("saveMaterials")
     public OperationResult<Materials> saveMaterials(Materials bo, @QueryParam("token") String token) {
         return super.saveMaterials(bo, token);
@@ -65,8 +65,8 @@ public class ServiceXml extends BORepositoryTest {
      * @return 操作结果
      */
     @POST
-    @Produces(MediaType.APPLICATION_XML)
-    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("fetchSalesOrder")
     public OperationResult<SalesOrder> fetchSalesOrder(Criteria criteria, @QueryParam("token") String token) {
         return super.fetchSalesOrder(criteria, token);
@@ -82,11 +82,13 @@ public class ServiceXml extends BORepositoryTest {
      * @return 操作结果
      */
     @POST
-    @Produces(MediaType.APPLICATION_XML)
-    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("saveSalesOrder")
     public OperationResult<SalesOrder> saveSalesOrder(SalesOrder bo, @QueryParam("token") String token) {
         return super.saveSalesOrder(bo, token);
     }
+
+    // --------------------------------------------------------------------------------------------//
 
 }

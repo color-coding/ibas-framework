@@ -44,9 +44,24 @@
                 $("#rsltMsg").html("unkown.");
             }
         }
-        var address = window.location.origin + '/demo/services/';
+        var address = window.location.origin + '/demo/services/jersey';
         var getWadl = function () {
-            var url = address + 'application.wadl';
+            var url = address + '/application.wadl';
+            $.ajax({
+                type: 'get',
+                contentType: "application/xml",
+                url: url,
+                success: function (data, status) {
+                	document.location.assign(url);
+                },
+                error: function (err) {
+                    showErrors(err);
+                }
+            });
+        };
+        var addressCXF = window.location.origin + '/demo/services/cxf';
+        var getWsdl = function () {
+            var url = addressCXF + '?wsdl';
             $.ajax({
                 type: 'get',
                 contentType: "application/xml",
@@ -60,7 +75,7 @@
             });
         };
         var testHello = function () {
-            var url = address + 'hello';
+            var url = address + '/hello';
             $.ajax({
                 type: 'get',
                 contentType: "text/html",
@@ -75,7 +90,7 @@
         };
         var criteria = null;
         var testCreate = function () {
-            var url = address + 'create';
+            var url = address + '/create';
             $.ajax({
                 type: 'get',
                 contentType: "text/html",
@@ -90,7 +105,7 @@
             });
         };
         var testFetch = function () {
-            var url = address + 'fetch';
+            var url = address + '/fetch';
             $.ajax({
                 type: 'POST',
                 contentType: "application/json",
@@ -105,7 +120,7 @@
             });
         };
         var testResult = function () {
-            var url = address + 'result';
+            var url = address + '/result';
             $.ajax({
                 type: 'get',
                 contentType: "text/html",
@@ -120,7 +135,7 @@
         };
         var salesOrder = null;
         var testFetchSalesOrder = function () {
-            var url = address + 'fetchSalesOrder?token=hahaha';
+            var url = address + '/fetchSalesOrder?token=hahaha';
             $.ajax({
                 type: 'POST',
                 contentType: "application/json",
@@ -136,7 +151,7 @@
             });
         };
         var testSaveSalesOrder = function () {
-            var url = address + 'saveSalesOrder?token=hahaha';
+            var url = address + '/saveSalesOrder?token=hahaha';
             $.ajax({
                 type: 'POST',
                 contentType: "application/json",
@@ -152,7 +167,7 @@
             });
         }
         var testQuerySalesOrder = function () {
-            var url = address + 'querySalesOrder?token=hahaha';
+            var url = address + '/querySalesOrder?token=hahaha';
             $.ajax({
                 type: 'POST',
                 contentType: "application/json",
@@ -171,6 +186,7 @@
 <body>
 	<div>
 		 <input type="button" value="wadl" onclick="getWadl();" />
+		 <input type="button" value="wsdl" onclick="getWsdl();" />
 	</div>
     <br />
     <div>
