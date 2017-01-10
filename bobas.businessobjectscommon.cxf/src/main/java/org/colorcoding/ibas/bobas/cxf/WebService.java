@@ -30,6 +30,9 @@ public class WebService {
 	private String address;
 
 	public final String getAddress() {
+		if (this.address == null) {
+			this.address = "";
+		}
 		return address;
 	}
 

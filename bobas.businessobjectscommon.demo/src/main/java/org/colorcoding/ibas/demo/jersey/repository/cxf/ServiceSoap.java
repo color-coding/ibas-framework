@@ -6,6 +6,7 @@ import javax.jws.WebService;
 
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.OperationResult;
+import org.colorcoding.ibas.bobas.cxf.WebServicePath;
 import org.colorcoding.ibas.bobas.test.bo.Materials;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 import org.colorcoding.ibas.bobas.test.repository.BORepositoryTest;
@@ -17,12 +18,8 @@ import org.colorcoding.ibas.bobas.test.repository.BORepositoryTest;
  *
  */
 @WebService
+@WebServicePath("/soap")
 public class ServiceSoap extends BORepositoryTest {
-
-	@WebMethod
-	public String hello() {
-		return "hi";
-	}
 
 	// --------------------------------------------------------------------------------------------//
 

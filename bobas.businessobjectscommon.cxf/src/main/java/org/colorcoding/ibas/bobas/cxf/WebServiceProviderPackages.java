@@ -31,8 +31,9 @@ public class WebServiceProviderPackages implements WebServiceProvider {
 				} else {
 					service.setName(item.getName());
 				}
-				if (annotation.endpointInterface() != null && !annotation.endpointInterface().isEmpty()) {
-					service.setAddress(annotation.endpointInterface());
+				WebServicePath servicePath = item.getDeclaredAnnotation(WebServicePath.class);
+				if (servicePath != null && servicePath.value() != null) {
+					service.setAddress(servicePath.value());
 				}
 				servers.add(service);
 			} catch (InstantiationException | IllegalAccessException e) {
