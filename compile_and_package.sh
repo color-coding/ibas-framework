@@ -79,6 +79,6 @@ do
       echo --编译[${line}]失败
     fi
   fi
-done < ${WORK_FOLDER}/compile_order.txt
+done < ${WORK_FOLDER}/compile_order.txt | sed 's/\r//g'
 
 echo --编译完成，更多信息请查看[compile_and_package_log_${OPNAME}.txt]
