@@ -26,24 +26,35 @@ public class CXFServlet extends CXFNonSpringServlet {
 	@Override
 	public void loadBus(ServletConfig servletConfig) {
 		super.loadBus(servletConfig);
+		this.registerServices();
+	}
+
+	/**
+	 * 注册服务
+	 */
+	protected void registerServices() {
+		// 遍历配置参数
 		Enumeration<String> enums = this.getInitParameterNames();
 		while (enums.hasMoreElements()) {
 			String key = enums.nextElement();
 			if (!key.startsWith(CONFIG_SERVER_PROVIDER)) {
 				continue;
 			}
+			// 找到服务提供的相关参数
 			String name = key.substring(CONFIG_SERVER_PROVIDER.length());
-			ServerProvider serverProvider = ServerProviderFactory.create().createProvider(name);
+			WebServiceProvider serverProvider = CXFFactory.create().createProvider(name);
 			if (serverProvider == null) {
 				continue;
 			}
+			// 调用服务提供者
 			String value = this.getInitParameter(key);
 			RuntimeLog.log(MessageLevel.DEBUG, String.format(MSG_SERVER_PROVIDER, name, value));
-			Server[] servers = serverProvider.getServers(value);
+			// 注册服务
+			WebService[] servers = serverProvider.getWebServices(value);
 			if (servers != null) {
-				for (Server server : servers) {
+				for (WebService server : servers) {
 					RuntimeLog.log(MessageLevel.DEBUG,
-							String.format(MSG_REGISTER_SERVER, server.getImplementor(), server.getAddress()));
+							String.format(MSG_REGISTER_SERVER, server.getName(), server.getAddress()));
 					Endpoint.publish(server.getAddress(), server.getImplementor());
 				}
 			}

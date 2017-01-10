@@ -39,8 +39,6 @@ public class ServiceBasic {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("hello")
 	public String sayHello() {
-		Object aa = new org.colorcoding.ibas.bobas.cxf.CXFServlet();
-		System.err.println(aa);
 		return "Hello Jersey";
 	}
 

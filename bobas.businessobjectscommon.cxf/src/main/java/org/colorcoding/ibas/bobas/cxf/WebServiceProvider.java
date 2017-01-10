@@ -6,12 +6,12 @@ package org.colorcoding.ibas.bobas.cxf;
  * @author Niuren.Zhu
  *
  */
-public interface ServerProvider {
+public interface WebServiceProvider {
 	/**
 	 * 获取服务
 	 * 
 	 * @param pars
 	 * @return
 	 */
-	Server[] getServers(Object... pars);
+	WebService[] getWebServices(Object... pars);
 }
