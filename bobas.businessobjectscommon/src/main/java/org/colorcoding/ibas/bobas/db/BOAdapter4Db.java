@@ -323,7 +323,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				}
 				// 修正查询条件的字段名称
 				for (ICondition condition : conditions) {
-					if (cProperty.getName().equals(condition.getAlias())) {
+					if (cProperty.getName().equalsIgnoreCase(condition.getAlias())) {
 						condition.setAlias(dbField.name());
 						DbFieldType dbFieldType = dbField.type();
 						condition.setAliasDataType(dbFieldType);
@@ -359,7 +359,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				}
 				// 修正排序的字段名称
 				for (ISort sort : sorts) {
-					if (cProperty.getName().equals(sort.getAlias())) {
+					if (cProperty.getName().equalsIgnoreCase(sort.getAlias())) {
 						sort.setAlias(dbField.name());
 					}
 				}
@@ -404,7 +404,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 						}
 						// 修正查询条件的字段名称
 						for (ICondition condition : criteria.getConditions()) {
-							if (cProperty.getName().equals(condition.getAlias())) {
+							if (cProperty.getName().equalsIgnoreCase(condition.getAlias())) {
 								condition.setAlias(dbField.name());
 								DbFieldType dbFieldType = dbField.type();
 								condition.setAliasDataType(dbFieldType);
@@ -416,7 +416,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 						}
 						// 修正排序的字段名称
 						for (ISort sort : criteria.getSorts()) {
-							if (cProperty.getName().equals(sort.getAlias())) {
+							if (cProperty.getName().equalsIgnoreCase(sort.getAlias())) {
 								sort.setAlias(dbField.name());
 							}
 						}
@@ -432,7 +432,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 					if (userFieldInfoList != null) {
 						for (UserFieldInfo userFieldInfo : userFieldInfoList) {
 							for (ICondition condition : criteria.getConditions()) {
-								if (userFieldInfo.getName().equals(condition.getAlias())) {
+								if (userFieldInfo.getName().equalsIgnoreCase(condition.getAlias())) {
 									condition.setAliasDataType(userFieldInfo.getValueType());
 								}
 							}
