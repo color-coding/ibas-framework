@@ -79,10 +79,10 @@ public class ServiceBasic {
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC
 		ISort sort = criteria.getSorts().create();
 		sort.setAlias("DocEntry");
-		sort.setSortType(SortType.st_Descending);
+		sort.setSortType(SortType.st_DESCENDING);
 		sort = criteria.getSorts().create();
 		sort.setAlias("CustomerCode");
-		sort.setSortType(SortType.st_Ascending);
+		sort.setSortType(SortType.st_ASCENDING);
 		// 子项查询
 		IChildCriteria childCriteria = criteria.getChildCriterias().create();
 		condition = childCriteria.getConditions().create();

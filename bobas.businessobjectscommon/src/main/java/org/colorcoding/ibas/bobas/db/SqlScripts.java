@@ -263,9 +263,9 @@ public class SqlScripts implements ISqlScripts {
 
 	@Override
 	public String getSqlString(SortType value) throws SqlScriptsException {
-		if (value == SortType.st_Ascending) {
+		if (value == SortType.st_ASCENDING) {
 			return "ASC";
-		} else if (value == SortType.st_Descending) {
+		} else if (value == SortType.st_DESCENDING) {
 			return "DESC";
 		}
 		throw new SqlScriptsException(i18n.prop("msg_bobas_value_can_not_be_resolved", value.toString()));

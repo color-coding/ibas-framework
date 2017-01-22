@@ -237,7 +237,7 @@ public class Criteria implements ICriteria {
 				return null;
 			}
 			for (ICondition condition : boCriteria.getConditions()) {
-				if (this.getSorts().size() > 0 && this.getSorts().get(0).getSortType() == SortType.st_Descending) {
+				if (this.getSorts().size() > 0 && this.getSorts().get(0).getSortType() == SortType.st_DESCENDING) {
 					// 降序排序，则下一个数据集为小于条件
 					condition.setOperation(ConditionOperation.co_LESS_THAN);
 					continue;
@@ -257,7 +257,7 @@ public class Criteria implements ICriteria {
 				return null;
 			}
 			for (ICondition condition : boCriteria.getConditions()) {
-				if (this.getSorts().size() > 0 && this.getSorts().get(0).getSortType() == SortType.st_Descending) {
+				if (this.getSorts().size() > 0 && this.getSorts().get(0).getSortType() == SortType.st_DESCENDING) {
 					// 降序排序，则下一个数据集为大于条件
 					condition.setOperation(ConditionOperation.co_GRATER_THAN);
 					continue;
