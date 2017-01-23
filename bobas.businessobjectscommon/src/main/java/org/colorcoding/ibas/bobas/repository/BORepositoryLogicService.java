@@ -77,18 +77,18 @@ public class BORepositoryLogicService extends BORepositoryService {
     protected boolean onSaveActionsEvent(SaveActionsType action, IBusinessObjectBase bo) {
         try {
             // 响应事件
-            if (action == SaveActionsType.before_deleting) {
+            if (action == SaveActionsType.BEFORE_DELETING) {
                 // 删除前检查
                 if (bo instanceof IBOReferenced) {
                     IBOReferenced refBO = (IBOReferenced) bo;
-                    if (refBO.getReferenced() == emYesNo.Yes) {
+                    if (refBO.getReferenced() == emYesNo.YES) {
                         // 被引用的数据，不允许删除，可以标记删除
                         throw new Exception(i18n.prop("msg_bobas_not_allow_delete_referenced_bo", bo.toString()));
                     }
                 }
             }
-            if (action == SaveActionsType.before_adding || action == SaveActionsType.before_deleting
-                    || action == SaveActionsType.before_updating) {
+            if (action == SaveActionsType.BEFORE_ADDING || action == SaveActionsType.BEFORE_DELETING
+                    || action == SaveActionsType.BEFORE_UPDATING) {
                 // 业务规则检查
                 if (this.isCheckRules()) {
                     // 检查规则
@@ -100,7 +100,7 @@ public class BORepositoryLogicService extends BORepositoryService {
                     this.triggerApprovals(bo);
                 }
             }
-            if (action != SaveActionsType.before_adding) {
+            if (action != SaveActionsType.BEFORE_ADDING) {
                 // 业务逻辑相关，最后执行业务逻辑，因为要求状态可用
                 if (this.isCheckLogics()) {
                     // 执行业务逻辑
@@ -128,18 +128,18 @@ public class BORepositoryLogicService extends BORepositoryService {
     @Override
     protected boolean onSaveActionsEvent(SaveActionsType action, IBusinessObjectBase bo, IBusinessObjectBase root)
             throws Exception {
-        if (action == SaveActionsType.before_deleting) {
+        if (action == SaveActionsType.BEFORE_DELETING) {
             // 删除前检查
             if (bo instanceof IBOReferenced) {
                 IBOReferenced refBO = (IBOReferenced) bo;
-                if (refBO.getReferenced() == emYesNo.Yes) {
+                if (refBO.getReferenced() == emYesNo.YES) {
                     // 被引用的数据，不允许删除，可以标记删除
                     throw new Exception(i18n.prop("msg_bobas_not_allow_delete_referenced_bo", bo.toString()));
                 }
             }
         }
-        if (action == SaveActionsType.before_adding || action == SaveActionsType.before_deleting
-                || action == SaveActionsType.before_updating) {
+        if (action == SaveActionsType.BEFORE_ADDING || action == SaveActionsType.BEFORE_DELETING
+                || action == SaveActionsType.BEFORE_UPDATING) {
             // 业务规则检查
             if (this.isCheckRules()) {
                 // 检查规则
@@ -199,14 +199,14 @@ public class BORepositoryLogicService extends BORepositoryService {
                 } else if (bo instanceof IBOTagDeleted) {
                     // 删除，取消流程
                     IBOTagDeleted referenced = (IBOTagDeleted) bo;
-                    if (referenced.getDeleted() == emYesNo.Yes) {
+                    if (referenced.getDeleted() == emYesNo.YES) {
                         approvalProcess.cancel(this.getCurrentUser().getToken(),
                                 i18n.prop("msg_bobas_user_deleted_approval_data"));
                     }
                 } else if (bo instanceof IBOTagCanceled) {
                     // 取消，取消流程
                     IBOTagCanceled referenced = (IBOTagCanceled) bo;
-                    if (referenced.getCanceled() == emYesNo.Yes) {
+                    if (referenced.getCanceled() == emYesNo.YES) {
                         approvalProcess.cancel(this.getCurrentUser().getToken(),
                                 i18n.prop("msg_bobas_user_deleted_approval_data"));
                     }
@@ -241,19 +241,19 @@ public class BORepositoryLogicService extends BORepositoryService {
         }
         try {
             // 执行逻辑
-            if (type == SaveActionsType.added) {
+            if (type == SaveActionsType.ADDED) {
                 // 新建数据，正向逻辑
                 logicsChain.forwardLogics(bo);
                 logicsChain.commit(bo);
-            } else if (type == SaveActionsType.before_deleting) {
+            } else if (type == SaveActionsType.BEFORE_DELETING) {
                 // 删除数据前，反向逻辑
                 logicsChain.reverseLogics(bo);
                 logicsChain.commit(bo);
-            } else if (type == SaveActionsType.before_updating) {
+            } else if (type == SaveActionsType.BEFORE_UPDATING) {
                 // 更新数据前，反向逻辑
                 logicsChain.reverseLogics(bo);
                 // 等待更新完成提交
-            } else if (type == SaveActionsType.updated) {
+            } else if (type == SaveActionsType.UPDATED) {
                 // 更新数据后，正向逻辑
                 logicsChain.forwardLogics(bo);
                 logicsChain.commit(bo);
@@ -265,7 +265,7 @@ public class BORepositoryLogicService extends BORepositoryService {
             throw e;
         }
         // 触发的BO完成操作，释放资源
-        if (type == SaveActionsType.added || type == SaveActionsType.updated || type == SaveActionsType.deleted) {
+        if (type == SaveActionsType.ADDED || type == SaveActionsType.UPDATED || type == SaveActionsType.DELETED) {
             if (logicsChain != null && logicsChain.getTrigger() == bo) {
                 // 释放业务链
                 logicsManager.closeChain(logicsChain.getId());

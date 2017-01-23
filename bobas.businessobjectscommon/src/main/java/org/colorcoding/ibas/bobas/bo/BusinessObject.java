@@ -182,35 +182,35 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
         // 重置引用状态
         if (this instanceof IBOReferenced) {
             IBOReferenced tagBO = (IBOReferenced) this;
-            tagBO.setReferenced(emYesNo.No);
+            tagBO.setReferenced(emYesNo.NO);
         }
         // 重置删除状态
         if (this instanceof IBOTagDeleted) {
             IBOTagDeleted tagBO = (IBOTagDeleted) this;
-            tagBO.setDeleted(emYesNo.No);
+            tagBO.setDeleted(emYesNo.NO);
         }
         // 重置取消状态
         if (this instanceof IBOTagCanceled) {
             IBOTagCanceled tagBO = (IBOTagCanceled) this;
-            tagBO.setCanceled(emYesNo.No);
+            tagBO.setCanceled(emYesNo.NO);
         }
         // 重置对象状态
         if (this instanceof IBODocument) {
             IBODocument docBO = (IBODocument) this;
-            docBO.setStatus(emBOStatus.Open);
-            docBO.setDocumentStatus(emDocumentStatus.Planned);
+            docBO.setStatus(emBOStatus.OPEN);
+            docBO.setDocumentStatus(emDocumentStatus.PLANNED);
             docBO.setDocNum(0);
             docBO.setPeriod(0);
         }
         if (this instanceof IBODocumentLine) {
             IBODocumentLine docLineBO = (IBODocumentLine) this;
-            docLineBO.setStatus(emBOStatus.Open);
-            docLineBO.setLineStatus(emDocumentStatus.Planned);
+            docLineBO.setStatus(emBOStatus.OPEN);
+            docLineBO.setLineStatus(emDocumentStatus.PLANNED);
         }
         // 重置审批状态
         if (this instanceof IApprovalData) {
             IApprovalData apData = (IApprovalData) this;
-            apData.setApprovalStatus(emApprovalStatus.Unaffected);
+            apData.setApprovalStatus(emApprovalStatus.UNAFFECTED);
         }
         // 重置子项状态
         for (IFieldData fieldData : this.getFields()) {
@@ -313,9 +313,9 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
             // 非新建状态删除可用
             if (this instanceof IBOTagDeleted) {
                 IBOTagDeleted tagBO = (IBOTagDeleted) this;
-                if (tagBO.getReferenced() == emYesNo.Yes) {
+                if (tagBO.getReferenced() == emYesNo.YES) {
                     // 被引用的数据，不允许删除
-                    tagBO.setDeleted(emYesNo.Yes);
+                    tagBO.setDeleted(emYesNo.YES);
                     return;
                 }
             }

@@ -69,7 +69,7 @@ public class testBORepository extends TestCase {
         criteria.setResultCount(1);
         ISort sort = criteria.getSorts().create();
         sort.setAlias(SalesOrder.DocEntryProperty.getName());
-        sort.setSortType(SortType.st_DESCENDING);
+        sort.setSortType(SortType.DESCENDING);
 
         operationResult = boRepository.fetchSalesOrder(criteria);
         System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
@@ -89,19 +89,19 @@ public class testBORepository extends TestCase {
         ICondition condition = criteria.getConditions().create();
         condition.setBracketOpenNum(1);
         condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
-        condition.setCondVal(emDocumentStatus.Planned);
+        condition.setCondVal(emDocumentStatus.PLANNED);
         condition = criteria.getConditions().create();
         condition.setBracketCloseNum(1);
         condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
-        condition.setCondVal(emDocumentStatus.Released);
-        condition.setRelationship(ConditionRelationship.cr_OR);
+        condition.setCondVal(emDocumentStatus.RELEASED);
+        condition.setRelationship(ConditionRelationship.OR);
         // ORDER BY "DocEntry" DESC, "CardCode" ASC
         ISort sort = criteria.getSorts().create();
         sort.setAlias(SalesOrder.DocEntryProperty.getName());
-        sort.setSortType(SortType.st_DESCENDING);
+        sort.setSortType(SortType.DESCENDING);
         sort = criteria.getSorts().create();
         sort.setAlias(SalesOrder.CustomerCodeProperty.getName());
-        sort.setSortType(SortType.st_ASCENDING);
+        sort.setSortType(SortType.ASCENDING);
 
         IOperationResult<?> operationResult = boRepository.fetchSalesOrder(criteria);
         System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
@@ -195,7 +195,7 @@ public class testBORepository extends TestCase {
         }
     }
 
-    static boolean flagStop = false;
+    static boolean FLAG_STOP = false;
 
     public void testExtremeTask() {
         try {
@@ -205,7 +205,7 @@ public class testBORepository extends TestCase {
                     public void run() {
                         testBORepository test = new testBORepository();
                         test.details_out = false;
-                        while (!flagStop) {
+                        while (!FLAG_STOP) {
                             try {
                                 test.testSaveBO();
                             } catch (Exception e) {
@@ -220,7 +220,7 @@ public class testBORepository extends TestCase {
                     public void run() {
                         testBORepository test = new testBORepository();
                         test.details_out = false;
-                        while (!flagStop) {
+                        while (!FLAG_STOP) {
                             try {
                                 test.testFetchBO();
                             } catch (Exception e) {
@@ -232,7 +232,7 @@ public class testBORepository extends TestCase {
                 tf.start();
             }
             Thread.sleep(30000);
-            flagStop = true;
+            FLAG_STOP = true;
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

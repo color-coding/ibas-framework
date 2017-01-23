@@ -51,7 +51,7 @@ public class Percent extends MeasurementDecimal<emPercentUnit> {
 	@XmlElement(name = "Unit")
 	public emPercentUnit getUnit() {
 		if (this.unit == null) {
-			this.unit = emPercentUnit.hundred_percent;
+			this.unit = emPercentUnit.HUNDRED_PERCENT;
 		}
 		return this.unit;
 	}

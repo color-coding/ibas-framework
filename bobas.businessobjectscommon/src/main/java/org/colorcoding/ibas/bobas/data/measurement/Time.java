@@ -52,7 +52,7 @@ public class Time extends MeasurementDecimal<emTimeUnit> {
 	// @XmlAttribute(name = "Unit")
 	public emTimeUnit getUnit() {
 		if (this.unit == null) {
-			this.unit = emTimeUnit.hour;
+			this.unit = emTimeUnit.HOUR;
 		}
 		return this.unit;
 	}

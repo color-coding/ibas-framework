@@ -10,13 +10,13 @@ public enum AssociationMode {
 	/**
 	 * 一对〇
 	 */
-	OneToZero,
+	ONE_TO_ZERO,
 	/**
 	 * 一对一
 	 */
-	OneToOne,
+	ONE_TO_ONE,
 	/**
 	 * 一对多
 	 */
-	OneToMany
+	ONE_TO_MANY
 }

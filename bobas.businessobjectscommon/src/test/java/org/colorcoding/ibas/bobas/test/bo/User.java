@@ -45,7 +45,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 编码 属性
 	 */
-	@DbField(name = "UserCode", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = true)
+	@DbField(name = "UserCode", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = true)
 	public final static IPropertyInfo<String> UserCodeProperty = registerProperty("UserCode", String.class, MY_CLASS);
 
 	/**
@@ -73,7 +73,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 名称 属性
 	 */
-	@DbField(name = "UserName", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "UserName", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<String> UserNameProperty = registerProperty("UserName", String.class, MY_CLASS);
 
 	/**
@@ -101,7 +101,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 用户密码 属性
 	 */
-	@DbField(name = "PassWord", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "PassWord", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<String> UserPasswordProperty = registerProperty("UserPassword", String.class,
 			MY_CLASS);
 
@@ -130,7 +130,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 激活 属性
 	 */
-	@DbField(name = "Activated", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Activated", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<emYesNo> ActivatedProperty = registerProperty("Activated", emYesNo.class,
 			MY_CLASS);
 
@@ -159,7 +159,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 超级用户 属性
 	 */
-	@DbField(name = "SupperUser", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "SupperUser", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<emYesNo> SupperUserProperty = registerProperty("SupperUser", emYesNo.class,
 			MY_CLASS);
 
@@ -188,7 +188,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 对象类型 属性
 	 */
-	@DbField(name = "ObjectCode", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "ObjectCode", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<String> ObjectCodeProperty = registerProperty("ObjectCode", String.class,
 			MY_CLASS);
 
@@ -217,7 +217,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 数据源 属性
 	 */
-	@DbField(name = "DataSource", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "DataSource", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<String> DataSourceProperty = registerProperty("DataSource", String.class,
 			MY_CLASS);
 
@@ -246,7 +246,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 对象编号 属性
 	 */
-	@DbField(name = "ObjectKey", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = true)
+	@DbField(name = "ObjectKey", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = true)
 	public final static IPropertyInfo<Integer> ObjectKeyProperty = registerProperty("ObjectKey", Integer.class,
 			MY_CLASS);
 
@@ -275,7 +275,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 创建日期 属性
 	 */
-	@DbField(name = "CreateDate", type = DbFieldType.db_Date, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "CreateDate", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<DateTime> CreateDateProperty = registerProperty("CreateDate", DateTime.class,
 			MY_CLASS);
 
@@ -304,7 +304,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 创建时间 属性
 	 */
-	@DbField(name = "CreateTime", type = DbFieldType.db_Date, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "CreateTime", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<Short> CreateTimeProperty = registerProperty("CreateTime", Short.class, MY_CLASS);
 
 	/**
@@ -332,7 +332,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 修改日期 属性
 	 */
-	@DbField(name = "UpdateDate", type = DbFieldType.db_Date, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "UpdateDate", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<DateTime> UpdateDateProperty = registerProperty("UpdateDate", DateTime.class,
 			MY_CLASS);
 
@@ -361,7 +361,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 修改时间 属性
 	 */
-	@DbField(name = "UpdateTime", type = DbFieldType.db_Date, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "UpdateTime", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<Short> UpdateTimeProperty = registerProperty("UpdateTime", Short.class, MY_CLASS);
 
 	/**
@@ -389,7 +389,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 实例号（版本） 属性
 	 */
-	@DbField(name = "LogInst", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "LogInst", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<Integer> LogInstProperty = registerProperty("LogInst", Integer.class, MY_CLASS);
 
 	/**
@@ -417,7 +417,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 服务系列 属性
 	 */
-	@DbField(name = "Series", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Series", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<Integer> SeriesProperty = registerProperty("Series", Integer.class, MY_CLASS);
 
 	/**
@@ -445,7 +445,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 创建用户 属性
 	 */
-	@DbField(name = "Creator", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Creator", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<Integer> CreateUserSignProperty = registerProperty("CreateUserSign",
 			Integer.class, MY_CLASS);
 
@@ -474,7 +474,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 修改用户 属性
 	 */
-	@DbField(name = "Updator", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Updator", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<Integer> UpdateUserSignProperty = registerProperty("UpdateUserSign",
 			Integer.class, MY_CLASS);
 
@@ -503,7 +503,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 创建动作标识 属性
 	 */
-	@DbField(name = "CreateActId", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "CreateActId", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<String> CreateActionIdProperty = registerProperty("CreateActionId", String.class,
 			MY_CLASS);
 
@@ -532,7 +532,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 更新动作标识 属性
 	 */
-	@DbField(name = "UpdateActId", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "UpdateActId", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<String> UpdateActionIdProperty = registerProperty("UpdateActionId", String.class,
 			MY_CLASS);
 
@@ -561,7 +561,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 审批状态 属性
 	 */
-	@DbField(name = "ApvlStatus", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "ApvlStatus", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<emApprovalStatus> ApprovalStatusProperty = registerProperty("ApprovalStatus",
 			emApprovalStatus.class, MY_CLASS);
 
@@ -590,7 +590,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 数据所有者 属性
 	 */
-	@DbField(name = "DataOwner", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "DataOwner", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<Integer> DataOwnerProperty = registerProperty("DataOwner", Integer.class,
 			MY_CLASS);
 
@@ -619,7 +619,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 数据所属组织 属性
 	 */
-	@DbField(name = "OrgCode", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "OrgCode", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<String> OrganizationProperty = registerProperty("Organization", String.class,
 			MY_CLASS);
 
@@ -648,7 +648,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 电子邮件地址 属性
 	 */
-	@DbField(name = "eMail", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "eMail", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<String> eMailProperty = registerProperty("eMail", String.class, MY_CLASS);
 
 	/**
@@ -680,7 +680,7 @@ public class User extends BusinessObject<User> implements IUser {
 	protected void initialize() {
 		super.initialize();
 		this.setObjectCode(BUSINESS_OBJECT_CODE);
-		this.setActivated(emYesNo.Yes);
+		this.setActivated(emYesNo.YES);
 	}
 
 }

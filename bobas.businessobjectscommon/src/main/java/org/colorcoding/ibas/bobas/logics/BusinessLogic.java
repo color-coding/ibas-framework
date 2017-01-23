@@ -100,23 +100,23 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
         if (data instanceof IBOTagDeleted) {
             // 引用数据，已标记删除的，不影响业务逻辑
             IBOTagDeleted refData = (IBOTagDeleted) data;
-            if (refData.getDeleted() == emYesNo.Yes) {
+            if (refData.getDeleted() == emYesNo.YES) {
                 return false;
             }
         }
         if (data instanceof IBOTagCanceled) {
             // 引用数据，已标记取消的，不影响业务逻辑
             IBOTagCanceled refData = (IBOTagCanceled) data;
-            if (refData.getCanceled() == emYesNo.Yes) {
+            if (refData.getCanceled() == emYesNo.YES) {
                 return false;
             }
         }
         if (data instanceof IApprovalData) {
             // 审批数据
             IApprovalData apData = (IApprovalData) data;
-            if (apData.getApprovalStatus() == emApprovalStatus.Cancelled
-                    || apData.getApprovalStatus() == emApprovalStatus.Processing
-                    || apData.getApprovalStatus() == emApprovalStatus.Rejected) {
+            if (apData.getApprovalStatus() == emApprovalStatus.CANCELLED
+                    || apData.getApprovalStatus() == emApprovalStatus.PROCESSING
+                    || apData.getApprovalStatus() == emApprovalStatus.REJECTED) {
                 // 计划状态
                 return false;
             }
@@ -124,7 +124,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
         if (data instanceof IBODocument) {
             // 单据类型
             IBODocument docData = (IBODocument) data;
-            if (docData.getDocumentStatus() == emDocumentStatus.Planned) {
+            if (docData.getDocumentStatus() == emDocumentStatus.PLANNED) {
                 // 计划状态
                 return false;
             }
@@ -132,7 +132,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
         if (data instanceof IBODocumentLine) {
             // 单据行
             IBODocumentLine lineData = (IBODocumentLine) data;
-            if (lineData.getLineStatus() == emDocumentStatus.Planned) {
+            if (lineData.getLineStatus() == emDocumentStatus.PLANNED) {
                 // 计划状态
                 return false;
             }

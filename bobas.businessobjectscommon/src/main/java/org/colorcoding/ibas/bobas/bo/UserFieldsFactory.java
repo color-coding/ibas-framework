@@ -87,13 +87,13 @@ public class UserFieldsFactory {
 	}
 
 	private Class<?> getFieldType(DbFieldType type) {
-		if (type == DbFieldType.db_Alphanumeric) {
+		if (type == DbFieldType.ALPHANUMERIC) {
 			return String.class;
-		} else if (type == DbFieldType.db_Date) {
+		} else if (type == DbFieldType.DATE) {
 			return DateTime.class;
-		} else if (type == DbFieldType.db_Decimal) {
+		} else if (type == DbFieldType.DECIMAL) {
 			return Decimal.class;
-		} else if (type == DbFieldType.db_Numeric) {
+		} else if (type == DbFieldType.NUMERIC) {
 			return Integer.class;
 		}
 		return null;

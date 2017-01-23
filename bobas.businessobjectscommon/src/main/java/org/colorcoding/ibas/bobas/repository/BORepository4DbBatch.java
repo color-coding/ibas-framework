@@ -225,13 +225,13 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
                 if (this.isPostTransaction()) {
                     if (bo.isNew()) {
                         // 新建对象
-                        command.addBatch(adapter4Db.parseBOTransactionNotification(TransactionType.Add, bo));
+                        command.addBatch(adapter4Db.parseBOTransactionNotification(TransactionType.ADD, bo));
                     } else if (bo.isDeleted()) {
                         // 删除对象
-                        command.addBatch(adapter4Db.parseBOTransactionNotification(TransactionType.Delete, bo));
+                        command.addBatch(adapter4Db.parseBOTransactionNotification(TransactionType.DELETE, bo));
                     } else {
                         // 更新对象
-                        command.addBatch(adapter4Db.parseBOTransactionNotification(TransactionType.Update, bo));
+                        command.addBatch(adapter4Db.parseBOTransactionNotification(TransactionType.UPDATE, bo));
                     }
                 }
                 savedBOs.add(bo);

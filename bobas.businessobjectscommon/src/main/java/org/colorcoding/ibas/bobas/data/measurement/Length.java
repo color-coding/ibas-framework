@@ -50,7 +50,7 @@ public class Length extends MeasurementDecimal<emLengthUnit> {
 	@XmlElement(name = "Unit")
 	public emLengthUnit getUnit() {
 		if (this.unit == null) {
-			this.unit = emLengthUnit.meter;
+			this.unit = emLengthUnit.METER;
 		}
 		return this.unit;
 	}

@@ -97,13 +97,13 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
                 // 包含子文件夹
                 if (condition.getAlias() == null || condition.getAlias().isEmpty())
                     continue;
-                emYesNo value = emYesNo.No;
+                emYesNo value = emYesNo.NO;
                 if (condition.getCondVal().length() > 1)
                     value = emYesNo.valueOf(condition.getCondVal());
                 else {
                     value = (emYesNo) DataConvert.toEnumValue(emYesNo.class, condition.getCondVal());
                 }
-                include = value == emYesNo.Yes ? true : false;
+                include = value == emYesNo.YES ? true : false;
             } else {
                 conditions.add(condition);
             }

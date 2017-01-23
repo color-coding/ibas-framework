@@ -250,7 +250,7 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
                             if (method.getName().equals(name)) {
                                 Permission permission = method.getAnnotation(Permission.class);
                                 if (permission != null) {
-                                    if (permission.defaultValue() == PermissionValue.unavailable) {
+                                    if (permission.defaultValue() == PermissionValue.UNAVAILABLE) {
                                         throw new UnauthorizedException();
                                     }
                                 }

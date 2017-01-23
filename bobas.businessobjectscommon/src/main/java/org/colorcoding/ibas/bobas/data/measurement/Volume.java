@@ -50,7 +50,7 @@ public class Volume extends MeasurementDecimal<emVolumeUnit> {
 	@XmlElement(name = "Unit")
 	public emVolumeUnit getUnit() {
 		if (this.unit == null) {
-			this.unit = emVolumeUnit.cubic_metre;
+			this.unit = emVolumeUnit.CUBIC_METRE;
 		}
 		return this.unit;
 	}

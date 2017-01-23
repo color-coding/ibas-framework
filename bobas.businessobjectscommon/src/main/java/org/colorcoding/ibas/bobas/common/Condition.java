@@ -111,13 +111,13 @@ public class Condition implements ICondition {
 		return DataConvert.toDbValue(value);
 	}
 
-	private ConditionOperation operation = ConditionOperation.co_EQUAL;
+	private ConditionOperation operation = ConditionOperation.EQUAL;
 
 	@Override
 	@XmlElement(name = "Operation")
 	public final ConditionOperation getOperation() {
 		if (this.operation == null) {
-			this.operation = ConditionOperation.co_EQUAL;
+			this.operation = ConditionOperation.EQUAL;
 		}
 		return this.operation;
 	}
@@ -127,13 +127,13 @@ public class Condition implements ICondition {
 		this.operation = value;
 	}
 
-	private ConditionRelationship relationship = ConditionRelationship.cr_AND;
+	private ConditionRelationship relationship = ConditionRelationship.AND;
 
 	@Override
 	@XmlElement(name = "Relationship")
 	public final ConditionRelationship getRelationship() {
 		if (this.relationship == null) {
-			this.relationship = ConditionRelationship.cr_AND;
+			this.relationship = ConditionRelationship.AND;
 		}
 		return this.relationship;
 	}
@@ -143,7 +143,7 @@ public class Condition implements ICondition {
 		this.relationship = value;
 	}
 
-	private DbFieldType aliasDataType = DbFieldType.db_Unknown;
+	private DbFieldType aliasDataType = DbFieldType.UNKNOWN;
 
 	// @XmlElement(name = "AliasDataType")
 	// 运行过程值，序列化不用输出
@@ -151,7 +151,7 @@ public class Condition implements ICondition {
 	@XmlTransient
 	public DbFieldType getAliasDataType() {
 		if (this.aliasDataType == null) {
-			this.aliasDataType = DbFieldType.db_Unknown;
+			this.aliasDataType = DbFieldType.UNKNOWN;
 		}
 		return this.aliasDataType;
 	}

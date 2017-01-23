@@ -46,7 +46,7 @@ public class SqlScripts implements ISqlScripts {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("%s");
 		if (dbFieldType != null) {
-			if (dbFieldType == DbFieldType.db_Alphanumeric) {
+			if (dbFieldType == DbFieldType.ALPHANUMERIC) {
 				stringBuilder = new StringBuilder();
 				stringBuilder.append("CAST");
 				stringBuilder.append("(");
@@ -57,7 +57,7 @@ public class SqlScripts implements ISqlScripts {
 				stringBuilder.append("NVARCHAR");
 				stringBuilder.append(")");
 				return stringBuilder.toString();
-			} else if (dbFieldType == DbFieldType.db_Date) {
+			} else if (dbFieldType == DbFieldType.DATE) {
 				stringBuilder = new StringBuilder();
 				stringBuilder.append("CAST");
 				stringBuilder.append("(");
@@ -68,7 +68,7 @@ public class SqlScripts implements ISqlScripts {
 				stringBuilder.append("DATETIME");
 				stringBuilder.append(")");
 				return stringBuilder.toString();
-			} else if (dbFieldType == DbFieldType.db_Numeric) {
+			} else if (dbFieldType == DbFieldType.NUMERIC) {
 				stringBuilder = new StringBuilder();
 				stringBuilder.append("CAST");
 				stringBuilder.append("(");
@@ -79,7 +79,7 @@ public class SqlScripts implements ISqlScripts {
 				stringBuilder.append("INT");
 				stringBuilder.append(")");
 				return stringBuilder.toString();
-			} else if (dbFieldType == DbFieldType.db_Decimal) {
+			} else if (dbFieldType == DbFieldType.DECIMAL) {
 				stringBuilder = new StringBuilder();
 				stringBuilder.append("CAST");
 				stringBuilder.append("(");
@@ -98,15 +98,15 @@ public class SqlScripts implements ISqlScripts {
 	@Override
 	public DbFieldType getDbFieldType(String dbType) {
 		if (dbType.equals("nvarchar")) {
-			return DbFieldType.db_Alphanumeric;
+			return DbFieldType.ALPHANUMERIC;
 		} else if (dbType.equals("int")) {
-			return DbFieldType.db_Numeric;
+			return DbFieldType.NUMERIC;
 		} else if (dbType.equals("datetime")) {
-			return DbFieldType.db_Date;
+			return DbFieldType.DATE;
 		} else if (dbType.equals("numeric")) {
-			return DbFieldType.db_Decimal;
+			return DbFieldType.DECIMAL;
 		}
-		return DbFieldType.db_Unknown;
+		return DbFieldType.UNKNOWN;
 	}
 
 	@Override
@@ -121,11 +121,11 @@ public class SqlScripts implements ISqlScripts {
 
 	@Override
 	public String getSqlString(ConditionRelationship value) throws SqlScriptsException {
-		if (value == ConditionRelationship.cr_AND) {
+		if (value == ConditionRelationship.AND) {
 			return "AND";
-		} else if (value == ConditionRelationship.cr_OR) {
+		} else if (value == ConditionRelationship.OR) {
 			return "OR";
-		} else if (value == ConditionRelationship.cr_NONE) {
+		} else if (value == ConditionRelationship.NONE) {
 			return this.getFieldBreakSign();
 		}
 		throw new SqlScriptsException(i18n.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
@@ -138,7 +138,7 @@ public class SqlScripts implements ISqlScripts {
 
 	@Override
 	public String getSqlString(ConditionOperation value, String opValue) throws SqlScriptsException {
-		if (value == ConditionOperation.co_CONTAIN) {
+		if (value == ConditionOperation.CONTAIN) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("LIKE");
 			stringBuilder.append(" ");
@@ -150,7 +150,7 @@ public class SqlScripts implements ISqlScripts {
 			stringBuilder.append("%");
 			stringBuilder.append("'");
 			return stringBuilder.toString();
-		} else if (value == ConditionOperation.co_NOT_CONTAIN) {
+		} else if (value == ConditionOperation.NOT_CONTAIN) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("NOT");
 			stringBuilder.append(" ");
@@ -164,7 +164,7 @@ public class SqlScripts implements ISqlScripts {
 			stringBuilder.append("%");
 			stringBuilder.append("'");
 			return stringBuilder.toString();
-		} else if (value == ConditionOperation.co_END) {
+		} else if (value == ConditionOperation.END) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("LIKE");
 			stringBuilder.append(" ");
@@ -174,7 +174,7 @@ public class SqlScripts implements ISqlScripts {
 			stringBuilder.append(opValue);
 			stringBuilder.append("'");
 			return stringBuilder.toString();
-		} else if (value == ConditionOperation.co_START) {
+		} else if (value == ConditionOperation.START) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("LIKE");
 			stringBuilder.append(" ");
@@ -184,39 +184,39 @@ public class SqlScripts implements ISqlScripts {
 			stringBuilder.append("%");
 			stringBuilder.append("'");
 			return stringBuilder.toString();
-		} else if (value == ConditionOperation.co_EQUAL) {
+		} else if (value == ConditionOperation.EQUAL) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("=");
 			stringBuilder.append(" ");
 			stringBuilder.append("%s");
 			return stringBuilder.toString();
-		} else if (value == ConditionOperation.co_NOT_EQUAL) {
+		} else if (value == ConditionOperation.NOT_EQUAL) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("<");
 			stringBuilder.append(">");
 			stringBuilder.append(" ");
 			stringBuilder.append("%s");
 			return stringBuilder.toString();
-		} else if (value == ConditionOperation.co_GRATER_EQUAL) {
+		} else if (value == ConditionOperation.GRATER_EQUAL) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append(">");
 			stringBuilder.append("=");
 			stringBuilder.append(" ");
 			stringBuilder.append("%s");
 			return stringBuilder.toString();
-		} else if (value == ConditionOperation.co_GRATER_THAN) {
+		} else if (value == ConditionOperation.GRATER_THAN) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append(">");
 			stringBuilder.append(" ");
 			stringBuilder.append("%s");
 			return stringBuilder.toString();
-		} else if (value == ConditionOperation.co_IS_NULL) {
+		} else if (value == ConditionOperation.IS_NULL) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("IS");
 			stringBuilder.append(" ");
 			stringBuilder.append("NULL");
 			return stringBuilder.toString();
-		} else if (value == ConditionOperation.co_NOT_NULL) {
+		} else if (value == ConditionOperation.NOT_NULL) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("IS");
 			stringBuilder.append(" ");
@@ -224,14 +224,14 @@ public class SqlScripts implements ISqlScripts {
 			stringBuilder.append(" ");
 			stringBuilder.append("NULL");
 			return stringBuilder.toString();
-		} else if (value == ConditionOperation.co_LESS_EQUAL) {
+		} else if (value == ConditionOperation.LESS_EQUAL) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("<");
 			stringBuilder.append("=");
 			stringBuilder.append(" ");
 			stringBuilder.append("%s");
 			return stringBuilder.toString();
-		} else if (value == ConditionOperation.co_LESS_THAN) {
+		} else if (value == ConditionOperation.LESS_THAN) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("<");
 			stringBuilder.append(" ");
@@ -247,9 +247,9 @@ public class SqlScripts implements ISqlScripts {
 			return this.getNullValue();
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		if (type == DbFieldType.db_Numeric || type == DbFieldType.db_Decimal) {
+		if (type == DbFieldType.NUMERIC || type == DbFieldType.DECIMAL) {
 			stringBuilder.append(value);
-		} else if (type == DbFieldType.db_Date) {
+		} else if (type == DbFieldType.DATE) {
 			stringBuilder.append("'");
 			stringBuilder.append(value);
 			stringBuilder.append("'");
@@ -263,9 +263,9 @@ public class SqlScripts implements ISqlScripts {
 
 	@Override
 	public String getSqlString(SortType value) throws SqlScriptsException {
-		if (value == SortType.st_ASCENDING) {
+		if (value == SortType.ASCENDING) {
 			return "ASC";
-		} else if (value == SortType.st_DESCENDING) {
+		} else if (value == SortType.DESCENDING) {
 			return "DESC";
 		}
 		throw new SqlScriptsException(i18n.prop("msg_bobas_value_can_not_be_resolved", value.toString()));

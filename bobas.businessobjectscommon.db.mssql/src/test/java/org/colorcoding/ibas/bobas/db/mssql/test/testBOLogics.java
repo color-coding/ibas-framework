@@ -47,8 +47,8 @@ public class testBOLogics extends TestCase {
         SalesOrder order = new SalesOrder();
 
         order.setCustomerCode("C00001");
-        order.setDocumentStatus(emDocumentStatus.Released);
-        order.setApprovalStatus(emApprovalStatus.Processing);
+        order.setDocumentStatus(emDocumentStatus.RELEASED);
+        order.setApprovalStatus(emApprovalStatus.PROCESSING);
         ISalesOrderItem orderItem = order.getSalesOrderItems().create();
         orderItem.setItemCode(material_1.getItemCode());
         orderItem.setItemDescription(material_1.getItemDescription());

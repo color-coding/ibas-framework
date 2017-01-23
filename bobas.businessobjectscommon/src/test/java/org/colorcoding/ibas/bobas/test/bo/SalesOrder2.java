@@ -21,7 +21,7 @@ public class SalesOrder2 extends SalesOrder {
 	/**
 	 * 凭证编号 属性
 	 */
-	@DbField(name = "DocEntry2", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "DocEntry2", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<Integer> DocEntry2Property = registerProperty("DocEntry2", Integer.class,
 			MY_CLASS);
 

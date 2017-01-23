@@ -9,9 +9,9 @@ public enum PermissionValue {
 	/**
 	 * 可用
 	 */
-	available,
+	AVAILABLE,
 	/**
 	 * 不可用
 	 */
-	unavailable;
+	UNAVAILABLE;
 }

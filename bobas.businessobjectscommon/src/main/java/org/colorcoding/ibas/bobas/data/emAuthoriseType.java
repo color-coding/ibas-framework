@@ -17,17 +17,17 @@ public enum emAuthoriseType {
 	 * 仅可见
 	 */
 	@DbValue(value = "V")
-	OnlyView,
+	ONLY_VIEW,
 	/**
 	 * 完全
 	 */
 	@DbValue(value = "A")
-	All,
+	ALL,
 	/**
 	 * 没有
 	 */
 	@DbValue(value = "N")
-	None;
+	NONE;
 
 	public int getValue() {
 		return this.ordinal();

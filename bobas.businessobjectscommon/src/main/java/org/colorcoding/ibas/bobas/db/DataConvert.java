@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
-import org.colorcoding.ibas.bobas.data.IEnumItem;
 import org.colorcoding.ibas.bobas.mapping.DbValue;
 
 public class DataConvert extends org.colorcoding.ibas.bobas.data.DataConvert {
@@ -63,12 +62,12 @@ public class DataConvert extends org.colorcoding.ibas.bobas.data.DataConvert {
 			return null;
 		}
 		for (Object enumItem : type.getEnumConstants()) {
-			if (value.equals(enumItem.toString())) {
+			if (value.equalsIgnoreCase(enumItem.toString())) {
 				// 枚举的字符串
 				return enumItem;
 			}
 			String dbValue = toDbValue(enumItem);
-			if (value.equals(dbValue)) {
+			if (value.equalsIgnoreCase(dbValue)) {
 				// 枚举的dbValue
 				return enumItem;
 			}
@@ -91,13 +90,7 @@ public class DataConvert extends org.colorcoding.ibas.bobas.data.DataConvert {
 			return null;
 		}
 		for (Object enumItem : type.getEnumConstants()) {
-			if (enumItem instanceof IEnumItem) {
-				// 枚举条目（比对枚举值）
-				IEnumItem itemValue = (IEnumItem) enumItem;
-				if (itemValue.getValue() == value) {
-					return enumItem;
-				}
-			} else if (enumItem instanceof Enum<?>) {
+			if (enumItem instanceof Enum<?>) {
 				// 枚举值（比对枚举索引）
 				Enum<?> itemValue = (Enum<?>) enumItem;
 				if (itemValue.ordinal() == value) {

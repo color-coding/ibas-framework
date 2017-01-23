@@ -161,11 +161,11 @@ public class DataConvert {
 			throw new NullPointerException();
 		}
 		if (value == emConditionRelationship.AND) {
-			return ConditionRelationship.cr_AND;
+			return ConditionRelationship.AND;
 		} else if (value == emConditionRelationship.OR) {
-			return ConditionRelationship.cr_OR;
+			return ConditionRelationship.OR;
 		} else if (value == emConditionRelationship.NONE) {
-			return ConditionRelationship.cr_NONE;
+			return ConditionRelationship.NONE;
 		}
 		throw new DataConvertException(i18n.prop("msg_bobas_not_support_convert_to_type", value));
 	}
@@ -175,25 +175,25 @@ public class DataConvert {
 			throw new NullPointerException();
 		}
 		if (value == emConditionOperation.CONTAIN) {
-			return ConditionOperation.co_CONTAIN;
+			return ConditionOperation.CONTAIN;
 		} else if (value == emConditionOperation.NOT_CONTAIN) {
-			return ConditionOperation.co_NOT_CONTAIN;
+			return ConditionOperation.NOT_CONTAIN;
 		} else if (value == emConditionOperation.EQUAL) {
-			return ConditionOperation.co_EQUAL;
+			return ConditionOperation.EQUAL;
 		} else if (value == emConditionOperation.NOT_EQUAL) {
-			return ConditionOperation.co_NOT_EQUAL;
+			return ConditionOperation.NOT_EQUAL;
 		} else if (value == emConditionOperation.GRATER_EQUAL) {
-			return ConditionOperation.co_GRATER_EQUAL;
+			return ConditionOperation.GRATER_EQUAL;
 		} else if (value == emConditionOperation.GRATER_THAN) {
-			return ConditionOperation.co_GRATER_THAN;
+			return ConditionOperation.GRATER_THAN;
 		} else if (value == emConditionOperation.LESS_EQUAL) {
-			return ConditionOperation.co_LESS_EQUAL;
+			return ConditionOperation.LESS_EQUAL;
 		} else if (value == emConditionOperation.LESS_THAN) {
-			return ConditionOperation.co_LESS_THAN;
+			return ConditionOperation.LESS_THAN;
 		} else if (value == emConditionOperation.BEGIN_WITH) {
-			return ConditionOperation.co_START;
+			return ConditionOperation.START;
 		} else if (value == emConditionOperation.END_WITH) {
-			return ConditionOperation.co_END;
+			return ConditionOperation.END;
 		}
 		throw new DataConvertException(i18n.prop("msg_bobas_not_support_convert_to_type", value));
 	}
@@ -202,11 +202,11 @@ public class DataConvert {
 		if (value == null) {
 			throw new NullPointerException();
 		}
-		if (value == ConditionRelationship.cr_AND) {
+		if (value == ConditionRelationship.AND) {
 			return emConditionRelationship.AND;
-		} else if (value == ConditionRelationship.cr_OR) {
+		} else if (value == ConditionRelationship.OR) {
 			return emConditionRelationship.OR;
-		} else if (value == ConditionRelationship.cr_NONE) {
+		} else if (value == ConditionRelationship.NONE) {
 			return emConditionRelationship.NONE;
 		}
 		throw new DataConvertException(i18n.prop("msg_bobas_not_support_convert_to_type", value));
@@ -216,25 +216,25 @@ public class DataConvert {
 		if (value == null) {
 			throw new NullPointerException();
 		}
-		if (value == ConditionOperation.co_CONTAIN) {
+		if (value == ConditionOperation.CONTAIN) {
 			return emConditionOperation.CONTAIN;
-		} else if (value == ConditionOperation.co_NOT_CONTAIN) {
+		} else if (value == ConditionOperation.NOT_CONTAIN) {
 			return emConditionOperation.NOT_CONTAIN;
-		} else if (value == ConditionOperation.co_EQUAL) {
+		} else if (value == ConditionOperation.EQUAL) {
 			return emConditionOperation.EQUAL;
-		} else if (value == ConditionOperation.co_NOT_EQUAL) {
+		} else if (value == ConditionOperation.NOT_EQUAL) {
 			return emConditionOperation.NOT_EQUAL;
-		} else if (value == ConditionOperation.co_GRATER_EQUAL) {
+		} else if (value == ConditionOperation.GRATER_EQUAL) {
 			return emConditionOperation.GRATER_EQUAL;
-		} else if (value == ConditionOperation.co_GRATER_THAN) {
+		} else if (value == ConditionOperation.GRATER_THAN) {
 			return emConditionOperation.GRATER_THAN;
-		} else if (value == ConditionOperation.co_LESS_EQUAL) {
+		} else if (value == ConditionOperation.LESS_EQUAL) {
 			return emConditionOperation.LESS_EQUAL;
-		} else if (value == ConditionOperation.co_LESS_THAN) {
+		} else if (value == ConditionOperation.LESS_THAN) {
 			return emConditionOperation.LESS_THAN;
-		} else if (value == ConditionOperation.co_START) {
+		} else if (value == ConditionOperation.START) {
 			return emConditionOperation.BEGIN_WITH;
-		} else if (value == ConditionOperation.co_END) {
+		} else if (value == ConditionOperation.END) {
 			return emConditionOperation.END_WITH;
 		}
 		throw new DataConvertException(i18n.prop("msg_bobas_not_support_convert_to_type", value));

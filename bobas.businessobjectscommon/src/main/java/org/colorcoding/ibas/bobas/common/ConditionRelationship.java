@@ -14,17 +14,17 @@ public enum ConditionRelationship {
 	 * 没关系
 	 */
 	@DbValue(value = "N")
-	cr_NONE,
+	NONE,
 	/**
 	 * 且
 	 */
 	@DbValue(value = "A")
-	cr_AND,
+	AND,
 	/**
 	 * 或
 	 */
 	@DbValue(value = "O")
-	cr_OR;
+	OR;
 
 	public int getValue() {
 		return this.ordinal();

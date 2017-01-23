@@ -50,7 +50,7 @@ public class Area extends MeasurementDecimal<emAreaUnit> {
 	@XmlElement(name = "Unit")
 	public emAreaUnit getUnit() {
 		if (this.unit == null) {
-			this.unit = emAreaUnit.square_metre;
+			this.unit = emAreaUnit.SQUARE_METRE;
 		}
 		return this.unit;
 	}

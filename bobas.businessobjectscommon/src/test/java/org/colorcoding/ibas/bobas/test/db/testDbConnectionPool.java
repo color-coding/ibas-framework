@@ -40,19 +40,19 @@ public class testDbConnectionPool extends TestCase {
 		ICondition condition = criteria.getConditions().create();
 		condition.setBracketOpenNum(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
-		condition.setCondVal(emDocumentStatus.Planned);
+		condition.setCondVal(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
 		condition.setBracketCloseNum(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
-		condition.setCondVal(emDocumentStatus.Released);
-		condition.setRelationship(ConditionRelationship.cr_OR);
+		condition.setCondVal(emDocumentStatus.RELEASED);
+		condition.setRelationship(ConditionRelationship.OR);
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC
 		ISort sort = criteria.getSorts().create();
 		sort.setAlias(SalesOrder.DocEntryProperty.getName());
-		sort.setSortType(SortType.st_DESCENDING);
+		sort.setSortType(SortType.DESCENDING);
 		sort = criteria.getSorts().create();
 		sort.setAlias(SalesOrder.CustomerCodeProperty.getName());
-		sort.setSortType(SortType.st_ASCENDING);
+		sort.setSortType(SortType.ASCENDING);
 
 		IOperationResult<ISalesOrder> operationResult = boRepository.fetchSalesOrder(criteria);
 		System.out.println(String.format("%s code:%s message:%s results:%s", Thread.currentThread().getName(),

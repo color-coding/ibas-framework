@@ -32,13 +32,13 @@ public class Sort implements ISort {
 		this.alias = value;
 	}
 
-	private SortType sortType = SortType.st_ASCENDING;
+	private SortType sortType = SortType.ASCENDING;
 
 	@Override
 	@XmlElement(name = "SortType")
 	public final SortType getSortType() {
 		if (this.sortType == null) {
-			this.sortType = SortType.st_ASCENDING;
+			this.sortType = SortType.ASCENDING;
 		}
 		return this.sortType;
 	}

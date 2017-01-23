@@ -148,7 +148,7 @@ public class BORepositoryTest extends BORepositoryServiceApplication
 		return new OperationResult<IMaterials>(this.saveMaterials((Materials) bo, this.getUserToken()));
 	}
 
-	@Permission(defaultValue = PermissionValue.available) // 权限标记，如果没有配置，则使用默认权限值
+	@Permission(defaultValue = PermissionValue.AVAILABLE) // 权限标记，如果没有配置，则使用默认权限值
 	public OperationMessages closeOrders(String token) {
 		OperationMessages operationMessages = new OperationMessages();
 		try {
@@ -162,7 +162,7 @@ public class BORepositoryTest extends BORepositoryServiceApplication
 		return operationMessages;
 	}
 
-	@Permission(defaultValue = PermissionValue.unavailable) // 权限标记，如果没有配置，则使用默认权限值
+	@Permission(defaultValue = PermissionValue.UNAVAILABLE) // 权限标记，如果没有配置，则使用默认权限值
 	public OperationMessages openOrders(String token) {
 		OperationMessages operationMessages = new OperationMessages();
 		try {

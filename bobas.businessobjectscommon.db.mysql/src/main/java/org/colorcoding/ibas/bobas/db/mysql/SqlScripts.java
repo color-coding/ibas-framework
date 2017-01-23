@@ -37,7 +37,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("%s");
 		if (dbFieldType != null) {
-			if (dbFieldType == DbFieldType.db_Alphanumeric) {
+			if (dbFieldType == DbFieldType.ALPHANUMERIC) {
 				stringBuilder = new StringBuilder();
 				stringBuilder.append("CAST");
 				stringBuilder.append("(");
@@ -48,7 +48,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 				stringBuilder.append("CHAR");
 				stringBuilder.append(")");
 				return stringBuilder.toString();
-			} else if (dbFieldType == DbFieldType.db_Date) {
+			} else if (dbFieldType == DbFieldType.DATE) {
 				stringBuilder = new StringBuilder();
 				stringBuilder.append("CAST");
 				stringBuilder.append("(");
@@ -59,7 +59,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 				stringBuilder.append("DATETIME");
 				stringBuilder.append(")");
 				return stringBuilder.toString();
-			} else if (dbFieldType == DbFieldType.db_Numeric) {
+			} else if (dbFieldType == DbFieldType.NUMERIC) {
 				stringBuilder = new StringBuilder();
 				stringBuilder.append("CAST");
 				stringBuilder.append("(");
@@ -70,7 +70,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 				stringBuilder.append("SIGNED");
 				stringBuilder.append(")");
 				return stringBuilder.toString();
-			} else if (dbFieldType == DbFieldType.db_Decimal) {
+			} else if (dbFieldType == DbFieldType.DECIMAL) {
 				stringBuilder = new StringBuilder();
 				stringBuilder.append("CAST");
 				stringBuilder.append("(");
@@ -89,15 +89,15 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	@Override
 	public DbFieldType getDbFieldType(String dbType) {
 		if (dbType.equals("varchar")) {
-			return DbFieldType.db_Alphanumeric;
+			return DbFieldType.ALPHANUMERIC;
 		} else if (dbType.equals("int")) {
-			return DbFieldType.db_Numeric;
+			return DbFieldType.NUMERIC;
 		} else if (dbType.equals("datetime")) {
-			return DbFieldType.db_Date;
+			return DbFieldType.DATE;
 		} else if (dbType.equals("decimal")) {
-			return DbFieldType.db_Decimal;
+			return DbFieldType.DECIMAL;
 		}
-		return DbFieldType.db_Unknown;
+		return DbFieldType.UNKNOWN;
 	}
 
 	/**

@@ -19,7 +19,7 @@ public @interface Permission {
 	 * 
 	 * @return
 	 */
-	public PermissionValue defaultValue() default PermissionValue.available;
+	public PermissionValue defaultValue() default PermissionValue.AVAILABLE;
 
 	/**
 	 * 分组（默认类标记）

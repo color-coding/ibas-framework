@@ -97,7 +97,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
         if (this.getProcessSteps() == null) {
             return null;
         }
-        if (this.getStatus() == emApprovalStatus.Processing) {
+        if (this.getStatus() == emApprovalStatus.PROCESSING) {
             IApprovalProcessStep preStep = null;
             IApprovalProcessStep step = this.currentStep();
             for (IApprovalProcessStep item : this.getProcessSteps()) {
@@ -106,17 +106,17 @@ public abstract class ApprovalProcess implements IApprovalProcess {
                 }
                 preStep = item;
             }
-        } else if (this.getStatus() == emApprovalStatus.Approved) {
+        } else if (this.getStatus() == emApprovalStatus.APPROVED) {
             for (int i = this.getProcessSteps().length - 1; i >= 0; i--) {
                 IApprovalProcessStep item = this.getProcessSteps()[i];
-                if (item.getStatus() == emApprovalStepStatus.Approved) {
+                if (item.getStatus() == emApprovalStepStatus.APPROVED) {
                     return item;
                 }
             }
-        } else if (this.getStatus() == emApprovalStatus.Rejected) {
+        } else if (this.getStatus() == emApprovalStatus.REJECTED) {
             for (int i = this.getProcessSteps().length - 1; i >= 0; i--) {
                 IApprovalProcessStep item = this.getProcessSteps()[i];
-                if (item.getStatus() == emApprovalStepStatus.Rejected) {
+                if (item.getStatus() == emApprovalStepStatus.REJECTED) {
                     return item;
                 }
             }
@@ -131,7 +131,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
         this.setApprovalData(null);
         this.setStartedTime(DateTime.getMaxValue());
         this.setFinishedTime(DateTime.getMaxValue());
-        this.setStatus(emApprovalStatus.Unaffected);
+        this.setStatus(emApprovalStatus.UNAFFECTED);
         for (IApprovalProcessStep item : this.getProcessSteps()) {
             ApprovalProcessStep stepItem = (ApprovalProcessStep) item;
             stepItem.restore();// 重置初始状态
@@ -148,7 +148,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
             if (step == null) {
                 continue;
             }
-            if (step.getStatus() == emApprovalStepStatus.Processing) {
+            if (step.getStatus() == emApprovalStepStatus.PROCESSING) {
                 // 当前进行的步骤
                 return step;
             }
@@ -173,7 +173,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
                     stepItem.start();
                     this.setApprovalData(data);
                     this.setStartedTime(DateTime.getNow());
-                    this.setStatus(emApprovalStatus.Processing);
+                    this.setStatus(emApprovalStatus.PROCESSING);
                     this.onStatusChanged();
                     return true;
                 } else {
@@ -196,7 +196,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
      */
     private ApprovalProcessStep nextStep() throws UnlogicalException, JudmentOperationException {
         for (IApprovalProcessStep item : this.getProcessSteps()) {
-            if (item.getStatus() != emApprovalStepStatus.Pending) {
+            if (item.getStatus() != emApprovalStepStatus.PENDING) {
                 // 只考虑挂起的步骤
                 continue;
             }
@@ -229,7 +229,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
             throw new ApprovalProcessException(i18n.prop("msg_bobas_not_found_approval_process_step", stepId));
         }
         apStep.getOwner().checkAuthorization(authorizationCode);
-        if (apResult == emApprovalResult.Processing) {
+        if (apResult == emApprovalResult.PROCESSING) {
             // 重置步骤，上一个步骤操作
             ApprovalProcessStep curStep = (ApprovalProcessStep) this.currentStep();
             IApprovalProcessStep preStep = this.getPreviousProcessStep();
@@ -240,7 +240,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
                 apStep.reset();// 操作步骤进行中
                 // 流程状态设置
                 this.setFinishedTime(DateTime.getMaxValue());
-                this.setStatus(emApprovalStatus.Processing);
+                this.setStatus(emApprovalStatus.PROCESSING);
                 this.onStatusChanged();
             } else {
                 // 操作的步骤不是正在进行的步骤
@@ -253,7 +253,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
                 // 操作的步骤不是正在进行的步骤
                 throw new ApprovalProcessException(i18n.prop("msg_bobas_not_processing_approval_process_step", stepId));
             }
-            if (apResult == emApprovalResult.Approved) {
+            if (apResult == emApprovalResult.APPROVED) {
                 // 批准
                 apStep.approve(judgment);
                 // 激活下一个符合条件的步骤，不存在则审批完成
@@ -262,21 +262,21 @@ public abstract class ApprovalProcess implements IApprovalProcess {
                     if (nextStep == null) {
                         // 没有下一个步骤，流程完成
                         this.setFinishedTime(DateTime.getNow());
-                        this.setStatus(emApprovalStatus.Approved);
+                        this.setStatus(emApprovalStatus.APPROVED);
                         this.onStatusChanged();
                     } else {
                         // 进行下一步骤
-                        this.setStatus(emApprovalStatus.Processing);
+                        this.setStatus(emApprovalStatus.PROCESSING);
                     }
                 } catch (JudmentOperationException e) {
                     throw new ApprovalProcessException(e);
                 }
-            } else if (apResult == emApprovalResult.Rejected) {
+            } else if (apResult == emApprovalResult.REJECTED) {
                 // 拒绝
                 apStep.reject(judgment);
                 // 任意步骤拒绝，流程拒绝
                 this.setFinishedTime(DateTime.getNow());
-                this.setStatus(emApprovalStatus.Rejected);
+                this.setStatus(emApprovalStatus.REJECTED);
                 this.onStatusChanged();
             }
         }
@@ -284,11 +284,11 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 
     public final boolean cancel(String authorizationCode, String remarks)
             throws ApprovalProcessException, InvalidAuthorizationException {
-        if (this.getStatus() == emApprovalStatus.Processing) {
+        if (this.getStatus() == emApprovalStatus.PROCESSING) {
             // 仅审批中的可以取消
             this.getOwner().checkAuthorization(authorizationCode);
             this.setFinishedTime(DateTime.getNow());
-            this.setStatus(emApprovalStatus.Cancelled);
+            this.setStatus(emApprovalStatus.CANCELLED);
             this.onStatusChanged();
             return true;
         }
@@ -322,14 +322,14 @@ public abstract class ApprovalProcess implements IApprovalProcess {
             }
             if (this.getApprovalData() instanceof IBOTagDeleted) {
                 IBOTagDeleted referenced = (IBOTagDeleted) this.getApprovalData();
-                if (referenced.getDeleted() == emYesNo.Yes) {
+                if (referenced.getDeleted() == emYesNo.YES) {
                     // 可标记删除数据
                     return;
                 }
             }
             if (this.getApprovalData() instanceof IBOTagCanceled) {
                 IBOTagCanceled referenced = (IBOTagCanceled) this.getApprovalData();
-                if (referenced.getCanceled() == emYesNo.Yes) {
+                if (referenced.getCanceled() == emYesNo.YES) {
                     // 可标记取消数据
                     return;
                 }
@@ -337,8 +337,8 @@ public abstract class ApprovalProcess implements IApprovalProcess {
             if (this.getApprovalData() instanceof IBODocument) {
                 // 单据类型
                 IBODocument document = (IBODocument) this.getApprovalData();
-                if (document.getStatus() == emBOStatus.Closed
-                        && this.getApprovalData().getApprovalStatus() == emApprovalStatus.Approved) {
+                if (document.getStatus() == emBOStatus.CLOSED
+                        && this.getApprovalData().getApprovalStatus() == emApprovalStatus.APPROVED) {
                     // 可关闭数据，仅审批通过后
                     return;
                 }
@@ -346,8 +346,8 @@ public abstract class ApprovalProcess implements IApprovalProcess {
             if (this.getApprovalData() instanceof IBODocumentLine) {
                 // 单据行类型
                 IBODocumentLine documentLine = (IBODocumentLine) this.getApprovalData();
-                if (documentLine.getStatus() == emBOStatus.Closed
-                        && this.getApprovalData().getApprovalStatus() == emApprovalStatus.Approved) {
+                if (documentLine.getStatus() == emBOStatus.CLOSED
+                        && this.getApprovalData().getApprovalStatus() == emApprovalStatus.APPROVED) {
                     // 可关闭数据，仅审批通过后
                     return;
                 }

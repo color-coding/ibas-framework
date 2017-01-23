@@ -33,7 +33,7 @@ public @interface Associations {
 	 * 
 	 * @return
 	 */
-	public AssociationMode mode() default AssociationMode.OneToZero;
+	public AssociationMode mode() default AssociationMode.ONE_TO_ZERO;
 
 	/**
 	 * 可否保存

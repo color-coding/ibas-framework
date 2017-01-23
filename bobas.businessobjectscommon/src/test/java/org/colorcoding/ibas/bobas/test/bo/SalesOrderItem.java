@@ -47,7 +47,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 编码 属性
      */
-    @DbField(name = "DocEntry", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = true)
+    @DbField(name = "DocEntry", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = true)
     public final static IPropertyInfo<Integer> DocEntryProperty = registerProperty("DocEntry", Integer.class, MY_CLASS);
 
     /**
@@ -75,7 +75,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 行号 属性
      */
-    @DbField(name = "LineId", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = true)
+    @DbField(name = "LineId", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = true)
     public final static IPropertyInfo<Integer> LineIdProperty = registerProperty("LineId", Integer.class, MY_CLASS);
 
     /**
@@ -103,7 +103,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 显示顺序 属性
      */
-    @DbField(name = "VisOrder", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "VisOrder", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Integer> VisOrderProperty = registerProperty("VisOrder", Integer.class, MY_CLASS);
 
     /**
@@ -131,7 +131,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 类型 属性
      */
-    @DbField(name = "Object", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Object", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<String> ObjectCodeProperty = registerProperty("ObjectCode", String.class,
             MY_CLASS);
 
@@ -160,7 +160,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 数据源 属性
      */
-    @DbField(name = "DataSource", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "DataSource", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<String> DataSourceProperty = registerProperty("DataSource", String.class,
             MY_CLASS);
 
@@ -189,7 +189,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 实例号（版本） 属性
      */
-    @DbField(name = "LogInst", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "LogInst", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Integer> LogInstProperty = registerProperty("LogInst", Integer.class, MY_CLASS);
 
     /**
@@ -217,7 +217,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 引用 属性
      */
-    @DbField(name = "Refed", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Refed", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<emYesNo> ReferencedProperty = registerProperty("Referenced", emYesNo.class,
             MY_CLASS);
 
@@ -246,7 +246,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 取消 属性
      */
-    @DbField(name = "Canceled", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Canceled", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<emYesNo> CanceledProperty = registerProperty("Canceled", emYesNo.class, MY_CLASS);
 
     /**
@@ -274,7 +274,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 状态 属性
      */
-    @DbField(name = "Status", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Status", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<emBOStatus> StatusProperty = registerProperty("Status", emBOStatus.class,
             MY_CLASS);
 
@@ -303,7 +303,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 单据状态 属性
      */
-    @DbField(name = "LineStatus", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "LineStatus", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<emDocumentStatus> LineStatusProperty = registerProperty("LineStatus",
             emDocumentStatus.class, MY_CLASS);
 
@@ -332,7 +332,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 创建日期 属性
      */
-    @DbField(name = "CreateDate", type = DbFieldType.db_Date, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "CreateDate", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<DateTime> CreateDateProperty = registerProperty("CreateDate", DateTime.class,
             MY_CLASS);
 
@@ -361,7 +361,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 创建时间 属性
      */
-    @DbField(name = "CreateTime", type = DbFieldType.db_Date, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "CreateTime", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Short> CreateTimeProperty = registerProperty("CreateTime", Short.class, MY_CLASS);
 
     /**
@@ -389,7 +389,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 修改日期 属性
      */
-    @DbField(name = "UpdateDate", type = DbFieldType.db_Date, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "UpdateDate", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<DateTime> UpdateDateProperty = registerProperty("UpdateDate", DateTime.class,
             MY_CLASS);
 
@@ -418,7 +418,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 修改时间 属性
      */
-    @DbField(name = "UpdateTime", type = DbFieldType.db_Date, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "UpdateTime", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Short> UpdateTimeProperty = registerProperty("UpdateTime", Short.class, MY_CLASS);
 
     /**
@@ -446,7 +446,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 创建用户 属性
      */
-    @DbField(name = "Creator", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Creator", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Integer> CreateUserSignProperty = registerProperty("CreateUserSign",
             Integer.class, MY_CLASS);
 
@@ -475,7 +475,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 修改用户 属性
      */
-    @DbField(name = "Updator", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Updator", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Integer> UpdateUserSignProperty = registerProperty("UpdateUserSign",
             Integer.class, MY_CLASS);
 
@@ -504,7 +504,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 创建动作标识 属性
      */
-    @DbField(name = "CreateActId", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "CreateActId", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<String> CreateActionIdProperty = registerProperty("CreateActionId", String.class,
             MY_CLASS);
 
@@ -533,7 +533,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 更新动作标识 属性
      */
-    @DbField(name = "UpdateActId", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "UpdateActId", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<String> UpdateActionIdProperty = registerProperty("UpdateActionId", String.class,
             MY_CLASS);
 
@@ -562,7 +562,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 参考1 属性
      */
-    @DbField(name = "Ref1", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Ref1", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<String> Reference1Property = registerProperty("Reference1", String.class,
             MY_CLASS);
 
@@ -591,7 +591,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 参考2 属性
      */
-    @DbField(name = "Ref2", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Ref2", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<String> Reference2Property = registerProperty("Reference2", String.class,
             MY_CLASS);
 
@@ -620,7 +620,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 物料编号 属性
      */
-    @DbField(name = "ItemCode", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "ItemCode", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<String> ItemCodeProperty = registerProperty("ItemCode", String.class, MY_CLASS);
 
     /**
@@ -648,7 +648,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 物料/服务描述 属性
      */
-    @DbField(name = "Dscription", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Dscription", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<String> ItemDescriptionProperty = registerProperty("ItemDescription",
             String.class, MY_CLASS);
 
@@ -677,7 +677,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 数量 属性
      */
-    @DbField(name = "Quantity", type = DbFieldType.db_Decimal, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Quantity", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Decimal> QuantityProperty = registerProperty("Quantity", Decimal.class, MY_CLASS);
 
     /**
@@ -738,7 +738,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 行交货日期 属性
      */
-    @DbField(name = "ShipDate", type = DbFieldType.db_Date, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "ShipDate", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<DateTime> DeliveryDateProperty = registerProperty("DeliveryDate", DateTime.class,
             MY_CLASS);
 
@@ -767,7 +767,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 剩余未清数量 属性
      */
-    @DbField(name = "OpenQty", type = DbFieldType.db_Decimal, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "OpenQty", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Decimal> OpenQuantityProperty = registerProperty("OpenQuantity", Decimal.class,
             MY_CLASS);
 
@@ -829,7 +829,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 单价 属性
      */
-    @DbField(name = "Price", type = DbFieldType.db_Decimal, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Price", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Decimal> PriceProperty = registerProperty("Price", Decimal.class, MY_CLASS);
 
     /**
@@ -890,7 +890,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 价格货币 属性
      */
-    @DbField(name = "Currency", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Currency", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<String> PriceCurrencyProperty = registerProperty("PriceCurrency", String.class,
             MY_CLASS);
 
@@ -919,7 +919,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 行总计 属性
      */
-    @DbField(name = "LineTotal", type = DbFieldType.db_Decimal, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "LineTotal", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Decimal> LineTotalProperty = registerProperty("LineTotal", Decimal.class,
             MY_CLASS);
 
@@ -981,7 +981,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
     /**
      * 仓库代码 属性
      */
-    @DbField(name = "WhsCode", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "WhsCode", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<String> WarehouseProperty = registerProperty("Warehouse", String.class, MY_CLASS);
 
     /**

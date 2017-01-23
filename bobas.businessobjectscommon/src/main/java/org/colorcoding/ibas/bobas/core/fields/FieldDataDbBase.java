@@ -38,7 +38,7 @@ public abstract class FieldDataDbBase<T> extends FieldDataBase<T> implements IFi
 		this.dbIndex = value;
 	}
 
-	private DbFieldType fieldType = DbFieldType.db_Unknown;
+	private DbFieldType fieldType = DbFieldType.UNKNOWN;
 
 	@Override
 	public DbFieldType getFieldType() {

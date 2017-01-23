@@ -151,22 +151,22 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 				if (bo.isNew()) {
 					// 新建的对象
 					this.usePrimaryKeys(bo);
-					this.notifyActions(SaveActionsType.before_adding, bo);
+					this.notifyActions(SaveActionsType.BEFORE_ADDING, bo);
 					String fileName = String.format("%s%s%s.bo", boFolder, File.separator, this.getFileName(bo));
 					this.writeBOFile(bo, fileName);
-					this.notifyActions(SaveActionsType.added, bo);
+					this.notifyActions(SaveActionsType.ADDED, bo);
 				} else if (bo.isDeleted()) {
 					// 删除对象
-					this.notifyActions(SaveActionsType.before_deleting, bo);
+					this.notifyActions(SaveActionsType.BEFORE_DELETING, bo);
 					this.deleteBOFile(bo);
-					this.notifyActions(SaveActionsType.deleted, bo);
+					this.notifyActions(SaveActionsType.DELETED, bo);
 				} else {
 					// 修改对象，先删除数据，再添加新的实例
-					this.notifyActions(SaveActionsType.before_updating, bo);
+					this.notifyActions(SaveActionsType.BEFORE_UPDATING, bo);
 					this.deleteBOFile(bo);
 					String fileName = String.format("%s%s%s.bo", boFolder, File.separator, this.getFileName(bo));
 					this.writeBOFile(bo, fileName);
-					this.notifyActions(SaveActionsType.updated, bo);
+					this.notifyActions(SaveActionsType.UPDATED, bo);
 				}
 				if (myTrans) {
 					// 自己打开的事务

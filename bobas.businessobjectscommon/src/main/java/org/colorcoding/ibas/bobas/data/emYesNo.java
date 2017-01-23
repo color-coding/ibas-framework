@@ -17,12 +17,12 @@ public enum emYesNo {
 	 * 否
 	 */
 	@DbValue(value = "N")
-	No,
+	NO,
 	/**
 	 * 是
 	 */
 	@DbValue(value = "Y")
-	Yes;
+	YES;
 
 	public int getValue() {
 		return this.ordinal();

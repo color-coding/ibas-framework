@@ -43,8 +43,8 @@ public class testLogics extends TestCase {
 
         // 创建采购订单
         PurchaseOrder order = new PurchaseOrder();
-        order.setApprovalStatus(emApprovalStatus.Processing);// 父项审批中，子项逻辑不执行
-        order.setDocumentStatus(emDocumentStatus.Planned);// 父项计划状态，子项逻辑不执行
+        order.setApprovalStatus(emApprovalStatus.PROCESSING);// 父项审批中，子项逻辑不执行
+        order.setDocumentStatus(emDocumentStatus.PLANNED);// 父项计划状态，子项逻辑不执行
         order.setCustomerCode("C00001");
         order.setCustomerName("宇宙无敌影业");
         PurchaseOrderItem item01 = order.getPurchaseOrderItems().create();
@@ -84,8 +84,8 @@ public class testLogics extends TestCase {
         operationResult = boRepository.fetchPurchaseOrder(order.getCriteria());
         assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
         order = (PurchaseOrder) operationResult.getResultObjects().firstOrDefault();
-        order.setApprovalStatus(emApprovalStatus.Approved);
-        order.setDocumentStatus(emDocumentStatus.Planned);// 父项计划状态，子项逻辑不执行
+        order.setApprovalStatus(emApprovalStatus.APPROVED);
+        order.setDocumentStatus(emDocumentStatus.PLANNED);// 父项计划状态，子项逻辑不执行
 
         operationResult = boRepository.savePurchaseOrder(order);
         assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
@@ -101,8 +101,8 @@ public class testLogics extends TestCase {
         operationResult = boRepository.fetchPurchaseOrder(order.getCriteria());
         assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
         order = (PurchaseOrder) operationResult.getResultObjects().firstOrDefault();
-        order.setApprovalStatus(emApprovalStatus.Approved);
-        order.setDocumentStatus(emDocumentStatus.Released);
+        order.setApprovalStatus(emApprovalStatus.APPROVED);
+        order.setDocumentStatus(emDocumentStatus.RELEASED);
         operationResult = boRepository.savePurchaseOrder(order);
         assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
         operationResult = boRepository.fetchMaterials(materials01.getCriteria());

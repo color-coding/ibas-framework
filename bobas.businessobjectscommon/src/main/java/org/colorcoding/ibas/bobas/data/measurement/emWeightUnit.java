@@ -15,17 +15,17 @@ public enum emWeightUnit {
 	 * 克
 	 */
 	@DbValue(value = "g")
-	gram(0),
+	GRAM(0),
 	/**
 	 * 千克
 	 */
 	@DbValue(value = "kg")
-	kilogram(1),
+	KILOGRAM(1),
 	/**
 	 * 吨
 	 */
 	@DbValue(value = "t")
-	ton(2);
+	TON(2);
 
 	private int intValue;
 	private static java.util.HashMap<Integer, emWeightUnit> mappings;

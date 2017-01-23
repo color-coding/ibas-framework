@@ -481,11 +481,11 @@ public class BORepositoryService implements IBORepositoryService {
             returnBO = operationResult.getResultObjects().firstOrDefault();
             if (this.isPostTransaction()) {
                 // 通知事务
-                TransactionType type = TransactionType.Update;
+                TransactionType type = TransactionType.UPDATE;
                 if (toDelete) {
-                    type = TransactionType.Delete;
+                    type = TransactionType.DELETE;
                 } else if (toAdd) {
-                    type = TransactionType.Add;
+                    type = TransactionType.ADD;
                 }
                 this.noticeTransaction(type, bo);
             }
@@ -623,7 +623,7 @@ public class BORepositoryService implements IBORepositoryService {
      * @return
      */
     protected boolean onSaveActionsEvent(SaveActionsType action, IBusinessObjectBase bo) throws Exception {
-        if (action == SaveActionsType.before_updating) {
+        if (action == SaveActionsType.BEFORE_UPDATING) {
             if (this.isCheckVersion()) {
                 // 更新前，检查版本是否有效
                 try {

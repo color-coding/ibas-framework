@@ -18,13 +18,13 @@ public enum emBOStatus {
 	 * 未清
 	 */
 	@DbValue(value = "O")
-	Open,
+	OPEN,
 
 	/**
 	 * 已清
 	 */
 	@DbValue(value = "C")
-	Closed;
+	CLOSED;
 
 	public int getValue() {
 		return this.ordinal();

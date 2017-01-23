@@ -191,15 +191,15 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
                     // 新建的对象
                     if (updateKeys)
                         adapter4Db.usePrimaryKeys(bo, command);// 获取并更新主键
-                    this.fireSaveActions(SaveActionsType.before_adding, bo, root);
+                    this.fireSaveActions(SaveActionsType.BEFORE_ADDING, bo, root);
                     sqlQuery = adapter4Db.parseSqlInsert(bo);
                 } else if (bo.isDeleted()) {
                     // 删除对象
-                    this.fireSaveActions(SaveActionsType.before_deleting, bo, root);
+                    this.fireSaveActions(SaveActionsType.BEFORE_DELETING, bo, root);
                     sqlQuery = adapter4Db.parseSqlDelete(bo);
                 } else {
                     // 修改对象，先删除数据，再添加新的实例
-                    this.fireSaveActions(SaveActionsType.before_updating, bo, root);
+                    this.fireSaveActions(SaveActionsType.BEFORE_UPDATING, bo, root);
                     sqlQuery = adapter4Db.parseSqlDelete(bo);
                     command.executeUpdate(sqlQuery);// 执行删除副本
                     sqlQuery = adapter4Db.parseSqlInsert(bo);
@@ -209,13 +209,13 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
                 // 通知事务
                 if (bo.isNew()) {
                     // 新建的对象
-                    this.fireSaveActions(SaveActionsType.added, bo, root);
+                    this.fireSaveActions(SaveActionsType.ADDED, bo, root);
                 } else if (bo.isDeleted()) {
                     // 删除对象
-                    this.fireSaveActions(SaveActionsType.deleted, bo, root);
+                    this.fireSaveActions(SaveActionsType.DELETED, bo, root);
                 } else {
                     // 修改对象
-                    this.fireSaveActions(SaveActionsType.updated, bo, root);
+                    this.fireSaveActions(SaveActionsType.UPDATED, bo, root);
                 }
                 if (myTrans) {
                     // 自己打开的事务

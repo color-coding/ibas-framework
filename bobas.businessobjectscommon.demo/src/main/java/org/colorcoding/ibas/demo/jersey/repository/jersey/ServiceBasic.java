@@ -70,24 +70,24 @@ public class ServiceBasic {
 		ICondition condition = criteria.getConditions().create();
 		condition.setBracketOpenNum(1);
 		condition.setAlias("DocumentStatus");
-		condition.setCondVal(emDocumentStatus.Planned);
+		condition.setCondVal(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
 		condition.setBracketCloseNum(1);
 		condition.setAlias("DocumentStatus");
-		condition.setCondVal(emDocumentStatus.Released);
-		condition.setRelationship(ConditionRelationship.cr_OR);
+		condition.setCondVal(emDocumentStatus.RELEASED);
+		condition.setRelationship(ConditionRelationship.OR);
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC
 		ISort sort = criteria.getSorts().create();
 		sort.setAlias("DocEntry");
-		sort.setSortType(SortType.st_DESCENDING);
+		sort.setSortType(SortType.DESCENDING);
 		sort = criteria.getSorts().create();
 		sort.setAlias("CustomerCode");
-		sort.setSortType(SortType.st_ASCENDING);
+		sort.setSortType(SortType.ASCENDING);
 		// 子项查询
 		IChildCriteria childCriteria = criteria.getChildCriterias().create();
 		condition = childCriteria.getConditions().create();
 		condition.setAlias("ItemCode");
-		condition.setOperation(ConditionOperation.co_CONTAIN);
+		condition.setOperation(ConditionOperation.CONTAIN);
 		condition.setCondVal("T000");
 
 		return criteria;
@@ -116,21 +116,21 @@ public class ServiceBasic {
 		order.setDocEntry(1);
 		order.setCustomerCode("C00001");
 		order.setDeliveryDate(DateTime.getToday());
-		order.setDocumentStatus(emDocumentStatus.Released);
+		order.setDocumentStatus(emDocumentStatus.RELEASED);
 		order.setDocumentTotal(new Decimal("99.99"));
-		order.setCycle(new Time(1.05, emTimeUnit.hour));
+		order.setCycle(new Time(1.05, emTimeUnit.HOUR));
 
-		order.getUserFields().addUserField("U_OrderType", DbFieldType.db_Alphanumeric);
-		order.getUserFields().addUserField("U_OrderId", DbFieldType.db_Numeric);
-		order.getUserFields().addUserField("U_OrderDate", DbFieldType.db_Date);
-		order.getUserFields().addUserField("U_OrderTotal", DbFieldType.db_Decimal);
+		order.getUserFields().addUserField("U_OrderType", DbFieldType.ALPHANUMERIC);
+		order.getUserFields().addUserField("U_OrderId", DbFieldType.NUMERIC);
+		order.getUserFields().addUserField("U_OrderDate", DbFieldType.DATE);
+		order.getUserFields().addUserField("U_OrderTotal", DbFieldType.DECIMAL);
 		order.getUserFields().setValue("U_OrderType", "S0000");
 		order.getUserFields().setValue("U_OrderId", 5768);
 		order.getUserFields().setValue("U_OrderDate", DateTime.getToday());
 		order.getUserFields().setValue("U_OrderTotal", new Decimal("999.888"));
-		order.setCanceled(emYesNo.Yes);
-		order.setDocumentStatus(emDocumentStatus.Closed);
-		order.setStatus(emBOStatus.Closed);
+		order.setCanceled(emYesNo.YES);
+		order.setDocumentStatus(emDocumentStatus.CLOSED);
+		order.setStatus(emBOStatus.CLOSED);
 		ISalesOrderItem orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00001");
 		orderItem.setQuantity(new Decimal(10));

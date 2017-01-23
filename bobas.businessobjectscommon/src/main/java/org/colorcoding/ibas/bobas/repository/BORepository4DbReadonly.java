@@ -531,7 +531,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 							}
 							ICondition condition = childCriteria.getConditions().create();
 							condition.setAlias(relation.mappedField);
-							condition.setOperation(ConditionOperation.co_EQUAL);
+							condition.setOperation(ConditionOperation.EQUAL);
 							condition.setCondVal(tmpField.getValue());
 						}
 						if (breakAssociated) {
@@ -545,13 +545,13 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 						IBusinessObjectBase[] cBOs = adapter4Db.parseBOs(reader, childBoType);
 						if (cBOs != null & cBOs.length > 0) {
 							// 有子项结果
-							if (assoFieldData.getAssociationMode() == AssociationMode.OneToMany) {
+							if (assoFieldData.getAssociationMode() == AssociationMode.ONE_TO_MANY) {
 								// 一对多关系
 								assoFieldData.setValue(cBOs);
 								// 查询填充后对象的子项
 								this.myFetchEx(cBOs, null);
-							} else if (assoFieldData.getAssociationMode() == AssociationMode.OneToOne
-									|| assoFieldData.getAssociationMode() == AssociationMode.OneToZero) {
+							} else if (assoFieldData.getAssociationMode() == AssociationMode.ONE_TO_ONE
+									|| assoFieldData.getAssociationMode() == AssociationMode.ONE_TO_ZERO) {
 								// 一对一
 								IBusinessObjectBase cBO = cBOs[0];// 仅取第一个
 								assoFieldData.setValue(cBO);
@@ -560,7 +560,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 							}
 						} else {
 							// 没有结果
-							if (assoFieldData.getAssociationMode() == AssociationMode.OneToOne) {
+							if (assoFieldData.getAssociationMode() == AssociationMode.ONE_TO_ONE) {
 								// 指定了一对一的关系，自动创建新的实例
 								IBusinessObjectBase cBO = (IBusinessObjectBase) BOFactory.create()
 										.createInstance(childBoType);

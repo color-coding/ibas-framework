@@ -12,30 +12,33 @@ public enum TransactionType {
 	/**
 	 * 添加
 	 */
-	@DbValue("A") Add,
+	@DbValue("A")
+	ADD,
 	/**
 	 * 更新
 	 */
-	@DbValue("U") Update,
+	@DbValue("U")
+	UPDATE,
 	/**
 	 * 删除
 	 */
-	@DbValue("D") Delete,
+	@DbValue("D")
+	DELETE,
 	// /**
 	// * 关闭前
 	// */
-	// before_closing,
+	// BEFORE_CLOSING,
 	// /**
 	// * 关闭后
 	// */
-	// closed,
+	// CLOSED,
 	// /**
 	// * 取消前
 	// */
-	// before_canceling,
+	// BEFORE_CANCELING,
 	// /**
 	// * 取消后
 	// */
-	// canceld
+	// CANCELD
 	;
 }

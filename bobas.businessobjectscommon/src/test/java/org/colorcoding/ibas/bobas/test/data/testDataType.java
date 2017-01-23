@@ -30,7 +30,7 @@ public class testDataType extends TestCase {
         currency.setValue(100.00);
         System.out.println(String.format("Currency: %s", currency.toString())); // 货币
         Length length = new Length();
-        length.setUnit(emLengthUnit.kilometer);
+        length.setUnit(emLengthUnit.KILOMETER);
         length.setValue(10000.00);
         System.out.println(String.format("Length: %s", length.toString())); // 长度
     }

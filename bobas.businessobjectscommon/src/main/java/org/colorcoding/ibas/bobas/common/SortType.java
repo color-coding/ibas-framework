@@ -13,10 +13,10 @@ public enum SortType {
 
 	/** 降序 */
 	@DbValue(value = "D")
-	st_DESCENDING,
+	DESCENDING,
 	/** 升序 */
 	@DbValue(value = "A")
-	st_ASCENDING;
+	ASCENDING;
 
 	public int getValue() {
 		return this.ordinal();

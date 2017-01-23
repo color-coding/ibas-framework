@@ -9,7 +9,7 @@ public class SaveActionsSupport {
         this.source = source;
     }
 
-    private static final int array_extension_step = 2;
+    private static final int ARRAY_EXTENSION_STEP = 2;
     private Object source = null;
     private SaveActionsListener[] listeners;
 
@@ -18,7 +18,7 @@ public class SaveActionsSupport {
             return;
         }
         if (this.listeners == null) {
-            this.listeners = new SaveActionsListener[array_extension_step];
+            this.listeners = new SaveActionsListener[ARRAY_EXTENSION_STEP];
         }
         boolean done = false;
         // 检查是否已监听
@@ -41,7 +41,7 @@ public class SaveActionsSupport {
         }
         if (!done) {
             // 数组不够
-            SaveActionsListener[] tmps = new SaveActionsListener[this.listeners.length + array_extension_step];
+            SaveActionsListener[] tmps = new SaveActionsListener[this.listeners.length + ARRAY_EXTENSION_STEP];
             int i = 0;
             for (; i < this.listeners.length; i++) {
                 tmps[i] = this.listeners[i];

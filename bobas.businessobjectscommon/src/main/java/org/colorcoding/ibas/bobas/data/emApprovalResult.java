@@ -17,25 +17,25 @@ public enum emApprovalResult {
 	 * 已批准
 	 */
 	@DbValue(value = "A")
-	Approved,
+	APPROVED,
 	/**
 	 * 拒绝的
 	 */
 	@DbValue(value = "R")
-	Rejected,
+	REJECTED,
 	/**
 	 * 重置为进行中
 	 */
 	@DbValue(value = "P")
-	Processing;
+	PROCESSING;
 	// /**
 	// * 退回
 	// */
-	// @DbValue(value = "P") Returned,
+	// @DbValue(value = "P") RETURNED,
 	// /**
 	// * 取消
 	// */
-	// @DbValue(value = "P") Cancelled;
+	// @DbValue(value = "P") CANCELLED;
 
 	public int getValue() {
 		return this.ordinal();

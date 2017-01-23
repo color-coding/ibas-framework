@@ -10,25 +10,25 @@ public enum SaveActionsType {
 	/**
 	 * 添加前
 	 */
-	before_adding,
+	BEFORE_ADDING,
 	/**
 	 * 添加后
 	 */
-	added,
+	ADDED,
 	/**
 	 * 更新前
 	 */
-	before_updating,
+	BEFORE_UPDATING,
 	/**
 	 * 更新后
 	 */
-	updated,
+	UPDATED,
 	/**
 	 * 删除前
 	 */
-	before_deleting,
+	BEFORE_DELETING,
 	/**
 	 * 删除后
 	 */
-	deleted;
+	DELETED;
 }

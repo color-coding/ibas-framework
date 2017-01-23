@@ -138,11 +138,11 @@ public class DateTime extends Date implements Serializable {
      */
     public static long interval(DateTime fromTime, DateTime toTime, emTimeUnit unit) throws ComputeException {
         long interval = toTime.getTime() - fromTime.getTime();
-        if (unit == emTimeUnit.hour) {
+        if (unit == emTimeUnit.HOUR) {
             return interval / (1000 * 60 * 60);
-        } else if (unit == emTimeUnit.minute) {
+        } else if (unit == emTimeUnit.MINUTE) {
             return interval / (1000 * 60);
-        } else if (unit == emTimeUnit.second) {
+        } else if (unit == emTimeUnit.SECOND) {
             return interval / (1000);
         }
         /*

@@ -41,21 +41,21 @@ public class testFileRepository extends TestCase {
         // 包含子文件夹
         condition = criteria.getConditions().create();
         condition.setAlias(FileRepository.CRITERIA_CONDITION_ALIAS_INCLUDE_SUBFOLDER);
-        condition.setCondVal(emYesNo.Yes);
+        condition.setCondVal(emYesNo.YES);
         // 扩展名为.java
         condition = criteria.getConditions().create();
         condition.setAlias(FileRepository.CRITERIA_CONDITION_ALIAS_FILE_NAME);
-        condition.setOperation(ConditionOperation.co_END);
+        condition.setOperation(ConditionOperation.END);
         condition.setCondVal(".class");
         // 文件名包括BO
         condition = criteria.getConditions().create();
         condition.setAlias(FileRepository.CRITERIA_CONDITION_ALIAS_FILE_NAME);
-        condition.setOperation(ConditionOperation.co_CONTAIN);
+        condition.setOperation(ConditionOperation.CONTAIN);
         condition.setCondVal("BO");
         // 修改时间大于2016-11-11
         condition = criteria.getConditions().create();
         condition.setAlias(FileRepository.CRITERIA_CONDITION_ALIAS_MODIFIED_TIME);
-        condition.setOperation(ConditionOperation.co_GRATER_THAN);
+        condition.setOperation(ConditionOperation.GRATER_THAN);
         condition.setCondVal(DateTime.valueOf("2016-11-11").getTime());
 
         FileRepository fileRepository = new FileRepository();

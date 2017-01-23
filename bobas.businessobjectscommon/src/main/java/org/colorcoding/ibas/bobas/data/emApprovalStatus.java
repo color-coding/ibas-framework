@@ -18,34 +18,34 @@ public enum emApprovalStatus {
 	 * 不影响
 	 */
 	@DbValue(value = "U")
-	Unaffected,
+	UNAFFECTED,
 
 	/**
 	 * 审批中
 	 */
 	@DbValue(value = "P")
-	Processing,
+	PROCESSING,
 
 	/**
 	 * 已批准
 	 */
 	@DbValue(value = "A")
-	Approved,
+	APPROVED,
 
 	/**
 	 * 已拒绝
 	 */
 	@DbValue(value = "R")
-	Rejected,
+	REJECTED,
 	// /**
 	// * 已退回
 	// */
-	// @DbValue(value = "T") Returned,
+	// @DbValue(value = "T") RETURNED,
 	/**
 	 * 已取消
 	 */
 	@DbValue(value = "C")
-	Cancelled;
+	CANCELLED;
 
 	public int getValue() {
 		return this.ordinal();

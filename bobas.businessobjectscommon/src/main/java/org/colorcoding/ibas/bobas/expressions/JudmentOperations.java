@@ -73,25 +73,25 @@ public enum JudmentOperations {
 		if (value == null) {
 			return null;
 		}
-		if (value == ConditionOperation.co_CONTAIN) {
+		if (value == ConditionOperation.CONTAIN) {
 			return JudmentOperations.CONTAIN;
-		} else if (value == ConditionOperation.co_NOT_CONTAIN) {
+		} else if (value == ConditionOperation.NOT_CONTAIN) {
 			return JudmentOperations.NOT_CONTAIN;
-		} else if (value == ConditionOperation.co_EQUAL) {
+		} else if (value == ConditionOperation.EQUAL) {
 			return JudmentOperations.EQUAL;
-		} else if (value == ConditionOperation.co_NOT_EQUAL) {
+		} else if (value == ConditionOperation.NOT_EQUAL) {
 			return JudmentOperations.NOT_EQUAL;
-		} else if (value == ConditionOperation.co_GRATER_EQUAL) {
+		} else if (value == ConditionOperation.GRATER_EQUAL) {
 			return JudmentOperations.GRATER_EQUAL;
-		} else if (value == ConditionOperation.co_GRATER_THAN) {
+		} else if (value == ConditionOperation.GRATER_THAN) {
 			return JudmentOperations.GRATER_THAN;
-		} else if (value == ConditionOperation.co_LESS_EQUAL) {
+		} else if (value == ConditionOperation.LESS_EQUAL) {
 			return JudmentOperations.LESS_EQUAL;
-		} else if (value == ConditionOperation.co_LESS_THAN) {
+		} else if (value == ConditionOperation.LESS_THAN) {
 			return JudmentOperations.LESS_THAN;
-		} else if (value == ConditionOperation.co_START) {
+		} else if (value == ConditionOperation.START) {
 			return JudmentOperations.BEGIN_WITH;
-		} else if (value == ConditionOperation.co_END) {
+		} else if (value == ConditionOperation.END) {
 			return JudmentOperations.END_WITH;
 		}
 		return null;
@@ -101,9 +101,9 @@ public enum JudmentOperations {
 		if (value == null) {
 			return null;
 		}
-		if (value == ConditionRelationship.cr_AND) {
+		if (value == ConditionRelationship.AND) {
 			return JudmentOperations.AND;
-		} else if (value == ConditionRelationship.cr_OR) {
+		} else if (value == ConditionRelationship.OR) {
 			return JudmentOperations.OR;
 		}
 		return null;

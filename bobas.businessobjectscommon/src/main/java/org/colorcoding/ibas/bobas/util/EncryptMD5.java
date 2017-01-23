@@ -14,7 +14,7 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
  */
 public class EncryptMD5 extends Encrypt {
 	// 要使用生成URL的字符
-	private final static String[] chars = new String[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l",
+	private final static String[] CHARS = new String[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l",
 			"m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6",
 			"7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R",
 			"S", "T", "U", "V", "W", "X", "Y", "Z" };
@@ -118,7 +118,7 @@ public class EncryptMD5 extends Encrypt {
 	 * @throws Exception
 	 */
 	public static String shortText(String text, String key) {
-		return shortText(text, chars, key);
+		return shortText(text, CHARS, key);
 	}
 
 	/**
@@ -146,7 +146,7 @@ public class EncryptMD5 extends Encrypt {
 	 */
 	public static String shortText(String text) {
 		// 自定义生成MD5加密字符串前的混合KEY
-		return shortText(text, chars);
+		return shortText(text, CHARS);
 	}
 
 }

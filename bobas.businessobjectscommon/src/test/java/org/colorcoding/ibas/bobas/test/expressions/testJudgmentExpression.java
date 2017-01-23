@@ -106,52 +106,52 @@ public class testJudgmentExpression extends TestCase {
 		ICondition condition = criteria.getConditions().create();
 		condition.setBracketOpenNum(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
-		condition.setCondVal(emDocumentStatus.Planned);
+		condition.setCondVal(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
 		condition.setBracketCloseNum(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
-		condition.setCondVal(emDocumentStatus.Finished);
-		condition.setRelationship(ConditionRelationship.cr_OR);
+		condition.setCondVal(emDocumentStatus.FINISHED);
+		condition.setRelationship(ConditionRelationship.OR);
 		// and (("DocDueDate" = "2016-03-15" or "DocDueDate" = "2016-03-17")
 		// and (("DocTotal" >= 10000 and "DocTotal" >= 10000)))
 		condition = criteria.getConditions().create();
 		condition.setBracketOpenNum(2);
 		condition.setAlias(SalesOrder.DeliveryDateProperty.getName());
 		condition.setCondVal("2016-03-15");
-		condition.setRelationship(ConditionRelationship.cr_AND);
+		condition.setRelationship(ConditionRelationship.AND);
 		condition = criteria.getConditions().create();
 		condition.setBracketCloseNum(1);
 		condition.setAlias(SalesOrder.DeliveryDateProperty.getName());
 		condition.setCondVal("2016-03-17");
-		condition.setRelationship(ConditionRelationship.cr_OR);
+		condition.setRelationship(ConditionRelationship.OR);
 		condition = criteria.getConditions().create();
 		condition.setBracketOpenNum(2);
 		condition.setBracketCloseNum(0);
 		condition.setAlias(SalesOrder.DocumentTotalProperty.getName());
 		condition.setCondVal(10000);
-		condition.setOperation(ConditionOperation.co_GRATER_EQUAL);
-		condition.setRelationship(ConditionRelationship.cr_AND);
+		condition.setOperation(ConditionOperation.GRATER_EQUAL);
+		condition.setRelationship(ConditionRelationship.AND);
 		condition = criteria.getConditions().create();
 		condition.setBracketCloseNum(3);
 		condition.setAlias(SalesOrder.DocumentTotalProperty.getName());
 		condition.setCondVal(10000);
-		condition.setOperation(ConditionOperation.co_GRATER_EQUAL);
-		condition.setRelationship(ConditionRelationship.cr_AND);
+		condition.setOperation(ConditionOperation.GRATER_EQUAL);
+		condition.setRelationship(ConditionRelationship.AND);
 		// and "CustomerCode" = "C00001" and "DataOwner" <> 1
 		condition = criteria.getConditions().create();
 		condition.setAlias(SalesOrder.CustomerCodeProperty.getName());
 		condition.setCondVal("C00001");
-		condition.setRelationship(ConditionRelationship.cr_AND);
+		condition.setRelationship(ConditionRelationship.AND);
 		condition = criteria.getConditions().create();
 		condition.setAlias(SalesOrder.DataOwnerProperty.getName());
 		condition.setCondVal(1);
-		condition.setOperation(ConditionOperation.co_NOT_EQUAL);
-		condition.setRelationship(ConditionRelationship.cr_AND);
+		condition.setOperation(ConditionOperation.NOT_EQUAL);
+		condition.setRelationship(ConditionRelationship.AND);
 		// 数据
 		ArrayList<SalesOrder> salesOrders = new ArrayList<SalesOrder>();
 		SalesOrder salesOrder = new SalesOrder();
 		salesOrder.setDocEntry(1);
-		salesOrder.setDocumentStatus(emDocumentStatus.Finished);
+		salesOrder.setDocumentStatus(emDocumentStatus.FINISHED);
 		salesOrder.setDeliveryDate(DateTime.valueOf("2016-03-15"));
 		salesOrder.setDocumentTotal(20000);
 		salesOrder.setCustomerCode("C00001");
@@ -176,7 +176,7 @@ public class testJudgmentExpression extends TestCase {
 
 		salesOrder = salesOrder.clone();
 		salesOrder.setDocEntry(5);
-		salesOrder.setDocumentStatus(emDocumentStatus.Planned);
+		salesOrder.setDocumentStatus(emDocumentStatus.PLANNED);
 		salesOrders.add(salesOrder);
 
 		// OK Order Docentry： 1，3，

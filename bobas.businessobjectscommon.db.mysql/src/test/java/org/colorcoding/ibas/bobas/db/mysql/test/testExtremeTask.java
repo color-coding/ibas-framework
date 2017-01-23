@@ -48,8 +48,8 @@ public class testExtremeTask extends TestCase {
 		boRepository.dispose();
 		DateTime finish = DateTime.getNow();
 		System.out.println(String.format("ibas写入[%s]条数据，从[%s]到[%s]共[%s]秒，平均%s条/秒。", count, start.toString("HH:mm:ss"),
-				finish.toString("HH:mm:ss"), DateTime.interval(start, finish, emTimeUnit.second),
-				count / DateTime.interval(start, finish, emTimeUnit.second)));
+				finish.toString("HH:mm:ss"), DateTime.interval(start, finish, emTimeUnit.SECOND),
+				count / DateTime.interval(start, finish, emTimeUnit.SECOND)));
 	}
 
 	public void writeSQL2DB() throws ComputeException, ClassNotFoundException, SQLException {
@@ -90,8 +90,8 @@ public class testExtremeTask extends TestCase {
 		connection.setAutoCommit(true);
 		DateTime finish = DateTime.getNow();
 		System.out.println(String.format("jdbc写入[%s]条数据，从[%s]到[%s]共[%s]秒，平均%s条/秒。", count, start.toString("HH:mm:ss"),
-				finish.toString("HH:mm:ss"), DateTime.interval(start, finish, emTimeUnit.second),
-				count / DateTime.interval(start, finish, emTimeUnit.second)));
+				finish.toString("HH:mm:ss"), DateTime.interval(start, finish, emTimeUnit.SECOND),
+				count / DateTime.interval(start, finish, emTimeUnit.SECOND)));
 	}
 
 	public void testWriteDatas() throws Exception {
@@ -123,6 +123,6 @@ public class testExtremeTask extends TestCase {
 		}
 		System.out.println(String.format("查询[%s]条数据，从[%s]到[%s]共[%s]秒。", operationResult.getResultObjects().size(),
 				start.toString("HH:mm:ss"), finish.toString("HH:mm:ss"),
-				DateTime.interval(start, finish, emTimeUnit.second)));
+				DateTime.interval(start, finish, emTimeUnit.SECOND)));
 	}
 }

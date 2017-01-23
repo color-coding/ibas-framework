@@ -17,12 +17,12 @@ public enum emDirection {
 	 * 入
 	 */
 	@DbValue(value = "I")
-	In,
+	IN,
 	/**
 	 * 出
 	 */
 	@DbValue(value = "O")
-	Out;
+	OUT;
 
 	public int getValue() {
 		return this.ordinal();

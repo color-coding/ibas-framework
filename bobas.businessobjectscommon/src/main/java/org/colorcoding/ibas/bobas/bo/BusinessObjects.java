@@ -457,9 +457,9 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 							continue;
 						}
 						IBOReferenced lineItem = (IBOReferenced) item;
-						if (lineItem.getReferenced() == emYesNo.Yes) {
+						if (lineItem.getReferenced() == emYesNo.YES) {
 							// 任意子项被引用，父项被引用
-							parentField.setValue(emYesNo.Yes);
+							parentField.setValue(emYesNo.YES);
 							return;
 						}
 					}
@@ -484,7 +484,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 						lineItem = (IBOTagCanceled) item;
 						if (lineItem.getCanceled() != boCanceled) {
 							// 子项有不同值，退出，优先不取消
-							parentField.setValue(emYesNo.No);
+							parentField.setValue(emYesNo.NO);
 							return;
 						}
 					}
@@ -510,7 +510,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 						lineItem = (IBOTagDeleted) item;
 						if (lineItem.getDeleted() != boDeleted) {
 							// 子项有不同值，退出，优先不删除
-							parentField.setValue(emYesNo.No);
+							parentField.setValue(emYesNo.NO);
 							return;
 						}
 					}
@@ -540,18 +540,18 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 							lineItem = (IBODocumentLine) item;
 							if (lineItem.getLineStatus() != boLineStatus) {
 								// 子项有不同值
-								if (parent.getDocumentStatus() == emDocumentStatus.Planned) {
+								if (parent.getDocumentStatus() == emDocumentStatus.PLANNED) {
 									// 父项计划状态
-									if (boLineStatus.ordinal() > emDocumentStatus.Planned.ordinal()) {
+									if (boLineStatus.ordinal() > emDocumentStatus.PLANNED.ordinal()) {
 										// 子项变为计划以上状态
-										parentField.setValue(emDocumentStatus.Released);
+										parentField.setValue(emDocumentStatus.RELEASED);
 									}
 								} else {
 									if (parent.getDocumentStatus().ordinal() > boLineStatus.ordinal()) {
 										// 父项高于修改状态，父项降低
-										if (boLineStatus == emDocumentStatus.Planned)
+										if (boLineStatus == emDocumentStatus.PLANNED)
 											// 最低到Relase
-											parentField.setValue(emDocumentStatus.Released);
+											parentField.setValue(emDocumentStatus.RELEASED);
 										else
 											parentField.setValue(boLineStatus);
 									}
@@ -577,7 +577,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 							lineItem = (IBODocumentLine) item;
 							if (lineItem.getStatus() != boStatus) {
 								// 子项有不同值，退出，优先不关闭
-								parentField.setValue(emBOStatus.Open);
+								parentField.setValue(emBOStatus.OPEN);
 								return;
 							}
 						}
@@ -600,18 +600,18 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 							}
 							lineItem = (IBODocumentLine) item;
 							if (lineItem.getLineStatus() != boLineStatus) {
-								if (parent.getLineStatus() == emDocumentStatus.Planned) {
+								if (parent.getLineStatus() == emDocumentStatus.PLANNED) {
 									// 父项计划状态
-									if (boLineStatus.ordinal() > emDocumentStatus.Planned.ordinal()) {
+									if (boLineStatus.ordinal() > emDocumentStatus.PLANNED.ordinal()) {
 										// 子项变为计划以上状态
-										parentField.setValue(emDocumentStatus.Released);
+										parentField.setValue(emDocumentStatus.RELEASED);
 									}
 								} else {
 									if (parent.getLineStatus().ordinal() > boLineStatus.ordinal()) {
 										// 父项高于修改状态，父项降低
-										if (boLineStatus == emDocumentStatus.Planned)
+										if (boLineStatus == emDocumentStatus.PLANNED)
 											// 最低到Relase
-											parentField.setValue(emDocumentStatus.Released);
+											parentField.setValue(emDocumentStatus.RELEASED);
 										else
 											parentField.setValue(boLineStatus);
 									}
@@ -637,7 +637,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 							lineItem = (IBODocumentLine) item;
 							if (lineItem.getStatus() != boStatus) {
 								// 子项有不同值，退出，优先不关闭
-								parentField.setValue(emBOStatus.Open);
+								parentField.setValue(emBOStatus.OPEN);
 								return;
 							}
 						}
@@ -670,7 +670,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 			// 元素类型是行类型，则添加排序字段
 			ISort sort = criteria.getSorts().create();
 			sort.setAlias(IBOLine.SECONDARY_PRIMARY_KEY_NAME);
-			sort.setSortType(SortType.st_ASCENDING);
+			sort.setSortType(SortType.ASCENDING);
 		}
 		return criteria;
 	}

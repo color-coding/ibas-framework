@@ -15,17 +15,17 @@ public enum emTimeUnit {
 	 * 秒
 	 */
 	@DbValue(value = "s")
-	second(0),
+	SECOND(0),
 	/**
 	 * 分钟
 	 */
 	@DbValue(value = "m")
-	minute(1),
+	MINUTE(1),
 	/**
 	 * 小时
 	 */
 	@DbValue(value = "h")
-	hour(2);
+	HOUR(2);
 
 	private int intValue;
 	private static java.util.HashMap<Integer, emTimeUnit> mappings;

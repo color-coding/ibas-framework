@@ -4,29 +4,29 @@ public enum DbFieldType {
 	/**
 	 * 未知
 	 */
-	db_Unknown,
+	UNKNOWN,
 	/**
 	 * 字母数字
 	 */
-	db_Alphanumeric,
+	ALPHANUMERIC,
 	/**
 	 * 长字符串
 	 */
-	db_Memo,
+	MEMO,
 	/**
 	 * 数字
 	 */
-	db_Numeric,
+	NUMERIC,
 	/**
 	 * 日期
 	 */
-	db_Date,
+	DATE,
 	/**
 	 * 小数
 	 */
-	db_Decimal,
+	DECIMAL,
 	/**
 	 * 字节
 	 */
-	db_Bytes;
+	BYTES;
 }

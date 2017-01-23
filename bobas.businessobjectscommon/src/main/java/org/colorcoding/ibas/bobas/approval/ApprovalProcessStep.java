@@ -31,7 +31,7 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
      * 恢复为初始状态
      */
     void restore() {
-        this.setStatus(emApprovalStepStatus.Pending);
+        this.setStatus(emApprovalStepStatus.PENDING);
         this.setStartedTime(DateTime.getMaxValue());
         this.setFinishedTime(DateTime.getMaxValue());
         this.setJudgment("");
@@ -43,11 +43,11 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
      * @throws UnlogicalException
      */
     void start() throws UnlogicalException {
-        if (this.getStatus() != emApprovalStepStatus.Pending) {
+        if (this.getStatus() != emApprovalStepStatus.PENDING) {
             throw new UnlogicalException();
         }
         this.setStartedTime(DateTime.getNow());
-        this.setStatus(emApprovalStepStatus.Processing);
+        this.setStatus(emApprovalStepStatus.PROCESSING);
     }
 
     /**
@@ -58,11 +58,11 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
      * @throws UnlogicalException
      */
     void approve(String judgment) throws UnlogicalException {
-        if (this.getStatus() != emApprovalStepStatus.Processing) {
+        if (this.getStatus() != emApprovalStepStatus.PROCESSING) {
             throw new UnlogicalException();
         }
         this.setFinishedTime(DateTime.getNow());
-        this.setStatus(emApprovalStepStatus.Approved);
+        this.setStatus(emApprovalStepStatus.APPROVED);
         this.setJudgment(judgment);
     }
 
@@ -74,11 +74,11 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
      * @throws UnlogicalException
      */
     void reject(String judgment) throws UnlogicalException {
-        if (this.getStatus() != emApprovalStepStatus.Processing) {
+        if (this.getStatus() != emApprovalStepStatus.PROCESSING) {
             throw new UnlogicalException();
         }
         this.setFinishedTime(DateTime.getNow());
-        this.setStatus(emApprovalStepStatus.Rejected);
+        this.setStatus(emApprovalStepStatus.REJECTED);
         this.setJudgment(judgment);
     }
 
@@ -88,11 +88,11 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
      * @throws UnlogicalException
      */
     void reset() throws UnlogicalException {
-        if (this.getStatus() != emApprovalStepStatus.Approved && this.getStatus() != emApprovalStepStatus.Rejected) {
+        if (this.getStatus() != emApprovalStepStatus.APPROVED && this.getStatus() != emApprovalStepStatus.REJECTED) {
             throw new UnlogicalException();
         }
         this.setFinishedTime(DateTime.getMaxValue());
-        this.setStatus(emApprovalStepStatus.Processing);
+        this.setStatus(emApprovalStepStatus.PROCESSING);
         this.setJudgment("");
     }
 
@@ -102,12 +102,12 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
      * @throws UnlogicalException
      */
     void skip() throws UnlogicalException {
-        if (this.getStatus() != emApprovalStepStatus.Pending) {
+        if (this.getStatus() != emApprovalStepStatus.PENDING) {
             throw new UnlogicalException();
         }
         this.setStartedTime(DateTime.getNow());
         this.setFinishedTime(DateTime.getNow());
-        this.setStatus(emApprovalStepStatus.Skipped);
+        this.setStatus(emApprovalStepStatus.SKIPPED);
         this.setJudgment("");
     }
 

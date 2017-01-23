@@ -60,7 +60,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 凭证编号 属性
      */
-    @DbField(name = "DocEntry", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = true)
+    @DbField(name = "DocEntry", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = true)
     public final static IPropertyInfo<Integer> DocEntryProperty = registerProperty("DocEntry", Integer.class, MY_CLASS);
 
     /**
@@ -88,7 +88,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 期间编号 属性
      */
-    @DbField(name = "DocNum", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "DocNum", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Integer> DocNumProperty = registerProperty("DocNum", Integer.class, MY_CLASS);
 
     /**
@@ -116,7 +116,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 期间 属性
      */
-    @DbField(name = "Period", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Period", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Integer> PeriodProperty = registerProperty("Period", Integer.class, MY_CLASS);
 
     /**
@@ -144,7 +144,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * Instance 属性
      */
-    @DbField(name = "Instance", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Instance", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Integer> InstanceProperty = registerProperty("Instance", Integer.class, MY_CLASS);
 
     /**
@@ -170,7 +170,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 服务系列 属性
      */
-    @DbField(name = "Series", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Series", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Integer> SeriesProperty = registerProperty("Series", Integer.class, MY_CLASS);
 
     /**
@@ -196,7 +196,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 手写 属性
      */
-    @DbField(name = "Handwrtten", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Handwrtten", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<emYesNo> HandwrittenProperty = registerProperty("Handwritten", emYesNo.class,
             MY_CLASS);
 
@@ -223,7 +223,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 取消 属性
      */
-    @DbField(name = "Canceled", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Canceled", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<emYesNo> CanceledProperty = registerProperty("Canceled", emYesNo.class, MY_CLASS);
 
     /**
@@ -251,7 +251,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 引用 属性
      */
-    @DbField(name = "Refed", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Refed", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<emYesNo> ReferencedProperty = registerProperty("Referenced", emYesNo.class,
             MY_CLASS);
 
@@ -280,7 +280,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 类型 属性
      */
-    @DbField(name = "Object", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Object", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<String> ObjectCodeProperty = registerProperty("ObjectCode", String.class,
             MY_CLASS);
 
@@ -308,7 +308,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 数据源 属性
      */
-    @DbField(name = "DataSource", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "DataSource", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<String> DataSourceProperty = registerProperty("DataSource", String.class,
             MY_CLASS);
 
@@ -337,7 +337,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 实例号（版本） 属性
      */
-    @DbField(name = "LogInst", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "LogInst", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Integer> LogInstProperty = registerProperty("LogInst", Integer.class, MY_CLASS);
 
     /**
@@ -365,7 +365,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 用户 属性
      */
-    @DbField(name = "UserSign", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "UserSign", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Integer> UserSignProperty = registerProperty("UserSign", Integer.class, MY_CLASS);
 
     /**
@@ -391,7 +391,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 是否结转 属性
      */
-    @DbField(name = "Transfered", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Transfered", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<emYesNo> TransferedProperty = registerProperty("Transfered", emYesNo.class,
             MY_CLASS);
 
@@ -418,7 +418,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 状态 属性
      */
-    @DbField(name = "Status", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Status", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<emBOStatus> StatusProperty = registerProperty("Status", emBOStatus.class,
             MY_CLASS);
 
@@ -447,7 +447,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 创建日期 属性
      */
-    @DbField(name = "CreateDate", type = DbFieldType.db_Date, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "CreateDate", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<DateTime> CreateDateProperty = registerProperty("CreateDate", DateTime.class,
             MY_CLASS);
 
@@ -476,7 +476,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 创建时间 属性
      */
-    @DbField(name = "CreateTime", type = DbFieldType.db_Date, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "CreateTime", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Short> CreateTimeProperty = registerProperty("CreateTime", Short.class, MY_CLASS);
 
     /**
@@ -504,7 +504,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 修改日期 属性
      */
-    @DbField(name = "UpdateDate", type = DbFieldType.db_Date, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "UpdateDate", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<DateTime> UpdateDateProperty = registerProperty("UpdateDate", DateTime.class,
             MY_CLASS);
 
@@ -533,7 +533,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 修改时间 属性
      */
-    @DbField(name = "UpdateTime", type = DbFieldType.db_Date, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "UpdateTime", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Short> UpdateTimeProperty = registerProperty("UpdateTime", Short.class, MY_CLASS);
 
     /**
@@ -561,7 +561,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 创建用户 属性
      */
-    @DbField(name = "Creator", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Creator", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Integer> CreateUserSignProperty = registerProperty("CreateUserSign",
             Integer.class, MY_CLASS);
 
@@ -590,7 +590,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 修改用户 属性
      */
-    @DbField(name = "Updator", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Updator", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Integer> UpdateUserSignProperty = registerProperty("UpdateUserSign",
             Integer.class, MY_CLASS);
 
@@ -619,7 +619,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 创建动作标识 属性
      */
-    @DbField(name = "CreateActId", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "CreateActId", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<String> CreateActionIdProperty = registerProperty("CreateActionId", String.class,
             MY_CLASS);
 
@@ -648,7 +648,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 更新动作标识 属性
      */
-    @DbField(name = "UpdateActId", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "UpdateActId", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<String> UpdateActionIdProperty = registerProperty("UpdateActionId", String.class,
             MY_CLASS);
 
@@ -677,7 +677,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 单据状态 属性
      */
-    @DbField(name = "DocStatus", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "DocStatus", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<emDocumentStatus> DocumentStatusProperty = registerProperty("DocumentStatus",
             emDocumentStatus.class, MY_CLASS);
 
@@ -706,7 +706,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 过账日期 属性
      */
-    @DbField(name = "DocDate", type = DbFieldType.db_Date, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "DocDate", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<DateTime> PostingDateProperty = registerProperty("PostingDate", DateTime.class,
             MY_CLASS);
 
@@ -735,7 +735,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 到期日 属性
      */
-    @DbField(name = "DocDueDate", type = DbFieldType.db_Date, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "DocDueDate", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<DateTime> DeliveryDateProperty = registerProperty("DeliveryDate", DateTime.class,
             MY_CLASS);
 
@@ -764,7 +764,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 凭证日期 属性
      */
-    @DbField(name = "TaxDate", type = DbFieldType.db_Date, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "TaxDate", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<DateTime> DocumentDateProperty = registerProperty("DocumentDate", DateTime.class,
             MY_CLASS);
 
@@ -793,7 +793,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 客户代码 属性
      */
-    @DbField(name = "CardCode", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "CardCode", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<String> CustomerCodeProperty = registerProperty("CustomerCode", String.class,
             MY_CLASS);
 
@@ -820,7 +820,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 客户名称 属性
      */
-    @DbField(name = "CardName", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "CardName", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<String> CustomerNameProperty = registerProperty("CustomerName", String.class,
             MY_CLASS);
 
@@ -847,7 +847,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 单据总计 属性
      */
-    @DbField(name = "DocTotal", type = DbFieldType.db_Decimal, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "DocTotal", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Decimal> DocumentTotalProperty = registerProperty("DocumentTotal", Decimal.class,
             MY_CLASS);
 
@@ -904,7 +904,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 数据所有者 属性
      */
-    @DbField(name = "DataOwner", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "DataOwner", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Integer> DataOwnerProperty = registerProperty("DataOwner", Integer.class,
             MY_CLASS);
 
@@ -922,7 +922,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
     /**
      * 审批状态 属性
      */
-    @DbField(name = "ApvlStatus", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "ApvlStatus", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<emApprovalStatus> ApprovalStatusProperty = registerProperty("ApprovalStatus",
             emApprovalStatus.class, MY_CLASS);
 
@@ -987,7 +987,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
         this.setPostingDate(DateTime.getToday());
         this.setDocumentDate(DateTime.getToday());
         this.setDeliveryDate(DateTime.getToday());
-        this.setDocumentStatus(emDocumentStatus.Released);
+        this.setDocumentStatus(emDocumentStatus.RELEASED);
 
     }
 

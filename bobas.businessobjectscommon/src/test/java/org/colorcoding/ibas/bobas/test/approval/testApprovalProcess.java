@@ -27,7 +27,7 @@ public class testApprovalProcess extends TestCase {
 		order.setDocEntry(1);
 		order.setCustomerCode("C00001");
 		order.setDeliveryDate(DateTime.getToday());
-		order.setDocumentStatus(emDocumentStatus.Released);
+		order.setDocumentStatus(emDocumentStatus.RELEASED);
 		order.setDocumentTotal(new Decimal("99.99"));
 		ISalesOrderItem orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00001");
@@ -206,7 +206,7 @@ public class testApprovalProcess extends TestCase {
 		order.setDocEntry(1);
 		order.setCustomerCode("C00001");
 		order.setDeliveryDate(DateTime.getToday());
-		order.setDocumentStatus(emDocumentStatus.Released);
+		order.setDocumentStatus(emDocumentStatus.RELEASED);
 		order.setDocumentTotal(new Decimal("99.99"));
 		ISalesOrderItem orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00001");
@@ -353,42 +353,42 @@ public class testApprovalProcess extends TestCase {
 		boolean done = aProcess.start(order);
 		assertEquals(String.format("order total [%s] not start approval process.", order.getDocumentTotal()), done,
 				true);
-		assertEquals("ap was not approved.", aProcess.getStatus(), emApprovalStatus.Processing);
+		assertEquals("ap was not approved.", aProcess.getStatus(), emApprovalStatus.PROCESSING);
 		// 全部批准
-		aProcess.approval(step10.getId(), emApprovalResult.Approved, "", "");
-		assertEquals("ap step 10 was not approved.", step10.getStatus(), emApprovalStepStatus.Approved);
-		assertEquals("ap step 20 was not processing.", step20.getStatus(), emApprovalStepStatus.Processing);
-		aProcess.approval(step20.getId(), emApprovalResult.Approved, "", "");
-		assertEquals("ap step 20 was not approved.", step20.getStatus(), emApprovalStepStatus.Approved);
-		assertEquals("ap step 30 was not processing.", step30.getStatus(), emApprovalStepStatus.Processing);
-		aProcess.approval(step30.getId(), emApprovalResult.Approved, "", "");
-		assertEquals("ap step 30 was not approved.", step30.getStatus(), emApprovalStepStatus.Approved);
-		assertEquals("ap was not approved.", aProcess.getStatus(), emApprovalStatus.Approved);
+		aProcess.approval(step10.getId(), emApprovalResult.APPROVED, "", "");
+		assertEquals("ap step 10 was not approved.", step10.getStatus(), emApprovalStepStatus.APPROVED);
+		assertEquals("ap step 20 was not processing.", step20.getStatus(), emApprovalStepStatus.PROCESSING);
+		aProcess.approval(step20.getId(), emApprovalResult.APPROVED, "", "");
+		assertEquals("ap step 20 was not approved.", step20.getStatus(), emApprovalStepStatus.APPROVED);
+		assertEquals("ap step 30 was not processing.", step30.getStatus(), emApprovalStepStatus.PROCESSING);
+		aProcess.approval(step30.getId(), emApprovalResult.APPROVED, "", "");
+		assertEquals("ap step 30 was not approved.", step30.getStatus(), emApprovalStepStatus.APPROVED);
+		assertEquals("ap was not approved.", aProcess.getStatus(), emApprovalStatus.APPROVED);
 
 		// 先拒绝，然后撤销，再批准
 		done = aProcess.start(order);
 		assertEquals(String.format("order total [%s] not start approval process.", order.getDocumentTotal()), done,
 				true);
-		aProcess.approval(step10.getId(), emApprovalResult.Rejected, "", "");
-		assertEquals("ap step 10 was not Rejected.", step10.getStatus(), emApprovalStepStatus.Rejected);
-		assertEquals("ap was not Rejected.", aProcess.getStatus(), emApprovalStatus.Rejected);
-		aProcess.approval(step10.getId(), emApprovalResult.Processing, "", "");
-		assertEquals("ap step 10 was not Processing.", step10.getStatus(), emApprovalStepStatus.Processing);
-		assertEquals("ap was not Processing.", aProcess.getStatus(), emApprovalStatus.Processing);
-		aProcess.approval(step10.getId(), emApprovalResult.Approved, "", "");
-		aProcess.approval(step20.getId(), emApprovalResult.Rejected, "", "");
-		assertEquals("ap step 20 was not Rejected.", step20.getStatus(), emApprovalStepStatus.Rejected);
-		assertEquals("ap was not Rejected.", aProcess.getStatus(), emApprovalStatus.Rejected);
-		aProcess.approval(step20.getId(), emApprovalResult.Processing, "", "");
-		assertEquals("ap step 20 was not Processing.", step20.getStatus(), emApprovalStepStatus.Processing);
-		assertEquals("ap was not Processing.", aProcess.getStatus(), emApprovalStatus.Processing);
-		aProcess.approval(step20.getId(), emApprovalResult.Approved, "", "");
-		aProcess.approval(step30.getId(), emApprovalResult.Rejected, "", "");
-		assertEquals("ap step 30 was not Rejected.", step30.getStatus(), emApprovalStepStatus.Rejected);
-		assertEquals("ap was not Rejected.", aProcess.getStatus(), emApprovalStatus.Rejected);
-		aProcess.approval(step30.getId(), emApprovalResult.Processing, "", "");
-		assertEquals("ap step 20 was not Processing.", step30.getStatus(), emApprovalStepStatus.Processing);
-		assertEquals("ap was not Processing.", aProcess.getStatus(), emApprovalStatus.Processing);
+		aProcess.approval(step10.getId(), emApprovalResult.REJECTED, "", "");
+		assertEquals("ap step 10 was not Rejected.", step10.getStatus(), emApprovalStepStatus.REJECTED);
+		assertEquals("ap was not Rejected.", aProcess.getStatus(), emApprovalStatus.REJECTED);
+		aProcess.approval(step10.getId(), emApprovalResult.PROCESSING, "", "");
+		assertEquals("ap step 10 was not Processing.", step10.getStatus(), emApprovalStepStatus.PROCESSING);
+		assertEquals("ap was not Processing.", aProcess.getStatus(), emApprovalStatus.PROCESSING);
+		aProcess.approval(step10.getId(), emApprovalResult.APPROVED, "", "");
+		aProcess.approval(step20.getId(), emApprovalResult.REJECTED, "", "");
+		assertEquals("ap step 20 was not Rejected.", step20.getStatus(), emApprovalStepStatus.REJECTED);
+		assertEquals("ap was not Rejected.", aProcess.getStatus(), emApprovalStatus.REJECTED);
+		aProcess.approval(step20.getId(), emApprovalResult.PROCESSING, "", "");
+		assertEquals("ap step 20 was not Processing.", step20.getStatus(), emApprovalStepStatus.PROCESSING);
+		assertEquals("ap was not Processing.", aProcess.getStatus(), emApprovalStatus.PROCESSING);
+		aProcess.approval(step20.getId(), emApprovalResult.APPROVED, "", "");
+		aProcess.approval(step30.getId(), emApprovalResult.REJECTED, "", "");
+		assertEquals("ap step 30 was not Rejected.", step30.getStatus(), emApprovalStepStatus.REJECTED);
+		assertEquals("ap was not Rejected.", aProcess.getStatus(), emApprovalStatus.REJECTED);
+		aProcess.approval(step30.getId(), emApprovalResult.PROCESSING, "", "");
+		assertEquals("ap step 20 was not Processing.", step30.getStatus(), emApprovalStepStatus.PROCESSING);
+		assertEquals("ap was not Processing.", aProcess.getStatus(), emApprovalStatus.PROCESSING);
 
 		// aProcess.approval(step10.getId(), emApprovalResult.Processing, "",
 		// "");// 跳步骤重置，此处应报错

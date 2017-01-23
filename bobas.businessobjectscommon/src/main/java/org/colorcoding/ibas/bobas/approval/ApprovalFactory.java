@@ -52,9 +52,9 @@ public class ApprovalFactory extends ConfigurableFactory {
             return new IApprovalProcessManager() {
                 @Override
                 public IApprovalProcess checkProcess(IApprovalData data) {
-                    if (data.getApprovalStatus() != emApprovalStatus.Unaffected) {
+                    if (data.getApprovalStatus() != emApprovalStatus.UNAFFECTED) {
                         // 重置数据状态
-                        data.setApprovalStatus(emApprovalStatus.Unaffected);
+                        data.setApprovalStatus(emApprovalStatus.UNAFFECTED);
                     }
                     return null;
                 }

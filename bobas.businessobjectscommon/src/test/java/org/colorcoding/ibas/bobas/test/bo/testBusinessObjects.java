@@ -31,17 +31,17 @@ public class testBusinessObjects extends TestCase {
         order.setDocEntry(1);
         order.setCustomerCode("C00001");
         order.setDeliveryDate(DateTime.getToday());
-        order.setDocumentStatus(emDocumentStatus.Released);
+        order.setDocumentStatus(emDocumentStatus.RELEASED);
         order.setDocumentTotal(new Decimal("99.99"));
         order.setDocumentUser(new User());
         order.setTeamUsers(new User[] { new User(), new User() });
-        order.setCycle(new Time(1.05, emTimeUnit.hour));
+        order.setCycle(new Time(1.05, emTimeUnit.HOUR));
         order.getCycle().setValue(0.9988);
 
-        order.getUserFields().addUserField("U_OrderType", DbFieldType.db_Alphanumeric);
-        order.getUserFields().addUserField("U_OrderId", DbFieldType.db_Numeric);
-        order.getUserFields().addUserField("U_OrderDate", DbFieldType.db_Date);
-        order.getUserFields().addUserField("U_OrderTotal", DbFieldType.db_Decimal);
+        order.getUserFields().addUserField("U_OrderType", DbFieldType.ALPHANUMERIC);
+        order.getUserFields().addUserField("U_OrderId", DbFieldType.NUMERIC);
+        order.getUserFields().addUserField("U_OrderDate", DbFieldType.DATE);
+        order.getUserFields().addUserField("U_OrderTotal", DbFieldType.DECIMAL);
 
         order.getUserFields().setValue("U_OrderType", "S0000");
         order.getUserFields().setValue("U_OrderId", 5768);
@@ -61,7 +61,7 @@ public class testBusinessObjects extends TestCase {
         assertEquals("Property [DocEntry] faild. ", (int) order.getDocEntry(), 1);
         assertEquals("Property [CustomerCode] faild. ", order.getCustomerCode(), "C00001");
         assertTrue("Property [DueDate] faild. ", order.getDeliveryDate().equals(DateTime.getToday()));
-        assertEquals("Property [DocumentStatus] faild. ", order.getDocumentStatus(), emDocumentStatus.Released);
+        assertEquals("Property [DocumentStatus] faild. ", order.getDocumentStatus(), emDocumentStatus.RELEASED);
         assertTrue("Property [DocumentTotal] faild. ", order.getDocumentTotal().toString().equals("99.99"));
 
         System.out.println(orderItem.toString());
@@ -172,17 +172,17 @@ public class testBusinessObjects extends TestCase {
         order.setDocEntry(1);
         order.setCustomerCode("C00001");
         order.setDeliveryDate(DateTime.getToday());
-        order.setDocumentStatus(emDocumentStatus.Released);
+        order.setDocumentStatus(emDocumentStatus.RELEASED);
         order.setDocumentTotal(new Decimal("99.99"));
         order.setDocumentUser(new User());
         order.setTeamUsers(new User[] { new User(), new User() });
-        order.setCycle(new Time(1.05, emTimeUnit.hour));
+        order.setCycle(new Time(1.05, emTimeUnit.HOUR));
         order.getCycle().setValue(0.9988);
 
-        order.getUserFields().addUserField("U_OrderType", DbFieldType.db_Alphanumeric);
-        order.getUserFields().addUserField("U_OrderId", DbFieldType.db_Numeric);
-        order.getUserFields().addUserField("U_OrderDate", DbFieldType.db_Date);
-        order.getUserFields().addUserField("U_OrderTotal", DbFieldType.db_Decimal);
+        order.getUserFields().addUserField("U_OrderType", DbFieldType.ALPHANUMERIC);
+        order.getUserFields().addUserField("U_OrderId", DbFieldType.NUMERIC);
+        order.getUserFields().addUserField("U_OrderDate", DbFieldType.DATE);
+        order.getUserFields().addUserField("U_OrderTotal", DbFieldType.DECIMAL);
 
         order.getUserFields().setValue("U_OrderType", "S0000");
         order.getUserFields().setValue("U_OrderId", 5768);
@@ -202,7 +202,7 @@ public class testBusinessObjects extends TestCase {
         assertEquals("Property [DocEntry] faild. ", (int) order.getDocEntry(), 1);
         assertEquals("Property [CustomerCode] faild. ", order.getCustomerCode(), "C00001");
         assertTrue("Property [DueDate] faild. ", order.getDeliveryDate().equals(DateTime.getToday()));
-        assertEquals("Property [DocumentStatus] faild. ", order.getDocumentStatus(), emDocumentStatus.Released);
+        assertEquals("Property [DocumentStatus] faild. ", order.getDocumentStatus(), emDocumentStatus.RELEASED);
         assertTrue("Property [DocumentTotal] faild. ", order.getDocumentTotal().toString().equals("99.99"));
 
         System.out.println(orderItem.toString());
@@ -228,12 +228,12 @@ public class testBusinessObjects extends TestCase {
 
     public void testStatusChanged() {
         SalesOrder order = new SalesOrder();
-        order.setDocumentStatus(emDocumentStatus.Released);
+        order.setDocumentStatus(emDocumentStatus.RELEASED);
         ISalesOrderItem line = order.getSalesOrderItems().create();
         assertEquals("LineStatus value faild.", order.getDocumentStatus(), line.getLineStatus());
         line = order.getSalesOrderItems().create();
         line = order.getSalesOrderItems().create();
-        emYesNo changedCanceled = emYesNo.Yes;
+        emYesNo changedCanceled = emYesNo.YES;
         for (ISalesOrderItem item : order.getSalesOrderItems()) {
             item.setCanceled(changedCanceled);
             System.out.println(String.format("changed [%s] canceled [%s], parent [%s] ", item.toString(),
@@ -241,10 +241,10 @@ public class testBusinessObjects extends TestCase {
         }
         System.out.println(String.format("finally [%s] canceled [%s]", order.toString(), order.getCanceled()));
         assertEquals("status changed faild.", changedCanceled, order.getCanceled());
-        line.setCanceled(emYesNo.No);
-        assertEquals("status changed faild.", emYesNo.No, order.getCanceled());
+        line.setCanceled(emYesNo.NO);
+        assertEquals("status changed faild.", emYesNo.NO, order.getCanceled());
         System.out.println(String.format("finally [%s] status [%s]", order.toString(), order.getCanceled()));
-        emBOStatus changedStatus = emBOStatus.Closed;
+        emBOStatus changedStatus = emBOStatus.CLOSED;
         for (ISalesOrderItem item : order.getSalesOrderItems()) {
             item.setStatus(changedStatus);
             System.out.println(String.format("changed [%s] status [%s], parent [%s] ", item.toString(),
@@ -252,9 +252,9 @@ public class testBusinessObjects extends TestCase {
         }
         System.out.println(String.format("finally [%s] status [%s]", order.toString(), order.getStatus()));
         assertEquals("status changed faild.", changedStatus, order.getStatus());
-        line.setStatus(emBOStatus.Open);
-        assertEquals("status changed faild.", emBOStatus.Open, order.getStatus());
-        emDocumentStatus changedDocumentStatus = emDocumentStatus.Finished;
+        line.setStatus(emBOStatus.OPEN);
+        assertEquals("status changed faild.", emBOStatus.OPEN, order.getStatus());
+        emDocumentStatus changedDocumentStatus = emDocumentStatus.FINISHED;
         order.setDocumentStatus(changedDocumentStatus);
         System.out.println(
                 String.format("changed [%s] documentstatus [%s]", order.toString(), order.getDocumentStatus()));
@@ -265,34 +265,34 @@ public class testBusinessObjects extends TestCase {
         }
 
         order = new SalesOrder();
-        order.setDocumentStatus(emDocumentStatus.Planned);
+        order.setDocumentStatus(emDocumentStatus.PLANNED);
         line = order.getSalesOrderItems().create();
         line = order.getSalesOrderItems().create();
         line = order.getSalesOrderItems().create();
-        line.setLineStatus(emDocumentStatus.Finished);
-        assertEquals("linestatus changed faild.", emDocumentStatus.Released, order.getDocumentStatus());
+        line.setLineStatus(emDocumentStatus.FINISHED);
+        assertEquals("linestatus changed faild.", emDocumentStatus.RELEASED, order.getDocumentStatus());
         for (ISalesOrderItem item : order.getSalesOrderItems()) {
             System.out.println(String.format("changed [%s] documentstatus [%s], parent [%s] ", item.toString(),
                     item.getLineStatus(), order.getDocumentStatus()));
         }
         for (ISalesOrderItem item : order.getSalesOrderItems()) {
-            item.setLineStatus(emDocumentStatus.Closed);
+            item.setLineStatus(emDocumentStatus.CLOSED);
             System.out.println(String.format("changed [%s] documentstatus [%s], parent [%s] ", item.toString(),
                     item.getLineStatus(), order.getDocumentStatus()));
         }
         System.out.println(
                 String.format("finally [%s] documentstatus [%s]", order.toString(), order.getDocumentStatus()));
-        assertEquals("status changed faild.", emDocumentStatus.Closed, order.getDocumentStatus());
-        line.setLineStatus(emDocumentStatus.Planned);
+        assertEquals("status changed faild.", emDocumentStatus.CLOSED, order.getDocumentStatus());
+        line.setLineStatus(emDocumentStatus.PLANNED);
         System.out.println(
                 String.format("finally [%s] documentstatus [%s]", order.toString(), order.getDocumentStatus()));
-        assertEquals("status changed faild.", emDocumentStatus.Released, order.getDocumentStatus());
-        line.setLineStatus(emDocumentStatus.Closed);
-        assertEquals("status changed faild.", emDocumentStatus.Closed, order.getDocumentStatus());
-        line.setLineStatus(emDocumentStatus.Finished);
+        assertEquals("status changed faild.", emDocumentStatus.RELEASED, order.getDocumentStatus());
+        line.setLineStatus(emDocumentStatus.CLOSED);
+        assertEquals("status changed faild.", emDocumentStatus.CLOSED, order.getDocumentStatus());
+        line.setLineStatus(emDocumentStatus.FINISHED);
         System.out.println(
                 String.format("finally [%s] documentstatus [%s]", order.toString(), order.getDocumentStatus()));
-        assertEquals("status changed faild.", emDocumentStatus.Finished, order.getDocumentStatus());
+        assertEquals("status changed faild.", emDocumentStatus.FINISHED, order.getDocumentStatus());
     }
 
     public void testSerializStatus() {
@@ -309,13 +309,13 @@ public class testBusinessObjects extends TestCase {
         stringBuilder.append(1);
         stringBuilder.append("</LineId>");
         stringBuilder.append("<LineStatus>");
-        stringBuilder.append(emDocumentStatus.Closed);
+        stringBuilder.append(emDocumentStatus.CLOSED);
         stringBuilder.append("</LineStatus>");
         stringBuilder.append("<Status>");
-        stringBuilder.append(emBOStatus.Closed);
+        stringBuilder.append(emBOStatus.CLOSED);
         stringBuilder.append("</Status>");
         stringBuilder.append("<Canceled>");
-        stringBuilder.append(emYesNo.Yes);
+        stringBuilder.append(emYesNo.YES);
         stringBuilder.append("</Canceled>");
         stringBuilder.append("</SalesOrderItem>");
         stringBuilder.append("<SalesOrderItem>");
@@ -326,13 +326,13 @@ public class testBusinessObjects extends TestCase {
         stringBuilder.append(2);
         stringBuilder.append("</LineId>");
         stringBuilder.append("<LineStatus>");
-        stringBuilder.append(emDocumentStatus.Closed);
+        stringBuilder.append(emDocumentStatus.CLOSED);
         stringBuilder.append("</LineStatus>");
         stringBuilder.append("<Status>");
-        stringBuilder.append(emBOStatus.Closed);
+        stringBuilder.append(emBOStatus.CLOSED);
         stringBuilder.append("</Status>");
         stringBuilder.append("<Canceled>");
-        stringBuilder.append(emYesNo.Yes);
+        stringBuilder.append(emYesNo.YES);
         stringBuilder.append("</Canceled>");
         stringBuilder.append("</SalesOrderItem>");
         stringBuilder.append("<SalesOrderItem>");
@@ -343,24 +343,24 @@ public class testBusinessObjects extends TestCase {
         stringBuilder.append(0);
         stringBuilder.append("</LineId>");
         stringBuilder.append("<LineStatus>");
-        stringBuilder.append(emDocumentStatus.Closed);
+        stringBuilder.append(emDocumentStatus.CLOSED);
         stringBuilder.append("</LineStatus>");
         stringBuilder.append("<Status>");
-        stringBuilder.append(emBOStatus.Closed);
+        stringBuilder.append(emBOStatus.CLOSED);
         stringBuilder.append("</Status>");
         stringBuilder.append("<Canceled>");
-        stringBuilder.append(emYesNo.Yes);
+        stringBuilder.append(emYesNo.YES);
         stringBuilder.append("</Canceled>");
         stringBuilder.append("</SalesOrderItem>");
         stringBuilder.append("</SalesOrderItems>");
         stringBuilder.append("<DocumentStatus>");
-        stringBuilder.append(emDocumentStatus.Closed);
+        stringBuilder.append(emDocumentStatus.CLOSED);
         stringBuilder.append("</DocumentStatus>");
         stringBuilder.append("<Status>");
-        stringBuilder.append(emBOStatus.Closed);
+        stringBuilder.append(emBOStatus.CLOSED);
         stringBuilder.append("</Status>");
         stringBuilder.append("<Canceled>");
-        stringBuilder.append(emYesNo.Yes);
+        stringBuilder.append(emYesNo.YES);
         stringBuilder.append("</Canceled>");
         stringBuilder.append("<DocEntry>");
         stringBuilder.append(99);
@@ -395,17 +395,17 @@ public class testBusinessObjects extends TestCase {
             order.setDocEntry(1);
             order.setCustomerCode("C00001");
             order.setDeliveryDate(DateTime.getToday());
-            order.setDocumentStatus(emDocumentStatus.Released);
+            order.setDocumentStatus(emDocumentStatus.RELEASED);
             order.setDocumentTotal(new Decimal("99.99"));
             order.setDocumentUser(new User());
             order.setTeamUsers(new User[] { new User(), new User() });
-            order.setCycle(new Time(1.05, emTimeUnit.hour));
+            order.setCycle(new Time(1.05, emTimeUnit.HOUR));
             order.getCycle().setValue(0.9988);
 
-            order.getUserFields().addUserField("U_OrderType", DbFieldType.db_Alphanumeric);
-            order.getUserFields().addUserField("U_OrderId", DbFieldType.db_Numeric);
-            order.getUserFields().addUserField("U_OrderDate", DbFieldType.db_Date);
-            order.getUserFields().addUserField("U_OrderTotal", DbFieldType.db_Decimal);
+            order.getUserFields().addUserField("U_OrderType", DbFieldType.ALPHANUMERIC);
+            order.getUserFields().addUserField("U_OrderId", DbFieldType.NUMERIC);
+            order.getUserFields().addUserField("U_OrderDate", DbFieldType.DATE);
+            order.getUserFields().addUserField("U_OrderTotal", DbFieldType.DECIMAL);
 
             order.getUserFields().setValue("U_OrderType", "S0000");
             order.getUserFields().setValue("U_OrderId", 5768);

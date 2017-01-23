@@ -29,7 +29,7 @@ public class Order extends BusinessObjectBase<Order> {
     /**
      * 数据库字段映射
      */
-    @DbField(name = "DocEntry", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = true)
+    @DbField(name = "DocEntry", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = true)
     /**
      * 依赖属性声明
      */
@@ -51,7 +51,7 @@ public class Order extends BusinessObjectBase<Order> {
         this.setProperty(DocEntryProperty, value);
     }
 
-    @DbField(name = "Suppler", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Suppler", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<String> SupplerProperty = registerProperty("Suppler", String.class, MY_CLASS);
 
     /**
@@ -68,7 +68,7 @@ public class Order extends BusinessObjectBase<Order> {
         this.setProperty(SupplerProperty, value);
     }
 
-    @DbField(name = "DueDate", type = DbFieldType.db_Date, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "DueDate", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<DateTime> DueDateProperty = registerProperty("DueDate", DateTime.class, MY_CLASS);
 
     @XmlElement(name = "DueDate")
@@ -80,7 +80,7 @@ public class Order extends BusinessObjectBase<Order> {
         this.setProperty(DueDateProperty, value);
     }
 
-    @DbField(name = "DocStatus", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "DocStatus", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<emDocumentStatus> DocumentStatusProperty = registerProperty("DocumentStatus",
             emDocumentStatus.class, MY_CLASS);
 
@@ -93,7 +93,7 @@ public class Order extends BusinessObjectBase<Order> {
         this.setProperty(DocumentStatusProperty, value);
     }
 
-    @DbField(name = "Activted", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "Activted", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Boolean> ActivtedProperty = registerProperty("Activted", Boolean.class, MY_CLASS);
 
     @XmlElement(name = "Activted")
@@ -105,7 +105,7 @@ public class Order extends BusinessObjectBase<Order> {
         this.setProperty(ActivtedProperty, value);
     }
 
-    @DbField(name = "DocTotal", type = DbFieldType.db_Decimal, table = DB_TABLE_NAME, primaryKey = false)
+    @DbField(name = "DocTotal", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
     public final static IPropertyInfo<Decimal> DocumentTotalProperty = registerProperty("DocumentTotal", Decimal.class,
             MY_CLASS);
 

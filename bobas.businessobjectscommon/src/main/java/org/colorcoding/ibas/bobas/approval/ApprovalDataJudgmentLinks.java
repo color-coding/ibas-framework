@@ -127,11 +127,11 @@ public class ApprovalDataJudgmentLinks extends BOJudgmentLinks {
 					return this.propertyName;
 				}
 
-				private static final String format_template = "{property's value: %s}";
+				private static final String FORMAT_TEMPLATE = "{property's value: %s}";
 
 				@Override
 				public String toString() {
-					return String.format(format_template, this.getPropertyName());
+					return String.format(FORMAT_TEMPLATE, this.getPropertyName());
 				}
 			};
 		}

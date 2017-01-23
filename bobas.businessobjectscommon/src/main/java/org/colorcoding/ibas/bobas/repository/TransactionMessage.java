@@ -29,7 +29,7 @@ public class TransactionMessage extends BusinessObject<TransactionMessage> imple
 	/**
 	 * 编码 属性
 	 */
-	@DbField(name = "Code", type = DbFieldType.db_Numeric, savable = false)
+	@DbField(name = "Code", type = DbFieldType.NUMERIC, savable = false)
 	public final static IPropertyInfo<Integer> CodeProperty = registerProperty("Code", Integer.class, MY_CLASS);
 
 	/**
@@ -55,7 +55,7 @@ public class TransactionMessage extends BusinessObject<TransactionMessage> imple
 	/**
 	 * 消息 属性
 	 */
-	@DbField(name = "Message", type = DbFieldType.db_Alphanumeric, savable = false)
+	@DbField(name = "Message", type = DbFieldType.ALPHANUMERIC, savable = false)
 	public final static IPropertyInfo<String> MessageProperty = registerProperty("Message", String.class, MY_CLASS);
 
 	/**

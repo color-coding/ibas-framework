@@ -39,35 +39,35 @@ public class testBOAdpter extends TestCase {
 		ICondition condition = criteria.getConditions().create();
 		condition.setBracketOpenNum(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
-		condition.setCondVal(emDocumentStatus.Planned);
+		condition.setCondVal(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
 		condition.setBracketCloseNum(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
-		condition.setCondVal(emDocumentStatus.Finished);
-		condition.setRelationship(ConditionRelationship.cr_OR);
+		condition.setCondVal(emDocumentStatus.FINISHED);
+		condition.setRelationship(ConditionRelationship.OR);
 		// AND "CardCode" IS NOT NULL AND "DocEntry" LIKE "2%"
 		condition = criteria.getConditions().create();
 		condition.setAlias(SalesOrder.CustomerCodeProperty.getName());
-		condition.setOperation(ConditionOperation.co_NOT_NULL);
+		condition.setOperation(ConditionOperation.NOT_NULL);
 		condition = criteria.getConditions().create();
 		condition.setAlias(SalesOrder.DocEntryProperty.getName());
-		condition.setOperation(ConditionOperation.co_START);
+		condition.setOperation(ConditionOperation.START);
 		condition.setCondVal("2");
 		condition = criteria.getConditions().create();
 		condition.setAlias(SalesOrder.DocEntryProperty.getName());
-		condition.setOperation(ConditionOperation.co_GRATER_THAN);
+		condition.setOperation(ConditionOperation.GRATER_THAN);
 		condition.setCondVal("2000");
 		condition = criteria.getConditions().create();
 		condition.setAlias(SalesOrder.DocEntryProperty.getName());
-		condition.setOperation(ConditionOperation.co_NOT_EQUAL);
+		condition.setOperation(ConditionOperation.NOT_EQUAL);
 		condition.setComparedAlias(SalesOrder.DocEntryProperty.getName());
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC
 		ISort sort = criteria.getSorts().create();
 		sort.setAlias(SalesOrder.DocEntryProperty.getName());
-		sort.setSortType(SortType.st_DESCENDING);
+		sort.setSortType(SortType.DESCENDING);
 		sort = criteria.getSorts().create();
 		sort.setAlias(SalesOrder.CustomerCodeProperty.getName());
-		sort.setSortType(SortType.st_ASCENDING);
+		sort.setSortType(SortType.ASCENDING);
 
 		IBOAdapter4Db boAdapter = new BOAdapter();
 		ISqlQuery sqlQuery = boAdapter.parseSqlQuery(criteria, SalesOrder.class);
@@ -81,14 +81,14 @@ public class testBOAdpter extends TestCase {
 		order.setDocEntry(1);
 		order.setCustomerCode("C00001");
 		order.setDeliveryDate(DateTime.getToday());
-		order.setDocumentStatus(emDocumentStatus.Released);
+		order.setDocumentStatus(emDocumentStatus.RELEASED);
 		order.setDocumentTotal(new Decimal("99.99"));
-		order.setCycle(new Time(1.05, emTimeUnit.hour));
+		order.setCycle(new Time(1.05, emTimeUnit.HOUR));
 
-		order.getUserFields().addUserField("U_OrderType", DbFieldType.db_Alphanumeric);
-		order.getUserFields().addUserField("U_OrderId", DbFieldType.db_Numeric);
-		order.getUserFields().addUserField("U_OrderDate", DbFieldType.db_Date);
-		order.getUserFields().addUserField("U_OrderTotal", DbFieldType.db_Decimal);
+		order.getUserFields().addUserField("U_OrderType", DbFieldType.ALPHANUMERIC);
+		order.getUserFields().addUserField("U_OrderId", DbFieldType.NUMERIC);
+		order.getUserFields().addUserField("U_OrderDate", DbFieldType.DATE);
+		order.getUserFields().addUserField("U_OrderTotal", DbFieldType.DECIMAL);
 
 		order.getUserFields().setValue("U_OrderType", "S0000");
 		order.getUserFields().setValue("U_OrderId", 5768);

@@ -13,7 +13,7 @@ public class testBasisBO extends TestCase {
 		order.setDocEntry(1);
 		order.setSuppler("C00001");
 		order.setDueDate(DateTime.getToday());
-		order.setDocumentStatus(emDocumentStatus.Released);
+		order.setDocumentStatus(emDocumentStatus.RELEASED);
 		order.setDocumentTotal(new Decimal("99.99"));
 		order.setActivted(true);
 
@@ -22,7 +22,7 @@ public class testBasisBO extends TestCase {
 		assertEquals("Property [DocEntry] faild. ", (int) order.getDocEntry(), 1);
 		assertEquals("Property [CustomerCode] faild. ", order.getSuppler(), "C00001");
 		assertTrue("Property [DueDate] faild. ", order.getDueDate().equals(DateTime.getToday()));
-		assertEquals("Property [DocumentStatus] faild. ", order.getDocumentStatus(), emDocumentStatus.Released);
+		assertEquals("Property [DocumentStatus] faild. ", order.getDocumentStatus(), emDocumentStatus.RELEASED);
 		assertEquals("Property [Activted] faild. ", (boolean) order.getActivted(), true);
 		assertTrue("Property [DocumentTotal] faild. ", order.getDocumentTotal().toString().equals("99.99"));
 

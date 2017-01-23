@@ -27,7 +27,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("%s");
 		if (dbFieldType != null) {
-			if (dbFieldType == DbFieldType.db_Alphanumeric) {
+			if (dbFieldType == DbFieldType.ALPHANUMERIC) {
 				stringBuilder = new StringBuilder();
 				stringBuilder.append("CAST");
 				stringBuilder.append("(");
@@ -38,7 +38,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 				stringBuilder.append("VARCHAR");
 				stringBuilder.append(")");
 				return stringBuilder.toString();
-			} else if (dbFieldType == DbFieldType.db_Date) {
+			} else if (dbFieldType == DbFieldType.DATE) {
 				stringBuilder = new StringBuilder();
 				stringBuilder.append("CAST");
 				stringBuilder.append("(");
@@ -49,7 +49,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 				stringBuilder.append("TIMESTAMP");
 				stringBuilder.append(")");
 				return stringBuilder.toString();
-			} else if (dbFieldType == DbFieldType.db_Numeric) {
+			} else if (dbFieldType == DbFieldType.NUMERIC) {
 				stringBuilder = new StringBuilder();
 				stringBuilder.append("CAST");
 				stringBuilder.append("(");
@@ -60,7 +60,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 				stringBuilder.append("INTEGER");
 				stringBuilder.append(")");
 				return stringBuilder.toString();
-			} else if (dbFieldType == DbFieldType.db_Decimal) {
+			} else if (dbFieldType == DbFieldType.DECIMAL) {
 				stringBuilder = new StringBuilder();
 				stringBuilder.append("CAST");
 				stringBuilder.append("(");
@@ -79,15 +79,15 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	@Override
 	public DbFieldType getDbFieldType(String dbType) {
 		if (dbType.equals("varchar")) {
-			return DbFieldType.db_Alphanumeric;
+			return DbFieldType.ALPHANUMERIC;
 		} else if (dbType.equals("INTEGER")) {
-			return DbFieldType.db_Numeric;
+			return DbFieldType.NUMERIC;
 		} else if (dbType.equals("TIMESTAMP")) {
-			return DbFieldType.db_Date;
+			return DbFieldType.DATE;
 		} else if (dbType.equals("INTEGER")) {
-			return DbFieldType.db_Decimal;
+			return DbFieldType.DECIMAL;
 		}
-		return DbFieldType.db_Unknown;
+		return DbFieldType.UNKNOWN;
 	}
 
 	@Override
@@ -97,7 +97,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 
 	@Override
 	public String getSqlString(ConditionOperation value, String opValue) throws SqlScriptsException {
-		if (value == ConditionOperation.co_NOT_EQUAL) {
+		if (value == ConditionOperation.NOT_EQUAL) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("!");
 			stringBuilder.append("=");
@@ -111,7 +111,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 
 	@Override
 	public String getSqlString(DbFieldType type, String value) throws SqlScriptsException {
-		if (type == DbFieldType.db_Date && value != null) {
+		if (type == DbFieldType.DATE && value != null) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("'");
 			stringBuilder.append(value);

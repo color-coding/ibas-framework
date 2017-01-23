@@ -196,14 +196,14 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 					stringBuilder.append("(");
 				}
 				// 字段名
-				if ((condition.getAliasDataType() == DbFieldType.db_Numeric
-						|| condition.getAliasDataType() == DbFieldType.db_Decimal)
-						&& (condition.getOperation() == ConditionOperation.co_START
-								|| condition.getOperation() == ConditionOperation.co_END
-								|| condition.getOperation() == ConditionOperation.co_CONTAIN
-								|| condition.getOperation() == ConditionOperation.co_NOT_CONTAIN)) {
+				if ((condition.getAliasDataType() == DbFieldType.NUMERIC
+						|| condition.getAliasDataType() == DbFieldType.DECIMAL)
+						&& (condition.getOperation() == ConditionOperation.START
+								|| condition.getOperation() == ConditionOperation.END
+								|| condition.getOperation() == ConditionOperation.CONTAIN
+								|| condition.getOperation() == ConditionOperation.NOT_CONTAIN)) {
 					// 数值类型的字段且需要作为字符比较的
-					String toVarchar = sqlScripts.getFieldValueCastType(DbFieldType.db_Alphanumeric);
+					String toVarchar = sqlScripts.getFieldValueCastType(DbFieldType.ALPHANUMERIC);
 					stringBuilder.appendFormat(toVarchar, String.format(dbObject, condition.getAlias()));
 				} else {
 					stringBuilder.appendFormat(dbObject, condition.getAlias());
@@ -211,13 +211,13 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				stringBuilder.append(" ");
 				if (condition.getComparedAlias() != null && !condition.getComparedAlias().isEmpty()) {
 					// 两字段间比较， [ItemCode] <> [ItemName]
-					if (condition.getOperation() == ConditionOperation.co_NONE
-							|| condition.getOperation() == ConditionOperation.co_START
-							|| condition.getOperation() == ConditionOperation.co_END
-							|| condition.getOperation() == ConditionOperation.co_IS_NULL
-							|| condition.getOperation() == ConditionOperation.co_NOT_NULL
-							|| condition.getOperation() == ConditionOperation.co_CONTAIN
-							|| condition.getOperation() == ConditionOperation.co_NOT_CONTAIN) {
+					if (condition.getOperation() == ConditionOperation.NONE
+							|| condition.getOperation() == ConditionOperation.START
+							|| condition.getOperation() == ConditionOperation.END
+							|| condition.getOperation() == ConditionOperation.IS_NULL
+							|| condition.getOperation() == ConditionOperation.NOT_NULL
+							|| condition.getOperation() == ConditionOperation.CONTAIN
+							|| condition.getOperation() == ConditionOperation.NOT_CONTAIN) {
 						// 字段间不支持以上操作
 						throw new BOParseException(i18n.prop("msg_bobas_invaild_condition_operation"));
 					}
@@ -229,20 +229,20 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 
 				} else {
 					// 字段与值的比较
-					if (condition.getOperation() == ConditionOperation.co_IS_NULL
-							|| condition.getOperation() == ConditionOperation.co_NOT_NULL) {
+					if (condition.getOperation() == ConditionOperation.IS_NULL
+							|| condition.getOperation() == ConditionOperation.NOT_NULL) {
 						// 不需要值的比较，[ItemName] is NULL
 						stringBuilder.append(sqlScripts.getSqlString(condition.getOperation()));
-					} else if (condition.getOperation() == ConditionOperation.co_START
-							|| condition.getOperation() == ConditionOperation.co_END
-							|| condition.getOperation() == ConditionOperation.co_CONTAIN
-							|| condition.getOperation() == ConditionOperation.co_NOT_CONTAIN) {
+					} else if (condition.getOperation() == ConditionOperation.START
+							|| condition.getOperation() == ConditionOperation.END
+							|| condition.getOperation() == ConditionOperation.CONTAIN
+							|| condition.getOperation() == ConditionOperation.NOT_CONTAIN) {
 						// like 相关运算
 						stringBuilder.append(sqlScripts.getSqlString(condition.getOperation(), condition.getCondVal()));
 					} else {
 						// 与值比较，[ItemCode] = 'A000001'
-						if (condition.getAliasDataType() == DbFieldType.db_Numeric
-								|| condition.getAliasDataType() == DbFieldType.db_Decimal) {
+						if (condition.getAliasDataType() == DbFieldType.NUMERIC
+								|| condition.getAliasDataType() == DbFieldType.DECIMAL) {
 							// 数值类型的字段
 							stringBuilder.appendFormat(sqlScripts.getSqlString(condition.getOperation()),
 									condition.getCondVal());
@@ -973,7 +973,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				ICriteria criteria = new Criteria();
 				ICondition condition = criteria.getConditions().create();
 				condition.setAlias(IBODocumentLine.MASTER_PRIMARY_KEY_NAME);
-				condition.setAliasDataType(DbFieldType.db_Numeric);
+				condition.setAliasDataType(DbFieldType.NUMERIC);
 				condition.setCondVal(item.getDocEntry().toString());
 				String table = String.format(sqlScripts.getDbObjectSign(), this.getBOMasterTable((IManageFields) bo));
 				String field = String.format(sqlScripts.getDbObjectSign(), IBODocumentLine.SECONDARY_PRIMARY_KEY_NAME);
@@ -1040,7 +1040,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				ICriteria criteria = new Criteria();
 				ICondition condition = criteria.getConditions().create();
 				condition.setAlias(IBOSimpleLine.MASTER_PRIMARY_KEY_NAME);
-				condition.setAliasDataType(DbFieldType.db_Numeric);
+				condition.setAliasDataType(DbFieldType.NUMERIC);
 				condition.setCondVal(item.getObjectKey());
 				String table = String.format(sqlScripts.getDbObjectSign(), this.getBOMasterTable((IManageFields) bo));
 				String field = String.format(sqlScripts.getDbObjectSign(), IBOSimpleLine.SECONDARY_PRIMARY_KEY_NAME);

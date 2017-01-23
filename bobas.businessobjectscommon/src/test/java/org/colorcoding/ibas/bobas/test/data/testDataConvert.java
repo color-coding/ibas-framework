@@ -9,16 +9,16 @@ import junit.framework.TestCase;
 public class testDataConvert extends TestCase {
 
 	public void testEnumConvert() {
-		emYesNo emValue = emYesNo.Yes;
+		emYesNo emValue = emYesNo.YES;
 		String dbValue = DataConvert.toDbValue(emValue);
 		assertEquals("Y", dbValue);
 		emValue = (emYesNo) DataConvert.toEnumValue(emYesNo.class, "N");
-		assertEquals(emYesNo.No, emValue);
+		assertEquals(emYesNo.NO, emValue);
 		emValue = (emYesNo) DataConvert.toEnumValue(emYesNo.class, "No");
-		assertEquals(emYesNo.No, emValue);
+		assertEquals(emYesNo.NO, emValue);
 		// 索引测试
 		emValue = (emYesNo) DataConvert.toEnumValue(emYesNo.class, 1);
-		assertEquals(emYesNo.Yes, emValue);
+		assertEquals(emYesNo.YES, emValue);
 		// 值测试
 		emConditionOperation emcpValue = (emConditionOperation) DataConvert.toEnumValue(emConditionOperation.class,
 				emConditionOperation.CONTAIN.getValue());

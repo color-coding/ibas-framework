@@ -44,9 +44,9 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
             }
         }
         // 没有符合的审批流程
-        if (data.getApprovalStatus() != emApprovalStatus.Unaffected && data.isNew()) {
+        if (data.getApprovalStatus() != emApprovalStatus.UNAFFECTED && data.isNew()) {
             // 重置数据状态
-            data.setApprovalStatus(emApprovalStatus.Unaffected);
+            data.setApprovalStatus(emApprovalStatus.UNAFFECTED);
         }
         return null;
     }
@@ -64,7 +64,7 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
         if (data instanceof IBODocument) {
             // 单据类型
             IBODocument docData = (IBODocument) data;
-            if (docData.getDocumentStatus() == emDocumentStatus.Planned) {
+            if (docData.getDocumentStatus() == emDocumentStatus.PLANNED) {
                 // 计划状态
                 return false;
             }
@@ -72,7 +72,7 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
         if (data instanceof IBODocumentLine) {
             // 单据行
             IBODocumentLine lineData = (IBODocumentLine) data;
-            if (lineData.getLineStatus() == emDocumentStatus.Planned) {
+            if (lineData.getLineStatus() == emDocumentStatus.PLANNED) {
                 // 计划状态
                 return false;
             }
@@ -80,14 +80,14 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
         if (data instanceof IBOTagDeleted) {
             // 引用数据，已标记删除的，不影响业务逻辑
             IBOTagDeleted refData = (IBOTagDeleted) data;
-            if (refData.getDeleted() == emYesNo.Yes) {
+            if (refData.getDeleted() == emYesNo.YES) {
                 return false;
             }
         }
         if (data instanceof IBOTagCanceled) {
             // 引用数据，已标记取消的，不影响业务逻辑
             IBOTagCanceled refData = (IBOTagCanceled) data;
-            if (refData.getCanceled() == emYesNo.Yes) {
+            if (refData.getCanceled() == emYesNo.YES) {
                 return false;
             }
         }

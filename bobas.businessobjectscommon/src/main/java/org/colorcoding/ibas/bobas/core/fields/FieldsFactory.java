@@ -63,9 +63,9 @@ public class FieldsFactory {
 
 	public AssociatedFieldDataBase<?> createAssociatedField(AssociationMode mode, int assoCount)
 			throws NotSupportTypeException {
-		if (mode == AssociationMode.OneToOne || mode == AssociationMode.OneToZero) {
+		if (mode == AssociationMode.ONE_TO_ONE || mode == AssociationMode.ONE_TO_ZERO) {
 			return new AssociatedFieldDataBO(assoCount);
-		} else if (mode == AssociationMode.OneToMany) {
+		} else if (mode == AssociationMode.ONE_TO_MANY) {
 			return new AssociatedFieldDataArray(assoCount);
 		} else {
 			throw new NotSupportTypeException(i18n.prop("msg_bobas_association_mode_not_support", mode));
@@ -73,7 +73,7 @@ public class FieldsFactory {
 	}
 
 	public ComplexFieldDataBase<?> createComplexField(ComplexFieldType type) throws NotSupportTypeException {
-		if (type == ComplexFieldType.cp_Measurement) {
+		if (type == ComplexFieldType.MEASUREMENT) {
 			return new ComplexFieldDataMeasurement();
 		} else {
 			throw new NotSupportTypeException(i18n.prop("msg_bobas_association_mode_not_support", type));

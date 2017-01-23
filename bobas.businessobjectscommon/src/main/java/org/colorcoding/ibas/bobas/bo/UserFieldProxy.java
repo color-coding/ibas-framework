@@ -66,17 +66,17 @@ public class UserFieldProxy implements IUserField {
     }
 
     final Object convertValue(DbFieldType type) {
-        if (type == DbFieldType.db_Numeric) {
+        if (type == DbFieldType.NUMERIC) {
             if (this.getValueString() == null || this.getValueString().isEmpty()) {
                 return 0;
             }
             return Integer.valueOf(this.getValueString());
-        } else if (type == DbFieldType.db_Date) {
+        } else if (type == DbFieldType.DATE) {
             if (this.getValueString() == null || this.getValueString().isEmpty()) {
                 return DateTime.minValue;
             }
             return DateTime.valueOf(this.getValueString());
-        } else if (type == DbFieldType.db_Decimal) {
+        } else if (type == DbFieldType.DECIMAL) {
             if (this.getValueString() == null || this.getValueString().isEmpty()) {
                 return Decimal.ZERO;
             }

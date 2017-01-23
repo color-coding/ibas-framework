@@ -17,22 +17,22 @@ public enum emDocumentStatus {
 	 * 计划
 	 */
 	@DbValue(value = "P")
-	Planned,
+	PLANNED,
 	/**
 	 * 下达
 	 */
 	@DbValue(value = "R")
-	Released,
+	RELEASED,
 	/**
 	 * 完成
 	 */
 	@DbValue(value = "F")
-	Finished,
+	FINISHED,
 	/**
 	 * 结算
 	 */
 	@DbValue(value = "C")
-	Closed;
+	CLOSED;
 
 	public int getValue() {
 		return this.ordinal();

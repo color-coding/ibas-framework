@@ -112,7 +112,7 @@ public class FileJudgmentLinks extends JudgmentLinks {
             JudgmentLinkItem jItem = new JudgmentLinkItem();
             jItem.setOpenBracket(item.getBracketOpenNum());
             jItem.setCloseBracket(item.getBracketCloseNum());
-            if (item.getRelationship() == ConditionRelationship.cr_NONE) {
+            if (item.getRelationship() == ConditionRelationship.NONE) {
                 jItem.setRelationship(JudmentOperations.AND);
             } else {
                 jItem.setRelationship(JudmentOperations.valueOf(item.getRelationship()));

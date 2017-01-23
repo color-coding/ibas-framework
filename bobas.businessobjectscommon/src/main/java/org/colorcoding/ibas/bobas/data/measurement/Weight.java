@@ -50,7 +50,7 @@ public class Weight extends MeasurementDecimal<emWeightUnit> {
 	@XmlElement(name = "Unit")
 	public emWeightUnit getUnit() {
 		if (this.unit == null) {
-			this.unit = emWeightUnit.kilogram;
+			this.unit = emWeightUnit.KILOGRAM;
 		}
 		return this.unit;
 	}

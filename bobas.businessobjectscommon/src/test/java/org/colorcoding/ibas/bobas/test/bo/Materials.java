@@ -58,7 +58,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 物料编号 属性
 	 */
-	@DbField(name = "ItemCode", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = true)
+	@DbField(name = "ItemCode", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = true)
 	public final static IPropertyInfo<String> ItemCodeProperty = registerProperty("ItemCode", String.class, MY_CLASS);
 
 	/**
@@ -84,7 +84,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 物料描述 属性
 	 */
-	@DbField(name = "ItemName", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "ItemName", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<String> ItemDescriptionProperty = registerProperty("ItemDescription",
 			String.class, MY_CLASS);
 
@@ -111,7 +111,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 订单数量 属性
 	 */
-	@DbField(name = "OnOrder", type = DbFieldType.db_Decimal, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "OnOrder", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<Decimal> OnOrderProperty = registerProperty("OnOrder", Decimal.class, MY_CLASS);
 
 	/**
@@ -167,7 +167,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 库存 属性
 	 */
-	@DbField(name = "OnHand", type = DbFieldType.db_Decimal, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "OnHand", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<Decimal> OnHandProperty = registerProperty("OnHand", Decimal.class, MY_CLASS);
 
 	/**
@@ -223,7 +223,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 对象编号 属性
 	 */
-	@DbField(name = "ObjectKey", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = true)
+	@DbField(name = "ObjectKey", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = true)
 	public final static IPropertyInfo<Integer> ObjectKeyProperty = registerProperty("ObjectKey", Integer.class,
 			MY_CLASS);
 
@@ -250,7 +250,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 类型 属性
 	 */
-	@DbField(name = "Object", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Object", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<String> ObjectCodeProperty = registerProperty("ObjectCode", String.class,
 			MY_CLASS);
 
@@ -279,7 +279,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 创建日期 属性
 	 */
-	@DbField(name = "CreateDate", type = DbFieldType.db_Date, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "CreateDate", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<DateTime> CreateDateProperty = registerProperty("CreateDate", DateTime.class,
 			MY_CLASS);
 
@@ -306,7 +306,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 创建时间 属性
 	 */
-	@DbField(name = "CreateTime", type = DbFieldType.db_Date, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "CreateTime", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<Short> CreateTimeProperty = registerProperty("CreateTime", Short.class, MY_CLASS);
 
 	/**
@@ -332,7 +332,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 修改日期 属性
 	 */
-	@DbField(name = "UpdateDate", type = DbFieldType.db_Date, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "UpdateDate", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<DateTime> UpdateDateProperty = registerProperty("UpdateDate", DateTime.class,
 			MY_CLASS);
 
@@ -359,7 +359,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 修改时间 属性
 	 */
-	@DbField(name = "UpdateTime", type = DbFieldType.db_Date, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "UpdateTime", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<Short> UpdateTimeProperty = registerProperty("UpdateTime", Short.class, MY_CLASS);
 
 	/**
@@ -385,7 +385,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 实例号（版本） 属性
 	 */
-	@DbField(name = "LogInst", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "LogInst", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<Integer> LogInstProperty = registerProperty("LogInst", Integer.class, MY_CLASS);
 
 	/**
@@ -411,7 +411,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 数据源 属性
 	 */
-	@DbField(name = "DataSource", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "DataSource", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<String> DataSourceProperty = registerProperty("DataSource", String.class,
 			MY_CLASS);
 
@@ -438,7 +438,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 服务系列 属性
 	 */
-	@DbField(name = "Series", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Series", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<Integer> SeriesProperty = registerProperty("Series", Integer.class, MY_CLASS);
 
 	/**
@@ -464,7 +464,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 创建用户 属性
 	 */
-	@DbField(name = "Creator", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Creator", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<Integer> CreateUserSignProperty = registerProperty("CreateUserSign",
 			Integer.class, MY_CLASS);
 
@@ -491,7 +491,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 修改用户 属性
 	 */
-	@DbField(name = "Updator", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Updator", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<Integer> UpdateUserSignProperty = registerProperty("UpdateUserSign",
 			Integer.class, MY_CLASS);
 
@@ -518,7 +518,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 创建动作标识 属性
 	 */
-	@DbField(name = "CreateActId", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "CreateActId", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<String> CreateActionIdProperty = registerProperty("CreateActionId", String.class,
 			MY_CLASS);
 
@@ -545,7 +545,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 更新动作标识 属性
 	 */
-	@DbField(name = "UpdateActId", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "UpdateActId", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<String> UpdateActionIdProperty = registerProperty("UpdateActionId", String.class,
 			MY_CLASS);
 
@@ -572,7 +572,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 审批状态 属性
 	 */
-	@DbField(name = "ApvlStatus", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "ApvlStatus", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<emApprovalStatus> ApprovalStatusProperty = registerProperty("ApprovalStatus",
 			emApprovalStatus.class, MY_CLASS);
 
@@ -599,7 +599,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 数据所有者 属性
 	 */
-	@DbField(name = "DataOwner", type = DbFieldType.db_Numeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "DataOwner", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<Integer> DataOwnerProperty = registerProperty("DataOwner", Integer.class,
 			MY_CLASS);
 
@@ -626,7 +626,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 团队成员 属性
 	 */
-	@DbField(name = "TeamMembers", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "TeamMembers", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<String> TeamMembersProperty = registerProperty("TeamMembers", String.class,
 			MY_CLASS);
 
@@ -653,7 +653,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 数据所属组织 属性
 	 */
-	@DbField(name = "OrgCode", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "OrgCode", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<String> OrganizationProperty = registerProperty("Organization", String.class,
 			MY_CLASS);
 
@@ -680,7 +680,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 已引用 属性
 	 */
-	@DbField(name = "Refed", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Refed", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<emYesNo> ReferencedProperty = registerProperty("Referenced", emYesNo.class,
 			MY_CLASS);
 
@@ -707,7 +707,7 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	/**
 	 * 已删除 属性
 	 */
-	@DbField(name = "Deleted", type = DbFieldType.db_Alphanumeric, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Deleted", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public final static IPropertyInfo<emYesNo> DeletedProperty = registerProperty("Deleted", emYesNo.class, MY_CLASS);
 
 	/**

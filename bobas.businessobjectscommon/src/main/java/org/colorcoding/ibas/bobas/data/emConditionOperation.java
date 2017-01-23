@@ -12,7 +12,7 @@ import org.colorcoding.ibas.bobas.mapping.DbValue;
  *
  */
 @XmlType(name = "emConditionOperation", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
-public enum emConditionOperation implements IEnumItem {
+public enum emConditionOperation {
 
 	/**
 	 * 等于(=)
