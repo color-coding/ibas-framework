@@ -136,8 +136,22 @@ public class SqlScripts implements ISqlScripts {
 		return this.getSqlString(value, null);
 	}
 
+	/**
+	 * 数据的安全性检查
+	 * 
+	 * @param data
+	 */
+	protected String checkSecurity(String data) {
+		if (data == null || data.isEmpty()) {
+			return data;
+		}
+		// 处理单引号
+		return data.replace("'", "''");
+	}
+
 	@Override
 	public String getSqlString(ConditionOperation value, String opValue) throws SqlScriptsException {
+		opValue = this.checkSecurity(opValue);
 		if (value == ConditionOperation.CONTAIN) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("LIKE");
@@ -246,6 +260,7 @@ public class SqlScripts implements ISqlScripts {
 		if (value == null) {
 			return this.getNullValue();
 		}
+		value = this.checkSecurity(value);
 		StringBuilder stringBuilder = new StringBuilder();
 		if (type == DbFieldType.NUMERIC || type == DbFieldType.DECIMAL) {
 			stringBuilder.append(value);
@@ -380,7 +395,7 @@ public class SqlScripts implements ISqlScripts {
 		stringBuilder.append("=");
 		stringBuilder.append(" ");
 		stringBuilder.append("'");
-		stringBuilder.append(boCode);
+		stringBuilder.append(this.checkSecurity(boCode));
 		stringBuilder.append("'");
 		return stringBuilder.toString();
 	}
@@ -411,7 +426,7 @@ public class SqlScripts implements ISqlScripts {
 		stringBuilder.append("=");
 		stringBuilder.append(" ");
 		stringBuilder.append("'");
-		stringBuilder.append(boCode);
+		stringBuilder.append(this.checkSecurity(boCode));
 		stringBuilder.append("'");
 		return stringBuilder.toString();
 	}
@@ -445,12 +460,12 @@ public class SqlScripts implements ISqlScripts {
 		stringBuilder.appendFormat("\"%s_SP_TRANSACTION_NOTIFICATION\"", this.getCompanyId());
 		stringBuilder.append(" ");
 		stringBuilder.append("N'");
-		stringBuilder.append(boCode);
+		stringBuilder.append(this.checkSecurity(boCode));
 		stringBuilder.append("'");
 		stringBuilder.append(",");
 		stringBuilder.append(" ");
 		stringBuilder.append("N'");
-		stringBuilder.append(type);
+		stringBuilder.append(this.checkSecurity(type));
 		stringBuilder.append("'");
 		stringBuilder.append(",");
 		stringBuilder.append(" ");
@@ -458,12 +473,12 @@ public class SqlScripts implements ISqlScripts {
 		stringBuilder.append(",");
 		stringBuilder.append(" ");
 		stringBuilder.append("N'");
-		stringBuilder.append(keyNames);
+		stringBuilder.append(this.checkSecurity(keyNames));
 		stringBuilder.append("'");
 		stringBuilder.append(",");
 		stringBuilder.append(" ");
 		stringBuilder.append("N'");
-		stringBuilder.append(keyValues);
+		stringBuilder.append(this.checkSecurity(keyValues));
 		stringBuilder.append("'");
 		return stringBuilder.toString();
 	}
@@ -486,12 +501,12 @@ public class SqlScripts implements ISqlScripts {
 			if (keyValue.value == null) {
 				stringBuilder.append("''");
 			} else if (keyValue.value.getClass().equals(Integer.class)) {
-				stringBuilder.append(keyValue.value.toString());
+				stringBuilder.append(String.valueOf(keyValue.value));
 			} else if (keyValue.value.getClass().equals(Double.class)) {
-				stringBuilder.append(keyValue.value.toString());
+				stringBuilder.append(String.valueOf(keyValue.value));
 			} else {
 				stringBuilder.append("N'");
-				stringBuilder.append(keyValue.value.toString());
+				stringBuilder.append(this.checkSecurity(String.valueOf(keyValue.value)));
 				stringBuilder.append("'");
 			}
 		}

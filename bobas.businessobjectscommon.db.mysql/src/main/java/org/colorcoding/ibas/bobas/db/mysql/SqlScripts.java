@@ -156,7 +156,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 		stringBuilder.append("=");
 		stringBuilder.append(" ");
 		stringBuilder.append("'");
-		stringBuilder.append(boCode);
+		stringBuilder.append(this.checkSecurity(boCode));
 		stringBuilder.append("'");
 		stringBuilder.append(" ");
 		stringBuilder.append("FOR UPDATE");
@@ -192,7 +192,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 		stringBuilder.append("=");
 		stringBuilder.append(" ");
 		stringBuilder.append("'");
-		stringBuilder.append(boCode);
+		stringBuilder.append(this.checkSecurity(boCode));
 		stringBuilder.append("'");
 		return stringBuilder.toString();
 	}
@@ -235,12 +235,12 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 		stringBuilder.append("(");
 		stringBuilder.append(" ");
 		stringBuilder.append("N'");
-		stringBuilder.append(boCode);
+		stringBuilder.append(this.checkSecurity(boCode));
 		stringBuilder.append("'");
 		stringBuilder.append(",");
 		stringBuilder.append(" ");
 		stringBuilder.append("N'");
-		stringBuilder.append(type);
+		stringBuilder.append(this.checkSecurity(type));
 		stringBuilder.append("'");
 		stringBuilder.append(",");
 		stringBuilder.append(" ");
@@ -248,12 +248,12 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 		stringBuilder.append(",");
 		stringBuilder.append(" ");
 		stringBuilder.append("N'");
-		stringBuilder.append(keyNames);
+		stringBuilder.append(this.checkSecurity(keyNames));
 		stringBuilder.append("'");
 		stringBuilder.append(",");
 		stringBuilder.append(" ");
 		stringBuilder.append("N'");
-		stringBuilder.append(keyValues);
+		stringBuilder.append(this.checkSecurity(keyValues));
 		stringBuilder.append("'");
 		stringBuilder.append(")");
 		return stringBuilder.toString();
@@ -275,12 +275,12 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 			if (keyValue.value == null) {
 				stringBuilder.append("''");
 			} else if (keyValue.value.getClass().equals(Integer.class)) {
-				stringBuilder.append(keyValue.value.toString());
+				stringBuilder.append(String.valueOf(keyValue.value));
 			} else if (keyValue.value.getClass().equals(Double.class)) {
-				stringBuilder.append(keyValue.value.toString());
+				stringBuilder.append(String.valueOf(keyValue.value));
 			} else {
 				stringBuilder.append("N'");
-				stringBuilder.append(keyValue.value.toString());
+				stringBuilder.append(this.checkSecurity(String.valueOf(keyValue.value)));
 				stringBuilder.append("'");
 			}
 		}

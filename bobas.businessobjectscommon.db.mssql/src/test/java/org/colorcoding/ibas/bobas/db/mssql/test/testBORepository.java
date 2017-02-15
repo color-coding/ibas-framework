@@ -2,6 +2,7 @@ package org.colorcoding.ibas.bobas.db.mssql.test;
 
 import org.colorcoding.ibas.bobas.bo.IBOUserFields;
 import org.colorcoding.ibas.bobas.bo.IUserField;
+import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.IChildCriteria;
@@ -147,6 +148,12 @@ public class testBORepository extends TestCase {
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
 		condition.setCondVal(emDocumentStatus.RELEASED);
 		condition.setRelationship(ConditionRelationship.OR);
+		// (CardCode != ''')
+		condition = criteria.getConditions().create();
+		condition.setAlias(SalesOrder.CustomerCodeProperty.getName());
+		condition.setCondVal("'C");
+		condition.setOperation(ConditionOperation.NOT_EQUAL);
+		condition.setRelationship(ConditionRelationship.AND);
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC
 		ISort sort = criteria.getSorts().create();
 		sort.setAlias(SalesOrder.DocEntryProperty.getName());
@@ -196,7 +203,7 @@ public class testBORepository extends TestCase {
 		order.setTeamUsers(new User[] { new User(), new User() });
 		order.getTeamUsers()[0].setUserCode(DateTime.getNow().toString("HHmmss") + "01");
 		order.getTeamUsers()[1].setUserCode(DateTime.getNow().toString("HHmmss") + "02");
-		order.setCustomerCode("C00001");
+		order.setCustomerCode("'C00001");
 		order.setCustomerName("宇宙无敌影业");
 		ISalesOrderItem item = order.getSalesOrderItems().create();
 		item.setItemCode("T800");
