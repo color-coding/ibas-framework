@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.demo.jersey.repository.cxf;
+package org.colorcoding.ibas.demo.repository.cxf;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;

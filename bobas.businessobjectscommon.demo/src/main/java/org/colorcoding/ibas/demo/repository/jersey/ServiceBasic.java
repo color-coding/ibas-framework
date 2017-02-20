@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.demo.jersey.repository.jersey;
+package org.colorcoding.ibas.demo.repository.jersey;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;

@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.demo.jersey.repository.jersey;
+package org.colorcoding.ibas.demo.repository.jersey;
 
 import java.io.InputStream;
 

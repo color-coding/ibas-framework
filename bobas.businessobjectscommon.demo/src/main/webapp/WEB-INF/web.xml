@@ -22,7 +22,7 @@
     <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
     <init-param>
       <param-name>jersey.config.server.provider.packages</param-name>
-      <param-value>org.colorcoding.ibas.demo.jersey.repository.jersey</param-value>
+      <param-value>org.colorcoding.ibas.demo.repository.jersey</param-value>
     </init-param>
     <init-param>
       <param-name>jersey.config.server.provider.classnames</param-name>
@@ -35,7 +35,7 @@
     <servlet-class>org.colorcoding.ibas.bobas.cxf.CXFServlet</servlet-class>
     <init-param>
       <param-name>ibas.config.server.provider.packages</param-name>
-      <param-value>org.colorcoding.ibas.demo.jersey.repository.cxf</param-value>
+      <param-value>org.colorcoding.ibas.demo.repository.cxf</param-value>
     </init-param>
   </servlet>
   <servlet-mapping>
