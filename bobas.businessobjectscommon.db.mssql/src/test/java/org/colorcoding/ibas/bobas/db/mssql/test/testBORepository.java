@@ -206,7 +206,7 @@ public class testBORepository extends TestCase {
 		order.setCustomerCode("'C00001");
 		order.setCustomerName("宇宙无敌影业");
 		ISalesOrderItem item = order.getSalesOrderItems().create();
-		item.setItemCode("T800");
+		item.setItemCode("T800;");
 		item.setItemDescription("终结者机器人-T800");
 		item.setQuantity(1);
 		item.setPrice(999999.99);
