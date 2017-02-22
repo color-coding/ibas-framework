@@ -503,7 +503,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 							IBusinessObjectBase[] childs = adapter4Db.parseBOs(reader, listField);
 							if (tmpCriteria != null && (childs == null || childs.length == 0)) {
 								// 没有匹配的子项数据
-								if (tmpCriteria.getFatherMustHasResluts()) {
+								if (tmpCriteria.isOnlyHasChilds()) {
 									// 要求父项必须有结果，但此时没有结果，则设置返回数组为空
 									bos[i] = null;
 									break;// 退出当前数据处理

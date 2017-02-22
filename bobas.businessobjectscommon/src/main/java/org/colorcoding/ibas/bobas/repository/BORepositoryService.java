@@ -342,7 +342,7 @@ public class BORepositoryService implements IBORepositoryService {
         if (criteria == null) {
             criteria = new Criteria();
         }
-        if (criteria.getNotLoadedChildren()) {
+        if (criteria.isNoChilds()) {
             // 不加载子项
             operationResult.copy(boRepository.fetch(criteria, boType));
         } else {

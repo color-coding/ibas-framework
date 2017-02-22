@@ -88,7 +88,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
         Criteria criteria = new Criteria();
         if (this instanceof IBOStorageTag) {
             IBOStorageTag tagBO = (IBOStorageTag) this;
-            criteria.setBusinessObjectCode(tagBO.getObjectCode());
+            criteria.setBOCode(tagBO.getObjectCode());
         }
         for (IFieldData item : this.getKeyFields()) {
             ICondition condition = criteria.getConditions().create();

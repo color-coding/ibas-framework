@@ -31,11 +31,11 @@ public class testCriteria extends TestCase {
 		criteria.setResultCount(100);
 		// ("DocStatus" = 'P' OR "DocStatus" = 'F')
 		ICondition condition = criteria.getConditions().create();
-		condition.setBracketOpenNum(1);
+		condition.setBracketOpen(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
 		condition.setCondVal(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
-		condition.setBracketCloseNum(1);
+		condition.setBracketClose(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
 		condition.setCondVal(emDocumentStatus.RELEASED);
 		condition.setRelationship(ConditionRelationship.OR);
@@ -103,11 +103,11 @@ public class testCriteria extends TestCase {
 		criteria.setResultCount(100);
 		// ("DocStatus" = 'P' OR "DocStatus" = 'F')
 		ICondition condition = criteria.getConditions().create();
-		condition.setBracketOpenNum(1);
+		condition.setBracketOpen(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
 		condition.setCondVal(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
-		condition.setBracketCloseNum(1);
+		condition.setBracketClose(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
 		condition.setCondVal(emDocumentStatus.RELEASED);
 		condition.setRelationship(ConditionRelationship.OR);
@@ -131,14 +131,14 @@ public class testCriteria extends TestCase {
 		String identifiers1 = "{[CC_TT_SALESORDER].[DocEntry = 1]}";
 		criteria = Criteria.create(identifiers1);
 		assertEquals("from identifiers faild.", 1, criteria.getConditions().size());
-		assertEquals("from identifiers faild.", "CC_TT_SALESORDER", criteria.getBusinessObjectCode());
+		assertEquals("from identifiers faild.", "CC_TT_SALESORDER", criteria.getBOCode());
 		assertEquals("from identifiers faild.", "DocEntry", criteria.getConditions().get(0).getAlias());
 		assertEquals("from identifiers faild.", "1", criteria.getConditions().get(0).getCondVal());
 
 		String identifiers2 = "{[CC_TT_SALESORDER].[DocEntry = 1]&[LineId = 2]}";
 		criteria = Criteria.create(identifiers2);
 		assertEquals("from identifiers faild.", 2, criteria.getConditions().size());
-		assertEquals("from identifiers faild.", "CC_TT_SALESORDER", criteria.getBusinessObjectCode());
+		assertEquals("from identifiers faild.", "CC_TT_SALESORDER", criteria.getBOCode());
 		assertEquals("from identifiers faild.", "DocEntry", criteria.getConditions().get(0).getAlias());
 		assertEquals("from identifiers faild.", "1", criteria.getConditions().get(0).getCondVal());
 		assertEquals("from identifiers faild.", "LineId", criteria.getConditions().get(1).getAlias());
@@ -150,11 +150,11 @@ public class testCriteria extends TestCase {
 		criteria.setResultCount(100);
 		// ("DocStatus" = 'P' OR "DocStatus" = 'F')
 		ICondition condition = criteria.getConditions().create();
-		condition.setBracketOpenNum(1);
+		condition.setBracketOpen(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
 		condition.setCondVal(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
-		condition.setBracketCloseNum(1);
+		condition.setBracketClose(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
 		condition.setCondVal(emDocumentStatus.RELEASED);
 		condition.setRelationship(ConditionRelationship.OR);
@@ -183,11 +183,11 @@ public class testCriteria extends TestCase {
 		criteria.setResultCount(100);
 		// ("DocStatus" = 'P' OR "DocStatus" = 'F')
 		ICondition condition = criteria.getConditions().create();
-		condition.setBracketOpenNum(1);
+		condition.setBracketOpen(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
 		condition.setCondVal(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
-		condition.setBracketCloseNum(1);
+		condition.setBracketClose(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
 		condition.setCondVal(emDocumentStatus.RELEASED);
 		condition.setRelationship(ConditionRelationship.OR);
@@ -203,9 +203,9 @@ public class testCriteria extends TestCase {
 		order.setDocEntry(199);
 		order.setLineId(78);
 		order.markOld();
-		ICriteria nextCriteria = criteria.nextResultCriteria(order);
+		ICriteria nextCriteria = criteria.nextCriteria(order);
 		System.out.println("下一个结果集：\r\n" + nextCriteria.toString("xml"));
-		ICriteria precriteria = criteria.previousResultCriteria(order);
+		ICriteria precriteria = criteria.previousCriteria(order);
 		System.out.println("上一个结果集：\r\n" + precriteria.toString("xml"));
 	}
 }

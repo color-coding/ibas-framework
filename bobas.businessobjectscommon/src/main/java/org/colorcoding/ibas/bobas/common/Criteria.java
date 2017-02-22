@@ -69,7 +69,7 @@ public class Criteria implements ICriteria {
 	private static ICriteria fromIdentifiers(String identifiers) {
 		Criteria criteria = new Criteria();
 		String[] tmps = identifiers.split("\\]\\.\\[");
-		criteria.setBusinessObjectCode(tmps[0].replace("{[", ""));
+		criteria.setBOCode(tmps[0].replace("{[", ""));
 		tmps = tmps[1].split("\\]\\&\\[");
 		for (int i = 0; i < tmps.length; i++) {
 			String[] tmpFields = tmps[i].split("=");
@@ -83,20 +83,20 @@ public class Criteria implements ICriteria {
 		return criteria;
 	}
 
-	private String businessObjectCode = "";
+	private String boCode = "";
 
 	@Override
-	@XmlElement(name = "BusinessObjectCode")
-	public final String getBusinessObjectCode() {
-		if (this.businessObjectCode == null) {
-			this.businessObjectCode = "";
+	@XmlElement(name = "BOCode")
+	public final String getBOCode() {
+		if (this.boCode == null) {
+			this.boCode = "";
 		}
-		return this.businessObjectCode;
+		return this.boCode;
 	}
 
 	@Override
-	public final void setBusinessObjectCode(String businessObjectCode) {
-		this.businessObjectCode = businessObjectCode;
+	public final void setBOCode(String value) {
+		this.boCode = value;
 	}
 
 	private int resultCount = -1;
@@ -108,21 +108,21 @@ public class Criteria implements ICriteria {
 	}
 
 	@Override
-	public final void setResultCount(int resultCount) {
-		this.resultCount = resultCount;
+	public final void setResultCount(int value) {
+		this.resultCount = value;
 	}
 
-	private boolean notLoadedChildren = false;
+	private boolean noChilds = false;
 
 	@Override
-	@XmlElement(name = "NotLoadedChildren")
-	public final boolean getNotLoadedChildren() {
-		return this.notLoadedChildren;
+	@XmlElement(name = "NoChilds")
+	public final boolean isNoChilds() {
+		return this.noChilds;
 	}
 
 	@Override
-	public final void setNotLoadedChildren(boolean notLoadedChildren) {
-		this.notLoadedChildren = notLoadedChildren;
+	public final void setNoChilds(boolean value) {
+		this.noChilds = value;
 	}
 
 	private String remarks = "";
@@ -134,8 +134,8 @@ public class Criteria implements ICriteria {
 	}
 
 	@Override
-	public final void setRemarks(String remarks) {
-		this.remarks = remarks;
+	public final void setRemarks(String value) {
+		this.remarks = value;
 	}
 
 	private IConditions conditions = null;
@@ -167,8 +167,8 @@ public class Criteria implements ICriteria {
 		return this.childCriterias;
 	}
 
-	public final void setChildCriterias(IChildCriterias childCriterias) {
-		this.childCriterias = childCriterias;
+	public final void setChildCriterias(IChildCriterias value) {
+		this.childCriterias = value;
 	}
 
 	private ISorts sorts = null;
@@ -183,8 +183,8 @@ public class Criteria implements ICriteria {
 		return this.sorts;
 	}
 
-	public final void setSorts(ISorts sorts) {
-		this.sorts = sorts;
+	public final void setSorts(ISorts value) {
+		this.sorts = value;
 	}
 
 	@Override
@@ -203,14 +203,14 @@ public class Criteria implements ICriteria {
 		if (bo instanceof IBOSimple) {
 			IBOSimple simple = (IBOSimple) bo;
 			boCriteria = new Criteria();
-			boCriteria.setBusinessObjectCode(simple.getObjectCode());
+			boCriteria.setBOCode(simple.getObjectCode());
 			ICondition condition = boCriteria.getConditions().create();
 			condition.setAlias(IBOSimple.MASTER_PRIMARY_KEY_NAME);
 			condition.setCondVal(simple.getObjectKey());
 		} else if (bo instanceof IBODocument) {
 			IBODocument document = (IBODocument) bo;
 			boCriteria = new Criteria();
-			boCriteria.setBusinessObjectCode(document.getObjectCode());
+			boCriteria.setBOCode(document.getObjectCode());
 			ICondition condition = boCriteria.getConditions().create();
 			condition.setAlias(IBODocument.MASTER_PRIMARY_KEY_NAME);
 			condition.setCondVal(document.getDocEntry());
@@ -218,7 +218,7 @@ public class Criteria implements ICriteria {
 		} else if (bo instanceof IBOMasterData) {
 			IBOMasterData master = (IBOMasterData) bo;
 			boCriteria = new Criteria();
-			boCriteria.setBusinessObjectCode(master.getObjectCode());
+			boCriteria.setBOCode(master.getObjectCode());
 			ICondition condition = boCriteria.getConditions().create();
 			condition.setAlias(IBOMasterData.SERIAL_NUMBER_KEY_NAME);
 			condition.setCondVal(master.getDocEntry());
@@ -230,7 +230,7 @@ public class Criteria implements ICriteria {
 	}
 
 	@Override
-	public final ICriteria nextResultCriteria(IBusinessObjectBase lastBO) {
+	public final ICriteria nextCriteria(IBusinessObjectBase lastBO) {
 		if (lastBO != null) {
 			ICriteria boCriteria = this.getBOCriteria(lastBO);
 			if (boCriteria == null) {
@@ -250,7 +250,7 @@ public class Criteria implements ICriteria {
 	}
 
 	@Override
-	public final ICriteria previousResultCriteria(IBusinessObjectBase firstBO) {
+	public final ICriteria previousCriteria(IBusinessObjectBase firstBO) {
 		if (firstBO != null) {
 			ICriteria boCriteria = this.getBOCriteria(firstBO);
 			if (boCriteria == null) {
@@ -297,16 +297,16 @@ public class Criteria implements ICriteria {
 			if (nCriteria.getConditions().size() > 0) {
 				// 原始条件括号括起
 				ICondition condition = nCriteria.getConditions().get(0);
-				condition.setBracketOpenNum(condition.getBracketOpenNum() + 1);
+				condition.setBracketOpen(condition.getBracketOpen() + 1);
 				condition = nCriteria.getConditions().get(nCriteria.getConditions().size() - 1);
-				condition.setBracketCloseNum(condition.getBracketCloseNum() + 1);
+				condition.setBracketClose(condition.getBracketClose() + 1);
 			}
 			if (tmpCriteria.getConditions().size() > 0) {
 				// 拷贝条件括号括起
 				ICondition condition = tmpCriteria.getConditions().get(0);
-				condition.setBracketOpenNum(condition.getBracketOpenNum() + 1);
+				condition.setBracketOpen(condition.getBracketOpen() + 1);
 				condition = tmpCriteria.getConditions().get(tmpCriteria.getConditions().size() - 1);
-				condition.setBracketCloseNum(condition.getBracketCloseNum() + 1);
+				condition.setBracketClose(condition.getBracketClose() + 1);
 			}
 			nCriteria.getConditions().addAll(tmpCriteria.getConditions());
 			// 复制排序条件

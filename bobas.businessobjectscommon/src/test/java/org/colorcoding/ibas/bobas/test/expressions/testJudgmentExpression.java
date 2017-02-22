@@ -104,35 +104,35 @@ public class testJudgmentExpression extends TestCase {
 		criteria.setResultCount(100);
 		// ("DocStatus" = 'P' OR "DocStatus" = 'F')
 		ICondition condition = criteria.getConditions().create();
-		condition.setBracketOpenNum(1);
+		condition.setBracketOpen(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
 		condition.setCondVal(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
-		condition.setBracketCloseNum(1);
+		condition.setBracketClose(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
 		condition.setCondVal(emDocumentStatus.FINISHED);
 		condition.setRelationship(ConditionRelationship.OR);
 		// and (("DocDueDate" = "2016-03-15" or "DocDueDate" = "2016-03-17")
 		// and (("DocTotal" >= 10000 and "DocTotal" >= 10000)))
 		condition = criteria.getConditions().create();
-		condition.setBracketOpenNum(2);
+		condition.setBracketOpen(2);
 		condition.setAlias(SalesOrder.DeliveryDateProperty.getName());
 		condition.setCondVal("2016-03-15");
 		condition.setRelationship(ConditionRelationship.AND);
 		condition = criteria.getConditions().create();
-		condition.setBracketCloseNum(1);
+		condition.setBracketClose(1);
 		condition.setAlias(SalesOrder.DeliveryDateProperty.getName());
 		condition.setCondVal("2016-03-17");
 		condition.setRelationship(ConditionRelationship.OR);
 		condition = criteria.getConditions().create();
-		condition.setBracketOpenNum(2);
-		condition.setBracketCloseNum(0);
+		condition.setBracketOpen(2);
+		condition.setBracketClose(0);
 		condition.setAlias(SalesOrder.DocumentTotalProperty.getName());
 		condition.setCondVal(10000);
 		condition.setOperation(ConditionOperation.GRATER_EQUAL);
 		condition.setRelationship(ConditionRelationship.AND);
 		condition = criteria.getConditions().create();
-		condition.setBracketCloseNum(3);
+		condition.setBracketClose(3);
 		condition.setAlias(SalesOrder.DocumentTotalProperty.getName());
 		condition.setCondVal(10000);
 		condition.setOperation(ConditionOperation.GRATER_EQUAL);

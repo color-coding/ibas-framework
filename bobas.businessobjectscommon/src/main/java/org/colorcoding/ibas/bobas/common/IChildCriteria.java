@@ -27,12 +27,12 @@ public interface IChildCriteria extends ICriteria {
 	 * 
 	 * @return
 	 */
-	boolean getFatherMustHasResluts();
+	boolean isOnlyHasChilds();
 
 	/**
 	 * 设置-是否父要求结果
 	 * 
 	 * @param value
 	 */
-	void setFatherMustHasResluts(boolean value);
+	void setOnlyHasChilds(boolean value);
 }

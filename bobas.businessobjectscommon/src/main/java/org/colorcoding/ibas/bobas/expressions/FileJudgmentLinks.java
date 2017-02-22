@@ -110,8 +110,8 @@ public class FileJudgmentLinks extends JudgmentLinks {
         ArrayList<JudgmentLinkItem> jLinkItems = new ArrayList<JudgmentLinkItem>();
         for (ICondition item : conditions) {
             JudgmentLinkItem jItem = new JudgmentLinkItem();
-            jItem.setOpenBracket(item.getBracketOpenNum());
-            jItem.setCloseBracket(item.getBracketCloseNum());
+            jItem.setOpenBracket(item.getBracketOpen());
+            jItem.setCloseBracket(item.getBracketClose());
             if (item.getRelationship() == ConditionRelationship.NONE) {
                 jItem.setRelationship(JudmentOperations.AND);
             } else {

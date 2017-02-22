@@ -35,36 +35,36 @@ public class Condition implements ICondition {
 		this.alias = value;
 	}
 
-	private int bracketCloseNum = 0;
+	private int bracketClose = 0;
 
 	@Override
-	@XmlElement(name = "BracketCloseNum")
-	public final int getBracketCloseNum() {
-		if (this.bracketCloseNum < 0) {
-			this.bracketCloseNum = 0;
+	@XmlElement(name = "BracketClose")
+	public final int getBracketClose() {
+		if (this.bracketClose < 0) {
+			this.bracketClose = 0;
 		}
-		return this.bracketCloseNum;
+		return this.bracketClose;
 	}
 
 	@Override
-	public final void setBracketCloseNum(int value) {
-		this.bracketCloseNum = value;
+	public final void setBracketClose(int value) {
+		this.bracketClose = value;
 	}
 
-	private int bracketOpenNum = 0;
+	private int bracketOpen = 0;
 
 	@Override
-	@XmlElement(name = "BracketOpenNum")
-	public final int getBracketOpenNum() {
-		if (this.bracketOpenNum < 0) {
-			this.bracketOpenNum = 0;
+	@XmlElement(name = "BracketOpen")
+	public final int getBracketOpen() {
+		if (this.bracketOpen < 0) {
+			this.bracketOpen = 0;
 		}
-		return this.bracketOpenNum;
+		return this.bracketOpen;
 	}
 
 	@Override
-	public final void setBracketOpenNum(int value) {
-		this.bracketOpenNum = value;
+	public final void setBracketOpen(int value) {
+		this.bracketOpen = value;
 	}
 
 	private String comparedAlias = "";

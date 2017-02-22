@@ -192,7 +192,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 					stringBuilder.append(" ");
 				}
 				// 开括号
-				for (int i = 0; i < condition.getBracketOpenNum(); i++) {
+				for (int i = 0; i < condition.getBracketOpen(); i++) {
 					stringBuilder.append("(");
 				}
 				// 字段名
@@ -254,7 +254,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 					}
 				}
 				// 闭括号
-				for (int i = 0; i < condition.getBracketCloseNum(); i++) {
+				for (int i = 0; i < condition.getBracketClose(); i++) {
 					stringBuilder.append(")");
 				}
 			}

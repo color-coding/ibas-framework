@@ -42,11 +42,11 @@ public class testBOAdapter extends TestCase {
 		criteria.setResultCount(100);
 		// ("DocStatus" = 'P' OR "DocStatus" = 'F')
 		ICondition condition = criteria.getConditions().create();
-		condition.setBracketOpenNum(1);
+		condition.setBracketOpen(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
 		condition.setCondVal(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
-		condition.setBracketCloseNum(1);
+		condition.setBracketClose(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
 		condition.setCondVal(emDocumentStatus.FINISHED);
 		condition.setRelationship(ConditionRelationship.OR);

@@ -16,7 +16,7 @@ public interface ICriteria {
 	 * 
 	 * @return
 	 */
-	String getBusinessObjectCode();
+	String getBOCode();
 
 	/**
 	 * 设置业务对象编码
@@ -24,7 +24,7 @@ public interface ICriteria {
 	 * @param value
 	 *            业务对象编码
 	 */
-	void setBusinessObjectCode(String value);
+	void setBOCode(String value);
 
 	/**
 	 * 获取查询结果数量
@@ -46,7 +46,7 @@ public interface ICriteria {
 	 * 
 	 * @return 是否
 	 */
-	boolean getNotLoadedChildren();
+	boolean isNoChilds();
 
 	/**
 	 * 设置是否查询子项
@@ -54,7 +54,7 @@ public interface ICriteria {
 	 * @param value
 	 *            是否
 	 */
-	void setNotLoadedChildren(boolean value);
+	void setNoChilds(boolean value);
 
 	/**
 	 * 获取备注
@@ -116,7 +116,7 @@ public interface ICriteria {
 	 *            起始业务对象
 	 * @return 查询
 	 */
-	ICriteria nextResultCriteria(IBusinessObjectBase lastBO);
+	ICriteria nextCriteria(IBusinessObjectBase lastBO);
 
 	/**
 	 * 计算上一个结果集的查询条件
@@ -127,7 +127,7 @@ public interface ICriteria {
 	 *            起始业务对象
 	 * @return 查询
 	 */
-	ICriteria previousResultCriteria(IBusinessObjectBase firstBO);
+	ICriteria previousCriteria(IBusinessObjectBase firstBO);
 
 	/**
 	 * 复制查询条件

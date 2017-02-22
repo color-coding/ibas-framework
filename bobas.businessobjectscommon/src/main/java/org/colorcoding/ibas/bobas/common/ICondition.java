@@ -29,7 +29,7 @@ public interface ICondition {
 	 * 
 	 * @return 比括号个数
 	 */
-	int getBracketCloseNum();
+	int getBracketClose();
 
 	/**
 	 * 设置-几个闭括号"）"
@@ -37,14 +37,14 @@ public interface ICondition {
 	 * @param value
 	 *            个数
 	 */
-	void setBracketCloseNum(int value);
+	void setBracketClose(int value);
 
 	/**
 	 * 获取-几个开括号"（"
 	 * 
 	 * @return 个数
 	 */
-	int getBracketOpenNum();
+	int getBracketOpen();
 
 	/**
 	 * 设置-几个开括号"（"
@@ -52,7 +52,7 @@ public interface ICondition {
 	 * @param value
 	 *            个数
 	 */
-	void setBracketOpenNum(int value);
+	void setBracketOpen(int value);
 
 	/**
 	 * 获取- 比较的字段（属性）名

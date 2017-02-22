@@ -39,15 +39,15 @@ public class testBORepository extends TestCase {
 
 	public void testCriteria() throws InvalidRepositoryException, InvalidTokenException {
 		ICriteria criteria = new Criteria();
-		criteria.setNotLoadedChildren(true);
+		criteria.setNoChilds(true);
 		criteria.setResultCount(100);
 		// ("DocStatus" = 'P' OR "DocStatus" = 'F')
 		ICondition condition = criteria.getConditions().create();
-		condition.setBracketOpenNum(1);
+		condition.setBracketOpen(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
 		condition.setCondVal(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
-		condition.setBracketCloseNum(1);
+		condition.setBracketClose(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
 		condition.setCondVal(emDocumentStatus.RELEASED);
 		condition.setRelationship(ConditionRelationship.OR);
@@ -66,7 +66,7 @@ public class testBORepository extends TestCase {
 		System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
 				operationResult.getMessage(), operationResult.getResultObjects().size()));
 
-		criteria.setNotLoadedChildren(false);
+		criteria.setNoChilds(false);
 		// 查询子项
 		IChildCriteria childCriteria = criteria.getChildCriterias().create();
 		childCriteria.setPropertyPath(SalesOrder.SalesOrderItemsProperty.getName());
@@ -140,11 +140,11 @@ public class testBORepository extends TestCase {
 		criteria.setResultCount(100);
 		// ("DocStatus" = 'P' OR "DocStatus" = 'F')
 		ICondition condition = criteria.getConditions().create();
-		condition.setBracketOpenNum(1);
+		condition.setBracketOpen(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
 		condition.setCondVal(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
-		condition.setBracketCloseNum(1);
+		condition.setBracketClose(1);
 		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
 		condition.setCondVal(emDocumentStatus.RELEASED);
 		condition.setRelationship(ConditionRelationship.OR);
