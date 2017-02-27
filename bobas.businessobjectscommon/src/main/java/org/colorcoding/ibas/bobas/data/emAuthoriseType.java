@@ -14,10 +14,10 @@ import org.colorcoding.ibas.bobas.mapping.DbValue;
 @XmlType(name = "emAuthoriseType", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
 public enum emAuthoriseType {
 	/**
-	 * 仅可见
+	 * 只读
 	 */
-	@DbValue(value = "V")
-	ONLY_VIEW,
+	@DbValue(value = "R")
+	READ,
 	/**
 	 * 完全
 	 */
