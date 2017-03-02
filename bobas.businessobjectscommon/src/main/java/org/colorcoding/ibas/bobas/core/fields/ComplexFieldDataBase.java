@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.colorcoding.ibas.bobas.core.BOFactory;
-import org.colorcoding.ibas.bobas.core.BOFactoryException;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.mapping.ComplexField;
 
@@ -100,8 +99,8 @@ public abstract class ComplexFieldDataBase<T> extends FieldDataBase<T>
 		this.setTable(mapping.table());
 		try {
 			this.setValue(BOFactory.create().createInstance(this.getValueType()));
-		} catch (BOFactoryException e) {
-			e.printStackTrace();
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new RuntimeException(e);
 		}
 	}
 

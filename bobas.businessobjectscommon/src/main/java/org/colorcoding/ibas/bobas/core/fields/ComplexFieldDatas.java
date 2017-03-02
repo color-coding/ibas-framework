@@ -1,7 +1,6 @@
 package org.colorcoding.ibas.bobas.core.fields;
 
 import org.colorcoding.ibas.bobas.core.BOFactory;
-import org.colorcoding.ibas.bobas.core.BOFactoryException;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.measurement.IMeasurement;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
@@ -16,8 +15,8 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 			// 如果未初始化，则尝试自动初始化
 			try {
 				this.setValue(BOFactory.create().createInstance(this.getValueType()));
-			} catch (BOFactoryException e) {
-				e.printStackTrace();
+			} catch (InstantiationException | IllegalAccessException e) {
+				throw new RuntimeException(e);
 			}
 		}
 		return this.value;

@@ -17,6 +17,10 @@ public class StringBuilder {
 		return this.stringBuilder.length();
 	}
 
+	public void setLength(int newLength) {
+		this.stringBuilder.setLength(newLength);
+	}
+
 	public void append(String str) {
 		this.stringBuilder.append(str);
 	}
@@ -39,5 +43,13 @@ public class StringBuilder {
 
 	public void append(char c) {
 		this.stringBuilder.append(c);
+	}
+
+	public int lastIndexOf(String str) {
+		return this.stringBuilder.lastIndexOf(str);
+	}
+
+	public int lastIndexOf(String str, int fromIndex) {
+		return this.stringBuilder.lastIndexOf(str, fromIndex);
 	}
 }

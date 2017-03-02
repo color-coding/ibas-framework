@@ -68,10 +68,14 @@ public class BORepository4Cache extends BORepositoryBase implements IBORepositor
 					cacheList = this.getCacheList(item.getClass());
 				}
 				synchronized (cacheList) {
-					cacheList.add(RepositoryFactory.createFatory().createCacheContainer(item));
+					cacheList.add(this.createCacheContainer(item));
 				}
 			}
 		}
+	}
+
+	protected IBOCacheContainer createCacheContainer(IBusinessObjectBase data) {
+		return new BOCacheContainer(data);
 	}
 
 	/**
@@ -87,7 +91,7 @@ public class BORepository4Cache extends BORepositoryBase implements IBORepositor
 		}
 		BOCacheContainers cacheList = this.getCacheList(data.getClass());
 		synchronized (cacheList) {
-			cacheList.add(RepositoryFactory.createFatory().createCacheContainer(data));
+			cacheList.add(this.createCacheContainer(data));
 		}
 	}
 

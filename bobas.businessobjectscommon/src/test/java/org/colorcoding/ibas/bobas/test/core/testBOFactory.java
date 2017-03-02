@@ -1,7 +1,6 @@
 package org.colorcoding.ibas.bobas.test.core;
 
 import org.colorcoding.ibas.bobas.core.BOFactory;
-import org.colorcoding.ibas.bobas.core.BOFactoryException;
 import org.colorcoding.ibas.bobas.core.IBOFactory;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 
@@ -9,7 +8,7 @@ import junit.framework.TestCase;
 
 public class testBOFactory extends TestCase {
 
-	public void testBOCode() throws BOFactoryException {
+	public void testBOCode() {
 		IBOFactory boFactory = BOFactory.create();
 		System.out.println(boFactory.getScanNamespaces().replace(";", "\n"));
 		String boCode = boFactory.getBOCode(SalesOrder.class);

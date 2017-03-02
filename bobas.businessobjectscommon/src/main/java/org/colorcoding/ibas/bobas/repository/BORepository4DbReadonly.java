@@ -15,7 +15,6 @@ import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.ISqlStoredProcedure;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.BOFactory;
-import org.colorcoding.ibas.bobas.core.BOFactoryException;
 import org.colorcoding.ibas.bobas.core.BORepositoryBase;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
@@ -131,7 +130,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	@Override
 	public IDbAdapter createDbAdapter() throws DbException {
 		if (this.dbAdapter == null) {
-			this.dbAdapter = DbAdapterFactory.createAdapter(this.getDbType());
+			this.dbAdapter = DbAdapterFactory.create().createAdapter(this.getDbType());
 		}
 		return this.dbAdapter;
 	}
@@ -376,11 +375,12 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 * @throws BOParseException
 	 * @throws SqlScriptsException
 	 * @throws ClassNotFoundException
-	 * @throws BOFactoryException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 */
 	private final IBusinessObjectBase[] myFetchEx(ICriteria criteria, Class<?> boType)
 			throws RepositoryException, DbException, SQLException, BOParseException, SqlScriptsException,
-			ClassNotFoundException, BOFactoryException {
+			ClassNotFoundException, InstantiationException, IllegalAccessException {
 		if (boType == null) {
 			throw new RepositoryException(i18n.prop("msg_bobas_not_specify_bo_type"));
 		}
@@ -425,11 +425,12 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 * @throws BOParseException
 	 * @throws SqlScriptsException
 	 * @throws ClassNotFoundException
-	 * @throws BOFactoryException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 */
 	private final IBusinessObjectBase[] myFetchEx(ISqlQuery sqlQuery, Class<?> boType)
 			throws RepositoryException, DbException, SQLException, BOParseException, SqlScriptsException,
-			ClassNotFoundException, BOFactoryException {
+			ClassNotFoundException, InstantiationException, IllegalAccessException {
 		if (boType == null) {
 			throw new RepositoryException(i18n.prop("msg_bobas_not_specify_bo_type"));
 		}
@@ -458,10 +459,11 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 * @throws SqlScriptsException
 	 * @throws BOParseException
 	 * @throws ClassNotFoundException
-	 * @throws BOFactoryException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 */
-	private final void myFetchEx(IBusinessObjectBase[] bos, ICriteria criteria)
-			throws DbException, SqlScriptsException, BOParseException, ClassNotFoundException, BOFactoryException {
+	private final void myFetchEx(IBusinessObjectBase[] bos, ICriteria criteria) throws DbException, SqlScriptsException,
+			BOParseException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 		boolean myOpenedDb = false;// 自己打开的数据库
 		IDbDataReader reader = null;
 		IDbCommand command = null;

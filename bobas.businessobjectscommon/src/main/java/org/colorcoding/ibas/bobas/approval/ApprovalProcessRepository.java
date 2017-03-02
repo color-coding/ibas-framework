@@ -4,7 +4,6 @@ import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.BOFactory;
-import org.colorcoding.ibas.bobas.core.BOFactoryException;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.repository.BORepositoryLogicService;
@@ -55,8 +54,7 @@ class ApprovalProcessRepository extends BORepositoryLogicService {
 			// 加载命名空间的类
 			Class<?> boClass = BOFactory.create().getBOClass(criteria.getBOCode());
 			if (boClass == null) {
-				throw new BOFactoryException(
-						i18n.prop("msg_bobas_not_found_bo_class", criteria.getBOCode()));
+				throw new ClassNotFoundException(i18n.prop("msg_bobas_not_found_bo_class", criteria.getBOCode()));
 			}
 			@SuppressWarnings("unchecked")
 			Class<P> boType = (Class<P>) boClass;

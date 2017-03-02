@@ -72,29 +72,23 @@ public class BOFactory implements IBOFactory {
 	}
 
 	@Override
-	public void loadPackage(String path) throws BOFactoryException {
+	public void loadPackage(String path) throws IOException {
 		URL url = null;
-		try {
-			String fullPath = path;
-			if (fullPath != null && (fullPath.indexOf(File.separator) < 0)) {
-				// 不是完整路径(目录 分隔符 文件名称)
-				fullPath = String.format("%s%s%s", Configuration.getWorkFolder(), File.separator, fullPath);
-			}
-			url = new File(path).toURI().toURL();
-		} catch (Exception e) {
-			throw new BOFactoryException(e.getMessage(), e);
+		String fullPath = path;
+		if (fullPath != null && (fullPath.indexOf(File.separator) < 0)) {
+			// 不是完整路径(目录 分隔符 文件名称)
+			fullPath = String.format("%s%s%s", Configuration.getWorkFolder(), File.separator, fullPath);
 		}
+		url = new File(path).toURI().toURL();
 		this.loadPackage(url);
 	}
 
 	@Override
-	public void loadPackage(URL url) throws BOFactoryException {
-		try {
-			URLClassLoader classLoader = new URLClassLoader(new URL[] { url });
-			classLoader.close();
-		} catch (Exception e) {
-			throw new BOFactoryException(e.getMessage(), e);
-		}
+	public void loadPackage(URL url) throws IOException {
+
+		URLClassLoader classLoader = new URLClassLoader(new URL[] { url });
+		classLoader.close();
+
 	}
 
 	private volatile HashMap<String, String> boMaps;
@@ -210,34 +204,23 @@ public class BOFactory implements IBOFactory {
 	}
 
 	@Override
-	public <P> P createInstance(Class<P> type) throws BOFactoryException {
-		try {
-			if (type == null) {
-				return null;
-			}
-			return type.newInstance();
-		} catch (Exception e) {
-			throw new BOFactoryException(e.getMessage(), e);
+	public <P> P createInstance(Class<P> type) throws InstantiationException, IllegalAccessException {
+		if (type == null) {
+			return null;
 		}
+		return type.newInstance();
 	}
 
 	@Override
-	public Object createInstance(String className) throws BOFactoryException {
-		try {
-			Class<?> type = this.getClass(className);
-			return type.newInstance();
-		} catch (Exception e) {
-			throw new BOFactoryException(e.getMessage(), e);
-		}
+	public Object createInstance(String className)
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		Class<?> type = this.getClass(className);
+		return type.newInstance();
 	}
 
 	@Override
-	public Class<?> getClass(String className) throws BOFactoryException {
-		try {
-			return Class.forName(className);
-		} catch (Exception e) {
-			throw new BOFactoryException(e.getMessage(), e);
-		}
+	public Class<?> getClass(String className) throws ClassNotFoundException {
+		return Class.forName(className);
 	}
 
 	@Override

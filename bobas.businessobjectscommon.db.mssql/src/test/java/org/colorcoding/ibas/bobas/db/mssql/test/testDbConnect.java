@@ -75,7 +75,7 @@ public class testDbConnect extends TestCase {
 	}
 
 	public void testToDataTable() throws DbException {
-		IDbAdapter dbAdapter = DbAdapterFactory.createAdapter();
+		IDbAdapter dbAdapter = DbAdapterFactory.create().createAdapter();
 		IDbConnection dbConnection = dbAdapter.createDbConnection();
 		IDbCommand dbCommand = dbConnection.createCommand();
 		IDbDataReader dbDataReader = dbCommand.executeReader("select * from cc_tt_oitm");

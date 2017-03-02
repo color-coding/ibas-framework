@@ -1,55 +1,141 @@
 package org.colorcoding.ibas.bobas.configuration;
 
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.core.BOFactory;
-import org.colorcoding.ibas.bobas.core.BOFactoryException;
+import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.messages.MessageLevel;
+import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.util.StringBuilder;
 
 /**
  * 可配置工厂
  * 
+ * @author Niuren.Zhu
+ *
+ * @param <T>
+ *            工厂创建的类型
  */
-public abstract class ConfigurableFactory {
+public abstract class ConfigurableFactory<T> {
 
-	public ConfigurableFactory() {
-
+	/**
+	 * 获取类型
+	 * 
+	 * @param names
+	 *            名称，任意值包含“.”，则不在补子类命名空间
+	 * @return 类型，未找到为null
+	 * @throws BOFactoryException
+	 */
+	@SuppressWarnings("unchecked")
+	public Class<T> getClass(String... names) throws ClassNotFoundException {
+		StringBuilder stringBuilder = new StringBuilder();
+		boolean nsDone = false;
+		for (String item : names) {
+			if (item == null || item.isEmpty()) {
+				continue;
+			}
+			// 补齐命名空间分隔符
+			if (stringBuilder.length() > 0 && stringBuilder.lastIndexOf(".") != stringBuilder.length()) {
+				stringBuilder.append(".");
+			}
+			if (item.indexOf(".") >= 0) {
+				nsDone = true;
+			}
+			// 拼接命令空间
+			stringBuilder.append(item.trim());
+		}
+		// 参数中不包含“.”则补齐命名空间
+		if (!nsDone) {
+			String namespace = this.getClass().getName();
+			int index = namespace.lastIndexOf(".");
+			if (index > 0) {
+				namespace = namespace.substring(0, index + 1);
+			}
+			stringBuilder.insert(0, namespace);
+		}
+		// 去除最后分隔符
+		if (stringBuilder.length() > 0 && stringBuilder.lastIndexOf(".") == stringBuilder.length()) {
+			stringBuilder.setLength(stringBuilder.length() - 1);
+		}
+		// 获取类类型
+		String fullName = stringBuilder.toString();
+		RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_CONFIG_COMBINED_CLASS_NAME, fullName);
+		return (Class<T>) BOFactory.create().getClass(fullName);
 	}
 
 	/**
-	 * 获取对象实例 实例路径：工厂命名空间 + 实现的类型 + 类的名称， 例如：
-	 * [org.colorcoding.ibas.bobas.db].[mysql].[DbAdapter]
+	 * 获取类型实例
 	 * 
-	 * @param factory
-	 *            工厂类型
-	 * @param type
-	 *            实现类型标记，此参数存在“.”则不加工厂命名空间前缀
-	 * @param name
-	 *            实例名称
-	 * @return 工厂实现的类型实例
-	 * @throws BOFactoryException
+	 * @param names
+	 *            名称
+	 * @return 类型实例
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 */
-	protected static Class<?> getInstance(Class<?> factory, String type, String name) throws BOFactoryException {
-		StringBuilder className = new StringBuilder();
-		if (type != null && type.indexOf(".") > 0) {
-			// 提供路径
-			className.append(type);
-		} else {
-			// 基础命名空间
-			className.append(factory.getPackage().getName());
-			// 类型实现命名空间
-			if (type != null && !type.isEmpty()) {
-				className.append(".");
-				className.append(type);
-			}
+	public T newInstance(String... names)
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		Class<T> type = this.getClass(names);
+		if (type == null) {
+			return null;
 		}
-		// 类名称
-		if (name != null && !name.isEmpty()) {
-			className.append(".");
-			className.append(name);
-		}
-
-		// 获取类类型
-		Class<?> instanceClass = BOFactory.create().getClass(className.toString());
-		return instanceClass;
+		return type.newInstance();
 	}
 
+	/**
+	 * 创建实例
+	 * 
+	 * @param configKey
+	 *            配置项，提供命名空间
+	 * @param typeName
+	 *            类名
+	 * @return
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws BOFactoryException
+	 */
+	public T create(String typeName) {
+		// 使用配置的实例
+		try {
+			return this.newInstance(typeName);
+		} catch (Exception e) {
+			throw new RuntimeException(i18n.prop("msg_bobas_configurable_factory_create_instance_faild", typeName), e);
+		}
+	}
+
+	/**
+	 * 创建实例
+	 * 
+	 * @param configKey
+	 *            配置项，提供命名空间
+	 * @param typeName
+	 *            类名
+	 * @return
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws BOFactoryException
+	 */
+	public T create(String configKey, String typeName) {
+		String configValue = MyConfiguration.getConfigValue(configKey, "").toLowerCase();
+		if (configValue == null || configValue.isEmpty()) {
+			// 没有配置，则使用默认
+			RuntimeLog.log(MessageLevel.WARN, RuntimeLog.MSG_CONFIG_NOT_CONFIGURATION_USING_DEFALUT, configKey,
+					typeName);
+			return this.createDefault(typeName);
+		}
+		// 使用配置的实例
+		try {
+			T instance = this.newInstance(configValue, typeName);
+			return instance;
+		} catch (Exception e) {
+			throw new RuntimeException(i18n.prop("msg_bobas_configurable_factory_create_instance_faild", typeName), e);
+		}
+	}
+
+	/**
+	 * 默认实例，没有配置时使用
+	 * 
+	 * @param typeName
+	 * @return
+	 */
+	protected abstract T createDefault(String typeName);
 }

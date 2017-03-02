@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import javax.xml.bind.JAXBException;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
 import org.colorcoding.ibas.bobas.configuration.Configuration;
 import org.colorcoding.ibas.bobas.configuration.ConfigurationManager;
 import org.colorcoding.ibas.bobas.configuration.IConfigurationManager;
@@ -47,4 +48,42 @@ public class testConfiguration extends TestCase {
 		// System.out.println(MyConfiguration.getResource("app.xml"));//null
 		MyConfiguration.update();
 	}
+
+	public void testConfigurableFactory() throws ClassNotFoundException {
+		// DbAdapter
+		TestFactory.create().getClass("DbAdapter.");// 不需要额外处理时，最后位为“.”
+		// org.colorcoding.ibas.bobas.test.configuration.DbAdapter
+		TestFactory.create().getClass("DbAdapter");
+		// db.mssql.DbAdapter
+		TestFactory.create().getClass("db.mssql", "DbAdapter");
+		// org.colorcoding.ibas.bobas.test.configuration.mssql.DbAdapter
+		TestFactory.create().getClass("mssql", "DbAdapter");
+	}
+
+}
+
+class TestFactory extends ConfigurableFactory<Object> {
+
+	private TestFactory() {
+	}
+
+	private volatile static TestFactory factory;
+
+	public synchronized static TestFactory create() {
+		if (factory == null) {
+			synchronized (TestFactory.class) {
+				if (factory == null) {
+					factory = new TestFactory();
+				}
+			}
+		}
+		return factory;
+	}
+
+	@Override
+	protected Object createDefault(String typeName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

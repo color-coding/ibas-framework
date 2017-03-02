@@ -17,7 +17,6 @@ import org.colorcoding.ibas.bobas.bo.IBOSimple;
 import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
-import org.colorcoding.ibas.bobas.core.BOFactoryException;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.ITrackStatusOperator;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
@@ -223,7 +222,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 		return UUID.randomUUID().toString();// bo.toString();
 	}
 
-	private BOFile getBOFile(IBusinessObjectBase bo) throws RepositoryException, BOFactoryException, JAXBException {
+	private BOFile getBOFile(IBusinessObjectBase bo) throws RepositoryException, JAXBException {
 		BOFile[] boFiles = this.myFetchEx(bo.getCriteria(), bo.getClass());
 		if (boFiles.length == 0) {
 			throw new RepositoryException(i18n.prop("msg_bobas_not_found_bo_copy", bo));
@@ -231,7 +230,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 		return boFiles[0];
 	}
 
-	private boolean deleteBOFile(IBusinessObjectBase bo) throws RepositoryException, BOFactoryException, JAXBException {
+	private boolean deleteBOFile(IBusinessObjectBase bo) throws RepositoryException, JAXBException {
 		BOFile boFile = this.getBOFile(bo);
 		File file = new File(this.getRepositoryFolder() + File.separator + boFile.getFilePath());
 		if (file.exists()) {

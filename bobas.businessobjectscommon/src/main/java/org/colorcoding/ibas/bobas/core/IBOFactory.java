@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.core;
 
+import java.io.IOException;
 import java.net.URL;
 
 /**
@@ -24,18 +25,18 @@ public interface IBOFactory {
 	 * 
 	 * @param path
 	 *            路径
-	 * @throws BOFactoryException
+	 * @throws IOException
 	 */
-	void loadPackage(String path) throws BOFactoryException;
+	void loadPackage(String path) throws IOException;
 
 	/**
 	 * 加载包
 	 * 
 	 * @param url
 	 *            地址
-	 * @throws BOFactoryException
+	 * @throws IOException
 	 */
-	void loadPackage(URL url) throws BOFactoryException;
+	void loadPackage(URL url) throws IOException;
 
 	/**
 	 * 获取业务对象类型
@@ -55,9 +56,10 @@ public interface IBOFactory {
 	 *            对象类型
 	 * 
 	 * @return 业务对象实例
-	 * @throws BOFactoryException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 */
-	<P> P createInstance(Class<P> type) throws BOFactoryException;
+	<P> P createInstance(Class<P> type) throws InstantiationException, IllegalAccessException;
 
 	/**
 	 * 创建业务对象实例
@@ -66,9 +68,12 @@ public interface IBOFactory {
 	 *            对象类型名称
 	 * 
 	 * @return 业务对象实例
-	 * @throws BOFactoryException
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 */
-	Object createInstance(String className) throws BOFactoryException;
+	Object createInstance(String className)
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException;
 
 	/**
 	 * 获取类型
@@ -76,9 +81,9 @@ public interface IBOFactory {
 	 * @param className
 	 *            类型名称
 	 * @return 类型
-	 * @throws BOFactoryException
+	 * @throws ClassNotFoundException
 	 */
-	Class<?> getClass(String className) throws BOFactoryException;
+	Class<?> getClass(String className) throws ClassNotFoundException;
 
 	/**
 	 * 获取命名空间下所有类型
