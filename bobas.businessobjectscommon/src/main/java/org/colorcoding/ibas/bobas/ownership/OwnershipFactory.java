@@ -1,7 +1,6 @@
 package org.colorcoding.ibas.bobas.ownership;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.approval.ApprovalException;
 import org.colorcoding.ibas.bobas.common.IOperationInformation;
 import org.colorcoding.ibas.bobas.common.OperationInformation;
 import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
@@ -56,12 +55,6 @@ public class OwnershipFactory extends ConfigurableFactory<IOwnershipJudger> {
 
 	private volatile static IOwnershipJudger ownershipJudger = null;
 
-	/**
-	 * 创建流程管理员实例
-	 * 
-	 * @return
-	 * @throws ApprovalException
-	 */
 	public synchronized IOwnershipJudger createJudger() {
 		if (ownershipJudger == null) {
 			ownershipJudger = this.create(MyConfiguration.CONFIG_ITEM_OWNERSHIP_WAY, "OwnershipJudger");

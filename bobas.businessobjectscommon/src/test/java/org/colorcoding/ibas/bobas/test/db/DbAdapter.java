@@ -1,9 +1,9 @@
 package org.colorcoding.ibas.bobas.test.db;
 
+import org.colorcoding.ibas.bobas.bo.BOException;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.db.BOAdapter4Db;
-import org.colorcoding.ibas.bobas.db.BOParseException;
 import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
 import org.colorcoding.ibas.bobas.db.IDbCommand;
@@ -46,7 +46,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			}
 
 			@Override
-			public KeyValue[] parsePrimaryKeys(IBusinessObjectBase bo, IDbCommand command) throws BOParseException {
+			public KeyValue[] parsePrimaryKeys(IBusinessObjectBase bo, IDbCommand command) throws BOException {
 				return new KeyValue[] { new KeyValue() };
 			}
 		};

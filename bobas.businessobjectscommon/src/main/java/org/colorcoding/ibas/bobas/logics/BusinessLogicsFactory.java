@@ -34,12 +34,6 @@ public class BusinessLogicsFactory extends ConfigurableFactory<IBusinessLogicsMa
 		return new BusinessLogicsManager();
 	}
 
-	/**
-	 * 创建业务逻辑管理员实例
-	 * 
-	 * @return
-	 * @throws BusinessLogicsException
-	 */
 	public synchronized IBusinessLogicsManager createManager() throws BusinessLogicsException {
 		if (defaultManager == null) {
 			defaultManager = this.create(MyConfiguration.CONFIG_ITEM_BUSINESS_LOGICS_WAY, "BusinessLogicsManager");

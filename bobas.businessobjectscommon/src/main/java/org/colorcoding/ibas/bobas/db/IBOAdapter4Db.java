@@ -1,26 +1,37 @@
 package org.colorcoding.ibas.bobas.db;
 
+import org.colorcoding.ibas.bobas.common.IConditions;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.ISqlStoredProcedure;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectListBase;
-import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.repository.TransactionType;
 
 /**
  * 业务对象的数据库适配器
  */
-public interface IBOAdapter4Db {
+public interface IBOAdapter4Db extends IBONumberingManager4Db {
+
 	/**
 	 * 解析查询
 	 * 
 	 * @param criteria
 	 *            查询
-	 * @return 查询对象
-	 * @throws SqlScriptsException
+	 * @return 查询语句
+	 * @throws BOParseException
 	 */
 	ISqlQuery parseSqlQuery(ICriteria criteria) throws BOParseException;
+
+	/**
+	 * 解析查询条件
+	 * 
+	 * @param conditions
+	 *            查询条件
+	 * @return 查询语句
+	 * @throws BOParseException
+	 */
+	ISqlQuery parseSqlQuery(IConditions conditions) throws BOParseException;
 
 	/**
 	 * 解析查询
@@ -47,7 +58,7 @@ public interface IBOAdapter4Db {
 	 * @param bo
 	 *            业务对象
 	 * @return 插入语句
-	 * @throws SqlScriptsException
+	 * @throws BOParseException
 	 */
 	ISqlQuery parseSqlInsert(IBusinessObjectBase bo) throws BOParseException;
 
@@ -57,7 +68,7 @@ public interface IBOAdapter4Db {
 	 * @param bo
 	 *            业务对象
 	 * @return 删除语句
-	 * @throws SqlScriptsException
+	 * @throws BOParseException
 	 */
 	ISqlQuery parseSqlDelete(IBusinessObjectBase bo) throws BOParseException;
 
@@ -67,7 +78,7 @@ public interface IBOAdapter4Db {
 	 * @param bo
 	 *            业务对象
 	 * @return 更新语句
-	 * @throws SqlScriptsException
+	 * @throws BOParseException
 	 */
 	ISqlQuery parseSqlUpdate(IBusinessObjectBase bo) throws BOParseException;
 
@@ -96,67 +107,6 @@ public interface IBOAdapter4Db {
 	 * @throws BOParseException
 	 */
 	IBusinessObjectBase[] parseBOs(IDbDataReader reader, IBusinessObjectListBase<?> bos) throws BOParseException;
-
-	/**
-	 * 解析业务对象
-	 * 
-	 * @param bo
-	 *            业务对象
-	 * @param command
-	 *            数据库命令
-	 * 
-	 * @return 主键及值
-	 * @throws BOParseException
-	 */
-	KeyValue[] parsePrimaryKeys(IBusinessObjectBase bo, IDbCommand command) throws BOParseException;
-
-	/**
-	 * 更新业务对象主键记录，主键值加一。
-	 * 
-	 * @param bo
-	 *            业务对象（取值对象）
-	 * @param command
-	 *            数据库命令
-	 * 
-	 * @throws BOParseException
-	 */
-	void updatePrimaryKeyRecords(IBusinessObjectBase bo, IDbCommand command) throws BOParseException;
-
-	/**
-	 * 更新业务对象主键记录
-	 * 
-	 * @param bo
-	 *            业务对象（取值对象）
-	 * @param addValue
-	 *            主键增加值
-	 * @param command
-	 *            数据库命令
-	 * 
-	 * @throws BOParseException
-	 */
-	void updatePrimaryKeyRecords(IBusinessObjectBase bo, int addValue, IDbCommand command) throws BOParseException;
-
-	/**
-	 * 使用主键（查询并更新） 应考虑多线程的并发问题
-	 * 
-	 * @param bo
-	 *            业务对象
-	 * @param command
-	 *            数据库命令
-	 * @return 业务对象主键
-	 * @throws BOParseException
-	 */
-	KeyValue[] usePrimaryKeys(IBusinessObjectBase bo, IDbCommand command) throws BOParseException;
-
-	/**
-	 * 给对象主键赋值
-	 * 
-	 * @param bo
-	 *            对象
-	 * @param keys
-	 *            主键
-	 */
-	void setPrimaryKeys(IBusinessObjectBase bo, KeyValue[] keys);
 
 	/**
 	 * 获取事务通知语句

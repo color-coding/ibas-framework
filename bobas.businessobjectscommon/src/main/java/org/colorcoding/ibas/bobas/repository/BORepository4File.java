@@ -11,8 +11,10 @@ import java.util.UUID;
 import javax.xml.bind.JAXBException;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.bo.BOException;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBOMasterData;
+import org.colorcoding.ibas.bobas.bo.IBONumberingManager;
 import org.colorcoding.ibas.bobas.bo.IBOSimple;
 import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
@@ -24,12 +26,104 @@ import org.colorcoding.ibas.bobas.core.SaveActionsException;
 import org.colorcoding.ibas.bobas.core.SaveActionsListener;
 import org.colorcoding.ibas.bobas.core.SaveActionsSupport;
 import org.colorcoding.ibas.bobas.core.SaveActionsType;
+import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 public class BORepository4File extends BORepository4FileReadonly implements IBORepository4File {
+
+	private IBONumberingManager boNumber;
+
+	public final IBONumberingManager getBONumber() {
+		if (this.boNumber == null) {
+			this.boNumber = new IBONumberingManager() {
+				public KeyValue[] usePrimaryKeys(IBusinessObjectBase bo, String workFolder, String transId)
+						throws IOException {
+					KeyValue[] keys = null;
+					if (bo instanceof IBOStorageTag) {
+						IBOStorageTag tagBO = (IBOStorageTag) bo;
+						String companyId = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_COMPANY_ID, "CC")
+								.toLowerCase();
+						File file = new File(workFolder + File.separator + companyId + "_sys" + File.separator
+								+ "bo_keys.properties");
+						if (!file.exists()) {
+							file.getParentFile().mkdirs();
+							file.createNewFile();
+						}
+						Properties props = new Properties();
+						props.load(new FileInputStream(file));
+						String value = props.getProperty(tagBO.getObjectCode());
+						if (value == null || value.isEmpty()) {
+							value = "1";
+						}
+						int key = 1, nextKey = 1;
+						key = Integer.parseInt(value);
+						nextKey = key + 1;
+						if (bo instanceof IBODocument) {
+							IBODocument item = (IBODocument) bo;
+							item.setDocEntry(key);
+							keys = new KeyValue[] { new KeyValue("DocEntry", key) };
+						} else if (bo instanceof IBOMasterData) {
+							IBOMasterData item = (IBOMasterData) bo;
+							item.setDocEntry(key);
+							keys = new KeyValue[] { new KeyValue("DocEntry", key) };
+						} else if (bo instanceof IBOSimple) {
+							IBOSimple item = (IBOSimple) bo;
+							item.setObjectKey(key);
+							keys = new KeyValue[] { new KeyValue("ObjectKey", key) };
+						}
+						OutputStream fos = new FileOutputStream(file);
+						props.setProperty(tagBO.getObjectCode(), String.valueOf(nextKey));
+						props.store(fos, String.format("fixed by transaction [%s].", transId));
+					}
+					return keys;
+				}
+
+				@Override
+				public KeyValue[] usePrimaryKeys(IBusinessObjectBase bo, Object... others) throws BOException {
+					String workFolder = (String) others[0];
+					String transId = (String) others[1];
+					try {
+						return this.usePrimaryKeys(bo, workFolder, transId);
+					} catch (Exception e) {
+						throw new BOException(e);
+					}
+				}
+
+				@Override
+				public void updatePrimaryKeyRecords(IBusinessObjectBase bo, int addValue, Object... others)
+						throws BOException {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public void updatePrimaryKeyRecords(IBusinessObjectBase bo, Object... others) throws BOException {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public void setPrimaryKeys(IBusinessObjectBase bo, KeyValue[] keys) {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public KeyValue[] parsePrimaryKeys(IBusinessObjectBase bo, Object... others) throws BOException {
+					// TODO Auto-generated method stub
+					return null;
+				}
+			};
+		}
+		return boNumber;
+	}
+
+	public final void setBONumber(IBONumberingManager value) {
+		this.boNumber = value;
+	}
 
 	@Override
 	public boolean beginTransaction() throws RepositoryException {
@@ -149,7 +243,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 				this.tagStorage(bo);// 存储标记
 				if (bo.isNew()) {
 					// 新建的对象
-					this.usePrimaryKeys(bo);
+					this.getBONumber().usePrimaryKeys(bo, this.getRepositoryFolder(), this.getTransactionId());
 					this.notifyActions(SaveActionsType.BEFORE_ADDING, bo);
 					String fileName = String.format("%s%s%s.bo", boFolder, File.separator, this.getFileName(bo));
 					this.writeBOFile(bo, fileName);
@@ -180,42 +274,6 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 			}
 		}
 		return bo;
-	}
-
-	protected void usePrimaryKeys(IBusinessObjectBase bo) throws IOException {
-		if (bo instanceof IBOStorageTag) {
-			IBOStorageTag tagBO = (IBOStorageTag) bo;
-			String companyId = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_COMPANY_ID, "CC")
-					.toLowerCase();
-			File file = new File(this.getRepositoryFolder() + File.separator + companyId + "_sys" + File.separator
-					+ "bo_keys.properties");
-			if (!file.exists()) {
-				file.getParentFile().mkdirs();
-				file.createNewFile();
-			}
-			Properties props = new Properties();
-			props.load(new FileInputStream(file));
-			String value = props.getProperty(tagBO.getObjectCode());
-			if (value == null || value.isEmpty()) {
-				value = "1";
-			}
-			int key = 1, nextKey = 1;
-			key = Integer.parseInt(value);
-			nextKey = key + 1;
-			if (bo instanceof IBODocument) {
-				IBODocument item = (IBODocument) bo;
-				item.setDocEntry(key);
-			} else if (bo instanceof IBOMasterData) {
-				IBOMasterData item = (IBOMasterData) bo;
-				item.setDocEntry(key);
-			} else if (bo instanceof IBOSimple) {
-				IBOSimple item = (IBOSimple) bo;
-				item.setObjectKey(key);
-			}
-			OutputStream fos = new FileOutputStream(file);
-			props.setProperty(tagBO.getObjectCode(), String.valueOf(nextKey));
-			props.store(fos, String.format("fixed by transaction [%s].", this.getTransactionId()));
-		}
 	}
 
 	private String getFileName(IBusinessObjectBase bo) {

@@ -4,6 +4,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.bo.BOException;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
 import org.colorcoding.ibas.bobas.bo.IBOLine;
@@ -174,7 +175,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	 * @return
 	 * @throws SqlScriptsException
 	 */
-	protected ISqlQuery parseSqlQuery(IConditions conditions) throws BOParseException {
+	public ISqlQuery parseSqlQuery(IConditions conditions) throws BOParseException {
 		try {
 			if (conditions == null) {
 				return null;
@@ -866,7 +867,6 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 		throw new BOParseException(i18n.prop("msg_bobas_not_provide_convert_method", toType.getName()));
 	}
 
-	@Override
 	public void setPrimaryKeys(IBusinessObjectBase bo, KeyValue[] keys) {
 		if (bo instanceof IBODocument) {
 			IBODocument boKey = (IBODocument) bo;
@@ -933,11 +933,11 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	}
 
 	@Override
-	public KeyValue[] usePrimaryKeys(IBusinessObjectBase bo, IDbCommand command) throws BOParseException {
+	public KeyValue[] usePrimaryKeys(IBusinessObjectBase bo, IDbCommand command) throws BOException {
 		// 获取主键
 		KeyValue[] keys = this.parsePrimaryKeys(bo, command);
 		if (keys == null || keys.length == 0) {
-			throw new BOParseException(i18n.prop("msg_bobas_not_found_bo_primary_keys", bo.getClass().getName()));
+			throw new BOException(i18n.prop("msg_bobas_not_found_bo_primary_keys", bo.getClass().getName()));
 		}
 		// 主键赋值
 		this.setPrimaryKeys(bo, keys);
@@ -947,7 +947,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	}
 
 	@Override
-	public KeyValue[] parsePrimaryKeys(IBusinessObjectBase bo, IDbCommand command) throws BOParseException {
+	public KeyValue[] parsePrimaryKeys(IBusinessObjectBase bo, IDbCommand command) throws BOException {
 		try {
 			ISqlScripts sqlScripts = this.getSqlScripts();
 			if (sqlScripts == null) {
@@ -1089,18 +1089,17 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			}
 			return keys.toArray(new KeyValue[] {});
 		} catch (Exception e) {
-			throw new BOParseException(e);
+			throw new BOException(e);
 		}
 	}
 
 	@Override
-	public void updatePrimaryKeyRecords(IBusinessObjectBase bo, IDbCommand command) throws BOParseException {
+	public void updatePrimaryKeyRecords(IBusinessObjectBase bo, IDbCommand command) throws BOException {
 		this.updatePrimaryKeyRecords(bo, 1, command);
 	}
 
 	@Override
-	public void updatePrimaryKeyRecords(IBusinessObjectBase bo, int addValue, IDbCommand command)
-			throws BOParseException {
+	public void updatePrimaryKeyRecords(IBusinessObjectBase bo, int addValue, IDbCommand command) throws BOException {
 		try {
 			if (bo instanceof IBOLine) {
 				// 对象行，不做处理
@@ -1135,7 +1134,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			// 更新数据记录
 			command.executeUpdate(sqlScripts.getUpdateBOPrimaryKeyScript(boCode, addValue));
 		} catch (Exception e) {
-			throw new BOParseException(e);
+			throw new BOException(e);
 		}
 	}
 
@@ -1188,5 +1187,25 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 		} catch (Exception e) {
 			throw new BOParseException(e);
 		}
+	}
+
+	@Override
+	public KeyValue[] parsePrimaryKeys(IBusinessObjectBase bo, Object... others) throws BOException {
+		return this.parsePrimaryKeys(bo, (IDbCommand) others[0]);
+	}
+
+	@Override
+	public KeyValue[] usePrimaryKeys(IBusinessObjectBase bo, Object... others) throws BOException {
+		return this.usePrimaryKeys(bo, (IDbCommand) others[0]);
+	}
+
+	@Override
+	public void updatePrimaryKeyRecords(IBusinessObjectBase bo, Object... others) throws BOException {
+		this.updatePrimaryKeyRecords(bo, 1, others);
+	}
+
+	@Override
+	public void updatePrimaryKeyRecords(IBusinessObjectBase bo, int addValue, Object... others) throws BOException {
+		this.updatePrimaryKeyRecords(bo, addValue, (IDbCommand) others[0]);
 	}
 }

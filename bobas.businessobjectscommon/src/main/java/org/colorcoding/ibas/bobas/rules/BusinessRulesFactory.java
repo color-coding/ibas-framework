@@ -2,7 +2,6 @@ package org.colorcoding.ibas.bobas.rules;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
-import org.colorcoding.ibas.bobas.logics.BusinessLogicsException;
 
 /**
  * 业务规则工厂
@@ -34,12 +33,6 @@ public class BusinessRulesFactory extends ConfigurableFactory<IBusinessRulesMana
 		return new BusinessRulesManager();
 	}
 
-	/**
-	 * 创建业务逻辑管理员实例
-	 * 
-	 * @return
-	 * @throws BusinessLogicsException
-	 */
 	public synchronized IBusinessRulesManager createManager() throws BusinessRuleException {
 		if (defaultManager == null) {
 			defaultManager = this.create(MyConfiguration.CONFIG_ITEM_BUSINESS_RULES_WAY, "BusinessRulesManager");

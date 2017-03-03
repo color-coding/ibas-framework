@@ -78,6 +78,10 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 		this.dbType = value;
 	}
 
+	public IDbAdapter createDbAdapter() throws DbException {
+		return DbAdapterFactory.create().createAdapter(this.getDbType());
+	}
+
 	private volatile IDbConnection dbConnection = null;
 
 	@Override
@@ -125,18 +129,19 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 		this.connectDb(null, dbServer, dbName, dbUser, dbPassword);
 	}
 
-	private IDbAdapter dbAdapter;
+	private IBOAdapter4Db boAdapter;
 
 	@Override
-	public IDbAdapter createDbAdapter() throws DbException {
-		if (this.dbAdapter == null) {
-			this.dbAdapter = DbAdapterFactory.create().createAdapter(this.getDbType());
+	public IBOAdapter4Db getBOAdapter() throws DbException {
+		if (this.boAdapter == null) {
+			this.boAdapter = this.createDbAdapter().createBOAdapter();
 		}
-		return this.dbAdapter;
+		return this.boAdapter;
 	}
 
-	public void setDbAdapter(IDbAdapter dbAdapter) throws DbException {
-		this.dbAdapter = dbAdapter;
+	@Override
+	public void setBOAdapter(IBOAdapter4Db boAdapter) {
+		this.boAdapter = boAdapter;
 	}
 
 	/**
@@ -182,7 +187,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	@Override
 	public DateTime getServerTime() {
 		try {
-			IBOAdapter4Db adapter4Db = this.createDbAdapter().createBOAdapter();
+			IBOAdapter4Db adapter4Db = this.getBOAdapter();
 			IOperationResult<SingleValue> operationResult = this.fetch(adapter4Db.getServerTimeScript());
 			SingleValue data = operationResult.getResultObjects().firstOrDefault();
 			if (data != null) {
@@ -223,7 +228,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	@Override
 	public <T extends IBusinessObjectBase> IOperationResult<T> fetch(ICriteria criteria, Class<T> boType) {
 		try {
-			IBOAdapter4Db adapter4Db = this.createDbAdapter().createBOAdapter();
+			IBOAdapter4Db adapter4Db = this.getBOAdapter();
 			ISqlQuery sqlQuery = adapter4Db.parseSqlQuery(criteria, boType);
 			return this.fetch(sqlQuery, boType);
 		} catch (Exception e) {
@@ -336,7 +341,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 		if (sqlQuery == null) {
 			throw new RepositoryException(i18n.prop("msg_bobas_invalid_sql_query"));
 		}
-		IBOAdapter4Db adapter4Db = this.createDbAdapter().createBOAdapter();
+		IBOAdapter4Db adapter4Db = this.getBOAdapter();
 		IDbDataReader reader = null;
 		IDbCommand command = null;
 		boolean myOpenedDb = false;// 自己打开的数据库
@@ -387,7 +392,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 		boolean myOpenedDb = false;// 自己打开的数据库
 		try {
 			myOpenedDb = this.openDbConnection();
-			IBOAdapter4Db adapter4Db = this.createDbAdapter().createBOAdapter();
+			IBOAdapter4Db adapter4Db = this.getBOAdapter();
 			ISqlQuery sqlQuery = adapter4Db.parseSqlQuery(criteria, boType);
 			IBusinessObjectBase[] mainBOs = this.myFetch(sqlQuery, boType);
 			this.myFetchEx(mainBOs, criteria);// 加载子项
@@ -467,7 +472,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 		boolean myOpenedDb = false;// 自己打开的数据库
 		IDbDataReader reader = null;
 		IDbCommand command = null;
-		IBOAdapter4Db adapter4Db = this.createDbAdapter().createBOAdapter();
+		IBOAdapter4Db adapter4Db = this.getBOAdapter();
 		try {
 			if (bos == null) {
 				return;
@@ -616,7 +621,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	@Override
 	public <T extends IBusinessObjectBase> IOperationResult<T> fetch(ISqlStoredProcedure sp, Class<T> boType) {
 		try {
-			IBOAdapter4Db adapter4Db = this.createDbAdapter().createBOAdapter();
+			IBOAdapter4Db adapter4Db = this.getBOAdapter();
 			ISqlQuery sqlQuery = adapter4Db.parseSqlQuery(sp);
 			return this.fetch(sqlQuery, boType);
 		} catch (Exception e) {
@@ -627,7 +632,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	@Override
 	public <T extends IBusinessObjectBase> IOperationResult<T> fetchEx(ISqlStoredProcedure sp, Class<T> boType) {
 		try {
-			IBOAdapter4Db adapter4Db = this.createDbAdapter().createBOAdapter();
+			IBOAdapter4Db adapter4Db = this.getBOAdapter();
 			ISqlQuery sqlQuery = adapter4Db.parseSqlQuery(sp);
 			return this.fetchEx(sqlQuery, boType);
 		} catch (Exception e) {
@@ -638,11 +643,12 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	@Override
 	public IOperationResult<SingleValue> fetch(ISqlStoredProcedure sp) {
 		try {
-			IBOAdapter4Db adapter4Db = this.createDbAdapter().createBOAdapter();
+			IBOAdapter4Db adapter4Db = this.getBOAdapter();
 			ISqlQuery sqlQuery = adapter4Db.parseSqlQuery(sp);
 			return this.fetch(sqlQuery);
 		} catch (Exception e) {
 			return new OperationResult<SingleValue>(e);
 		}
 	}
+
 }
