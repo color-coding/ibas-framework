@@ -15,7 +15,7 @@ import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.measurement.Time;
 import org.colorcoding.ibas.bobas.data.measurement.emTimeUnit;
-import org.colorcoding.ibas.bobas.db.BOParseException;
+import org.colorcoding.ibas.bobas.db.BOParsingException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
 import org.colorcoding.ibas.bobas.db.hana.BOAdapter;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
@@ -26,7 +26,7 @@ import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 import junit.framework.TestCase;
 
 public class testBOAdapter extends TestCase {
-	public void testCriteria() throws BOParseException {
+	public void testCriteria() throws BOParsingException {
 
 		String sqlString = "SELECT TOP 100 * FROM \"CC_TT_ORDR\" WHERE (\"DocStatus\" = N'P' OR \"DocStatus\" = N'F') AND \"CardCode\" IS NOT NULL AND CAST(\"DocEntry\" AS NVARCHAR) LIKE N'2%' AND \"DocEntry\" > 2000 AND \"DocEntry\" <> CAST(\"B1DocEntry\" AS INTEGER) ORDER BY \"DocEntry\" DESC, \"CardCode\" ASC";
 
@@ -73,7 +73,7 @@ public class testBOAdapter extends TestCase {
 		assertEquals(sqlString, sqlQuery.getQueryString());
 	}
 
-	public void testInsertUpdateDelete() throws BOParseException {
+	public void testInsertUpdateDelete() throws BOParsingException {
 		ISalesOrder order = new SalesOrder();
 		order.setDocEntry(1);
 		order.setCustomerCode("C00001");
@@ -119,7 +119,7 @@ public class testBOAdapter extends TestCase {
 		}
 	}
 
-	public void testStoredProcedure() throws BOParseException {
+	public void testStoredProcedure() throws BOParsingException {
 		ISqlStoredProcedure sqlStoredProcedure = new SqlStoredProcedure();
 		sqlStoredProcedure.setName("CC_SP_TRANSACTION_NOTIFICATION");
 		sqlStoredProcedure.addParameters("", "A");

@@ -25,7 +25,7 @@ import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.SingleValue;
-import org.colorcoding.ibas.bobas.db.BOParseException;
+import org.colorcoding.ibas.bobas.db.BOParsingException;
 import org.colorcoding.ibas.bobas.db.DbAdapterFactory;
 import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
@@ -331,10 +331,10 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 * @throws RepositoryException
 	 * @throws DbException
 	 * @throws SQLException
-	 * @throws BOParseException
+	 * @throws BOParsingException
 	 */
 	private final IBusinessObjectBase[] myFetch(ISqlQuery sqlQuery, Class<?> boType)
-			throws RepositoryException, DbException, SQLException, BOParseException {
+			throws RepositoryException, DbException, SQLException, BOParsingException {
 		if (boType == null) {
 			throw new RepositoryException(i18n.prop("msg_bobas_not_specify_bo_type"));
 		}
@@ -377,14 +377,14 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 * @throws RepositoryException
 	 * @throws DbException
 	 * @throws SQLException
-	 * @throws BOParseException
+	 * @throws BOParsingException
 	 * @throws SqlScriptsException
 	 * @throws ClassNotFoundException
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
 	private final IBusinessObjectBase[] myFetchEx(ICriteria criteria, Class<?> boType)
-			throws RepositoryException, DbException, SQLException, BOParseException, SqlScriptsException,
+			throws RepositoryException, DbException, SQLException, BOParsingException, SqlScriptsException,
 			ClassNotFoundException, InstantiationException, IllegalAccessException {
 		if (boType == null) {
 			throw new RepositoryException(i18n.prop("msg_bobas_not_specify_bo_type"));
@@ -427,14 +427,14 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 * @throws RepositoryException
 	 * @throws DbException
 	 * @throws SQLException
-	 * @throws BOParseException
+	 * @throws BOParsingException
 	 * @throws SqlScriptsException
 	 * @throws ClassNotFoundException
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
 	private final IBusinessObjectBase[] myFetchEx(ISqlQuery sqlQuery, Class<?> boType)
-			throws RepositoryException, DbException, SQLException, BOParseException, SqlScriptsException,
+			throws RepositoryException, DbException, SQLException, BOParsingException, SqlScriptsException,
 			ClassNotFoundException, InstantiationException, IllegalAccessException {
 		if (boType == null) {
 			throw new RepositoryException(i18n.prop("msg_bobas_not_specify_bo_type"));
@@ -462,13 +462,13 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 *            可能存在的子项查询
 	 * @throws DbException
 	 * @throws SqlScriptsException
-	 * @throws BOParseException
+	 * @throws BOParsingException
 	 * @throws ClassNotFoundException
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
 	private final void myFetchEx(IBusinessObjectBase[] bos, ICriteria criteria) throws DbException, SqlScriptsException,
-			BOParseException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+			BOParsingException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 		boolean myOpenedDb = false;// 自己打开的数据库
 		IDbDataReader reader = null;
 		IDbCommand command = null;

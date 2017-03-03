@@ -1,7 +1,7 @@
 package org.colorcoding.ibas.bobas.db;
 
 import org.colorcoding.ibas.bobas.bo.BOException;
-import org.colorcoding.ibas.bobas.bo.IBONumberingManager;
+import org.colorcoding.ibas.bobas.bo.IBOKeysManager;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.data.KeyValue;
 
@@ -11,7 +11,7 @@ import org.colorcoding.ibas.bobas.data.KeyValue;
  * @author Niuren.Zhu
  *
  */
-public interface IBONumberingManager4Db extends IBONumberingManager {
+public interface IBOKeysManager4Db extends IBOKeysManager {
 
 	/**
 	 * 解析业务对象

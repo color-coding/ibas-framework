@@ -146,7 +146,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	}
 
 	@Override
-	public ISqlQuery getServerTimeScript() throws BOParseException {
+	public ISqlQuery getServerTimeScript() throws BOParsingException {
 		try {
 
 			ISqlScripts sqlScripts = this.getSqlScripts();
@@ -155,12 +155,12 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			}
 			return sqlScripts.getServerTimeScript();
 		} catch (Exception e) {
-			throw new BOParseException(e);
+			throw new BOParsingException(e);
 		}
 	}
 
 	@Override
-	public ISqlQuery parseSqlQuery(ICriteria criteria) throws BOParseException {
+	public ISqlQuery parseSqlQuery(ICriteria criteria) throws BOParsingException {
 		if (criteria == null) {
 			return null;
 		}
@@ -175,7 +175,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	 * @return
 	 * @throws SqlScriptsException
 	 */
-	public ISqlQuery parseSqlQuery(IConditions conditions) throws BOParseException {
+	public ISqlQuery parseSqlQuery(IConditions conditions) throws BOParsingException {
 		try {
 			if (conditions == null) {
 				return null;
@@ -220,7 +220,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 							|| condition.getOperation() == ConditionOperation.CONTAIN
 							|| condition.getOperation() == ConditionOperation.NOT_CONTAIN) {
 						// 字段间不支持以上操作
-						throw new BOParseException(i18n.prop("msg_bobas_invaild_condition_operation"));
+						throw new BOParsingException(i18n.prop("msg_bobas_invaild_condition_operation"));
 					}
 					// 彭文磊 解决数字和字符串相比较的情况 如“<>”
 					// 如果不是字符串，就将比较的字段类型转换成 条件字段的类型
@@ -261,7 +261,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			}
 			return new SqlQuery(stringBuilder.toString());
 		} catch (Exception e) {
-			throw new BOParseException(e);
+			throw new BOParsingException(e);
 		}
 	}
 
@@ -273,7 +273,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	 * @return
 	 * @throws SqlScriptsException
 	 */
-	protected ISqlQuery parseSqlQuery(ISorts sorts) throws BOParseException {
+	protected ISqlQuery parseSqlQuery(ISorts sorts) throws BOParsingException {
 		try {
 
 			if (sorts == null) {
@@ -295,7 +295,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			}
 			return new SqlQuery(stringBuilder.toString());
 		} catch (Exception e) {
-			throw new BOParseException(e);
+			throw new BOParsingException(e);
 		}
 	}
 
@@ -370,7 +370,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	}
 
 	@Override
-	public ISqlQuery parseSqlQuery(ICriteria criteria, Class<?> boType) throws BOParseException {
+	public ISqlQuery parseSqlQuery(ICriteria criteria, Class<?> boType) throws BOParsingException {
 		try {
 
 			// select top 100 * from "OUSR" where "Supper" = 'Y' order by "Code"
@@ -444,7 +444,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				throw new SqlScriptsException(e.getMessage(), e);
 			}
 			if (table == null || table.isEmpty()) {
-				throw new BOParseException(i18n.prop("msg_bobas_not_found_bo_table", boType.getName()));
+				throw new BOParsingException(i18n.prop("msg_bobas_not_found_bo_table", boType.getName()));
 			}
 			int result = criteria.getResultCount();
 			table = String.format(sqlScripts.getDbObjectSign(), table);
@@ -452,15 +452,15 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			String where = this.parseSqlQuery(criteria.getConditions()).getQueryString();
 			return new SqlQuery(sqlScripts.groupSelectQuery("*", table, where, order, result));
 		} catch (Exception e) {
-			throw new BOParseException(e);
+			throw new BOParsingException(e);
 		}
 	}
 
 	@Override
-	public ISqlQuery parseSqlInsert(IBusinessObjectBase bo) throws BOParseException {
+	public ISqlQuery parseSqlInsert(IBusinessObjectBase bo) throws BOParsingException {
 		try {
 			if (!(bo instanceof IManageFields)) {
-				throw new BOParseException(i18n.prop("msg_bobas_invaild_bo"));
+				throw new BOParsingException(i18n.prop("msg_bobas_invaild_bo"));
 			}
 			ISqlScripts sqlScripts = this.getSqlScripts();
 			if (sqlScripts == null) {
@@ -470,7 +470,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			String table = this.getBOMasterTable(boFields);
 			if (table == null || table.isEmpty()) {
 				// 没有获取到表
-				throw new BOParseException(i18n.prop("msg_bobas_not_found_bo_table", bo.getClass().getName()));
+				throw new BOParsingException(i18n.prop("msg_bobas_not_found_bo_table", bo.getClass().getName()));
 			}
 			table = String.format(sqlScripts.getDbObjectSign(), table);
 			StringBuilder fieldsBuilder = new StringBuilder();
@@ -493,15 +493,15 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			}
 			if (fieldsBuilder.length() == 0) {
 				// 没有字段
-				throw new BOParseException(i18n.prop("msg_bobas_not_allow_sql_scripts"));
+				throw new BOParsingException(i18n.prop("msg_bobas_not_allow_sql_scripts"));
 			}
 			if (valuesBuilder.length() == 0) {
 				// 没有字段值
-				throw new BOParseException(i18n.prop("msg_bobas_not_allow_sql_scripts"));
+				throw new BOParsingException(i18n.prop("msg_bobas_not_allow_sql_scripts"));
 			}
 			return new SqlQuery(sqlScripts.groupInsertQuery(table, fieldsBuilder.toString(), valuesBuilder.toString()));
 		} catch (Exception e) {
-			throw new BOParseException(e);
+			throw new BOParsingException(e);
 		}
 	}
 
@@ -556,10 +556,10 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	}
 
 	@Override
-	public ISqlQuery parseSqlDelete(IBusinessObjectBase bo) throws BOParseException {
+	public ISqlQuery parseSqlDelete(IBusinessObjectBase bo) throws BOParsingException {
 		try {
 			if (!(bo instanceof IManageFields)) {
-				throw new BOParseException(i18n.prop("msg_bobas_invaild_bo"));
+				throw new BOParsingException(i18n.prop("msg_bobas_invaild_bo"));
 			}
 			ISqlScripts sqlScripts = this.getSqlScripts();
 			if (sqlScripts == null) {
@@ -569,27 +569,27 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			String table = this.getBOMasterTable(boFields);
 			if (table == null || table.isEmpty()) {
 				// 没有获取到表
-				throw new BOParseException(i18n.prop("msg_bobas_not_found_bo_table", bo.getClass().getName()));
+				throw new BOParsingException(i18n.prop("msg_bobas_not_found_bo_table", bo.getClass().getName()));
 			}
 			table = String.format(sqlScripts.getDbObjectSign(), table);
 			String partWhere = this.getBOFieldValues(this.getDbFields(boFields.getKeyFields()),
 					sqlScripts.getAndSign());
 			if (partWhere == null || partWhere.isEmpty()) {
 				// 没有条件的删除不允许执行
-				throw new BOParseException(i18n.prop("msg_bobas_not_allow_sql_scripts"));
+				throw new BOParsingException(i18n.prop("msg_bobas_not_allow_sql_scripts"));
 			}
 			return new SqlQuery(sqlScripts.groupDeleteQuery(table, partWhere));
 		} catch (Exception e) {
-			throw new BOParseException(e);
+			throw new BOParsingException(e);
 		}
 	}
 
 	@Override
-	public ISqlQuery parseSqlUpdate(IBusinessObjectBase bo) throws BOParseException {
+	public ISqlQuery parseSqlUpdate(IBusinessObjectBase bo) throws BOParsingException {
 		try {
 
 			if (!(bo instanceof IManageFields)) {
-				throw new BOParseException(i18n.prop("msg_bobas_invaild_bo"));
+				throw new BOParsingException(i18n.prop("msg_bobas_invaild_bo"));
 			}
 			ISqlScripts sqlScripts = this.getSqlScripts();
 			if (sqlScripts == null) {
@@ -599,14 +599,14 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			String table = this.getBOMasterTable(boFields);
 			if (table == null || table.isEmpty()) {
 				// 没有获取到表
-				throw new BOParseException(i18n.prop("msg_bobas_not_found_bo_table", bo.getClass().getName()));
+				throw new BOParsingException(i18n.prop("msg_bobas_not_found_bo_table", bo.getClass().getName()));
 			}
 			table = String.format(sqlScripts.getDbObjectSign(), table);
 			String partWhere = this.getBOFieldValues(this.getDbFields(boFields.getKeyFields()),
 					sqlScripts.getAndSign());
 			if (partWhere == null || partWhere.isEmpty()) {
 				// 没有条件的删除不允许执行
-				throw new BOParseException(i18n.prop("msg_bobas_not_allow_sql_scripts"));
+				throw new BOParsingException(i18n.prop("msg_bobas_not_allow_sql_scripts"));
 			}
 			ArrayList<IFieldDataDb> fieldDatas = new ArrayList<IFieldDataDb>();
 			for (IFieldDataDb iFieldData : this.getDbFields(boFields)) {
@@ -617,7 +617,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			String partFieldValues = this.getBOFieldValues(fieldDatas, sqlScripts.getFieldBreakSign());
 			return new SqlQuery(sqlScripts.groupUpdateQuery(table, partFieldValues, partWhere));
 		} catch (Exception e) {
-			throw new BOParseException(e);
+			throw new BOParsingException(e);
 		}
 	}
 
@@ -629,13 +629,13 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	 * @param bo
 	 *            对象
 	 * @return
-	 * @throws BOParseException
+	 * @throws BOParsingException
 	 * @throws DbException
 	 * @throws SQLException
 	 * @throws SqlScriptsException
 	 */
 	protected int[] getFieldIndex(IDbDataReader reader, IManageFields bo)
-			throws BOParseException, DbException, SQLException, SqlScriptsException {
+			throws BOParsingException, DbException, SQLException, SqlScriptsException {
 		// 构建索引
 		IFieldData[] boFields = bo.getFields();
 		int[] dfIndex = null;// 数据字段索引数组
@@ -717,10 +717,10 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	 *            匹配的索引
 	 * @return
 	 * @throws DbException
-	 * @throws BOParseException
+	 * @throws BOParsingException
 	 */
 	protected IManageFields fillDatas(IDbDataReader reader, IManageFields bo, int[] dfIndex)
-			throws DbException, BOParseException {
+			throws DbException, BOParsingException {
 		IFieldData[] boFields = bo.getFields();
 		// 填充BO数据
 		for (int i = 0; i < dfIndex.length; i++) {
@@ -761,10 +761,10 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	 * @param fieldData
 	 *            复制的字段
 	 * @throws DbException
-	 * @throws BOParseException
+	 * @throws BOParsingException
 	 */
 	protected void fillDatas(IDbDataReader reader, int rCol, IFieldData fieldData)
-			throws DbException, BOParseException {
+			throws DbException, BOParsingException {
 		if (fieldData.getValueType() == Integer.class) {
 			fieldData.setValue(reader.getInt(rCol));
 		} else if (fieldData.getValueType() == String.class) {
@@ -792,12 +792,12 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 
 	@Override
 	public IBusinessObjectBase[] parseBOs(IDbDataReader reader, IBusinessObjectListBase<?> bos)
-			throws BOParseException {
+			throws BOParsingException {
 		if (reader == null) {
-			throw new BOParseException(i18n.prop("msg_bobas_invaild_data_reader"));
+			throw new BOParsingException(i18n.prop("msg_bobas_invaild_data_reader"));
 		}
 		if (bos == null) {
-			throw new BOParseException(i18n.prop("msg_bobas_invaild_bo_list"));
+			throw new BOParsingException(i18n.prop("msg_bobas_invaild_bo_list"));
 		}
 		ArrayList<IBusinessObjectBase> childs = new ArrayList<IBusinessObjectBase>();
 		try {
@@ -805,10 +805,10 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			while (reader.next()) {
 				IBusinessObjectBase bo = bos.create();
 				if (bo == null) {
-					throw new BOParseException(i18n.prop("msg_bobas_bo_list_not_support_create_element"));
+					throw new BOParsingException(i18n.prop("msg_bobas_bo_list_not_support_create_element"));
 				}
 				if (!(bo instanceof IManageFields)) {
-					throw new BOParseException(i18n.prop("msg_bobas_not_support_bo_type", bo.getClass().getName()));
+					throw new BOParsingException(i18n.prop("msg_bobas_not_support_bo_type", bo.getClass().getName()));
 				}
 				IManageFields boFields = (IManageFields) bo;
 				if (dfIndex == null) {
@@ -818,18 +818,18 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				childs.add(bo);
 			}
 		} catch (Exception e) {
-			throw new BOParseException(e.getMessage(), e);
+			throw new BOParsingException(e.getMessage(), e);
 		}
 		return childs.toArray(new IBusinessObjectBase[] {});
 	}
 
 	@Override
-	public IBusinessObjectBase[] parseBOs(IDbDataReader reader, Class<?> boType) throws BOParseException {
+	public IBusinessObjectBase[] parseBOs(IDbDataReader reader, Class<?> boType) throws BOParsingException {
 		if (reader == null) {
-			throw new BOParseException(i18n.prop("msg_bobas_invaild_data_reader"));
+			throw new BOParsingException(i18n.prop("msg_bobas_invaild_data_reader"));
 		}
 		if (boType == null) {
-			throw new BOParseException(i18n.prop("msg_bobas_invaild_bo_type"));
+			throw new BOParsingException(i18n.prop("msg_bobas_invaild_bo_type"));
 		}
 		ArrayList<IBusinessObjectBase> bos = new ArrayList<IBusinessObjectBase>();
 		try {
@@ -838,7 +838,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			while (reader.next()) {
 				IBusinessObjectBase bo = (IBusinessObjectBase) iboFactory.createInstance(boType);
 				if (!(bo instanceof IManageFields)) {
-					throw new BOParseException(i18n.prop("msg_bobas_not_support_bo_type", boType.getName()));
+					throw new BOParsingException(i18n.prop("msg_bobas_not_support_bo_type", boType.getName()));
 				}
 				IManageFields boFields = (IManageFields) bo;
 				if (dfIndex == null) {
@@ -848,7 +848,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				bos.add(bo);
 			}
 		} catch (Exception e) {
-			throw new BOParseException(e.getMessage(), e);
+			throw new BOParsingException(e.getMessage(), e);
 		}
 		return bos.toArray(new IBusinessObjectBase[] {});
 	}
@@ -861,10 +861,10 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	 * @param value
 	 *            值
 	 * @return
-	 * @throws BOParseException
+	 * @throws BOParsingException
 	 */
-	protected Object convertValue(Class<?> toType, Object value) throws BOParseException {
-		throw new BOParseException(i18n.prop("msg_bobas_not_provide_convert_method", toType.getName()));
+	protected Object convertValue(Class<?> toType, Object value) throws BOParsingException {
+		throw new BOParsingException(i18n.prop("msg_bobas_not_provide_convert_method", toType.getName()));
 	}
 
 	public void setPrimaryKeys(IBusinessObjectBase bo, KeyValue[] keys) {
@@ -1129,7 +1129,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			}
 			if (boCode == null || nextValue == 0) {
 				// 未能有效解析
-				throw new BOParseException(i18n.prop("msg_bobas_not_specify_primary_keys_obtaining_method"));
+				throw new BOParsingException(i18n.prop("msg_bobas_not_specify_primary_keys_obtaining_method"));
 			}
 			// 更新数据记录
 			command.executeUpdate(sqlScripts.getUpdateBOPrimaryKeyScript(boCode, addValue));
@@ -1140,7 +1140,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 
 	@Override
 	public ISqlQuery parseBOTransactionNotification(TransactionType type, IBusinessObjectBase bo)
-			throws BOParseException {
+			throws BOParsingException {
 		try {
 			ISqlScripts sqlScripts = this.getSqlScripts();
 			if (sqlScripts == null) {
@@ -1168,12 +1168,12 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			return new SqlQuery(sqlScripts.getBOTransactionNotificationScript(boCode, DataConvert.toDbValue(type),
 					keyCount, keyNames.toString(), keyValues.toString()));
 		} catch (Exception e) {
-			throw new BOParseException(e);
+			throw new BOParsingException(e);
 		}
 	}
 
 	@Override
-	public ISqlQuery parseSqlQuery(ISqlStoredProcedure sp) throws BOParseException {
+	public ISqlQuery parseSqlQuery(ISqlStoredProcedure sp) throws BOParsingException {
 		if (sp == null) {
 			return null;
 		}
@@ -1185,7 +1185,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			return new SqlQuery(
 					sqlScripts.groupStoredProcedure(sp.getName(), sp.getParameters().toArray(new KeyValue[] {})));
 		} catch (Exception e) {
-			throw new BOParseException(e);
+			throw new BOParsingException(e);
 		}
 	}
 

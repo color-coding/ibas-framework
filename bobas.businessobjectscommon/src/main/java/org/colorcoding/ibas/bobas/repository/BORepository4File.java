@@ -14,7 +14,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.BOException;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBOMasterData;
-import org.colorcoding.ibas.bobas.bo.IBONumberingManager;
+import org.colorcoding.ibas.bobas.bo.IBOKeysManager;
 import org.colorcoding.ibas.bobas.bo.IBOSimple;
 import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
@@ -34,11 +34,11 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 public class BORepository4File extends BORepository4FileReadonly implements IBORepository4File {
 
-	private IBONumberingManager boNumber;
+	private IBOKeysManager boNumber;
 
-	public final IBONumberingManager getBONumber() {
+	public final IBOKeysManager getBONumber() {
 		if (this.boNumber == null) {
-			this.boNumber = new IBONumberingManager() {
+			this.boNumber = new IBOKeysManager() {
 				public KeyValue[] usePrimaryKeys(IBusinessObjectBase bo, String workFolder, String transId)
 						throws IOException {
 					KeyValue[] keys = null;
@@ -95,25 +95,18 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 				@Override
 				public void updatePrimaryKeyRecords(IBusinessObjectBase bo, int addValue, Object... others)
 						throws BOException {
-					// TODO Auto-generated method stub
-
 				}
 
 				@Override
 				public void updatePrimaryKeyRecords(IBusinessObjectBase bo, Object... others) throws BOException {
-					// TODO Auto-generated method stub
-
 				}
 
 				@Override
 				public void setPrimaryKeys(IBusinessObjectBase bo, KeyValue[] keys) {
-					// TODO Auto-generated method stub
-
 				}
 
 				@Override
 				public KeyValue[] parsePrimaryKeys(IBusinessObjectBase bo, Object... others) throws BOException {
-					// TODO Auto-generated method stub
 					return null;
 				}
 			};
@@ -121,7 +114,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 		return boNumber;
 	}
 
-	public final void setBONumber(IBONumberingManager value) {
+	public final void setBONumber(IBOKeysManager value) {
 		this.boNumber = value;
 	}
 

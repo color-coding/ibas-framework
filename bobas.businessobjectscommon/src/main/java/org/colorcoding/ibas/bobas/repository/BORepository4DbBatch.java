@@ -13,7 +13,7 @@ import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.data.KeyValue;
-import org.colorcoding.ibas.bobas.db.BOParseException;
+import org.colorcoding.ibas.bobas.db.BOParsingException;
 import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
 import org.colorcoding.ibas.bobas.db.IDbCommand;
@@ -104,10 +104,10 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 	 *            包含子项
 	 * @return 对象保存语句数组
 	 * @throws DbException
-	 * @throws BOParseException
+	 * @throws BOParsingException
 	 */
 	private ISqlQuery[] parseSaveQueries(IBusinessObjectBase bo, boolean recursion)
-			throws DbException, BOParseException {
+			throws DbException, BOParsingException {
 		IBOAdapter4Db adapter4Db = this.getBOAdapter();
 		ArrayList<ISqlQuery> sqlQueries = new ArrayList<>();
 		// 不是更新状态，不做处理
@@ -201,12 +201,12 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 					continue;
 				if (keys == null) {
 					// 初始化主键
-					keys = adapter4Db.parsePrimaryKeys(bo, command);
+					keys = this.getBOKeysManager().parsePrimaryKeys(bo, command);
 				}
 				if (bo.isNew()) {
 					// 新建的对象
 					// 设置主键
-					adapter4Db.setPrimaryKeys(bo, keys);
+					this.getBOKeysManager().setPrimaryKeys(bo, keys);
 					// 主键值增加
 					for (KeyValue key : keys) {
 						if (key.value instanceof Integer) {
@@ -240,7 +240,7 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 			command.clearBatch();
 			// 更新主键
 			if (keyUsedCount > 0)
-				adapter4Db.updatePrimaryKeyRecords(bos[0], keyUsedCount, command);
+				this.getBOKeysManager().updatePrimaryKeyRecords(bos[0], (Object) keyUsedCount, (Object) command);
 			if (myTrans)
 				this.commitTransaction();// 自己打开的事务，关闭事务
 		} catch (Exception e) {

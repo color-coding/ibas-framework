@@ -9,7 +9,7 @@ import org.colorcoding.ibas.bobas.data.KeyValue;
  * @author Niuren.Zhu
  *
  */
-public interface IBONumberingManager {
+public interface IBOKeysManager {
 	/**
 	 * 解析主键
 	 * 

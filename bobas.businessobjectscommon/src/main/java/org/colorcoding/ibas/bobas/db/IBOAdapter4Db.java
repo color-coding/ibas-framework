@@ -11,7 +11,7 @@ import org.colorcoding.ibas.bobas.repository.TransactionType;
 /**
  * 业务对象的数据库适配器
  */
-public interface IBOAdapter4Db extends IBONumberingManager4Db {
+public interface IBOAdapter4Db extends IBOKeysManager4Db {
 
 	/**
 	 * 解析查询
@@ -19,9 +19,9 @@ public interface IBOAdapter4Db extends IBONumberingManager4Db {
 	 * @param criteria
 	 *            查询
 	 * @return 查询语句
-	 * @throws BOParseException
+	 * @throws BOParsingException
 	 */
-	ISqlQuery parseSqlQuery(ICriteria criteria) throws BOParseException;
+	ISqlQuery parseSqlQuery(ICriteria criteria) throws BOParsingException;
 
 	/**
 	 * 解析查询条件
@@ -29,9 +29,9 @@ public interface IBOAdapter4Db extends IBONumberingManager4Db {
 	 * @param conditions
 	 *            查询条件
 	 * @return 查询语句
-	 * @throws BOParseException
+	 * @throws BOParsingException
 	 */
-	ISqlQuery parseSqlQuery(IConditions conditions) throws BOParseException;
+	ISqlQuery parseSqlQuery(IConditions conditions) throws BOParsingException;
 
 	/**
 	 * 解析查询
@@ -42,15 +42,15 @@ public interface IBOAdapter4Db extends IBONumberingManager4Db {
 	 *            对象类型
 	 * @return 查询脚本
 	 */
-	ISqlQuery parseSqlQuery(ICriteria criteria, Class<?> boType) throws BOParseException;
+	ISqlQuery parseSqlQuery(ICriteria criteria, Class<?> boType) throws BOParsingException;
 
 	/**
 	 * 获取服务器时间脚本
 	 * 
 	 * @return 脚本
-	 * @throws BOParseException
+	 * @throws BOParsingException
 	 */
-	ISqlQuery getServerTimeScript() throws BOParseException;
+	ISqlQuery getServerTimeScript() throws BOParsingException;
 
 	/**
 	 * 获取插入语句
@@ -58,9 +58,9 @@ public interface IBOAdapter4Db extends IBONumberingManager4Db {
 	 * @param bo
 	 *            业务对象
 	 * @return 插入语句
-	 * @throws BOParseException
+	 * @throws BOParsingException
 	 */
-	ISqlQuery parseSqlInsert(IBusinessObjectBase bo) throws BOParseException;
+	ISqlQuery parseSqlInsert(IBusinessObjectBase bo) throws BOParsingException;
 
 	/**
 	 * 获取删除语句
@@ -68,9 +68,9 @@ public interface IBOAdapter4Db extends IBONumberingManager4Db {
 	 * @param bo
 	 *            业务对象
 	 * @return 删除语句
-	 * @throws BOParseException
+	 * @throws BOParsingException
 	 */
-	ISqlQuery parseSqlDelete(IBusinessObjectBase bo) throws BOParseException;
+	ISqlQuery parseSqlDelete(IBusinessObjectBase bo) throws BOParsingException;
 
 	/**
 	 * 获取更新语句
@@ -78,9 +78,9 @@ public interface IBOAdapter4Db extends IBONumberingManager4Db {
 	 * @param bo
 	 *            业务对象
 	 * @return 更新语句
-	 * @throws BOParseException
+	 * @throws BOParsingException
 	 */
-	ISqlQuery parseSqlUpdate(IBusinessObjectBase bo) throws BOParseException;
+	ISqlQuery parseSqlUpdate(IBusinessObjectBase bo) throws BOParsingException;
 
 	/**
 	 * 解析业务对象
@@ -91,9 +91,9 @@ public interface IBOAdapter4Db extends IBONumberingManager4Db {
 	 *            业务对象
 	 * 
 	 * @return 解析的对象数组
-	 * @throws BOParseException
+	 * @throws BOParsingException
 	 */
-	IBusinessObjectBase[] parseBOs(IDbDataReader reader, Class<?> boType) throws BOParseException;
+	IBusinessObjectBase[] parseBOs(IDbDataReader reader, Class<?> boType) throws BOParsingException;
 
 	/**
 	 * 解析业务对象
@@ -104,9 +104,9 @@ public interface IBOAdapter4Db extends IBONumberingManager4Db {
 	 *            业务对象实例
 	 * 
 	 * @return 解析的对象
-	 * @throws BOParseException
+	 * @throws BOParsingException
 	 */
-	IBusinessObjectBase[] parseBOs(IDbDataReader reader, IBusinessObjectListBase<?> bos) throws BOParseException;
+	IBusinessObjectBase[] parseBOs(IDbDataReader reader, IBusinessObjectListBase<?> bos) throws BOParsingException;
 
 	/**
 	 * 获取事务通知语句
@@ -114,9 +114,9 @@ public interface IBOAdapter4Db extends IBONumberingManager4Db {
 	 * @param bo
 	 *            业务对象
 	 * @return 通知语句
-	 * @throws BOParseException
+	 * @throws BOParsingException
 	 */
-	ISqlQuery parseBOTransactionNotification(TransactionType type, IBusinessObjectBase bo) throws BOParseException;
+	ISqlQuery parseBOTransactionNotification(TransactionType type, IBusinessObjectBase bo) throws BOParsingException;
 
 	/**
 	 * 解析查询
@@ -126,6 +126,6 @@ public interface IBOAdapter4Db extends IBONumberingManager4Db {
 	 * @return 查询对象
 	 * @throws SqlScriptsException
 	 */
-	ISqlQuery parseSqlQuery(ISqlStoredProcedure sp) throws BOParseException;
+	ISqlQuery parseSqlQuery(ISqlStoredProcedure sp) throws BOParsingException;
 
 }

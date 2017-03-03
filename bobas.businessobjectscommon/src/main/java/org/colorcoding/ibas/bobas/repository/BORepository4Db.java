@@ -1,7 +1,7 @@
 package org.colorcoding.ibas.bobas.repository;
 
+import org.colorcoding.ibas.bobas.bo.IBOKeysManager;
 import org.colorcoding.ibas.bobas.bo.IBOLine;
-import org.colorcoding.ibas.bobas.bo.IBONumberingManager;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.OperationResult;
@@ -157,17 +157,17 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 		return operationResult;
 	}
 
-	private IBONumberingManager boNumber;
+	private IBOKeysManager boKeysManager;
 
-	public final IBONumberingManager getBONumber() throws DbException {
-		if (this.boNumber == null) {
-			this.boNumber = this.getBOAdapter();
+	public final IBOKeysManager getBOKeysManager() throws DbException {
+		if (this.boKeysManager == null) {
+			this.boKeysManager = this.getBOAdapter();
 		}
-		return boNumber;
+		return boKeysManager;
 	}
 
-	public final void setBONumber(IBONumberingManager value) {
-		this.boNumber = value;
+	public final void setBOKeysManager(IBOKeysManager value) {
+		this.boKeysManager = value;
 	}
 
 	/**
@@ -204,7 +204,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 				if (bo.isNew()) {
 					// 新建的对象
 					if (updateKeys)
-						this.getBONumber().usePrimaryKeys(bo, command);// 获取并更新主键
+						this.getBOKeysManager().usePrimaryKeys(bo, command);// 获取并更新主键
 					this.fireSaveActions(SaveActionsType.BEFORE_ADDING, bo, root);
 					sqlQuery = adapter4Db.parseSqlInsert(bo);
 				} else if (bo.isDeleted()) {

@@ -82,7 +82,6 @@ class TestFactory extends ConfigurableFactory<Object> {
 
 	@Override
 	protected Object createDefault(String typeName) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
