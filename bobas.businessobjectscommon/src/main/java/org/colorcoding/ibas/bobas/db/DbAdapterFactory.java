@@ -51,7 +51,7 @@ public class DbAdapterFactory extends ConfigurableFactory<IDbAdapter> {
 		return defaultDbAdapter;
 	}
 
-	public synchronized IDbAdapter createAdapter(String type) throws DbException {
+	public synchronized IDbAdapter createAdapter(String type) {
 		if (type == null || type.isEmpty()) {
 			// 空或没有指定，则返回默认
 			return createAdapter();
@@ -72,7 +72,7 @@ public class DbAdapterFactory extends ConfigurableFactory<IDbAdapter> {
 				dbAdapters.put(dbType, adapter);
 				return adapter;
 			} catch (Exception e) {
-				throw new DbException(i18n.prop("msg_bobas_create_db_adapter_falid"), e);
+				throw new RuntimeException(i18n.prop("msg_bobas_create_db_adapter_falid"), e);
 			}
 		}
 	}

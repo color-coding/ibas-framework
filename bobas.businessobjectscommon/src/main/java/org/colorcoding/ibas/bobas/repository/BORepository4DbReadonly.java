@@ -78,7 +78,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 		this.dbType = value;
 	}
 
-	public IDbAdapter createDbAdapter() throws DbException {
+	public IDbAdapter createDbAdapter() {
 		return DbAdapterFactory.create().createAdapter(this.getDbType());
 	}
 
@@ -132,7 +132,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	private IBOAdapter4Db boAdapter;
 
 	@Override
-	public IBOAdapter4Db getBOAdapter() throws DbException {
+	public IBOAdapter4Db getBOAdapter() {
 		if (this.boAdapter == null) {
 			this.boAdapter = this.createDbAdapter().createBOAdapter();
 		}

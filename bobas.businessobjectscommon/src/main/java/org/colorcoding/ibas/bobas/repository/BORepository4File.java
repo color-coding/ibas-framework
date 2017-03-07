@@ -34,11 +34,11 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 public class BORepository4File extends BORepository4FileReadonly implements IBORepository4File {
 
-	private IBOKeysManager boNumber;
+	private IBOKeysManager keysManager;
 
-	public final IBOKeysManager getBONumber() {
-		if (this.boNumber == null) {
-			this.boNumber = new IBOKeysManager() {
+	public final IBOKeysManager getKeysManager() {
+		if (this.keysManager == null) {
+			this.keysManager = new IBOKeysManager() {
 				public KeyValue[] usePrimaryKeys(IBusinessObjectBase bo, String workFolder, String transId)
 						throws IOException {
 					KeyValue[] keys = null;
@@ -111,11 +111,11 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 				}
 			};
 		}
-		return boNumber;
+		return keysManager;
 	}
 
-	public final void setBONumber(IBOKeysManager value) {
-		this.boNumber = value;
+	public final void setKeysManager(IBOKeysManager value) {
+		this.keysManager = value;
 	}
 
 	@Override
@@ -236,7 +236,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 				this.tagStorage(bo);// 存储标记
 				if (bo.isNew()) {
 					// 新建的对象
-					this.getBONumber().usePrimaryKeys(bo, this.getRepositoryFolder(), this.getTransactionId());
+					this.getKeysManager().usePrimaryKeys(bo, this.getRepositoryFolder(), this.getTransactionId());
 					this.notifyActions(SaveActionsType.BEFORE_ADDING, bo);
 					String fileName = String.format("%s%s%s.bo", boFolder, File.separator, this.getFileName(bo));
 					this.writeBOFile(bo, fileName);

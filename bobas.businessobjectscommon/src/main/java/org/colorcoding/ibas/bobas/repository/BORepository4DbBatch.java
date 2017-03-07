@@ -201,12 +201,12 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 					continue;
 				if (keys == null) {
 					// 初始化主键
-					keys = this.getBOKeysManager().parsePrimaryKeys(bo, command);
+					keys = this.getKeysManager().parsePrimaryKeys(bo, command);
 				}
 				if (bo.isNew()) {
 					// 新建的对象
 					// 设置主键
-					this.getBOKeysManager().setPrimaryKeys(bo, keys);
+					this.getKeysManager().setPrimaryKeys(bo, keys);
 					// 主键值增加
 					for (KeyValue key : keys) {
 						if (key.value instanceof Integer) {
@@ -240,7 +240,7 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 			command.clearBatch();
 			// 更新主键
 			if (keyUsedCount > 0)
-				this.getBOKeysManager().updatePrimaryKeyRecords(bos[0], (Object) keyUsedCount, (Object) command);
+				this.getKeysManager().updatePrimaryKeyRecords(bos[0], (Object) keyUsedCount, (Object) command);
 			if (myTrans)
 				this.commitTransaction();// 自己打开的事务，关闭事务
 		} catch (Exception e) {
