@@ -70,6 +70,7 @@ public class UserFieldsFactory {
 		dfieldData.setOriginal(true);
 		dfieldData.setDbField(name);
 		dfieldData.setFieldType(type);
+		// dfieldData.setValue(this.getDefaultValue(type));
 		return new UserField(dfieldData);
 	}
 
@@ -98,4 +99,11 @@ public class UserFieldsFactory {
 		}
 		return null;
 	}
+	/*
+	 * private Object getDefaultValue(DbFieldType type) { if (type ==
+	 * DbFieldType.ALPHANUMERIC) { return ""; } else if (type ==
+	 * DbFieldType.DATE) { return DateTime.minValue; } else if (type ==
+	 * DbFieldType.DECIMAL) { return Decimal.ZERO; } else if (type ==
+	 * DbFieldType.NUMERIC) { return 0; } return null; }
+	 */
 }
