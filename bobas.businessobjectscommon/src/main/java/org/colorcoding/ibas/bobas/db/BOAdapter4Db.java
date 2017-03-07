@@ -867,7 +867,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 		throw new BOParsingException(i18n.prop("msg_bobas_not_provide_convert_method", toType.getName()));
 	}
 
-	public void setPrimaryKeys(IBusinessObjectBase bo, KeyValue[] keys) {
+	public void applyPrimaryKeys(IBusinessObjectBase bo, KeyValue[] keys) {
 		if (bo instanceof IBODocument) {
 			IBODocument boKey = (IBODocument) bo;
 			for (KeyValue key : keys) {
@@ -940,14 +940,48 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			throw new BOException(i18n.prop("msg_bobas_not_found_bo_primary_keys", bo.getClass().getName()));
 		}
 		// 主键赋值
-		this.setPrimaryKeys(bo, keys);
+		this.applyPrimaryKeys(bo, keys);
 		// 更新主键
 		this.updatePrimaryKeyRecords(bo, command);
 		return keys;
 	}
 
 	@Override
-	public KeyValue[] parsePrimaryKeys(IBusinessObjectBase bo, IDbCommand command) throws BOException {
+	public KeyValue[] usePrimaryKeys(IBusinessObjectBase[] bos, IDbCommand command) throws BOException {
+		// 获取主键
+		KeyValue[] keys = null;// 主键信息
+		int keyUsedCount = 0;// 主键使用的个数
+		for (IBusinessObjectBase bo : bos) {
+			if (bo == null)
+				continue;
+			if (!bo.isDirty())
+				continue;
+			if (keys == null) {
+				// 初始化主键
+				keys = this.parsePrimaryKeys(bo, command);
+			}
+			if (bo.isNew()) {
+				// 新建的对象
+				// 设置主键
+				this.applyPrimaryKeys(bo, keys);
+				// 主键值增加
+				for (KeyValue key : keys) {
+					if (key.value instanceof Integer) {
+						key.value = Integer.sum((int) key.value, 1);
+					} else if (key.value instanceof Long) {
+						key.value = Long.sum((long) key.value, 1);
+					}
+				}
+				keyUsedCount++;// 使用了主键
+			}
+		}
+		// 更新主键
+		if (keyUsedCount > 0)
+			this.updatePrimaryKeyRecords(bos[0], keyUsedCount, command);
+		return keys;
+	}
+
+	protected KeyValue[] parsePrimaryKeys(IBusinessObjectBase bo, IDbCommand command) throws BOException {
 		try {
 			ISqlScripts sqlScripts = this.getSqlScripts();
 			if (sqlScripts == null) {
@@ -1093,13 +1127,12 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 		}
 	}
 
-	@Override
-	public void updatePrimaryKeyRecords(IBusinessObjectBase bo, IDbCommand command) throws BOException {
+	protected void updatePrimaryKeyRecords(IBusinessObjectBase bo, IDbCommand command) throws BOException {
 		this.updatePrimaryKeyRecords(bo, 1, command);
 	}
 
-	@Override
-	public void updatePrimaryKeyRecords(IBusinessObjectBase bo, int addValue, IDbCommand command) throws BOException {
+	protected void updatePrimaryKeyRecords(IBusinessObjectBase bo, int addValue, IDbCommand command)
+			throws BOException {
 		try {
 			if (bo instanceof IBOLine) {
 				// 对象行，不做处理
@@ -1190,22 +1223,13 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	}
 
 	@Override
-	public KeyValue[] parsePrimaryKeys(IBusinessObjectBase bo, Object... others) throws BOException {
-		return this.parsePrimaryKeys(bo, (IDbCommand) others[0]);
-	}
-
-	@Override
 	public KeyValue[] usePrimaryKeys(IBusinessObjectBase bo, Object... others) throws BOException {
 		return this.usePrimaryKeys(bo, (IDbCommand) others[0]);
 	}
 
 	@Override
-	public void updatePrimaryKeyRecords(IBusinessObjectBase bo, Object... others) throws BOException {
-		this.updatePrimaryKeyRecords(bo, 1, others);
+	public KeyValue[] usePrimaryKeys(IBusinessObjectBase[] bos, Object... others) throws BOException {
+		return this.usePrimaryKeys(bos, (IDbCommand) others[0]);
 	}
 
-	@Override
-	public void updatePrimaryKeyRecords(IBusinessObjectBase bo, int addValue, Object... others) throws BOException {
-		this.updatePrimaryKeyRecords(bo, addValue, (IDbCommand) others[0]);
-	}
 }

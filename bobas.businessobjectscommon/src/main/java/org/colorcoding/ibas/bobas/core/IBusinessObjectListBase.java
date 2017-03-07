@@ -6,13 +6,6 @@ import org.colorcoding.ibas.bobas.util.Collection;
 
 public interface IBusinessObjectListBase<E extends IBusinessObjectBase> extends List<E>, Collection<E> {
 	/**
-	 * 是否智能处理子项主键
-	 * 
-	 * @return
-	 */
-	boolean isSmartPrimaryKeys();
-
-	/**
 	 * 创建新的元素实例
 	 * 
 	 * @return 新的元素实例

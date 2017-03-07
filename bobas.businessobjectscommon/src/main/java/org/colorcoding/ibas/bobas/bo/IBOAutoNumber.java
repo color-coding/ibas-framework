@@ -6,7 +6,21 @@ package org.colorcoding.ibas.bobas.bo;
  * @author Niuren.Zhu
  *
  */
-public interface IBOAutoNumber {
+public interface IBOAutoNumber extends IBOStorageTag {
+
+	/**
+	 * 获取-编号系列
+	 * 
+	 * @return
+	 */
+	Integer getSeries();
+
+	/**
+	 * 设置-编号系列
+	 * 
+	 * @param value
+	 */
+	void setSeries(Integer value);
 
 	/**
 	 * 获取-自动编号

@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.repository;
 import java.lang.reflect.Array;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.bo.IBOKeysManager;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.OperationResult;
@@ -12,7 +13,6 @@ import org.colorcoding.ibas.bobas.core.ITrackStatusOperator;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
-import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.db.BOParsingException;
 import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
@@ -187,36 +187,19 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 		boolean myOpenedDb = false;// 自己打开的数据库
 		boolean myTrans = false;// 自己打开的事务
 		IBOAdapter4Db adapter4Db = this.getBOAdapter();
+		IBOKeysManager keysManager = this.getKeysManager();
 		ArrayList<IBusinessObjectBase> savedBOs = new ArrayList<>();
 		try {
 			myOpenedDb = this.openDbConnection();
 			myTrans = this.beginTransaction();
 			command = this.getDbConnection().createCommand();
-			KeyValue[] keys = null;// 主键信息
-			int keyUsedCount = 0;// 主键使用的个数
+			// 批量设置主键
+			keysManager.usePrimaryKeys(bos, command);
 			for (IBusinessObjectBase bo : bos) {
 				if (bo == null)
 					continue;
 				if (!bo.isDirty())
 					continue;
-				if (keys == null) {
-					// 初始化主键
-					keys = this.getKeysManager().parsePrimaryKeys(bo, command);
-				}
-				if (bo.isNew()) {
-					// 新建的对象
-					// 设置主键
-					this.getKeysManager().setPrimaryKeys(bo, keys);
-					// 主键值增加
-					for (KeyValue key : keys) {
-						if (key.value instanceof Integer) {
-							key.value = Integer.sum((int) key.value, 1);
-						} else if (key.value instanceof Long) {
-							key.value = Long.sum((long) key.value, 1);
-						}
-					}
-					keyUsedCount++;// 使用了主键
-				}
 				// 解析BO保存语句，并添加到批量命令
 				for (ISqlQuery sqlQuery : this.parseSaveQueries(bo, recursion)) {
 					command.addBatch(sqlQuery);
@@ -238,9 +221,6 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 			}
 			command.executeBatch();
 			command.clearBatch();
-			// 更新主键
-			if (keyUsedCount > 0)
-				this.getKeysManager().updatePrimaryKeyRecords(bos[0], (Object) keyUsedCount, (Object) command);
 			if (myTrans)
 				this.commitTransaction();// 自己打开的事务，关闭事务
 		} catch (Exception e) {

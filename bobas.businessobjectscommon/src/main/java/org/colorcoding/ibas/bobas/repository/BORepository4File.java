@@ -13,8 +13,8 @@ import javax.xml.bind.JAXBException;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.BOException;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
-import org.colorcoding.ibas.bobas.bo.IBOMasterData;
 import org.colorcoding.ibas.bobas.bo.IBOKeysManager;
+import org.colorcoding.ibas.bobas.bo.IBOMasterData;
 import org.colorcoding.ibas.bobas.bo.IBOSimple;
 import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
@@ -93,21 +93,13 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 				}
 
 				@Override
-				public void updatePrimaryKeyRecords(IBusinessObjectBase bo, int addValue, Object... others)
-						throws BOException {
+				public void applyPrimaryKeys(IBusinessObjectBase bo, KeyValue[] keys) {
+					throw new UnsupportedOperationException();
 				}
 
 				@Override
-				public void updatePrimaryKeyRecords(IBusinessObjectBase bo, Object... others) throws BOException {
-				}
-
-				@Override
-				public void setPrimaryKeys(IBusinessObjectBase bo, KeyValue[] keys) {
-				}
-
-				@Override
-				public KeyValue[] parsePrimaryKeys(IBusinessObjectBase bo, Object... others) throws BOException {
-					return null;
+				public KeyValue[] usePrimaryKeys(IBusinessObjectBase[] bos, Object... others) throws BOException {
+					throw new UnsupportedOperationException();
 				}
 			};
 		}
