@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
+import org.colorcoding.ibas.bobas.bo.IBOSeriesKey;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
@@ -24,7 +25,7 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 @XmlType(name = "Materials")
 @XmlRootElement(name = "Materials")
 @BOCode(Materials.BUSINESS_OBJECT_CODE)
-public class Materials extends BusinessObject<Materials> implements IMaterials {
+public class Materials extends BusinessObject<Materials> implements IMaterials, IBOSeriesKey {
 
 	/**
 	 * 序列化版本标记
@@ -740,4 +741,13 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 
 	}
 
+	@Override
+	public Object getSeriesValue() {
+		return this.getItemCode();
+	}
+
+	@Override
+	public void setSeriesValue(Object value) {
+		this.setItemCode((String) value);
+	}
 }

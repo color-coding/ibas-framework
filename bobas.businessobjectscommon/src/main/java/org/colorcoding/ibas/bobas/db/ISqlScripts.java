@@ -123,6 +123,42 @@ public interface ISqlScripts {
 	String getBOPrimaryKeyQuery(String boCode) throws SqlScriptsException;
 
 	/**
+	 * 获取业务对象默认系列
+	 * 
+	 * @param boCode
+	 *            业务对象
+	 * @return 主键查询语句，例:SELECT "DefSeries" FROM "CC_SYS_ONNM" WHERE "ObjectCode"
+	 *         = '%s'
+	 * @throws SqlScriptsException
+	 */
+	String getBODefalutSeriesQuery(String boCode) throws SqlScriptsException;
+
+	/**
+	 * 获取业务对象系列
+	 * 
+	 * @param boCode
+	 *            业务对象
+	 * @return 主键查询语句，例:SELECT "NextNum", "Template" FROM "CC_SYS_NNM1" WHERE
+	 *         "ObjectCode" = '%s' AND "Series" = %s AND "Locked" = 'N'
+	 * @throws SqlScriptsException
+	 */
+	String getBOSeriesQuery(String boCode, int series) throws SqlScriptsException;
+
+	/**
+	 * 获取更新业务对象主键查询
+	 * 
+	 * @param boCode
+	 *            业务对象
+	 * @param addValue
+	 *            增加值
+	 * @return 主键查询语句，例:UPDATE "CC_SYS_NNM1" SET "NextNum" = "NextNum" +
+	 *         {addValue} WHERE "ObjectCode" = '%s' AND "Series" = %s AND
+	 *         "Locked" = 'N'
+	 * @throws SqlScriptsException
+	 */
+	String getUpdateBOSeriesKeyScript(String boCode, int series, int addValue) throws SqlScriptsException;
+
+	/**
 	 * 获取更新业务对象主键查询
 	 * 
 	 * @param boCode

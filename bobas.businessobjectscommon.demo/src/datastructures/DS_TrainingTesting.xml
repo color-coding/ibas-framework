@@ -5,6 +5,15 @@
     <Field Name="ObjectCode" Description="对象编码" DataType="db_Alpha" SubType="st_None" EditSize="30" PropertyName="ObjectCode" FixedDataType="String" IsPrimaryKey="Yes" />
     <Field Name="DocSubType" Description="凭证子类型" DataType="db_Alpha" SubType="st_None" EditSize="2" PropertyName="DocumentSubType" FixedDataType="String" IsPrimaryKey="Yes" />
     <Field Name="AutoKey" Description="自动按键" DataType="db_Numeric" SubType="st_None" EditSize="8" PropertyName="AutoKey" FixedDataType="Integer" />
+    <Field Name="DefSeries" Description="默认序列" DataType="db_Numeric" SubType="st_None" EditSize="6" PropertyName="DefaultSeries" FixedDataType="Integer" />
+  </Table>
+  <Table Name="CC_SYS_NNM1" Description="业务对象序号-期间" Type="bott_NoObject" PropertyName="BOSubNumbering">
+    <Field Name="ObjectCode" Description="对象编码" DataType="db_Alpha" SubType="st_None" EditSize="30" PropertyName="ObjectCode" FixedDataType="String" IsPrimaryKey="Yes" />
+    <Field Name="Series" Description="序列" DataType="db_Numeric" SubType="st_None" EditSize="6" PropertyName="Series" FixedDataType="Integer" IsPrimaryKey="Yes" />
+    <Field Name="SeriesName" Description="序列名称" DataType="db_Alpha" SubType="st_None" EditSize="8" PropertyName="SeriesName" FixedDataType="String" />
+    <Field Name="NextNum" Description="下一个编号" DataType="db_Numeric" SubType="st_None" EditSize="8" PropertyName="NextNumber" FixedDataType="Integer" />
+    <Field Name="Locked" Description="已锁定" DataType="db_Alpha" SubType="st_None" EditSize="1" PropertyName="Locked" FixedDataType="emYesNo" />
+    <Field Name="Template" Description="模板" DataType="db_Alpha" SubType="st_None" EditSize="20" PropertyName="Template" FixedDataType="String" />
   </Table>
   <Table Name="CC_TT_OITM" Description="物料主数据" Type="bott_SimpleBusinessObject" PropertyName="Materials">
     <Field Name="ItemCode" Description="物料编号" DataType="db_Alpha" SubType="st_None" EditSize="20" PropertyName="ItemCode" IsUnique="Yes" FixedDataType="String" IsPrimaryKey="Yes" />

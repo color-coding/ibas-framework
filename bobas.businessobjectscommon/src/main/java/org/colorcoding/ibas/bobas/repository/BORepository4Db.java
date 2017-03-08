@@ -199,6 +199,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 				if (bo.isNew()) {
 					// 新建的对象
 					this.getKeysManager().usePrimaryKeys(bo, command);// 获取并更新主键
+					this.getKeysManager().useSeriesKey(bo, command);// 获取并更新系列号
 					this.fireSaveActions(SaveActionsType.BEFORE_ADDING, bo, root);
 					sqlQuery = adapter4Db.parseSqlInsert(bo);
 				} else if (bo.isDeleted()) {

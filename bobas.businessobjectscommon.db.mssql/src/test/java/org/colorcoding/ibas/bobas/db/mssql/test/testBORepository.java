@@ -23,9 +23,11 @@ import org.colorcoding.ibas.bobas.repository.BORepository4DbReadonly;
 import org.colorcoding.ibas.bobas.repository.IBORepository4DbReadonly;
 import org.colorcoding.ibas.bobas.repository.InvalidRepositoryException;
 import org.colorcoding.ibas.bobas.repository.InvalidTokenException;
+import org.colorcoding.ibas.bobas.test.bo.IMaterials;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrder;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrderItem;
 import org.colorcoding.ibas.bobas.test.bo.IUser;
+import org.colorcoding.ibas.bobas.test.bo.Materials;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrderItem;
 import org.colorcoding.ibas.bobas.test.bo.User;
@@ -234,6 +236,12 @@ public class testBORepository extends TestCase {
 		assertEquals(operationResult.getResultCode(), 0);
 		order.delete();
 		operationResult = boRepository.saveSalesOrder(order);
+		System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
+				operationResult.getMessage(), operationResult.getResultObjects().size()));
+		assertEquals(operationResult.getResultCode(), 0);
+
+		IMaterials materials = new Materials();
+		operationResult = boRepository.saveMaterials(materials);
 		System.out.println(String.format("code:%s message:%s results:%s", operationResult.getResultCode(),
 				operationResult.getMessage(), operationResult.getResultObjects().size()));
 		assertEquals(operationResult.getResultCode(), 0);

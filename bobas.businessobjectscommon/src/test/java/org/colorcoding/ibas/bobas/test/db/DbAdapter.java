@@ -49,6 +49,17 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			public KeyValue[] parsePrimaryKeys(IBusinessObjectBase bo, IDbCommand command) throws BOException {
 				return new KeyValue[] { new KeyValue() };
 			}
+
+			@Override
+			public KeyValue useSeriesKey(IBusinessObjectBase bo, Object... others) throws BOException {
+				return null;
+			}
+
+			@Override
+			public KeyValue useSeriesKey(IBusinessObjectBase[] bos, Object... others) throws BOException {
+				return null;
+			}
+
 		};
 	}
 

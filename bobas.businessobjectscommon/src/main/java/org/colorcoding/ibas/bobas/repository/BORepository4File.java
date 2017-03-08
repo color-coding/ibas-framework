@@ -101,6 +101,22 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 				public KeyValue[] usePrimaryKeys(IBusinessObjectBase[] bos, Object... others) throws BOException {
 					throw new UnsupportedOperationException();
 				}
+
+				@Override
+				public KeyValue useSeriesKey(IBusinessObjectBase bo, Object... others) throws BOException {
+					throw new UnsupportedOperationException();
+				}
+
+				@Override
+				public KeyValue useSeriesKey(IBusinessObjectBase[] bos, Object... others) throws BOException {
+					throw new UnsupportedOperationException();
+				}
+
+				@Override
+				public void applySeriesKey(IBusinessObjectBase bo, KeyValue key) {
+					throw new UnsupportedOperationException();
+				}
+
 			};
 		}
 		return keysManager;

@@ -10,6 +10,7 @@ import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
 import org.colorcoding.ibas.bobas.bo.IBOLine;
 import org.colorcoding.ibas.bobas.bo.IBOMasterData;
 import org.colorcoding.ibas.bobas.bo.IBOMasterDataLine;
+import org.colorcoding.ibas.bobas.bo.IBOSeriesKey;
 import org.colorcoding.ibas.bobas.bo.IBOSimple;
 import org.colorcoding.ibas.bobas.bo.IBOSimpleLine;
 import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
@@ -954,26 +955,23 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 		for (IBusinessObjectBase bo : bos) {
 			if (bo == null)
 				continue;
-			if (!bo.isDirty())
+			if (!bo.isDirty() || !bo.isNew())
 				continue;
 			if (keys == null) {
 				// 初始化主键
 				keys = this.parsePrimaryKeys(bo, command);
 			}
-			if (bo.isNew()) {
-				// 新建的对象
-				// 设置主键
-				this.applyPrimaryKeys(bo, keys);
-				// 主键值增加
-				for (KeyValue key : keys) {
-					if (key.value instanceof Integer) {
-						key.value = Integer.sum((int) key.value, 1);
-					} else if (key.value instanceof Long) {
-						key.value = Long.sum((long) key.value, 1);
-					}
+			// 设置主键
+			this.applyPrimaryKeys(bo, keys);
+			// 主键值增加
+			for (KeyValue key : keys) {
+				if (key.value instanceof Integer) {
+					key.value = Integer.sum((int) key.value, 1);
+				} else if (key.value instanceof Long) {
+					key.value = Long.sum((long) key.value, 1);
 				}
-				keyUsedCount++;// 使用了主键
 			}
+			keyUsedCount++;// 使用了主键
 		}
 		// 更新主键
 		if (keyUsedCount > 0)
@@ -1172,6 +1170,106 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	}
 
 	@Override
+	public KeyValue useSeriesKey(IBusinessObjectBase bo, IDbCommand command) throws BOException {
+		if (!(bo instanceof IBOSeriesKey))
+			return null;
+		IBOSeriesKey seriesKey = (IBOSeriesKey) bo;
+		KeyValue key = this.parseSeriesKey(seriesKey, command);
+		if (key == null) {
+			return null;
+		}
+		this.updateSeriesKeyRecords(seriesKey, 1, command);
+		this.applySeriesKey(bo, key);
+		return key;
+	}
+
+	@Override
+	public KeyValue useSeriesKey(IBusinessObjectBase[] bos, IDbCommand command) throws BOException {
+		KeyValue key = null;
+		int keyUsedCount = 0;// 使用的个数
+		IBOSeriesKey seriesKey = null;
+		for (IBusinessObjectBase bo : bos) {
+			if (!bo.isDirty() || !bo.isNew())
+				continue;
+			if (!(bo instanceof IBOSeriesKey))
+				continue;
+			seriesKey = (IBOSeriesKey) bo;
+			if (key == null) {
+				// 初始化系列号
+				key = this.parseSeriesKey(seriesKey, command);
+			}
+			// 应用键值
+			this.applySeriesKey(bo, key);
+			// 键值增加
+			if (key.value instanceof Integer) {
+				key.value = Integer.sum((int) key.value, 1);
+			} else if (key.value instanceof Long) {
+				key.value = Long.sum((long) key.value, 1);
+			}
+			keyUsedCount++;// 使用了键值
+
+		}
+		// 更新键值
+		if (keyUsedCount > 0)
+			this.updateSeriesKeyRecords(seriesKey, keyUsedCount, command);
+		return key;
+	}
+
+	protected void updateSeriesKeyRecords(IBOSeriesKey bo, int addValue, IDbCommand command) throws BOException {
+		try {
+			ISqlScripts sqlScripts = this.getSqlScripts();
+			if (sqlScripts == null) {
+				throw new SqlScriptsException(i18n.prop("msg_bobas_invaild_sql_scripts"));
+			}
+			// 更新数据记录
+			command.executeUpdate(sqlScripts.getUpdateBOSeriesKeyScript(bo.getObjectCode(), bo.getSeries(), addValue));
+		} catch (Exception e) {
+			throw new BOException(e);
+		}
+	}
+
+	protected KeyValue parseSeriesKey(IBOSeriesKey bo, IDbCommand command) throws BOException {
+		try {
+			ISqlScripts sqlScripts = this.getSqlScripts();
+			if (sqlScripts == null) {
+				throw new SqlScriptsException(i18n.prop("msg_bobas_invaild_sql_scripts"));
+			}
+			IDbDataReader reader = null;
+			if (bo.getSeries() <= 0) {
+				// 未设置系列，获取默认
+				reader = command.executeReader(sqlScripts.getBODefalutSeriesQuery(bo.getObjectCode()));
+				if (reader.next()) {
+					bo.setSeries(reader.getInt(1));
+				}
+				reader.close();
+			}
+			KeyValue key = null;
+			reader = command.executeReader(sqlScripts.getBOSeriesQuery(bo.getObjectCode(), bo.getSeries()));
+			if (reader.next()) {
+				key = new KeyValue(reader.getString(2), reader.getInt(1));
+			}
+			reader.close();
+			return key;
+		} catch (Exception e) {
+			throw new BOException(e);
+		}
+	}
+
+	@Override
+	public void applySeriesKey(IBusinessObjectBase bo, KeyValue key) {
+		if (bo instanceof IBOSeriesKey) {
+			IBOSeriesKey seriesKey = (IBOSeriesKey) bo;
+			if (key.key != null && !key.key.isEmpty()) {
+				// 存在模块，则格式化编号
+				seriesKey.setSeriesValue(String.format(key.key, key.value));
+			} else {
+				// 直接赋值编号
+				seriesKey.setSeriesValue(key.value);
+			}
+		}
+	}
+
+	@Override
 	public ISqlQuery parseBOTransactionNotification(TransactionType type, IBusinessObjectBase bo)
 			throws BOParsingException {
 		try {
@@ -1230,6 +1328,16 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	@Override
 	public KeyValue[] usePrimaryKeys(IBusinessObjectBase[] bos, Object... others) throws BOException {
 		return this.usePrimaryKeys(bos, (IDbCommand) others[0]);
+	}
+
+	@Override
+	public KeyValue useSeriesKey(IBusinessObjectBase bo, Object... others) throws BOException {
+		return this.useSeriesKey(bo, (IDbCommand) others[0]);
+	}
+
+	@Override
+	public KeyValue useSeriesKey(IBusinessObjectBase[] bos, Object... others) throws BOException {
+		return this.useSeriesKey(bos, (IDbCommand) others[0]);
 	}
 
 }

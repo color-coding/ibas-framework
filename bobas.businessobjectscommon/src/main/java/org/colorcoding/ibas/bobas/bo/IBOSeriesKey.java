@@ -1,12 +1,12 @@
 package org.colorcoding.ibas.bobas.bo;
 
 /**
- * 自动编号
+ * 系列自动编号
  * 
  * @author Niuren.Zhu
  *
  */
-public interface IBOAutoNumber extends IBOStorageTag {
+public interface IBOSeriesKey extends IBOStorageTag {
 
 	/**
 	 * 获取-编号系列
@@ -23,16 +23,16 @@ public interface IBOAutoNumber extends IBOStorageTag {
 	void setSeries(Integer value);
 
 	/**
-	 * 获取-自动编号
+	 * 获取-系列编号
 	 * 
 	 * @return
 	 */
-	String getAutoNumber();
+	Object getSeriesValue();
 
 	/**
-	 * 设置-自动编号
+	 * 设置-系列编号
 	 * 
 	 * @param value
 	 */
-	void setAutoNumber(String value);
+	void setSeriesValue(Object value);
 }

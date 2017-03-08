@@ -37,4 +37,28 @@ public interface IBOKeysManager4Db extends IBOKeysManager {
 	 */
 	KeyValue[] usePrimaryKeys(IBusinessObjectBase[] bos, IDbCommand command) throws BOException;
 
+	/**
+	 * 使用系列编号
+	 * 
+	 * @param bo
+	 *            业务对象
+	 * @param command
+	 *            数据库命令
+	 * @return 系列编号
+	 * @throws BOException
+	 */
+	KeyValue useSeriesKey(IBusinessObjectBase bo, IDbCommand command) throws BOException;
+
+	/**
+	 * 使用系列编号
+	 * 
+	 * @param bos
+	 *            业务对象集合
+	 * @param command
+	 *            数据库命令
+	 * @return 系列编号
+	 * @throws BOException
+	 */
+	KeyValue useSeriesKey(IBusinessObjectBase[] bos, IDbCommand command) throws BOException;
+
 }

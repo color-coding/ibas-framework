@@ -195,6 +195,8 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 			command = this.getDbConnection().createCommand();
 			// 批量设置主键
 			keysManager.usePrimaryKeys(bos, command);
+			// 批量设置系列号
+			keysManager.useSeriesKey(bos, command);
 			for (IBusinessObjectBase bo : bos) {
 				if (bo == null)
 					continue;

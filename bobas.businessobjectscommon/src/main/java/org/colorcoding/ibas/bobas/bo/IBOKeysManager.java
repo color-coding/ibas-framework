@@ -45,4 +45,37 @@ public interface IBOKeysManager {
 	 */
 	void applyPrimaryKeys(IBusinessObjectBase bo, KeyValue[] keys);
 
+	/**
+	 * 使用系列编号
+	 * 
+	 * @param bo
+	 *            业务对象
+	 * @param others
+	 *            参数
+	 * @return 系列编号
+	 * @throws BOException
+	 */
+	KeyValue useSeriesKey(IBusinessObjectBase bo, Object... others) throws BOException;
+
+	/**
+	 * 使用系列编号
+	 * 
+	 * @param bos
+	 *            业务对象集合
+	 * @param others
+	 *            参数
+	 * @return 系列编号
+	 * @throws BOException
+	 */
+	KeyValue useSeriesKey(IBusinessObjectBase[] bos, Object... others) throws BOException;
+
+	/**
+	 * 设置主键值
+	 * 
+	 * @param bo
+	 *            业务对象
+	 * @param key
+	 *            系列编号
+	 */
+	void applySeriesKey(IBusinessObjectBase bo, KeyValue key);
 }
