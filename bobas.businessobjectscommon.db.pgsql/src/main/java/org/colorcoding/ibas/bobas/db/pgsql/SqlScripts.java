@@ -78,9 +78,9 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 
 	@Override
 	public DbFieldType getDbFieldType(String dbType) {
-		if (dbType.equals("varchar")) {
+		if (dbType.equals("VARCHAR") || dbType.equals("TEXT")) {
 			return DbFieldType.ALPHANUMERIC;
-		} else if (dbType.equals("INTEGER")) {
+		} else if (dbType.equals("INTEGER") || dbType.equals("SMALLINT")) {
 			return DbFieldType.NUMERIC;
 		} else if (dbType.equals("TIMESTAMP")) {
 			return DbFieldType.DATE;
