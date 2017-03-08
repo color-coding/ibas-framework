@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.data.Decimal;
-import org.colorcoding.ibas.bobas.mapping.DbValue;
+import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 时间单位
@@ -14,17 +14,17 @@ public enum emTimeUnit {
 	/**
 	 * 秒
 	 */
-	@DbValue(value = "s")
+	@Value("s")
 	SECOND(0),
 	/**
 	 * 分钟
 	 */
-	@DbValue(value = "m")
+	@Value("m")
 	MINUTE(1),
 	/**
 	 * 小时
 	 */
-	@DbValue(value = "h")
+	@Value("h")
 	HOUR(2);
 
 	private int intValue;

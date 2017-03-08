@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.data;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
-import org.colorcoding.ibas.bobas.mapping.DbValue;
+import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 条件-操作
@@ -17,73 +17,73 @@ public enum emConditionOperation {
 	/**
 	 * 等于(=)
 	 */
-	@DbValue(value = "EQ")
+	@Value("EQ")
 	EQUAL,
 
 	/**
 	 * 大于(>)
 	 */
-	@DbValue(value = "GT")
+	@Value("GT")
 	GRATER_THAN,
 
 	/**
 	 * 小于(<)
 	 */
-	@DbValue(value = "LT")
+	@Value("LT")
 	LESS_THAN,
 
 	/**
 	 * 大于等于(>=)
 	 */
-	@DbValue(value = "GE")
+	@Value("GE")
 	GRATER_EQUAL,
 
 	/**
 	 * 小于等于(<=)
 	 */
-	@DbValue(value = "LE")
+	@Value("LE")
 	LESS_EQUAL,
 
 	/**
 	 * 不等于(<>)
 	 */
-	@DbValue(value = "NE")
+	@Value("NE")
 	NOT_EQUAL,
 
 	/**
 	 * 开始于
 	 */
-	@DbValue(value = "BW")
+	@Value("BW")
 	BEGIN_WITH,
 
 	/**
 	 * 不是开始于
 	 */
-	@DbValue(value = "NB")
+	@Value("NB")
 	NOT_BEGIN_WITH,
 
 	/**
 	 * 结束于
 	 */
-	@DbValue(value = "EW")
+	@Value("EW")
 	END_WITH,
 
 	/**
 	 * 不是结束于
 	 */
-	@DbValue(value = "NW")
+	@Value("NW")
 	NOT_END_WITH,
 
 	/**
 	 * 包括
 	 */
-	@DbValue(value = "CN")
+	@Value("CN")
 	CONTAIN,
 
 	/**
 	 * 不包含
 	 */
-	@DbValue(value = "NC")
+	@Value("NC")
 	NOT_CONTAIN;
 
 	public int getValue() {

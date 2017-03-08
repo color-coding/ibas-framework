@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.data;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
-import org.colorcoding.ibas.bobas.mapping.DbValue;
+import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 单据状态
@@ -16,22 +16,22 @@ public enum emDocumentStatus {
 	/**
 	 * 计划
 	 */
-	@DbValue(value = "P")
+	@Value("P")
 	PLANNED,
 	/**
 	 * 下达
 	 */
-	@DbValue(value = "R")
+	@Value("R")
 	RELEASED,
 	/**
 	 * 完成
 	 */
-	@DbValue(value = "F")
+	@Value("F")
 	FINISHED,
 	/**
 	 * 结算
 	 */
-	@DbValue(value = "C")
+	@Value("C")
 	CLOSED;
 
 	public int getValue() {

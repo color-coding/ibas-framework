@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.data.Decimal;
-import org.colorcoding.ibas.bobas.mapping.DbValue;
+import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 重量单位
@@ -14,17 +14,17 @@ public enum emWeightUnit {
 	/**
 	 * 克
 	 */
-	@DbValue(value = "g")
+	@Value("g")
 	GRAM(0),
 	/**
 	 * 千克
 	 */
-	@DbValue(value = "kg")
+	@Value("kg")
 	KILOGRAM(1),
 	/**
 	 * 吨
 	 */
-	@DbValue(value = "t")
+	@Value("t")
 	TON(2);
 
 	private int intValue;

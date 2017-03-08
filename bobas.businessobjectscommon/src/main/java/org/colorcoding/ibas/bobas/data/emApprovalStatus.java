@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.data;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
-import org.colorcoding.ibas.bobas.mapping.DbValue;
+import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 审批状态
@@ -17,34 +17,34 @@ public enum emApprovalStatus {
 	/**
 	 * 不影响
 	 */
-	@DbValue(value = "U")
+	@Value("U")
 	UNAFFECTED,
 
 	/**
 	 * 审批中
 	 */
-	@DbValue(value = "P")
+	@Value("P")
 	PROCESSING,
 
 	/**
 	 * 已批准
 	 */
-	@DbValue(value = "A")
+	@Value("A")
 	APPROVED,
 
 	/**
 	 * 已拒绝
 	 */
-	@DbValue(value = "R")
+	@Value("R")
 	REJECTED,
 	// /**
 	// * 已退回
 	// */
-	// @DbValue(value = "T") RETURNED,
+	// @Value("T") RETURNED,
 	/**
 	 * 已取消
 	 */
-	@DbValue(value = "C")
+	@Value("C")
 	CANCELLED;
 
 	public int getValue() {

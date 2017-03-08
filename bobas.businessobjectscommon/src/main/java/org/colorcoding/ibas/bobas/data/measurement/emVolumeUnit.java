@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.data.Decimal;
-import org.colorcoding.ibas.bobas.mapping.DbValue;
+import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 体积单位
@@ -14,22 +14,22 @@ public enum emVolumeUnit {
 	/**
 	 * 立方毫米
 	 */
-	@DbValue(value = "mm³")
+	@Value("mm³")
 	CUBIC_MILLIMETER(0),
 	/**
 	 * 立方厘米
 	 */
-	@DbValue(value = "cm³")
+	@Value("cm³")
 	CUBIC_CENTIMETER(1),
 	/**
 	 * 立方米
 	 */
-	@DbValue(value = "m³")
+	@Value("m³")
 	CUBIC_METRE(2),
 	/**
 	 * 立方千米
 	 */
-	@DbValue(value = "km³")
+	@Value("km³")
 	CUBIC_KILOMETER(5);
 
 	private int intValue;

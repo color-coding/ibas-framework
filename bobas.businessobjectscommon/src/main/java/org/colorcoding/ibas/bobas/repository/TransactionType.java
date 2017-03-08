@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.repository;
 
-import org.colorcoding.ibas.bobas.mapping.DbValue;
+import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 事务类型
@@ -12,17 +12,17 @@ public enum TransactionType {
 	/**
 	 * 添加
 	 */
-	@DbValue("A")
+	@Value("A")
 	ADD,
 	/**
 	 * 更新
 	 */
-	@DbValue("U")
+	@Value("U")
 	UPDATE,
 	/**
 	 * 删除
 	 */
-	@DbValue("D")
+	@Value("D")
 	DELETE,
 	// /**
 	// * 关闭前

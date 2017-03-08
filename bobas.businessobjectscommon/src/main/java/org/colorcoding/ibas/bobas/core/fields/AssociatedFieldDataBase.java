@@ -61,7 +61,7 @@ public abstract class AssociatedFieldDataBase<T> extends FieldDataBase<T> {
 
 	public void mapping(Associations mapping) {
 		this.setAssociationMode(mapping.mode());
-		this.setSavable(mapping.isSavable());
+		this.setSavable(mapping.savable());
 		this.setAutoLoading(mapping.autoLoading());
 		this.setValueType(mapping.type());
 		for (AssociatedField assoField : mapping.value()) {

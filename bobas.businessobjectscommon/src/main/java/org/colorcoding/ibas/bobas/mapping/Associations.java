@@ -40,7 +40,7 @@ public @interface Associations {
 	 * 
 	 * @return
 	 */
-	public boolean isSavable() default false;
+	public boolean savable() default false;
 
 	/**
 	 * 自动加载

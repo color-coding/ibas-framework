@@ -5,7 +5,7 @@ import java.lang.reflect.Field;
 
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
-import org.colorcoding.ibas.bobas.mapping.DbValue;
+import org.colorcoding.ibas.bobas.mapping.Value;
 
 public class DataConvert extends org.colorcoding.ibas.bobas.data.DataConvert {
 
@@ -22,11 +22,11 @@ public class DataConvert extends org.colorcoding.ibas.bobas.data.DataConvert {
 		Class<?> valueType = value.getClass();
 		if (valueType.isEnum()) {
 			for (Field field : valueType.getDeclaredFields()) {
-				Annotation annotation = field.getAnnotation(DbValue.class);
+				Annotation annotation = field.getAnnotation(Value.class);
 				if (annotation != null) {
-					DbValue dbValue = (DbValue) annotation;
+					Value aValue = (Value) annotation;
 					if (field.getName().equals(value.toString())) {
-						return dbValue.value();
+						return aValue.value();
 					}
 				}
 			}

@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.data.Decimal;
-import org.colorcoding.ibas.bobas.mapping.DbValue;
+import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 比例单位
@@ -12,7 +12,7 @@ import org.colorcoding.ibas.bobas.mapping.DbValue;
 @XmlType(name = "emPercentUnit", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
 public enum emPercentUnit {
 	// 百分百
-	@DbValue(value = "%")
+	@Value("%")
 	HUNDRED_PERCENT(0);
 
 	private int intValue;

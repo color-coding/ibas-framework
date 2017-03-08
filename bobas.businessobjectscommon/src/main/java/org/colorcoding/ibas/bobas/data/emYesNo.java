@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.data;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
-import org.colorcoding.ibas.bobas.mapping.DbValue;
+import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 是否
@@ -16,12 +16,12 @@ public enum emYesNo {
 	/**
 	 * 否
 	 */
-	@DbValue(value = "N")
+	@Value("N")
 	NO,
 	/**
 	 * 是
 	 */
-	@DbValue(value = "Y")
+	@Value("Y")
 	YES;
 
 	public int getValue() {

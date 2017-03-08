@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.data.Decimal;
-import org.colorcoding.ibas.bobas.mapping.DbValue;
+import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 面积单位
@@ -14,22 +14,22 @@ public enum emAreaUnit {
 	/**
 	 * 平方毫米
 	 */
-	@DbValue(value = "mm²")
+	@Value("mm²")
 	SQUARE_MILLIMETER(0),
 	/**
 	 * 平方厘米
 	 */
-	@DbValue(value = "cm²")
+	@Value("cm²")
 	SQUARE_CENTIMETER(1),
 	/**
 	 * 平方米
 	 */
-	@DbValue(value = "m²")
+	@Value("m²")
 	SQUARE_METRE(2),
 	/**
 	 * 平方千米
 	 */
-	@DbValue(value = "km²")
+	@Value("km²")
 	SQUARE_KILOMETER(5);
 
 	private int intValue;

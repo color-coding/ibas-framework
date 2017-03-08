@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.data.Decimal;
-import org.colorcoding.ibas.bobas.mapping.DbValue;
+import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 长度单位
@@ -12,16 +12,16 @@ import org.colorcoding.ibas.bobas.mapping.DbValue;
 @XmlType(name = "emLengthUnit", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
 public enum emLengthUnit {
 	// 毫米
-	@DbValue(value = "mm")
+	@Value("mm")
 	MILLIMETER(0),
 	// 厘米
-	@DbValue(value = "cm")
+	@Value("cm")
 	CENTIMETER(1),
 	// 米
-	@DbValue(value = "m")
+	@Value("m")
 	METER(2),
 	// 千米
-	@DbValue(value = "km")
+	@Value("km")
 	KILOMETER(5);
 
 	private int intValue;

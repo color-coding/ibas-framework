@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.data;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
-import org.colorcoding.ibas.bobas.mapping.DbValue;
+import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 权限
@@ -16,17 +16,17 @@ public enum emAuthoriseType {
 	/**
 	 * 只读
 	 */
-	@DbValue(value = "R")
+	@Value("R")
 	READ,
 	/**
 	 * 完全
 	 */
-	@DbValue(value = "A")
+	@Value("A")
 	ALL,
 	/**
 	 * 没有
 	 */
-	@DbValue(value = "N")
+	@Value("N")
 	NONE;
 
 	public int getValue() {

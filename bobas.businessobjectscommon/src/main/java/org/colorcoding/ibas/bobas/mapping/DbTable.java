@@ -13,5 +13,5 @@ public @interface DbTable {
 	 * 
 	 * @return
 	 */
-	public String name();
+	public String value();
 }

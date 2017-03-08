@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.common;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
-import org.colorcoding.ibas.bobas.mapping.DbValue;
+import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 条件之间关系
@@ -13,17 +13,17 @@ public enum ConditionRelationship {
 	/**
 	 * 没关系
 	 */
-	@DbValue(value = "N")
+	@Value("N")
 	NONE,
 	/**
 	 * 且
 	 */
-	@DbValue(value = "A")
+	@Value("A")
 	AND,
 	/**
 	 * 或
 	 */
-	@DbValue(value = "O")
+	@Value("O")
 	OR;
 
 	public int getValue() {

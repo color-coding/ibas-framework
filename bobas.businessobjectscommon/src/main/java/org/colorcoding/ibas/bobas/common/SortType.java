@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.common;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
-import org.colorcoding.ibas.bobas.mapping.DbValue;
+import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 排序
@@ -12,10 +12,10 @@ import org.colorcoding.ibas.bobas.mapping.DbValue;
 public enum SortType {
 
 	/** 降序 */
-	@DbValue(value = "D")
+	@Value("D")
 	DESCENDING,
 	/** 升序 */
-	@DbValue(value = "A")
+	@Value("A")
 	ASCENDING;
 
 	public int getValue() {

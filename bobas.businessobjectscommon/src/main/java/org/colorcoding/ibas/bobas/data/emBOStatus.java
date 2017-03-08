@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.data;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
-import org.colorcoding.ibas.bobas.mapping.DbValue;
+import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 业务对象状态
@@ -17,13 +17,13 @@ public enum emBOStatus {
 	/**
 	 * 未清
 	 */
-	@DbValue(value = "O")
+	@Value("O")
 	OPEN,
 
 	/**
 	 * 已清
 	 */
-	@DbValue(value = "C")
+	@Value("C")
 	CLOSED;
 
 	public int getValue() {

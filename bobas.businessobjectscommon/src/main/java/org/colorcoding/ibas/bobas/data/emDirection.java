@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.data;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
-import org.colorcoding.ibas.bobas.mapping.DbValue;
+import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 方向
@@ -16,12 +16,12 @@ public enum emDirection {
 	/**
 	 * 入
 	 */
-	@DbValue(value = "I")
+	@Value("I")
 	IN,
 	/**
 	 * 出
 	 */
-	@DbValue(value = "O")
+	@Value("O")
 	OUT;
 
 	public int getValue() {
