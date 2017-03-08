@@ -11,7 +11,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.data.FileData;
-import org.colorcoding.ibas.bobas.jersey.FileRepositoryService;
+import org.colorcoding.ibas.bobas.repository.jersey.FileRepositoryService;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 

@@ -1,9 +1,10 @@
-package org.colorcoding.ibas.bobas.jersey.test;
+package org.colorcoding.ibas.bobas.serialization.jersey.test;
+
+import java.io.StringWriter;
 
 import javax.xml.bind.JAXBException;
 
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
-import org.colorcoding.ibas.bobas.core.Serializer;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
@@ -12,6 +13,8 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.data.measurement.Time;
 import org.colorcoding.ibas.bobas.data.measurement.emTimeUnit;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
+import org.colorcoding.ibas.bobas.serialization.ISerializer;
+import org.colorcoding.ibas.bobas.serialization.jersey.SerializerJson;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrderItem;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 import org.colorcoding.ibas.bobas.test.bo.User;
@@ -55,7 +58,8 @@ public class testBusinessObject extends TestCase {
 
 		String json = order.toString("json");
 		System.out.println(json);
-		Serializer.deserializeString("json", json, order.getClass());
+		ISerializer serializer = new SerializerJson();
+		serializer.deserialize(json, order.getClass());
 	}
 
 	public void testSerializStatus() {
@@ -83,8 +87,11 @@ public class testBusinessObject extends TestCase {
 		stringBuilder.append(String.format("\"Canceled\":\"%s\",", emYesNo.YES));
 		stringBuilder.append(String.format("\"Status\":\"%s\"", emBOStatus.CLOSED));
 		stringBuilder.append("}}");
-		IBusinessObject bo = (IBusinessObject) Serializer.deserializeString("json", stringBuilder.toString(),
-				SalesOrder.class);
-		System.out.println(Serializer.serializeString(bo, true));
+		ISerializer serializer = new SerializerJson();
+		IBusinessObject bo = serializer.deserialize(stringBuilder.toString(), SalesOrder.class);
+		StringWriter writer = new StringWriter();
+		serializer.serialize(bo, writer, true);
+		System.out.println(writer.toString());
 	}
+
 }

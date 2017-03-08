@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.data;
 
+import java.io.StringWriter;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -8,7 +10,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
-import org.colorcoding.ibas.bobas.core.Serializer;
+import org.colorcoding.ibas.bobas.serialization.ISerializer;
+import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "DataTable", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
@@ -84,7 +87,10 @@ public class DataTable implements IDataTable {
 
 	@Override
 	public String toString(String type) {
-		return Serializer.serializeString(type, this, false);
+		ISerializer serializer = SerializerFactory.create().createManager().create(type);
+		StringWriter writer = new StringWriter();
+		serializer.serialize(this, writer, false);
+		return writer.toString();
 	}
 
 }

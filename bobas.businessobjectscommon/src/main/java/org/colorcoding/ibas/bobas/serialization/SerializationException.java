@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.bobas.core;
+package org.colorcoding.ibas.bobas.serialization;
 
 public class SerializationException extends RuntimeException {
 

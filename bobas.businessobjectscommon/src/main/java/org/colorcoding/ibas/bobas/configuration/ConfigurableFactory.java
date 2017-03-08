@@ -93,7 +93,7 @@ public abstract class ConfigurableFactory<T> {
 	 * @throws IllegalAccessException
 	 * @throws BOFactoryException
 	 */
-	public T create(String typeName) {
+	protected T create(String typeName) {
 		// 使用配置的实例
 		try {
 			return this.newInstance(typeName);
@@ -114,7 +114,7 @@ public abstract class ConfigurableFactory<T> {
 	 * @throws IllegalAccessException
 	 * @throws BOFactoryException
 	 */
-	public T create(String configKey, String typeName) {
+	protected T create(String configKey, String typeName) {
 		String configValue = MyConfiguration.getConfigValue(configKey, "").toLowerCase();
 		if (configValue == null || configValue.isEmpty()) {
 			// 没有配置，则使用默认

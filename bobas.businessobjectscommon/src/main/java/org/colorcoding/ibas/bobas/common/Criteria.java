@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.common;
 
+import java.io.StringWriter;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -12,7 +14,9 @@ import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBOMasterData;
 import org.colorcoding.ibas.bobas.bo.IBOSimple;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
-import org.colorcoding.ibas.bobas.core.Serializer;
+import org.colorcoding.ibas.bobas.serialization.ISerializer;
+import org.colorcoding.ibas.bobas.serialization.ISerializerManager;
+import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
 
 /**
  * 查询
@@ -44,16 +48,19 @@ public class Criteria implements ICriteria {
 		if (value.startsWith("{[") && value.endsWith("]}")) {
 			// 对象识别码
 			return fromIdentifiers(value);
-		} else if (value.startsWith("<?xml")) {
-			// xml
-			return (ICriteria) Serializer.deserializeString(Serializer.DATA_TYPE_XML, value, Criteria.class,
-					Conditions.class, Condition.class, Sorts.class, Sort.class, ChildCriterias.class,
-					ChildCriteria.class);
-		} else if (value.startsWith("{") && value.endsWith("}")) {
-			// json
-			return (ICriteria) Serializer.deserializeString(Serializer.DATA_TYPE_JSON, value, Criteria.class,
-					Conditions.class, Condition.class, Sorts.class, Sort.class, ChildCriterias.class,
-					ChildCriteria.class);
+		} else {
+			ISerializerManager manager = SerializerFactory.create().createManager();
+			if (value.startsWith("<?xml")) {
+				// xml
+				ISerializer serializer = manager.create(ISerializerManager.TYPE_XML);
+				return (ICriteria) serializer.deserialize(value, Criteria.class, Conditions.class, Condition.class,
+						Sorts.class, Sort.class, ChildCriterias.class, ChildCriteria.class);
+			} else if (value.startsWith("{") && value.endsWith("}")) {
+				// json
+				ISerializer serializer = manager.create(ISerializerManager.TYPE_XML);
+				return (ICriteria) serializer.deserialize(value, Criteria.class, Conditions.class, Condition.class,
+						Sorts.class, Sort.class, ChildCriterias.class, ChildCriteria.class);
+			}
 		}
 		return null;
 	}
@@ -189,12 +196,16 @@ public class Criteria implements ICriteria {
 
 	@Override
 	public final ICriteria clone() {
-		return (ICriteria) Serializer.clone(this);
+		ISerializer serializer = SerializerFactory.create().createManager().create();
+		return (ICriteria) serializer.clone(this);
 	}
 
 	@Override
 	public String toString(String type) {
-		return Serializer.serializeString(type, this, true);
+		ISerializer serializer = SerializerFactory.create().createManager().create(type);
+		StringWriter writer = new StringWriter();
+		serializer.serialize(this, writer, false);
+		return writer.toString();
 	}
 
 	protected ICriteria getBOCriteria(IBusinessObjectBase bo) {

@@ -179,4 +179,8 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-业务规则管理方式
 	 */
 	public final static String CONFIG_ITEM_BUSINESS_RULES_WAY = "BizRulesWay";
+	/**
+	 * 配置项目-序列化管理方式
+	 */
+	public final static String CONFIG_ITEM_SERIALIZATION_WAY = "SerializationWay";
 }

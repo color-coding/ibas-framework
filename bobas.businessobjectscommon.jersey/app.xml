@@ -4,7 +4,7 @@
 	<appSettings>
 		<!--配置项目-是否开启调试模式-->
 		<add key="DebugMode" value="true" />
-		<!--配置项目-JSON序列化实现-->
-		<add key="Serializer" value="jersey" />
+		<!--配置项目-序列化管理方式-->
+		<add key="SerializationWay" value="jersey" />
 	</appSettings>
 </ns2:configuration>

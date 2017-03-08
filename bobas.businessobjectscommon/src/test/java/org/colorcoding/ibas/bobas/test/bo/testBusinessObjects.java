@@ -1,16 +1,22 @@
 package org.colorcoding.ibas.bobas.test.bo;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Date;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
 
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
+import org.colorcoding.ibas.bobas.bo.BusinessObjects;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.OperationResult;
-import org.colorcoding.ibas.bobas.core.Serializer;
+import org.colorcoding.ibas.bobas.configuration.Configuration;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
@@ -20,6 +26,9 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.data.measurement.Time;
 import org.colorcoding.ibas.bobas.data.measurement.emTimeUnit;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
+import org.colorcoding.ibas.bobas.serialization.ISerializer;
+import org.colorcoding.ibas.bobas.serialization.ISerializerManager;
+import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
 
 import junit.framework.TestCase;
 
@@ -212,17 +221,18 @@ public class testBusinessObjects extends TestCase {
 	}
 
 	public void testSerializer() {
+		ISerializerManager manager = SerializerFactory.create().createManager();
+		ISerializer serializer = manager.create("xml");
 		Materials materials = new Materials();
 		materials.setCreateDate(DateTime.getToday());
 		System.out.println(materials.toString("xml"));
 		String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Materials><ItemCode>A0003</ItemCode><ItemDescription>A0003</ItemDescription><CreateDate>2099-11-11</CreateDate><OnHand>999.99</OnHand></Materials>";
-		IBusinessObject bo = (IBusinessObject) Serializer.deserializeString(xml, Materials.class);
+
+		IBusinessObject bo = serializer.deserialize(xml, Materials.class);
 		System.out.println(bo.toString("xml"));
-		bo = (IBusinessObject) Serializer.deserializeString(Serializer.DATA_TYPE_XML,
-				xml.replace("2099-11-11", "2099/11/12"), Materials.class);
+		bo = serializer.deserialize(xml.replace("2099-11-11", "2099/11/12"), Materials.class);
 		System.out.println(bo.toString("xml"));
-		bo = (IBusinessObject) Serializer.deserializeString(Serializer.DATA_TYPE_XML,
-				xml.replace("2099-11-11", "2099/1/2"), Materials.class);
+		bo = serializer.deserialize(xml.replace("2099-11-11", "2099/1/2"), Materials.class);
 		System.out.println(bo.toString("xml"));
 	}
 
@@ -373,8 +383,12 @@ public class testBusinessObjects extends TestCase {
 		stringBuilder.append(99);
 		stringBuilder.append("</DocEntry>");
 		stringBuilder.append("</SalesOrder>");
-		SalesOrder bo = (SalesOrder) Serializer.deserializeString(stringBuilder.toString(), SalesOrder.class);
-		System.out.println(Serializer.serializeString(bo, true));
+		ISerializerManager manager = SerializerFactory.create().createManager();
+		ISerializer serializer = manager.create("xml");
+		SalesOrder bo = serializer.deserialize(stringBuilder.toString(), SalesOrder.class);
+		StringWriter writer = new StringWriter();
+		serializer.serialize(bo, writer, true);
+		System.out.println(writer.toString());
 
 		System.out.println(String.format(
 				"DocEntry: %s Status: %s DocumentStatus: %s Canceled: %s isNew: %s isDirty: %s", bo.getDocEntry(),
@@ -453,5 +467,28 @@ public class testBusinessObjects extends TestCase {
 				+ (run.totalMemory() - run.freeMemory()));
 		System.out.println("memory clear:" + (endMem - clearedMem));
 		Thread.sleep(10000000);
+	}
+
+	public void testXMLSchema() throws JAXBException, IOException {
+		JAXBContext context = JAXBContext.newInstance(SalesOrder.class, BusinessObject.class, BusinessObjects.class);
+		// generate the schema
+		context.generateSchema(
+				// need to define a SchemaOutputResolver to store to
+				new SchemaOutputResolver() {
+					private File file;
+
+					@Override
+					public Result createOutput(String ns, String fileName) throws IOException {
+						try {
+							file = new File(Configuration.getStartupFolder() + fileName);
+							if (!file.exists()) {
+								file.createNewFile();
+							}
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						return new StreamResult(file);
+					}
+				});
 	}
 }

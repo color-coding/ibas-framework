@@ -2,6 +2,7 @@ package org.colorcoding.ibas.bobas.bo;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.StringWriter;
 
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -18,7 +19,6 @@ import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.core.BusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
-import org.colorcoding.ibas.bobas.core.Serializer;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.data.DateTime;
@@ -34,6 +34,8 @@ import org.colorcoding.ibas.bobas.rules.BusinessRulesFactory;
 import org.colorcoding.ibas.bobas.rules.IBusinessRule;
 import org.colorcoding.ibas.bobas.rules.IBusinessRules;
 import org.colorcoding.ibas.bobas.rules.IBusinessRulesManager;
+import org.colorcoding.ibas.bobas.serialization.ISerializer;
+import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
 import org.colorcoding.ibas.bobas.util.StringBuilder;
 
 /*
@@ -141,7 +143,10 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 
 	@Override
 	public String toString(String type) {
-		return Serializer.serializeString(type, this, false);
+		ISerializer serializer = SerializerFactory.create().createManager().create(type);
+		StringWriter writer = new StringWriter();
+		serializer.serialize(this, writer, false);
+		return writer.toString();
 	}
 
 	/*

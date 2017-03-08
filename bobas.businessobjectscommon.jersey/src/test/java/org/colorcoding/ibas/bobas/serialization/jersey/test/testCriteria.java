@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.bobas.jersey.test;
+package org.colorcoding.ibas.bobas.serialization.jersey.test;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
