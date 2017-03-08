@@ -29,6 +29,7 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.ISerializerManager;
 import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
+import org.colorcoding.ibas.bobas.serialization.SerializerXml;
 
 import junit.framework.TestCase;
 
@@ -490,5 +491,9 @@ public class testBusinessObjects extends TestCase {
 						return new StreamResult(file);
 					}
 				});
+		ISerializer serializer = new SerializerXml();
+		StringWriter writer = new StringWriter();
+		serializer.schema(SalesOrder.class, writer);
+		System.out.println(writer.toString());
 	}
 }

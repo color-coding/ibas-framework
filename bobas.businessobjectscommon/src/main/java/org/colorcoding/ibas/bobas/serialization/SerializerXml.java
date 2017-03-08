@@ -8,8 +8,19 @@ import java.io.Writer;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * 序列化对象
@@ -119,6 +130,35 @@ public class SerializerXml extends Serializer {
 			}
 		}
 
+	}
+
+	public static final String XML_FILE_EXTENSION = ".xml";
+	public static final String XML_FILE_ENCODING = "utf-8";
+	public static final String XML_FILE_INDENT = "yes";
+
+	@Override
+	public void schema(Class<?> type, Writer writer) throws SerializationException {
+		try {
+			DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			DOMImplementation domImpl = db.getDOMImplementation();
+			Document document = domImpl.createDocument("http://www.w3.org/2001/XMLSchema", "xs:schema", null);
+			Element root = document.getDocumentElement();
+			Element element = document.createElement("xs:element");
+			root.appendChild(element);
+
+			// 将xml写到文件中
+			javax.xml.transform.Transformer transformer = TransformerFactory.newInstance().newTransformer();
+			DOMSource source = new DOMSource(document);
+			// 添加xml 头信息
+			transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+			transformer.setOutputProperty(OutputKeys.ENCODING, XML_FILE_ENCODING);
+			transformer.setOutputProperty(OutputKeys.INDENT, XML_FILE_INDENT);
+			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+			StreamResult result = new StreamResult(writer);
+			transformer.transform(source, result);
+		} catch (ParserConfigurationException | TransformerException e) {
+			throw new SerializationException(e);
+		}
 	}
 
 }

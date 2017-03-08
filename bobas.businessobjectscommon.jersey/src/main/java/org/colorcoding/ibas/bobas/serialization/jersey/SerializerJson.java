@@ -148,4 +148,9 @@ public class SerializerJson extends Serializer {
 		}
 	}
 
+	@Override
+	public void schema(Class<?> type, Writer writer) throws SerializationException {
+		throw new UnsupportedOperationException();
+	}
+
 }

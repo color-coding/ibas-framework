@@ -75,4 +75,15 @@ public interface ISerializer {
 	 *            已知类型
 	 */
 	void serialize(Object object, Writer writer, Class<?>... types) throws SerializationException;
+
+	/**
+	 * 获取schema
+	 * 
+	 * @param type
+	 *            目标类型
+	 * @param writer
+	 *            输出目标
+	 * @throws SerializationException
+	 */
+	void schema(Class<?> type, Writer writer) throws SerializationException;
 }
