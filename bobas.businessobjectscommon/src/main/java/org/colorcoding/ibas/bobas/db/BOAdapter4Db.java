@@ -1289,8 +1289,8 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 						keyNames.append(" ");
 					}
 					if (keyValues.length() > 0) {
-						keyNames.append(",");
-						keyNames.append(" ");
+						keyValues.append(",");
+						keyValues.append(" ");
 					}
 					keyNames.append(dbItem.getDbField());
 					keyValues.append(DataConvert.toString(dbItem.getValue()));
