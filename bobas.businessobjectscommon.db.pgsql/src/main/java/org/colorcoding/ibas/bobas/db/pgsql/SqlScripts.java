@@ -4,7 +4,6 @@ import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.SqlQuery;
 import org.colorcoding.ibas.bobas.data.KeyValue;
-import org.colorcoding.ibas.bobas.db.SqlScriptsException;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.util.StringBuilder;
 
@@ -18,12 +17,12 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	@Override
-	public ISqlQuery getServerTimeScript() {
+	public ISqlQuery getServerTimeQuery() {
 		return new SqlQuery("NOW()");
 	}
 
 	@Override
-	public String getFieldValueCastType(DbFieldType dbFieldType) {
+	public String getCastTypeString(DbFieldType dbFieldType) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("%s");
 		if (dbFieldType != null) {
@@ -77,7 +76,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	@Override
-	public DbFieldType getDbFieldType(String dbType) {
+	public DbFieldType toDbFieldType(String dbType) {
 		if (dbType.equals("VARCHAR") || dbType.equals("TEXT")) {
 			return DbFieldType.ALPHANUMERIC;
 		} else if (dbType.equals("INTEGER") || dbType.equals("SMALLINT")) {
@@ -96,7 +95,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	@Override
-	public String getSqlString(ConditionOperation value, String opValue) throws SqlScriptsException {
+	public String getSqlString(ConditionOperation value, String opValue) {
 		if (value == ConditionOperation.NOT_EQUAL) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("!");
@@ -110,7 +109,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	@Override
-	public String getSqlString(DbFieldType type, String value) throws SqlScriptsException {
+	public String getSqlString(DbFieldType type, String value) {
 		if (type == DbFieldType.DATE && value != null) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("'");
@@ -122,8 +121,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	@Override
-	public String groupSelectQuery(String partSelect, String table, String partWhere, String partOrder, int result)
-			throws SqlScriptsException {
+	public String groupSelectQuery(String partSelect, String table, String partWhere, String partOrder, int result) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("SELECT");
 		stringBuilder.append(" ");
@@ -154,7 +152,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	@Override
-	public String getBOPrimaryKeyQuery(String boCode) throws SqlScriptsException {
+	public String getPrimaryKeyQuery(String boCode) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("SELECT");
 		stringBuilder.append(" ");
@@ -179,7 +177,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	@Override
-	public String groupMaxValueQuery(String field, String table, String partWhere) throws SqlScriptsException {
+	public String groupMaxValueQuery(String field, String table, String partWhere) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("SELECT");
 		stringBuilder.append(" ");
@@ -204,8 +202,8 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	@Override
-	public String getBOTransactionNotificationScript(String boCode, String type, int keyCount, String keyNames,
-			String keyValues) throws SqlScriptsException {
+	public String getTransactionNotificationQuery(String boCode, String type, int keyCount, String keyNames,
+			String keyValues) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("SELECT");
 		stringBuilder.append(" ");
@@ -245,7 +243,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	@Override
-	public String groupStoredProcedure(String spName, KeyValue[] parameters) throws SqlScriptsException {
+	public String groupStoredProcedure(String spName, KeyValue[] parameters) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("SELECT * FROM ");
 		stringBuilder.append("\"");

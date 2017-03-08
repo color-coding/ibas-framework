@@ -45,12 +45,22 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	ISqlQuery parseSqlQuery(ICriteria criteria, Class<?> boType) throws BOParsingException;
 
 	/**
+	 * 解析查询
+	 * 
+	 * @param sp
+	 *            调用的存储过程信息
+	 * @return 查询对象
+	 * @throws SqlScriptsException
+	 */
+	ISqlQuery parseSqlQuery(ISqlStoredProcedure sp) throws BOParsingException;
+
+	/**
 	 * 获取服务器时间脚本
 	 * 
 	 * @return 脚本
 	 * @throws BOParsingException
 	 */
-	ISqlQuery getServerTimeScript() throws BOParsingException;
+	ISqlQuery getServerTimeQuery() throws BOParsingException;
 
 	/**
 	 * 获取插入语句
@@ -60,7 +70,7 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	 * @return 插入语句
 	 * @throws BOParsingException
 	 */
-	ISqlQuery parseSqlInsert(IBusinessObjectBase bo) throws BOParsingException;
+	ISqlQuery parseInsertScript(IBusinessObjectBase bo) throws BOParsingException;
 
 	/**
 	 * 获取删除语句
@@ -70,7 +80,7 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	 * @return 删除语句
 	 * @throws BOParsingException
 	 */
-	ISqlQuery parseSqlDelete(IBusinessObjectBase bo) throws BOParsingException;
+	ISqlQuery parseDeleteScript(IBusinessObjectBase bo) throws BOParsingException;
 
 	/**
 	 * 获取更新语句
@@ -80,7 +90,7 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	 * @return 更新语句
 	 * @throws BOParsingException
 	 */
-	ISqlQuery parseSqlUpdate(IBusinessObjectBase bo) throws BOParsingException;
+	ISqlQuery parseUpdateScript(IBusinessObjectBase bo) throws BOParsingException;
 
 	/**
 	 * 解析业务对象
@@ -116,16 +126,6 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	 * @return 通知语句
 	 * @throws BOParsingException
 	 */
-	ISqlQuery parseBOTransactionNotification(TransactionType type, IBusinessObjectBase bo) throws BOParsingException;
-
-	/**
-	 * 解析查询
-	 * 
-	 * @param sp
-	 *            调用的存储过程信息
-	 * @return 查询对象
-	 * @throws SqlScriptsException
-	 */
-	ISqlQuery parseSqlQuery(ISqlStoredProcedure sp) throws BOParsingException;
+	ISqlQuery parseTransactionNotification(TransactionType type, IBusinessObjectBase bo) throws BOParsingException;
 
 }

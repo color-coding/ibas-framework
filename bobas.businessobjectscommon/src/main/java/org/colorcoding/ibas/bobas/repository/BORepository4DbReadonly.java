@@ -188,7 +188,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	public DateTime getServerTime() {
 		try {
 			IBOAdapter4Db adapter4Db = this.getBOAdapter();
-			IOperationResult<SingleValue> operationResult = this.fetch(adapter4Db.getServerTimeScript());
+			IOperationResult<SingleValue> operationResult = this.fetch(adapter4Db.getServerTimeQuery());
 			SingleValue data = operationResult.getResultObjects().firstOrDefault();
 			if (data != null) {
 				if (data.getValue() instanceof Timestamp) {

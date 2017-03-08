@@ -201,17 +201,17 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 					this.getKeysManager().usePrimaryKeys(bo, command);// 获取并更新主键
 					this.getKeysManager().useSeriesKey(bo, command);// 获取并更新系列号
 					this.fireSaveActions(SaveActionsType.BEFORE_ADDING, bo, root);
-					sqlQuery = adapter4Db.parseSqlInsert(bo);
+					sqlQuery = adapter4Db.parseInsertScript(bo);
 				} else if (bo.isDeleted()) {
 					// 删除对象
 					this.fireSaveActions(SaveActionsType.BEFORE_DELETING, bo, root);
-					sqlQuery = adapter4Db.parseSqlDelete(bo);
+					sqlQuery = adapter4Db.parseDeleteScript(bo);
 				} else {
 					// 修改对象，先删除数据，再添加新的实例
 					this.fireSaveActions(SaveActionsType.BEFORE_UPDATING, bo, root);
-					sqlQuery = adapter4Db.parseSqlDelete(bo);
+					sqlQuery = adapter4Db.parseDeleteScript(bo);
 					command.executeUpdate(sqlQuery);// 执行删除副本
-					sqlQuery = adapter4Db.parseSqlInsert(bo);
+					sqlQuery = adapter4Db.parseInsertScript(bo);
 				}
 				// 运行保存语句
 				command.executeUpdate(sqlQuery);

@@ -3,7 +3,6 @@ package org.colorcoding.ibas.bobas.db.mysql;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.SqlQuery;
 import org.colorcoding.ibas.bobas.data.KeyValue;
-import org.colorcoding.ibas.bobas.db.SqlScriptsException;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.util.StringBuilder;
 
@@ -25,7 +24,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	 * 获取当前日期时间
 	 */
 	@Override
-	public ISqlQuery getServerTimeScript() {
+	public ISqlQuery getServerTimeQuery() {
 		return new SqlQuery("now()");
 	}
 
@@ -33,7 +32,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	 * 将字段转换成条件字段的类型
 	 */
 	@Override
-	public String getFieldValueCastType(DbFieldType dbFieldType) {
+	public String getCastTypeString(DbFieldType dbFieldType) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("%s");
 		if (dbFieldType != null) {
@@ -87,7 +86,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	@Override
-	public DbFieldType getDbFieldType(String dbType) {
+	public DbFieldType toDbFieldType(String dbType) {
 		if (dbType.equals("varchar") || dbType.equals("text")) {
 			return DbFieldType.ALPHANUMERIC;
 		} else if (dbType.equals("int") || dbType.equals("smallint")) {
@@ -104,8 +103,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	 * 获取特定行数的数据
 	 */
 	@Override
-	public String groupSelectQuery(String partSelect, String table, String partWhere, String partOrder, int result)
-			throws SqlScriptsException {
+	public String groupSelectQuery(String partSelect, String table, String partWhere, String partOrder, int result) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("SELECT");
 		stringBuilder.append(" ");
@@ -139,7 +137,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	 * 获得主键
 	 */
 	@Override
-	public String getBOPrimaryKeyQuery(String boCode) throws SqlScriptsException {
+	public String getPrimaryKeyQuery(String boCode) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("SELECT");
 		stringBuilder.append(" ");
@@ -167,7 +165,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	 * 更新主键
 	 */
 	@Override
-	public String getUpdateBOPrimaryKeyScript(String boCode, int addValue) throws SqlScriptsException {
+	public String getUpdatePrimaryKeyScript(String boCode, int addValue) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("UPDATE");
 		stringBuilder.append(" ");
@@ -201,7 +199,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	 * 获取某一列的最大值，如果为空返回1
 	 */
 	@Override
-	public String groupMaxValueQuery(String field, String table, String partWhere) throws SqlScriptsException {
+	public String groupMaxValueQuery(String field, String table, String partWhere) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("SELECT");
 		stringBuilder.append(" ");
@@ -226,8 +224,8 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	@Override
-	public String getBOTransactionNotificationScript(String boCode, String type, int keyCount, String keyNames,
-			String keyValues) throws SqlScriptsException {
+	public String getTransactionNotificationQuery(String boCode, String type, int keyCount, String keyNames,
+			String keyValues) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("CALL");
 		stringBuilder.append(" ");
@@ -260,7 +258,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	@Override
-	public String groupStoredProcedure(String spName, KeyValue[] parameters) throws SqlScriptsException {
+	public String groupStoredProcedure(String spName, KeyValue[] parameters) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("CALL");
 		stringBuilder.append(" ");

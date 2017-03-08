@@ -147,14 +147,14 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	}
 
 	@Override
-	public ISqlQuery getServerTimeScript() throws BOParsingException {
+	public ISqlQuery getServerTimeQuery() throws BOParsingException {
 		try {
 
 			ISqlScripts sqlScripts = this.getSqlScripts();
 			if (sqlScripts == null) {
 				throw new SqlScriptsException(i18n.prop("msg_bobas_invaild_sql_scripts"));
 			}
-			return sqlScripts.getServerTimeScript();
+			return sqlScripts.getServerTimeQuery();
 		} catch (Exception e) {
 			throw new BOParsingException(e);
 		}
@@ -205,7 +205,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 								|| condition.getOperation() == ConditionOperation.CONTAIN
 								|| condition.getOperation() == ConditionOperation.NOT_CONTAIN)) {
 					// 数值类型的字段且需要作为字符比较的
-					String toVarchar = sqlScripts.getFieldValueCastType(DbFieldType.ALPHANUMERIC);
+					String toVarchar = sqlScripts.getCastTypeString(DbFieldType.ALPHANUMERIC);
 					stringBuilder.appendFormat(toVarchar, String.format(dbObject, condition.getAlias()));
 				} else {
 					stringBuilder.appendFormat(dbObject, condition.getAlias());
@@ -225,7 +225,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 					}
 					// 彭文磊 解决数字和字符串相比较的情况 如“<>”
 					// 如果不是字符串，就将比较的字段类型转换成 条件字段的类型
-					String toDbFiledType = sqlScripts.getFieldValueCastType(condition.getAliasDataType());
+					String toDbFiledType = sqlScripts.getCastTypeString(condition.getAliasDataType());
 					stringBuilder.appendFormat(sqlScripts.getSqlString(condition.getOperation()),
 							String.format(toDbFiledType, String.format(dbObject, condition.getComparedAlias())));
 
@@ -458,7 +458,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	}
 
 	@Override
-	public ISqlQuery parseSqlInsert(IBusinessObjectBase bo) throws BOParsingException {
+	public ISqlQuery parseInsertScript(IBusinessObjectBase bo) throws BOParsingException {
 		try {
 			if (!(bo instanceof IManageFields)) {
 				throw new BOParsingException(i18n.prop("msg_bobas_invaild_bo"));
@@ -486,7 +486,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				fieldsBuilder.appendFormat(sqlScripts.getDbObjectSign(), dbItem.getDbField());
 				Object value = dbItem.getValue();
 				if (value == null) {
-					valuesBuilder.append(sqlScripts.getNullValue());
+					valuesBuilder.append(sqlScripts.getNullSign());
 				} else {
 					valuesBuilder
 							.appendFormat(sqlScripts.getSqlString(dbItem.getFieldType(), DataConvert.toDbValue(value)));
@@ -500,7 +500,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				// 没有字段值
 				throw new BOParsingException(i18n.prop("msg_bobas_not_allow_sql_scripts"));
 			}
-			return new SqlQuery(sqlScripts.groupInsertQuery(table, fieldsBuilder.toString(), valuesBuilder.toString()));
+			return new SqlQuery(sqlScripts.groupInsertScript(table, fieldsBuilder.toString(), valuesBuilder.toString()));
 		} catch (Exception e) {
 			throw new BOParsingException(e);
 		}
@@ -530,7 +530,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			stringBuilder.append(" ");
 			Object value = dbItem.getValue();
 			if (value == null) {
-				stringBuilder.append(sqlScripts.getNullValue());
+				stringBuilder.append(sqlScripts.getNullSign());
 			} else {
 				stringBuilder
 						.appendFormat(sqlScripts.getSqlString(dbItem.getFieldType(), DataConvert.toDbValue(value)));
@@ -557,7 +557,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	}
 
 	@Override
-	public ISqlQuery parseSqlDelete(IBusinessObjectBase bo) throws BOParsingException {
+	public ISqlQuery parseDeleteScript(IBusinessObjectBase bo) throws BOParsingException {
 		try {
 			if (!(bo instanceof IManageFields)) {
 				throw new BOParsingException(i18n.prop("msg_bobas_invaild_bo"));
@@ -579,14 +579,14 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				// 没有条件的删除不允许执行
 				throw new BOParsingException(i18n.prop("msg_bobas_not_allow_sql_scripts"));
 			}
-			return new SqlQuery(sqlScripts.groupDeleteQuery(table, partWhere));
+			return new SqlQuery(sqlScripts.groupDeleteScript(table, partWhere));
 		} catch (Exception e) {
 			throw new BOParsingException(e);
 		}
 	}
 
 	@Override
-	public ISqlQuery parseSqlUpdate(IBusinessObjectBase bo) throws BOParsingException {
+	public ISqlQuery parseUpdateScript(IBusinessObjectBase bo) throws BOParsingException {
 		try {
 
 			if (!(bo instanceof IManageFields)) {
@@ -616,7 +616,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				}
 			}
 			String partFieldValues = this.getBOFieldValues(fieldDatas, sqlScripts.getFieldBreakSign());
-			return new SqlQuery(sqlScripts.groupUpdateQuery(table, partFieldValues, partWhere));
+			return new SqlQuery(sqlScripts.groupUpdateScript(table, partFieldValues, partWhere));
 		} catch (Exception e) {
 			throw new BOParsingException(e);
 		}
@@ -694,7 +694,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 							String name = metaData.getColumnName(rCol);
 							if (name != null && name.startsWith(UserField.USER_FIELD_PREFIX_SIGN)) {
 								uBO.getUserFields().addUserField(name,
-										sqlScripts.getDbFieldType(metaData.getColumnTypeName(rCol)));
+										sqlScripts.toDbFieldType(metaData.getColumnTypeName(rCol)));
 								dfIndex[i] = bo.getFields().length - 1;// 记录自定义字段编号
 							}
 						}
@@ -990,7 +990,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			if (bo instanceof IBODocument) {
 				// 业务单据主键
 				IBODocument item = (IBODocument) bo;
-				reader = command.executeReader(sqlScripts.getBOPrimaryKeyQuery(item.getObjectCode()));
+				reader = command.executeReader(sqlScripts.getPrimaryKeyQuery(item.getObjectCode()));
 				if (reader.next()) {
 					keys.add(new KeyValue(IBODocument.MASTER_PRIMARY_KEY_NAME, reader.getInt(1)));
 					reader.close();
@@ -1023,7 +1023,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			} else if (bo instanceof IBOMasterData) {
 				// 主数据主键
 				IBOMasterData item = (IBOMasterData) bo;
-				reader = command.executeReader(sqlScripts.getBOPrimaryKeyQuery(item.getObjectCode()));
+				reader = command.executeReader(sqlScripts.getPrimaryKeyQuery(item.getObjectCode()));
 				if (reader.next()) {
 					keys.add(new KeyValue(IBOMasterData.MASTER_PRIMARY_KEY_NAME, item.getCode()));
 					keys.add(new KeyValue(IBOMasterData.SERIAL_NUMBER_KEY_NAME, reader.getInt(1)));
@@ -1057,7 +1057,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			} else if (bo instanceof IBOSimple) {
 				// 简单对象主键
 				IBOSimple item = (IBOSimple) bo;
-				reader = command.executeReader(sqlScripts.getBOPrimaryKeyQuery(item.getObjectCode()));
+				reader = command.executeReader(sqlScripts.getPrimaryKeyQuery(item.getObjectCode()));
 				if (reader.next()) {
 					keys.add(new KeyValue(IBOSimple.MASTER_PRIMARY_KEY_NAME, reader.getInt(1)));
 					reader.close();
@@ -1163,7 +1163,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				throw new BOParsingException(i18n.prop("msg_bobas_not_specify_primary_keys_obtaining_method"));
 			}
 			// 更新数据记录
-			command.executeUpdate(sqlScripts.getUpdateBOPrimaryKeyScript(boCode, addValue));
+			command.executeUpdate(sqlScripts.getUpdatePrimaryKeyScript(boCode, addValue));
 		} catch (Exception e) {
 			throw new BOException(e);
 		}
@@ -1222,7 +1222,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				throw new SqlScriptsException(i18n.prop("msg_bobas_invaild_sql_scripts"));
 			}
 			// 更新数据记录
-			command.executeUpdate(sqlScripts.getUpdateBOSeriesKeyScript(bo.getObjectCode(), bo.getSeries(), addValue));
+			command.executeUpdate(sqlScripts.getUpdateSeriesKeyScript(bo.getObjectCode(), bo.getSeries(), addValue));
 		} catch (Exception e) {
 			throw new BOException(e);
 		}
@@ -1237,14 +1237,14 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			IDbDataReader reader = null;
 			if (bo.getSeries() <= 0) {
 				// 未设置系列，获取默认
-				reader = command.executeReader(sqlScripts.getBODefalutSeriesQuery(bo.getObjectCode()));
+				reader = command.executeReader(sqlScripts.getDefalutSeriesQuery(bo.getObjectCode()));
 				if (reader.next()) {
 					bo.setSeries(reader.getInt(1));
 				}
 				reader.close();
 			}
 			KeyValue key = null;
-			reader = command.executeReader(sqlScripts.getBOSeriesQuery(bo.getObjectCode(), bo.getSeries()));
+			reader = command.executeReader(sqlScripts.getSeriesKeyQuery(bo.getObjectCode(), bo.getSeries()));
 			if (reader.next()) {
 				key = new KeyValue(reader.getString(2), reader.getInt(1));
 			}
@@ -1270,7 +1270,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	}
 
 	@Override
-	public ISqlQuery parseBOTransactionNotification(TransactionType type, IBusinessObjectBase bo)
+	public ISqlQuery parseTransactionNotification(TransactionType type, IBusinessObjectBase bo)
 			throws BOParsingException {
 		try {
 			ISqlScripts sqlScripts = this.getSqlScripts();
@@ -1296,7 +1296,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 					keyValues.append(DataConvert.toString(dbItem.getValue()));
 				}
 			}
-			return new SqlQuery(sqlScripts.getBOTransactionNotificationScript(boCode, DataConvert.toDbValue(type),
+			return new SqlQuery(sqlScripts.getTransactionNotificationQuery(boCode, DataConvert.toDbValue(type),
 					keyCount, keyNames.toString(), keyValues.toString()));
 		} catch (Exception e) {
 			throw new BOParsingException(e);

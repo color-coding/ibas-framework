@@ -1,11 +1,7 @@
 package org.colorcoding.ibas.bobas.repository;
 
-
 public class BOTransactionException extends RuntimeException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -8566095122136934954L;
 
 	public BOTransactionException() {

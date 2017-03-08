@@ -1,11 +1,7 @@
 package org.colorcoding.ibas.bobas.logics;
 
-
 public class BusinessLogicsException extends RuntimeException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 6654310086635040829L;
 
 	public BusinessLogicsException() {

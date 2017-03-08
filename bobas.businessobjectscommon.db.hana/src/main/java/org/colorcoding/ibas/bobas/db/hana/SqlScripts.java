@@ -3,7 +3,6 @@ package org.colorcoding.ibas.bobas.db.hana;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.SqlQuery;
 import org.colorcoding.ibas.bobas.data.KeyValue;
-import org.colorcoding.ibas.bobas.db.SqlScriptsException;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.util.StringBuilder;
 
@@ -14,12 +13,12 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	@Override
-	public ISqlQuery getServerTimeScript() {
+	public ISqlQuery getServerTimeQuery() {
 		return new SqlQuery("SELECT  NOW() \"now\" FROM DUMMY;");
 	}
 
 	@Override
-	public String getFieldValueCastType(DbFieldType dbFieldType) {
+	public String getCastTypeString(DbFieldType dbFieldType) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("%s");
 		if (dbFieldType != null) {
@@ -73,7 +72,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	@Override
-	public DbFieldType getDbFieldType(String dbType) {
+	public DbFieldType toDbFieldType(String dbType) {
 		if (dbType.equals("NVARCHAR") || dbType.equals("NCLOB")) {
 			return DbFieldType.ALPHANUMERIC;
 		} else if (dbType.equals("INTEGER") || dbType.equals("SMALLINT")) {
@@ -87,7 +86,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	@Override
-	public String getBOPrimaryKeyQuery(String boCode) throws SqlScriptsException {
+	public String getPrimaryKeyQuery(String boCode) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("SELECT");
 		stringBuilder.append(" ");
@@ -112,7 +111,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	@Override
-	public String groupMaxValueQuery(String field, String table, String partWhere) throws SqlScriptsException {
+	public String groupMaxValueQuery(String field, String table, String partWhere) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("SELECT");
 		stringBuilder.append(" ");
@@ -137,8 +136,8 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	@Override
-	public String getBOTransactionNotificationScript(String boCode, String type, int keyCount, String keyNames,
-			String keyValues) throws SqlScriptsException {
+	public String getTransactionNotificationQuery(String boCode, String type, int keyCount, String keyNames,
+			String keyValues) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("CALL");
 		stringBuilder.append(" ");
@@ -171,7 +170,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	@Override
-	public String groupStoredProcedure(String spName, KeyValue[] parameters) throws SqlScriptsException {
+	public String groupStoredProcedure(String spName, KeyValue[] parameters) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("CALL");
 		stringBuilder.append(" ");

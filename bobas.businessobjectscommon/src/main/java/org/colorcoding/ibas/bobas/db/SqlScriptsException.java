@@ -1,11 +1,7 @@
 package org.colorcoding.ibas.bobas.db;
 
-
 public class SqlScriptsException extends Exception {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -92016001204817675L;
 
 	public SqlScriptsException() {

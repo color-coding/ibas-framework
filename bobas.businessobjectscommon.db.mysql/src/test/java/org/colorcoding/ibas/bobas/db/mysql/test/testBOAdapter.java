@@ -103,23 +103,23 @@ public class testBOAdapter extends TestCase {
 		orderItem.setItemCode("A00002");
 
 		IBOAdapter4Db boAdapter = new BOAdapter();
-		ISqlQuery sqlQuery = boAdapter.parseSqlInsert(order);
+		ISqlQuery sqlQuery = boAdapter.parseInsertScript(order);
 		System.out.println(sqlQuery.getQueryString());
 
-		sqlQuery = boAdapter.parseSqlUpdate(order);
+		sqlQuery = boAdapter.parseUpdateScript(order);
 		System.out.println(sqlQuery.getQueryString());
 
-		sqlQuery = boAdapter.parseSqlDelete(order);
+		sqlQuery = boAdapter.parseDeleteScript(order);
 		System.out.println(sqlQuery.getQueryString());
 
 		for (ISalesOrderItem item : order.getSalesOrderItems()) {
-			sqlQuery = boAdapter.parseSqlInsert(item);
+			sqlQuery = boAdapter.parseInsertScript(item);
 			System.out.println(sqlQuery.getQueryString());
 
-			sqlQuery = boAdapter.parseSqlUpdate(item);
+			sqlQuery = boAdapter.parseUpdateScript(item);
 			System.out.println(sqlQuery.getQueryString());
 
-			sqlQuery = boAdapter.parseSqlDelete(item);
+			sqlQuery = boAdapter.parseDeleteScript(item);
 			System.out.println(sqlQuery.getQueryString());
 		}
 	}

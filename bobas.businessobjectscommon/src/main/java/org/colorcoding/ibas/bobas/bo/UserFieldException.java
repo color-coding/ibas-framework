@@ -1,11 +1,7 @@
 package org.colorcoding.ibas.bobas.bo;
 
-
 public class UserFieldException extends RuntimeException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 6653049461272212539L;
 
 	public UserFieldException() {

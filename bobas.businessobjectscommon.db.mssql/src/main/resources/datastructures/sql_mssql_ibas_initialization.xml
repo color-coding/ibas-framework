@@ -37,6 +37,7 @@
 				    @list_of_cols_val_tab_del nvarchar(255)    -- Key Values, split by ','
 				AS
 				BEGIN
+				SET NOCOUNT ON --不计数
 				declare @error int                             -- return code, 0 is sucessful.
 				declare @error_message nvarchar(200)           -- return message
 				select @error = 0

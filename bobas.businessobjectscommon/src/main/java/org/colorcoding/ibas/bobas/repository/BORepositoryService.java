@@ -559,7 +559,7 @@ public class BORepositoryService implements IBORepositoryService {
 				// 数据库仓库
 				IBORepository4Db dbRepository = (IBORepository4Db) this.getRepository();
 				IBOAdapter4Db adapter4Db = dbRepository.getBOAdapter();
-				ISqlQuery sqlQuery = adapter4Db.parseBOTransactionNotification(type, bo);
+				ISqlQuery sqlQuery = adapter4Db.parseTransactionNotification(type, bo);
 				IOperationResult<TransactionMessage> spOpRslt = dbRepository.fetch(sqlQuery, TransactionMessage.class);
 				if (spOpRslt.getError() != null) {
 					throw spOpRslt.getError();

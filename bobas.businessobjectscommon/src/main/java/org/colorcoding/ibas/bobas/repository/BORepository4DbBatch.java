@@ -118,14 +118,14 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 		if (bo.isNew()) {
 			// 新建的对象
 			// 设置主键
-			sqlQueries.add(adapter4Db.parseSqlInsert(bo));
+			sqlQueries.add(adapter4Db.parseInsertScript(bo));
 		} else if (bo.isDeleted()) {
 			// 删除对象
-			sqlQueries.add(adapter4Db.parseSqlDelete(bo));
+			sqlQueries.add(adapter4Db.parseDeleteScript(bo));
 		} else {
 			// 修改对象，先删除数据，再添加新的实例
-			sqlQueries.add(adapter4Db.parseSqlDelete(bo));
-			sqlQueries.add(adapter4Db.parseSqlInsert(bo));
+			sqlQueries.add(adapter4Db.parseDeleteScript(bo));
+			sqlQueries.add(adapter4Db.parseInsertScript(bo));
 		}
 		if (recursion) {
 			// 处理子项
@@ -210,13 +210,13 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 				if (this.isPostTransaction()) {
 					if (bo.isNew()) {
 						// 新建对象
-						command.addBatch(adapter4Db.parseBOTransactionNotification(TransactionType.ADD, bo));
+						command.addBatch(adapter4Db.parseTransactionNotification(TransactionType.ADD, bo));
 					} else if (bo.isDeleted()) {
 						// 删除对象
-						command.addBatch(adapter4Db.parseBOTransactionNotification(TransactionType.DELETE, bo));
+						command.addBatch(adapter4Db.parseTransactionNotification(TransactionType.DELETE, bo));
 					} else {
 						// 更新对象
-						command.addBatch(adapter4Db.parseBOTransactionNotification(TransactionType.UPDATE, bo));
+						command.addBatch(adapter4Db.parseTransactionNotification(TransactionType.UPDATE, bo));
 					}
 				}
 				savedBOs.add(bo);

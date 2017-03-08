@@ -1,11 +1,7 @@
 package org.colorcoding.ibas.bobas.organization;
 
-
 public class OrganizationException extends Exception {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -8920927864236097565L;
 
 	public OrganizationException() {

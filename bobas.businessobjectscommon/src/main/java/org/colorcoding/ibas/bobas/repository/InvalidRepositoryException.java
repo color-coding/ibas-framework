@@ -4,9 +4,6 @@ import org.colorcoding.ibas.bobas.core.RepositoryException;
 
 public class InvalidRepositoryException extends RepositoryException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2860909011993101779L;
 
 	public InvalidRepositoryException() {

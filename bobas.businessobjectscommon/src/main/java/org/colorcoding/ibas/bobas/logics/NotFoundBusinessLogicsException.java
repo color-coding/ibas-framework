@@ -2,9 +2,6 @@ package org.colorcoding.ibas.bobas.logics;
 
 public class NotFoundBusinessLogicsException extends BusinessLogicsException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -3828583628302548133L;
 
 	public NotFoundBusinessLogicsException() {

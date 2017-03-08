@@ -2,14 +2,12 @@ package org.colorcoding.ibas.bobas.approval;
 
 /**
  * 没有授权异常
+ * 
  * @author Niuren.Zhu
  *
  */
 public class UnauthorizedException extends ApprovalProcessException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7689315325176956037L;
 
 	public UnauthorizedException() {

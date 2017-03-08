@@ -1,11 +1,7 @@
 package org.colorcoding.ibas.bobas.db;
 
-
 public class BOParsingException extends Exception {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 53554104536888660L;
 
 	public BOParsingException() {

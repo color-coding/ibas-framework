@@ -34,19 +34,19 @@ public interface ISqlScripts {
 	/**
 	 * 获取空值字符
 	 */
-	String getNullValue();
+	String getNullSign();
 
 	/**
 	 * 获取服务器时间脚本
 	 * 
 	 * @return 脚本
 	 */
-	ISqlQuery getServerTimeScript();
+	ISqlQuery getServerTimeQuery();
 
 	/**
 	 * 字段值转为条件字段类型( CAST(%s AS NVARCHAR) )
 	 */
-	String getFieldValueCastType(DbFieldType dbFieldType);
+	String getCastTypeString(DbFieldType dbFieldType);
 
 	/**
 	 * 获取数据库绑定数据类型
@@ -55,7 +55,7 @@ public interface ISqlScripts {
 	 *            数据库数据类型
 	 * @return 数据库绑定数据类型
 	 */
-	DbFieldType getDbFieldType(String dbType);
+	DbFieldType toDbFieldType(String dbType);
 
 	/**
 	 * 获取值的语句
@@ -67,7 +67,7 @@ public interface ISqlScripts {
 	 * @return 语句值 （N'%s'）
 	 * @throws SqlScriptsException
 	 */
-	String getSqlString(DbFieldType type, String value) throws SqlScriptsException;
+	String getSqlString(DbFieldType type, String value);
 
 	/**
 	 * 获取条件操作符的语句
@@ -79,7 +79,7 @@ public interface ISqlScripts {
 	 * @return 语句值（ = %s）
 	 * @throws SqlScriptsException
 	 */
-	String getSqlString(ConditionOperation value, String opValue) throws SqlScriptsException;
+	String getSqlString(ConditionOperation value, String opValue);
 
 	/**
 	 * 获取条件操作符的语句
@@ -89,7 +89,7 @@ public interface ISqlScripts {
 	 * @return 语句值（ = %s）
 	 * @throws SqlScriptsException
 	 */
-	String getSqlString(ConditionOperation value) throws SqlScriptsException;
+	String getSqlString(ConditionOperation value);
 
 	/**
 	 * 获取条件关系的语句
@@ -99,7 +99,7 @@ public interface ISqlScripts {
 	 * @return 语句值 （and）
 	 * @throws SqlScriptsException
 	 */
-	String getSqlString(ConditionRelationship value) throws SqlScriptsException;
+	String getSqlString(ConditionRelationship value);
 
 	/**
 	 * 获取排序的语句
@@ -109,7 +109,7 @@ public interface ISqlScripts {
 	 * @return 语句值 （DESC;ASC）
 	 * @throws SqlScriptsException
 	 */
-	String getSqlString(SortType value) throws SqlScriptsException;
+	String getSqlString(SortType value);
 
 	/**
 	 * 获取业务对象主键查询
@@ -120,7 +120,7 @@ public interface ISqlScripts {
 	 *         '%s'
 	 * @throws SqlScriptsException
 	 */
-	String getBOPrimaryKeyQuery(String boCode) throws SqlScriptsException;
+	String getPrimaryKeyQuery(String boCode);
 
 	/**
 	 * 获取业务对象默认系列
@@ -131,7 +131,7 @@ public interface ISqlScripts {
 	 *         = '%s'
 	 * @throws SqlScriptsException
 	 */
-	String getBODefalutSeriesQuery(String boCode) throws SqlScriptsException;
+	String getDefalutSeriesQuery(String boCode);
 
 	/**
 	 * 获取业务对象系列
@@ -142,7 +142,7 @@ public interface ISqlScripts {
 	 *         "ObjectCode" = '%s' AND "Series" = %s AND "Locked" = 'N'
 	 * @throws SqlScriptsException
 	 */
-	String getBOSeriesQuery(String boCode, int series) throws SqlScriptsException;
+	String getSeriesKeyQuery(String boCode, int series);
 
 	/**
 	 * 获取更新业务对象主键查询
@@ -156,7 +156,7 @@ public interface ISqlScripts {
 	 *         "Locked" = 'N'
 	 * @throws SqlScriptsException
 	 */
-	String getUpdateBOSeriesKeyScript(String boCode, int series, int addValue) throws SqlScriptsException;
+	String getUpdateSeriesKeyScript(String boCode, int series, int addValue);
 
 	/**
 	 * 获取更新业务对象主键查询
@@ -169,7 +169,7 @@ public interface ISqlScripts {
 	 *         {addValue} WHERE "ObjectCode" = '%s'
 	 * @throws SqlScriptsException
 	 */
-	String getUpdateBOPrimaryKeyScript(String boCode, int addValue) throws SqlScriptsException;
+	String getUpdatePrimaryKeyScript(String boCode, int addValue);
 
 	/**
 	 * 获取业务对象事务通知语句
@@ -187,8 +187,8 @@ public interface ISqlScripts {
 	 * @return
 	 * @throws SqlScriptsException
 	 */
-	String getBOTransactionNotificationScript(String boCode, String type, int keyCount, String keyNames,
-			String keyValues) throws SqlScriptsException;
+	String getTransactionNotificationQuery(String boCode, String type, int keyCount, String keyNames,
+			String keyValues);
 
 	/**
 	 * 组合select查询
@@ -206,8 +206,7 @@ public interface ISqlScripts {
 	 * @return 组合后的查询
 	 * @throws SqlScriptsException
 	 */
-	String groupSelectQuery(String partSelect, String table, String partWhere, String partOrder, int result)
-			throws SqlScriptsException;
+	String groupSelectQuery(String partSelect, String table, String partWhere, String partOrder, int result);
 
 	/**
 	 * 组合删除查询
@@ -219,7 +218,7 @@ public interface ISqlScripts {
 	 * @return
 	 * @throws SqlScriptsException
 	 */
-	String groupDeleteQuery(String table, String partWhere) throws SqlScriptsException;
+	String groupDeleteScript(String table, String partWhere);
 
 	/**
 	 * 组合更新查询
@@ -233,7 +232,7 @@ public interface ISqlScripts {
 	 * @return
 	 * @throws SqlScriptsException
 	 */
-	String groupUpdateQuery(String table, String partFieldValues, String partWhere) throws SqlScriptsException;
+	String groupUpdateScript(String table, String partFieldValues, String partWhere);
 
 	/**
 	 * 组合插入查询
@@ -247,7 +246,7 @@ public interface ISqlScripts {
 	 * @return
 	 * @throws SqlScriptsException
 	 */
-	String groupInsertQuery(String table, String partFields, String partValues) throws SqlScriptsException;
+	String groupInsertScript(String table, String partFields, String partValues);
 
 	/**
 	 * 组合获取最大值查询
@@ -261,7 +260,7 @@ public interface ISqlScripts {
 	 * @return
 	 * @throws SqlScriptsException
 	 */
-	String groupMaxValueQuery(String field, String table, String partWhere) throws SqlScriptsException;
+	String groupMaxValueQuery(String field, String table, String partWhere);
 
 	/**
 	 * 组合存储过程语句
@@ -275,5 +274,5 @@ public interface ISqlScripts {
 	 * @return
 	 * @throws SqlScriptsException
 	 */
-	String groupStoredProcedure(String spName, KeyValue[] parameters) throws SqlScriptsException;
+	String groupStoredProcedure(String spName, KeyValue[] parameters);
 }

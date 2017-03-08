@@ -22,7 +22,7 @@ public class SqlScripts implements ISqlScripts {
 	}
 
 	@Override
-	public ISqlQuery getServerTimeScript() {
+	public ISqlQuery getServerTimeQuery() {
 		return new SqlQuery("SELECT GETDATE() 'NOW'");
 	}
 
@@ -37,12 +37,12 @@ public class SqlScripts implements ISqlScripts {
 	}
 
 	@Override
-	public String getNullValue() {
+	public String getNullSign() {
 		return "NULL";
 	}
 
 	@Override
-	public String getFieldValueCastType(DbFieldType dbFieldType) {
+	public String getCastTypeString(DbFieldType dbFieldType) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("%s");
 		if (dbFieldType != null) {
@@ -96,7 +96,7 @@ public class SqlScripts implements ISqlScripts {
 	}
 
 	@Override
-	public DbFieldType getDbFieldType(String dbType) {
+	public DbFieldType toDbFieldType(String dbType) {
 		if (dbType.equals("nvarchar") || dbType.equals("ntext")) {
 			return DbFieldType.ALPHANUMERIC;
 		} else if (dbType.equals("int") || dbType.equals("smallint")) {
@@ -122,7 +122,7 @@ public class SqlScripts implements ISqlScripts {
 	}
 
 	@Override
-	public String getSqlString(ConditionRelationship value) throws SqlScriptsException {
+	public String getSqlString(ConditionRelationship value) {
 		if (value == ConditionRelationship.AND) {
 			return "AND";
 		} else if (value == ConditionRelationship.OR) {
@@ -130,11 +130,11 @@ public class SqlScripts implements ISqlScripts {
 		} else if (value == ConditionRelationship.NONE) {
 			return this.getFieldBreakSign();
 		}
-		throw new SqlScriptsException(i18n.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
+		throw new RuntimeException(i18n.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
 	}
 
 	@Override
-	public String getSqlString(ConditionOperation value) throws SqlScriptsException {
+	public String getSqlString(ConditionOperation value) {
 		return this.getSqlString(value, null);
 	}
 
@@ -152,7 +152,7 @@ public class SqlScripts implements ISqlScripts {
 	}
 
 	@Override
-	public String getSqlString(ConditionOperation value, String opValue) throws SqlScriptsException {
+	public String getSqlString(ConditionOperation value, String opValue) {
 		opValue = this.checkSecurity(opValue);
 		if (value == ConditionOperation.CONTAIN) {
 			StringBuilder stringBuilder = new StringBuilder();
@@ -254,13 +254,13 @@ public class SqlScripts implements ISqlScripts {
 			stringBuilder.append("%s");
 			return stringBuilder.toString();
 		}
-		throw new SqlScriptsException(i18n.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
+		throw new RuntimeException(i18n.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
 	}
 
 	@Override
-	public String getSqlString(DbFieldType type, String value) throws SqlScriptsException {
+	public String getSqlString(DbFieldType type, String value) {
 		if (value == null) {
-			return this.getNullValue();
+			return this.getNullSign();
 		}
 		value = this.checkSecurity(value);
 		StringBuilder stringBuilder = new StringBuilder();
@@ -279,18 +279,17 @@ public class SqlScripts implements ISqlScripts {
 	}
 
 	@Override
-	public String getSqlString(SortType value) throws SqlScriptsException {
+	public String getSqlString(SortType value) {
 		if (value == SortType.ASCENDING) {
 			return "ASC";
 		} else if (value == SortType.DESCENDING) {
 			return "DESC";
 		}
-		throw new SqlScriptsException(i18n.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
+		throw new RuntimeException(i18n.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
 	}
 
 	@Override
-	public String groupSelectQuery(String partSelect, String table, String partWhere, String partOrder, int result)
-			throws SqlScriptsException {
+	public String groupSelectQuery(String partSelect, String table, String partWhere, String partOrder, int result) {
 		StringBuilder stringBuilder = new StringBuilder();
 		if (result >= 0) {
 			stringBuilder.append("SELECT");
@@ -325,7 +324,7 @@ public class SqlScripts implements ISqlScripts {
 	}
 
 	@Override
-	public String groupDeleteQuery(String table, String partWhere) throws SqlScriptsException {
+	public String groupDeleteScript(String table, String partWhere) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("DELETE");
 		stringBuilder.append(" ");
@@ -340,7 +339,7 @@ public class SqlScripts implements ISqlScripts {
 	}
 
 	@Override
-	public String groupUpdateQuery(String table, String partFieldValues, String partWhere) throws SqlScriptsException {
+	public String groupUpdateScript(String table, String partFieldValues, String partWhere) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("UPDATE");
 		stringBuilder.append(" ");
@@ -357,7 +356,7 @@ public class SqlScripts implements ISqlScripts {
 	}
 
 	@Override
-	public String groupInsertQuery(String table, String partFields, String partValues) throws SqlScriptsException {
+	public String groupInsertScript(String table, String partFields, String partValues) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("INSERT");
 		stringBuilder.append(" ");
@@ -378,7 +377,7 @@ public class SqlScripts implements ISqlScripts {
 	}
 
 	@Override
-	public String getBOPrimaryKeyQuery(String boCode) throws SqlScriptsException {
+	public String getPrimaryKeyQuery(String boCode) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("SELECT");
 		stringBuilder.append(" ");
@@ -403,7 +402,7 @@ public class SqlScripts implements ISqlScripts {
 	}
 
 	@Override
-	public String getUpdateBOPrimaryKeyScript(String boCode, int addValue) throws SqlScriptsException {
+	public String getUpdatePrimaryKeyScript(String boCode, int addValue) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("UPDATE");
 		stringBuilder.append(" ");
@@ -434,7 +433,7 @@ public class SqlScripts implements ISqlScripts {
 	}
 
 	@Override
-	public String groupMaxValueQuery(String field, String table, String partWhere) throws SqlScriptsException {
+	public String groupMaxValueQuery(String field, String table, String partWhere) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("SELECT");
 		stringBuilder.append(" ");
@@ -454,8 +453,8 @@ public class SqlScripts implements ISqlScripts {
 	}
 
 	@Override
-	public String getBOTransactionNotificationScript(String boCode, String type, int keyCount, String keyNames,
-			String keyValues) throws SqlScriptsException {
+	public String getTransactionNotificationQuery(String boCode, String type, int keyCount, String keyNames,
+			String keyValues) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("EXEC");
 		stringBuilder.append(" ");
@@ -486,7 +485,7 @@ public class SqlScripts implements ISqlScripts {
 	}
 
 	@Override
-	public String groupStoredProcedure(String spName, KeyValue[] parameters) throws SqlScriptsException {
+	public String groupStoredProcedure(String spName, KeyValue[] parameters) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("EXEC");
 		stringBuilder.append(" ");
@@ -516,7 +515,7 @@ public class SqlScripts implements ISqlScripts {
 	}
 
 	@Override
-	public String getBODefalutSeriesQuery(String boCode) throws SqlScriptsException {
+	public String getDefalutSeriesQuery(String boCode) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("SELECT");
 		stringBuilder.append(" ");
@@ -539,7 +538,7 @@ public class SqlScripts implements ISqlScripts {
 	}
 
 	@Override
-	public String getBOSeriesQuery(String boCode, int series) throws SqlScriptsException {
+	public String getSeriesKeyQuery(String boCode, int series) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("SELECT");
 		stringBuilder.append(" ");
@@ -583,7 +582,7 @@ public class SqlScripts implements ISqlScripts {
 	}
 
 	@Override
-	public String getUpdateBOSeriesKeyScript(String boCode, int series, int addValue) throws SqlScriptsException {
+	public String getUpdateSeriesKeyScript(String boCode, int series, int addValue) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("UPDATE");
 		stringBuilder.append(" ");

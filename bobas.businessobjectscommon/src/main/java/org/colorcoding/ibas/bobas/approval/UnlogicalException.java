@@ -8,9 +8,6 @@ package org.colorcoding.ibas.bobas.approval;
  */
 public class UnlogicalException extends ApprovalProcessException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 8552353432956770890L;
 
 	public UnlogicalException() {
