@@ -5,15 +5,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.Writer;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+
+import org.colorcoding.ibas.bobas.MyConfiguration;
 
 /**
  * 序列化对象
@@ -49,7 +48,8 @@ public abstract class Serializer implements ISerializer {
 
 	@Override
 	public void serialize(Object object, Writer writer, Class<?>... types) throws SerializationException {
-		this.serialize(object, writer, false, types);
+		boolean formatted = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_FORMATTED_OUTPUT, false);
+		this.serialize(object, writer, formatted, types);
 	}
 
 	/**
@@ -60,10 +60,10 @@ public abstract class Serializer implements ISerializer {
 	 * @return
 	 */
 	protected SchemaElement[] getSerializedElements(Class<?> type, boolean recursion) {
-		Map<String, SchemaElement> elements = new HashMap<>();
+		SchemaElements elements = new SchemaElements();
 		if (type.isPrimitive()) {
 			// 基本类型不做处理
-			return elements.values().toArray(new SchemaElement[] {});
+			return elements.toArray();
 		} else if (type.isInterface()) {
 			// 类型为接口时
 			if (recursion) {
@@ -73,9 +73,7 @@ public abstract class Serializer implements ISerializer {
 						// 基础类型不做处理
 						continue;
 					}
-					for (SchemaElement element : this.getSerializedElements(item, recursion)) {
-						elements.put(element.getName(), element);
-					}
+					elements.add(this.getSerializedElements(item, recursion));
 				}
 			}
 			for (Method method : type.getMethods()) {
@@ -84,7 +82,7 @@ public abstract class Serializer implements ISerializer {
 				}
 				String elementName = method.getName().replace("set", "");
 				Class<?> elementType = method.getParameterTypes()[0];
-				elements.put(elementName, new SchemaElement(elementName, elementType));
+				elements.add(new SchemaElement(elementName, elementType));
 			}
 		} else {
 			// 类型是类
@@ -92,13 +90,41 @@ public abstract class Serializer implements ISerializer {
 				// 递归，先获取基类
 				Class<?> superClass = type.getSuperclass();
 				if (superClass != null && !superClass.equals(Object.class)) {
-					for (SchemaElement element : this.getSerializedElements(superClass, recursion)) {
-						elements.put(element.getName(), element);
-					}
+					elements.add(this.getSerializedElements(superClass, recursion));
 				}
 			}
+			// 取被标记的字段
+			for (Field field : type.getDeclaredFields()) {
+				Class<?> elementType = field.getType();
+				String elementName = field.getName();
+				String wrapperName = null;
+				XmlElementWrapper xmlWrapper = field.getAnnotation(XmlElementWrapper.class);
+				if (xmlWrapper != null) {
+					// 首先判断是否为数组元素
+					wrapperName = xmlWrapper.name();
+				}
+				XmlElement xmlElement = field.getAnnotation(XmlElement.class);
+				if (xmlElement != null) {
+					if (!xmlElement.name().equals("##default")) {
+						elementName = xmlElement.name();
+					}
+					if (xmlElement.type() != null
+							&& !xmlElement.type().getName().startsWith(XmlElement.class.getName())) {
+						elementType = xmlElement.type();
+					}
+				} else {
+					continue;
+				}
+				if (elementName == null) {
+					continue;
+				}
+				if (elementType == null) {
+					continue;
+				}
+				elements.add(new SchemaElement(elementName, wrapperName, elementType));
+			}
 			// 取被标记的属性
-			for (Method method : type.getMethods()) {
+			for (Method method : type.getDeclaredMethods()) {
 				Class<?> elementType = method.getReturnType();
 				if (elementType == null && method.getParameterTypes().length == 1) {
 					// 没有返回类型时，取一个参数的设置类型
@@ -127,12 +153,37 @@ public abstract class Serializer implements ISerializer {
 				if (elementType == null) {
 					continue;
 				}
-				elements.put(elementName, new SchemaElement(elementName, wrapperName, elementType));
+				elements.add(new SchemaElement(elementName, wrapperName, elementType));
+			}
+			elements.sort(null);
+		}
+		return elements.toArray();
+	}
+
+	private class SchemaElements extends ArrayList<SchemaElement> {
+		private static final long serialVersionUID = 5525571009797394981L;
+
+		public void add(SchemaElement[] items) {
+			for (SchemaElement schemaElement : items) {
+				this.add(schemaElement);
 			}
 		}
-		List<SchemaElement> values = new ArrayList<>(elements.values());
-		Collections.sort(values);
-		return values.toArray(new SchemaElement[] {});
+
+		@Override
+		public boolean add(SchemaElement e) {
+			for (int i = 0; i < this.size(); i++) {
+				SchemaElement item = this.get(i);
+				if (item.getName().equals(e.getName())) {
+					this.set(i, e);
+					return true;
+				}
+			}
+			return super.add(e);
+		}
+
+		public SchemaElement[] toArray() {
+			return this.toArray(new SchemaElement[] {});
+		}
 	}
 
 	protected class SchemaElement implements Comparable<SchemaElement> {
@@ -183,7 +234,14 @@ public abstract class Serializer implements ISerializer {
 
 		@Override
 		public int compareTo(SchemaElement o) {
-			return this.getName().compareTo(o.getName());
+			if (Character.isUpperCase(o.getName().charAt(0)) == Character.isUpperCase(this.getName().charAt(0))) {
+				return this.getName().compareTo(o.getName());
+			} else {
+				if (Character.isUpperCase(o.getName().charAt(0))) {
+					return -1;
+				}
+				return 1;
+			}
 		}
 
 	}

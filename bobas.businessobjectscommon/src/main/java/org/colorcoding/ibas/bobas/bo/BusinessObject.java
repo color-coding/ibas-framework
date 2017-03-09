@@ -145,7 +145,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	public String toString(String type) {
 		ISerializer serializer = SerializerFactory.create().createManager().create(type);
 		StringWriter writer = new StringWriter();
-		serializer.serialize(this, writer, false);
+		serializer.serialize(this, writer);
 		return writer.toString();
 	}
 

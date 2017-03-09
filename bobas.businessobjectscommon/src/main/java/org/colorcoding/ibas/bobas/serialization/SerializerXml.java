@@ -20,6 +20,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
@@ -154,7 +155,10 @@ public class SerializerXml extends Serializer {
 			transformer.setOutputProperty(OutputKeys.METHOD, "xml");
 			transformer.setOutputProperty(OutputKeys.ENCODING, XML_FILE_ENCODING);
 			transformer.setOutputProperty(OutputKeys.INDENT, XML_FILE_INDENT);
-			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+			boolean formatted = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_FORMATTED_OUTPUT, false);
+			if (formatted) {
+				transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+			}
 			StreamResult result = new StreamResult(writer);
 			transformer.transform(source, result);
 		} catch (ParserConfigurationException | TransformerException e) {
@@ -163,17 +167,21 @@ public class SerializerXml extends Serializer {
 	}
 
 	protected void createSchemaElement(Document document, Class<?> type) {
-		Element element = this.createSchemaElement(document, type, type.getSimpleName());
+		Element element = this.createSchemaElement(document, type, type.getSimpleName(), true);
 		document.getDocumentElement().appendChild(element);
 	}
 
-	protected Element createSchemaElement(Document document, Class<?> type, String name) {
+	protected Element createSchemaElement(Document document, Class<?> type, String name, boolean isRoot) {
 		Element element = document.createElement("xs:element");
 		element.setAttribute("name", name);
 		// 获取元素类型
 		if (this.getKnownTyps().containsKey(type.getName())) {
 			// 已知类型
 			// type="xs:string"
+			if (!isRoot) {
+				element.setAttribute("minOccurs", "0");
+				element.setAttribute("nillable", "true");
+			}
 			element.setAttribute("type", this.getKnownTyps().get(type.getName()));
 		} else if (type.isEnum()) {
 			// 枚举类型
@@ -184,6 +192,10 @@ public class SerializerXml extends Serializer {
 			// <xs:enumeration value="BMW"/>
 			// </xs:restriction>
 			// </xs:simpleType>
+			if (!isRoot) {
+				element.setAttribute("minOccurs", "0");
+				element.setAttribute("nillable", "true");
+			}
 			Element elementType = document.createElement("xs:simpleType");
 			Element elementRestriction = document.createElement("xs:restriction");
 			elementRestriction.setAttribute("base", "xs:string");
@@ -199,15 +211,20 @@ public class SerializerXml extends Serializer {
 			elementType.appendChild(elementRestriction);
 			element.appendChild(elementType);
 		} else if (type.isArray() || Collection.class.isAssignableFrom(type)) {
+			if (!isRoot) {
+				element.setAttribute("minOccurs", "0");
+				// element.setAttribute("maxOccurs", "unbounded");
+			}
 			Element elementType = document.createElement("xs:complexType");
-			Element elementSequence = document.createElement("xs:sequence");
+			Element elementSequence = document.createElement("xs:all");
 			String itemName = type.getName();
 			if (itemName.endsWith("s")) {
 				// 此处获取子项
 				itemName = itemName.substring(0, itemName.length() - 1);
 				try {
 					Class<?> itemType = Class.forName(itemName);
-					elementSequence.appendChild(this.createSchemaElement(document, itemType, itemType.getSimpleName()));
+					elementSequence
+							.appendChild(this.createSchemaElement(document, itemType, itemType.getSimpleName(), false));
 				} catch (ClassNotFoundException e) {
 					throw new SerializationException(e);
 				}
@@ -221,20 +238,28 @@ public class SerializerXml extends Serializer {
 			// <xs:element />
 			// </xs:sequence>
 			// </xs:complexType>
+			if (!isRoot) {
+				element.setAttribute("minOccurs", "0");
+				// element.setAttribute("maxOccurs", "unbounded");
+			}
 			Element elementType = document.createElement("xs:complexType");
-			Element elementSequence = document.createElement("xs:sequence");
+			Element elementSequence = document.createElement("xs:all");
 			for (SchemaElement item : this.getSerializedElements(type, true)) {
 				if (item.getWrapper() != null && !item.getWrapper().isEmpty()) {
 					Element itemElement = document.createElement("xs:element");
 					itemElement.setAttribute("name", item.getWrapper());
+					itemElement.setAttribute("minOccurs", "0");
+					// itemElement.setAttribute("maxOccurs", "unbounded");
 					Element itemElementType = document.createElement("xs:complexType");
-					Element itemElementSequence = document.createElement("xs:sequence");
-					itemElementSequence.appendChild(this.createSchemaElement(document, item.getType(), item.getName()));
+					Element itemElementSequence = document.createElement("xs:all");
+					itemElementSequence
+							.appendChild(this.createSchemaElement(document, item.getType(), item.getName(), false));
 					itemElementType.appendChild(itemElementSequence);
 					itemElement.appendChild(itemElementType);
 					elementSequence.appendChild(itemElement);
 				} else {
-					elementSequence.appendChild(this.createSchemaElement(document, item.getType(), item.getName()));
+					elementSequence
+							.appendChild(this.createSchemaElement(document, item.getType(), item.getName(), false));
 				}
 			}
 			elementType.appendChild(elementSequence);
@@ -248,6 +273,11 @@ public class SerializerXml extends Serializer {
 	public Map<String, String> getKnownTyps() {
 		if (this.knownTypes == null) {
 			this.knownTypes = new HashMap<>();
+			this.knownTypes.put("integer", "xs:integer");
+			this.knownTypes.put("short", "xs:integer");
+			this.knownTypes.put("boolean", "xs:boolean");
+			this.knownTypes.put("float", "xs:decimal");
+			this.knownTypes.put("double", "xs:decimal");
 			this.knownTypes.put("java.lang.Integer", "xs:integer");
 			this.knownTypes.put("java.lang.String", "xs:string");
 			this.knownTypes.put("java.lang.Short", "xs:integer");
@@ -256,9 +286,9 @@ public class SerializerXml extends Serializer {
 			this.knownTypes.put("java.lang.Double", "xs:decimal");
 			this.knownTypes.put("java.lang.Character", "xs:string");
 			this.knownTypes.put("java.math.BigDecimal", "xs:decimal");
-			this.knownTypes.put("java.util.Date", "xs:date");
+			this.knownTypes.put("java.util.Date", "xs:dateTime");
 			this.knownTypes.put("org.colorcoding.ibas.bobas.data.Decimal", "xs:decimal");
-			this.knownTypes.put("org.colorcoding.ibas.bobas.data.DateTime", "xs:date");
+			this.knownTypes.put("org.colorcoding.ibas.bobas.data.DateTime", "xs:dateTime");
 		}
 		return this.knownTypes;
 	}
