@@ -1,6 +1,5 @@
 package org.colorcoding.ibas.bobas.test.bo;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Date;
@@ -8,15 +7,10 @@ import java.util.Date;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
 
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
-import org.colorcoding.ibas.bobas.bo.BusinessObjects;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.OperationResult;
-import org.colorcoding.ibas.bobas.configuration.Configuration;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
@@ -471,29 +465,24 @@ public class testBusinessObjects extends TestCase {
 	}
 
 	public void testXMLSchema() throws JAXBException, IOException {
-		JAXBContext context = JAXBContext.newInstance(SalesOrder.class, BusinessObject.class, BusinessObjects.class);
-		// generate the schema
-		context.generateSchema(
-				// need to define a SchemaOutputResolver to store to
-				new SchemaOutputResolver() {
-					private File file;
-
-					@Override
-					public Result createOutput(String ns, String fileName) throws IOException {
-						try {
-							file = new File(Configuration.getStartupFolder() + fileName);
-							if (!file.exists()) {
-								file.createNewFile();
-							}
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						return new StreamResult(file);
-					}
-				});
+		/*
+		 * JAXBContext context = JAXBContext.newInstance(SalesOrder.class,
+		 * BusinessObject.class, BusinessObjects.class); // generate the schema
+		 * context.generateSchema( // need to define a SchemaOutputResolver to
+		 * store to new SchemaOutputResolver() { private File file;
+		 * 
+		 * @Override public Result createOutput(String ns, String fileName)
+		 * throws IOException { try { file = new
+		 * File(Configuration.getStartupFolder() + fileName); if
+		 * (!file.exists()) { file.createNewFile(); } } catch (IOException e) {
+		 * e.printStackTrace(); } return new StreamResult(file); } });
+		 */
 		ISerializer serializer = new SerializerXml();
 		StringWriter writer = new StringWriter();
 		serializer.schema(SalesOrder.class, writer);
+		System.out.println(writer.toString());
+		writer = new StringWriter();
+		serializer.schema(ISalesOrder.class, writer);
 		System.out.println(writer.toString());
 	}
 }

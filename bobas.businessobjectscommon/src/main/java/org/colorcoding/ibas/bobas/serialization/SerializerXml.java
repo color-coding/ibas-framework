@@ -4,6 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -142,9 +145,7 @@ public class SerializerXml extends Serializer {
 			DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			DOMImplementation domImpl = db.getDOMImplementation();
 			Document document = domImpl.createDocument("http://www.w3.org/2001/XMLSchema", "xs:schema", null);
-			Element root = document.getDocumentElement();
-			Element element = document.createElement("xs:element");
-			root.appendChild(element);
+			this.createSchemaElement(document, type);
 
 			// 将xml写到文件中
 			javax.xml.transform.Transformer transformer = TransformerFactory.newInstance().newTransformer();
@@ -159,6 +160,107 @@ public class SerializerXml extends Serializer {
 		} catch (ParserConfigurationException | TransformerException e) {
 			throw new SerializationException(e);
 		}
+	}
+
+	protected void createSchemaElement(Document document, Class<?> type) {
+		Element element = this.createSchemaElement(document, type, type.getSimpleName());
+		document.getDocumentElement().appendChild(element);
+	}
+
+	protected Element createSchemaElement(Document document, Class<?> type, String name) {
+		Element element = document.createElement("xs:element");
+		element.setAttribute("name", name);
+		// 获取元素类型
+		if (this.getKnownTyps().containsKey(type.getName())) {
+			// 已知类型
+			// type="xs:string"
+			element.setAttribute("type", this.getKnownTyps().get(type.getName()));
+		} else if (type.isEnum()) {
+			// 枚举类型
+			// <xs:simpleType>
+			// <xs:restriction base="xs:string">
+			// <xs:enumeration value="Audi"/>
+			// <xs:enumeration value="Golf"/>
+			// <xs:enumeration value="BMW"/>
+			// </xs:restriction>
+			// </xs:simpleType>
+			Element elementType = document.createElement("xs:simpleType");
+			Element elementRestriction = document.createElement("xs:restriction");
+			elementRestriction.setAttribute("base", "xs:string");
+			for (Object enumItem : type.getEnumConstants()) {
+				if (enumItem instanceof Enum<?>) {
+					// 枚举值（比对枚举索引）
+					Enum<?> itemValue = (Enum<?>) enumItem;
+					Element elementEnumeration = document.createElement("xs:enumeration");
+					elementEnumeration.setAttribute("value", itemValue.name());
+					elementRestriction.appendChild(elementEnumeration);
+				}
+			}
+			elementType.appendChild(elementRestriction);
+			element.appendChild(elementType);
+		} else if (type.isArray() || Collection.class.isAssignableFrom(type)) {
+			Element elementType = document.createElement("xs:complexType");
+			Element elementSequence = document.createElement("xs:sequence");
+			String itemName = type.getName();
+			if (itemName.endsWith("s")) {
+				// 此处获取子项
+				itemName = itemName.substring(0, itemName.length() - 1);
+				try {
+					Class<?> itemType = Class.forName(itemName);
+					elementSequence.appendChild(this.createSchemaElement(document, itemType, itemType.getSimpleName()));
+				} catch (ClassNotFoundException e) {
+					throw new SerializationException(e);
+				}
+			}
+			elementType.appendChild(elementSequence);
+			element.appendChild(elementType);
+		} else {
+			// 未处理的类型，可能为类，继续处理
+			// <xs:complexType>
+			// <xs:sequence>
+			// <xs:element />
+			// </xs:sequence>
+			// </xs:complexType>
+			Element elementType = document.createElement("xs:complexType");
+			Element elementSequence = document.createElement("xs:sequence");
+			for (SchemaElement item : this.getSerializedElements(type, true)) {
+				if (item.getWrapper() != null && !item.getWrapper().isEmpty()) {
+					Element itemElement = document.createElement("xs:element");
+					itemElement.setAttribute("name", item.getWrapper());
+					Element itemElementType = document.createElement("xs:complexType");
+					Element itemElementSequence = document.createElement("xs:sequence");
+					itemElementSequence.appendChild(this.createSchemaElement(document, item.getType(), item.getName()));
+					itemElementType.appendChild(itemElementSequence);
+					itemElement.appendChild(itemElementType);
+					elementSequence.appendChild(itemElement);
+				} else {
+					elementSequence.appendChild(this.createSchemaElement(document, item.getType(), item.getName()));
+				}
+			}
+			elementType.appendChild(elementSequence);
+			element.appendChild(elementType);
+		}
+		return element;
+	}
+
+	private Map<String, String> knownTypes;
+
+	public Map<String, String> getKnownTyps() {
+		if (this.knownTypes == null) {
+			this.knownTypes = new HashMap<>();
+			this.knownTypes.put("java.lang.Integer", "xs:integer");
+			this.knownTypes.put("java.lang.String", "xs:string");
+			this.knownTypes.put("java.lang.Short", "xs:integer");
+			this.knownTypes.put("java.lang.Boolean", "xs:boolean");
+			this.knownTypes.put("java.lang.Float", "xs:decimal");
+			this.knownTypes.put("java.lang.Double", "xs:decimal");
+			this.knownTypes.put("java.lang.Character", "xs:string");
+			this.knownTypes.put("java.math.BigDecimal", "xs:decimal");
+			this.knownTypes.put("java.util.Date", "xs:date");
+			this.knownTypes.put("org.colorcoding.ibas.bobas.data.Decimal", "xs:decimal");
+			this.knownTypes.put("org.colorcoding.ibas.bobas.data.DateTime", "xs:date");
+		}
+		return this.knownTypes;
 	}
 
 }
