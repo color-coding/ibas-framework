@@ -1,20 +1,11 @@
 package org.colorcoding.ibas.bobas.test.bo;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Date;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
@@ -31,8 +22,6 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.ISerializerManager;
 import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
-import org.colorcoding.ibas.bobas.serialization.SerializerXml;
-import org.xml.sax.SAXException;
 
 import junit.framework.TestCase;
 
@@ -222,22 +211,6 @@ public class testBusinessObjects extends TestCase {
 		assertEquals("Property [ItemCode] faild. ", orderItem.getItemCode(), "A00002");
 		assertEquals("Property [Quantity] faild. ", orderItem.getQuantity().toString(), "10");
 
-	}
-
-	public void testSerializer() {
-		ISerializerManager manager = SerializerFactory.create().createManager();
-		ISerializer serializer = manager.create("xml");
-		Materials materials = new Materials();
-		materials.setCreateDate(DateTime.getToday());
-		System.out.println(materials.toString("xml"));
-		String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Materials><ItemCode>A0003</ItemCode><ItemDescription>A0003</ItemDescription><CreateDate>2099-11-11</CreateDate><OnHand>999.99</OnHand></Materials>";
-
-		IBusinessObject bo = serializer.deserialize(xml, Materials.class);
-		System.out.println(bo.toString("xml"));
-		bo = serializer.deserialize(xml.replace("2099-11-11", "2099/11/12"), Materials.class);
-		System.out.println(bo.toString("xml"));
-		bo = serializer.deserialize(xml.replace("2099-11-11", "2099/1/2"), Materials.class);
-		System.out.println(bo.toString("xml"));
 	}
 
 	public void testStatusChanged() {
@@ -471,75 +444,5 @@ public class testBusinessObjects extends TestCase {
 				+ (run.totalMemory() - run.freeMemory()));
 		System.out.println("memory clear:" + (endMem - clearedMem));
 		Thread.sleep(10000000);
-	}
-
-	public void testXmlSchema() throws JAXBException, IOException, SAXException {
-		/*
-		 * JAXBContext context = JAXBContext.newInstance(SalesOrder.class,
-		 * BusinessObject.class, BusinessObjects.class); // generate the schema
-		 * context.generateSchema( // need to define a SchemaOutputResolver to
-		 * store to new SchemaOutputResolver() { private File file;
-		 * 
-		 * @Override public Result createOutput(String ns, String fileName)
-		 * throws IOException { try { file = new
-		 * File(Configuration.getStartupFolder() + fileName); if
-		 * (!file.exists()) { file.createNewFile(); } } catch (IOException e) {
-		 * e.printStackTrace(); } return new StreamResult(file); } });
-		 */
-		ISerializer serializer = new SerializerXml();
-		StringWriter writer = new StringWriter();
-		serializer.schema(SalesOrder.class, writer);
-		System.out.println(writer.toString());
-		// 测试接口生成schema
-		// writer = new StringWriter();
-		// serializer.schema(ISalesOrder.class, writer);
-		// System.out.println(writer.toString());
-		// schema校验
-		SalesOrder order = new SalesOrder();
-		order.setDocEntry(1);
-		order.setCustomerCode("C00001");
-		order.setDeliveryDate(DateTime.getToday());
-		order.setDocumentStatus(emDocumentStatus.RELEASED);
-		order.setDocumentTotal(new Decimal("99.99"));
-		order.setDocumentUser(new User());
-		order.setTeamUsers(new User[] { new User(), new User() });
-		order.setCycle(new Time(1.05, emTimeUnit.HOUR));
-		// order.getCycle().setValue(0.9988);
-		// order.getUserFields().addUserField("U_OrderType",
-		// DbFieldType.ALPHANUMERIC);
-		// order.getUserFields().addUserField("U_OrderId", DbFieldType.NUMERIC);
-		// order.getUserFields().addUserField("U_OrderDate", DbFieldType.DATE);
-		// order.getUserFields().addUserField("U_OrderTotal",
-		// DbFieldType.DECIMAL);
-		// order.getUserFields().setValue("U_OrderType", "S0000");
-		// order.getUserFields().setValue("U_OrderId", 5768);
-		// order.getUserFields().setValue("U_OrderDate", DateTime.getToday());
-		// order.getUserFields().setValue("U_OrderTotal", new
-		// Decimal("999.888"));
-		ISalesOrderItem orderItem = order.getSalesOrderItems().create();
-		orderItem.setItemCode("A00001");
-		orderItem.setQuantity(new Decimal(10));
-		orderItem.setPrice(new Decimal(99.99));
-		orderItem = order.getSalesOrderItems().create();
-		orderItem.setItemCode("A00002");
-		orderItem.setQuantity(10);
-		orderItem.setPrice(199.99);
-
-		System.out.println(order.toString("xml"));
-		SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-		// 包装待验证的xml字符串为Reader
-		Reader xmlReader = new BufferedReader(new StringReader(order.toString("xml")));
-		// 保障Schema xsd字符串为Reader
-		Reader xsdReader = new BufferedReader(new StringReader(writer.toString()));
-		Source xsdSource = new StreamSource(xsdReader);
-		// 解析作为Schema的指定源并以Schema形式返回它
-		Schema schema = factory.newSchema(xsdSource);
-		// 根据Schema检查xml文档的处理器,创建此 Schema的新 Validator
-		Validator validator = schema.newValidator();
-		// 构造待验证xml Source
-		Source xmlSource = new StreamSource(xmlReader);
-		// 执行验证
-		validator.validate(xmlSource);
-
 	}
 }

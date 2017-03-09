@@ -1,7 +1,10 @@
 package org.colorcoding.ibas.bobas.serialization;
 
 import java.io.File;
+import java.io.Reader;
 import java.io.Writer;
+
+import org.xml.sax.SAXException;
 
 /**
  * 序列化者
@@ -49,6 +52,20 @@ public interface ISerializer {
 	<T> T deserialize(File file, Class<T> type, Class<?>... types) throws SerializationException;
 
 	/**
+	 * 反序列化
+	 * 
+	 * @param inputStream
+	 *            数据
+	 * @param type
+	 *            目标类型
+	 * @param types
+	 *            已知类型
+	 * @return 新对象实例
+	 * @throws SerializationException
+	 */
+	<T> T deserialize(java.io.InputStream inputStream, Class<T> type, Class<?>... types) throws SerializationException;
+
+	/**
 	 * 序列化
 	 * 
 	 * @param object
@@ -85,5 +102,39 @@ public interface ISerializer {
 	 *            输出目标
 	 * @throws SerializationException
 	 */
-	void schema(Class<?> type, Writer writer) throws SerializationException;
+	void getSchema(Class<?> type, Writer writer) throws SerializationException;
+
+	/**
+	 * 验证数据
+	 * 
+	 * @param type
+	 *            目标类型
+	 * @param data
+	 *            数据
+	 * @throws SAXException
+	 */
+	void validate(Class<?> type, String data) throws ValidateException;
+
+	/**
+	 * 验证数据
+	 * 
+	 * @param type
+	 *            目标类型
+	 * @param file
+	 *            数据
+	 * @throws SAXException
+	 */
+	void validate(Class<?> type, File file) throws ValidateException;
+
+	/**
+	 * 验证数据
+	 * 
+	 * @param type
+	 *            目标类型
+	 * @param reader
+	 *            数据
+	 * @throws SAXException
+	 */
+	void validate(Class<?> type, Reader reader) throws ValidateException;
+
 }

@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.test.bo;
 
+import java.util.Date;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -1393,4 +1395,14 @@ public class SalesOrder extends BusinessObject<SalesOrder> implements ISalesOrde
 		this.setDocNum((Integer) value);
 	}
 
+	private Date testDate = new Date();
+
+	@XmlElement(name = "TestDate")
+	public final Date getTestDate() {
+		return testDate;
+	}
+
+	public final void setTestDate(Date testDate) {
+		this.testDate = testDate;
+	}
 }

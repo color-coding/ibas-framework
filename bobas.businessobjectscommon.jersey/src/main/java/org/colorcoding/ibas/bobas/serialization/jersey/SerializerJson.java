@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +17,7 @@ import javax.xml.bind.Unmarshaller;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.serialization.SerializationException;
 import org.colorcoding.ibas.bobas.serialization.Serializer;
+import org.colorcoding.ibas.bobas.serialization.ValidateException;
 
 /**
  * 序列化，添加json处理
@@ -149,7 +151,12 @@ public class SerializerJson extends Serializer {
 	}
 
 	@Override
-	public void schema(Class<?> type, Writer writer) throws SerializationException {
+	public void getSchema(Class<?> type, Writer writer) throws SerializationException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void validate(Class<?> type, Reader reader) throws ValidateException {
 		throw new UnsupportedOperationException();
 	}
 

@@ -1,8 +1,12 @@
 package org.colorcoding.ibas.bobas.serialization;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,10 +19,15 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
@@ -141,7 +150,7 @@ public class SerializerXml extends Serializer {
 	public static final String XML_FILE_INDENT = "yes";
 
 	@Override
-	public void schema(Class<?> type, Writer writer) throws SerializationException {
+	public void getSchema(Class<?> type, Writer writer) throws SerializationException {
 		try {
 			DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			DOMImplementation domImpl = db.getDOMImplementation();
@@ -213,10 +222,10 @@ public class SerializerXml extends Serializer {
 		} else if (type.isArray() || Collection.class.isAssignableFrom(type)) {
 			if (!isRoot) {
 				element.setAttribute("minOccurs", "0");
-				// element.setAttribute("maxOccurs", "unbounded");
+				element.setAttribute("maxOccurs", "unbounded");
 			}
 			Element elementType = document.createElement("xs:complexType");
-			Element elementSequence = document.createElement("xs:all");
+			Element elementSequence = document.createElement("xs:sequence");
 			String itemName = type.getName();
 			if (itemName.endsWith("s")) {
 				// 此处获取子项
@@ -240,18 +249,18 @@ public class SerializerXml extends Serializer {
 			// </xs:complexType>
 			if (!isRoot) {
 				element.setAttribute("minOccurs", "0");
-				// element.setAttribute("maxOccurs", "unbounded");
+				element.setAttribute("maxOccurs", "unbounded");
 			}
 			Element elementType = document.createElement("xs:complexType");
-			Element elementSequence = document.createElement("xs:all");
+			Element elementSequence = document.createElement("xs:sequence");
 			for (SchemaElement item : this.getSerializedElements(type, true)) {
 				if (item.getWrapper() != null && !item.getWrapper().isEmpty()) {
 					Element itemElement = document.createElement("xs:element");
 					itemElement.setAttribute("name", item.getWrapper());
 					itemElement.setAttribute("minOccurs", "0");
-					// itemElement.setAttribute("maxOccurs", "unbounded");
+					itemElement.setAttribute("maxOccurs", "unbounded");
 					Element itemElementType = document.createElement("xs:complexType");
-					Element itemElementSequence = document.createElement("xs:all");
+					Element itemElementSequence = document.createElement("xs:sequence");
 					itemElementSequence
 							.appendChild(this.createSchemaElement(document, item.getType(), item.getName(), false));
 					itemElementType.appendChild(itemElementSequence);
@@ -288,9 +297,34 @@ public class SerializerXml extends Serializer {
 			this.knownTypes.put("java.math.BigDecimal", "xs:decimal");
 			this.knownTypes.put("java.util.Date", "xs:dateTime");
 			this.knownTypes.put("org.colorcoding.ibas.bobas.data.Decimal", "xs:decimal");
-			this.knownTypes.put("org.colorcoding.ibas.bobas.data.DateTime", "xs:dateTime");
+			this.knownTypes.put("org.colorcoding.ibas.bobas.data.DateTime", "xs:string");
 		}
 		return this.knownTypes;
+	}
+
+	@Override
+	public void validate(Class<?> type, Reader reader) throws ValidateException {
+		try {
+			Writer writer = new StringWriter();
+			this.getSchema(type, writer);
+			SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+			Reader xsdReader = new BufferedReader(new StringReader(writer.toString()));
+			Source xsdSource = new StreamSource(xsdReader);
+			Schema schema = factory.newSchema(xsdSource);
+			this.validate(schema, reader);
+		} catch (Exception e) {
+			throw new ValidateException(e);
+		}
+	}
+
+	public void validate(Schema schema, Reader reader) throws ValidateException {
+		try {
+			Validator validator = schema.newValidator();
+			Source xmlSource = new StreamSource(reader);
+			validator.validate(xmlSource);
+		} catch (Exception e) {
+			throw new ValidateException(e);
+		}
 	}
 
 }

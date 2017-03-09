@@ -1,13 +1,19 @@
 package org.colorcoding.ibas.bobas.serialization;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.Reader;
+import java.io.StringReader;
 import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -94,70 +100,81 @@ public abstract class Serializer implements ISerializer {
 				}
 			}
 			// 取被标记的字段
-			for (Field field : type.getDeclaredFields()) {
-				Class<?> elementType = field.getType();
-				String elementName = field.getName();
-				String wrapperName = null;
-				XmlElementWrapper xmlWrapper = field.getAnnotation(XmlElementWrapper.class);
-				if (xmlWrapper != null) {
-					// 首先判断是否为数组元素
-					wrapperName = xmlWrapper.name();
-				}
-				XmlElement xmlElement = field.getAnnotation(XmlElement.class);
-				if (xmlElement != null) {
-					if (!xmlElement.name().equals("##default")) {
-						elementName = xmlElement.name();
-					}
-					if (xmlElement.type() != null
-							&& !xmlElement.type().getName().startsWith(XmlElement.class.getName())) {
-						elementType = xmlElement.type();
-					}
-				} else {
-					continue;
-				}
-				if (elementName == null) {
-					continue;
-				}
-				if (elementType == null) {
-					continue;
-				}
-				elements.add(new SchemaElement(elementName, wrapperName, elementType));
-			}
+			elements.add(this.getSerializedElements(type.getDeclaredFields()));
 			// 取被标记的属性
-			for (Method method : type.getDeclaredMethods()) {
-				Class<?> elementType = method.getReturnType();
-				if (elementType == null && method.getParameterTypes().length == 1) {
-					// 没有返回类型时，取一个参数的设置类型
-					elementType = method.getParameterTypes()[0];
-				}
-				String elementName = null;
-				String wrapperName = null;
-				XmlElementWrapper xmlWrapper = method.getAnnotation(XmlElementWrapper.class);
-				if (xmlWrapper != null) {
-					// 首先判断是否为数组元素
-					wrapperName = xmlWrapper.name();
-				}
-				XmlElement xmlElement = method.getAnnotation(XmlElement.class);
-				if (xmlElement != null) {
-					if (elementName == null) {
-						elementName = xmlElement.name();
-					}
-					if (xmlElement.type() != null
-							&& !xmlElement.type().getName().startsWith(XmlElement.class.getName())) {
-						elementType = xmlElement.type();
-					}
-				}
-				if (elementName == null) {
-					continue;
-				}
-				if (elementType == null) {
-					continue;
-				}
-				elements.add(new SchemaElement(elementName, wrapperName, elementType));
-			}
-			elements.sort(null);
+			List<SchemaElement> tmps = this.getSerializedElements(type.getDeclaredMethods());
+			tmps.sort(null);// 排序
+			elements.add(tmps);
 		}
 		return elements.toArray();
+	}
+
+	private List<SchemaElement> getSerializedElements(Field[] fields) {
+		List<SchemaElement> elements = new ArrayList<>();
+		for (Field field : fields) {
+			Class<?> elementType = field.getType();
+			String elementName = field.getName();
+			String wrapperName = null;
+			XmlElementWrapper xmlWrapper = field.getAnnotation(XmlElementWrapper.class);
+			if (xmlWrapper != null) {
+				// 首先判断是否为数组元素
+				wrapperName = xmlWrapper.name();
+			}
+			XmlElement xmlElement = field.getAnnotation(XmlElement.class);
+			if (xmlElement != null) {
+				if (!xmlElement.name().equals("##default")) {
+					elementName = xmlElement.name();
+				}
+				if (xmlElement.type() != null && !xmlElement.type().getName().startsWith(XmlElement.class.getName())) {
+					elementType = xmlElement.type();
+				}
+			} else {
+				continue;
+			}
+			if (elementName == null) {
+				continue;
+			}
+			if (elementType == null) {
+				continue;
+			}
+			elements.add(new SchemaElement(elementName, wrapperName, elementType));
+		}
+		return elements;
+	}
+
+	private List<SchemaElement> getSerializedElements(Method[] methods) {
+		List<SchemaElement> elements = new ArrayList<>();
+		for (Method method : methods) {
+			Class<?> elementType = method.getReturnType();
+			if (elementType == null && method.getParameterTypes().length == 1) {
+				// 没有返回类型时，取一个参数的设置类型
+				elementType = method.getParameterTypes()[0];
+			}
+			String elementName = null;
+			String wrapperName = null;
+			XmlElementWrapper xmlWrapper = method.getAnnotation(XmlElementWrapper.class);
+			if (xmlWrapper != null) {
+				// 首先判断是否为数组元素
+				wrapperName = xmlWrapper.name();
+			}
+			XmlElement xmlElement = method.getAnnotation(XmlElement.class);
+			if (xmlElement != null) {
+				if (elementName == null) {
+					elementName = xmlElement.name();
+				}
+				if (xmlElement.type() != null && !xmlElement.type().getName().startsWith(XmlElement.class.getName())) {
+					elementType = xmlElement.type();
+				}
+			}
+			if (elementName == null) {
+				continue;
+			}
+			if (elementType == null) {
+				continue;
+			}
+			elements.add(new SchemaElement(elementName, wrapperName, elementType));
+		}
+		return elements;
 	}
 
 	private class SchemaElements extends ArrayList<SchemaElement> {
@@ -169,13 +186,18 @@ public abstract class Serializer implements ISerializer {
 			}
 		}
 
+		public void add(Collection<SchemaElement> items) {
+			for (SchemaElement schemaElement : items) {
+				this.add(schemaElement);
+			}
+		}
+
 		@Override
 		public boolean add(SchemaElement e) {
 			for (int i = 0; i < this.size(); i++) {
 				SchemaElement item = this.get(i);
 				if (item.getName().equals(e.getName())) {
-					this.set(i, e);
-					return true;
+					this.remove(i);
 				}
 			}
 			return super.add(e);
@@ -233,11 +255,19 @@ public abstract class Serializer implements ISerializer {
 		}
 
 		@Override
-		public int compareTo(SchemaElement o) {
-			if (Character.isUpperCase(o.getName().charAt(0)) == Character.isUpperCase(this.getName().charAt(0))) {
-				return this.getName().compareTo(o.getName());
+		public int compareTo(SchemaElement target) {
+			String sName = this.getWrapper();
+			if (sName == null || sName.isEmpty()) {
+				sName = this.getName();
+			}
+			String tName = target.getWrapper();
+			if (tName == null || tName.isEmpty()) {
+				tName = target.getName();
+			}
+			if (Character.isUpperCase(tName.charAt(0)) == Character.isUpperCase(sName.charAt(0))) {
+				return sName.compareTo(tName);
 			} else {
-				if (Character.isUpperCase(o.getName().charAt(0))) {
+				if (Character.isUpperCase(tName.charAt(0))) {
 					return -1;
 				}
 				return 1;
@@ -245,4 +275,20 @@ public abstract class Serializer implements ISerializer {
 		}
 
 	}
+
+	@Override
+	public void validate(Class<?> type, String data) throws ValidateException {
+		this.validate(type, new BufferedReader(new StringReader(data)));
+	}
+
+	@Override
+	public void validate(Class<?> type, File file) throws ValidateException {
+		try {
+			this.validate(type, new FileReader(file));
+		} catch (FileNotFoundException e) {
+			throw new ValidateException(e);
+		}
+	}
+
+	public abstract void validate(Class<?> type, Reader reader) throws ValidateException;
 }
