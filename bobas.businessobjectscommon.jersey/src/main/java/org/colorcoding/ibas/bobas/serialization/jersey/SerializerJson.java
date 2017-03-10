@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +19,13 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.serialization.SerializationException;
 import org.colorcoding.ibas.bobas.serialization.Serializer;
 import org.colorcoding.ibas.bobas.serialization.ValidateException;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.github.fge.jackson.JsonLoader;
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.github.fge.jsonschema.core.report.ProcessingReport;
+import com.github.fge.jsonschema.main.JsonSchema;
+import com.github.fge.jsonschema.main.JsonSchemaFactory;
 
 /**
  * 序列化，添加json处理
@@ -157,7 +165,23 @@ public class SerializerJson extends Serializer {
 
 	@Override
 	public void validate(Class<?> type, Reader reader) throws ValidateException {
-		throw new UnsupportedOperationException();
+		try {
+			StringWriter writer = new StringWriter();
+			this.getSchema(type, writer);
+			JsonNode jsonSchema = JsonLoader.fromString(writer.toString());
+			JsonSchema schema = JsonSchemaFactory.byDefault().getJsonSchema(jsonSchema);
+			JsonNode jsonData = JsonLoader.fromReader(reader);
+			ProcessingReport report = schema.validate(jsonData);
+			if (!report.isSuccess()) {
+				throw new ValidateException(report.toString());
+			}
+		} catch (IOException e) {
+			throw new ValidateException(e);
+		} catch (ValidateException e) {
+			throw e;
+		} catch (ProcessingException e) {
+			throw new ValidateException(e);
+		}
 	}
 
 }

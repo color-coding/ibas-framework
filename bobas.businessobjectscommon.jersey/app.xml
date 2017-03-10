@@ -6,5 +6,7 @@
 		<add key="DebugMode" value="true" />
 		<!--配置项目-序列化管理方式-->
 		<add key="SerializationWay" value="jersey" />
+		<!--配置项目-是否格式化输出-->
+		<add key="FormattedOutput" value="true"  />
 	</appSettings>
 </ns2:configuration>

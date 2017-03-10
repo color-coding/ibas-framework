@@ -251,13 +251,17 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 								Permission permission = method.getAnnotation(Permission.class);
 								if (permission != null) {
 									if (permission.defaultValue() == PermissionValue.UNAVAILABLE) {
-										throw new UnauthorizedException();
+										throw new UnauthorizedException(
+												i18n.prop("msg_bobas_not_authorized_method", name));
 									}
 								}
 							}
 						}
 					}
 				}
+			} catch (UnauthorizedException e) {
+				RuntimeLog.log(RuntimeLog.MSG_PERMISSIONS_NOT_AUTHORIZED, this.getCurrentUser(), type.getName(), name);
+				throw e;
 			} catch (Exception e) {
 				RuntimeLog.log(RuntimeLog.MSG_PERMISSIONS_NOT_AUTHORIZED, this.getCurrentUser(), type.getName(), name);
 				throw new UnauthorizedException(i18n.prop("msg_bobas_not_authorized_method", name));

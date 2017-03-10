@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.serialization.jersey.test;
 
+import java.io.IOException;
 import java.io.StringWriter;
 
 import javax.xml.bind.JAXBException;
@@ -19,21 +20,22 @@ import org.colorcoding.ibas.bobas.test.bo.ISalesOrderItem;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 import org.colorcoding.ibas.bobas.test.bo.User;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+
 import junit.framework.TestCase;
 
 public class testBusinessObject extends TestCase {
 
-	public void testJSON() throws JAXBException {
-
+	public void testJson() throws JAXBException {
 		SalesOrder order = new SalesOrder();
-
 		order.setDocEntry(1);
 		order.setCustomerCode("C00001");
 		order.setDeliveryDate(DateTime.getToday());
 		order.setDocumentStatus(emDocumentStatus.RELEASED);
 		order.setDocumentTotal(new Decimal("99.99"));
 		order.setDocumentUser(new User());
-		order.setTeamUsers(new User[] { new User(), new User() });
+		// order.setTeamUsers(new User[] { new User(), new User() });
 		order.setCycle(new Time(1.05, emTimeUnit.HOUR));
 		order.getCycle().setValue(0.9988);
 
@@ -41,6 +43,8 @@ public class testBusinessObject extends TestCase {
 		order.getUserFields().addUserField("U_OrderId", DbFieldType.NUMERIC);
 		order.getUserFields().addUserField("U_OrderDate", DbFieldType.DATE);
 		order.getUserFields().addUserField("U_OrderTotal", DbFieldType.DECIMAL);
+		// 注册自定义字段
+		order.getUserFields().register();
 
 		order.getUserFields().setValue("U_OrderType", "S0000");
 		order.getUserFields().setValue("U_OrderId", 5768);
@@ -59,7 +63,11 @@ public class testBusinessObject extends TestCase {
 		String json = order.toString("json");
 		System.out.println(json);
 		ISerializer serializer = new SerializerJson();
-		serializer.deserialize(json, order.getClass());
+		order = serializer.deserialize(json, order.getClass());
+		String jsonNew = order.toString("json");
+		System.out.println(jsonNew);
+		// 此处会报错，因为自定义字段
+		assertEquals(json, jsonNew);
 	}
 
 	public void testSerializStatus() {
@@ -94,4 +102,21 @@ public class testBusinessObject extends TestCase {
 		System.out.println(writer.toString());
 	}
 
+	public void testCreator() throws IOException {
+		JsonFactory jsonFactory = new JsonFactory();
+		StringWriter writer = new StringWriter();
+		JsonGenerator jsonGenerator = jsonFactory.createGenerator(writer);
+		jsonGenerator.writeStartObject();
+		jsonGenerator.writeNumberField("ANumberFiledKey", 123456);
+		jsonGenerator.writeArrayFieldStart("AArraryFiledKey");
+		jsonGenerator.writeEndArray();
+		jsonGenerator.writeEndObject();
+		jsonGenerator.flush();
+		jsonGenerator.close();
+		System.out.println(writer.toString());
+	}
+
+	public void testJsonSchema() {
+
+	}
 }

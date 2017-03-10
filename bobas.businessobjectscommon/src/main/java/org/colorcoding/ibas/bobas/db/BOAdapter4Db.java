@@ -149,7 +149,6 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	@Override
 	public ISqlQuery getServerTimeQuery() throws BOParsingException {
 		try {
-
 			ISqlScripts sqlScripts = this.getSqlScripts();
 			if (sqlScripts == null) {
 				throw new SqlScriptsException(i18n.prop("msg_bobas_invaild_sql_scripts"));
@@ -261,7 +260,9 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				}
 			}
 			return new SqlQuery(stringBuilder.toString());
-		} catch (Exception e) {
+		} catch (BOParsingException e) {
+			throw e;
+		} catch (SqlScriptsException e) {
 			throw new BOParsingException(e);
 		}
 	}
@@ -276,7 +277,6 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	 */
 	protected ISqlQuery parseSqlQuery(ISorts sorts) throws BOParsingException {
 		try {
-
 			if (sorts == null) {
 				return null;
 			}
@@ -373,7 +373,6 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	@Override
 	public ISqlQuery parseSqlQuery(ICriteria criteria, Class<?> boType) throws BOParsingException {
 		try {
-
 			// select top 100 * from "OUSR" where "Supper" = 'Y' order by "Code"
 			// select * from "OUSR" where "Supper" = 'Y' order by "Code LIMIT
 			// 100 "
@@ -452,7 +451,9 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			String order = this.parseSqlQuery(criteria.getSorts()).getQueryString();
 			String where = this.parseSqlQuery(criteria.getConditions()).getQueryString();
 			return new SqlQuery(sqlScripts.groupSelectQuery("*", table, where, order, result));
-		} catch (Exception e) {
+		} catch (BOParsingException e) {
+			throw e;
+		} catch (SqlScriptsException e) {
 			throw new BOParsingException(e);
 		}
 	}
@@ -500,8 +501,11 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				// 没有字段值
 				throw new BOParsingException(i18n.prop("msg_bobas_not_allow_sql_scripts"));
 			}
-			return new SqlQuery(sqlScripts.groupInsertScript(table, fieldsBuilder.toString(), valuesBuilder.toString()));
-		} catch (Exception e) {
+			return new SqlQuery(
+					sqlScripts.groupInsertScript(table, fieldsBuilder.toString(), valuesBuilder.toString()));
+		} catch (BOParsingException e) {
+			throw e;
+		} catch (SqlScriptsException e) {
 			throw new BOParsingException(e);
 		}
 	}
@@ -580,7 +584,9 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				throw new BOParsingException(i18n.prop("msg_bobas_not_allow_sql_scripts"));
 			}
 			return new SqlQuery(sqlScripts.groupDeleteScript(table, partWhere));
-		} catch (Exception e) {
+		} catch (BOParsingException e) {
+			throw e;
+		} catch (SqlScriptsException e) {
 			throw new BOParsingException(e);
 		}
 	}
@@ -588,7 +594,6 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	@Override
 	public ISqlQuery parseUpdateScript(IBusinessObjectBase bo) throws BOParsingException {
 		try {
-
 			if (!(bo instanceof IManageFields)) {
 				throw new BOParsingException(i18n.prop("msg_bobas_invaild_bo"));
 			}
@@ -617,7 +622,9 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			}
 			String partFieldValues = this.getBOFieldValues(fieldDatas, sqlScripts.getFieldBreakSign());
 			return new SqlQuery(sqlScripts.groupUpdateScript(table, partFieldValues, partWhere));
-		} catch (Exception e) {
+		} catch (BOParsingException e) {
+			throw e;
+		} catch (SqlScriptsException e) {
 			throw new BOParsingException(e);
 		}
 	}
@@ -818,8 +825,14 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				this.fillDatas(reader, boFields, dfIndex);
 				childs.add(bo);
 			}
-		} catch (Exception e) {
-			throw new BOParsingException(e.getMessage(), e);
+		} catch (BOParsingException e) {
+			throw e;
+		} catch (SqlScriptsException e) {
+			throw new BOParsingException(e);
+		} catch (DbException e) {
+			throw new BOParsingException(e);
+		} catch (SQLException e) {
+			throw new BOParsingException(e);
 		}
 		return childs.toArray(new IBusinessObjectBase[] {});
 	}
@@ -848,8 +861,16 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				this.fillDatas(reader, boFields, dfIndex);
 				bos.add(bo);
 			}
-		} catch (Exception e) {
-			throw new BOParsingException(e.getMessage(), e);
+		} catch (SqlScriptsException e) {
+			throw new BOParsingException(e);
+		} catch (DbException e) {
+			throw new BOParsingException(e);
+		} catch (SQLException e) {
+			throw new BOParsingException(e);
+		} catch (InstantiationException e) {
+			throw new BOParsingException(e);
+		} catch (IllegalAccessException e) {
+			throw new BOParsingException(e);
 		}
 		return bos.toArray(new IBusinessObjectBase[] {});
 	}
@@ -1120,7 +1141,11 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				}
 			}
 			return keys.toArray(new KeyValue[] {});
-		} catch (Exception e) {
+		} catch (SqlScriptsException e) {
+			throw new BOException(e);
+		} catch (BOParsingException e) {
+			throw new BOException(e);
+		} catch (DbException e) {
 			throw new BOException(e);
 		}
 	}
@@ -1164,7 +1189,11 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			}
 			// 更新数据记录
 			command.executeUpdate(sqlScripts.getUpdatePrimaryKeyScript(boCode, addValue));
-		} catch (Exception e) {
+		} catch (SqlScriptsException e) {
+			throw new BOException(e);
+		} catch (BOParsingException e) {
+			throw new BOException(e);
+		} catch (DbException e) {
 			throw new BOException(e);
 		}
 	}
@@ -1223,7 +1252,9 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			}
 			// 更新数据记录
 			command.executeUpdate(sqlScripts.getUpdateSeriesKeyScript(bo.getObjectCode(), bo.getSeries(), addValue));
-		} catch (Exception e) {
+		} catch (SqlScriptsException e) {
+			throw new BOException(e);
+		} catch (DbException e) {
 			throw new BOException(e);
 		}
 	}
@@ -1250,7 +1281,9 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			}
 			reader.close();
 			return key;
-		} catch (Exception e) {
+		} catch (SqlScriptsException e) {
+			throw new BOException(e);
+		} catch (DbException e) {
 			throw new BOException(e);
 		}
 	}
@@ -1298,7 +1331,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			}
 			return new SqlQuery(sqlScripts.getTransactionNotificationQuery(boCode, DataConvert.toDbValue(type),
 					keyCount, keyNames.toString(), keyValues.toString()));
-		} catch (Exception e) {
+		} catch (SqlScriptsException e) {
 			throw new BOParsingException(e);
 		}
 	}
@@ -1315,7 +1348,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			}
 			return new SqlQuery(
 					sqlScripts.groupStoredProcedure(sp.getName(), sp.getParameters().toArray(new KeyValue[] {})));
-		} catch (Exception e) {
+		} catch (SqlScriptsException e) {
 			throw new BOParsingException(e);
 		}
 	}

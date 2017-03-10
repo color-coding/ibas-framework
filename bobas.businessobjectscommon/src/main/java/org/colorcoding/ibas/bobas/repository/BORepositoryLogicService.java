@@ -83,7 +83,8 @@ public class BORepositoryLogicService extends BORepositoryService {
 					IBOReferenced refBO = (IBOReferenced) bo;
 					if (refBO.getReferenced() == emYesNo.YES) {
 						// 被引用的数据，不允许删除，可以标记删除
-						throw new Exception(i18n.prop("msg_bobas_not_allow_delete_referenced_bo", bo.toString()));
+						throw new SaveActionsException(
+								i18n.prop("msg_bobas_not_allow_delete_referenced_bo", bo.toString()));
 					}
 				}
 			}
@@ -109,6 +110,8 @@ public class BORepositoryLogicService extends BORepositoryService {
 			}
 			// 运行基类方法
 			return super.onSaveActionsEvent(action, bo);
+		} catch (SaveActionsException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new SaveActionsException(e);
 		}
@@ -123,18 +126,19 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 *            发生事件对象
 	 * @param parent
 	 *            所属的父项
-	 * @throws Exception
+	 * @throws SaveActionsException
 	 */
 	@Override
 	protected boolean onSaveActionsEvent(SaveActionsType action, IBusinessObjectBase bo, IBusinessObjectBase root)
-			throws Exception {
+			throws SaveActionsException {
 		if (action == SaveActionsType.BEFORE_DELETING) {
 			// 删除前检查
 			if (bo instanceof IBOReferenced) {
 				IBOReferenced refBO = (IBOReferenced) bo;
 				if (refBO.getReferenced() == emYesNo.YES) {
 					// 被引用的数据，不允许删除，可以标记删除
-					throw new Exception(i18n.prop("msg_bobas_not_allow_delete_referenced_bo", bo.toString()));
+					throw new SaveActionsException(
+							i18n.prop("msg_bobas_not_allow_delete_referenced_bo", bo.toString()));
 				}
 			}
 		}
@@ -143,7 +147,11 @@ public class BORepositoryLogicService extends BORepositoryService {
 			// 业务规则检查
 			if (this.isCheckRules()) {
 				// 检查规则
-				this.checkRules(action, bo);
+				try {
+					this.checkRules(action, bo);
+				} catch (BusinessRuleException e) {
+					throw new SaveActionsException(e);
+				}
 			}
 		}
 		return true;

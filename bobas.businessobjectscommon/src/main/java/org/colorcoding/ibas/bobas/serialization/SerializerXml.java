@@ -148,13 +148,14 @@ public class SerializerXml extends Serializer {
 	public static final String XML_FILE_EXTENSION = ".xml";
 	public static final String XML_FILE_ENCODING = "utf-8";
 	public static final String XML_FILE_INDENT = "yes";
+	public static final String XML_FILE_NAMESPACE = "http://www.w3.org/2001/XMLSchema";
 
 	@Override
 	public void getSchema(Class<?> type, Writer writer) throws SerializationException {
 		try {
 			DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			DOMImplementation domImpl = db.getDOMImplementation();
-			Document document = domImpl.createDocument("http://www.w3.org/2001/XMLSchema", "xs:schema", null);
+			Document document = domImpl.createDocument(XML_FILE_NAMESPACE, "xs:schema", null);
 			this.createSchemaElement(document, type);
 
 			// 将xml写到文件中

@@ -177,11 +177,13 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 					throw opRslt.getError();
 				}
 				if (opRslt.getResultCode() != 0) {
-					throw new Exception(opRslt.getMessage());
+					throw new BusinessLogicsException(opRslt.getMessage());
 				}
 				return (L) opRslt.getResultObjects().firstOrDefault();
 			}
 			throw new BusinessLogicsException(i18n.prop("msg_bobas_not_supported"));
+		} catch (BusinessLogicsException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new BusinessLogicsException(e);
 		}
@@ -214,11 +216,13 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 					throw opRslt.getError();
 				}
 				if (opRslt.getResultCode() != 0) {
-					throw new Exception(opRslt.getMessage());
+					throw new BusinessLogicsException(opRslt.getMessage());
 				}
 				return opRslt.getResultObjects().firstOrDefault();
 			}
 			throw new BusinessLogicsException(i18n.prop("msg_bobas_not_supported"));
+		} catch (BusinessLogicsException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new BusinessLogicsException(e);
 		}

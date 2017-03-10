@@ -8,15 +8,15 @@
 		<url>http://colorcoding.org</url>
 	</organization>
 	<url>http://colorcoding.org/ibas/bobas/jersey</url>
-    <parent>
+	<parent>
 		<groupId>org.colorcoding.ibas</groupId>
 		<artifactId>bobas.businessobjectscommon.parent</artifactId>
 		<version>0.1.2</version>
-    </parent>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jersey.version>2.22.1</jersey.version>
-    </properties>
+	</parent>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jersey.version>2.22.1</jersey.version>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
@@ -24,11 +24,16 @@
 			<version>2.0.1</version>
 			<scope>provided</scope>
 		</dependency>
-        <dependency>
-            <groupId>org.colorcoding.ibas</groupId>
-            <artifactId>bobas.businessobjectscommon</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>com.github.fge</groupId>
+			<artifactId>json-schema-validator</artifactId>
+			<version>2.2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.colorcoding.ibas</groupId>
+			<artifactId>bobas.businessobjectscommon</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-server</artifactId>
@@ -48,6 +53,6 @@
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-multipart</artifactId>
 			<version>${jersey.version}</version>
-		</dependency>	
+		</dependency>
 	</dependencies>
 </project>

@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.test.approval;
 
+import org.colorcoding.ibas.bobas.approval.ApprovalException;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcessStep;
 import org.colorcoding.ibas.bobas.approval.UnauthorizedException;
@@ -97,7 +98,7 @@ public class ApprovalProcess extends org.colorcoding.ibas.bobas.approval.Approva
 	}
 
 	@Override
-	protected void saveProcess(IBORepository boRepository) throws Exception {
+	protected void saveProcess(IBORepository boRepository) throws ApprovalException {
 
 	}
 

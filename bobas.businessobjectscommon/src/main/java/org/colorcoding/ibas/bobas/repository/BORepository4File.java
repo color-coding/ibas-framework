@@ -27,7 +27,6 @@ import org.colorcoding.ibas.bobas.core.SaveActionsListener;
 import org.colorcoding.ibas.bobas.core.SaveActionsSupport;
 import org.colorcoding.ibas.bobas.core.SaveActionsType;
 import org.colorcoding.ibas.bobas.data.KeyValue;
-import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
@@ -222,7 +221,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 		return operationResult;
 	}
 
-	private IBusinessObjectBase mySave(IBusinessObjectBase bo) throws RepositoryException, DbException {
+	private IBusinessObjectBase mySave(IBusinessObjectBase bo) throws RepositoryException {
 		if (bo == null) {
 			throw new RepositoryException(i18n.prop("msg_bobas_invalid_bo"));
 		}
@@ -271,7 +270,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 					// 自己打开的事务
 					this.rollbackTransaction();// 关闭事务
 				}
-				throw new DbException(i18n.prop("msg_bobas_to_save_bo_faild", e.getMessage()), e);
+				throw new RepositoryException(i18n.prop("msg_bobas_to_save_bo_faild", e.getMessage()), e);
 			}
 		}
 		return bo;

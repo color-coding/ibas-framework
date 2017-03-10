@@ -40,11 +40,13 @@ public class DbConnection implements IDbConnection {
 	public String getURL() throws DbException {
 		try {
 			if (this.isClosed()) {
-				throw new Exception(i18n.prop("msg_bobas_database_connection_is_closed"));
+				throw new DbException(i18n.prop("msg_bobas_database_connection_is_closed"));
 			}
 			return this.dbConnection.getMetaData().getURL();
-		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+		} catch (DbException e) {
+			throw e;
+		} catch (SQLException e) {
+			throw new DbException(e);
 		}
 	}
 
@@ -52,11 +54,13 @@ public class DbConnection implements IDbConnection {
 	public String getUserName() throws DbException {
 		try {
 			if (this.isClosed()) {
-				throw new Exception(i18n.prop("msg_bobas_database_connection_is_closed"));
+				throw new DbException(i18n.prop("msg_bobas_database_connection_is_closed"));
 			}
 			return this.dbConnection.getMetaData().getUserName();
-		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+		} catch (DbException e) {
+			throw e;
+		} catch (SQLException e) {
+			throw new DbException(e);
 		}
 	}
 
@@ -95,7 +99,7 @@ public class DbConnection implements IDbConnection {
 		try {
 			if (this.inTransaction()) {
 				// 处于事务中，不允许关闭数据库连接
-				throw new Exception(i18n.prop("msg_bobas_database_has_not_commit_transaction"));
+				throw new DbException(i18n.prop("msg_bobas_database_has_not_commit_transaction"));
 			}
 			if (force || !DbConnectionPool.isEnabled()) {
 				// 没有开启缓存或强制关闭
@@ -112,8 +116,10 @@ public class DbConnection implements IDbConnection {
 			}
 			// 重置状态
 			this.opened = false;
-		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+		} catch (DbException e) {
+			throw e;
+		} catch (SQLException e) {
+			throw new DbException(e);
 		}
 	}
 
@@ -174,8 +180,8 @@ public class DbConnection implements IDbConnection {
 				return true;
 			}
 			return false;
-		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+		} catch (SQLException e) {
+			throw new DbException(e);
 		}
 	}
 
@@ -183,12 +189,14 @@ public class DbConnection implements IDbConnection {
 	public IDbCommand createCommand() throws DbException {
 		try {
 			if (this.isClosed()) {
-				throw new Exception(i18n.prop("msg_bobas_database_connection_is_closed"));
+				throw new DbException(i18n.prop("msg_bobas_database_connection_is_closed"));
 			}
 			Statement statement = this.dbConnection.createStatement();
 			return new DbCommand(statement);
-		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+		} catch (DbException e) {
+			throw e;
+		} catch (SQLException e) {
+			throw new DbException(e);
 		}
 	}
 
@@ -197,7 +205,7 @@ public class DbConnection implements IDbConnection {
 		try {
 			// 手动提交事务
 			if (this.isClosed()) {
-				throw new Exception(i18n.prop("msg_bobas_database_connection_is_closed"));
+				throw new DbException(i18n.prop("msg_bobas_database_connection_is_closed"));
 			}
 			if (this.inTransaction()) {
 				return false;
@@ -207,8 +215,8 @@ public class DbConnection implements IDbConnection {
 				this.open();
 			}
 			return true;
-		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+		} catch (DbException e) {
+			throw e;
 		}
 	}
 
@@ -216,11 +224,13 @@ public class DbConnection implements IDbConnection {
 	public void rollbackTransaction() throws DbException {
 		try {
 			if (this.isClosed()) {
-				throw new Exception(i18n.prop("msg_bobas_database_connection_is_closed"));
+				throw new DbException(i18n.prop("msg_bobas_database_connection_is_closed"));
 			}
 			this.dbConnection.rollback();
 			this.inTransaction = false;
-		} catch (Exception e) {
+		} catch (DbException e) {
+			throw e;
+		} catch (SQLException e) {
 			throw new DbException(e.getMessage(), e);
 		}
 	}
@@ -229,11 +239,13 @@ public class DbConnection implements IDbConnection {
 	public void commitTransaction() throws DbException {
 		try {
 			if (this.isClosed()) {
-				throw new Exception(i18n.prop("msg_bobas_database_connection_is_closed"));
+				throw new DbException(i18n.prop("msg_bobas_database_connection_is_closed"));
 			}
 			this.dbConnection.commit();
 			this.inTransaction = false;
-		} catch (Exception e) {
+		} catch (DbException e) {
+			throw e;
+		} catch (SQLException e) {
 			throw new DbException(e.getMessage(), e);
 		}
 	}

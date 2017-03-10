@@ -48,7 +48,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	 * @throws Exception
 	 *             异常
 	 */
-	protected abstract void saveProcess(IBORepository boRepository) throws Exception;
+	protected abstract void saveProcess(IBORepository boRepository) throws ApprovalException;
 
 	private IUser owner;
 
@@ -419,24 +419,24 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	 * 
 	 * @param boRepository
 	 */
-	private void saveData(ApprovalProcessRepository apRepository) throws Exception {
+	private void saveData(ApprovalProcessRepository apRepository) throws ApprovalException {
 		if (!(this.getApprovalData() instanceof IBusinessObject)) {
 			// 审批数据不是业务对象，则查询实际业务对象
 			ICriteria criteria = this.getApprovalData().getCriteria();
 			if (criteria == null || criteria.getConditions().size() == 0) {
-				throw new Exception(i18n.prop("msg_bobas_approval_data_identifiers_unrecognizable",
+				throw new ApprovalException(i18n.prop("msg_bobas_approval_data_identifiers_unrecognizable",
 						this.getApprovalData().getIdentifiers()));
 			}
 			IOperationResult<IBusinessObject> opRsltFetch = apRepository.fetch(criteria);
 			if (opRsltFetch.getError() != null) {
-				throw opRsltFetch.getError();
+				throw new ApprovalException(opRsltFetch.getError());
 			}
 			if (opRsltFetch.getResultCode() != 0) {
-				throw new Exception(opRsltFetch.getMessage());
+				throw new ApprovalException(opRsltFetch.getMessage());
 			}
 			Object tmpBO = opRsltFetch.getResultObjects().firstOrDefault();
 			if (!(tmpBO instanceof IApprovalData)) {
-				throw new Exception(
+				throw new ApprovalException(
 						i18n.prop("msg_bobas_approval_data_not_exist", this.getApprovalData().getIdentifiers()));
 			}
 			IApprovalData data = (IApprovalData) tmpBO;
@@ -446,10 +446,10 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 		// 保存审批数据
 		IOperationResult<?> opRsltSave = apRepository.save((IBusinessObject) this.getApprovalData());
 		if (opRsltSave.getError() != null) {
-			throw opRsltSave.getError();
+			throw new ApprovalException(opRsltSave.getError());
 		}
 		if (opRsltSave.getResultCode() != 0) {
-			throw new Exception(opRsltSave.getMessage());
+			throw new ApprovalException(opRsltSave.getMessage());
 		}
 	}
 

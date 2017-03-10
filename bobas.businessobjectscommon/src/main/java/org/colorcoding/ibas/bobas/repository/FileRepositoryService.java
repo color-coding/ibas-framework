@@ -74,6 +74,8 @@ public class FileRepositoryService implements IFileRepositoryService {
 				throw new InvalidTokenException(i18n.prop("msg_bobas_no_user_match_the_token"));
 			}
 			this.setCurrentUser(user);
+		} catch (InvalidTokenException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new InvalidTokenException(e.getMessage(), e);
 		}

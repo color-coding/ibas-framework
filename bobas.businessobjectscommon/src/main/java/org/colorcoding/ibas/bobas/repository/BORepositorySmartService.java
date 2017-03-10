@@ -6,6 +6,7 @@ import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
+import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**
@@ -82,7 +83,7 @@ public class BORepositorySmartService extends BORepositoryLogicService implement
 			dbRepository.connectDb(type, server, name, user, password);
 			this.setReadonlyRepository(dbRepository);
 			this.setEnabledReadonlyRepository(true);// 启动只读库
-		} catch (Exception e) {
+		} catch (DbException e) {
 			throw new InvalidRepositoryException(e);
 		}
 	}

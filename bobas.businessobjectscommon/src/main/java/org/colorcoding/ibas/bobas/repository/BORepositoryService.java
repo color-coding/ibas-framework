@@ -17,6 +17,7 @@ import org.colorcoding.ibas.bobas.core.SaveActionsEvent;
 import org.colorcoding.ibas.bobas.core.SaveActionsException;
 import org.colorcoding.ibas.bobas.core.SaveActionsListener;
 import org.colorcoding.ibas.bobas.core.SaveActionsType;
+import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
 import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
@@ -79,8 +80,8 @@ public class BORepositoryService implements IBORepositoryService {
 					return that.onSaveActionsEvent(event.getType(), event.getBO(), event.getRootBO());
 				}
 				return true;
-			} catch (Exception e) {
-				throw new SaveActionsException(e);
+			} catch (SaveActionsException e) {
+				throw e;
 			}
 		}
 	};
@@ -114,7 +115,7 @@ public class BORepositoryService implements IBORepositoryService {
 			IBORepository4Db dbRepository = new BORepository4Db();
 			dbRepository.connectDb(type, server, name, user, password);
 			this.setRepository(dbRepository);
-		} catch (Exception e) {
+		} catch (DbException e) {
 			throw new InvalidRepositoryException(e);
 		}
 	}
@@ -133,7 +134,7 @@ public class BORepositoryService implements IBORepositoryService {
 			// throw new
 			// NotSupportedException(i18n.prop("msg_bobas_not_supported"));
 			return false;
-		} catch (Exception e) {
+		} catch (DbException e) {
 			throw new RepositoryException(e);
 		}
 	}
@@ -146,7 +147,7 @@ public class BORepositoryService implements IBORepositoryService {
 			if (this.cacheRepository != null) {
 				this.cacheRepository.dispose();
 			}
-		} catch (Exception e) {
+		} catch (DbException e) {
 			throw new RepositoryException(e);
 		}
 	}
@@ -577,6 +578,8 @@ public class BORepositoryService implements IBORepositoryService {
 					throw new Exception(message.getMessage());
 				}
 			}
+		} catch (BOTransactionException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new BOTransactionException(e.getMessage(), e);
 		}
@@ -622,7 +625,7 @@ public class BORepositoryService implements IBORepositoryService {
 	 *            发生对象
 	 * @return
 	 */
-	protected boolean onSaveActionsEvent(SaveActionsType action, IBusinessObjectBase bo) throws Exception {
+	protected boolean onSaveActionsEvent(SaveActionsType action, IBusinessObjectBase bo) throws SaveActionsException {
 		if (action == SaveActionsType.BEFORE_UPDATING) {
 			if (this.isCheckVersion()) {
 				// 更新前，检查版本是否有效
@@ -647,7 +650,7 @@ public class BORepositoryService implements IBORepositoryService {
 						}
 					}
 				} catch (Exception e) {
-					throw new Exception(i18n.prop("msg_bobas_bo_version_check_faild", bo), e);
+					throw new SaveActionsException(i18n.prop("msg_bobas_bo_version_check_faild", bo), e);
 				}
 			}
 		}
@@ -666,7 +669,7 @@ public class BORepositoryService implements IBORepositoryService {
 	 * @return
 	 */
 	protected boolean onSaveActionsEvent(SaveActionsType action, IBusinessObjectBase bo, IBusinessObjectBase root)
-			throws Exception {
+			throws SaveActionsException {
 		return true;
 	}
 
