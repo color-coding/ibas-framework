@@ -14,6 +14,7 @@ import org.colorcoding.ibas.bobas.data.measurement.Time;
 import org.colorcoding.ibas.bobas.data.measurement.emTimeUnit;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
+import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
 import org.colorcoding.ibas.bobas.serialization.ValidateException;
 import org.colorcoding.ibas.bobas.serialization.jersey.SerializerJson;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrderItem;
@@ -133,7 +134,7 @@ public class testBusinessObject extends TestCase {
 		orderItem.setQuantity(10);
 		orderItem.setPrice(199.99);
 
-		ISerializer serializer = new SerializerJson();
+		ISerializer serializer = SerializerFactory.create().createManager().create("json");
 		StringWriter writer = new StringWriter();
 		serializer.getSchema(order.getClass(), writer);
 		System.out.println(writer.toString());

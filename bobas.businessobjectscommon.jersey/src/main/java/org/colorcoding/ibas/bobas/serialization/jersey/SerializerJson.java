@@ -205,7 +205,15 @@ public class SerializerJson extends Serializer {
 		JsonFactory jsonFactory = new JsonFactory();
 		try {
 			JsonGenerator jsonGenerator = jsonFactory.createGenerator(writer);
+			jsonGenerator.writeStartObject();
+			jsonGenerator.writeStringField("$schema", SCHEMA_VERSION);
+			jsonGenerator.writeStringField("type", "object");
+			jsonGenerator.writeFieldName("properties");
+			jsonGenerator.writeStartObject();
+			jsonGenerator.writeFieldName(type.getSimpleName());
 			this.createSchemaElement(jsonGenerator, type);
+			jsonGenerator.writeEndObject();
+			jsonGenerator.writeEndObject();
 			jsonGenerator.flush();
 			jsonGenerator.close();
 		} catch (IOException e) {
@@ -214,19 +222,6 @@ public class SerializerJson extends Serializer {
 	}
 
 	protected void createSchemaElement(JsonGenerator jsonGenerator, Class<?> type)
-			throws JsonGenerationException, IOException {
-		jsonGenerator.writeStartObject();
-		jsonGenerator.writeStringField("$schema", SCHEMA_VERSION);
-		jsonGenerator.writeStringField("type", "object");
-		jsonGenerator.writeFieldName("properties");
-		jsonGenerator.writeStartObject();
-		jsonGenerator.writeFieldName(type.getSimpleName());
-		this.createSchemaElement(jsonGenerator, type, type.getSimpleName(), true);
-		jsonGenerator.writeEndObject();
-		jsonGenerator.writeEndObject();
-	}
-
-	protected void createSchemaElement(JsonGenerator jsonGenerator, Class<?> type, String name, boolean isRoot)
 			throws JsonGenerationException, IOException {
 		jsonGenerator.writeStartObject();
 		if (this.getKnownTyps().containsKey(type.getName())) {
@@ -254,11 +249,11 @@ public class SerializerJson extends Serializer {
 					jsonGenerator.writeStartObject();
 					jsonGenerator.writeStringField("type", "array");
 					jsonGenerator.writeFieldName("items");
-					this.createSchemaElement(jsonGenerator, item.getType(), item.getWrapper(), false);
+					this.createSchemaElement(jsonGenerator, item.getType());
 					jsonGenerator.writeEndObject();
 				} else {
 					jsonGenerator.writeFieldName(item.getName());
-					this.createSchemaElement(jsonGenerator, item.getType(), item.getName(), false);
+					this.createSchemaElement(jsonGenerator, item.getType());
 				}
 			}
 			jsonGenerator.writeEndObject();
