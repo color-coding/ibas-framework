@@ -20,6 +20,9 @@ import org.colorcoding.ibas.bobas.serialization.SerializationException;
 import org.colorcoding.ibas.bobas.serialization.Serializer;
 import org.colorcoding.ibas.bobas.serialization.ValidateException;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jackson.JsonLoader;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
@@ -159,24 +162,35 @@ public class SerializerJson extends Serializer {
 	}
 
 	@Override
-	public void getSchema(Class<?> type, Writer writer) throws SerializationException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public void validate(Class<?> type, Reader reader) throws ValidateException {
 		try {
 			StringWriter writer = new StringWriter();
 			this.getSchema(type, writer);
 			JsonNode jsonSchema = JsonLoader.fromString(writer.toString());
 			JsonSchema schema = JsonSchemaFactory.byDefault().getJsonSchema(jsonSchema);
+			this.validate(schema, reader);
+		} catch (IOException e) {
+			throw new ValidateException(e);
+		} catch (ProcessingException e) {
+			throw new ValidateException(e);
+		}
+	}
+
+	public void validate(JsonSchema schema, Reader reader) throws ValidateException {
+		try {
 			JsonNode jsonData = JsonLoader.fromReader(reader);
-			ProcessingReport report = schema.validate(jsonData);
+			this.validate(schema, jsonData);
+		} catch (IOException e) {
+			throw new ValidateException(e);
+		}
+	}
+
+	public void validate(JsonSchema schema, JsonNode data) throws ValidateException {
+		try {
+			ProcessingReport report = schema.validate(data);
 			if (!report.isSuccess()) {
 				throw new ValidateException(report.toString());
 			}
-		} catch (IOException e) {
-			throw new ValidateException(e);
 		} catch (ValidateException e) {
 			throw e;
 		} catch (ProcessingException e) {
@@ -184,4 +198,96 @@ public class SerializerJson extends Serializer {
 		}
 	}
 
+	public static final String SCHEMA_VERSION = "http://json-schema.org/draft-04/schema#";
+
+	@Override
+	public void getSchema(Class<?> type, Writer writer) throws SerializationException {
+		JsonFactory jsonFactory = new JsonFactory();
+		try {
+			JsonGenerator jsonGenerator = jsonFactory.createGenerator(writer);
+			this.createSchemaElement(jsonGenerator, type);
+			jsonGenerator.flush();
+			jsonGenerator.close();
+		} catch (IOException e) {
+			throw new SerializationException(e);
+		}
+	}
+
+	protected void createSchemaElement(JsonGenerator jsonGenerator, Class<?> type)
+			throws JsonGenerationException, IOException {
+		jsonGenerator.writeStartObject();
+		jsonGenerator.writeStringField("$schema", SCHEMA_VERSION);
+		jsonGenerator.writeStringField("type", "object");
+		jsonGenerator.writeFieldName("properties");
+		jsonGenerator.writeStartObject();
+		jsonGenerator.writeFieldName(type.getSimpleName());
+		this.createSchemaElement(jsonGenerator, type, type.getSimpleName(), true);
+		jsonGenerator.writeEndObject();
+		jsonGenerator.writeEndObject();
+	}
+
+	protected void createSchemaElement(JsonGenerator jsonGenerator, Class<?> type, String name, boolean isRoot)
+			throws JsonGenerationException, IOException {
+		jsonGenerator.writeStartObject();
+		if (this.getKnownTyps().containsKey(type.getName())) {
+			// 已知类型
+			jsonGenerator.writeStringField("type", this.getKnownTyps().get(type.getName()));
+		} else if (type.isEnum()) {
+			// 枚举类型
+			jsonGenerator.writeStringField("type", "string");
+			jsonGenerator.writeArrayFieldStart("enum");
+			for (Object enumItem : type.getEnumConstants()) {
+				if (enumItem instanceof Enum<?>) {
+					// 枚举值（比对枚举索引）
+					Enum<?> itemValue = (Enum<?>) enumItem;
+					jsonGenerator.writeString(itemValue.name());
+				}
+			}
+			jsonGenerator.writeEndArray();
+		} else {
+			jsonGenerator.writeStringField("type", "object");
+			jsonGenerator.writeFieldName("properties");
+			jsonGenerator.writeStartObject();
+			for (SchemaElement item : this.getSerializedElements(type, true)) {
+				if (item.getWrapper() != null && !item.getWrapper().isEmpty()) {
+					jsonGenerator.writeFieldName(item.getWrapper());
+					jsonGenerator.writeStartObject();
+					jsonGenerator.writeStringField("type", "array");
+					jsonGenerator.writeFieldName("items");
+					this.createSchemaElement(jsonGenerator, item.getType(), item.getWrapper(), false);
+					jsonGenerator.writeEndObject();
+				} else {
+					jsonGenerator.writeFieldName(item.getName());
+					this.createSchemaElement(jsonGenerator, item.getType(), item.getName(), false);
+				}
+			}
+			jsonGenerator.writeEndObject();
+		}
+		jsonGenerator.writeEndObject();
+	}
+
+	private Map<String, String> knownTypes;
+
+	public Map<String, String> getKnownTyps() {
+		if (this.knownTypes == null) {
+			this.knownTypes = new HashMap<>();
+			this.knownTypes.put("integer", "integer");
+			this.knownTypes.put("short", "integer");
+			this.knownTypes.put("boolean", "boolean");
+			this.knownTypes.put("float", "number");
+			this.knownTypes.put("double", "number");
+			this.knownTypes.put("java.lang.Integer", "integer");
+			this.knownTypes.put("java.lang.String", "string");
+			this.knownTypes.put("java.lang.Short", "integer");
+			this.knownTypes.put("java.lang.Boolean", "boolean");
+			this.knownTypes.put("java.lang.Float", "number");
+			this.knownTypes.put("java.lang.Double", "number");
+			this.knownTypes.put("java.lang.Character", "string");
+			this.knownTypes.put("java.math.BigDecimal", "number");
+			this.knownTypes.put("java.util.Date", "string");
+			this.knownTypes.put("org.colorcoding.ibas.bobas.data.Decimal", "number");
+			this.knownTypes.put("org.colorcoding.ibas.bobas.data.DateTime", "string");
+		}
+		return this.knownTypes;
+	}
 }
