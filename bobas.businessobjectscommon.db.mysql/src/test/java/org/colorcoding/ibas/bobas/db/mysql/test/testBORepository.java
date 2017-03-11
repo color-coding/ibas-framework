@@ -68,7 +68,7 @@ public class testBORepository extends TestCase {
         ICriteria criteria = order.getCriteria();// new Criteria();
         criteria.setResultCount(1);
         ISort sort = criteria.getSorts().create();
-        sort.setAlias(SalesOrder.DocEntryProperty.getName());
+        sort.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
         sort.setSortType(SortType.DESCENDING);
 
         operationResult = boRepository.fetchSalesOrder(criteria);
@@ -88,19 +88,19 @@ public class testBORepository extends TestCase {
         // ("DocStatus" = 'P' OR "DocStatus" = 'F')
         ICondition condition = criteria.getConditions().create();
         condition.setBracketOpen(1);
-        condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
+        condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
         condition.setCondVal(emDocumentStatus.PLANNED);
         condition = criteria.getConditions().create();
         condition.setBracketClose(1);
-        condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
+        condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
         condition.setCondVal(emDocumentStatus.RELEASED);
         condition.setRelationship(ConditionRelationship.OR);
         // ORDER BY "DocEntry" DESC, "CardCode" ASC
         ISort sort = criteria.getSorts().create();
-        sort.setAlias(SalesOrder.DocEntryProperty.getName());
+        sort.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
         sort.setSortType(SortType.DESCENDING);
         sort = criteria.getSorts().create();
-        sort.setAlias(SalesOrder.CustomerCodeProperty.getName());
+        sort.setAlias(SalesOrder.PROPERTY_CUSTOMERCODE.getName());
         sort.setSortType(SortType.ASCENDING);
 
         IOperationResult<?> operationResult = boRepository.fetchSalesOrder(criteria);
@@ -399,13 +399,13 @@ public class testBORepository extends TestCase {
 
         ICriteria criteria = Criteria.create();
         ICondition condition = criteria.getConditions().create();
-        condition.setAlias(MaterialsQuantityJournal.BaseDocumentTypeProperty.getName());
+        condition.setAlias(MaterialsQuantityJournal.PROPERTY_BASEDOCUMENTTYPE.getName());
         condition.setCondVal(item01.getDocumentType());
         condition = criteria.getConditions().create();
-        condition.setAlias(MaterialsQuantityJournal.BaseDocumentEntryProperty.getName());
+        condition.setAlias(MaterialsQuantityJournal.PROPERTY_BASEDOCUMENTENTRY.getName());
         condition.setCondVal(item01.getDocumentEntry());
         condition = criteria.getConditions().create();
-        condition.setAlias(MaterialsQuantityJournal.BaseDocumentLineIdProperty.getName());
+        condition.setAlias(MaterialsQuantityJournal.PROPERTY_BASEDOCUMENTLINEID.getName());
         condition.setCondVal(item01.getDocumentLineId());
         operationResult = boRepository.fetchMaterialsQuantityJournal(criteria);
         assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
@@ -441,13 +441,13 @@ public class testBORepository extends TestCase {
 
         criteria = Criteria.create();
         condition = criteria.getConditions().create();
-        condition.setAlias(MaterialsQuantityJournal.BaseDocumentTypeProperty.getName());
+        condition.setAlias(MaterialsQuantityJournal.PROPERTY_BASEDOCUMENTTYPE.getName());
         condition.setCondVal(item03.getDocumentType());
         condition = criteria.getConditions().create();
-        condition.setAlias(MaterialsQuantityJournal.BaseDocumentEntryProperty.getName());
+        condition.setAlias(MaterialsQuantityJournal.PROPERTY_BASEDOCUMENTENTRY.getName());
         condition.setCondVal(item03.getDocumentEntry());
         condition = criteria.getConditions().create();
-        condition.setAlias(MaterialsQuantityJournal.BaseDocumentLineIdProperty.getName());
+        condition.setAlias(MaterialsQuantityJournal.PROPERTY_BASEDOCUMENTLINEID.getName());
         condition.setCondVal(item03.getDocumentLineId());
         operationResult = boRepository.fetchMaterialsQuantityJournal(criteria);
         assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);

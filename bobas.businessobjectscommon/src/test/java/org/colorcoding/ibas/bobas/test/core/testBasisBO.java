@@ -11,19 +11,20 @@ public class testBasisBO extends TestCase {
 	public void testUseBO() {
 		Order order = new Order();
 		order.setDocEntry(1);
-		order.setSuppler("C00001");
-		order.setDueDate(DateTime.getToday());
+		order.setCustomerCode("C00001");
+		order.setDocumentDate(DateTime.getToday());
 		order.setDocumentStatus(emDocumentStatus.RELEASED);
 		order.setDocumentTotal(new Decimal("99.99"));
-		order.setActivted(true);
+		order.setActivated(true);
+		order.setSuppler("S00001");
 
 		System.out.println(order.toString());
 
 		assertEquals("Property [DocEntry] faild. ", (int) order.getDocEntry(), 1);
-		assertEquals("Property [CustomerCode] faild. ", order.getSuppler(), "C00001");
-		assertTrue("Property [DueDate] faild. ", order.getDueDate().equals(DateTime.getToday()));
+		assertEquals("Property [CustomerCode] faild. ", order.getCustomerCode(), "C00001");
+		assertTrue("Property [DueDate] faild. ", order.getDocumentDate().equals(DateTime.getToday()));
 		assertEquals("Property [DocumentStatus] faild. ", order.getDocumentStatus(), emDocumentStatus.RELEASED);
-		assertEquals("Property [Activted] faild. ", (boolean) order.getActivted(), true);
+		assertEquals("Property [Activted] faild. ", (boolean) order.getActivated(), true);
 		assertTrue("Property [DocumentTotal] faild. ", order.getDocumentTotal().toString().equals("99.99"));
 
 		order.setDocEntry(null);

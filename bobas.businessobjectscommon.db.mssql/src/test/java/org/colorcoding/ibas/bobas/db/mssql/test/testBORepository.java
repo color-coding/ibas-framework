@@ -46,19 +46,19 @@ public class testBORepository extends TestCase {
 		// ("DocStatus" = 'P' OR "DocStatus" = 'F')
 		ICondition condition = criteria.getConditions().create();
 		condition.setBracketOpen(1);
-		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
+		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
 		condition.setCondVal(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
 		condition.setBracketClose(1);
-		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
+		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
 		condition.setCondVal(emDocumentStatus.RELEASED);
 		condition.setRelationship(ConditionRelationship.OR);
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC
 		ISort sort = criteria.getSorts().create();
-		sort.setAlias(SalesOrder.DocEntryProperty.getName());
+		sort.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
 		sort.setSortType(SortType.DESCENDING);
 		sort = criteria.getSorts().create();
-		sort.setAlias(SalesOrder.CustomerCodeProperty.getName());
+		sort.setAlias(SalesOrder.PROPERTY_CUSTOMERCODE.getName());
 		sort.setSortType(SortType.ASCENDING);
 
 		BORepositoryTest boRepository = new BORepositoryTest();
@@ -71,10 +71,10 @@ public class testBORepository extends TestCase {
 		criteria.setNoChilds(false);
 		// 查询子项
 		IChildCriteria childCriteria = criteria.getChildCriterias().create();
-		childCriteria.setPropertyPath(SalesOrder.SalesOrderItemsProperty.getName());
+		childCriteria.setPropertyPath(SalesOrder.PROPERTY_SALESORDERITEMS.getName());
 		// childCriteria.setFatherMustHasResluts(false);//父项必须有返回值
 		condition = childCriteria.getConditions().create();
-		condition.setAlias(SalesOrderItem.LineStatusProperty.getName());
+		condition.setAlias(SalesOrderItem.PROPERTY_LINESTATUS.getName());
 		condition.setCondVal(emDocumentStatus.FINISHED);
 
 		boRepository = new BORepositoryTest();// 重新构造后缓存失效
@@ -123,7 +123,7 @@ public class testBORepository extends TestCase {
 		ICriteria criteria = order.getCriteria();// new Criteria();
 		criteria.setResultCount(1);
 		ISort sort = criteria.getSorts().create();
-		sort.setAlias(SalesOrder.DocEntryProperty.getName());
+		sort.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
 		sort.setSortType(SortType.DESCENDING);
 
 		operationResult = boRepository.fetchSalesOrder(criteria);
@@ -143,25 +143,25 @@ public class testBORepository extends TestCase {
 		// ("DocStatus" = 'P' OR "DocStatus" = 'F')
 		ICondition condition = criteria.getConditions().create();
 		condition.setBracketOpen(1);
-		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
+		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
 		condition.setCondVal(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
 		condition.setBracketClose(1);
-		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
+		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
 		condition.setCondVal(emDocumentStatus.RELEASED);
 		condition.setRelationship(ConditionRelationship.OR);
 		// (CardCode != ''')
 		condition = criteria.getConditions().create();
-		condition.setAlias(SalesOrder.CustomerCodeProperty.getName());
+		condition.setAlias(SalesOrder.PROPERTY_CUSTOMERCODE.getName());
 		condition.setCondVal("'C");
 		condition.setOperation(ConditionOperation.NOT_EQUAL);
 		condition.setRelationship(ConditionRelationship.AND);
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC
 		ISort sort = criteria.getSorts().create();
-		sort.setAlias(SalesOrder.DocEntryProperty.getName());
+		sort.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
 		sort.setSortType(SortType.DESCENDING);
 		sort = criteria.getSorts().create();
-		sort.setAlias(SalesOrder.CustomerCodeProperty.getName());
+		sort.setAlias(SalesOrder.PROPERTY_CUSTOMERCODE.getName());
 		sort.setSortType(SortType.ASCENDING);
 
 		IOperationResult<?> operationResult = boRepository.fetchSalesOrder(criteria);

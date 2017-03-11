@@ -19,7 +19,7 @@ public class MaterialsInventoryQuantityLogic extends BusinessLogic<IMaterialsInv
 	protected IMaterials fetchBeAffected(IMaterialsInventoryQuantityContract contract) {
 		ICriteria criteria = Criteria.create();
 		ICondition condition = criteria.getConditions().create();
-		condition.setAlias(Materials.ItemCodeProperty.getName());
+		condition.setAlias(Materials.PROPERTY_ITEMCODE.getName());
 		condition.setCondVal(contract.getItemCode());
 		// 先在事务缓存中查询
 		IMaterials materials = this.fetchBeAffected(criteria, IMaterials.class);

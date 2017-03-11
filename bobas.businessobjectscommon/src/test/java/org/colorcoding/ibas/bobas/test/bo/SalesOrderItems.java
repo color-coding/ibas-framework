@@ -8,9 +8,14 @@ import org.colorcoding.ibas.bobas.bo.BusinessObjects;
 /**
  * 销售订单-行 集合
  */
-@XmlType(name = "SalesOrderItems")
+@XmlType(name = SalesOrderItems.BUSINESS_OBJECT_NAME)
 @XmlSeeAlso({ SalesOrderItem.class })
 public class SalesOrderItems extends BusinessObjects<ISalesOrderItem, ISalesOrder> implements ISalesOrderItems {
+
+	/**
+	 * 业务对象名称
+	 */
+	public static final String BUSINESS_OBJECT_NAME = "SalesOrderItems";
 
 	/**
 	 * 序列化版本标记

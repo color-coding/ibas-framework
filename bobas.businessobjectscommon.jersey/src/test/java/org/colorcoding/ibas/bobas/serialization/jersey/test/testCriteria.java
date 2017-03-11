@@ -31,24 +31,24 @@ public class testCriteria extends TestCase {
 		// ("DocStatus" = 'P' OR "DocStatus" = 'F')
 		ICondition condition = criteria.getConditions().create();
 		condition.setBracketOpen(1);
-		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
+		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
 		condition.setCondVal(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
 		condition.setBracketClose(1);
-		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
+		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
 		condition.setCondVal(emDocumentStatus.RELEASED);
 		condition.setRelationship(ConditionRelationship.OR);
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC
 		ISort sort = criteria.getSorts().create();
-		sort.setAlias(SalesOrder.DocEntryProperty.getName());
+		sort.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
 		sort.setSortType(SortType.DESCENDING);
 		sort = criteria.getSorts().create();
-		sort.setAlias(SalesOrder.CustomerCodeProperty.getName());
+		sort.setAlias(SalesOrder.PROPERTY_CUSTOMERCODE.getName());
 		sort.setSortType(SortType.ASCENDING);
 		// 子项查询
 		IChildCriteria childCriteria = criteria.getChildCriterias().create();
 		condition = childCriteria.getConditions().create();
-		condition.setAlias(SalesOrderItem.ItemCodeProperty.getName());
+		condition.setAlias(SalesOrderItem.PROPERTY_ITEMCODE.getName());
 		condition.setOperation(ConditionOperation.CONTAIN);
 		condition.setCondVal("T000");
 
@@ -81,24 +81,24 @@ public class testCriteria extends TestCase {
 		// ("DocStatus" = 'P' OR "DocStatus" = 'F')
 		ICondition condition = criteria.getConditions().create();
 		condition.setBracketOpen(1);
-		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
+		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
 		condition.setCondVal(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
 		condition.setBracketClose(1);
-		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
+		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
 		condition.setCondVal(emDocumentStatus.RELEASED);
 		condition.setRelationship(ConditionRelationship.OR);
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC
 		ISort sort = criteria.getSorts().create();
-		sort.setAlias(SalesOrder.DocEntryProperty.getName());
+		sort.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
 		sort.setSortType(SortType.DESCENDING);
 		sort = criteria.getSorts().create();
-		sort.setAlias(SalesOrder.CustomerCodeProperty.getName());
+		sort.setAlias(SalesOrder.PROPERTY_CUSTOMERCODE.getName());
 		sort.setSortType(SortType.ASCENDING);
 		// 子项查询
 		IChildCriteria childCriteria = criteria.getChildCriterias().create();
 		condition = childCriteria.getConditions().create();
-		condition.setAlias(SalesOrderItem.ItemCodeProperty.getName());
+		condition.setAlias(SalesOrderItem.PROPERTY_ITEMCODE.getName());
 		condition.setOperation(ConditionOperation.CONTAIN);
 		condition.setCondVal("T000");
 

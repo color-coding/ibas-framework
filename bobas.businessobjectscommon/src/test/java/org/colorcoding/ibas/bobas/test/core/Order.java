@@ -13,117 +13,237 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 @XmlRootElement(name = "Order", namespace = "httpL//ibas.club/bobas/test")
 public class Order extends BusinessObjectBase<Order> {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 4771656989360317386L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4771656989360317386L;
 
-    /**
-     * 当前类型 java的泛型是擦除机制，不能在运行期间获取到泛型信息
-     */
-    private final static Class<?> MY_CLASS = Order.class;
-    /**
-     * 数据库表
-     */
-    public final static String DB_TABLE_NAME = "CC_SM_OPOR";
-    /**
-     * 数据库字段映射
-     */
-    @DbField(name = "DocEntry", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = true)
-    /**
-     * 依赖属性声明
-     */
-    public final static IPropertyInfo<Integer> DocEntryProperty = registerProperty("DocEntry", Integer.class, MY_CLASS);
+	/**
+	 * 当前类型 java的泛型是擦除机制，不能在运行期间获取到泛型信息
+	 */
+	private final static Class<?> MY_CLASS = Order.class;
+	/**
+	 * 数据库表
+	 */
+	public final static String DB_TABLE_NAME = "CC_SM_OPOR";
 
-    /**
-     * 序列化标记
-     */
-    @XmlElement(name = "DocEntry")
-    public final Integer getDocEntry() {
-        return this.getProperty(DocEntryProperty);
-    }
+	/**
+	 * 业务对象名称
+	 */
+	public static final String BUSINESS_OBJECT_NAME = "SalesOrder";
 
-    /**
-     * 
-     * @param value
-     */
-    public final void setDocEntry(Integer value) {
-        this.setProperty(DocEntryProperty, value);
-    }
+	/**
+	 * 属性名称-凭证编号
+	 */
+	private static final String PROPERTY_DOCENTRY_NAME = "DocEntry";
 
-    @DbField(name = "Suppler", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
-    public final static IPropertyInfo<String> SupplerProperty = registerProperty("Suppler", String.class, MY_CLASS);
+	/**
+	 * 凭证编号 属性
+	 */
+	@DbField(name = "DocEntry", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = true)
+	public static final IPropertyInfo<Integer> PROPERTY_DOCENTRY = registerProperty(PROPERTY_DOCENTRY_NAME,
+			Integer.class, MY_CLASS);
 
-    /**
-     * 供应商
-     * 
-     * @return
-     */
-    @XmlElement(name = "Suppler")
-    public final String getSuppler() {
-        return this.getProperty(SupplerProperty);
-    }
+	/**
+	 * 获取-凭证编号
+	 * 
+	 * @return 值
+	 */
+	@XmlElement(name = PROPERTY_DOCENTRY_NAME)
+	public final Integer getDocEntry() {
+		return this.getProperty(PROPERTY_DOCENTRY);
+	}
 
-    public final void setSuppler(String value) {
-        this.setProperty(SupplerProperty, value);
-    }
+	/**
+	 * 设置-凭证编号
+	 * 
+	 * @param value
+	 *            值
+	 */
+	public final void setDocEntry(Integer value) {
+		this.setProperty(PROPERTY_DOCENTRY, value);
+	}
 
-    @DbField(name = "DueDate", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
-    public final static IPropertyInfo<DateTime> DueDateProperty = registerProperty("DueDate", DateTime.class, MY_CLASS);
+	/**
+	 * 属性名称-客户代码
+	 */
+	private static final String PROPERTY_CUSTOMERCODE_NAME = "CustomerCode";
 
-    @XmlElement(name = "DueDate")
-    public final DateTime getDueDate() {
-        return this.getProperty(DueDateProperty);
-    }
+	/**
+	 * 客户代码 属性
+	 */
+	@DbField(name = "CardCode", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	public static final IPropertyInfo<String> PROPERTY_CUSTOMERCODE = registerProperty(PROPERTY_CUSTOMERCODE_NAME,
+			String.class, MY_CLASS);
 
-    public final void setDueDate(DateTime value) {
-        this.setProperty(DueDateProperty, value);
-    }
+	/**
+	 * 获取-客户代码
+	 * 
+	 * @return 值
+	 */
+	@XmlElement(name = PROPERTY_CUSTOMERCODE_NAME)
+	public final String getCustomerCode() {
+		return this.getProperty(PROPERTY_CUSTOMERCODE);
+	}
 
-    @DbField(name = "DocStatus", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
-    public final static IPropertyInfo<emDocumentStatus> DocumentStatusProperty = registerProperty("DocumentStatus",
-            emDocumentStatus.class, MY_CLASS);
+	/**
+	 * 设置-客户代码
+	 * 
+	 * @param value
+	 *            值
+	 */
+	public final void setCustomerCode(String value) {
+		this.setProperty(PROPERTY_CUSTOMERCODE, value);
+	}
 
-    @XmlElement(name = "DocumentStatus")
-    public final emDocumentStatus getDocumentStatus() {
-        return this.getProperty(DocumentStatusProperty);
-    }
+	/**
+	 * 属性名称-凭证日期
+	 */
+	private static final String PROPERTY_DOCUMENTDATE_NAME = "DocumentDate";
 
-    public final void setDocumentStatus(emDocumentStatus value) {
-        this.setProperty(DocumentStatusProperty, value);
-    }
+	/**
+	 * 凭证日期 属性
+	 */
+	@DbField(name = "TaxDate", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
+	public static final IPropertyInfo<DateTime> PROPERTY_DOCUMENTDATE = registerProperty(PROPERTY_DOCUMENTDATE_NAME,
+			DateTime.class, MY_CLASS);
 
-    @DbField(name = "Activted", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
-    public final static IPropertyInfo<Boolean> ActivtedProperty = registerProperty("Activted", Boolean.class, MY_CLASS);
+	/**
+	 * 获取-凭证日期
+	 * 
+	 * @return 值
+	 */
+	@XmlElement(name = PROPERTY_DOCUMENTDATE_NAME)
+	public final DateTime getDocumentDate() {
+		return this.getProperty(PROPERTY_DOCUMENTDATE);
+	}
 
-    @XmlElement(name = "Activted")
-    public final Boolean getActivted() {
-        return this.getProperty(ActivtedProperty);
-    }
+	/**
+	 * 设置-凭证日期
+	 * 
+	 * @param value
+	 *            值
+	 */
+	public final void setDocumentDate(DateTime value) {
+		this.setProperty(PROPERTY_DOCUMENTDATE, value);
+	}
 
-    public final void setActivted(Boolean value) {
-        this.setProperty(ActivtedProperty, value);
-    }
+	/**
+	 * 属性名称-单据状态
+	 */
+	private static final String PROPERTY_DOCUMENTSTATUS_NAME = "DocumentStatus";
 
-    @DbField(name = "DocTotal", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
-    public final static IPropertyInfo<Decimal> DocumentTotalProperty = registerProperty("DocumentTotal", Decimal.class,
-            MY_CLASS);
+	/**
+	 * 单据状态 属性
+	 */
+	@DbField(name = "DocStatus", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	public static final IPropertyInfo<emDocumentStatus> PROPERTY_DOCUMENTSTATUS = registerProperty(
+			PROPERTY_DOCUMENTSTATUS_NAME, emDocumentStatus.class, MY_CLASS);
 
-    @XmlElement(name = "DocumentTotal")
-    public final Decimal getDocumentTotal() {
-        return this.getProperty(DocumentTotalProperty);
-    }
+	/**
+	 * 获取-单据状态
+	 * 
+	 * @return 值
+	 */
+	@XmlElement(name = PROPERTY_DOCUMENTSTATUS_NAME)
+	public final emDocumentStatus getDocumentStatus() {
+		return this.getProperty(PROPERTY_DOCUMENTSTATUS);
+	}
 
-    public final void setDocumentTotal(Decimal value) {
-        this.setProperty(DocumentTotalProperty, value);
-    }
+	/**
+	 * 设置-单据状态
+	 * 
+	 * @param value
+	 *            值
+	 */
+	public final void setDocumentStatus(emDocumentStatus value) {
+		this.setProperty(PROPERTY_DOCUMENTSTATUS, value);
+	}
 
-    public String toString(String type) {
-        return null;
-    }
+	/**
+	 * 属性名称-已激活的
+	 */
+	private static final String PROPERTY_ACTIVATED_NAME = "Activated";
 
-    public String getSchema(String type) {
-        return null;
-    }
+	/**
+	 * 已激活的 属性
+	 */
+	@DbField(name = "Activated", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	public static final IPropertyInfo<Boolean> PROPERTY_ACTIVATED = registerProperty(PROPERTY_ACTIVATED_NAME,
+			Boolean.class, MY_CLASS);
+
+	/**
+	 * 获取-已激活的
+	 * 
+	 * @return 值
+	 */
+	@XmlElement(name = PROPERTY_ACTIVATED_NAME)
+	public final Boolean getActivated() {
+		return this.getProperty(PROPERTY_ACTIVATED);
+	}
+
+	/**
+	 * 设置-已激活的
+	 * 
+	 * @param value
+	 *            值
+	 */
+	public final void setActivated(Boolean value) {
+		this.setProperty(PROPERTY_ACTIVATED, value);
+	}
+
+	/**
+	 * 属性名称-单据总计
+	 */
+	private static final String PROPERTY_DOCUMENTTOTAL_NAME = "DocumentTotal";
+
+	/**
+	 * 单据总计 属性
+	 */
+	@DbField(name = "DocTotal", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
+	public static final IPropertyInfo<Decimal> PROPERTY_DOCUMENTTOTAL = registerProperty(PROPERTY_DOCUMENTTOTAL_NAME,
+			Decimal.class, MY_CLASS);
+
+	/**
+	 * 获取-单据总计
+	 * 
+	 * @return 值
+	 */
+	@XmlElement(name = PROPERTY_DOCUMENTTOTAL_NAME)
+	public final Decimal getDocumentTotal() {
+		return this.getProperty(PROPERTY_DOCUMENTTOTAL);
+	}
+
+	/**
+	 * 设置-单据总计
+	 * 
+	 * @param value
+	 *            值
+	 */
+	public final void setDocumentTotal(Decimal value) {
+		this.setProperty(PROPERTY_DOCUMENTTOTAL, value);
+	}
+
+	@DbField(name = "Suppler", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	public final static IPropertyInfo<String> SupplerProperty = registerProperty("Suppler", String.class, MY_CLASS);
+
+	/**
+	 * 供应商
+	 * 
+	 * @return
+	 */
+	@XmlElement(name = "Suppler")
+	public final String getSuppler() {
+		return this.getProperty(SupplerProperty);
+	}
+
+	public final void setSuppler(String value) {
+		this.setProperty(SupplerProperty, value);
+	}
+
+	@Override
+	public String toString(String type) {
+		return null;
+	}
 
 }

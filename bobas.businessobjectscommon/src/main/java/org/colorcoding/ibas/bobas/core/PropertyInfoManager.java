@@ -18,6 +18,9 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 public class PropertyInfoManager {
 	volatile private static HashMap<Class<?>, PropertyInfoList> propertyInfoCache = new HashMap<Class<?>, PropertyInfoList>();
 
+	public static final String BO_PROPERTY_NAMING_RULES_UPPER = "PROPERTY_%s";
+	public static final String BO_PROPERTY_NAMING_RULES_CAMEL = "%sProperty";
+
 	/**
 	 * 注册属性
 	 * 
@@ -52,14 +55,23 @@ public class PropertyInfoManager {
 		}
 		// 获取属性的注释
 		try {
-			Field pField = boType.getField(String.format("%sProperty", property.getName()));
+			Field pField = boType
+					.getField(String.format(BO_PROPERTY_NAMING_RULES_UPPER, property.getName().toUpperCase()));
 			if (pField != null) {
 				property.addAnnotation(pField.getAnnotations());
+			}
+		} catch (NoSuchFieldException e) {
+			try {
+				Field pField = boType.getField(String.format(BO_PROPERTY_NAMING_RULES_CAMEL, property.getName()));
+				if (pField != null) {
+					property.addAnnotation(pField.getAnnotations());
+				}
+			} catch (Exception e2) {
+				RuntimeLog.log(e);
 			}
 		} catch (Exception e) {
 			RuntimeLog.log(e);
 		}
-
 	}
 
 	/**

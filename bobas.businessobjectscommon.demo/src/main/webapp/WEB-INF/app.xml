@@ -8,6 +8,6 @@
 		<add key="MasterDbUserID" value="sa" />
 		<add key="MasterDbUserPassword" value="1q2w3e" />
 		<add key="MsgLevel" value="DEBUG" />
-		<add key="Serializer" value="jersey" />
+		<add key="SerializationWay" value="jersey" />
 	</appSettings>
 </ns2:configuration>

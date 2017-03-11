@@ -43,35 +43,35 @@ public class testBOAdapter extends TestCase {
 		// ("DocStatus" = 'P' OR "DocStatus" = 'F')
 		ICondition condition = criteria.getConditions().create();
 		condition.setBracketOpen(1);
-		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
+		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
 		condition.setCondVal(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
 		condition.setBracketClose(1);
-		condition.setAlias(SalesOrder.DocumentStatusProperty.getName());
+		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
 		condition.setCondVal(emDocumentStatus.FINISHED);
 		condition.setRelationship(ConditionRelationship.OR);
 		// AND "CardCode" IS NOT NULL AND "DocEntry" LIKE "2%"
 		condition = criteria.getConditions().create();
-		condition.setAlias(SalesOrder.CustomerCodeProperty.getName());
+		condition.setAlias(SalesOrder.PROPERTY_CUSTOMERCODE.getName());
 		condition.setOperation(ConditionOperation.NOT_NULL);
 		condition = criteria.getConditions().create();
-		condition.setAlias(SalesOrder.DocEntryProperty.getName());
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
 		condition.setOperation(ConditionOperation.START);
 		condition.setCondVal("2");
 		condition = criteria.getConditions().create();
-		condition.setAlias(SalesOrder.DocEntryProperty.getName());
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
 		condition.setOperation(ConditionOperation.GRATER_THAN);
 		condition.setCondVal("2000");
 		condition = criteria.getConditions().create();
-		condition.setAlias(SalesOrder.DocEntryProperty.getName());
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
 		condition.setOperation(ConditionOperation.NOT_EQUAL);
-		condition.setComparedAlias(SalesOrder.DocEntryProperty.getName());
+		condition.setComparedAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC
 		ISort sort = criteria.getSorts().create();
-		sort.setAlias(SalesOrder.DocEntryProperty.getName());
+		sort.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
 		sort.setSortType(SortType.DESCENDING);
 		sort = criteria.getSorts().create();
-		sort.setAlias(SalesOrder.CustomerCodeProperty.getName());
+		sort.setAlias(SalesOrder.PROPERTY_CUSTOMERCODE.getName());
 		sort.setSortType(SortType.ASCENDING);
 
 		IBOAdapter4Db boAdapter = new BOAdapter();
