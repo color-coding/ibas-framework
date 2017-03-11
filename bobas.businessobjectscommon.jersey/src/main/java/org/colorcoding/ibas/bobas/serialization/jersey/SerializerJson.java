@@ -15,6 +15,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.serialization.SerializationException;
 import org.colorcoding.ibas.bobas.serialization.Serializer;
@@ -239,6 +240,12 @@ public class SerializerJson extends Serializer {
 				}
 			}
 			jsonGenerator.writeEndArray();
+		} else if (type.equals(DateTime.class)) {
+			// 日期类型
+			jsonGenerator.writeStringField("type", "string");
+			// 格式：2000-01-01 or 2000-01-01T00:00:00
+			jsonGenerator.writeStringField("pattern",
+					"^|[0-9]{4}-[0-1][0-9]-[0-3][0-9]|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9]$");
 		} else {
 			jsonGenerator.writeStringField("type", "object");
 			jsonGenerator.writeFieldName("properties");
@@ -281,7 +288,8 @@ public class SerializerJson extends Serializer {
 			this.knownTypes.put("java.math.BigDecimal", "number");
 			this.knownTypes.put("java.util.Date", "string");
 			this.knownTypes.put("org.colorcoding.ibas.bobas.data.Decimal", "number");
-			this.knownTypes.put("org.colorcoding.ibas.bobas.data.DateTime", "string");
+			// this.knownTypes.put("org.colorcoding.ibas.bobas.data.DateTime",
+			// "string");
 		}
 		return this.knownTypes;
 	}

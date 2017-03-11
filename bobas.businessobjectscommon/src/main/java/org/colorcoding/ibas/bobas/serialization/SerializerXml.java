@@ -30,6 +30,7 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
@@ -220,6 +221,22 @@ public class SerializerXml extends Serializer {
 			}
 			elementType.appendChild(elementRestriction);
 			element.appendChild(elementType);
+		} else if (type.equals(DateTime.class)) {
+			// 日期类型
+			if (!isRoot) {
+				element.setAttribute("minOccurs", "0");
+				element.setAttribute("nillable", "true");
+			}
+			Element elementType = document.createElement("xs:simpleType");
+			Element elementRestriction = document.createElement("xs:restriction");
+			elementRestriction.setAttribute("base", "xs:string");
+			Element elementEnumeration = document.createElement("xs:pattern");
+			// 格式：2000-01-01 or 2000-01-01T00:00:00
+			elementEnumeration.setAttribute("value",
+					"|[0-9]{4}-[0-1][0-9]-[0-3][0-9]|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9]");
+			elementRestriction.appendChild(elementEnumeration);
+			elementType.appendChild(elementRestriction);
+			element.appendChild(elementType);
 		} else if (type.isArray() || Collection.class.isAssignableFrom(type)) {
 			if (!isRoot) {
 				element.setAttribute("minOccurs", "0");
@@ -298,7 +315,8 @@ public class SerializerXml extends Serializer {
 			this.knownTypes.put("java.math.BigDecimal", "xs:decimal");
 			this.knownTypes.put("java.util.Date", "xs:dateTime");
 			this.knownTypes.put("org.colorcoding.ibas.bobas.data.Decimal", "xs:decimal");
-			this.knownTypes.put("org.colorcoding.ibas.bobas.data.DateTime", "xs:string");
+			// this.knownTypes.put("org.colorcoding.ibas.bobas.data.DateTime",
+			// "xs:string");
 		}
 		return this.knownTypes;
 	}
