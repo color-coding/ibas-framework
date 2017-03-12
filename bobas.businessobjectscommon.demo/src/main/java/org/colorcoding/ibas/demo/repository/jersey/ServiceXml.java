@@ -16,7 +16,7 @@ import org.colorcoding.ibas.bobas.test.repository.BORepositoryTest;
 /**
  * 数据服务XML
  */
-@Path("xml/")
+@Path("xml")
 public class ServiceXml extends BORepositoryTest {
 
 	// --------------------------------------------------------------------------------------------//

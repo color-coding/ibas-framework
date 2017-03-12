@@ -15,7 +15,7 @@ import org.colorcoding.ibas.bobas.repository.jersey.FileRepositoryService;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
-@Path("files/")
+@Path("files")
 public class ServiceFile extends FileRepositoryService {
 
 	@POST

@@ -18,7 +18,7 @@ import org.colorcoding.ibas.bobas.test.repository.BORepositoryTest;
  *
  */
 @WebService
-@WebServicePath("/soap")
+@WebServicePath("soap")
 public class ServiceSoap extends BORepositoryTest {
 
 	// --------------------------------------------------------------------------------------------//

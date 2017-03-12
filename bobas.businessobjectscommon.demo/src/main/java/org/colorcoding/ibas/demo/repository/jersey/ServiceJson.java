@@ -16,7 +16,7 @@ import org.colorcoding.ibas.bobas.test.repository.BORepositoryTest;
 /**
  * 数据服务JSON
  */
-@Path("json/")
+@Path("json")
 public class ServiceJson extends BORepositoryTest {
 
 	// --------------------------------------------------------------------------------------------//
