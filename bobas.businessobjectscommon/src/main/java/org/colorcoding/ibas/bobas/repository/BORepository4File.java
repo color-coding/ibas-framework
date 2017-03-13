@@ -43,7 +43,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 					KeyValue[] keys = null;
 					if (bo instanceof IBOStorageTag) {
 						IBOStorageTag tagBO = (IBOStorageTag) bo;
-						String companyId = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_COMPANY_ID, "CC")
+						String companyId = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_COMPANY, "CC")
 								.toLowerCase();
 						File file = new File(workFolder + File.separator + companyId + "_sys" + File.separator
 								+ "bo_keys.properties");

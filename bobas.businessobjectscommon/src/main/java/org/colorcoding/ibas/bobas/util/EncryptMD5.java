@@ -132,7 +132,7 @@ public class EncryptMD5 extends Encrypt {
 	 * @throws Exception
 	 */
 	public static String shortText(String text, String[] chars) {
-		String key = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_COMPANY_ID, "CC");
+		String key = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_COMPANY, "CC");
 		return shortText(text, chars, key);
 	}
 

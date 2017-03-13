@@ -447,7 +447,8 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				throw new BOParsingException(i18n.prop("msg_bobas_not_found_bo_table", boType.getName()));
 			}
 			int result = criteria.getResultCount();
-			table = String.format(sqlScripts.getDbObjectSign(), table);
+			table = MyConfiguration.applyVariables(String.format(sqlScripts.getDbObjectSign(), table));
+			// 修正其中公司变量
 			String order = this.parseSqlQuery(criteria.getSorts()).getQueryString();
 			String where = this.parseSqlQuery(criteria.getConditions()).getQueryString();
 			return new SqlQuery(sqlScripts.groupSelectQuery("*", table, where, order, result));
@@ -1018,7 +1019,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				} else {
 					reader.close();
 					throw new SqlScriptsException(
-							i18n.prop("msg_bobas_not_found_bo_primary_keys", bo.getClass().getName()));
+							i18n.prop("msg_bobas_not_found_bo_primary_keys", bo.getClass().getSimpleName()));
 				}
 			} else if (bo instanceof IBODocumentLine) {
 				// 业务单据行主键
@@ -1039,7 +1040,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				} else {
 					reader.close();
 					throw new SqlScriptsException(
-							i18n.prop("msg_bobas_not_found_bo_primary_keys", bo.getClass().getName()));
+							i18n.prop("msg_bobas_not_found_bo_primary_keys", bo.getClass().getSimpleName()));
 				}
 			} else if (bo instanceof IBOMasterData) {
 				// 主数据主键
@@ -1052,7 +1053,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				} else {
 					reader.close();
 					throw new SqlScriptsException(
-							i18n.prop("msg_bobas_not_found_bo_primary_keys", bo.getClass().getName()));
+							i18n.prop("msg_bobas_not_found_bo_primary_keys", bo.getClass().getSimpleName()));
 				}
 			} else if (bo instanceof IBOMasterDataLine) {
 				// 主数据行主键
@@ -1073,7 +1074,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				} else {
 					reader.close();
 					throw new SqlScriptsException(
-							i18n.prop("msg_bobas_not_found_bo_primary_keys", bo.getClass().getName()));
+							i18n.prop("msg_bobas_not_found_bo_primary_keys", bo.getClass().getSimpleName()));
 				}
 			} else if (bo instanceof IBOSimple) {
 				// 简单对象主键
@@ -1085,7 +1086,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				} else {
 					reader.close();
 					throw new SqlScriptsException(
-							i18n.prop("msg_bobas_not_found_bo_primary_keys", bo.getClass().getName()));
+							i18n.prop("msg_bobas_not_found_bo_primary_keys", bo.getClass().getSimpleName()));
 				}
 			} else if (bo instanceof IBOSimpleLine) {
 				// 简单对象行主键
@@ -1106,7 +1107,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				} else {
 					reader.close();
 					throw new SqlScriptsException(
-							i18n.prop("msg_bobas_not_found_bo_primary_keys", bo.getClass().getName()));
+							i18n.prop("msg_bobas_not_found_bo_primary_keys", bo.getClass().getSimpleName()));
 				}
 
 			} else {
@@ -1136,7 +1137,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 					} else {
 						reader.close();
 						throw new SqlScriptsException(
-								i18n.prop("msg_bobas_not_found_bo_primary_keys", bo.getClass().getName()));
+								i18n.prop("msg_bobas_not_found_bo_primary_keys", bo.getClass().getSimpleName()));
 					}
 				}
 			}

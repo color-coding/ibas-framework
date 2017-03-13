@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.core.fields;
 
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.mapping.DbField;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
@@ -54,7 +55,7 @@ public abstract class FieldDataDbBase<T> extends FieldDataBase<T> implements IFi
 		this.setSavable(true);
 		this.setOriginal(true);
 		this.setDbField(mapping.name());
-		this.setDbTable(mapping.table());
+		this.setDbTable(MyConfiguration.applyVariables(mapping.table()));
 		this.setFieldType(mapping.type());
 	}
 }

@@ -17,7 +17,7 @@ public class SqlScripts implements ISqlScripts {
 
 	protected String getCompanyId() {
 		if (companyId == null)
-			companyId = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_COMPANY_ID, "CC");
+			companyId = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_COMPANY, "CC");
 		return companyId;
 	}
 

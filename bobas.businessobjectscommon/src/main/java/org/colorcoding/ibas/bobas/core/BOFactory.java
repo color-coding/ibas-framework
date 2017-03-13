@@ -198,7 +198,7 @@ public class BOFactory implements IBOFactory {
 		}
 		Annotation annotation = type.getAnnotation(BOCode.class);
 		if (annotation != null) {
-			return ((BOCode) annotation).value();
+			return MyConfiguration.applyVariables(((BOCode) annotation).value());
 		}
 		return null;
 	}

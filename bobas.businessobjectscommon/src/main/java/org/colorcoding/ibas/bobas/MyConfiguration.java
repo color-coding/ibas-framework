@@ -46,7 +46,7 @@ public class MyConfiguration extends Configuration {
 	/**
 	 * 配置项目-公司标记
 	 */
-	public final static String CONFIG_ITEM_COMPANY_ID = "CompanyId";
+	public final static String CONFIG_ITEM_COMPANY = "Company";
 	/**
 	 * 配置项目-调试模式
 	 */
