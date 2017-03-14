@@ -11,7 +11,6 @@ import java.lang.reflect.Method;
  */
 public class Parameter {
 	public static Parameter create(String string) {
-		// {"name":"ibasVersion","value":"0.1.1"}
 		if (string == null || string.isEmpty()) {
 			return null;
 		}
@@ -129,11 +128,10 @@ public class Parameter {
 	}
 
 	public Object getValue(String path) throws Exception {
-		// like,getValue().toString(xml)
 		return this.getValue(this.getValue(), path);
 	}
 
 	public String toString() {
-		return String.format("Parameter %s %s", this.getName(), this.getValue());
+		return String.format("{parameter %s %s}", this.getName(), this.getValue());
 	}
 }

@@ -29,7 +29,7 @@ public class DbAdapterFactory extends ConfigurableFactory<IDbAdapter> {
 
 	@Override
 	protected IDbAdapter createDefault(String typeName) {
-		return null;
+		throw new RuntimeException(i18n.prop("msg_bobas_not_found_db_dbtype"));
 	}
 
 	/**

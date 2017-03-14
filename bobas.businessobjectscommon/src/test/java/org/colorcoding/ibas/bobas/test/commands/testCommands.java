@@ -10,6 +10,7 @@ public class testCommands extends TestCase {
 
 	public void testCommand4Test() {
 		CommandsManager commandsManager = new CommandsManager();
+		commandsManager.register(Command4Test.class);
 		ArrayList<String> args = new ArrayList<>();
 		args.add(String.format(Command4Test.COMMAND_PROMPT)); // 命令
 		args.add(String.format("-TemplateFolder=%s", "eclipse/ibas_classic")); // 使用的模板

@@ -232,7 +232,7 @@ public class Configuration {
 	}
 
 	/**
-	 * 从配置文件重新加载配置项目
+	 * 重新加载配置文件
 	 */
 	public static void update() {
 		String folder = getStartupFolder();
@@ -240,7 +240,16 @@ public class Configuration {
 			// 测试脚本 target\test-classes
 			folder = (new File(folder)).getParentFile().getParentFile().getPath();
 		}
-		String configFile = String.format("%s%sapp.xml", folder, File.separator);
+		update(String.format("%s%sapp.xml", folder, File.separator));
+	}
+
+	/**
+	 * 重新加载配置文件
+	 * 
+	 * @param configFile
+	 *            文件
+	 */
+	public static void update(String configFile) {
 		getInstance().update(configFile);
 		RuntimeLog.log(RuntimeLog.MSG_CONFIG_READ_FILE_DATA, configFile);
 	}

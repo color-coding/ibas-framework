@@ -126,14 +126,6 @@ public class SerializerJson extends Serializer {
 			marshaller.marshal(object, writer);
 		} catch (Exception e) {
 			throw new SerializationException(e);
-		} finally {
-			try {
-				if (writer != null) {
-					writer.close();
-				}
-			} catch (Exception e) {
-				RuntimeLog.log(e);
-			}
 		}
 	}
 
@@ -151,14 +143,6 @@ public class SerializerJson extends Serializer {
 			return (T) unmarshaller.unmarshal(inputStream);
 		} catch (Exception e) {
 			throw new SerializationException(e);
-		} finally {
-			try {
-				if (inputStream != null) {
-					inputStream.close();
-				}
-			} catch (Exception e) {
-				RuntimeLog.log(e);
-			}
 		}
 	}
 

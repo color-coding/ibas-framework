@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
@@ -67,7 +68,8 @@ public class CommandsManager {
 	 *            参数
 	 */
 	protected void print(String message, Object... args) {
-		System.out.println("[btulz]: " + String.format(message, args));
+		String pMsg = String.format("[ibas|commands]: %s", String.format(message, args));
+		System.out.println(pMsg);
 	}
 
 	public int run(String[] args) {
@@ -80,7 +82,7 @@ public class CommandsManager {
 			stringBuilder.append(arg);
 			stringBuilder.append("}");
 		}
-		RuntimeLog.log(MessageLevel.DEBUG, "input in command args %s.", stringBuilder);
+		RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_COMMAND_ARGUMENTS, stringBuilder);
 		if (args == null || args.length == 0
 				|| (args.length == 1 && args[0].trim().equals(Command.ARGUMENT_NAME_HELP))) {
 			// 没有提供参数，则输出已注册的所有命令
@@ -91,14 +93,14 @@ public class CommandsManager {
 				}
 				stringBuilder.append(name);
 			}
-			this.print("you can use the command [%s].", stringBuilder);
+			this.print(i18n.prop("msg_bobas_commands_correct_synta"), stringBuilder);
 			return Command.RETURN_VALUE_NO_COMMAND_EXECUTION;
 		}
 		String prompt = args[0].trim();
 		Class<? extends Command<?>> commandType = this.getCommands(prompt);
 		if (commandType == null) {
 			// 没有找到命令
-			this.print("not found command [%s].", prompt);
+			this.print(i18n.prop("msg_bobas_commands_not_found"), prompt);
 			return Command.RETURN_VALUE_NOT_FOUND_COMMAND_PROMPT;
 		}
 		try {
@@ -109,7 +111,7 @@ public class CommandsManager {
 			}
 			return command.run(cArgs);
 		} catch (InstantiationException | IllegalAccessException e) {
-			this.print("call command [%s] faild.", prompt);
+			this.print(i18n.prop("msg_bobas_commands_call_faild"), prompt);
 			this.print(e.toString());
 			return Command.RETURN_VALUE_COMMAND_EXECUTION_FAILD;
 		}

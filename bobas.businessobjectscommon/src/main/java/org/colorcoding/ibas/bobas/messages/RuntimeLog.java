@@ -65,6 +65,7 @@ public class RuntimeLog {
 	public static final String MSG_BUSINESS_RULES_MANAGER_CREATED = "rules manager: created business rules manager [%s].";
 	public static final String MSG_RULES_EXECUTING = "rules: bo %s executing rule [%s - %s].";
 	public static final String MSG_RULES_EXECUTING_FAILD = "rules: field [%s] triggered rules fail to run, %s.";
+	public static final String MSG_COMMAND_ARGUMENTS = "command: input arguments %s.";
 
 	private static int MESSAGE_LEVEL = -1;
 

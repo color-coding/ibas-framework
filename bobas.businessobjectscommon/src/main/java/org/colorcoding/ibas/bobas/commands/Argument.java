@@ -125,7 +125,7 @@ public class Argument {
 	}
 
 	public String toString() {
-		return String.format("Argument %s %s", this.getName(), this.getValue());
+		return String.format("{argument %s %s}", this.getName(), this.getValue());
 	}
 
 	/**

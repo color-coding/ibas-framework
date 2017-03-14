@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.colorcoding.ibas.bobas.i18n.i18n;
+
 /**
  * 命令
  * 
@@ -45,7 +47,7 @@ public abstract class Command<C> {
 
 	public String getName() {
 		if (this.name == null) {
-			this.name = "btulz";
+			this.name = "ibas|commands";
 		}
 		return name;
 	}
@@ -73,7 +75,7 @@ public abstract class Command<C> {
 	 *            参数
 	 */
 	protected void print(String message, Object... args) {
-		System.out.println(String.format("[%s]: ", this.getName()) + String.format(message, args));
+		System.out.println(String.format("[commands|%s]: %s", this.getName(), String.format(message, args)));
 	}
 
 	/**
@@ -129,7 +131,7 @@ public abstract class Command<C> {
 				}
 				if (!done) {
 					// 未能识别的参数
-					this.print("invalid argument [%s].", args[i]);
+					this.print(i18n.prop("msg_bobas_commands_invalid_argument"), args[i]);
 					return RETURN_VALUE_INVALID_ARGUMENT;
 				}
 			}
