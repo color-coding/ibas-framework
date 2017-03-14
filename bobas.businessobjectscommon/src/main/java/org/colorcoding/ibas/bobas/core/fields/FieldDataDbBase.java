@@ -6,10 +6,13 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 public abstract class FieldDataDbBase<T> extends FieldDataBase<T> implements IFieldDataDb {
 
-	private String dbField = "";
+	private String dbField;
 
 	@Override
 	public String getDbField() {
+		if (this.fieldMapping != null) {
+			return this.fieldMapping.name();
+		}
 		return this.dbField;
 	}
 
@@ -17,10 +20,13 @@ public abstract class FieldDataDbBase<T> extends FieldDataBase<T> implements IFi
 		this.dbField = value;
 	}
 
-	private String dbTable = "";
+	private String dbTable;
 
 	@Override
 	public String getDbTable() {
+		if (this.fieldMapping != null) {
+			return MyConfiguration.applyVariables(this.fieldMapping.table());
+		}
 		return this.dbTable;
 	}
 
@@ -39,10 +45,13 @@ public abstract class FieldDataDbBase<T> extends FieldDataBase<T> implements IFi
 		this.dbIndex = value;
 	}
 
-	private DbFieldType fieldType = DbFieldType.UNKNOWN;
+	private DbFieldType fieldType;
 
 	@Override
 	public DbFieldType getFieldType() {
+		if (this.fieldMapping != null) {
+			return this.fieldMapping.type();
+		}
 		return this.fieldType;
 	}
 
@@ -50,12 +59,12 @@ public abstract class FieldDataDbBase<T> extends FieldDataBase<T> implements IFi
 		this.fieldType = value;
 	}
 
+	private DbField fieldMapping;
+
 	public void mapping(DbField mapping) {
 		this.setPrimaryKey(mapping.primaryKey());
 		this.setSavable(true);
 		this.setOriginal(true);
-		this.setDbField(mapping.name());
-		this.setDbTable(MyConfiguration.applyVariables(mapping.table()));
-		this.setFieldType(mapping.type());
+		this.fieldMapping = mapping;
 	}
 }
