@@ -112,12 +112,12 @@ public class ConfigurationManager implements IConfigurationManager {
 	}
 
 	@Override
-	public synchronized void update(String filePath) {
+	public synchronized boolean update(String filePath) {
 		if (filePath == null || filePath.isEmpty())
-			return;
+			return false;
 		File file = new File(filePath);
 		if (!file.exists())
-			return;
+			return false;
 		try {
 			InputStream stream = new FileInputStream(file);
 			JAXBContext context = JAXBContext.newInstance(ConfigurationManager.class);
@@ -126,11 +126,13 @@ public class ConfigurationManager implements IConfigurationManager {
 			for (ConfigurationElement item : tmpManager.getConfigurationElements()) {
 				this.addSetting(item.getKey(), item.getValue());
 			}
+			return true;
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		return false;
 	}
 
 }

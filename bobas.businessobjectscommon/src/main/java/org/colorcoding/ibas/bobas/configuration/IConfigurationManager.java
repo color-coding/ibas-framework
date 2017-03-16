@@ -41,6 +41,7 @@ public interface IConfigurationManager {
 	 * 
 	 * @param filePath
 	 *            配置文件路径
+	 * @return 是否成功
 	 */
-	void update(String filePath);
+	boolean update(String filePath);
 }

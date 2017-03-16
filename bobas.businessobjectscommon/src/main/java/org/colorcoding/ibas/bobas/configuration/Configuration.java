@@ -233,14 +233,16 @@ public class Configuration {
 
 	/**
 	 * 重新加载配置文件
+	 * 
+	 * @return 是否成功
 	 */
-	public static void update() {
+	public static boolean update() {
 		String folder = getStartupFolder();
 		if (folder.endsWith("target" + File.separator + "test-classes")) {
 			// 测试脚本 target\test-classes
 			folder = (new File(folder)).getParentFile().getParentFile().getPath();
 		}
-		update(String.format("%s%sapp.xml", folder, File.separator));
+		return update(String.format("%s%sapp.xml", folder, File.separator));
 	}
 
 	/**
@@ -248,10 +250,14 @@ public class Configuration {
 	 * 
 	 * @param configFile
 	 *            文件
+	 * @return 是否成功
 	 */
-	public static void update(String configFile) {
-		getInstance().update(configFile);
-		RuntimeLog.log(RuntimeLog.MSG_CONFIG_READ_FILE_DATA, configFile);
+	public static boolean update(String configFile) {
+		boolean done = getInstance().update(configFile);
+		if (done) {
+			RuntimeLog.log(RuntimeLog.MSG_CONFIG_READ_FILE_DATA, configFile);
+		}
+		return done;
 	}
 
 	private static Map<String, String> variableMap;
