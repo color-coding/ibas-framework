@@ -39,8 +39,8 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
  * 
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = SalesOrder.BUSINESS_OBJECT_NAME)
-@XmlRootElement(name = SalesOrder.BUSINESS_OBJECT_NAME)
+@XmlType(name = SalesOrder.BUSINESS_OBJECT_NAME, namespace = "http://colorcoding.org/ibas/bobas/test")
+@XmlRootElement(name = SalesOrder.BUSINESS_OBJECT_NAME, namespace = "http://colorcoding.org/ibas/bobas/test")
 @BOCode(SalesOrder.BUSINESS_OBJECT_CODE)
 public class SalesOrder extends BusinessObject<SalesOrder> implements ISalesOrder, IApprovalData, IBOSeriesKey {
 	// ,IFieldMaxValueKey

@@ -287,7 +287,7 @@ public class testBusinessObjects extends TestCase {
 		// 测试反序列化的状态变化
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-		stringBuilder.append("<SalesOrder>");
+		stringBuilder.append("<ns:SalesOrder xmlns:ns=\"http://colorcoding.org/ibas/bobas/test\">");
 		stringBuilder.append("<isNew>false</isNew>");
 		stringBuilder.append("<isDirty>true</isDirty>");
 		stringBuilder.append("<SalesOrderItems>");
@@ -359,7 +359,7 @@ public class testBusinessObjects extends TestCase {
 		stringBuilder.append("<DocEntry>");
 		stringBuilder.append(99);
 		stringBuilder.append("</DocEntry>");
-		stringBuilder.append("</SalesOrder>");
+		stringBuilder.append("</ns:SalesOrder>");
 		ISerializerManager manager = SerializerFactory.create().createManager();
 		ISerializer serializer = manager.create("xml");
 		SalesOrder bo = serializer.deserialize(stringBuilder.toString(), SalesOrder.class);

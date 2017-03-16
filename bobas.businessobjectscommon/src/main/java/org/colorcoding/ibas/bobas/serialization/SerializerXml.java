@@ -15,6 +15,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -161,7 +162,11 @@ public class SerializerXml extends Serializer {
 	}
 
 	protected void createSchemaElement(Document document, Class<?> type) {
-		Element element = this.createSchemaElement(document, type, type.getSimpleName(), true);
+		Element element = this.createSchemaElement(document, type, "" + type.getSimpleName(), true);
+		XmlRootElement annotation = type.getAnnotation(XmlRootElement.class);
+		if (annotation != null) {
+			document.getDocumentElement().setAttribute("targetNamespace", annotation.namespace());
+		}
 		document.getDocumentElement().appendChild(element);
 	}
 

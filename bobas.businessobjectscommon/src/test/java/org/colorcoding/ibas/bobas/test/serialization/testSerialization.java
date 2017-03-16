@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.Writer;
 
 import javax.xml.bind.JAXBException;
@@ -67,7 +68,7 @@ public class testSerialization extends TestCase {
 		// schema校验
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n");
-		stringBuilder.append("<SalesOrder>\r\n");
+		stringBuilder.append("<ns:SalesOrder xmlns:ns=\"http://colorcoding.org/ibas/bobas/test\">\r\n");
 		stringBuilder.append("<isDirty>true</isDirty>\r\n");
 		stringBuilder.append("<isDeleted>false</isDeleted>\r\n");
 		stringBuilder.append("<isNew>true</isNew>\r\n");
@@ -239,7 +240,7 @@ public class testSerialization extends TestCase {
 		stringBuilder.append("<UpdateTime>0</UpdateTime>\r\n");
 		stringBuilder.append("<UpdateUserSign>0</UpdateUserSign>\r\n");
 		stringBuilder.append("<UserSign>0</UserSign>\r\n");
-		stringBuilder.append("</SalesOrder>\r\n");
+		stringBuilder.append("</ns:SalesOrder>\r\n");
 		// System.err.println(stringBuilder.toString());
 		SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 		// 包装待验证的xml字符串为Reader
@@ -288,6 +289,9 @@ public class testSerialization extends TestCase {
 		String xml = order.toString("xml");
 		System.out.println(xml);
 		ISerializer serializer = new SerializerXml();
+		StringWriter writer = new StringWriter();
+		serializer.getSchema(SalesOrder.class, writer);
+		System.out.println(writer.toString());
 		serializer.validate(SalesOrder.class, xml);
 	}
 
