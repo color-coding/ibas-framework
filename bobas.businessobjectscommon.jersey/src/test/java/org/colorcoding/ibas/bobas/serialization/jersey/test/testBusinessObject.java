@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.serialization.jersey.test;
 
-import java.io.StringWriter;
+import java.io.ByteArrayOutputStream;
 
 import javax.xml.bind.JAXBException;
 
@@ -60,7 +60,7 @@ public class testBusinessObject extends TestCase {
 
 		String json = order.toString("json");
 		System.out.println(json);
-		ISerializer serializer = new SerializerJson();
+		ISerializer<?> serializer = new SerializerJson();
 		order = serializer.deserialize(json, order.getClass());
 		String jsonNew = order.toString("json");
 		System.out.println(jsonNew);
@@ -93,10 +93,10 @@ public class testBusinessObject extends TestCase {
 		stringBuilder.append(String.format("\"Canceled\":\"%s\",", emYesNo.YES));
 		stringBuilder.append(String.format("\"Status\":\"%s\"", emBOStatus.CLOSED));
 		stringBuilder.append("}}");
-		ISerializer serializer = new SerializerJson();
+		ISerializer<?> serializer = new SerializerJson();
 		serializer.validate(SalesOrder.class, stringBuilder.toString());
 		IBusinessObject bo = serializer.deserialize(stringBuilder.toString(), SalesOrder.class);
-		StringWriter writer = new StringWriter();
+		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.serialize(bo, writer, true);
 		System.out.println(writer.toString());
 	}
@@ -134,8 +134,8 @@ public class testBusinessObject extends TestCase {
 		orderItem.setQuantity(10);
 		orderItem.setPrice(199.99);
 
-		ISerializer serializer = SerializerFactory.create().createManager().create("json");
-		StringWriter writer = new StringWriter();
+		ISerializer<?> serializer = SerializerFactory.create().createManager().create("json");
+		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.getSchema(order.getClass(), writer);
 		System.out.println(writer.toString());
 		serializer.validate(order.getClass(), order.toString("json"));

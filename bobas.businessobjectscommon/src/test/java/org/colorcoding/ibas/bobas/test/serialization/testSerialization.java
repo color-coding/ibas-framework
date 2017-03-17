@@ -1,14 +1,13 @@
 package org.colorcoding.ibas.bobas.test.serialization;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.Source;
@@ -42,7 +41,7 @@ public class testSerialization extends TestCase {
 
 	public void testSerializer() throws SAXException, IOException {
 		ISerializerManager manager = SerializerFactory.create().createManager();
-		ISerializer serializer = manager.create("xml");
+		ISerializer<?> serializer = manager.create("xml");
 		Materials materials = new Materials();
 		materials.setCreateDate(DateTime.getToday());
 		System.out.println(materials.toString("xml"));
@@ -58,12 +57,12 @@ public class testSerialization extends TestCase {
 	}
 
 	public void testXmlSchema() throws JAXBException, IOException, SAXException {
-		ISerializer serializer = new SerializerXml();
+		ISerializer<?> serializer = new SerializerXml();
 		File file = new File(MyConfiguration.getWorkFolder() + File.separator + "test.xsd");
 		if (!file.exists()) {
 			file.createNewFile();
 		}
-		Writer writer = new FileWriter(file, false);
+		FileOutputStream writer = new FileOutputStream(file);
 		serializer.getSchema(SalesOrder.class, writer);
 		// schema校验
 		StringBuilder stringBuilder = new StringBuilder();
@@ -288,8 +287,8 @@ public class testSerialization extends TestCase {
 		orderItem.setPrice(199.99);
 		String xml = order.toString("xml");
 		System.out.println(xml);
-		ISerializer serializer = new SerializerXml();
-		StringWriter writer = new StringWriter();
+		ISerializer<?> serializer = new SerializerXml();
+		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.getSchema(SalesOrder.class, writer);
 		System.out.println(writer.toString());
 		serializer.validate(SalesOrder.class, xml);

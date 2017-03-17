@@ -1,18 +1,16 @@
 package org.colorcoding.ibas.bobas.serialization;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -32,100 +30,66 @@ import javax.xml.validation.Validator;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 /**
- * 序列化对象
+ * xml序列化者
  * 
  * 继承实现时，注意序列化和反序列化监听
  */
-public class SerializerXml extends Serializer {
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T clone(T object, Class<?>... types) throws SerializationException {
-		ByteArrayInputStream inputStream = null;
-		ByteArrayOutputStream outputStream = null;
-		try {
-			Class<?>[] knownTypes = new Class[types.length + 1];
-			knownTypes[0] = object.getClass();
-			for (int i = 0; i < types.length; i++) {
-				knownTypes[i + 1] = types[i];
-			}
-			JAXBContext context = JAXBContext.newInstance(knownTypes);
-			Marshaller marshaller = context.createMarshaller();
-			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");// //编码格式
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);// 是否格式化生成的xml串
-			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);// 是否省略xm头声明信息
-			outputStream = new ByteArrayOutputStream();
-			marshaller.marshal(object, outputStream);
-			Unmarshaller unmarshaller = context.createUnmarshaller();
-			inputStream = new ByteArrayInputStream(outputStream.toByteArray());
-			return (T) unmarshaller.unmarshal(inputStream);
-		} catch (Exception e) {
-			throw new SerializationException(e);
-		} finally {
-			try {
-				if (outputStream != null) {
-					outputStream.close();
-				}
-			} catch (IOException e) {
-				RuntimeLog.log(e);
-			}
-			try {
-				if (inputStream != null) {
-					inputStream.close();
-				}
-			} catch (IOException e) {
-				RuntimeLog.log(e);
-			}
-		}
-	}
-
-	/**
-	 * 从xml字符形成对象
-	 * 
-	 * @param value
-	 *            字符串
-	 * @param types
-	 *            相关对象
-	 * @return 对象实例
-	 */
-	@SuppressWarnings("unchecked")
-	public <T> T deserialize(java.io.InputStream inputStream, Class<T> type, Class<?>... types) {
-		try {
-			Class<?>[] knownTypes = new Class[types.length + 1];
-			knownTypes[0] = type;
-			for (int i = 0; i < types.length; i++) {
-				knownTypes[i + 1] = types[i];
-			}
-			JAXBContext context = JAXBContext.newInstance(knownTypes);
-			Unmarshaller unmarshaller = context.createUnmarshaller();
-			return (T) unmarshaller.unmarshal(inputStream);
-		} catch (Exception e) {
-			throw new SerializationException(e);
-		}
-	}
+public class SerializerXml extends Serializer<Schema> {
 
 	@Override
-	public void serialize(Object object, Writer writer, boolean formated, Class<?>... types)
-			throws SerializationException {
+	public void serialize(Object object, OutputStream outputStream, boolean formated, Class<?>... types) {
 		try {
-			Class<?>[] knownTypes = new Class[types.length + 1];
-			knownTypes[0] = object.getClass();
-			for (int i = 0; i < types.length; i++) {
-				knownTypes[i + 1] = types[i];
-			}
-			JAXBContext context = JAXBContext.newInstance(knownTypes);
+			Class<?>[] knwonTypes = new Class<?>[types.length + 1];
+			knwonTypes[0] = object.getClass();
+			System.arraycopy(types, 0, knwonTypes, 1, types.length);
+			JAXBContext context = JAXBContext.newInstance(knwonTypes);
 			Marshaller marshaller = context.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");// 编码格式
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);// 是否格式化生成的xml串
 			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);// 是否省略xm头声明信息
-			marshaller.marshal(object, writer);
-		} catch (Exception e) {
+			marshaller.marshal(object, outputStream);
+		} catch (JAXBException e) {
+			throw new SerializationException(e);
+		}
+	}
+
+	@Override
+	public Object deserialize(InputStream inputStream, Class<?>... types) throws SerializationException {
+		try {
+			JAXBContext context = JAXBContext.newInstance(types);
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			return unmarshaller.unmarshal(inputStream);
+		} catch (JAXBException e) {
+			throw new SerializationException(e);
+		}
+	}
+
+	@Override
+	public void validate(Schema schema, InputStream data) throws ValidateException {
+		try {
+			Validator validator = schema.newValidator();
+			Source xmlSource = new StreamSource(data);
+			validator.validate(xmlSource);
+		} catch (SAXException | IOException e) {
+			throw new ValidateException(e);
+		}
+	}
+
+	@Override
+	public Schema getSchema(Class<?> type) throws SerializationException {
+		try {
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			this.getSchema(type, outputStream);
+			SchemaFactory factory = SchemaFactory.newInstance(XML_FILE_NAMESPACE);
+			Source xsdSource = new StreamSource(new ByteArrayInputStream(outputStream.toByteArray()));
+			return factory.newSchema(xsdSource);
+		} catch (SAXException e) {
 			throw new SerializationException(e);
 		}
 	}
@@ -136,13 +100,12 @@ public class SerializerXml extends Serializer {
 	public static final String XML_FILE_NAMESPACE = "http://www.w3.org/2001/XMLSchema";
 
 	@Override
-	public void getSchema(Class<?> type, Writer writer) throws SerializationException {
+	public void getSchema(Class<?> type, OutputStream outputStream) throws SerializationException {
 		try {
 			DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			DOMImplementation domImpl = db.getDOMImplementation();
 			Document document = domImpl.createDocument(XML_FILE_NAMESPACE, "xs:schema", null);
 			this.createSchemaElement(document, type);
-
 			// 将xml写到文件中
 			javax.xml.transform.Transformer transformer = TransformerFactory.newInstance().newTransformer();
 			DOMSource source = new DOMSource(document);
@@ -154,8 +117,7 @@ public class SerializerXml extends Serializer {
 			if (formatted) {
 				transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 			}
-			StreamResult result = new StreamResult(writer);
-			transformer.transform(source, result);
+			transformer.transform(source, new StreamResult(outputStream));
 		} catch (ParserConfigurationException | TransformerException e) {
 			throw new SerializationException(e);
 		}
@@ -307,31 +269,6 @@ public class SerializerXml extends Serializer {
 			// "xs:string");
 		}
 		return this.knownTypes;
-	}
-
-	@Override
-	public void validate(Class<?> type, Reader reader) throws ValidateException {
-		try {
-			Writer writer = new StringWriter();
-			this.getSchema(type, writer);
-			SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-			Reader xsdReader = new BufferedReader(new StringReader(writer.toString()));
-			Source xsdSource = new StreamSource(xsdReader);
-			Schema schema = factory.newSchema(xsdSource);
-			this.validate(schema, reader);
-		} catch (Exception e) {
-			throw new ValidateException(e);
-		}
-	}
-
-	public void validate(Schema schema, Reader reader) throws ValidateException {
-		try {
-			Validator validator = schema.newValidator();
-			Source xmlSource = new StreamSource(reader);
-			validator.validate(xmlSource);
-		} catch (Exception e) {
-			throw new ValidateException(e);
-		}
 	}
 
 }

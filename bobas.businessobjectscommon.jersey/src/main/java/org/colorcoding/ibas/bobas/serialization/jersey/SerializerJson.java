@@ -4,9 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +15,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.serialization.SchemaElement;
 import org.colorcoding.ibas.bobas.serialization.SerializationException;
 import org.colorcoding.ibas.bobas.serialization.Serializer;
 import org.colorcoding.ibas.bobas.serialization.ValidateException;
@@ -37,159 +36,14 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory;
  * @author Niuren.Zhu
  *
  */
-public class SerializerJson extends Serializer {
-
-	/**
-	 * 创建json序列化类
-	 * 
-	 * @param types
-	 *            已知类型
-	 * @return
-	 * @throws JAXBException
-	 */
-	private static JAXBContext createJAXBContextJson(Class<?>... types) throws JAXBException {
-		String factoryKey = "javax.xml.bind.context.factory";
-		String factoryValue = System.getProperty(factoryKey);
-		try {
-			// 重置序列化工厂
-			System.setProperty(factoryKey, "org.eclipse.persistence.jaxb.JAXBContextFactory");
-			Map<String, Object> properties = new HashMap<String, Object>(2);
-			// 指定格式为json，避免引用此处没有静态变量
-			properties.put("eclipselink.media-type", "application/json");
-			// json数组不要前缀类型
-			properties.put("eclipselink.json.wrapper-as-array-name", true);
-			JAXBContext context = JAXBContext.newInstance(types, properties);
-			return context;
-		} finally {
-			// 还原工厂参数
-			if (factoryValue == null) {
-				System.clearProperty(factoryKey);
-			} else {
-				System.setProperty(factoryKey, factoryValue);
-			}
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T clone(T object, Class<?>... types) throws SerializationException {
-		ByteArrayInputStream inputStream = null;
-		ByteArrayOutputStream outputStream = null;
-		try {
-			Class<?>[] knownTypes = new Class[types.length + 1];
-			knownTypes[0] = object.getClass();
-			for (int i = 0; i < types.length; i++) {
-				knownTypes[i + 1] = types[i];
-			}
-			JAXBContext context = createJAXBContextJson(knownTypes);
-			Marshaller marshaller = context.createMarshaller();
-			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");// //编码格式
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);// 是否格式化生成的xml串
-			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);// 是否省略xm头声明信息
-			outputStream = new ByteArrayOutputStream();
-			marshaller.marshal(object, outputStream);
-			Unmarshaller unmarshaller = context.createUnmarshaller();
-			inputStream = new ByteArrayInputStream(outputStream.toByteArray());
-			return (T) unmarshaller.unmarshal(inputStream);
-		} catch (Exception e) {
-			throw new SerializationException(e);
-		} finally {
-			try {
-				if (outputStream != null) {
-					outputStream.close();
-				}
-			} catch (IOException e) {
-				RuntimeLog.log(e);
-			}
-			try {
-				if (inputStream != null) {
-					inputStream.close();
-				}
-			} catch (IOException e) {
-				RuntimeLog.log(e);
-			}
-		}
-	}
-
-	@Override
-	public void serialize(Object object, Writer writer, boolean formated, Class<?>... types)
-			throws SerializationException {
-		try {
-			Class<?>[] knownTypes = new Class[types.length + 1];
-			knownTypes[0] = object.getClass();
-			for (int i = 0; i < types.length; i++) {
-				knownTypes[i + 1] = types[i];
-			}
-			JAXBContext context = createJAXBContextJson(knownTypes);
-			Marshaller marshaller = context.createMarshaller();
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);
-			marshaller.marshal(object, writer);
-		} catch (Exception e) {
-			throw new SerializationException(e);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T deserialize(InputStream inputStream, Class<T> type, Class<?>... types) {
-		try {
-			Class<?>[] knownTypes = new Class[types.length + 1];
-			knownTypes[0] = type;
-			for (int i = 0; i < types.length; i++) {
-				knownTypes[i + 1] = types[i];
-			}
-			JAXBContext context = createJAXBContextJson(knownTypes);
-			Unmarshaller unmarshaller = context.createUnmarshaller();
-			return (T) unmarshaller.unmarshal(inputStream);
-		} catch (Exception e) {
-			throw new SerializationException(e);
-		}
-	}
-
-	@Override
-	public void validate(Class<?> type, Reader reader) throws ValidateException {
-		try {
-			StringWriter writer = new StringWriter();
-			this.getSchema(type, writer);
-			JsonNode jsonSchema = JsonLoader.fromString(writer.toString());
-			JsonSchema schema = JsonSchemaFactory.byDefault().getJsonSchema(jsonSchema);
-			this.validate(schema, reader);
-		} catch (IOException e) {
-			throw new ValidateException(e);
-		} catch (ProcessingException e) {
-			throw new ValidateException(e);
-		}
-	}
-
-	public void validate(JsonSchema schema, Reader reader) throws ValidateException {
-		try {
-			JsonNode jsonData = JsonLoader.fromReader(reader);
-			this.validate(schema, jsonData);
-		} catch (IOException e) {
-			throw new ValidateException(e);
-		}
-	}
-
-	public void validate(JsonSchema schema, JsonNode data) throws ValidateException {
-		try {
-			ProcessingReport report = schema.validate(data);
-			if (!report.isSuccess()) {
-				throw new ValidateException(report.toString());
-			}
-		} catch (ValidateException e) {
-			throw e;
-		} catch (ProcessingException e) {
-			throw new ValidateException(e);
-		}
-	}
-
+public class SerializerJson extends Serializer<JsonSchema> {
 	public static final String SCHEMA_VERSION = "http://json-schema.org/draft-04/schema#";
 
 	@Override
-	public void getSchema(Class<?> type, Writer writer) throws SerializationException {
+	public void getSchema(Class<?> type, OutputStream outputStream) throws SerializationException {
 		JsonFactory jsonFactory = new JsonFactory();
 		try {
-			JsonGenerator jsonGenerator = jsonFactory.createGenerator(writer);
+			JsonGenerator jsonGenerator = jsonFactory.createGenerator(outputStream);
 			jsonGenerator.writeStartObject();
 			jsonGenerator.writeStringField("$schema", SCHEMA_VERSION);
 			jsonGenerator.writeStringField("type", "object");
@@ -276,5 +130,105 @@ public class SerializerJson extends Serializer {
 			// "string");
 		}
 		return this.knownTypes;
+	}
+
+	@Override
+	public JsonSchema getSchema(Class<?> type) throws SerializationException {
+		try {
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			this.getSchema(type, outputStream);
+			JsonNode jsonSchema = JsonLoader
+					.fromReader(new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray())));
+			return JsonSchemaFactory.byDefault().getJsonSchema(jsonSchema);
+		} catch (IOException | ProcessingException e) {
+			throw new SerializationException(e);
+		}
+	}
+
+	private static JAXBContext context;
+
+	/**
+	 * 创建json序列化类
+	 * 
+	 * @param types
+	 *            已知类型
+	 * @return
+	 * @throws JAXBException
+	 */
+	protected JAXBContext createJAXBContextJson(Class<?>... types) throws JAXBException {
+		if (context != null) {
+			return context;
+		}
+		String factoryKey = "javax.xml.bind.context.factory";
+		String factoryValue = System.getProperty(factoryKey);
+		try {
+			// 重置序列化工厂
+			System.setProperty(factoryKey, "org.eclipse.persistence.jaxb.JAXBContextFactory");
+			Map<String, Object> properties = new HashMap<String, Object>(2);
+			// 指定格式为json，避免引用此处没有静态变量
+			properties.put("eclipselink.media-type", "application/json");
+			// json数组不要前缀类型
+			properties.put("eclipselink.json.wrapper-as-array-name", true);
+			context = JAXBContext.newInstance(types, properties);
+			return context;
+		} finally {
+			// 还原工厂参数
+			if (factoryValue == null) {
+				System.clearProperty(factoryKey);
+			} else {
+				System.setProperty(factoryKey, factoryValue);
+			}
+		}
+	}
+
+	@Override
+	public void serialize(Object object, OutputStream outputStream, boolean formated, Class<?>... types) {
+		try {
+			Class<?>[] knownTypes = new Class[types.length + 1];
+			knownTypes[0] = object.getClass();
+			for (int i = 0; i < types.length; i++) {
+				knownTypes[i + 1] = types[i];
+			}
+			JAXBContext context = createJAXBContextJson(knownTypes);
+			Marshaller marshaller = context.createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);
+			marshaller.marshal(object, outputStream);
+		} catch (JAXBException e) {
+			throw new SerializationException(e);
+		}
+	}
+
+	@Override
+	public Object deserialize(InputStream inputStream, Class<?>... types) throws SerializationException {
+		try {
+			JAXBContext context = createJAXBContextJson(types);
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			return unmarshaller.unmarshal(inputStream);
+		} catch (JAXBException e) {
+			throw new SerializationException(e);
+		}
+	}
+
+	@Override
+	public void validate(JsonSchema schema, InputStream data) throws ValidateException {
+		try {
+			JsonNode jsonData = JsonLoader.fromReader(new InputStreamReader(data));
+			this.validate(schema, jsonData);
+		} catch (IOException e) {
+			throw new ValidateException(e);
+		}
+	}
+
+	public void validate(JsonSchema schema, JsonNode data) throws ValidateException {
+		try {
+			ProcessingReport report = schema.validate(data);
+			if (!report.isSuccess()) {
+				throw new ValidateException(report.toString());
+			}
+		} catch (ValidateException e) {
+			throw e;
+		} catch (ProcessingException e) {
+			throw new ValidateException(e);
+		}
 	}
 }

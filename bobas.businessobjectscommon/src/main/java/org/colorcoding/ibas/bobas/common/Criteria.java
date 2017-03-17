@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.common;
 
-import java.io.StringWriter;
+import java.io.ByteArrayOutputStream;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -52,12 +52,12 @@ public class Criteria implements ICriteria {
 			ISerializerManager manager = SerializerFactory.create().createManager();
 			if (value.startsWith("<?xml")) {
 				// xml
-				ISerializer serializer = manager.create(ISerializerManager.TYPE_XML);
+				ISerializer<?> serializer = manager.create(ISerializerManager.TYPE_XML);
 				return (ICriteria) serializer.deserialize(value, Criteria.class, Conditions.class, Condition.class,
 						Sorts.class, Sort.class, ChildCriterias.class, ChildCriteria.class);
 			} else if (value.startsWith("{") && value.endsWith("}")) {
 				// json
-				ISerializer serializer = manager.create(ISerializerManager.TYPE_XML);
+				ISerializer<?> serializer = manager.create(ISerializerManager.TYPE_XML);
 				return (ICriteria) serializer.deserialize(value, Criteria.class, Conditions.class, Condition.class,
 						Sorts.class, Sort.class, ChildCriterias.class, ChildCriteria.class);
 			}
@@ -196,14 +196,14 @@ public class Criteria implements ICriteria {
 
 	@Override
 	public final ICriteria clone() {
-		ISerializer serializer = SerializerFactory.create().createManager().create();
+		ISerializer<?> serializer = SerializerFactory.create().createManager().create();
 		return (ICriteria) serializer.clone(this);
 	}
 
 	@Override
 	public String toString(String type) {
-		ISerializer serializer = SerializerFactory.create().createManager().create(type);
-		StringWriter writer = new StringWriter();
+		ISerializer<?> serializer = SerializerFactory.create().createManager().create(type);
+		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.serialize(this, writer);
 		return writer.toString();
 	}

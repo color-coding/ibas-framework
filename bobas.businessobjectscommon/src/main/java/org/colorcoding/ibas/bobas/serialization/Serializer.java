@@ -1,18 +1,12 @@
 package org.colorcoding.ibas.bobas.serialization;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.Writer;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -25,37 +19,59 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
  * 
  * 继承实现时，注意序列化和反序列化监听
  */
-public abstract class Serializer implements ISerializer {
-
-	/**
-	 * 从xml字符形成对象
-	 * 
-	 * @param value
-	 *            字符串
-	 * @param types
-	 *            相关对象
-	 * @return 对象实例
-	 */
-	public abstract <T> T deserialize(java.io.InputStream inputStream, Class<T> type, Class<?>... types);
+public abstract class Serializer<S> implements ISerializer<S> {
 
 	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T clone(T object, Class<?>... types) throws SerializationException {
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		this.serialize(object, outputStream, false, types);
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+		return (T) this.deserialize(inputStream, types);
+	}
+
+	@Override
+	public void validate(Class<?> type, InputStream data) throws ValidateException {
+		this.validate(this.getSchema(type), data);
+	}
+
+	@Override
+	public void validate(S schema, String data) throws ValidateException {
+		this.validate(schema, new ByteArrayInputStream(data.getBytes()));
+	}
+
+	@Override
+	public void validate(Class<?> type, String data) throws ValidateException {
+		this.validate(type, new ByteArrayInputStream(data.getBytes()));
+	}
+
+	@Override
+	public void serialize(Object object, OutputStream outputStream, Class<?>... types) throws SerializationException {
+		this.serialize(object, outputStream,
+				MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_FORMATTED_OUTPUT, false), types);
+	}
+
+	@Override
+	public Object deserialize(String data, Class<?>... types) throws SerializationException {
+		return this.deserialize(new ByteArrayInputStream(data.getBytes()), types);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
 	public <T> T deserialize(String data, Class<T> type, Class<?>... types) throws SerializationException {
-		return this.deserialize(new ByteArrayInputStream(data.getBytes()), type, types);
+		Class<?>[] knwonTypes = new Class<?>[types.length + 1];
+		knwonTypes[0] = type;
+		System.arraycopy(types, 0, knwonTypes, 1, types.length);
+		return (T) this.deserialize(data, knwonTypes);
 	}
 
 	@Override
-	public <T> T deserialize(File file, Class<T> type, Class<?>... types) throws SerializationException {
-		try {
-			return this.deserialize(new FileInputStream(file), type, types);
-		} catch (FileNotFoundException e) {
-			throw new SerializationException(e);
-		}
-	}
-
-	@Override
-	public void serialize(Object object, Writer writer, Class<?>... types) throws SerializationException {
-		boolean formatted = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_FORMATTED_OUTPUT, false);
-		this.serialize(object, writer, formatted, types);
+	@SuppressWarnings("unchecked")
+	public <T> T deserialize(InputStream inputStream, Class<T> type, Class<?>... types) throws SerializationException {
+		Class<?>[] knwonTypes = new Class<?>[types.length + 1];
+		knwonTypes[0] = type;
+		System.arraycopy(types, 0, knwonTypes, 1, types.length);
+		return (T) this.deserialize(inputStream, knwonTypes);
 	}
 
 	/**
@@ -177,118 +193,16 @@ public abstract class Serializer implements ISerializer {
 		return elements;
 	}
 
-	private class SchemaElements extends ArrayList<SchemaElement> {
-		private static final long serialVersionUID = 5525571009797394981L;
-
-		public void add(SchemaElement[] items) {
-			for (SchemaElement schemaElement : items) {
-				this.add(schemaElement);
-			}
-		}
-
-		public void add(Collection<SchemaElement> items) {
-			for (SchemaElement schemaElement : items) {
-				this.add(schemaElement);
-			}
-		}
-
-		@Override
-		public boolean add(SchemaElement e) {
-			for (int i = 0; i < this.size(); i++) {
-				SchemaElement item = this.get(i);
-				if (item.getName().equals(e.getName())) {
-					this.remove(i);
-				}
-			}
-			return super.add(e);
-		}
-
-		public SchemaElement[] toArray() {
-			return this.toArray(new SchemaElement[] {});
-		}
-	}
-
-	protected class SchemaElement implements Comparable<SchemaElement> {
-
-		public SchemaElement() {
-
-		}
-
-		public SchemaElement(String name, Class<?> type) {
-			this.name = name;
-			this.type = type;
-		}
-
-		public SchemaElement(String name, String wrapper, Class<?> type) {
-			this(name, type);
-			this.wrapper = wrapper;
-		}
-
-		private String name;
-
-		public final String getName() {
-			return name;
-		}
-
-		public final void setName(String name) {
-			this.name = name;
-		}
-
-		private String wrapper;
-
-		public final String getWrapper() {
-			return wrapper;
-		}
-
-		public final void setWrapper(String wrapper) {
-			this.wrapper = wrapper;
-		}
-
-		private Class<?> type;
-
-		public final Class<?> getType() {
-			return type;
-		}
-
-		public final void setType(Class<?> type) {
-			this.type = type;
-		}
-
-		@Override
-		public int compareTo(SchemaElement target) {
-			String sName = this.getWrapper();
-			if (sName == null || sName.isEmpty()) {
-				sName = this.getName();
-			}
-			String tName = target.getWrapper();
-			if (tName == null || tName.isEmpty()) {
-				tName = target.getName();
-			}
-			if (Character.isUpperCase(tName.charAt(0)) == Character.isUpperCase(sName.charAt(0))) {
-				return sName.compareTo(tName);
-			} else {
-				if (Character.isUpperCase(tName.charAt(0))) {
-					return -1;
-				}
-				return 1;
-			}
-		}
-
-	}
+	@Override
+	public abstract void serialize(Object object, OutputStream outputStream, boolean formated, Class<?>... types);
 
 	@Override
-	public void validate(Class<?> type, String data) throws ValidateException {
-		this.validate(type, new BufferedReader(new StringReader(data)));
-	}
+	public abstract Object deserialize(InputStream inputStream, Class<?>... types) throws SerializationException;
 
 	@Override
-	public void validate(Class<?> type, File file) throws ValidateException {
-		try {
-			this.validate(type, new FileReader(file));
-		} catch (FileNotFoundException e) {
-			throw new ValidateException(e);
-		}
-	}
+	public abstract void validate(S schema, InputStream data) throws ValidateException;
 
-	public abstract void validate(Class<?> type, Reader reader) throws ValidateException;
+	@Override
+	public abstract S getSchema(Class<?> type) throws SerializationException;
+
 }

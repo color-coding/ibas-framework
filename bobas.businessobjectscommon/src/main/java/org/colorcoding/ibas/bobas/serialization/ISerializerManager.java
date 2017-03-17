@@ -21,7 +21,7 @@ public interface ISerializerManager {
 	 * 
 	 * @return
 	 */
-	ISerializer create();
+	ISerializer<?> create();
 
 	/**
 	 * 创建序列化者
@@ -30,5 +30,5 @@ public interface ISerializerManager {
 	 *            类型
 	 * @return
 	 */
-	ISerializer create(String sign);
+	ISerializer<?> create(String sign);
 }

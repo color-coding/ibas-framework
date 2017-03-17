@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.test.bo;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Date;
@@ -361,9 +362,9 @@ public class testBusinessObjects extends TestCase {
 		stringBuilder.append("</DocEntry>");
 		stringBuilder.append("</ns:SalesOrder>");
 		ISerializerManager manager = SerializerFactory.create().createManager();
-		ISerializer serializer = manager.create("xml");
+		ISerializer<?> serializer = manager.create("xml");
 		SalesOrder bo = serializer.deserialize(stringBuilder.toString(), SalesOrder.class);
-		StringWriter writer = new StringWriter();
+		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.serialize(bo, writer, true);
 		System.out.println(writer.toString());
 
