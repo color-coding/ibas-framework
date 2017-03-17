@@ -37,7 +37,7 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory;
  *
  */
 public class SerializerJson extends Serializer<JsonSchema> {
-	public static final String SCHEMA_VERSION = "http://json-schema.org/draft-04/schema#";
+	public static final String SCHEMA_VERSION = "http://json-schema.org/schema#";
 
 	@Override
 	public void getSchema(Class<?> type, OutputStream outputStream) throws SerializationException {
