@@ -231,7 +231,8 @@ public class BOFactory implements IBOFactory {
 		// 定义一个枚举的集合 并进行循环来处理这个目录下的things
 		Enumeration<URL> dirs;
 		try {
-			dirs = Thread.currentThread().getContextClassLoader().getResources(packageDirName);
+			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+			dirs = classLoader.getResources(packageDirName);
 			// 循环迭代下去
 			while (dirs.hasMoreElements()) {
 				// 获取下一个元素
@@ -279,21 +280,21 @@ public class BOFactory implements IBOFactory {
 										String className = name.substring(packageName.length() + 1, name.length() - 6);
 										try {
 											// 添加到classes
-											classes.add(Class.forName(packageName + '.' + className));
+											classes.add(classLoader.loadClass(packageName + '.' + className));
 										} catch (ClassNotFoundException e) {
-											RuntimeLog.log(e);
+											RuntimeLog.log(MessageLevel.DEBUG, e);
 										}
 									}
 								}
 							}
 						}
 					} catch (IOException e) {
-						RuntimeLog.log(e);
+						RuntimeLog.log(MessageLevel.DEBUG, e);
 					}
 				}
 			}
 		} catch (IOException e) {
-			RuntimeLog.log(e);
+			RuntimeLog.log(MessageLevel.DEBUG, e);
 		}
 		return classes.toArray(new Class<?>[] {});
 	}
@@ -311,7 +312,6 @@ public class BOFactory implements IBOFactory {
 		File dir = new File(packagePath);
 		// 如果不存在或者 也不是目录就直接返回
 		if (!dir.exists() || !dir.isDirectory()) {
-			// log.warn("用户定义包名 " + packageName + " 下没有任何文件");
 			return;
 		}
 		// 如果存在 就获取包下的所有文件 包括目录
@@ -321,6 +321,7 @@ public class BOFactory implements IBOFactory {
 				return (file.isDirectory()) || (file.getName().endsWith(".class"));
 			}
 		});
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		// 循环所有文件
 		for (File file : dirfiles) {
 			// 如果是目录 则继续扫描
@@ -331,11 +332,8 @@ public class BOFactory implements IBOFactory {
 				String className = file.getName().substring(0, file.getName().length() - 6);
 				try {
 					// 添加到集合中去
-					// classes.add(Class.forName(packageName + '.' +
-					// className));
-					// 经过回复同学的提醒，这里用forName有一些不好，会触发static方法，没有使用classLoader的load干净
-					classes.add(
-							Thread.currentThread().getContextClassLoader().loadClass(packageName + '.' + className));
+					// 这里用forName有一些不好，会触发static方法，没有使用classLoader的load干净
+					classes.add(classLoader.loadClass(packageName + '.' + className));
 				} catch (ClassNotFoundException e) {
 					RuntimeLog.log(MessageLevel.DEBUG, e);
 				}
