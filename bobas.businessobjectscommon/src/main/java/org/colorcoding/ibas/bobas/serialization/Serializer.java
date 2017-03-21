@@ -27,7 +27,12 @@ public abstract class Serializer<S> implements ISerializer<S> {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		this.serialize(object, outputStream, false, types);
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
-		return (T) this.deserialize(inputStream, types);
+		Class<?>[] knownTypes = new Class[types.length + 1];
+		knownTypes[0] = object.getClass();
+		for (int i = 0; i < types.length; i++) {
+			knownTypes[i + 1] = types[i];
+		}
+		return (T) this.deserialize(inputStream, knownTypes);
 	}
 
 	@Override
