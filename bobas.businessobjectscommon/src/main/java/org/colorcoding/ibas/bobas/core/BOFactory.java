@@ -50,6 +50,10 @@ public class BOFactory implements IBOFactory {
 
 	}
 
+	protected ClassLoader getClassLoader() {
+		return Thread.currentThread().getContextClassLoader();
+	}
+
 	private String scanNamespaces;
 
 	public synchronized String getScanNamespaces() {
@@ -85,10 +89,8 @@ public class BOFactory implements IBOFactory {
 
 	@Override
 	public void loadPackage(URL url) throws IOException {
-
-		URLClassLoader classLoader = new URLClassLoader(new URL[] { url });
+		URLClassLoader classLoader = new URLClassLoader(new URL[] { url }, this.getClassLoader());
 		classLoader.close();
-
 	}
 
 	private volatile HashMap<String, String> boMaps;
@@ -136,7 +138,7 @@ public class BOFactory implements IBOFactory {
 	public Class<?>[] getKnownClasses(String packageName) {
 		ArrayList<Class<?>> knownClass = new ArrayList<Class<?>>();
 		// 根据boCode获取class
-		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		ClassLoader classLoader = this.getClassLoader();
 		// 获取根类型
 		Class<?> rootClass = classLoader.getClass();
 		while (rootClass != ClassLoader.class)
@@ -220,7 +222,7 @@ public class BOFactory implements IBOFactory {
 
 	@Override
 	public Class<?> getClass(String className) throws ClassNotFoundException {
-		return Class.forName(className);
+		return Class.forName(className, true, this.getClassLoader());
 	}
 
 	@Override
@@ -231,7 +233,7 @@ public class BOFactory implements IBOFactory {
 		// 定义一个枚举的集合 并进行循环来处理这个目录下的things
 		Enumeration<URL> dirs;
 		try {
-			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+			ClassLoader classLoader = this.getClassLoader();
 			dirs = classLoader.getResources(packageDirName);
 			// 循环迭代下去
 			while (dirs.hasMoreElements()) {
@@ -321,7 +323,7 @@ public class BOFactory implements IBOFactory {
 				return (file.isDirectory()) || (file.getName().endsWith(".class"));
 			}
 		});
-		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		ClassLoader classLoader = this.getClassLoader();
 		// 循环所有文件
 		for (File file : dirfiles) {
 			// 如果是目录 则继续扫描
