@@ -24,29 +24,32 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
  */
 public class Configuration {
 
-	private volatile static IConfigurationManager configuration;
+	private volatile static IConfigurationManager instance;
 
-	public static IConfigurationManager getInstance() {
-		if (configuration == null) {
+	/**
+	 * 创建实例，使用默认位置配置
+	 * 
+	 * @return
+	 */
+	public static IConfigurationManager create() {
+		if (instance == null) {
 			synchronized (Configuration.class) {
-				if (configuration == null) {
-					String configFile = null;
+				if (instance == null) {
+					String folder = getStartupFolder();
+					if (folder.endsWith("target" + File.separator + "test-classes")) {
+						// 测试脚本 target\test-classes
+						folder = (new File(folder)).getParentFile().getParentFile().getPath();
+					}
+					String configFile = String.format("%s%sapp.xml", folder, File.separator);
 					try {
-						String folder = getStartupFolder();
-						if (folder.endsWith("target" + File.separator + "test-classes")) {
-							// 测试脚本 target\test-classes
-							folder = (new File(folder)).getParentFile().getParentFile().getPath();
-						}
-						configFile = String.format("%s%sapp.xml", folder, File.separator);
-						configuration = ConfigurationManager.create(configFile);
+						instance = create(configFile);
 					} catch (FileNotFoundException | JAXBException e) {
-						// 读取配置文件出错
 						e.printStackTrace();
 					}
-					if (configuration == null) {
+					if (instance == null) {
 						// 读取配置文件失败
 						System.err.println(String.format(RuntimeLog.MSG_CONFIG_READ_FILE_DATA_FAILD, configFile));
-						configuration = new ConfigurationManager();
+						instance = new ConfigurationManager();
 					} else {
 						// 读取配置文件成功
 						RuntimeLog.log(RuntimeLog.MSG_CONFIG_READ_FILE_DATA, configFile);
@@ -54,7 +57,27 @@ public class Configuration {
 				}
 			}
 		}
-		return configuration;
+		return instance;
+	}
+
+	/**
+	 * 创建实例
+	 * 
+	 * @param configFile
+	 *            配置文件路径
+	 * @return
+	 * @throws JAXBException
+	 * @throws FileNotFoundException
+	 */
+	public static IConfigurationManager create(String configFile) throws FileNotFoundException, JAXBException {
+		if (instance == null) {
+			synchronized (Configuration.class) {
+				if (instance == null) {
+					instance = ConfigurationManager.create(configFile);
+				}
+			}
+		}
+		return instance;
 	}
 
 	/**
@@ -144,7 +167,7 @@ public class Configuration {
 	 * @return
 	 */
 	public static String getConfigValue(String key) {
-		return getInstance().getValue(key);
+		return create().getValue(key);
 	}
 
 	/**
@@ -157,7 +180,7 @@ public class Configuration {
 	 */
 	public static void addConfigValue(String key, Object value) {
 		String tmpValue = String.valueOf(value);
-		getInstance().addSetting(key, tmpValue);
+		create().addSetting(key, tmpValue);
 	}
 
 	/**
@@ -253,7 +276,7 @@ public class Configuration {
 	 * @return 是否成功
 	 */
 	public static boolean update(String configFile) {
-		boolean done = getInstance().update(configFile);
+		boolean done = create().update(configFile);
 		if (done) {
 			RuntimeLog.log(RuntimeLog.MSG_CONFIG_READ_FILE_DATA, configFile);
 		}
