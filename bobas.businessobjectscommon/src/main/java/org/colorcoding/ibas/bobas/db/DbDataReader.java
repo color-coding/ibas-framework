@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.db;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 
+import org.colorcoding.ibas.bobas.core.BOFactory;
 import org.colorcoding.ibas.bobas.data.DataTable;
 import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.IDataTableColumn;
@@ -30,7 +31,7 @@ public class DbDataReader extends DbDataReaderBase {
 				for (int i = 1; i <= metaData.getColumnCount(); i++) {
 					IDataTableColumn dtColumn = dataTable.getColumns().create();
 					dtColumn.setName(metaData.getColumnName(i));
-					dtColumn.setDataType(Class.forName(metaData.getColumnClassName(i)));
+					dtColumn.setDataType(BOFactory.create().getClass(metaData.getColumnClassName(i)));
 				}
 				// 添加行数据
 				while (this.next()) {

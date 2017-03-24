@@ -200,7 +200,7 @@ public class PropertyInfoManager {
 	 */
 	public static boolean registerClass(String className) {
 		try {
-			Class.forName(className);
+			BOFactory.create().getClass(className);
 			return true;
 		} catch (ClassNotFoundException e) {
 			RuntimeLog.log(e);

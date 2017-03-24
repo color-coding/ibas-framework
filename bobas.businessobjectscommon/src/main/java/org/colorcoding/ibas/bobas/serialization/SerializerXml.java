@@ -29,6 +29,7 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.core.BOFactory;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
@@ -199,7 +200,7 @@ public class SerializerXml extends Serializer<Schema> {
 				// 此处获取子项
 				itemName = itemName.substring(0, itemName.length() - 1);
 				try {
-					Class<?> itemType = Class.forName(itemName);
+					Class<?> itemType = BOFactory.create().getClass(itemName);
 					elementSequence
 							.appendChild(this.createSchemaElement(document, itemType, itemType.getSimpleName(), false));
 				} catch (ClassNotFoundException e) {
