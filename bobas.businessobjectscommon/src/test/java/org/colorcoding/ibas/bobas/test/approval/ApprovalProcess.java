@@ -1,10 +1,8 @@
 package org.colorcoding.ibas.bobas.test.approval;
 
-import org.colorcoding.ibas.bobas.approval.ApprovalException;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcessStep;
 import org.colorcoding.ibas.bobas.approval.UnauthorizedException;
-import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.organization.IUser;
@@ -98,13 +96,13 @@ public class ApprovalProcess extends org.colorcoding.ibas.bobas.approval.Approva
 	}
 
 	@Override
-	protected void saveProcess(IBORepository boRepository) throws ApprovalException {
-
+	public boolean isNew() {
+		return false;
 	}
 
 	@Override
-	public boolean isNew() {
-		return false;
+	protected void saveProcess() throws Exception {
+
 	}
 
 }

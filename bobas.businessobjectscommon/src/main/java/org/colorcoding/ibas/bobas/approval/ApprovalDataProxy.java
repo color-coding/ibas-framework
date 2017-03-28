@@ -14,6 +14,7 @@ import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 public class ApprovalDataProxy extends TrackableBase implements IApprovalData {
 
 	public ApprovalDataProxy() {
+		this.setSavable(false);
 		this.markOld();
 	}
 

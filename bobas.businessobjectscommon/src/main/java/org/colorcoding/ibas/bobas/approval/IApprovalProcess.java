@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.approval;
 
 import org.colorcoding.ibas.bobas.core.IBORepository;
+import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalResult;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
@@ -105,11 +106,12 @@ public interface IApprovalProcess {
 	 *            授权码
 	 * @param judgment
 	 *            意见
-	 * @throws ApprovalProcessException
 	 * @throws InvalidAuthorizationException
+	 * @throws ApprovalException
+	 * @throws RepositoryException
 	 */
 	void approval(int stepId, emApprovalResult apResult, String authorizationCode, String judgment)
-			throws ApprovalProcessException, InvalidAuthorizationException;
+			throws InvalidAuthorizationException, ApprovalException, RepositoryException;
 
 	/**
 	 * 取消流程
@@ -126,13 +128,21 @@ public interface IApprovalProcess {
 			throws ApprovalProcessException, InvalidAuthorizationException;
 
 	/**
+	 * 设置业务仓库
+	 * 
+	 * @param boRepository
+	 * @throws ApprovalProcessException
+	 */
+	void setRepository(IBORepository boRepository);
+
+	/**
 	 * 保存审批流程
 	 * 
 	 * @param boRepository
 	 *            保存到的业务仓库
 	 * @throws ApprovalProcessException
 	 */
-	void save(IBORepository boRepository) throws ApprovalProcessException;
+	void save() throws ApprovalProcessException;
 
 	/**
 	 * 检查保存权限

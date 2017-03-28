@@ -2,9 +2,10 @@ package org.colorcoding.ibas.bobas.test.approval;
 
 import java.util.ArrayList;
 
-import org.colorcoding.ibas.bobas.approval.ApprovalProcessException;
+import org.colorcoding.ibas.bobas.approval.ApprovalException;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcessStep;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcessStepCondition;
+import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emApprovalResult;
@@ -201,7 +202,7 @@ public class testApprovalProcess extends TestCase {
 		// orderItem.getItemCode()), done, true);
 	}
 
-	public void testApprovalSteps() throws ApprovalProcessException, InvalidAuthorizationException {
+	public void testApprovalSteps() throws InvalidAuthorizationException, ApprovalException, RepositoryException {
 		SalesOrder order = new SalesOrder();
 		order.setDocEntry(1);
 		order.setCustomerCode("C00001");

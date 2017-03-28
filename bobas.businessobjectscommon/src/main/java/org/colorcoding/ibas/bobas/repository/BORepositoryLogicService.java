@@ -220,7 +220,8 @@ public class BORepositoryLogicService extends BORepositoryService {
 					}
 				}
 			}
-			approvalProcess.save(this.getRepository());
+			approvalProcess.setRepository(this.getRepository());
+			approvalProcess.save();
 		}
 	}
 
