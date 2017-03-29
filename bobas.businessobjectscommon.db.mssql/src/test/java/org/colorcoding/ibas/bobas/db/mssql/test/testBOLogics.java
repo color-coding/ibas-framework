@@ -229,13 +229,13 @@ public class testBOLogics extends TestCase {
         ICriteria criteria = Criteria.create();
         ICondition condition = criteria.getConditions().create();
         condition.setAlias(MaterialsQuantityJournal.PROPERTY_BASEDOCUMENTTYPE.getName());
-        condition.setCondVal(item01.getDocumentType());
+        condition.setValue(item01.getDocumentType());
         condition = criteria.getConditions().create();
         condition.setAlias(MaterialsQuantityJournal.PROPERTY_BASEDOCUMENTENTRY.getName());
-        condition.setCondVal(item01.getDocumentEntry());
+        condition.setValue(item01.getDocumentEntry());
         condition = criteria.getConditions().create();
         condition.setAlias(MaterialsQuantityJournal.PROPERTY_BASEDOCUMENTLINEID.getName());
-        condition.setCondVal(item01.getDocumentLineId());
+        condition.setValue(item01.getDocumentLineId());
         operationResult = boRepository.fetchMaterialsQuantityJournal(criteria);
         assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
         MaterialsQuantityJournal journal01 = (MaterialsQuantityJournal) operationResult.getResultObjects()
@@ -271,13 +271,13 @@ public class testBOLogics extends TestCase {
         criteria = Criteria.create();
         condition = criteria.getConditions().create();
         condition.setAlias(MaterialsQuantityJournal.PROPERTY_BASEDOCUMENTTYPE.getName());
-        condition.setCondVal(item03.getDocumentType());
+        condition.setValue(item03.getDocumentType());
         condition = criteria.getConditions().create();
         condition.setAlias(MaterialsQuantityJournal.PROPERTY_BASEDOCUMENTENTRY.getName());
-        condition.setCondVal(item03.getDocumentEntry());
+        condition.setValue(item03.getDocumentEntry());
         condition = criteria.getConditions().create();
         condition.setAlias(MaterialsQuantityJournal.PROPERTY_BASEDOCUMENTLINEID.getName());
-        condition.setCondVal(item03.getDocumentLineId());
+        condition.setValue(item03.getDocumentLineId());
         operationResult = boRepository.fetchMaterialsQuantityJournal(criteria);
         assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
         journal01 = (MaterialsQuantityJournal) operationResult.getResultObjects().firstOrDefault();

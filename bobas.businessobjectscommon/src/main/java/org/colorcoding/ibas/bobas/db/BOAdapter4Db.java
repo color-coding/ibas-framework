@@ -239,18 +239,18 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 							|| condition.getOperation() == ConditionOperation.CONTAIN
 							|| condition.getOperation() == ConditionOperation.NOT_CONTAIN) {
 						// like 相关运算
-						stringBuilder.append(sqlScripts.getSqlString(condition.getOperation(), condition.getCondVal()));
+						stringBuilder.append(sqlScripts.getSqlString(condition.getOperation(), condition.getValue()));
 					} else {
 						// 与值比较，[ItemCode] = 'A000001'
 						if (condition.getAliasDataType() == DbFieldType.NUMERIC
 								|| condition.getAliasDataType() == DbFieldType.DECIMAL) {
 							// 数值类型的字段
 							stringBuilder.appendFormat(sqlScripts.getSqlString(condition.getOperation()),
-									condition.getCondVal());
+									condition.getValue());
 						} else {
 							// 非数值类型字段
 							stringBuilder.appendFormat(sqlScripts.getSqlString(condition.getOperation()),
-									sqlScripts.getSqlString(condition.getAliasDataType(), condition.getCondVal()));
+									sqlScripts.getSqlString(condition.getAliasDataType(), condition.getValue()));
 						}
 					}
 				}
@@ -1028,7 +1028,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				ICondition condition = criteria.getConditions().create();
 				condition.setAlias(IBODocumentLine.MASTER_PRIMARY_KEY_NAME);
 				condition.setAliasDataType(DbFieldType.NUMERIC);
-				condition.setCondVal(item.getDocEntry().toString());
+				condition.setValue(item.getDocEntry().toString());
 				String table = String.format(sqlScripts.getDbObjectSign(), this.getBOMasterTable((IManageFields) bo));
 				String field = String.format(sqlScripts.getDbObjectSign(), IBODocumentLine.SECONDARY_PRIMARY_KEY_NAME);
 				String where = this.parseSqlQuery(criteria.getConditions()).getQueryString();
@@ -1061,7 +1061,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				ICriteria criteria = new Criteria();
 				ICondition condition = criteria.getConditions().create();
 				condition.setAlias(IBOMasterDataLine.MASTER_PRIMARY_KEY_NAME);
-				condition.setCondVal(item.getCode());
+				condition.setValue(item.getCode());
 				String table = String.format(sqlScripts.getDbObjectSign(), this.getBOMasterTable((IManageFields) bo));
 				String field = String.format(sqlScripts.getDbObjectSign(),
 						IBOMasterDataLine.SECONDARY_PRIMARY_KEY_NAME);
@@ -1095,7 +1095,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				ICondition condition = criteria.getConditions().create();
 				condition.setAlias(IBOSimpleLine.MASTER_PRIMARY_KEY_NAME);
 				condition.setAliasDataType(DbFieldType.NUMERIC);
-				condition.setCondVal(item.getObjectKey());
+				condition.setValue(item.getObjectKey());
 				String table = String.format(sqlScripts.getDbObjectSign(), this.getBOMasterTable((IManageFields) bo));
 				String field = String.format(sqlScripts.getDbObjectSign(), IBOSimpleLine.SECONDARY_PRIMARY_KEY_NAME);
 				String where = this.parseSqlQuery(criteria.getConditions()).getQueryString();

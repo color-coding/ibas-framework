@@ -19,13 +19,13 @@ public class MaterialsJournalContractLogic extends BusinessLogic<IMaterialsJourn
 		ICriteria criteria = Criteria.create();
 		ICondition condition = criteria.getConditions().create();
 		condition.setAlias(MaterialsQuantityJournal.PROPERTY_BASEDOCUMENTTYPE.getName());
-		condition.setCondVal(contract.getDocumentType());
+		condition.setValue(contract.getDocumentType());
 		condition = criteria.getConditions().create();
 		condition.setAlias(MaterialsQuantityJournal.PROPERTY_BASEDOCUMENTENTRY.getName());
-		condition.setCondVal(contract.getDocumentEntry());
+		condition.setValue(contract.getDocumentEntry());
 		condition = criteria.getConditions().create();
 		condition.setAlias(MaterialsQuantityJournal.PROPERTY_BASEDOCUMENTLINEID.getName());
-		condition.setCondVal(contract.getDocumentLineId());
+		condition.setValue(contract.getDocumentLineId());
 		// 先在事务缓存中查询
 		MaterialsQuantityJournal journal = this.fetchBeAffected(criteria, MaterialsQuantityJournal.class);
 		if (journal == null) {

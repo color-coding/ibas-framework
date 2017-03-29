@@ -106,45 +106,45 @@ public class testJudgmentExpression extends TestCase {
 		ICondition condition = criteria.getConditions().create();
 		condition.setBracketOpen(1);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
-		condition.setCondVal(emDocumentStatus.PLANNED);
+		condition.setValue(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
 		condition.setBracketClose(1);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
-		condition.setCondVal(emDocumentStatus.FINISHED);
+		condition.setValue(emDocumentStatus.FINISHED);
 		condition.setRelationship(ConditionRelationship.OR);
 		// and (("DocDueDate" = "2016-03-15" or "DocDueDate" = "2016-03-17")
 		// and (("DocTotal" >= 10000 and "DocTotal" >= 10000)))
 		condition = criteria.getConditions().create();
 		condition.setBracketOpen(2);
 		condition.setAlias(SalesOrder.PROPERTY_DELIVERYDATE.getName());
-		condition.setCondVal("2016-03-15");
+		condition.setValue("2016-03-15");
 		condition.setRelationship(ConditionRelationship.AND);
 		condition = criteria.getConditions().create();
 		condition.setBracketClose(1);
 		condition.setAlias(SalesOrder.PROPERTY_DELIVERYDATE.getName());
-		condition.setCondVal("2016-03-17");
+		condition.setValue("2016-03-17");
 		condition.setRelationship(ConditionRelationship.OR);
 		condition = criteria.getConditions().create();
 		condition.setBracketOpen(2);
 		condition.setBracketClose(0);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTTOTAL.getName());
-		condition.setCondVal(10000);
+		condition.setValue(10000);
 		condition.setOperation(ConditionOperation.GRATER_EQUAL);
 		condition.setRelationship(ConditionRelationship.AND);
 		condition = criteria.getConditions().create();
 		condition.setBracketClose(3);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTTOTAL.getName());
-		condition.setCondVal(10000);
+		condition.setValue(10000);
 		condition.setOperation(ConditionOperation.GRATER_EQUAL);
 		condition.setRelationship(ConditionRelationship.AND);
 		// and "CustomerCode" = "C00001" and "DataOwner" <> 1
 		condition = criteria.getConditions().create();
 		condition.setAlias(SalesOrder.PROPERTY_CUSTOMERCODE.getName());
-		condition.setCondVal("C00001");
+		condition.setValue("C00001");
 		condition.setRelationship(ConditionRelationship.AND);
 		condition = criteria.getConditions().create();
 		condition.setAlias(SalesOrder.PROPERTY_DATAOWNER.getName());
-		condition.setCondVal(1);
+		condition.setValue(1);
 		condition.setOperation(ConditionOperation.NOT_EQUAL);
 		condition.setRelationship(ConditionRelationship.AND);
 		// 数据

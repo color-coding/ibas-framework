@@ -46,7 +46,7 @@ public class BOJudgmentLinksCondition extends BOJudgmentLinks {
 			} else {
 				// 与值比较
 				IValueOperter valueOperter = this.createValueOperter();
-				valueOperter.setValue(item.getCondVal());
+				valueOperter.setValue(item.getValue());
 				jItem.setRightOperter(valueOperter);
 			}
 			jLinkItems.add(jItem);

@@ -33,11 +33,11 @@ public class testCriteria extends TestCase {
 		ICondition condition = criteria.getConditions().create();
 		condition.setBracketOpen(1);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
-		condition.setCondVal(emDocumentStatus.PLANNED);
+		condition.setValue(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
 		condition.setBracketClose(1);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
-		condition.setCondVal(emDocumentStatus.RELEASED);
+		condition.setValue(emDocumentStatus.RELEASED);
 		condition.setRelationship(ConditionRelationship.OR);
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC
 		ISort sort = criteria.getSorts().create();
@@ -51,7 +51,7 @@ public class testCriteria extends TestCase {
 		condition = childCriteria.getConditions().create();
 		condition.setAlias(SalesOrderItem.PROPERTY_ITEMCODE.getName());
 		condition.setOperation(ConditionOperation.CONTAIN);
-		condition.setCondVal("T000");
+		condition.setValue("T000");
 
 		// 测试Condition
 		JAXBContext context = JAXBContext.newInstance(condition.getClass());
@@ -105,11 +105,11 @@ public class testCriteria extends TestCase {
 		ICondition condition = criteria.getConditions().create();
 		condition.setBracketOpen(1);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
-		condition.setCondVal(emDocumentStatus.PLANNED);
+		condition.setValue(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
 		condition.setBracketClose(1);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
-		condition.setCondVal(emDocumentStatus.RELEASED);
+		condition.setValue(emDocumentStatus.RELEASED);
 		condition.setRelationship(ConditionRelationship.OR);
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC
 		ISort sort = criteria.getSorts().create();
@@ -123,7 +123,7 @@ public class testCriteria extends TestCase {
 		condition = childCriteria.getConditions().create();
 		condition.setAlias(SalesOrderItem.PROPERTY_ITEMCODE.getName());
 		condition.setOperation(ConditionOperation.CONTAIN);
-		condition.setCondVal("T000");
+		condition.setValue("T000");
 
 		ICriteria xmlCriteria = Criteria.create(criteria.toString("xml"));
 		assertEquals("xml marshal and unmarshal not equal", criteria.toString("xml"), xmlCriteria.toString("xml"));
@@ -133,16 +133,16 @@ public class testCriteria extends TestCase {
 		assertEquals("from identifiers faild.", 1, criteria.getConditions().size());
 		assertEquals("from identifiers faild.", "CC_TT_SALESORDER", criteria.getBOCode());
 		assertEquals("from identifiers faild.", "DocEntry", criteria.getConditions().get(0).getAlias());
-		assertEquals("from identifiers faild.", "1", criteria.getConditions().get(0).getCondVal());
+		assertEquals("from identifiers faild.", "1", criteria.getConditions().get(0).getValue());
 
 		String identifiers2 = "{[CC_TT_SALESORDER].[DocEntry = 1]&[LineId = 2]}";
 		criteria = Criteria.create(identifiers2);
 		assertEquals("from identifiers faild.", 2, criteria.getConditions().size());
 		assertEquals("from identifiers faild.", "CC_TT_SALESORDER", criteria.getBOCode());
 		assertEquals("from identifiers faild.", "DocEntry", criteria.getConditions().get(0).getAlias());
-		assertEquals("from identifiers faild.", "1", criteria.getConditions().get(0).getCondVal());
+		assertEquals("from identifiers faild.", "1", criteria.getConditions().get(0).getValue());
 		assertEquals("from identifiers faild.", "LineId", criteria.getConditions().get(1).getAlias());
-		assertEquals("from identifiers faild.", "2", criteria.getConditions().get(1).getCondVal());
+		assertEquals("from identifiers faild.", "2", criteria.getConditions().get(1).getValue());
 	}
 
 	public void testCopyFrom() {
@@ -152,11 +152,11 @@ public class testCriteria extends TestCase {
 		ICondition condition = criteria.getConditions().create();
 		condition.setBracketOpen(1);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
-		condition.setCondVal(emDocumentStatus.PLANNED);
+		condition.setValue(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
 		condition.setBracketClose(1);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
-		condition.setCondVal(emDocumentStatus.RELEASED);
+		condition.setValue(emDocumentStatus.RELEASED);
 		condition.setRelationship(ConditionRelationship.OR);
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC
 		ISort sort = criteria.getSorts().create();
@@ -172,7 +172,7 @@ public class testCriteria extends TestCase {
 
 		condition.setAlias(SalesOrderItem.PROPERTY_ITEMCODE.getName());
 		condition.setOperation(ConditionOperation.CONTAIN);
-		condition.setCondVal("T000");
+		condition.setValue("T000");
 
 		criteria = criteria.copyFrom(criteria.clone());
 		System.out.println(criteria.toString("xml"));
@@ -185,11 +185,11 @@ public class testCriteria extends TestCase {
 		ICondition condition = criteria.getConditions().create();
 		condition.setBracketOpen(1);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
-		condition.setCondVal(emDocumentStatus.PLANNED);
+		condition.setValue(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
 		condition.setBracketClose(1);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
-		condition.setCondVal(emDocumentStatus.RELEASED);
+		condition.setValue(emDocumentStatus.RELEASED);
 		condition.setRelationship(ConditionRelationship.OR);
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC
 		ISort sort = criteria.getSorts().create();

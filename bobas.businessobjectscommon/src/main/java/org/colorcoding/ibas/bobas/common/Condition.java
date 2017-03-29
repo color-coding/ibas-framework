@@ -83,25 +83,25 @@ public class Condition implements ICondition {
 		this.comparedAlias = value;
 	}
 
-	private String condVal = "";
+	private String value = "";
 
 	@Override
-	@XmlElement(name = "CondVal")
-	public final String getCondVal() {
-		if (this.condVal == null) {
-			this.condVal = "";
+	@XmlElement(name = "Value")
+	public final String getValue() {
+		if (this.value == null) {
+			this.value = "";
 		}
-		return this.condVal;
+		return this.value;
 	}
 
 	@Override
-	public final void setCondVal(String value) {
-		this.condVal = value;
+	public final void setValue(String value) {
+		this.value = value;
 	}
 
 	@Override
-	public final void setCondVal(Object value) {
-		this.condVal = this.toValue(value);
+	public final void setValue(Object value) {
+		this.value = this.toValue(value);
 	}
 
 	protected String toValue(Object value) {

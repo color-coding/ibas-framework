@@ -92,16 +92,16 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
                 // 文件夹条件
                 if (condition.getAlias() == null || condition.getAlias().isEmpty())
                     continue;
-                workFolder = workFolder + File.separator + condition.getCondVal();
+                workFolder = workFolder + File.separator + condition.getValue();
             } else if (CRITERIA_CONDITION_ALIAS_INCLUDE_SUBFOLDER.equals(condition.getAlias())) {
                 // 包含子文件夹
                 if (condition.getAlias() == null || condition.getAlias().isEmpty())
                     continue;
                 emYesNo value = emYesNo.NO;
-                if (condition.getCondVal().length() > 1)
-                    value = emYesNo.valueOf(condition.getCondVal());
+                if (condition.getValue().length() > 1)
+                    value = emYesNo.valueOf(condition.getValue());
                 else {
-                    value = (emYesNo) DataConvert.toEnumValue(emYesNo.class, condition.getCondVal());
+                    value = (emYesNo) DataConvert.toEnumValue(emYesNo.class, condition.getValue());
                 }
                 include = value == emYesNo.YES ? true : false;
             } else {

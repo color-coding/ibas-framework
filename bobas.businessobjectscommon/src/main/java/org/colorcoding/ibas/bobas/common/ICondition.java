@@ -74,7 +74,7 @@ public interface ICondition {
 	 * 
 	 * @return 值
 	 */
-	String getCondVal();
+	String getValue();
 
 	/**
 	 * 设置-比较的值
@@ -82,7 +82,7 @@ public interface ICondition {
 	 * @param value
 	 *            值
 	 */
-	void setCondVal(String value);
+	void setValue(String value);
 
 	/**
 	 * 设置-比较的值
@@ -90,7 +90,7 @@ public interface ICondition {
 	 * @param value
 	 *            值
 	 */
-	void setCondVal(Object value);
+	void setValue(Object value);
 
 	/**
 	 * 获取-比较方法

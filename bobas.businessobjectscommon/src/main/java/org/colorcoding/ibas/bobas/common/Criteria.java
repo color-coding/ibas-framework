@@ -85,7 +85,7 @@ public class Criteria implements ICriteria {
 			}
 			ICondition condition = criteria.getConditions().create();
 			condition.setAlias(tmpFields[0].replace("[", "").trim());
-			condition.setCondVal(tmpFields[1].replace("]", "").replace("}", "").trim());
+			condition.setValue(tmpFields[1].replace("]", "").replace("}", "").trim());
 		}
 		return criteria;
 	}
@@ -217,14 +217,14 @@ public class Criteria implements ICriteria {
 			boCriteria.setBOCode(simple.getObjectCode());
 			ICondition condition = boCriteria.getConditions().create();
 			condition.setAlias(IBOSimple.MASTER_PRIMARY_KEY_NAME);
-			condition.setCondVal(simple.getObjectKey());
+			condition.setValue(simple.getObjectKey());
 		} else if (bo instanceof IBODocument) {
 			IBODocument document = (IBODocument) bo;
 			boCriteria = new Criteria();
 			boCriteria.setBOCode(document.getObjectCode());
 			ICondition condition = boCriteria.getConditions().create();
 			condition.setAlias(IBODocument.MASTER_PRIMARY_KEY_NAME);
-			condition.setCondVal(document.getDocEntry());
+			condition.setValue(document.getDocEntry());
 
 		} else if (bo instanceof IBOMasterData) {
 			IBOMasterData master = (IBOMasterData) bo;
@@ -232,7 +232,7 @@ public class Criteria implements ICriteria {
 			boCriteria.setBOCode(master.getObjectCode());
 			ICondition condition = boCriteria.getConditions().create();
 			condition.setAlias(IBOMasterData.SERIAL_NUMBER_KEY_NAME);
-			condition.setCondVal(master.getDocEntry());
+			condition.setValue(master.getDocEntry());
 		}
 		if (boCriteria == null) {
 			boCriteria = bo.getCriteria();

@@ -47,11 +47,11 @@ public class testBORepository extends TestCase {
 		ICondition condition = criteria.getConditions().create();
 		condition.setBracketOpen(1);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
-		condition.setCondVal(emDocumentStatus.PLANNED);
+		condition.setValue(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
 		condition.setBracketClose(1);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
-		condition.setCondVal(emDocumentStatus.RELEASED);
+		condition.setValue(emDocumentStatus.RELEASED);
 		condition.setRelationship(ConditionRelationship.OR);
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC
 		ISort sort = criteria.getSorts().create();
@@ -75,7 +75,7 @@ public class testBORepository extends TestCase {
 		// childCriteria.setFatherMustHasResluts(false);//父项必须有返回值
 		condition = childCriteria.getConditions().create();
 		condition.setAlias(SalesOrderItem.PROPERTY_LINESTATUS.getName());
-		condition.setCondVal(emDocumentStatus.FINISHED);
+		condition.setValue(emDocumentStatus.FINISHED);
 
 		boRepository = new BORepositoryTest();// 重新构造后缓存失效
 		boRepository.setUserToken("");
@@ -144,16 +144,16 @@ public class testBORepository extends TestCase {
 		ICondition condition = criteria.getConditions().create();
 		condition.setBracketOpen(1);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
-		condition.setCondVal(emDocumentStatus.PLANNED);
+		condition.setValue(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
 		condition.setBracketClose(1);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
-		condition.setCondVal(emDocumentStatus.RELEASED);
+		condition.setValue(emDocumentStatus.RELEASED);
 		condition.setRelationship(ConditionRelationship.OR);
 		// (CardCode != ''')
 		condition = criteria.getConditions().create();
 		condition.setAlias(SalesOrder.PROPERTY_CUSTOMERCODE.getName());
-		condition.setCondVal("'C");
+		condition.setValue("'C");
 		condition.setOperation(ConditionOperation.NOT_EQUAL);
 		condition.setRelationship(ConditionRelationship.AND);
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC

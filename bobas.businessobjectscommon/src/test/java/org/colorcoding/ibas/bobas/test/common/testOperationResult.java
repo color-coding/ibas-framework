@@ -22,7 +22,7 @@ public class testOperationResult extends TestCase {
 		Criteria criteria = new Criteria();
 		ICondition condition = criteria.getConditions().create();
 		condition.setAlias("ItemCode");
-		condition.setCondVal("A00001");
+		condition.setValue("A00001");
 		operationResult.addResultObjects(criteria);
 		operationResult.addResultObjects(criteria.clone());
 

@@ -1522,7 +1522,7 @@ public class SalesOrder extends BusinessObject<SalesOrder> implements ISalesOrde
 		ICriteria criteria = new Criteria();
 		ICondition condition = criteria.getConditions().create();
 		condition.setAlias(PROPERTY_CUSTOMERCODE_NAME);
-		condition.setCondVal(this.getCustomerCode());
+		condition.setValue(this.getCustomerCode());
 
 		return criteria.getConditions();
 	}

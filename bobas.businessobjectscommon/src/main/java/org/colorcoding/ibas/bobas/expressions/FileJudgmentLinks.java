@@ -124,7 +124,7 @@ public class FileJudgmentLinks extends JudgmentLinks {
             jItem.setLeftOperter(propertyValueOperter);
             // 右边取值
             IValueOperter valueOperter = this.createValueOperter();
-            valueOperter.setValue(item.getCondVal());
+            valueOperter.setValue(item.getValue());
             jItem.setRightOperter(valueOperter);
             jLinkItems.add(jItem);
         }

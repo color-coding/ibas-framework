@@ -40,11 +40,11 @@ public class testDbConnectionPool extends TestCase {
 		ICondition condition = criteria.getConditions().create();
 		condition.setBracketOpen(1);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
-		condition.setCondVal(emDocumentStatus.PLANNED);
+		condition.setValue(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
 		condition.setBracketClose(1);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
-		condition.setCondVal(emDocumentStatus.RELEASED);
+		condition.setValue(emDocumentStatus.RELEASED);
 		condition.setRelationship(ConditionRelationship.OR);
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC
 		ISort sort = criteria.getSorts().create();

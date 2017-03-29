@@ -39,11 +39,11 @@ public class testBOAdpter extends TestCase {
 		ICondition condition = criteria.getConditions().create();
 		condition.setBracketOpen(1);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
-		condition.setCondVal(emDocumentStatus.PLANNED);
+		condition.setValue(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
 		condition.setBracketClose(1);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
-		condition.setCondVal(emDocumentStatus.FINISHED);
+		condition.setValue(emDocumentStatus.FINISHED);
 		condition.setRelationship(ConditionRelationship.OR);
 		// AND "CardCode" IS NOT NULL AND "DocEntry" LIKE "2%"
 		condition = criteria.getConditions().create();
@@ -52,11 +52,11 @@ public class testBOAdpter extends TestCase {
 		condition = criteria.getConditions().create();
 		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
 		condition.setOperation(ConditionOperation.START);
-		condition.setCondVal("2");
+		condition.setValue("2");
 		condition = criteria.getConditions().create();
 		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
 		condition.setOperation(ConditionOperation.GRATER_THAN);
-		condition.setCondVal("2000");
+		condition.setValue("2000");
 		condition = criteria.getConditions().create();
 		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
 		condition.setOperation(ConditionOperation.NOT_EQUAL);

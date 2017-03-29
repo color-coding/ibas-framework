@@ -70,11 +70,11 @@ public class ServiceBasic {
 		ICondition condition = criteria.getConditions().create();
 		condition.setBracketOpen(1);
 		condition.setAlias("DocumentStatus");
-		condition.setCondVal(emDocumentStatus.PLANNED);
+		condition.setValue(emDocumentStatus.PLANNED);
 		condition = criteria.getConditions().create();
 		condition.setBracketClose(1);
 		condition.setAlias("DocumentStatus");
-		condition.setCondVal(emDocumentStatus.RELEASED);
+		condition.setValue(emDocumentStatus.RELEASED);
 		condition.setRelationship(ConditionRelationship.OR);
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC
 		ISort sort = criteria.getSorts().create();
@@ -88,7 +88,7 @@ public class ServiceBasic {
 		condition = childCriteria.getConditions().create();
 		condition.setAlias("ItemCode");
 		condition.setOperation(ConditionOperation.CONTAIN);
-		condition.setCondVal("T000");
+		condition.setValue("T000");
 
 		return criteria;
 	}

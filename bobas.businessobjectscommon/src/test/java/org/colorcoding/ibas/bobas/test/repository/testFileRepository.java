@@ -37,26 +37,26 @@ public class testFileRepository extends TestCase {
         // 文件
         ICondition condition = criteria.getConditions().create();
         condition.setAlias(FileRepository.CRITERIA_CONDITION_ALIAS_FOLDER);
-        condition.setCondVal("classes");
+        condition.setValue("classes");
         // 包含子文件夹
         condition = criteria.getConditions().create();
         condition.setAlias(FileRepository.CRITERIA_CONDITION_ALIAS_INCLUDE_SUBFOLDER);
-        condition.setCondVal(emYesNo.YES);
+        condition.setValue(emYesNo.YES);
         // 扩展名为.java
         condition = criteria.getConditions().create();
         condition.setAlias(FileRepository.CRITERIA_CONDITION_ALIAS_FILE_NAME);
         condition.setOperation(ConditionOperation.END);
-        condition.setCondVal(".class");
+        condition.setValue(".class");
         // 文件名包括BO
         condition = criteria.getConditions().create();
         condition.setAlias(FileRepository.CRITERIA_CONDITION_ALIAS_FILE_NAME);
         condition.setOperation(ConditionOperation.CONTAIN);
-        condition.setCondVal("BO");
+        condition.setValue("BO");
         // 修改时间大于2016-11-11
         condition = criteria.getConditions().create();
         condition.setAlias(FileRepository.CRITERIA_CONDITION_ALIAS_MODIFIED_TIME);
         condition.setOperation(ConditionOperation.GRATER_THAN);
-        condition.setCondVal(DateTime.valueOf("2016-11-11").getTime());
+        condition.setValue(DateTime.valueOf("2016-11-11").getTime());
 
         FileRepository fileRepository = new FileRepository();
         fileRepository.setRepositoryFolder(new File(MyConfiguration.getWorkFolder()).getParent());

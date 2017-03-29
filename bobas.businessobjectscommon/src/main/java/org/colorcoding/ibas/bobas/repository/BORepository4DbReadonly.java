@@ -539,7 +539,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 							ICondition condition = childCriteria.getConditions().create();
 							condition.setAlias(relation.mappedField);
 							condition.setOperation(ConditionOperation.EQUAL);
-							condition.setCondVal(tmpField.getValue());
+							condition.setValue(tmpField.getValue());
 						}
 						if (breakAssociated) {
 							// 终止关联，处理下一个字段

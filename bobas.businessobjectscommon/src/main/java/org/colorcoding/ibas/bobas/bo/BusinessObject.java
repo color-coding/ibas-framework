@@ -95,7 +95,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 		for (IFieldData item : this.getKeyFields()) {
 			ICondition condition = criteria.getConditions().create();
 			condition.setAlias(item.getName());
-			condition.setCondVal(String.valueOf(item.getValue()));
+			condition.setValue(String.valueOf(item.getValue()));
 		}
 		return criteria;
 	}
