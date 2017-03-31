@@ -203,7 +203,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 			ApprovalDataJudgmentLinks judgmentLinks = new ApprovalDataJudgmentLinks();
 			judgmentLinks.parsingConditions(stepItem.getConditions());
 			boolean done = true;
-			if (judgmentLinks.getJudgmentItems().length > 0) {
+			if (judgmentLinks.getJudgmentItems() != null && judgmentLinks.getJudgmentItems().length > 0) {
 				// 有条件，则加载实际数据进行比较
 				// 审批的数据可能存在是代理数据情况
 				if (this.getApprovalData(true) instanceof IBusinessObjectBase) {
