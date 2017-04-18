@@ -203,9 +203,9 @@ public class testCriteria extends TestCase {
 		order.setDocEntry(199);
 		order.setLineId(78);
 		order.markOld();
-		ICriteria nextCriteria = criteria.nextCriteria(order);
+		ICriteria nextCriteria = criteria.next(order);
 		System.out.println("下一个结果集：\r\n" + nextCriteria.toString("xml"));
-		ICriteria precriteria = criteria.previousCriteria(order);
+		ICriteria precriteria = criteria.previous(order);
 		System.out.println("上一个结果集：\r\n" + precriteria.toString("xml"));
 	}
 }

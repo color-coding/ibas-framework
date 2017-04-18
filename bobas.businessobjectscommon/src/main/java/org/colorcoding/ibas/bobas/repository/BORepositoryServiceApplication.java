@@ -132,7 +132,7 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 				if (!dataFull) {
 					// 结果数量不满足，进行下一组数据查询
 					IBusinessObjectBase lastBO = opRslt.getResultObjects().lastOrDefault();
-					criteria = criteria.nextCriteria(lastBO);// 下组数据的查询条件
+					criteria = criteria.next(lastBO);// 下组数据的查询条件
 				}
 			} while (!dataFull);
 			if (filterCount > 0) {

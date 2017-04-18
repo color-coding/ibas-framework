@@ -241,7 +241,7 @@ public class Criteria implements ICriteria {
 	}
 
 	@Override
-	public final ICriteria nextCriteria(IBusinessObjectBase lastBO) {
+	public final ICriteria next(IBusinessObjectBase lastBO) {
 		if (lastBO != null) {
 			ICriteria boCriteria = this.getBOCriteria(lastBO);
 			if (boCriteria == null) {
@@ -251,9 +251,9 @@ public class Criteria implements ICriteria {
 				if (this.getSorts().size() > 0 && this.getSorts().get(0).getSortType() == SortType.DESCENDING) {
 					// 降序排序，则下一个数据集为小于条件
 					condition.setOperation(ConditionOperation.LESS_THAN);
-					continue;
+				} else {
+					condition.setOperation(ConditionOperation.GRATER_THAN);
 				}
-				condition.setOperation(ConditionOperation.GRATER_THAN);
 			}
 			return this.copyFrom(boCriteria);
 		}
@@ -261,7 +261,7 @@ public class Criteria implements ICriteria {
 	}
 
 	@Override
-	public final ICriteria previousCriteria(IBusinessObjectBase firstBO) {
+	public final ICriteria previous(IBusinessObjectBase firstBO) {
 		if (firstBO != null) {
 			ICriteria boCriteria = this.getBOCriteria(firstBO);
 			if (boCriteria == null) {
@@ -271,9 +271,9 @@ public class Criteria implements ICriteria {
 				if (this.getSorts().size() > 0 && this.getSorts().get(0).getSortType() == SortType.DESCENDING) {
 					// 降序排序，则下一个数据集为大于条件
 					condition.setOperation(ConditionOperation.GRATER_THAN);
-					continue;
+				} else {
+					condition.setOperation(ConditionOperation.LESS_THAN);
 				}
-				condition.setOperation(ConditionOperation.LESS_THAN);
 			}
 			return this.copyFrom(boCriteria);
 		}

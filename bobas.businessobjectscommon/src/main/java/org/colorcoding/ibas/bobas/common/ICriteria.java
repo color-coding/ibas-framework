@@ -116,7 +116,7 @@ public interface ICriteria {
 	 *            起始业务对象
 	 * @return 查询
 	 */
-	ICriteria nextCriteria(IBusinessObjectBase lastBO);
+	ICriteria next(IBusinessObjectBase lastBO);
 
 	/**
 	 * 计算上一个结果集的查询条件
@@ -127,7 +127,7 @@ public interface ICriteria {
 	 *            起始业务对象
 	 * @return 查询
 	 */
-	ICriteria previousCriteria(IBusinessObjectBase firstBO);
+	ICriteria previous(IBusinessObjectBase firstBO);
 
 	/**
 	 * 复制查询条件
