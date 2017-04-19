@@ -11,8 +11,11 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
+import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
 import org.colorcoding.ibas.bobas.bo.IBOMasterData;
+import org.colorcoding.ibas.bobas.bo.IBOMasterDataLine;
 import org.colorcoding.ibas.bobas.bo.IBOSimple;
+import org.colorcoding.ibas.bobas.bo.IBOSimpleLine;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.ISerializerManager;
@@ -208,7 +211,7 @@ public class Criteria implements ICriteria {
 		return writer.toString();
 	}
 
-	protected ICriteria getBOCriteria(IBusinessObjectBase bo) {
+	protected ICriteria boCriteria(IBusinessObjectBase bo, ConditionOperation operation) {
 		ICriteria boCriteria = null;
 		// 判断BO类型，添加下个集合条件，尽量使用数值字段
 		if (bo instanceof IBOSimple) {
@@ -218,24 +221,81 @@ public class Criteria implements ICriteria {
 			ICondition condition = boCriteria.getConditions().create();
 			condition.setAlias(IBOSimple.MASTER_PRIMARY_KEY_NAME);
 			condition.setValue(simple.getObjectKey());
-		} else if (bo instanceof IBODocument) {
+			condition.setOperation(operation);
+		} else if (bo instanceof IBODocument || bo instanceof IBOMasterData) {
 			IBODocument document = (IBODocument) bo;
 			boCriteria = new Criteria();
 			boCriteria.setBOCode(document.getObjectCode());
 			ICondition condition = boCriteria.getConditions().create();
 			condition.setAlias(IBODocument.MASTER_PRIMARY_KEY_NAME);
 			condition.setValue(document.getDocEntry());
-
-		} else if (bo instanceof IBOMasterData) {
-			IBOMasterData master = (IBOMasterData) bo;
+			condition.setOperation(operation);
+		} else if (bo instanceof IBOSimpleLine) {
+			IBOSimpleLine line = (IBOSimpleLine) bo;
 			boCriteria = new Criteria();
-			boCriteria.setBOCode(master.getObjectCode());
+			boCriteria.setBOCode(line.getObjectCode());
+			// 父项相等时，lineid比较方式
 			ICondition condition = boCriteria.getConditions().create();
-			condition.setAlias(IBOMasterData.SERIAL_NUMBER_KEY_NAME);
-			condition.setValue(master.getDocEntry());
+			condition.setBracketOpen(2);
+			condition.setAlias(IBOSimpleLine.MASTER_PRIMARY_KEY_NAME);
+			condition.setValue(line.getObjectKey());
+			condition = boCriteria.getConditions().create();
+			condition.setBracketClose(1);
+			condition.setAlias(IBOSimpleLine.SECONDARY_PRIMARY_KEY_NAME);
+			condition.setValue(line.getLineId());
+			condition.setOperation(operation);
+			// 父项不等时
+			condition = boCriteria.getConditions().create();
+			condition.setBracketClose(1);
+			condition.setAlias(IBOSimpleLine.MASTER_PRIMARY_KEY_NAME);
+			condition.setValue(line.getObjectKey());
+			condition.setOperation(operation);
+		} else if (bo instanceof IBODocumentLine) {
+			IBODocumentLine line = (IBODocumentLine) bo;
+			boCriteria = new Criteria();
+			boCriteria.setBOCode(line.getObjectCode());
+			// 父项相等时，lineid比较方式
+			ICondition condition = boCriteria.getConditions().create();
+			condition.setBracketOpen(2);
+			condition.setAlias(IBOSimpleLine.MASTER_PRIMARY_KEY_NAME);
+			condition.setValue(line.getDocEntry());
+			condition = boCriteria.getConditions().create();
+			condition.setBracketClose(1);
+			condition.setAlias(IBOSimpleLine.SECONDARY_PRIMARY_KEY_NAME);
+			condition.setValue(line.getLineId());
+			condition.setOperation(operation);
+			// 父项不等时
+			condition = boCriteria.getConditions().create();
+			condition.setBracketClose(1);
+			condition.setAlias(IBOSimpleLine.MASTER_PRIMARY_KEY_NAME);
+			condition.setValue(line.getDocEntry());
+			condition.setOperation(operation);
+		} else if (bo instanceof IBOMasterDataLine) {
+			IBOMasterDataLine line = (IBOMasterDataLine) bo;
+			boCriteria = new Criteria();
+			boCriteria.setBOCode(line.getObjectCode());
+			// 父项相等时，lineid比较方式
+			ICondition condition = boCriteria.getConditions().create();
+			condition.setBracketOpen(2);
+			condition.setAlias(IBOSimpleLine.MASTER_PRIMARY_KEY_NAME);
+			condition.setValue(line.getCode());
+			condition = boCriteria.getConditions().create();
+			condition.setBracketClose(1);
+			condition.setAlias(IBOSimpleLine.SECONDARY_PRIMARY_KEY_NAME);
+			condition.setValue(line.getLineId());
+			condition.setOperation(operation);
+			// 父项不等时
+			condition = boCriteria.getConditions().create();
+			condition.setBracketClose(1);
+			condition.setAlias(IBOSimpleLine.MASTER_PRIMARY_KEY_NAME);
+			condition.setValue(line.getCode());
+			condition.setOperation(operation);
 		}
 		if (boCriteria == null) {
 			boCriteria = bo.getCriteria();
+			for (ICondition condition : boCriteria.getConditions()) {
+				condition.setOperation(operation);
+			}
 		}
 		return boCriteria;
 	}
@@ -243,17 +303,17 @@ public class Criteria implements ICriteria {
 	@Override
 	public final ICriteria next(IBusinessObjectBase lastBO) {
 		if (lastBO != null) {
-			ICriteria boCriteria = this.getBOCriteria(lastBO);
+			SortType sortType = SortType.ASCENDING;
+			ConditionOperation operation = ConditionOperation.GRATER_THAN;
+			if (this.getSorts().size() > 0) {
+				sortType = this.getSorts().firstOrDefault().getSortType();
+			}
+			if (sortType == SortType.DESCENDING) {
+				operation = ConditionOperation.LESS_THAN;
+			}
+			ICriteria boCriteria = this.boCriteria(lastBO, operation);
 			if (boCriteria == null) {
 				return null;
-			}
-			for (ICondition condition : boCriteria.getConditions()) {
-				if (this.getSorts().size() > 0 && this.getSorts().get(0).getSortType() == SortType.DESCENDING) {
-					// 降序排序，则下一个数据集为小于条件
-					condition.setOperation(ConditionOperation.LESS_THAN);
-				} else {
-					condition.setOperation(ConditionOperation.GRATER_THAN);
-				}
 			}
 			return this.copyFrom(boCriteria);
 		}
@@ -263,17 +323,17 @@ public class Criteria implements ICriteria {
 	@Override
 	public final ICriteria previous(IBusinessObjectBase firstBO) {
 		if (firstBO != null) {
-			ICriteria boCriteria = this.getBOCriteria(firstBO);
+			SortType sortType = SortType.ASCENDING;
+			ConditionOperation operation = ConditionOperation.LESS_THAN;
+			if (this.getSorts().size() > 0) {
+				sortType = this.getSorts().firstOrDefault().getSortType();
+			}
+			if (sortType == SortType.DESCENDING) {
+				operation = ConditionOperation.GRATER_THAN;
+			}
+			ICriteria boCriteria = this.boCriteria(firstBO, operation);
 			if (boCriteria == null) {
 				return null;
-			}
-			for (ICondition condition : boCriteria.getConditions()) {
-				if (this.getSorts().size() > 0 && this.getSorts().get(0).getSortType() == SortType.DESCENDING) {
-					// 降序排序，则下一个数据集为大于条件
-					condition.setOperation(ConditionOperation.GRATER_THAN);
-				} else {
-					condition.setOperation(ConditionOperation.LESS_THAN);
-				}
 			}
 			return this.copyFrom(boCriteria);
 		}
