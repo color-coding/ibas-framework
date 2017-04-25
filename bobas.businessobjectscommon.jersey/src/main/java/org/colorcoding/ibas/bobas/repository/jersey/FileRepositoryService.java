@@ -13,7 +13,7 @@ public class FileRepositoryService extends org.colorcoding.ibas.bobas.repository
 		try {
 			FileData fileData = new FileData();
 			fileData.setStream(fileStream);
-			// fileData.setFileName(fileDisposition.getFileName());
+			fileData.setOriginalName(fileDisposition.getFileName());
 			return new OperationResult<>(super.save(fileData, token));
 		} catch (Exception e) {
 			return new OperationResult<>(e);

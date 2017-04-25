@@ -67,6 +67,22 @@ public class FileData {
 		this.stream = stream;
 	}
 
+	private String originalName;
+
+	/**
+	 * 原始文件名称
+	 * 
+	 * @return
+	 */
+	@XmlElement(name = "OriginalName")
+	public String getOriginalName() {
+		return originalName;
+	}
+
+	public void setOriginalName(String originalName) {
+		this.originalName = originalName;
+	}
+
 	@Override
 	public String toString() {
 		return String.format("{file data: %s}", this.getFileName());
