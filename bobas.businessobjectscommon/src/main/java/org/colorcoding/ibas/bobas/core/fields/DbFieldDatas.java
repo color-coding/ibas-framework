@@ -9,33 +9,33 @@ import org.colorcoding.ibas.bobas.data.Decimal;
  */
 class DbFieldDataInteger extends FieldDataDbBase<Integer> {
 
-    public DbFieldDataInteger(Class<?> valueType) {
-        this.setValueType(valueType);
-    }
+	public DbFieldDataInteger(Class<?> valueType) {
+		this.setValueType(valueType);
+	}
 
-    private int value = 0;
+	private int value = 0;
 
-    @Override
-    public Integer getValue() {
-        return this.value;
-    }
+	@Override
+	public Integer getValue() {
+		return this.value;
+	}
 
-    public boolean setValue(Integer value) {
-        if (value == null) {
-            value = 0;
-        }
-        if (this.value == value) {
-            return false;
-        }
-        this.value = value;
-        this.setDirty(true);
-        return true;
-    }
+	public boolean setValue(Integer value) {
+		if (value == null) {
+			value = 0;
+		}
+		if (this.value == value) {
+			return false;
+		}
+		this.value = value;
+		this.setDirty(true);
+		return true;
+	}
 
-    @Override
-    public boolean setValue(Object value) {
-        return this.setValue((Integer) value);
-    }
+	@Override
+	public boolean setValue(Object value) {
+		return this.setValue((Integer) value);
+	}
 
 }
 
@@ -44,33 +44,33 @@ class DbFieldDataInteger extends FieldDataDbBase<Integer> {
  */
 class DbFieldDataShort extends FieldDataDbBase<Short> {
 
-    public DbFieldDataShort(Class<?> valueType) {
-        this.setValueType(valueType);
-    }
+	public DbFieldDataShort(Class<?> valueType) {
+		this.setValueType(valueType);
+	}
 
-    private short value = 0;
+	private short value = 0;
 
-    @Override
-    public Short getValue() {
-        return this.value;
-    }
+	@Override
+	public Short getValue() {
+		return this.value;
+	}
 
-    public boolean setValue(Short value) {
-        if (value == null) {
-            value = 0;
-        }
-        if (this.value == value) {
-            return false;
-        }
-        this.value = value;
-        this.setDirty(true);
-        return true;
-    }
+	public boolean setValue(Short value) {
+		if (value == null) {
+			value = 0;
+		}
+		if (this.value == value) {
+			return false;
+		}
+		this.value = value;
+		this.setDirty(true);
+		return true;
+	}
 
-    @Override
-    public boolean setValue(Object value) {
-        return this.setValue((Short) value);
-    }
+	@Override
+	public boolean setValue(Object value) {
+		return this.setValue((Short) value);
+	}
 
 }
 
@@ -79,30 +79,30 @@ class DbFieldDataShort extends FieldDataDbBase<Short> {
  */
 class DbFieldDataChar extends FieldDataDbBase<Character> {
 
-    public DbFieldDataChar(Class<?> valueType) {
-        this.setValueType(valueType);
-    }
+	public DbFieldDataChar(Class<?> valueType) {
+		this.setValueType(valueType);
+	}
 
-    private Character value = null;
+	private Character value = null;
 
-    @Override
-    public Character getValue() {
-        return this.value;
-    }
+	@Override
+	public Character getValue() {
+		return this.value;
+	}
 
-    public boolean setValue(Character value) {
-        if (this.value != null && this.value.equals(value)) {
-            return false;
-        }
-        this.value = value;
-        this.setDirty(true);
-        return true;
-    }
+	public boolean setValue(Character value) {
+		if (this.value != null && this.value.equals(value)) {
+			return false;
+		}
+		this.value = value;
+		this.setDirty(true);
+		return true;
+	}
 
-    @Override
-    public boolean setValue(Object value) {
-        return this.setValue((Character) value);
-    }
+	@Override
+	public boolean setValue(Object value) {
+		return this.setValue((Character) value);
+	}
 
 }
 
@@ -111,30 +111,30 @@ class DbFieldDataChar extends FieldDataDbBase<Character> {
  */
 class DbFieldDataString extends FieldDataDbBase<String> {
 
-    public DbFieldDataString(Class<?> valueType) {
-        this.setValueType(valueType);
-    }
+	public DbFieldDataString(Class<?> valueType) {
+		this.setValueType(valueType);
+	}
 
-    private String value = null;
+	private String value = null;
 
-    @Override
-    public String getValue() {
-        return this.value;
-    }
+	@Override
+	public String getValue() {
+		return this.value;
+	}
 
-    public boolean setValue(String value) {
-        if (this.value != null && this.value.equals(value)) {
-            return false;
-        }
-        this.value = value;
-        this.setDirty(true);
-        return true;
-    }
+	public boolean setValue(String value) {
+		if (this.value != null && this.value.equals(value)) {
+			return false;
+		}
+		this.value = value;
+		this.setDirty(true);
+		return true;
+	}
 
-    @Override
-    public boolean setValue(Object value) {
-        return this.setValue((String) value);
-    }
+	@Override
+	public boolean setValue(Object value) {
+		return this.setValue((String) value);
+	}
 }
 
 /**
@@ -142,30 +142,30 @@ class DbFieldDataString extends FieldDataDbBase<String> {
  */
 class DbFieldDataDecimal extends FieldDataDbBase<Decimal> {
 
-    public DbFieldDataDecimal(Class<?> valueType) {
-        this.setValueType(valueType);
-    }
+	public DbFieldDataDecimal(Class<?> valueType) {
+		this.setValueType(valueType);
+	}
 
-    private Decimal value = Decimal.ZERO;
+	private Decimal value = Decimal.ZERO;
 
-    @Override
-    public Decimal getValue() {
-        return this.value;
-    }
+	@Override
+	public Decimal getValue() {
+		return this.value;
+	}
 
-    public boolean setValue(Decimal value) {
-        if (this.value != null && this.value.equals(value)) {
-            return false;
-        }
-        this.value = value;
-        this.setDirty(true);
-        return true;
-    }
+	public boolean setValue(Decimal value) {
+		if (this.value != null && this.value.equals(value)) {
+			return false;
+		}
+		this.value = value;
+		this.setDirty(true);
+		return true;
+	}
 
-    @Override
-    public boolean setValue(Object value) {
-        return this.setValue((Decimal) value);
-    }
+	@Override
+	public boolean setValue(Object value) {
+		return this.setValue((Decimal) value);
+	}
 }
 
 /**
@@ -173,30 +173,30 @@ class DbFieldDataDecimal extends FieldDataDbBase<Decimal> {
  */
 class DbFieldDataDateTime extends FieldDataDbBase<DateTime> {
 
-    public DbFieldDataDateTime(Class<?> valueType) {
-        this.setValueType(valueType);
-    }
+	public DbFieldDataDateTime(Class<?> valueType) {
+		this.setValueType(valueType);
+	}
 
-    private DateTime value = DateTime.minValue;
+	private DateTime value = DateTime.minValue;
 
-    @Override
-    public DateTime getValue() {
-        return this.value;
-    }
+	@Override
+	public DateTime getValue() {
+		return this.value;
+	}
 
-    public boolean setValue(DateTime value) {
-        if (this.value != null && this.value.equals(value)) {
-            return false;
-        }
-        this.value = value;
-        this.setDirty(true);
-        return true;
-    }
+	public boolean setValue(DateTime value) {
+		if (this.value != null && this.value.equals(value)) {
+			return false;
+		}
+		this.value = value;
+		this.setDirty(true);
+		return true;
+	}
 
-    @Override
-    public boolean setValue(Object value) {
-        return this.setValue((DateTime) value);
-    }
+	@Override
+	public boolean setValue(Object value) {
+		return this.setValue((DateTime) value);
+	}
 }
 
 /**
@@ -204,33 +204,33 @@ class DbFieldDataDateTime extends FieldDataDbBase<DateTime> {
  */
 class DbFieldDataFloat extends FieldDataDbBase<Float> {
 
-    public DbFieldDataFloat(Class<?> valueType) {
-        this.setValueType(valueType);
-    }
+	public DbFieldDataFloat(Class<?> valueType) {
+		this.setValueType(valueType);
+	}
 
-    private float value = 0.0f;
+	private float value = 0.0f;
 
-    @Override
-    public Float getValue() {
-        return this.value;
-    }
+	@Override
+	public Float getValue() {
+		return this.value;
+	}
 
-    public boolean setValue(Float value) {
-        if (value == null) {
-            value = 0.0f;
-        }
-        if (this.value == value) {
-            return false;
-        }
-        this.value = value;
-        this.setDirty(true);
-        return true;
-    }
+	public boolean setValue(Float value) {
+		if (value == null) {
+			value = 0.0f;
+		}
+		if (this.value == value) {
+			return false;
+		}
+		this.value = value;
+		this.setDirty(true);
+		return true;
+	}
 
-    @Override
-    public boolean setValue(Object value) {
-        return this.setValue((Float) value);
-    }
+	@Override
+	public boolean setValue(Object value) {
+		return this.setValue((Float) value);
+	}
 }
 
 /**
@@ -238,33 +238,33 @@ class DbFieldDataFloat extends FieldDataDbBase<Float> {
  */
 class DbFieldDataDouble extends FieldDataDbBase<Double> {
 
-    public DbFieldDataDouble(Class<?> valueType) {
-        this.setValueType(valueType);
-    }
+	public DbFieldDataDouble(Class<?> valueType) {
+		this.setValueType(valueType);
+	}
 
-    private double value = 0.0;
+	private double value = 0.0;
 
-    @Override
-    public Double getValue() {
-        return this.value;
-    }
+	@Override
+	public Double getValue() {
+		return this.value;
+	}
 
-    public boolean setValue(Double value) {
-        if (value == null) {
-            value = 0.0;
-        }
-        if (this.value == value) {
-            return false;
-        }
-        this.value = value;
-        this.setDirty(true);
-        return true;
-    }
+	public boolean setValue(Double value) {
+		if (value == null) {
+			value = 0.0;
+		}
+		if (this.value == value) {
+			return false;
+		}
+		this.value = value;
+		this.setDirty(true);
+		return true;
+	}
 
-    @Override
-    public boolean setValue(Object value) {
-        return this.setValue((Double) value);
-    }
+	@Override
+	public boolean setValue(Object value) {
+		return this.setValue((Double) value);
+	}
 }
 
 /**
@@ -272,30 +272,30 @@ class DbFieldDataDouble extends FieldDataDbBase<Double> {
  */
 class DbFieldDataBoolean extends FieldDataDbBase<Boolean> {
 
-    public DbFieldDataBoolean(Class<?> valueType) {
-        this.setValueType(valueType);
-    }
+	public DbFieldDataBoolean(Class<?> valueType) {
+		this.setValueType(valueType);
+	}
 
-    private boolean value = false;
+	private boolean value = false;
 
-    @Override
-    public Boolean getValue() {
-        return this.value;
-    }
+	@Override
+	public Boolean getValue() {
+		return this.value;
+	}
 
-    public boolean setValue(Boolean value) {
-        if (this.value == value) {
-            return false;
-        }
-        this.value = value;
-        this.setDirty(true);
-        return true;
-    }
+	public boolean setValue(Boolean value) {
+		if (this.value == value) {
+			return false;
+		}
+		this.value = value;
+		this.setDirty(true);
+		return true;
+	}
 
-    @Override
-    public boolean setValue(Object value) {
-        return this.setValue((Boolean) value);
-    }
+	@Override
+	public boolean setValue(Object value) {
+		return this.setValue((Boolean) value);
+	}
 }
 
 /**
@@ -303,29 +303,32 @@ class DbFieldDataBoolean extends FieldDataDbBase<Boolean> {
  */
 class DbFieldDataEnum extends FieldDataDbBase<Enum<?>> {
 
-    public DbFieldDataEnum(Class<?> valueType) {
-        this.setValueType(valueType);
-        this.setValue(valueType.getEnumConstants()[0]);// 获取枚举的第一个值
-    }
+	public DbFieldDataEnum(Class<?> valueType) {
+		this.setValueType(valueType);
+		for (Object item : valueType.getEnumConstants()) {
+			this.setValue(item);// 获取枚举的第一个值
+			break;
+		}
+	}
 
-    private Enum<?> value = null;
+	private Enum<?> value = null;
 
-    @Override
-    public Enum<?> getValue() {
-        return this.value;
-    }
+	@Override
+	public Enum<?> getValue() {
+		return this.value;
+	}
 
-    public boolean setValue(Enum<?> value) {
-        if (this.value != null && this.value.equals(value)) {
-            return false;
-        }
-        this.value = value;
-        this.setDirty(true);
-        return true;
-    }
+	public boolean setValue(Enum<?> value) {
+		if (this.value != null && this.value.equals(value)) {
+			return false;
+		}
+		this.value = value;
+		this.setDirty(true);
+		return true;
+	}
 
-    @Override
-    public boolean setValue(Object value) {
-        return this.setValue((Enum<?>) value);
-    }
+	@Override
+	public boolean setValue(Object value) {
+		return this.setValue((Enum<?>) value);
+	}
 }
