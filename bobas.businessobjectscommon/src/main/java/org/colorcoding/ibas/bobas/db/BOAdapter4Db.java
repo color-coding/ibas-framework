@@ -894,6 +894,9 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 		if (bo instanceof IBODocument) {
 			IBODocument boKey = (IBODocument) bo;
 			for (KeyValue key : keys) {
+				if (key.value == null) {
+					continue;
+				}
 				if (IBODocument.MASTER_PRIMARY_KEY_NAME.equals(key.key)) {
 					boKey.setDocEntry((int) (key.value));
 				}
@@ -901,6 +904,9 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 		} else if (bo instanceof IBODocumentLine) {
 			IBODocumentLine boKey = (IBODocumentLine) bo;
 			for (KeyValue key : keys) {
+				if (key.value == null) {
+					continue;
+				}
 				if (IBODocumentLine.MASTER_PRIMARY_KEY_NAME.equals(key.key)) {
 					boKey.setDocEntry((int) (key.value));
 				} else if (IBODocumentLine.SECONDARY_PRIMARY_KEY_NAME.equals(key.key)) {
@@ -910,6 +916,9 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 		} else if (bo instanceof IBOMasterData) {
 			IBOMasterData boKey = (IBOMasterData) bo;
 			for (KeyValue key : keys) {
+				if (key.value == null) {
+					continue;
+				}
 				if (IBOMasterData.SERIAL_NUMBER_KEY_NAME.equals(key.key)) {
 					boKey.setDocEntry((int) (key.value));
 				} else if (IBOMasterData.MASTER_PRIMARY_KEY_NAME.equals(key.key)) {
@@ -919,6 +928,9 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 		} else if (bo instanceof IBOMasterDataLine) {
 			IBOMasterDataLine boKey = (IBOMasterDataLine) bo;
 			for (KeyValue key : keys) {
+				if (key.value == null) {
+					continue;
+				}
 				if (IBOMasterDataLine.SECONDARY_PRIMARY_KEY_NAME.equals(key.key)) {
 					boKey.setLineId((int) (key.value));
 				} else if (IBOMasterDataLine.MASTER_PRIMARY_KEY_NAME.equals(key.key)) {
@@ -928,6 +940,9 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 		} else if (bo instanceof IBOSimple) {
 			IBOSimple boKey = (IBOSimple) bo;
 			for (KeyValue key : keys) {
+				if (key.value == null) {
+					continue;
+				}
 				if (IBOSimple.MASTER_PRIMARY_KEY_NAME.equals(key.key)) {
 					boKey.setObjectKey((int) (key.value));
 				}
@@ -935,6 +950,9 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 		} else if (bo instanceof IBOSimpleLine) {
 			IBOSimpleLine boKey = (IBOSimpleLine) bo;
 			for (KeyValue key : keys) {
+				if (key.value == null) {
+					continue;
+				}
 				if (IBOSimpleLine.MASTER_PRIMARY_KEY_NAME.equals(key.key)) {
 					boKey.setObjectKey((int) (key.value));
 				} else if (IBOSimpleLine.SECONDARY_PRIMARY_KEY_NAME.equals(key.key)) {
@@ -947,6 +965,9 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				IFieldMaxValueKey maxValueKey = (IFieldMaxValueKey) bo;
 				IFieldDataDb dbField = maxValueKey.getMaxValueField();
 				for (KeyValue key : keys) {
+					if (key.value == null) {
+						continue;
+					}
 					if (dbField.getName().equals(key.key)) {
 						dbField.setValue(key.value);
 					}
