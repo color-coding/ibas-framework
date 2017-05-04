@@ -36,6 +36,8 @@ public class DataTableRow implements IDataTableRow {
 			Object value = this.values[i];
 			if (value != null) {
 				values[i] = value.toString();
+			} else {
+				values[i] = new String();
 			}
 		}
 		return values;
