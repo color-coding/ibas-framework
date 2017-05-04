@@ -285,4 +285,121 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 		stringBuilder.append(")");
 		return stringBuilder.toString();
 	}
+
+	@Override
+	public String getDefalutSeriesQuery(String boCode) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("SELECT");
+		stringBuilder.append(" ");
+		stringBuilder.append("`DefSeries`");
+		stringBuilder.append(" ");
+		stringBuilder.append("FROM");
+		stringBuilder.append(" ");
+		stringBuilder.appendFormat("`%s_SYS_ONNM`", this.getCompanyId());
+		stringBuilder.append(" ");
+		stringBuilder.append("WHERE");
+		stringBuilder.append(" ");
+		stringBuilder.append("`ObjectCode`");
+		stringBuilder.append(" ");
+		stringBuilder.append("=");
+		stringBuilder.append(" ");
+		stringBuilder.append("'");
+		stringBuilder.append(this.checkSecurity(boCode));
+		stringBuilder.append("'");
+		return stringBuilder.toString();
+	}
+
+	@Override
+	public String getSeriesKeyQuery(String boCode, int series) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("SELECT");
+		stringBuilder.append(" ");
+		stringBuilder.append("`NextNum`");
+		stringBuilder.append(",");
+		stringBuilder.append(" ");
+		stringBuilder.append("`Template`");
+		stringBuilder.append(" ");
+		stringBuilder.append("FROM");
+		stringBuilder.append(" ");
+		stringBuilder.appendFormat("`%s_SYS_NNM1`", this.getCompanyId());
+		stringBuilder.append(" ");
+		stringBuilder.append("WHERE");
+		stringBuilder.append(" ");
+		stringBuilder.append("`ObjectCode`");
+		stringBuilder.append(" ");
+		stringBuilder.append("=");
+		stringBuilder.append(" ");
+		stringBuilder.append("'");
+		stringBuilder.append(this.checkSecurity(boCode));
+		stringBuilder.append("'");
+		stringBuilder.append(" ");
+		stringBuilder.append("AND");
+		stringBuilder.append(" ");
+		stringBuilder.append("`Series`");
+		stringBuilder.append(" ");
+		stringBuilder.append("=");
+		stringBuilder.append(" ");
+		stringBuilder.append(series);
+		stringBuilder.append(" ");
+		stringBuilder.append("AND");
+		stringBuilder.append(" ");
+		stringBuilder.append("`Locked`");
+		stringBuilder.append(" ");
+		stringBuilder.append("=");
+		stringBuilder.append(" ");
+		stringBuilder.append("'");
+		stringBuilder.append("N");
+		stringBuilder.append("'");
+		return stringBuilder.toString();
+	}
+
+	@Override
+	public String getUpdateSeriesKeyScript(String boCode, int series, int addValue) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("UPDATE");
+		stringBuilder.append(" ");
+		stringBuilder.appendFormat("`%s_SYS_NNM1`", this.getCompanyId());
+		stringBuilder.append(" ");
+		stringBuilder.append("SET");
+		stringBuilder.append(" ");
+		stringBuilder.append("`NextNum`");
+		stringBuilder.append(" ");
+		stringBuilder.append("=");
+		stringBuilder.append(" ");
+		stringBuilder.append("`NextNum`");
+		stringBuilder.append(" ");
+		stringBuilder.append("+");
+		stringBuilder.append(" ");
+		stringBuilder.append(addValue);
+		stringBuilder.append(" ");
+		stringBuilder.append("WHERE");
+		stringBuilder.append(" ");
+		stringBuilder.append("`ObjectCode`");
+		stringBuilder.append(" ");
+		stringBuilder.append("=");
+		stringBuilder.append(" ");
+		stringBuilder.append("'");
+		stringBuilder.append(this.checkSecurity(boCode));
+		stringBuilder.append("'");
+		stringBuilder.append(" ");
+		stringBuilder.append("AND");
+		stringBuilder.append(" ");
+		stringBuilder.append("`Series`");
+		stringBuilder.append(" ");
+		stringBuilder.append("=");
+		stringBuilder.append(" ");
+		stringBuilder.append(series);
+		stringBuilder.append(" ");
+		stringBuilder.append("AND");
+		stringBuilder.append(" ");
+		stringBuilder.append("`Locked`");
+		stringBuilder.append(" ");
+		stringBuilder.append("=");
+		stringBuilder.append(" ");
+		stringBuilder.append("'");
+		stringBuilder.append("N");
+		stringBuilder.append("'");
+		return stringBuilder.toString();
+	}
+
 }

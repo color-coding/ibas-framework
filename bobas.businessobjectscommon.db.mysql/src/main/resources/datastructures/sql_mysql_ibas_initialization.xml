@@ -2,7 +2,7 @@
 <!DOCTYPE DataStructureOrchestration>
 <ns2:DataStructureOrchestration
     xmlns:ns2="http://colorcoding.org/btulz/transformers">
-    <Name>ds_mysql_ibas_initialization</Name>
+    <Name>sql_mysql_ibas_initialization</Name>
     <Description>基于MYSQL的结构映射说明</Description>
     <Integrated>true</Integrated>
     <DriverName>com.mysql.jdbc.Driver</DriverName>
@@ -12,37 +12,37 @@
     <Action Name="create db" Isolated="true">
         <Step Name="check and create db">
             <Script>
-                create database if not exists `${DbName}` character set utf8
+                create database if not exists `${DbName}` character set utf8;
             </Script>
         </Step>
     </Action>
-	<Action Name="create stored procedures">
-		<Step Name="check and drop exists stored procedures">
-			<Script>				
-			    DROP PROCEDURE IF EXISTS `${DbName}`.`${Company}_SP_TRANSACTION_NOTIFICATION`;
-			</Script>
-		</Step>
-		<Step Name="create stored procedures">
-			<Script>
-				CREATE PROCEDURE `${DbName}`.`${Company}_SP_TRANSACTION_NOTIFICATION`(
-				    _object_type varchar(30),                 -- BO Code
- 				    _transaction_type char(1),                -- [A]dd, [U]pdate, [D]elete
- 				    _num_of_cols_in_key int,                   -- Key Count
- 				    _list_of_key_cols_tab_del varchar(255),   -- Key Names, split by ','
-				    _list_of_cols_val_tab_del varchar(255)    -- Key Values, split by ','
-				)
-				BEGIN
-				declare _error int;                             -- return code, 0 is sucessful.
-				declare _error_message varchar(200);           -- return message
-				set _error = 0;
-				set _error_message = N'OK';
-				/*----------------------------------------------------------------------------------------------------------------------------*/
-				-- ADD YOUR CODE HERE
-				/* ----------------------------------------------------------------------------------------------------------------------------*/
-				-- return
-				select _error, _error_message;
-				END
-			</Script>
-		</Step>
-	</Action>
+    <Action Name="create stored procedures ${Company}_SP_TRANSACTION_NOTIFICATION">
+        <Step Name="check and drop exists stored procedures">
+            <Script>
+                DROP PROCEDURE IF EXISTS `${DbName}`.`${Company}_SP_TRANSACTION_NOTIFICATION`;
+            </Script>
+        </Step>
+        <Step Name="create stored procedures">
+            <Script>
+                CREATE PROCEDURE `${DbName}`.`${Company}_SP_TRANSACTION_NOTIFICATION` (
+                    object_type varchar(30),                  /*对象类型（BOCode）*/
+                    transaction_type char(1),                 /*业务类型（Add:A-添加, Update:U-更新, Delete:D-删除）*/
+                    num_of_cols_in_key int,                   /*主键个数*/
+                    list_of_key_cols_tab_del varchar(255),    /*主键名称*/
+                    list_of_cols_val_tab_del varchar(255)     /*主键值*/
+                )
+                BEGIN
+                    declare error int;                             /*返回值(0 无错误)*/
+                    declare error_message varchar(200);            /*返回的消息*/
+                    set error = 0;
+                    set error_message = N'OK';
+                    /*----------------------------------------------------------------------------------------------------------------------------*/
+                    -- ADD YOUR CODE HERE
+                    /* ----------------------------------------------------------------------------------------------------------------------------*/
+                    -- return
+                    select error, error_message;
+                END;
+            </Script>
+        </Step>
+    </Action>
 </ns2:DataStructureOrchestration>
