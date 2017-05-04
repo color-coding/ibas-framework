@@ -29,7 +29,7 @@ public class DataTableRow implements IDataTableRow {
 		this.columns = columns;
 	}
 
-	@XmlElement(name = "Cell", type = String.class, required = true)
+	@XmlElement(name = "Cells", type = String.class, required = true)
 	private String[] getValueProxys() {
 		String[] values = new String[this.values.length];
 		for (int i = 0; i < this.values.length; i++) {
