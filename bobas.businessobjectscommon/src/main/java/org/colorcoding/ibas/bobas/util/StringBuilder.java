@@ -34,11 +34,19 @@ public class StringBuilder {
 	}
 
 	public void appendFormat(String str, Object... args) {
-		this.stringBuilder.append(String.format(str, args));
+		if (args.length == 0) {
+			this.stringBuilder.append(str);
+		} else {
+			this.stringBuilder.append(String.format(str, args));
+		}
 	}
 
 	public void insertFormat(int offset, String str, Object... args) {
-		this.stringBuilder.insert(offset, String.format(str, args));
+		if (args.length == 0) {
+			this.stringBuilder.insert(offset, str);
+		} else {
+			this.stringBuilder.insert(offset, String.format(str, args));
+		}
 	}
 
 	public void append(char c) {
