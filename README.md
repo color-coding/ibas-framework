@@ -48,4 +48,5 @@
 [牛加人等于朱](http://baike.baidu.com/view/1769.htm "NiurenZhu")<br>
 [老彭](http://baike.baidu.com/view/1828.htm "three-stones")<br>
 [周周](http://baike.baidu.com/view/1751.htm "neilzhou0309")<br>
-[Color-Coding](http://colorcoding.org/ "咔啦工作室")<br>
+[^色^](http://baike.baidu.com/view/1769.htm "ooteng")<br>
+[Color-Coding](http://colorcoding.studio/ "咔啦工作室")<br>
