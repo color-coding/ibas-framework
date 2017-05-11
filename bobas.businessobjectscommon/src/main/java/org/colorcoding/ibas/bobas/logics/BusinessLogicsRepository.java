@@ -13,6 +13,7 @@ import org.colorcoding.ibas.bobas.repository.BORepositoryLogicService;
 class BusinessLogicsRepository extends BORepositoryLogicService {
 
 	public BusinessLogicsRepository() {
+		this.setRefetchBeforeDelete(false);// 删除前不替换数据
 		this.setRefetchAfterSave(false);// 保存后不检索数据
 		this.setUseCache(false);// 不使用缓存数据
 		this.setCheckApprovalProcess(false);// 不检查审批逻辑

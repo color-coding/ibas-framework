@@ -3,7 +3,9 @@ package org.colorcoding.ibas.bobas.repository;
 import java.util.LinkedList;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
+import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
@@ -48,6 +50,9 @@ public class BORepositoryService implements IBORepositoryService {
 		// 是否检查版本
 		this.setCheckVersion(
 				!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_VERSION_CHECK, false));
+		// 是否删除前重新查询
+		this.setRefetchBeforeDelete(
+				MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_REFETCH_BEFORE_DELETE, false));
 	}
 
 	/**
@@ -227,6 +232,21 @@ public class BORepositoryService implements IBORepositoryService {
 
 	public final void setRefetchAfterSave(boolean value) {
 		this.refetchAfterSave = value;
+	}
+
+	private boolean refetchBeforeDelete;
+
+	/**
+	 * 删除前是否查询数据
+	 * 
+	 * @return
+	 */
+	public final boolean isRefetchBeforeDelete() {
+		return refetchBeforeDelete;
+	}
+
+	public final void setRefetchBeforeDelete(boolean value) {
+		this.refetchBeforeDelete = value;
 	}
 
 	private boolean postTransaction;
@@ -600,6 +620,26 @@ public class BORepositoryService implements IBORepositoryService {
 		OperationResult<P> operationResult = new OperationResult<P>();
 		try {
 			this.setCurrentUser(token);// 解析并设置当前用户
+			if (bo != null && bo.isDeleted() && this.isRefetchBeforeDelete()) {
+				// 删除前重新查询数据，避免漏或多删子项
+				@SuppressWarnings("unchecked")
+				OperationResult<P> opRsltFetch = this.fetchInDb(bo.getCriteria(), (Class<P>) bo.getClass());
+				P boCopy = opRsltFetch.getResultObjects().firstOrDefault();
+				if (boCopy != null && boCopy.getClass() == bo.getClass() && boCopy instanceof BusinessObject
+						&& opRsltFetch.getResultCode() == 0) {
+					// 查到了数据库副本
+					@SuppressWarnings("unchecked")
+					BusinessObject<IBusinessObject> newBO = (BusinessObject<IBusinessObject>) boCopy;
+					// 使用BO的删除方法，引用对象时不进行删除操作
+					newBO.delete();
+					// 替换操作对象
+					bo = boCopy;
+					RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_REPOSITORY_REPLACED_BE_DELETED_BO, bo);
+				} else {
+					// 没有找到有效的副本
+					RuntimeLog.log(MessageLevel.WARN, RuntimeLog.MSG_REPOSITORY_NOT_FOUND_BE_DELETED_BO, bo);
+				}
+			}
 			operationResult.addResultObjects(this.save(this.getRepository(), bo));
 			if (this.isUseCache() && operationResult.getResultCode() == 0) {
 				// 删除已缓存的数据

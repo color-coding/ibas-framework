@@ -84,6 +84,10 @@ public class MyConfiguration extends Configuration {
 	 */
 	public final static String CONFIG_ITEM_BO_DISABLED_BUSINESS_APPROVAL = "DisabledBusinessApproval";
 	/**
+	 * 配置项目-业务对象删除前查询
+	 */
+	public final static String CONFIG_ITEM_BO_REFETCH_BEFORE_DELETE = "RefetchBeforeDelete";
+	/**
 	 * 配置项目-开启只读业务仓库
 	 */
 	public final static String CONFIG_ITEM_ENABLED_READONLY_REPOSITORY = "EnabledReadonlyRepository";
