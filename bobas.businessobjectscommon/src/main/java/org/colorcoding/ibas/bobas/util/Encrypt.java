@@ -8,7 +8,7 @@ package org.colorcoding.ibas.bobas.util;
  */
 public class Encrypt {
 	/**
-	 * 转移字节数组为字符串
+	 * 转移字节数组为16进制字符串
 	 * 
 	 * @param src
 	 * @return
@@ -30,7 +30,17 @@ public class Encrypt {
 	}
 
 	/**
-	 * 字符串转为字节数组
+	 * 转移字符串为16进制字符串
+	 * 
+	 * @param src
+	 * @return
+	 */
+	public static String toHexString(String src) {
+		return toHexString(src.getBytes());
+	}
+
+	/**
+	 * 16进制字符串转为字节数组
 	 * 
 	 * @param hexString
 	 * @return
