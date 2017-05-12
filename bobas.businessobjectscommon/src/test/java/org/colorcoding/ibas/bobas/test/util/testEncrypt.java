@@ -1,18 +1,25 @@
 package org.colorcoding.ibas.bobas.test.util;
 
-import org.colorcoding.ibas.bobas.util.EncryptAES;
+import org.colorcoding.ibas.bobas.util.Encrypt;
 
 import junit.framework.TestCase;
 
 public class testEncrypt extends TestCase {
 
-	public void testEncryptAES() {
-		String key = EncryptAES.toHexString("cc!iBAS==>*7788~");
-		String data = EncryptAES.toHexString("i'm niuren.");
-		String eData = EncryptAES.encrypt(data, key);
-		System.out.println(eData);
-		String dData = EncryptAES.decrypt(eData, key);
-		System.out.println(dData);
+	public void testHexString() {
+		String key = "cc!iBAS==>*7788~";
+		String hKey = Encrypt.toHexString(key);
+		System.out.println(String.format("%s > %s", key, hKey));
+		String cKey = new String(Encrypt.toBytes(hKey));
+		assertEquals("Hex faild.", key, cKey);
+		System.out.println(String.format("~ %s", cKey));
+
+		String data = "I'm niuren.";
+		String hData = Encrypt.toHexString(data);
+		String cData = new String(Encrypt.toBytes(hData));
+		System.out.println(String.format("%s > %s", data, hData));
+		assertEquals("Hex faild.", data, cData);
+		System.out.println(String.format("~ %s", cData));
 
 	}
 }
