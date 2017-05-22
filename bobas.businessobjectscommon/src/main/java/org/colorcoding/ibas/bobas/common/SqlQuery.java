@@ -35,4 +35,9 @@ public class SqlQuery implements ISqlQuery {
 	public final void setQueryString(String value) {
 		this.queryString = value;
 	}
+    
+	@Override
+	public String toString() {
+		return this.getQueryString();
+	}
 }

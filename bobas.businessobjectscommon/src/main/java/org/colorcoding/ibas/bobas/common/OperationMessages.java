@@ -8,7 +8,6 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.i18n.i18n;
 
 /**
  * 操作消息
@@ -19,135 +18,107 @@ import org.colorcoding.ibas.bobas.i18n.i18n;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "OperationMessages", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
 @XmlRootElement(name = "OperationMessages", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
-public class OperationMessages implements IOperationMessages {
+public class OperationMessages extends Result implements IOperationMessages {
 
-    public OperationMessages() {
-        this.setSignID(java.util.UUID.randomUUID().toString());
-        this.setResultCode(0);
-    }
+	public OperationMessages() {
+		this.setSignID(java.util.UUID.randomUUID().toString());
+		this.setResultCode(0);
+	}
 
-    public OperationMessages(String userSign) {
-        this();
-        this.setUserSign(userSign);
-    }
+	public OperationMessages(String userSign) {
+		this();
+		this.setUserSign(userSign);
+	}
 
-    public OperationMessages(String userSign, String message) {
-        this();
-        this.setUserSign(userSign);
-        this.setMessage(message);
-    }
+	public OperationMessages(String userSign, String message) {
+		this();
+		this.setUserSign(userSign);
+		this.setMessage(message);
+	}
 
-    public OperationMessages(String userSign, Exception exception) {
-        this();
-        this.setUserSign(userSign);
-        this.setError(exception);
-    }
+	public OperationMessages(String userSign, Exception exception) {
+		this();
+		this.setUserSign(userSign);
+		this.setError(exception);
+	}
 
-    public OperationMessages(Exception exception) {
-        this();
-        this.setError(exception);
-    }
+	public OperationMessages(Exception exception) {
+		this();
+		this.setError(exception);
+	}
 
-    public OperationMessages(IOperationMessages result) {
-        this.copy(result);
-    }
+	public OperationMessages(IOperationMessages result) {
+		this.copy(result);
+	}
 
-    private String signID;
+	private String signID;
 
-    @Override
-    @XmlElement(name = "SignID")
-    public final String getSignID() {
-        return this.signID;
-    }
+	@Override
+	@XmlElement(name = "SignID")
+	public final String getSignID() {
+		return this.signID;
+	}
 
-    public final void setSignID(String value) {
-        this.signID = value;
-    }
+	public final void setSignID(String value) {
+		this.signID = value;
+	}
 
-    private String message;
+	private DateTime time = DateTime.getNow();
 
-    @Override
-    @XmlElement(name = "Message")
-    public final String getMessage() {
-        return this.message;
-    }
+	@Override
+	@XmlElement(name = "Time")
+	public final DateTime getTime() {
+		return this.time;
+	}
 
-    public final void setMessage(String value) {
-        this.message = value;
-    }
+	public final void setTime(DateTime value) {
+		this.time = value;
+	}
 
-    private DateTime time = DateTime.getNow();
+	private String userSign;
 
-    @Override
-    @XmlElement(name = "Time")
-    public final DateTime getTime() {
-        return this.time;
-    }
+	@Override
+	@XmlElement(name = "UserSign")
+	public final String getUserSign() {
+		return this.userSign;
+	}
 
-    public final void setTime(DateTime value) {
-        this.time = value;
-    }
+	public final void setUserSign(String value) {
+		this.userSign = value;
+	}
 
-    private String userSign;
+	private Exception error;
 
-    @Override
-    @XmlElement(name = "UserSign")
-    public final String getUserSign() {
-        return this.userSign;
-    }
+	@Override
+	public final Exception getError() {
+		return this.error;
+	}
 
-    public final void setUserSign(String value) {
-        this.userSign = value;
-    }
+	public final void setError(Exception value) {
+		this.error = value;
+		if (this.error != null) {
+			if (this.getResultCode() == 0) {
+				this.setResultCode(-1);
+			}
+			if (this.getMessage() == null || this.getMessage().isEmpty()) {
+				this.setMessage(this.error.getMessage());
+			}
+		}
 
-    private int resultCode;
+	}
 
-    @Override
-    @XmlElement(name = "ResultCode")
-    public final int getResultCode() {
-        return this.resultCode;
-    }
+	@Override
+	public String toString() {
+		return String.format("{operation messages: %s - %s}", this.getResultCode(), this.getMessage());
+	}
 
-    public final void setResultCode(int value) {
-        this.resultCode = value;
-        this.message = null;
-        if (this.resultCode == 0 && this.message == null) {
-            this.setMessage(i18n.prop("msg_bobas_operation_successful"));
-        }
-    }
-
-    private Exception error;
-
-    @Override
-    public final Exception getError() {
-        return this.error;
-    }
-
-    public final void setError(Exception value) {
-        this.error = value;
-        if (this.error != null) {
-            if (this.getResultCode() == 0) {
-                this.setResultCode(-1);
-            }
-            if (this.getMessage() == null || this.getMessage().isEmpty()) {
-                this.setMessage(this.error.getMessage());
-            }
-        }
-
-    }
-
-    @Override
-    public String toString() {
-        return String.format("{operation messages: %s - %s}", this.getResultCode(), this.getMessage());
-    }
-
-    @Override
-    public void copy(IOperationMessages opMsg) {
-        this.setSignID(opMsg.getSignID());
-        this.setUserSign(opMsg.getUserSign());
-        this.setTime(opMsg.getTime());
-        this.setResultCode(opMsg.getResultCode());
-        this.setMessage(opMsg.getMessage());
-        this.setError(opMsg.getError());
-    }
+	@Override
+	public void copy(IOperationMessages opMsg) {
+		this.setSignID(opMsg.getSignID());
+		this.setUserSign(opMsg.getUserSign());
+		this.setTime(opMsg.getTime());
+		this.setResultCode(opMsg.getResultCode());
+		this.setMessage(opMsg.getMessage());
+		this.setError(opMsg.getError());
+	}
 }
