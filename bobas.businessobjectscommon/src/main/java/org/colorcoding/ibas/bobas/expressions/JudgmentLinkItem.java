@@ -29,13 +29,13 @@ public class JudgmentLinkItem {
 		this.openBracket = openBracket;
 	}
 
-	private IValueOperter leftOperter;
+	private IValueOperator leftOperter;
 
-	public final IValueOperter getLeftOperter() {
+	public final IValueOperator getLeftOperter() {
 		return leftOperter;
 	}
 
-	public final void setLeftOperter(IValueOperter leftOperter) {
+	public final void setLeftOperter(IValueOperator leftOperter) {
 		this.leftOperter = leftOperter;
 	}
 
@@ -49,13 +49,13 @@ public class JudgmentLinkItem {
 		this.operation = operation;
 	}
 
-	private IValueOperter rightOperter;
+	private IValueOperator rightOperter;
 
-	public final IValueOperter getRightOperter() {
+	public final IValueOperator getRightOperter() {
 		return rightOperter;
 	}
 
-	public final void setRightOperter(IValueOperter rightOperter) {
+	public final void setRightOperter(IValueOperator rightOperter) {
 		this.rightOperter = rightOperter;
 	}
 

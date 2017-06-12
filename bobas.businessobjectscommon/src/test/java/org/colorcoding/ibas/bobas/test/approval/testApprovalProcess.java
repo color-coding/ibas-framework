@@ -16,6 +16,7 @@ import org.colorcoding.ibas.bobas.data.emConditionRelationship;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
+import org.colorcoding.ibas.bobas.repository.BORepository4Db;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrderItem;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 
@@ -103,6 +104,7 @@ public class testApprovalProcess extends TestCase {
 		};
 		// 创建审批流程
 		ApprovalProcess aProcess = new ApprovalProcess();
+		aProcess.setRepository(new BORepository4Db());
 		aProcess.setName("订单审批流程");
 
 		ArrayList<IApprovalProcessStep> aSteps = new ArrayList<IApprovalProcessStep>();
@@ -303,6 +305,7 @@ public class testApprovalProcess extends TestCase {
 		};
 		// 创建审批流程
 		ApprovalProcess aProcess = new ApprovalProcess();
+		aProcess.setRepository(new BORepository4Db());
 		aProcess.setName("订单审批流程2");
 
 		ArrayList<IApprovalProcessStep> aSteps = new ArrayList<IApprovalProcessStep>();

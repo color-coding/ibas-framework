@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.test.approval;
 
 import org.colorcoding.ibas.bobas.approval.IApprovalProcessStepCondition;
+import org.colorcoding.ibas.bobas.approval.PropertyValueMode;
 import org.colorcoding.ibas.bobas.data.emConditionOperation;
 import org.colorcoding.ibas.bobas.data.emConditionRelationship;
 
@@ -8,6 +9,17 @@ public class ApprovalProcessStepCondition implements IApprovalProcessStepConditi
 	public ApprovalProcessStepCondition() {
 		this.setOperation(emConditionOperation.EQUAL);
 		this.setRelation(emConditionRelationship.AND);
+	}
+
+	private PropertyValueMode valueMode = PropertyValueMode.DB_FIELD;
+
+	@Override
+	public PropertyValueMode getValueMode() {
+		return this.valueMode;
+	}
+
+	public void setValueMode(PropertyValueMode value) {
+		this.valueMode = value;
 	}
 
 	private String propertyName;

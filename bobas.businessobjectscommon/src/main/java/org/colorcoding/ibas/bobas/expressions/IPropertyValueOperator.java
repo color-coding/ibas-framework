@@ -6,7 +6,7 @@ package org.colorcoding.ibas.bobas.expressions;
  * @author Niuren.Zhu
  *
  */
-public interface IPropertyValueOperter extends IValueOperter {
+public interface IPropertyValueOperator extends IValueOperator {
 	/**
 	 * 设置属性名称
 	 * 

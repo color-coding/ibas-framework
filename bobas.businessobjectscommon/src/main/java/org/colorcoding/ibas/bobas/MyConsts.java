@@ -41,5 +41,9 @@ public final class MyConsts {
 	 * 配置项命名空间
 	 */
 	public static final String NAMESPACE_BOBAS_CONFIGURATION = NAMESPACE_BOBAS + "/configuration";
+	/**
+	 * 变量命名模板，${%s}
+	 */
+	public static final String VARIABLE_NAMING_TEMPLATE = "${%s}";
 
 }

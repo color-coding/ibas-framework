@@ -11,6 +11,13 @@ import org.colorcoding.ibas.bobas.data.emConditionRelationship;
  */
 public interface IApprovalProcessStepCondition {
 	/**
+	 * 属性取值方式
+	 * 
+	 * @return
+	 */
+	PropertyValueMode getValueMode();
+
+	/**
 	 * 获取-属性名称
 	 * 
 	 * @return

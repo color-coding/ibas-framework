@@ -34,20 +34,20 @@ public class BOJudgmentLinksCondition extends BOJudgmentLinks {
 			}
 			jItem.setOperation(JudmentOperations.valueOf(item.getOperation()));
 			// 左边取值
-			IPropertyValueOperter propertyValueOperter = this.createPropertyValueOperter();
-			propertyValueOperter.setPropertyName(item.getAlias());
-			jItem.setLeftOperter(propertyValueOperter);
+			IPropertyValueOperator propertyValueOperator = this.createPropertyValueOperator();
+			propertyValueOperator.setPropertyName(item.getAlias());
+			jItem.setLeftOperter(propertyValueOperator);
 			// 右边取值
 			if (item.getComparedAlias() != null && !item.getComparedAlias().isEmpty()) {
 				// 与属性比较
-				propertyValueOperter = this.createPropertyValueOperter();
-				propertyValueOperter.setPropertyName(item.getComparedAlias());
-				jItem.setRightOperter(propertyValueOperter);
+				propertyValueOperator = this.createPropertyValueOperator();
+				propertyValueOperator.setPropertyName(item.getComparedAlias());
+				jItem.setRightOperter(propertyValueOperator);
 			} else {
 				// 与值比较
-				IValueOperter valueOperter = this.createValueOperter();
-				valueOperter.setValue(item.getValue());
-				jItem.setRightOperter(valueOperter);
+				IValueOperator ValueOperator = this.createValueOperator();
+				ValueOperator.setValue(item.getValue());
+				jItem.setRightOperter(ValueOperator);
 			}
 			jLinkItems.add(jItem);
 		}

@@ -33,8 +33,8 @@ public abstract class JudgmentLinks {
      * 
      * @return
      */
-    protected IValueOperter createValueOperter() {
-        return new IValueOperter() {
+    protected IValueOperator createValueOperator() {
+        return new IValueOperator() {
             private Object value;
 
             @Override
@@ -78,13 +78,13 @@ public abstract class JudgmentLinks {
         // 设置所以条件的比较值
         for (JudgmentLinkItem item : this.getJudgmentItems()) {
             // 左值
-            if (item.getLeftOperter() instanceof IPropertyValueOperter) {
-                IPropertyValueOperter pOperter = (IPropertyValueOperter) item.getLeftOperter();
+            if (item.getLeftOperter() instanceof IPropertyValueOperator) {
+                IPropertyValueOperator pOperter = (IPropertyValueOperator) item.getLeftOperter();
                 pOperter.setValue(object);
             }
             // 右值
-            if (item.getRightOperter() instanceof IPropertyValueOperter) {
-                IPropertyValueOperter pOperter = (IPropertyValueOperter) item.getRightOperter();
+            if (item.getRightOperter() instanceof IPropertyValueOperator) {
+                IPropertyValueOperator pOperter = (IPropertyValueOperator) item.getRightOperter();
                 pOperter.setValue(object);
             }
         }

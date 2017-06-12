@@ -6,7 +6,7 @@ package org.colorcoding.ibas.bobas.expressions;
  * @author Niuren.Zhu
  *
  */
-public interface IValueOperter {
+public interface IValueOperator {
 	/**
 	 * 获取值
 	 * 

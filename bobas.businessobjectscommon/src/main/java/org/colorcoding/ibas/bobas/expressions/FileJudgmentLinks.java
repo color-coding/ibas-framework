@@ -32,8 +32,8 @@ public class FileJudgmentLinks extends JudgmentLinks {
      * 
      * @return
      */
-    public IPropertyValueOperter createPropertyValueOperter() {
-        return new IPropertyValueOperter() {
+    public IPropertyValueOperator createPropertyValueOperator() {
+        return new IPropertyValueOperator() {
 
             private File value;
 
@@ -119,13 +119,13 @@ public class FileJudgmentLinks extends JudgmentLinks {
             }
             jItem.setOperation(JudmentOperations.valueOf(item.getOperation()));
             // 左边取值
-            IPropertyValueOperter propertyValueOperter = this.createPropertyValueOperter();
-            propertyValueOperter.setPropertyName(item.getAlias());
-            jItem.setLeftOperter(propertyValueOperter);
+            IPropertyValueOperator propertyValueOperator = this.createPropertyValueOperator();
+            propertyValueOperator.setPropertyName(item.getAlias());
+            jItem.setLeftOperter(propertyValueOperator);
             // 右边取值
-            IValueOperter valueOperter = this.createValueOperter();
-            valueOperter.setValue(item.getValue());
-            jItem.setRightOperter(valueOperter);
+            IValueOperator ValueOperator = this.createValueOperator();
+            ValueOperator.setValue(item.getValue());
+            jItem.setRightOperter(ValueOperator);
             jLinkItems.add(jItem);
         }
         if (jLinkItems.size() == 0) {
