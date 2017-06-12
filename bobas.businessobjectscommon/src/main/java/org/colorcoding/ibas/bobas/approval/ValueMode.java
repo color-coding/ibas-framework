@@ -6,7 +6,7 @@ package org.colorcoding.ibas.bobas.approval;
  * @author Niuren.Zhu
  *
  */
-public enum PropertyValueMode {
+public enum ValueMode {
 	/**
 	 * 属性取值
 	 */
@@ -15,6 +15,10 @@ public enum PropertyValueMode {
 	 * 数据库字段取值
 	 */
 	DB_FIELD,
+	/**
+	 * 输入值
+	 */
+	INPUT,
 	/**
 	 * sql脚本取值
 	 */

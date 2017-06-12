@@ -76,11 +76,11 @@ public class JudgmentExpressionDecimal extends JudgmentExpressionComparable<BigD
 		} else if (value instanceof String) {
 			this.setRightValue((String) value);
 		} else if (value instanceof Double) {
-			this.setRightValue((Double) value);
+			this.setRightValue((double) value);
 		} else if (value instanceof Integer) {
-			this.setRightValue((Integer) value);
+			this.setRightValue((int) value);
 		} else if (value instanceof Long) {
-			this.setRightValue((Long) value);
+			this.setRightValue((long) value);
 		}
 	}
 

@@ -1,7 +1,7 @@
 package org.colorcoding.ibas.bobas.test.approval;
 
 import org.colorcoding.ibas.bobas.approval.IApprovalProcessStepCondition;
-import org.colorcoding.ibas.bobas.approval.PropertyValueMode;
+import org.colorcoding.ibas.bobas.approval.ValueMode;
 import org.colorcoding.ibas.bobas.data.emConditionOperation;
 import org.colorcoding.ibas.bobas.data.emConditionRelationship;
 
@@ -11,15 +11,15 @@ public class ApprovalProcessStepCondition implements IApprovalProcessStepConditi
 		this.setRelation(emConditionRelationship.AND);
 	}
 
-	private PropertyValueMode valueMode = PropertyValueMode.DB_FIELD;
+	private ValueMode propertyValueMode = ValueMode.DB_FIELD;
 
 	@Override
-	public PropertyValueMode getValueMode() {
-		return this.valueMode;
+	public ValueMode getPropertyValueMode() {
+		return this.propertyValueMode;
 	}
 
-	public void setValueMode(PropertyValueMode value) {
-		this.valueMode = value;
+	public void setPropertyValueMode(ValueMode value) {
+		this.propertyValueMode = value;
 	}
 
 	private String propertyName;
@@ -53,6 +53,17 @@ public class ApprovalProcessStepCondition implements IApprovalProcessStepConditi
 
 	public void setRelation(emConditionRelationship value) {
 		this.relation = value;
+	}
+
+	private ValueMode conditionValueMode = ValueMode.INPUT;
+
+	@Override
+	public ValueMode getConditionValueMode() {
+		return this.conditionValueMode;
+	}
+
+	public void setConditionValueMode(ValueMode value) {
+		this.conditionValueMode = value;
 	}
 
 	private String conditionValue;

@@ -15,7 +15,7 @@ public interface IApprovalProcessStepCondition {
 	 * 
 	 * @return
 	 */
-	PropertyValueMode getValueMode();
+	ValueMode getPropertyValueMode();
 
 	/**
 	 * 获取-属性名称
@@ -37,6 +37,13 @@ public interface IApprovalProcessStepCondition {
 	 * @return
 	 */
 	emConditionRelationship getRelation();
+
+	/**
+	 * 属性取值方式
+	 * 
+	 * @return
+	 */
+	ValueMode getConditionValueMode();
 
 	/**
 	 * 获取-条件值

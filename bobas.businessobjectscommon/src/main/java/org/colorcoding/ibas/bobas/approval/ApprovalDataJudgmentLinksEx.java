@@ -16,8 +16,8 @@ public class ApprovalDataJudgmentLinksEx extends ApprovalDataJudgmentLinks {
 	}
 
 	@Override
-	public IPropertyValueOperator createPropertyValueOperator(PropertyValueMode mode) {
-		if (mode == PropertyValueMode.SQL_SCRIPT) {
+	public IPropertyValueOperator createPropertyValueOperator(ValueMode mode) {
+		if (mode == ValueMode.SQL_SCRIPT) {
 			// 数据库脚本比较
 			return new SQLScriptValueOperator(this.getRepository());
 		}

@@ -1,10 +1,14 @@
 package org.colorcoding.ibas.bobas.approval;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.colorcoding.ibas.bobas.MyConsts;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.SqlQuery;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
+import org.colorcoding.ibas.bobas.core.fields.IFieldDataDb;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.expressions.IPropertyValueOperator;
@@ -51,12 +55,28 @@ public class SQLScriptValueOperator implements IPropertyValueOperator {
 				throw new RuntimeException(i18n.prop("msg_bobas_invalid_sql_query"));
 			}
 			String query = this.propertyName;
-			// 替换查询中的变量（主键名称）
+			// 替换查询中的变量
 			if (this.bo instanceof IManageFields) {
 				IManageFields boFields = (IManageFields) this.bo;
-				for (IFieldData field : boFields.getKeyFields()) {
-					query = query.replace(String.format(MyConsts.VARIABLE_NAMING_TEMPLATE, field.getName()),
-							String.valueOf(field.getValue()));
+				String pattern = "\\$\\{([\\!a-zA-Z].*?)\\}";
+				Matcher matcher = Pattern.compile(pattern).matcher(query);
+				while (matcher.find()) {
+					String vName = matcher.group(0).replace("${", "").replace("}", "");
+					IFieldDataDb fieldData = null;
+					for (IFieldData item : boFields.getFields()) {
+						if (item instanceof IFieldDataDb) {
+							IFieldDataDb dbItem = (IFieldDataDb) item;
+							if (dbItem.getDbField().equals(vName)) {
+								fieldData = dbItem;
+								break;
+							}
+						}
+					}
+					if (fieldData == null) {
+						throw new RuntimeException(i18n.prop("msg_bobas_not_found_bo_field", vName));
+					}
+					query = query.replace(String.format(MyConsts.VARIABLE_NAMING_TEMPLATE, fieldData.getDbField()),
+							String.valueOf(fieldData.getValue()));
 				}
 			}
 			IOperationResult<IDataTable> opRslt = this.repository.query(new SqlQuery(query));

@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcessStep;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcessStepCondition;
-import org.colorcoding.ibas.bobas.approval.PropertyValueMode;
 import org.colorcoding.ibas.bobas.approval.UnauthorizedException;
+import org.colorcoding.ibas.bobas.approval.ValueMode;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
@@ -148,12 +148,12 @@ public class testApprovalProcess extends TestCase {
 		aCondition.setConditionValue("10000");
 		// sql查询比较
 		bCondition = new ApprovalProcessStepCondition();
-		bCondition.setValueMode(PropertyValueMode.SQL_SCRIPT);
 		bCondition.setRelation(emConditionRelationship.AND);
-		bCondition.setPropertyName(String.format("select 0 from %s where %2$s = ${%2$s}", SalesOrder.DB_TABLE_NAME,
-				SalesOrder.PROPERTY_CUSTOMERCODE.getName()));// DocumentTotal
-		bCondition.setOperation(emConditionOperation.EQUAL);
-		bCondition.setConditionValue("0");
+		bCondition.setPropertyName("DocTotal");// DocumentTotal
+		bCondition.setOperation(emConditionOperation.GRATER_EQUAL);
+		bCondition.setConditionValueMode(ValueMode.SQL_SCRIPT);
+		bCondition.setConditionValue(
+				String.format("select 0 from %s where CardCode = '${CardCode}'", SalesOrder.DB_TABLE_NAME));
 		aStep.setConditions(new IApprovalProcessStepCondition[] { aCondition, bCondition });
 		aSteps.add(aStep);
 		// 添加审批步骤
@@ -381,15 +381,15 @@ class ApprovalProcessStepCondition implements IApprovalProcessStepCondition {
 		this.setRelation(emConditionRelationship.AND);
 	}
 
-	private PropertyValueMode valueMode = PropertyValueMode.DB_FIELD;
+	private ValueMode propertyValueMode = ValueMode.DB_FIELD;
 
 	@Override
-	public PropertyValueMode getValueMode() {
-		return this.valueMode;
+	public ValueMode getPropertyValueMode() {
+		return this.propertyValueMode;
 	}
 
-	public void setValueMode(PropertyValueMode value) {
-		this.valueMode = value;
+	public void setPropertyValueMode(ValueMode value) {
+		this.propertyValueMode = value;
 	}
 
 	private String propertyName;
@@ -423,6 +423,17 @@ class ApprovalProcessStepCondition implements IApprovalProcessStepCondition {
 
 	public void setRelation(emConditionRelationship value) {
 		this.relation = value;
+	}
+
+	private ValueMode conditionValueMode = ValueMode.INPUT;
+
+	@Override
+	public ValueMode getConditionValueMode() {
+		return this.conditionValueMode;
+	}
+
+	public void setConditionValueMode(ValueMode value) {
+		this.conditionValueMode = value;
 	}
 
 	private String conditionValue;

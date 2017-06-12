@@ -33,14 +33,22 @@ public class ApprovalDataJudgmentLinks extends BOJudgmentLinks {
 			}
 			jItem.setOperation(JudmentOperations.valueOf(item.getOperation()));
 			// 左边取值
-			IPropertyValueOperator propertyValueOperator = this.createPropertyValueOperator(item.getValueMode());
+			IPropertyValueOperator propertyValueOperator = this
+					.createPropertyValueOperator(item.getPropertyValueMode());
 			propertyValueOperator.setPropertyName(item.getPropertyName());
 			jItem.setLeftOperter(propertyValueOperator);
 			// 右边取值
-			// 与值比较
-			IValueOperator ValueOperator = this.createValueOperator();
-			ValueOperator.setValue(item.getConditionValue());
-			jItem.setRightOperter(ValueOperator);
+			if (item.getConditionValueMode() == ValueMode.INPUT) {
+				// 与值比较
+				IValueOperator valueOperator = this.createValueOperator();
+				valueOperator.setValue(item.getConditionValue());
+				jItem.setRightOperter(valueOperator);
+			} else {
+				// 与对象属性值比较
+				IPropertyValueOperator valueOperator = this.createPropertyValueOperator(item.getConditionValueMode());
+				valueOperator.setPropertyName(item.getConditionValue());
+				jItem.setRightOperter(valueOperator);
+			}
 			jLinkItems.add(jItem);
 		}
 		if (jLinkItems.size() == 0) {
@@ -49,8 +57,8 @@ public class ApprovalDataJudgmentLinks extends BOJudgmentLinks {
 		super.setJudgmentItems(jLinkItems.toArray(new JudgmentLinkItem[] {}));
 	}
 
-	public IPropertyValueOperator createPropertyValueOperator(PropertyValueMode mode) {
-		if (mode == PropertyValueMode.DB_FIELD) {
+	public IPropertyValueOperator createPropertyValueOperator(ValueMode mode) {
+		if (mode == ValueMode.DB_FIELD) {
 			// 使用数据库字段属性比较
 			return new DBFieldValueOperator();
 		} else {
@@ -58,5 +66,4 @@ public class ApprovalDataJudgmentLinks extends BOJudgmentLinks {
 			return super.createPropertyValueOperator();
 		}
 	}
-
 }

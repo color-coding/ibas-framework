@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.colorcoding.ibas.bobas.approval.ApprovalException;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcessStep;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcessStepCondition;
+import org.colorcoding.ibas.bobas.approval.ValueMode;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
@@ -317,7 +318,15 @@ public class testApprovalProcess extends TestCase {
 		aCondition.setPropertyName("DocTotal");// DocumentTotal
 		aCondition.setOperation(emConditionOperation.GRATER_EQUAL);
 		aCondition.setConditionValue("3000");
-		step10.setConditions(new IApprovalProcessStepCondition[] { aCondition });
+		// 属性与属性比较
+		ApprovalProcessStepCondition bCondition = new ApprovalProcessStepCondition();
+		bCondition.setPropertyValueMode(ValueMode.DB_FIELD);
+		bCondition.setRelation(emConditionRelationship.AND);
+		bCondition.setPropertyName("DocTotal");// DocumentTotal
+		bCondition.setOperation(emConditionOperation.EQUAL);
+		bCondition.setConditionValueMode(ValueMode.DB_FIELD);
+		bCondition.setConditionValue("DocTotal");
+		step10.setConditions(new IApprovalProcessStepCondition[] { aCondition, bCondition });
 		aSteps.add(step10);
 		// 3000以上，10000以下经理审批
 		ApprovalProcessStep step20 = new ApprovalProcessStep();
@@ -327,7 +336,7 @@ public class testApprovalProcess extends TestCase {
 		aCondition.setPropertyName("DocTotal");// DocumentTotal
 		aCondition.setOperation(emConditionOperation.GRATER_EQUAL);
 		aCondition.setConditionValue("3000");
-		ApprovalProcessStepCondition bCondition = new ApprovalProcessStepCondition();
+		bCondition = new ApprovalProcessStepCondition();
 		bCondition.setRelation(emConditionRelationship.AND);
 		bCondition.setPropertyName("DocTotal");// DocumentTotal
 		bCondition.setOperation(emConditionOperation.LESS_THAN);
