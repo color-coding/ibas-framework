@@ -36,6 +36,9 @@ public class RuntimeLog {
 	public static final String MSG_JUDGMENT_EXPRESSION = "judgment: expression %s = [%s]";
 	public static final String MSG_JUDGMENT_RELATION = "judgment: relation %s = [%s]";
 	public static final String MSG_JUDGMENT_LINK_INFO = "judgment: judgment item count [%s].";
+	public static final String MSG_JUDGMENT_ENTRY_SUB_JUDGMENT = "judgment: entry sub judgment [%s].";
+	public static final String MSG_JUDGMENT_NOT_FOUND_PROPERTY = "judgment: not found [%s]'s property [%s].";
+	public static final String MSG_JUDGMENT_PROPERTY_NULL = "judgment: [%s].[%s] value is null.";
 	public static final String MSG_DB_ADAPTER_CREATED = "db adapter: created db adapter [%s].";
 	public static final String MSG_TRANSACTION_SP_VALUES = "transaction: sp [%s] [%s] [%s - %s]";
 	public static final String MSG_USER_FIELDS_REGISTER = "user fields: register type [%s]'s user fields, count [%s].";

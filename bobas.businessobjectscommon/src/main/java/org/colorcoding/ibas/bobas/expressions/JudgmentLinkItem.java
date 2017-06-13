@@ -69,7 +69,8 @@ public class JudgmentLinkItem {
 		this.closeBracket = closeBracket;
 	}
 
-	public String print() {
+	@Override
+	public String toString() {
 		// AND ((ItemCode = "A" OR Customer = "C") AND Total >= 1000)
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(this.getRelationship().toString());
@@ -87,4 +88,5 @@ public class JudgmentLinkItem {
 		}
 		return stringBuilder.toString();
 	}
+
 }

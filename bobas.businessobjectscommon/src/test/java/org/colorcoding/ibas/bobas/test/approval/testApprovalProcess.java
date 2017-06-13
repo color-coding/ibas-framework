@@ -189,20 +189,18 @@ public class testApprovalProcess extends TestCase {
 		aStep.setOwner(boss);
 		aCondition = new ApprovalProcessStepCondition();
 		aCondition.setPropertyName("SalesOrderItems.ItemCode");
-		aCondition.setOperation(emConditionOperation.GRATER_EQUAL);
+		aCondition.setOperation(emConditionOperation.EQUAL);
 		aCondition.setConditionValue("S00001");
 		aStep.setConditions(new IApprovalProcessStepCondition[] { aCondition });
 		aSteps.add(aStep);
 		bProcess.setProcessSteps(aSteps.toArray(new IApprovalProcessStep[] {}));
 
 		// 搞不定，放弃了，科科
-		// done = bProcess.start(order);
-		// assertEquals(String.format("order item [%s].",
-		// orderItem.getItemCode()), done, false);
-		// orderItem.setItemCode("S00001");
-		// done = bProcess.start(order);
-		// assertEquals(String.format("order item [%s].",
-		// orderItem.getItemCode()), done, true);
+		done = bProcess.start(order);
+		assertEquals(String.format("order item [%s].", orderItem.getItemCode()), done, false);
+		orderItem.setItemCode("S00001");
+		done = bProcess.start(order);
+		assertEquals(String.format("order item [%s].", orderItem.getItemCode()), done, true);
 	}
 
 	public void testApprovalSteps() throws InvalidAuthorizationException, ApprovalException, RepositoryException {

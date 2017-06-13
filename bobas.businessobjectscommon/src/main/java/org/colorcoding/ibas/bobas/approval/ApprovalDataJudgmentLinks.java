@@ -8,9 +8,21 @@ import org.colorcoding.ibas.bobas.expressions.JudgmentLinkItem;
 import org.colorcoding.ibas.bobas.expressions.JudgmentLinksException;
 import org.colorcoding.ibas.bobas.expressions.JudmentOperations;
 import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.repository.IBORepository4DbReadonly;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
 public class ApprovalDataJudgmentLinks extends BOJudgmentLinks {
+
+	private IBORepository4DbReadonly repository;
+
+	public final IBORepository4DbReadonly getRepository() {
+		return repository;
+	}
+
+	public final void setRepository(IBORepository4DbReadonly repository) {
+		this.repository = repository;
+	}
+
 	/**
 	 * 初始化判断条件
 	 * 
@@ -24,8 +36,6 @@ public class ApprovalDataJudgmentLinks extends BOJudgmentLinks {
 		ArrayList<JudgmentLinkItem> jLinkItems = new ArrayList<JudgmentLinkItem>();
 		for (IApprovalProcessStepCondition item : conditions) {
 			JudgmentLinkItem jItem = new JudgmentLinkItem();
-			jItem.setOpenBracket(0);
-			jItem.setCloseBracket(0);
 			if (item.getRelation() == emConditionRelationship.NONE || item.getRelation() == null) {
 				jItem.setRelationship(JudmentOperations.AND);
 			} else {
@@ -61,6 +71,9 @@ public class ApprovalDataJudgmentLinks extends BOJudgmentLinks {
 		if (mode == ValueMode.DB_FIELD) {
 			// 使用数据库字段属性比较
 			return new DBFieldValueOperator();
+		} else if (mode == ValueMode.SQL_SCRIPT) {
+			// 数据库脚本比较
+			return new SQLScriptValueOperator(this.getRepository());
 		} else {
 			// 默认类属性比较
 			return super.createPropertyValueOperator();
