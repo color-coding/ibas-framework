@@ -195,7 +195,7 @@ public class testApprovalProcess extends TestCase {
 		aSteps.add(aStep);
 		bProcess.setProcessSteps(aSteps.toArray(new IApprovalProcessStep[] {}));
 
-		// 搞不定，放弃了，科科
+		// 先不进审批，后进入审批
 		done = bProcess.start(order);
 		assertEquals(String.format("order item [%s].", orderItem.getItemCode()), done, false);
 		orderItem.setItemCode("S00001");

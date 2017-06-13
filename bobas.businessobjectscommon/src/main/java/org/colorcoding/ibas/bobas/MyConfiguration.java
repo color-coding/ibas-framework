@@ -176,10 +176,6 @@ public class MyConfiguration extends Configuration {
 	 */
 	public final static String CONFIG_ITEM_OWNERSHIP_WAY = "OwnershipWay";
 	/**
-	 * 配置项目-审批时数据比较取值方法
-	 */
-	public final static String CONFIG_ITEM_APPROVAL_DATA_JUDGMENT_VALUE_WAY = "ApDjvWay";
-	/**
 	 * 配置项目-业务规则管理方式
 	 */
 	public final static String CONFIG_ITEM_BUSINESS_RULES_WAY = "BizRulesWay";
