@@ -193,7 +193,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 			return;
 		}
 		IApprovalProcessManager apManager = ApprovalFactory.create().createManager();
-		IApprovalProcess approvalProcess = apManager.checkProcess((IApprovalData) bo);
+		IApprovalProcess approvalProcess = apManager.checkProcess((IApprovalData) bo, this.getRepository());
 		if (approvalProcess != null) {
 			// 创建了流程实例
 			// 保存流程实例，使用当前仓库以保证事务完整

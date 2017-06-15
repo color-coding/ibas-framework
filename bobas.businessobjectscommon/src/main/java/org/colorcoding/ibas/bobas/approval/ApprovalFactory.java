@@ -2,6 +2,7 @@ package org.colorcoding.ibas.bobas.approval;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
+import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 
 /**
@@ -47,7 +48,7 @@ public class ApprovalFactory extends ConfigurableFactory<IApprovalProcessManager
 	protected IApprovalProcessManager createDefault(String typeName) {
 		return new IApprovalProcessManager() {
 			@Override
-			public IApprovalProcess checkProcess(IApprovalData data) {
+			public IApprovalProcess checkProcess(IApprovalData data, IBORepository repository) {
 				if (data.getApprovalStatus() != emApprovalStatus.UNAFFECTED) {
 					// 重置数据状态
 					data.setApprovalStatus(emApprovalStatus.UNAFFECTED);
