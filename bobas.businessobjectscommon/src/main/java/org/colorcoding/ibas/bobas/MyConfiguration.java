@@ -187,4 +187,8 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-格式化输出
 	 */
 	public final static String CONFIG_ITEM_FORMATTED_OUTPUT = "FormattedOutput";
+	/**
+	 * 配置项目-SQL写入语句检查表达式
+	 */
+	public final static String CONFIG_ITEM_INSPECTOR_SQL_WRITE_REGEX = "SqlWriteRegex";
 }
