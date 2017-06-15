@@ -72,10 +72,8 @@ public class DBFieldValueOperator implements IPropertyValueOperator {
 		return this.propertyName;
 	}
 
-	private static final String FORMAT_TEMPLATE = "{property's value: %s}";
-
 	@Override
 	public String toString() {
-		return String.format(FORMAT_TEMPLATE, this.getPropertyName());
+		return String.format("{property's value: %s}", this.getPropertyName());
 	}
 }

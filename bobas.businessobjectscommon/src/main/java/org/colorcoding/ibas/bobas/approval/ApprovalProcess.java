@@ -63,7 +63,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 
 	@Override
 	public String toString() {
-		return String.format("{approval process: %s %s}", this.getName(), this.getStatus());
+		return String.format("{approvalProcess: %s %s}", this.getName(), this.getStatus());
 	}
 
 	/**

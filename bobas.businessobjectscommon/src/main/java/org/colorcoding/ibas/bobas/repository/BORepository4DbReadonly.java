@@ -33,6 +33,7 @@ import org.colorcoding.ibas.bobas.db.IDbAdapter;
 import org.colorcoding.ibas.bobas.db.IDbCommand;
 import org.colorcoding.ibas.bobas.db.IDbConnection;
 import org.colorcoding.ibas.bobas.db.IDbDataReader;
+import org.colorcoding.ibas.bobas.db.ISqlScriptInspector;
 import org.colorcoding.ibas.bobas.db.SqlScriptsException;
 import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.mapping.AssociationMode;
@@ -589,6 +590,12 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	public IOperationResult<IDataTable> query(ISqlQuery sqlQuery) {
 		OperationResult<IDataTable> operationResult = new OperationResult<IDataTable>();
 		try {
+			// 检查SQL
+			ISqlScriptInspector inspector = this.createDbAdapter().createSqlInspector();
+			if (inspector != null) {
+				inspector.check(sqlQuery);
+			}
+			// 执行SQL
 			IDbDataReader reader = null;
 			IDbCommand command = null;
 			boolean myOpenedDb = false;// 自己打开的数据库

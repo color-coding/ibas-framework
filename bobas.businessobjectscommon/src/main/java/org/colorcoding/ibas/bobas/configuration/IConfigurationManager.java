@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.configuration;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import javax.xml.bind.JAXBException;
 
@@ -9,6 +10,12 @@ import javax.xml.bind.JAXBException;
  * 
  */
 public interface IConfigurationManager {
+	/**
+	 * 获取配置元素
+	 * 
+	 * @return
+	 */
+	Collection<IConfigurationElement> getElements();
 
 	/**
 	 * 保存配置项到指定路径

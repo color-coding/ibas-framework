@@ -12,21 +12,51 @@ import org.colorcoding.ibas.bobas.MyConsts;
 @XmlType(name = "SqlQuery", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
 @XmlRootElement(name = "SqlQuery", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
 public class SqlQuery implements ISqlQuery {
+
+	private static final String SQL_EMPTY = "";
+
+	/**
+	 * 构造
+	 */
 	public SqlQuery() {
+		this.setAllowRead(true);
+		this.setAllowWrite(true);
 	}
 
+	/**
+	 * 构造
+	 * 
+	 * @param sql
+	 *            脚本内容
+	 */
 	public SqlQuery(String sql) {
 		this();
 		this.setQueryString(sql);
 	}
 
-	private String queryString = "";
+	/**
+	 * 构造
+	 * 
+	 * @param sql
+	 *            脚本内容
+	 * @param read
+	 *            允许读取数据
+	 * @param write
+	 *            允许写入数据
+	 */
+	public SqlQuery(String sql, boolean read, boolean write) {
+		this(sql);
+		this.setAllowRead(read);
+		this.setAllowWrite(write);
+	}
+
+	private String queryString;
 
 	@Override
-	@XmlElement
+	@XmlElement(name = "QueryString")
 	public final String getQueryString() {
-		if (this.queryString == null && this.queryString.isEmpty()) {
-			this.queryString = "";
+		if (this.queryString == null) {
+			this.queryString = SQL_EMPTY;
 		}
 		return this.queryString;
 	}
@@ -35,7 +65,31 @@ public class SqlQuery implements ISqlQuery {
 	public final void setQueryString(String value) {
 		this.queryString = value;
 	}
-    
+
+	private boolean allowRead;
+
+	@Override
+	@XmlElement(name = "AllowRead")
+	public final boolean isAllowRead() {
+		return allowRead;
+	}
+
+	public final void setAllowRead(boolean value) {
+		this.allowRead = value;
+	}
+
+	private boolean allowWrite;
+
+	@Override
+	@XmlElement(name = "AllowWrite")
+	public final boolean isAllowWrite() {
+		return allowWrite;
+	}
+
+	public final void setAllowWrite(boolean value) {
+		this.allowWrite = value;
+	}
+
 	@Override
 	public String toString() {
 		return this.getQueryString();

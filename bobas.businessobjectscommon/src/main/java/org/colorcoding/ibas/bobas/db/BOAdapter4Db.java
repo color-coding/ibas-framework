@@ -894,69 +894,69 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 		if (bo instanceof IBODocument) {
 			IBODocument boKey = (IBODocument) bo;
 			for (KeyValue key : keys) {
-				if (key.value == null) {
+				if (key.getValue() == null) {
 					continue;
 				}
-				if (IBODocument.MASTER_PRIMARY_KEY_NAME.equals(key.key)) {
-					boKey.setDocEntry((int) (key.value));
+				if (IBODocument.MASTER_PRIMARY_KEY_NAME.equals(key.getKey())) {
+					boKey.setDocEntry((int) (key.getValue()));
 				}
 			}
 		} else if (bo instanceof IBODocumentLine) {
 			IBODocumentLine boKey = (IBODocumentLine) bo;
 			for (KeyValue key : keys) {
-				if (key.value == null) {
+				if (key.getValue() == null) {
 					continue;
 				}
-				if (IBODocumentLine.MASTER_PRIMARY_KEY_NAME.equals(key.key)) {
-					boKey.setDocEntry((int) (key.value));
-				} else if (IBODocumentLine.SECONDARY_PRIMARY_KEY_NAME.equals(key.key)) {
-					boKey.setLineId((int) (key.value));
+				if (IBODocumentLine.MASTER_PRIMARY_KEY_NAME.equals(key.getKey())) {
+					boKey.setDocEntry((int) (key.getValue()));
+				} else if (IBODocumentLine.SECONDARY_PRIMARY_KEY_NAME.equals(key.getKey())) {
+					boKey.setLineId((int) (key.getValue()));
 				}
 			}
 		} else if (bo instanceof IBOMasterData) {
 			IBOMasterData boKey = (IBOMasterData) bo;
 			for (KeyValue key : keys) {
-				if (key.value == null) {
+				if (key.getValue() == null) {
 					continue;
 				}
-				if (IBOMasterData.SERIAL_NUMBER_KEY_NAME.equals(key.key)) {
-					boKey.setDocEntry((int) (key.value));
-				} else if (IBOMasterData.MASTER_PRIMARY_KEY_NAME.equals(key.key)) {
-					boKey.setCode(String.valueOf(key.value));
+				if (IBOMasterData.SERIAL_NUMBER_KEY_NAME.equals(key.getKey())) {
+					boKey.setDocEntry((int) (key.getValue()));
+				} else if (IBOMasterData.MASTER_PRIMARY_KEY_NAME.equals(key.getKey())) {
+					boKey.setCode(String.valueOf(key.getValue()));
 				}
 			}
 		} else if (bo instanceof IBOMasterDataLine) {
 			IBOMasterDataLine boKey = (IBOMasterDataLine) bo;
 			for (KeyValue key : keys) {
-				if (key.value == null) {
+				if (key.getValue() == null) {
 					continue;
 				}
-				if (IBOMasterDataLine.SECONDARY_PRIMARY_KEY_NAME.equals(key.key)) {
-					boKey.setLineId((int) (key.value));
-				} else if (IBOMasterDataLine.MASTER_PRIMARY_KEY_NAME.equals(key.key)) {
-					boKey.setCode(String.valueOf(key.value));
+				if (IBOMasterDataLine.SECONDARY_PRIMARY_KEY_NAME.equals(key.getKey())) {
+					boKey.setLineId((int) (key.getValue()));
+				} else if (IBOMasterDataLine.MASTER_PRIMARY_KEY_NAME.equals(key.getKey())) {
+					boKey.setCode(String.valueOf(key.getValue()));
 				}
 			}
 		} else if (bo instanceof IBOSimple) {
 			IBOSimple boKey = (IBOSimple) bo;
 			for (KeyValue key : keys) {
-				if (key.value == null) {
+				if (key.getValue() == null) {
 					continue;
 				}
-				if (IBOSimple.MASTER_PRIMARY_KEY_NAME.equals(key.key)) {
-					boKey.setObjectKey((int) (key.value));
+				if (IBOSimple.MASTER_PRIMARY_KEY_NAME.equals(key.getKey())) {
+					boKey.setObjectKey((int) (key.getValue()));
 				}
 			}
 		} else if (bo instanceof IBOSimpleLine) {
 			IBOSimpleLine boKey = (IBOSimpleLine) bo;
 			for (KeyValue key : keys) {
-				if (key.value == null) {
+				if (key.getValue() == null) {
 					continue;
 				}
-				if (IBOSimpleLine.MASTER_PRIMARY_KEY_NAME.equals(key.key)) {
-					boKey.setObjectKey((int) (key.value));
-				} else if (IBOSimpleLine.SECONDARY_PRIMARY_KEY_NAME.equals(key.key)) {
-					boKey.setLineId((int) (key.value));
+				if (IBOSimpleLine.MASTER_PRIMARY_KEY_NAME.equals(key.getKey())) {
+					boKey.setObjectKey((int) (key.getValue()));
+				} else if (IBOSimpleLine.SECONDARY_PRIMARY_KEY_NAME.equals(key.getKey())) {
+					boKey.setLineId((int) (key.getValue()));
 				}
 			}
 		} else if (bo instanceof ICustomPrimaryKeys) {
@@ -965,11 +965,11 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				IFieldMaxValueKey maxValueKey = (IFieldMaxValueKey) bo;
 				IFieldDataDb dbField = maxValueKey.getMaxValueField();
 				for (KeyValue key : keys) {
-					if (key.value == null) {
+					if (key.getValue() == null) {
 						continue;
 					}
-					if (dbField.getName().equals(key.key)) {
-						dbField.setValue(key.value);
+					if (dbField.getName().equals(key.getKey())) {
+						dbField.setValue(key.getValue());
 					}
 				}
 			}
@@ -1008,10 +1008,10 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			this.applyPrimaryKeys(bo, keys);
 			// 主键值增加
 			for (KeyValue key : keys) {
-				if (key.value instanceof Integer) {
-					key.value = Integer.sum((int) key.value, 1);
-				} else if (key.value instanceof Long) {
-					key.value = Long.sum((long) key.value, 1);
+				if (key.getValue() instanceof Integer) {
+					key.setValue(Integer.sum((int) key.getValue(), 1));
+				} else if (key.getValue() instanceof Long) {
+					key.setValue(Long.sum((long) key.getValue(), 1));
 				}
 			}
 			keyUsedCount++;// 使用了主键
@@ -1252,10 +1252,10 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			// 应用键值
 			this.applySeriesKey(bo, key);
 			// 键值增加
-			if (key.value instanceof Integer) {
-				key.value = Integer.sum((int) key.value, 1);
-			} else if (key.value instanceof Long) {
-				key.value = Long.sum((long) key.value, 1);
+			if (key.getValue() instanceof Integer) {
+				key.setValue(Integer.sum((int) key.getValue(), 1));
+			} else if (key.getValue() instanceof Long) {
+				key.setValue(Long.sum((long) key.getValue(), 1));
 			}
 			keyUsedCount++;// 使用了键值
 
@@ -1314,12 +1314,12 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	public void applySeriesKey(IBusinessObjectBase bo, KeyValue key) {
 		if (bo instanceof IBOSeriesKey) {
 			IBOSeriesKey seriesKey = (IBOSeriesKey) bo;
-			if (key.key != null && !key.key.isEmpty()) {
+			if (key.getKey() != null && !key.getKey().isEmpty()) {
 				// 存在模块，则格式化编号
-				seriesKey.setSeriesValue(String.format(key.key, key.value));
+				seriesKey.setSeriesValue(String.format(key.getKey(), key.getValue()));
 			} else {
 				// 直接赋值编号
-				seriesKey.setSeriesValue(key.value);
+				seriesKey.setSeriesValue(key.getValue());
 			}
 		}
 	}

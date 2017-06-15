@@ -182,15 +182,15 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 			if (i > 0) {
 				stringBuilder.append(", ");
 			}
-			if (keyValue.value == null) {
+			if (keyValue.getValue() == null) {
 				stringBuilder.append("''");
-			} else if (keyValue.value.getClass().equals(Integer.class)) {
-				stringBuilder.append(String.valueOf(keyValue.value));
-			} else if (keyValue.value.getClass().equals(Double.class)) {
-				stringBuilder.append(String.valueOf(keyValue.value));
+			} else if (keyValue.getValue().getClass().equals(Integer.class)) {
+				stringBuilder.append(String.valueOf(keyValue.getValue()));
+			} else if (keyValue.getValue().getClass().equals(Double.class)) {
+				stringBuilder.append(String.valueOf(keyValue.getValue()));
 			} else {
 				stringBuilder.append("N'");
-				stringBuilder.append(this.checkSecurity(String.valueOf(keyValue.value)));
+				stringBuilder.append(this.checkSecurity(String.valueOf(keyValue.getValue())));
 				stringBuilder.append("'");
 			}
 		}

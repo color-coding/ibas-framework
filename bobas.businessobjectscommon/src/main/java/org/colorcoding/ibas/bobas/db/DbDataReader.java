@@ -30,7 +30,11 @@ public class DbDataReader extends DbDataReaderBase {
 				// 创建列
 				for (int i = 1; i <= metaData.getColumnCount(); i++) {
 					IDataTableColumn dtColumn = dataTable.getColumns().create();
-					dtColumn.setName(metaData.getColumnName(i));
+					String name = metaData.getColumnName(i);
+					if (name == null || name.isEmpty()) {
+						name = String.format("col_%s", i);
+					}
+					dtColumn.setName(name);
 					dtColumn.setDataType(BOFactory.create().getClass(metaData.getColumnClassName(i)));
 				}
 				// 添加行数据

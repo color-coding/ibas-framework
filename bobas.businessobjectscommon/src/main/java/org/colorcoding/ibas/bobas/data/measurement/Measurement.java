@@ -56,8 +56,8 @@ public abstract class Measurement<V, U> extends Number implements IMeasurement<V
 			KeyText[] characters = this.getUnitCharacters();
 			if (characters != null) {
 				for (KeyText keyText : characters) {
-					if (keyText.key.equalsIgnoreCase(this.getUnit().toString())) {
-						return String.format("{measurement: %s %s}", this.getValue(), keyText.text);
+					if (keyText.getKey().equalsIgnoreCase(this.getUnit().toString())) {
+						return String.format("{measurement: %s %s}", this.getValue(), keyText.getText());
 					}
 				}
 			}
@@ -84,10 +84,7 @@ public abstract class Measurement<V, U> extends Number implements IMeasurement<V
 			Annotation annotation = field.getAnnotation(Value.class);
 			if (annotation != null) {
 				Value aValue = (Value) annotation;
-				KeyText keyText = new KeyText();
-				keyText.key = field.getName();
-				keyText.text = aValue.value();
-				keyTexts.add(keyText);
+				keyTexts.add(new KeyText(field.getName(), aValue.value()));
 			}
 		}
 		return keyTexts.toArray(new KeyText[] {});

@@ -1,9 +1,8 @@
 package org.colorcoding.ibas.bobas.approval;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Iterator;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.SqlQuery;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
@@ -11,6 +10,7 @@ import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IFieldDataDb;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.data.IDataTable;
+import org.colorcoding.ibas.bobas.data.IKeyText;
 import org.colorcoding.ibas.bobas.expressions.IPropertyValueOperator;
 import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.repository.IBORepository4DbReadonly;
@@ -58,28 +58,51 @@ public class SQLScriptValueOperator implements IPropertyValueOperator {
 			// 替换查询中的变量
 			if (this.bo instanceof IManageFields) {
 				IManageFields boFields = (IManageFields) this.bo;
-				String pattern = "\\$\\{([\\!a-zA-Z].*?)\\}";
-				Matcher matcher = Pattern.compile(pattern).matcher(query);
-				while (matcher.find()) {
-					String vName = matcher.group(0).replace("${", "").replace("}", "");
-					IFieldDataDb fieldData = null;
-					for (IFieldData item : boFields.getFields()) {
-						if (item instanceof IFieldDataDb) {
-							IFieldDataDb dbItem = (IFieldDataDb) item;
-							if (dbItem.getDbField().equals(vName)) {
-								fieldData = dbItem;
-								break;
+				query = MyConfiguration.applyVariables(query, new Iterator<IKeyText>() {
+					IFieldData[] fieldDatas = boFields.getFields(c -> c instanceof IFieldDataDb);
+					int index;
+
+					@Override
+					public IKeyText next() {
+						IFieldData fieldData = fieldDatas[index];
+						IKeyText next = new IKeyText() {
+
+							@Override
+							public void setText(String value) {
 							}
-						}
+
+							@Override
+							public void setKey(String value) {
+							}
+
+							@Override
+							public String getText() {
+								return fieldData.getValue() == null ? null : fieldData.getValue().toString();
+							}
+
+							@Override
+							public String getKey() {
+								return ((IFieldDataDb) fieldData).getDbField();
+							}
+
+							@Override
+							public String toString() {
+								return String.format("{keyText: %s %s}", this.getKey(), this.getText());
+							}
+
+						};
+						index++;
+						return next;
 					}
-					if (fieldData == null) {
-						throw new RuntimeException(i18n.prop("msg_bobas_not_found_bo_field", vName));
+
+					@Override
+					public boolean hasNext() {
+						return index < fieldDatas.length ? true : false;
 					}
-					query = query.replace(String.format(MyConsts.VARIABLE_NAMING_TEMPLATE, fieldData.getDbField()),
-							String.valueOf(fieldData.getValue()));
-				}
+				});
+				;
 			}
-			IOperationResult<IDataTable> opRslt = this.repository.query(new SqlQuery(query));
+			IOperationResult<IDataTable> opRslt = this.repository.query(new SqlQuery(query, true, false));
 			if (opRslt.getError() != null) {
 				throw new RuntimeException(opRslt.getError());
 			}

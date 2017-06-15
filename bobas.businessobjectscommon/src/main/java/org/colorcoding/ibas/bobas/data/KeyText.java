@@ -11,15 +11,53 @@ import org.colorcoding.ibas.bobas.MyConsts;
  */
 @XmlType(name = "KeyText", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
 @XmlRootElement(name = "KeyText", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
-public class KeyText {
+public class KeyText implements IKeyText {
+	private final static String EMPTY = "";
+
+	public KeyText() {
+		this.key = EMPTY;
+		this.text = EMPTY;
+	}
+
+	public KeyText(String key, String text) {
+		this.key = key;
+		this.text = text;
+	}
+
 	/**
 	 * 值
 	 */
 	@XmlElement(name = "Key")
-	public String key = "";
+	private String key;
+
+	public final String getKey() {
+		if (this.key == null) {
+			this.key = EMPTY;
+		}
+		return key;
+	}
+
+	public final void setKey(String key) {
+		this.key = key;
+	}
+
 	/**
 	 * 描述
 	 */
 	@XmlElement(name = "Text")
-	public String text = "";
+	private String text;
+
+	public final String getText() {
+		return text;
+	}
+
+	public final void setText(String text) {
+		this.text = text;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("{keyText: %s %s}", this.getKey(), this.getText());
+	}
+
 }

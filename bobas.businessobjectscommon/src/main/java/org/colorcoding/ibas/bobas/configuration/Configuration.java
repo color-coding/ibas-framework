@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,6 +15,7 @@ import java.util.regex.Pattern;
 import javax.xml.bind.JAXBException;
 
 import org.colorcoding.ibas.bobas.data.DataConvert;
+import org.colorcoding.ibas.bobas.data.IKeyText;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**
@@ -280,39 +282,126 @@ public class Configuration {
 		if (done) {
 			RuntimeLog.log(RuntimeLog.MSG_CONFIG_READ_FILE_DATA, configFile);
 		}
+		variableStringCache = null;
 		return done;
 	}
 
-	private static Map<String, String> variableMap;
+	private static Map<String, String> variableStringCache;
 
 	/**
-	 * 用配置值替换字符中变量标记${XXXXXX}
+	 * 变量命名模板，${%s}
+	 */
+	public static final String VARIABLE_NAMING_TEMPLATE = "${%s}";
+	/**
+	 * 变量样式，${XXXXXX}
+	 */
+	public static final String VARIABLE_PATTERN = "\\$\\{([\\!a-zA-Z].*?)\\}";
+
+	/**
+	 * 用配置项替换字符中的变量
 	 * 
 	 * @param value
-	 *            值
-	 * @return
+	 *            待处理字符
+	 * @return 替换过字符
 	 */
 	public static String applyVariables(String value) {
-		if (value != null && value.indexOf("${") >= 0) {
-			if (variableMap == null) {
-				variableMap = new HashMap<>();
+		if (variableStringCache == null) {
+			variableStringCache = new HashMap<>();
+		}
+		if (variableStringCache.containsKey(value)) {
+			return variableStringCache.get(value);
+		}
+		String nValue = applyVariables(value, new Iterator<IKeyText>() {
+
+			private Iterator<IConfigurationElement> iterator = create().getElements().iterator();
+
+			@Override
+			public boolean hasNext() {
+				return iterator.hasNext();
 			}
-			if (variableMap.containsKey(value)) {
-				return variableMap.get(value);
+
+			@Override
+			public IKeyText next() {
+				IConfigurationElement next = iterator.next();
+				return new IKeyText() {
+
+					@Override
+					public void setText(String value) {
+						next.setValue(value);
+					}
+
+					@Override
+					public void setKey(String value) {
+						next.setKey(value);
+					}
+
+					@Override
+					public String getText() {
+						return next.getValue();
+					}
+
+					@Override
+					public String getKey() {
+						return next.getKey();
+					}
+
+					@Override
+					public String toString() {
+						return String.format("{key text: %s %s}", this.getKey(), this.getText());
+					}
+
+				};
 			}
-			String pattern = "\\$\\{([\\!a-zA-Z].*?)\\}";
-			Matcher matcher = Pattern.compile(pattern).matcher(value);
-			String nValue = value;
+
+		});
+		if (nValue != value) {
+			// 缓存新字符
+			variableStringCache.put(value, nValue);
+		}
+		return nValue;
+	}
+
+	/**
+	 * 查询并替换字符中的变量
+	 * 
+	 * @param value
+	 *            待处理字符
+	 * @param variables
+	 *            变量
+	 * @return 替换过字符
+	 */
+	public static String applyVariables(String value, Iterator<IKeyText> variables) {
+		if (value != null && variables != null) {
+			Matcher matcher = Pattern.compile(VARIABLE_PATTERN).matcher(value);
 			while (matcher.find()) {
-				String vName = matcher.group(0);
-				String vValue = getConfigValue(vName.replace("${", "").replace("}", ""));
-				if (vValue != null) {
-					nValue = nValue.replace(vName, vValue);
+				String vName = matcher.group(0);// 带格式名称${}
+				String name = vName.substring(2, vName.length() - 1);// 不带格式名称
+				while (variables.hasNext()) {
+					IKeyText item = variables.next();
+					if (name.equalsIgnoreCase(item.getKey()) || vName.equalsIgnoreCase(item.getKey())) {
+						value = value.replace(vName, item.getText() == null ? new String() : item.getText());
+						break;
+					}
 				}
 			}
-			variableMap.put(value, nValue);
-			return variableMap.get(value);
 		}
 		return value;
+
+	}
+
+	/**
+	 * 查询并替换字符中的变量
+	 * 
+	 * @param value
+	 *            待处理字符
+	 * @param variables
+	 *            变量
+	 * @return 替换过字符
+	 */
+	public static String applyVariables(String value, Iterable<IKeyText> variables) {
+		if (value == null || variables == null) {
+			return value;
+		}
+		return applyVariables(value, variables.iterator());
 	}
 }

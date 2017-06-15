@@ -5,6 +5,12 @@ import java.util.List;
 
 import org.colorcoding.ibas.bobas.data.KeyValue;
 
+/**
+ * 数据库存储过程
+ * 
+ * @author Niuren.Zhu
+ *
+ */
 public class SqlStoredProcedure implements ISqlStoredProcedure {
 
 	private String name;

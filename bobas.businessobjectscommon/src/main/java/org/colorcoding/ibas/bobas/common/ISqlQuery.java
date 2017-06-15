@@ -8,6 +8,34 @@ package org.colorcoding.ibas.bobas.common;
  */
 public interface ISqlQuery {
 	/**
+	 * 是否允许读取
+	 * 
+	 * @return
+	 */
+	boolean isAllowRead();
+
+	/**
+	 * 设置-允许读取
+	 * 
+	 * @param value
+	 */
+	void setAllowRead(boolean value);
+
+	/**
+	 * 是否允许写入
+	 * 
+	 * @return
+	 */
+	boolean isAllowWrite();
+
+	/**
+	 * 设置-允许写入
+	 * 
+	 * @param value
+	 */
+	void setAllowWrite(boolean value);
+
+	/**
 	 * 获取-查询语句
 	 * 
 	 * @return

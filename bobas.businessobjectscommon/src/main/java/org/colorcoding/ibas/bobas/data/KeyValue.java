@@ -14,29 +14,52 @@ import org.colorcoding.ibas.bobas.MyConsts;
  */
 @XmlType(name = "KeyValue", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
 @XmlRootElement(name = "KeyValue", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
-public class KeyValue {
-    public KeyValue() {
+public class KeyValue implements IKeyValue {
 
-    }
+	private final static String EMPTY = "";
 
-    public KeyValue(String key, Object value) {
-        this.key = key;
-        this.value = value;
-    }
+	public KeyValue() {
+		this.key = EMPTY;
+	}
 
-    /**
-     * 键
-     */
-    @XmlElement(name = "Key")
-    public String key;
-    /**
-     * 值
-     */
-    @XmlElement(name = "Value")
-    public Object value;
+	public KeyValue(String key, Object value) {
+		this.key = key;
+		this.value = value;
+	}
 
-    @Override
-    public String toString() {
-        return String.format("{key value: %s %s}", this.key, this.value);
-    }
+	/**
+	 * 键
+	 */
+	@XmlElement(name = "Key")
+	private String key;
+
+	public final String getKey() {
+		if (this.key == null) {
+			this.key = EMPTY;
+		}
+		return key;
+	}
+
+	public final void setKey(String key) {
+		this.key = key;
+	}
+
+	/**
+	 * 值
+	 */
+	@XmlElement(name = "Value")
+	private Object value;
+
+	public final Object getValue() {
+		return value;
+	}
+
+	public final void setValue(Object value) {
+		this.value = value;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("{keyValue: %s %s}", this.getKey(), this.getValue());
+	}
 }

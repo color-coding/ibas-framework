@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.HashMap;
 
 import javax.xml.bind.JAXBContext;
@@ -42,22 +43,27 @@ public class ConfigurationManager implements IConfigurationManager {
 		return (IConfigurationManager) unmarshaller.unmarshal(stream);
 	}
 
-	private HashMap<String, IConfigurationElement> elements;
+	private HashMap<String, IConfigurationElement> elementsMap;
 
 	/**
 	 * 配置项
 	 */
-	protected HashMap<String, IConfigurationElement> getElements() {
-		if (elements == null) {
-			elements = new HashMap<String, IConfigurationElement>();
+	protected HashMap<String, IConfigurationElement> getElementsMap() {
+		if (elementsMap == null) {
+			elementsMap = new HashMap<String, IConfigurationElement>();
 		}
-		return elements;
+		return elementsMap;
+	}
+
+	@Override
+	public Collection<IConfigurationElement> getElements() {
+		return this.getElementsMap().values();
 	}
 
 	@XmlElementWrapper(name = "appSettings")
 	@XmlElement(name = "add", type = ConfigurationElement.class)
 	private ConfigurationElement[] getConfigurationElements() {
-		return this.getElements().values().toArray(new ConfigurationElement[] {});
+		return this.getElementsMap().values().toArray(new ConfigurationElement[] {});
 	}
 
 	@SuppressWarnings("unused")
@@ -74,7 +80,7 @@ public class ConfigurationManager implements IConfigurationManager {
 	public void saveSettings(String filePath) throws JAXBException, IOException {
 		if (filePath == null || filePath.isEmpty())
 			return;
-		if (elements == null)
+		if (elementsMap == null)
 			return;
 		File file = new File(filePath);
 		if (file.exists()) {
@@ -91,8 +97,8 @@ public class ConfigurationManager implements IConfigurationManager {
 
 	@Override
 	public String getValue(String key) {
-		if (this.getElements().containsKey(key)) {
-			return this.getElements().get(key).getValue();
+		if (this.getElementsMap().containsKey(key)) {
+			return this.getElementsMap().get(key).getValue();
 		}
 		return null;
 	}
@@ -100,13 +106,13 @@ public class ConfigurationManager implements IConfigurationManager {
 	@Override
 	public void addSetting(String key, String value) {
 		IConfigurationElement element = null;
-		if (this.getElements().containsKey(key)) {
-			element = this.getElements().get(key);
+		if (this.getElementsMap().containsKey(key)) {
+			element = this.getElementsMap().get(key);
 		}
 		if (element == null) {
 			element = new ConfigurationElement();
 			element.setKey(key);
-			this.getElements().put(element.getKey(), element);
+			this.getElementsMap().put(element.getKey(), element);
 		}
 		element.setValue(value);
 	}

@@ -45,9 +45,5 @@ public final class MyConsts {
 	 * 表达式命名空间
 	 */
 	public static final String NAMESPACE_BOBAS_EXPRESSIONS = NAMESPACE_BOBAS + "/expressions";
-	/**
-	 * 变量命名模板，${%s}
-	 */
-	public static final String VARIABLE_NAMING_TEMPLATE = "${%s}";
 
 }

@@ -99,4 +99,9 @@ public abstract class DbAdapter implements IDbAdapter {
 	@Override
 	public abstract IBOAdapter4Db createBOAdapter();
 
+	@Override
+	public ISqlScriptInspector createSqlInspector() {
+		return new SqlScriptInspector();
+	}
+
 }

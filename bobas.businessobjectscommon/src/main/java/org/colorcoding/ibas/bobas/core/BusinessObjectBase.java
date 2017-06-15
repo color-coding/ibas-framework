@@ -1,6 +1,8 @@
 package org.colorcoding.ibas.bobas.core;
 
 import java.lang.reflect.Array;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -81,6 +83,18 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 	@Override
 	public IFieldData[] getFields() {
 		return this.fieldManager.toArray();
+	}
+
+	@Override
+	public IFieldData[] getFields(Predicate<? super IFieldData> filter) {
+		Objects.requireNonNull(filter);
+		ArrayList<IFieldData> fieldDatas = new ArrayList<>();
+		for (IFieldData item : fieldManager) {
+			if (filter.test(item)) {
+				fieldDatas.add(item);
+			}
+		}
+		return fieldDatas.toArray(new IFieldData[] {});
 	}
 
 	/**
