@@ -18,6 +18,7 @@ import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
 import org.colorcoding.ibas.bobas.repository.BORepository4Db;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrderItem;
+import org.colorcoding.ibas.bobas.test.bo.Materials;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 
 import junit.framework.TestCase;
@@ -148,12 +149,13 @@ public class testApprovalProcess extends TestCase {
 		aCondition.setConditionValue("10000");
 		// sql查询比较
 		bCondition = new ApprovalProcessStepCondition();
+		bCondition.setPropertyValueMode(ValueMode.PROPERTY);
 		bCondition.setRelation(emConditionRelationship.AND);
-		bCondition.setPropertyName("DocTotal");// DocumentTotal
+		bCondition.setPropertyName("SalesOrderItems.Price");// 此处为属性名称，否则集合无法处理
 		bCondition.setOperation(emConditionOperation.GRATER_EQUAL);
 		bCondition.setConditionValueMode(ValueMode.SQL_SCRIPT);
-		bCondition.setConditionValue(
-				String.format("select 0 from %s where CardCode = '${CardCode}'", SalesOrder.DB_TABLE_NAME));
+		bCondition.setConditionValue(// 此处用数据库字段，与上面反着
+				String.format("select top 1 100 from %s where ItemCode <> '${ItemCode}'", Materials.DB_TABLE_NAME));
 		aStep.setConditions(new IApprovalProcessStepCondition[] { aCondition, bCondition });
 		aSteps.add(aStep);
 		// 添加审批步骤

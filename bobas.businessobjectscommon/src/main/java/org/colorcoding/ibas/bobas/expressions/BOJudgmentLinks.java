@@ -116,7 +116,7 @@ public class BOJudgmentLinks extends JudgmentLinks {
 						jItem.setOpenBracket(item.getOpenBracket());
 						jItem.setLeftOperter(this.createValueOperator());
 						jItem.getLeftOperter().setValue(true);
-						jItem.setOperation(item.getOperation());
+						jItem.setOperation(JudmentOperations.EQUAL);
 						jItem.setRightOperter(this.createValueOperator());
 						jItem.getRightOperter().setValue(result);
 						jItem.setCloseBracket(item.getCloseBracket());
