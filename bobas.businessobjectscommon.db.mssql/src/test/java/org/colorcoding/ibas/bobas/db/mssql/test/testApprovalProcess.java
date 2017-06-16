@@ -155,7 +155,7 @@ public class testApprovalProcess extends TestCase {
 		bCondition.setOperation(emConditionOperation.GRATER_EQUAL);
 		bCondition.setConditionValueMode(ValueMode.SQL_SCRIPT);
 		bCondition.setConditionValue(// 此处用数据库字段，与上面反着
-				String.format("select top 1 100 from %s where ItemCode <> '${ItemCode}'", Materials.DB_TABLE_NAME));
+				String.format("select top 1 100.00 from %s where ItemCode <> '${ItemCode}'", Materials.DB_TABLE_NAME));
 		aStep.setConditions(new IApprovalProcessStepCondition[] { aCondition, bCondition });
 		aSteps.add(aStep);
 		// 添加审批步骤

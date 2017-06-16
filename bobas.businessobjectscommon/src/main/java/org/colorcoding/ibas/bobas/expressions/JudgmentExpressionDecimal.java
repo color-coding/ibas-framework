@@ -31,14 +31,16 @@ public class JudgmentExpressionDecimal extends JudgmentExpressionComparable<BigD
 	public final void setLeftValue(Object value) {
 		if (value instanceof Decimal) {
 			this.setLeftValue((Decimal) value);
+		} else if (value instanceof BigDecimal) {
+			this.setLeftValue((BigDecimal) value);
 		} else if (value instanceof String) {
 			this.setLeftValue((String) value);
 		} else if (value instanceof Double) {
-			this.setLeftValue((Double) value);
+			this.setLeftValue((double) value);
 		} else if (value instanceof Integer) {
-			this.setLeftValue((Integer) value);
+			this.setLeftValue((int) value);
 		} else if (value instanceof Long) {
-			this.setLeftValue((Long) value);
+			this.setLeftValue((long) value);
 		}
 	}
 
@@ -58,6 +60,10 @@ public class JudgmentExpressionDecimal extends JudgmentExpressionComparable<BigD
 		this.setLeftValue(Decimal.valueOf(value));
 	}
 
+	public final void setLeftValue(BigDecimal value) {
+		this.setLeftValue(new Decimal(value));
+	}
+
 	public final void setLeftValue(Decimal value) {
 		this.leftValue = value;
 	}
@@ -73,6 +79,8 @@ public class JudgmentExpressionDecimal extends JudgmentExpressionComparable<BigD
 	public final void setRightValue(Object value) {
 		if (value instanceof Decimal) {
 			this.setRightValue((Decimal) value);
+		} else if (value instanceof BigDecimal) {
+			this.setRightValue((BigDecimal) value);
 		} else if (value instanceof String) {
 			this.setRightValue((String) value);
 		} else if (value instanceof Double) {
@@ -98,6 +106,10 @@ public class JudgmentExpressionDecimal extends JudgmentExpressionComparable<BigD
 
 	public final void setRightValue(long value) {
 		this.setRightValue(Decimal.valueOf(value));
+	}
+
+	public final void setRightValue(BigDecimal value) {
+		this.setRightValue(new Decimal(value));
 	}
 
 	public final void setRightValue(Decimal value) {
