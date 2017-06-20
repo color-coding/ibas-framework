@@ -237,7 +237,7 @@ public class Configuration {
 	 * @return
 	 */
 	public static String getLogFolder() {
-		return getWorkFolder() + File.separator + "log";
+		return getWorkFolder() + File.separator + "logs";
 	}
 
 	/**
