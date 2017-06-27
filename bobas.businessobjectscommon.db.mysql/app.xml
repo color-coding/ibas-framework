@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE configuration>
 <ns2:configuration xmlns:ns2="http://colorcoding.org/ibas/bobas/configuration">
-	<appSettings>
- 		<add key="MsgLevel" value="DEBUG" />
-		<add key="MasterDbType" value="MYSQL" />
-		<add key="MasterDbServer" value="ibas-dev-mysql" />
-		<add key="MasterDbName" value="ibas_demo" />
-		<add key="MasterDbUserID" value="root" />
-		<add key="MasterDbUserPassword" value="1q2w3e" />
-<!-- 		<add key="DisabledRefetch" value="true" /> -->
-<!-- 		<add key="DisabledBusinessLogics" value="true" /> -->
-<!-- 		<add key="DisabledBusinessApproval" value="true" /> -->
-<!-- 		<add key="DisabledCache" value="true" /> -->
-<!-- 		<add key="DisabledVersionCheck" value="true" /> -->
-<!-- 		<add key="DisabledPostTransaction" value="true" /> -->
-<!-- 		<add key="EnabledUserFields" value="false" /> -->
-	</appSettings>
+    <appSettings>
+         <add key="MsgLevel" value="DEBUG" />
+        <add key="MasterDbType" value="MYSQL" />
+        <add key="MasterDbServer" value="ibas-dev-mysql" />
+        <add key="MasterDbName" value="ibas_demo" />
+        <add key="MasterDbUserID" value="root" />
+        <add key="MasterDbUserPassword" value="1q2w3e" />
+<!--         <add key="DisabledRefetch" value="true" /> -->
+<!--         <add key="DisabledBusinessLogics" value="true" /> -->
+<!--         <add key="DisabledBusinessApproval" value="true" /> -->
+<!--         <add key="DisabledCache" value="true" /> -->
+<!--         <add key="DisabledVersionCheck" value="true" /> -->
+<!--         <add key="DisabledPostTransaction" value="true" /> -->
+<!--         <add key="EnabledUserFields" value="false" /> -->
+    </appSettings>
 </ns2:configuration>

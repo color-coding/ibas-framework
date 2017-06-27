@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE configuration>
 <ns2:configuration xmlns:ns2="http://colorcoding.org/ibas/bobas/configuration">
-	<appSettings>
-		<add key="DebugMode" value="true" />
-		<add key="MsgLevel" value="INFO" />
-		<add key="MasterDbType" value="MSSQL" />
-		<add key="MasterDbServer" value="ibas-dev-mssql" />
-		<add key="MasterDbName" value="ibas_demo" />
-		<add key="MasterDbUserID" value="sa" />
-		<add key="MasterDbUserPassword" value="1q2w3e" />
-		<add key="EnabledReadonlyRepository" value="false" />
-		<add key="ReadonlyDbType" value="MSSQL" />
-		<add key="ReadonlyDbServer" value="ibas-dev-mssql" />
-		<add key="ReadonlyDbName" value="ibas_demo" />
-		<add key="ReadonlyDbUserID" value="sa" />
-		<add key="ReadonlyDbUserPassword" value="1q2w3e" />
-	</appSettings>
+    <appSettings>
+        <add key="DebugMode" value="true" />
+        <add key="MsgLevel" value="INFO" />
+        <add key="MasterDbType" value="MSSQL" />
+        <add key="MasterDbServer" value="ibas-dev-mssql" />
+        <add key="MasterDbName" value="ibas_demo" />
+        <add key="MasterDbUserID" value="sa" />
+        <add key="MasterDbUserPassword" value="1q2w3e" />
+        <add key="EnabledReadonlyRepository" value="false" />
+        <add key="ReadonlyDbType" value="MSSQL" />
+        <add key="ReadonlyDbServer" value="ibas-dev-mssql" />
+        <add key="ReadonlyDbName" value="ibas_demo" />
+        <add key="ReadonlyDbUserID" value="sa" />
+        <add key="ReadonlyDbUserPassword" value="1q2w3e" />
+    </appSettings>
 </ns2:configuration>

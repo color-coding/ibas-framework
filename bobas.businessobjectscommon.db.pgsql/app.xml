@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE configuration>
 <ns2:configuration xmlns:ns2="http://colorcoding.org/ibas/bobas/configuration">
-	<appSettings>
-		<add key="DebugMode" value="true" />
-		<add key="MasterDbType" value="PGSQL" />
-		<add key="MasterDbServer" value="ibas-dev-pgsql" />
-		<add key="MasterDbName" value="ibas_demo" />
-		<add key="MasterDbUserID" value="postgres" />
-		<add key="MasterDbUserPassword" value="1q2w3e" />
-	</appSettings>
+    <appSettings>
+        <add key="DebugMode" value="true" />
+        <add key="MasterDbType" value="PGSQL" />
+        <add key="MasterDbServer" value="ibas-dev-pgsql" />
+        <add key="MasterDbName" value="ibas_demo" />
+        <add key="MasterDbUserID" value="postgres" />
+        <add key="MasterDbUserPassword" value="1q2w3e" />
+    </appSettings>
 </ns2:configuration>
