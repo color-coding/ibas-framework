@@ -44,6 +44,7 @@ public class FileRepository extends FileRepositoryReadonly implements IFileRepos
 			throw new RepositoryException(i18n.prop("msg_bobas_invalid_data"));
 		}
 		FileData nFileData = new FileData();
+		nFileData.setOriginalName(fileData.getOriginalName());
 		if (fileData.getFileName() != null && !fileData.getFileName().isEmpty())
 			nFileData.setFileName(fileData.getFileName() + "_" + UUID.randomUUID().toString());
 		else
@@ -60,7 +61,9 @@ public class FileRepository extends FileRepositoryReadonly implements IFileRepos
 			outputStream.close();
 			fileData.getStream().close();
 		}
-		RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_WRITE_FILE, nFileData.getLocation());
+		RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_WRITE_FILE,
+				nFileData.getOriginalName() == null ? nFileData.getLocation()
+						: String.format("%s|%s", nFileData.getOriginalName(), nFileData.getLocation()));
 		return nFileData;
 	}
 }
