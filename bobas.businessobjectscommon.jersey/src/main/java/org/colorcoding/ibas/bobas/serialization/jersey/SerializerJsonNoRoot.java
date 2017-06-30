@@ -53,7 +53,11 @@ public class SerializerJsonNoRoot extends Serializer<JsonSchema> {
 			jsonGenerator.writeStringField("type", "object");
 			jsonGenerator.writeFieldName("properties");
 			jsonGenerator.writeStartObject();
-			jsonGenerator.writeFieldName(type.getSimpleName());
+			jsonGenerator.writeFieldName("type");
+			jsonGenerator.writeStartObject();
+			jsonGenerator.writeStringField("type", "string");
+			jsonGenerator.writeStringField("pattern", type.getSimpleName());
+			jsonGenerator.writeEndObject();
 			this.createSchemaElement(jsonGenerator, type);
 			jsonGenerator.writeEndObject();
 			jsonGenerator.writeEndObject();
@@ -66,48 +70,50 @@ public class SerializerJsonNoRoot extends Serializer<JsonSchema> {
 
 	protected void createSchemaElement(JsonGenerator jsonGenerator, Class<?> type)
 			throws JsonGenerationException, IOException {
-		jsonGenerator.writeStartObject();
-		if (this.getKnownTyps().containsKey(type.getName())) {
-			// 已知类型
-			jsonGenerator.writeStringField("type", this.getKnownTyps().get(type.getName()));
-		} else if (type.isEnum()) {
-			// 枚举类型
-			jsonGenerator.writeStringField("type", "string");
-			jsonGenerator.writeArrayFieldStart("enum");
-			for (Object enumItem : type.getEnumConstants()) {
-				if (enumItem instanceof Enum<?>) {
-					// 枚举值（比对枚举索引）
-					Enum<?> itemValue = (Enum<?>) enumItem;
-					jsonGenerator.writeString(itemValue.name());
-				}
-			}
-			jsonGenerator.writeEndArray();
-		} else if (type.equals(DateTime.class)) {
-			// 日期类型
-			jsonGenerator.writeStringField("type", "string");
-			// 格式：2000-01-01 or 2000-01-01T00:00:00
-			jsonGenerator.writeStringField("pattern",
-					"^|[0-9]{4}-[0-1][0-9]-[0-3][0-9]|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9]$");
-		} else {
-			jsonGenerator.writeStringField("type", "object");
-			jsonGenerator.writeFieldName("properties");
+		for (SchemaElement item : this.getSerializedElements(type, true)) {
+			jsonGenerator.writeFieldName(
+					item.getWrapper() != null && !item.getWrapper().isEmpty() ? item.getWrapper() : item.getName());
 			jsonGenerator.writeStartObject();
-			for (SchemaElement item : this.getSerializedElements(type, true)) {
-				if (item.getWrapper() != null && !item.getWrapper().isEmpty()) {
-					jsonGenerator.writeFieldName(item.getWrapper());
-					jsonGenerator.writeStartObject();
-					jsonGenerator.writeStringField("type", "array");
-					jsonGenerator.writeFieldName("items");
-					this.createSchemaElement(jsonGenerator, item.getType());
-					jsonGenerator.writeEndObject();
-				} else {
-					jsonGenerator.writeFieldName(item.getName());
-					this.createSchemaElement(jsonGenerator, item.getType());
+			if (this.getKnownTyps().containsKey(item.getType().getName())) {
+				// 已知类型
+				jsonGenerator.writeStringField("type", this.getKnownTyps().get(item.getType().getName()));
+			} else if (item.getType().isEnum()) {
+				// 枚举类型
+				jsonGenerator.writeStringField("type", "string");
+				jsonGenerator.writeArrayFieldStart("enum");
+				for (Object enumItem : item.getType().getEnumConstants()) {
+					if (enumItem instanceof Enum<?>) {
+						// 枚举值（比对枚举索引）
+						Enum<?> itemValue = (Enum<?>) enumItem;
+						jsonGenerator.writeString(itemValue.name());
+					}
 				}
+				jsonGenerator.writeEndArray();
+			} else if (item.getType().equals(DateTime.class)) {
+				// 日期类型
+				jsonGenerator.writeStringField("type", "string");
+				// 格式：2000-01-01 or 2000-01-01T00:00:00
+				jsonGenerator.writeStringField("pattern",
+						"^|[0-9]{4}-[0-1][0-9]-[0-3][0-9]|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9]$");
+			} else if (item.getWrapper() != null && !item.getWrapper().isEmpty()) {
+				jsonGenerator.writeStringField("type", "array");
+				jsonGenerator.writeFieldName("items");
+				jsonGenerator.writeStartObject();
+				jsonGenerator.writeStringField("type", "object");
+				jsonGenerator.writeFieldName("properties");
+				jsonGenerator.writeStartObject();
+				this.createSchemaElement(jsonGenerator, item.getType());
+				jsonGenerator.writeEndObject();
+				jsonGenerator.writeEndObject();
+			} else {
+				jsonGenerator.writeStringField("type", "object");
+				jsonGenerator.writeFieldName("properties");
+				jsonGenerator.writeStartObject();
+				this.createSchemaElement(jsonGenerator, item.getType());
+				jsonGenerator.writeEndObject();
 			}
 			jsonGenerator.writeEndObject();
 		}
-		jsonGenerator.writeEndObject();
 	}
 
 	private Map<String, String> knownTypes;
