@@ -60,7 +60,7 @@ public class testBusinessObject extends TestCase {
 
 		String json = order.toString("json");
 		System.out.println(json);
-		ISerializer<?> serializer = new SerializerJson();
+		ISerializer<?> serializer = SerializerFactory.create().createManager().create("json");
 		order = serializer.deserialize(json, order.getClass());
 		String jsonNew = order.toString("json");
 		System.out.println(jsonNew);

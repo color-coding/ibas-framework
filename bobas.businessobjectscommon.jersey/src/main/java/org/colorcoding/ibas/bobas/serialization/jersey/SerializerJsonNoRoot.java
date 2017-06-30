@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -34,12 +35,12 @@ import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 
 /**
- * JSON序列化，包含ROOT
+ * JSON序列化，不包含ROOT
  * 
  * @author Niuren.Zhu
  *
  */
-public class SerializerJson extends Serializer<JsonSchema> {
+public class SerializerJsonNoRoot extends Serializer<JsonSchema> {
 	public static final String SCHEMA_VERSION = "http://json-schema.org/schema#";
 
 	@Override
@@ -159,6 +160,7 @@ public class SerializerJson extends Serializer<JsonSchema> {
 	 * @throws JAXBException
 	 */
 	protected JAXBContext createJAXBContextJson(Class<?>... types) throws JAXBException {
+
 		if (context != null) {
 			return context;
 		}
@@ -190,6 +192,7 @@ public class SerializerJson extends Serializer<JsonSchema> {
 			JAXBContext context = createJAXBContextJson(knownTypes);
 			Marshaller marshaller = context.createMarshaller();
 			marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
+			marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
 			marshaller.setProperty(MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);
 			marshaller.marshal(object, outputStream);
@@ -204,8 +207,16 @@ public class SerializerJson extends Serializer<JsonSchema> {
 			JAXBContext context = createJAXBContextJson(types);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
+			unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
 			unmarshaller.setProperty(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
-			return unmarshaller.unmarshal(inputStream);
+			unmarshaller.setProperty(UnmarshallerProperties.JSON_TYPE_COMPATIBILITY, true);
+			Object object = unmarshaller.unmarshal(inputStream);
+			if (object instanceof JAXBElement) {
+				// 因为不包括头，此处返回的是这个玩意儿
+				return ((JAXBElement<?>) object).getValue();
+			} else {
+				return object;
+			}
 		} catch (JAXBException e) {
 			throw new SerializationException(e);
 		}
