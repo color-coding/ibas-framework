@@ -61,6 +61,9 @@ public class ApprovalDataJudgmentLinks extends BOJudgmentLinks {
 				valueOperator.setPropertyName(item.getConditionValue());
 				jItem.setRightOperter(valueOperator);
 			}
+			// 设置括号
+			jItem.setCloseBracket(item.getBracketClose());
+			jItem.setOpenBracket(item.getBracketOpen());
 			jLinkItems.add(jItem);
 		}
 		if (jLinkItems.size() == 0) {

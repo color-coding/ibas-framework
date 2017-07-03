@@ -77,4 +77,24 @@ public class ApprovalProcessStepCondition implements IApprovalProcessStepConditi
 		this.conditionValue = value;
 	}
 
+	private int bracketOpen;
+
+	public final int getBracketOpen() {
+		return bracketOpen;
+	}
+
+	public final void setBracketOpen(int bracketOpen) {
+		this.bracketOpen = bracketOpen;
+	}
+
+	private int bracketClose;
+
+	public final int getBracketClose() {
+		return bracketClose;
+	}
+
+	public final void setBracketClose(int bracketClose) {
+		this.bracketClose = bracketClose;
+	}
+
 }

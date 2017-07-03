@@ -52,4 +52,17 @@ public interface IApprovalProcessStepCondition {
 	 */
 	String getConditionValue();
 
+	/**
+	 * 获取-开括号数
+	 * 
+	 * @return 值
+	 */
+	int getBracketOpen();
+
+	/**
+	 * 获取-闭括号数
+	 * 
+	 * @return 值
+	 */
+	int getBracketClose();
 }
