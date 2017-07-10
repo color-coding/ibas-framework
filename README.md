@@ -6,7 +6,7 @@
 [![encourager]][encourager-image]
 
 [encourager]: http://baike.baidu.com/view/10998931.html
-[encourager-image]: https://github.com/color-coding/ibas-framework/blob/master/encourager.gif "はしもとかんな"
+[encourager-image]: encourager.gif "はしもとかんな"
 * 姓名：桥本环奈（はしもとかんな）
 * 生日：1999年2月3日
 * 国籍：日本
