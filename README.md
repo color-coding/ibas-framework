@@ -3,10 +3,7 @@
 [btulz.transforms](https://github.com/color-coding/btulz.transforms "业务系统工具")可实现根据模型自动生成此架构代码。<br>
 
 ## 鼓励师 | Encourager
-[![encourager]][encourager-image]
-
-[encourager]: http://baike.baidu.com/view/10998931.html
-[encourager-image]: encourager.gif "はしもとかんな"
+![](encourager.gif "はしもとかんな")
 * 姓名：桥本环奈（はしもとかんな）
 * 生日：1999年2月3日
 * 国籍：日本
