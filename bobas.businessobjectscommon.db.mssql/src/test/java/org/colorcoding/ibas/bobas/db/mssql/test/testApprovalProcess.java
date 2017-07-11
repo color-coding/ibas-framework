@@ -18,7 +18,6 @@ import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
 import org.colorcoding.ibas.bobas.repository.BORepository4Db;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrderItem;
-import org.colorcoding.ibas.bobas.test.bo.Materials;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 
 import junit.framework.TestCase;
@@ -155,7 +154,7 @@ public class testApprovalProcess extends TestCase {
 		bCondition.setOperation(emConditionOperation.GRATER_EQUAL);
 		bCondition.setConditionValueMode(ValueMode.SQL_SCRIPT);
 		bCondition.setConditionValue(// 此处用数据库字段，与上面反着
-				String.format("select top 1 100.00 from %s where ItemCode <> '${ItemCode}'", Materials.DB_TABLE_NAME));
+				String.format("select cast(rand()*100*${LineId} as numeric(19,6))"));
 		aStep.setConditions(new IApprovalProcessStepCondition[] { aCondition, bCondition });
 		aSteps.add(aStep);
 		// 添加审批步骤

@@ -215,12 +215,12 @@ public class BOJudgmentLinks extends JudgmentLinks {
 			jItem.setLeftOperter(propertyValueOperator);
 			// 比较类型
 			jItem.setOperation(parent.getOperation());
-			// 右值
-			jItem.setRightOperter(parent.getRightOperter());
-			if (jItem.getRightOperter() instanceof IPropertyValueOperator) {
-				// 属性值操作
-				jItem.getRightOperter().setValue(item);
-			}
+			// 获取右值，使用父项的运算结果避免藏数据
+			parent.getRightOperter().setValue(item);
+			IValueOperator valueOperator = this.createValueOperator();
+			valueOperator.setValue(parent.getRightOperter().getValue());
+			// 设置右值
+			jItem.setRightOperter(valueOperator);
 			jItems.add(jItem);
 		}
 		return this.judge(0, jItems.toArray(new JudgmentLinkItem[] {}));

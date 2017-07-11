@@ -5,13 +5,13 @@
         <add key="DebugMode" value="true" />
         <add key="MsgLevel" value="INFO" />
         <add key="MasterDbType" value="SYBASE" />
-        <add key="MasterDbServer" value="ibas-dev-sybase" />
+        <add key="MasterDbServer" value="ibas-db-sybase" />
         <add key="MasterDbName" value="ibas_demo" />
         <add key="MasterDbUserID" value="sa" />
         <add key="MasterDbUserPassword" value="1q2w3e" />
         <add key="EnabledReadonlyRepository" value="false" />
         <add key="ReadonlyDbType" value="sybase" />
-        <add key="ReadonlyDbServer" value="ibas-dev-sybase" />
+        <add key="ReadonlyDbServer" value="ibas-db-sybase" />
         <add key="ReadonlyDbName" value="ibas_demo" />
         <add key="ReadonlyDbUserID" value="sa" />
         <add key="ReadonlyDbUserPassword" value="1q2w3e" />

@@ -4,7 +4,7 @@
     <appSettings>
         <add key="DebugMode" value="true" />
         <add key="MasterDbType" value="PGSQL" />
-        <add key="MasterDbServer" value="ibas-dev-pgsql" />
+        <add key="MasterDbServer" value="ibas-db-pgsql" />
         <add key="MasterDbName" value="ibas_demo" />
         <add key="MasterDbUserID" value="postgres" />
         <add key="MasterDbUserPassword" value="1q2w3e" />
