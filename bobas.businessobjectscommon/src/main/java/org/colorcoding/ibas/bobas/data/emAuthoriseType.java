@@ -14,15 +14,15 @@ import org.colorcoding.ibas.bobas.mapping.Value;
 @XmlType(name = "emAuthoriseType", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
 public enum emAuthoriseType {
 	/**
-	 * 只读
-	 */
-	@Value("R")
-	READ,
-	/**
 	 * 完全
 	 */
 	@Value("A")
 	ALL,
+	/**
+	 * 只读
+	 */
+	@Value("R")
+	READ,
 	/**
 	 * 没有
 	 */
