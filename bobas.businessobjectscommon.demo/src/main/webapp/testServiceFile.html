@@ -5,14 +5,23 @@
 <title>Test File Services</title>
 </head>
 <body>
-	<h1>Upload File</h1>
-	<form action="services/jersey/files/upload"
-		method="post" enctype="multipart/form-data">
-		<p>
-			select file : <input type="file" name="file" size="50" />
-		</p>
-		<input type="submit" value="upload" />
-	</form>
-
+	<div>
+		<h1>Upload File</h1>
+		<form action="services/jersey/files/upload" method="post"
+			enctype="multipart/form-data">
+			<p>
+				select file : <input type="file" name="file" size="50" />
+			</p>
+			<input type="submit" value="upload" />
+		</form>
+	</div>
+	<div>
+		<input type="button" value="download" onclick="download();" />
+	</div>
 </body>
+<script>
+	var download = function() {
+		window.open("services/jersey/files/download?format=xml");
+	}
+</script>
 </html>
