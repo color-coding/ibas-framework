@@ -34,9 +34,9 @@
   </build>
   <repositories>
     <repository>
-      <id>ibas-dev</id>
+      <id>ibas-maven</id>
       <name>ibas maven repository</name>
-      <url>http://ibas.club:8877/nexus/content/groups/public/</url>
+      <url>http://maven.colorcoding.org/repository/maven-public/</url>
       <layout>default</layout>
       <snapshots>
         <enabled>false</enabled>

@@ -12,7 +12,7 @@
 ## 项目结构 | Projects
 * bobas.businessobjectscommon           框架核心项目
 * bobas.businessobjectscommon.db.*      数据库支持项目
-* bobas.businessobjectscommon.*.demo    演示项目
+* bobas.businessobjectscommon.demo      演示项目
 * bobas.businessobjectscommon.jersey    webservice支持项目，jersey实现
 * bobas.businessobjectscommon.cxf       webservice支持项目，cxf实现
 
