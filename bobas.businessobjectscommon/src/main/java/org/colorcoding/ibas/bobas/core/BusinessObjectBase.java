@@ -126,28 +126,12 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 	}
 
 	/**
-	 * 获取主键字段
-	 * 
-	 * @return 主键字段
-	 */
-	@Override
-	public final IFieldData[] getKeyFields() {
-		ArrayList<IFieldData> keyFields = new ArrayList<IFieldData>();
-		for (IFieldData iFieldData : this.fieldManager) {
-			if (iFieldData.isPrimaryKey()) {
-				keyFields.add(iFieldData);
-			}
-		}
-		return keyFields.toArray(new IFieldData[] {});
-	}
-
-	/**
 	 * 是否存在管理的属性
 	 * 
 	 * @return
 	 */
 	@Override
-	public final boolean hasManagedProperties() {
+	public final boolean hasProperty() {
 		try {
 			PropertyInfoList propertyInfoList = PropertyInfoManager.getPropertyInfoList(this.getClass());
 			if (propertyInfoList != null && propertyInfoList.size() > 0) {
@@ -167,7 +151,7 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 	 * @return true;false
 	 */
 	@Override
-	public final boolean existProperty(IPropertyInfo<?> property) {
+	public final boolean hasProperty(IPropertyInfo<?> property) {
 		try {
 			PropertyInfoList propertyInfoList = PropertyInfoManager.getPropertyInfoList(this.getClass());
 			if (propertyInfoList != null && propertyInfoList.size() > 0) {
@@ -189,7 +173,7 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 	 * @return 属性数组
 	 */
 	@Override
-	public final IPropertyInfo<?>[] getManagedProperties() {
+	public final IPropertyInfo<?>[] getProperty() {
 		IPropertyInfo<?>[] properties = new IPropertyInfo<?>[] {};
 		try {
 			PropertyInfoList propertyInfoList = PropertyInfoManager.getPropertyInfoList(this.getClass());

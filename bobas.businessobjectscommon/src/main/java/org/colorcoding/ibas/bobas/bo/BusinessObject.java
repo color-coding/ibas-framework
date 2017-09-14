@@ -65,7 +65,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 			// 继承了自定义字段，初始化列表
 			if (this.userFields == null) {
 				this.userFields = new UserFields(this.getClass());
-				this.userFields.addPropertyChangeListener(new PropertyChangeListener() {
+				this.userFields.registerListener(new PropertyChangeListener() {
 					@Override
 					public void propertyChange(PropertyChangeEvent evt) {
 						// 触发属性改变事件
@@ -92,7 +92,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 			IBOStorageTag tagBO = (IBOStorageTag) this;
 			criteria.setBOCode(tagBO.getObjectCode());
 		}
-		for (IFieldData item : this.getKeyFields()) {
+		for (IFieldData item : this.getFields(c -> c.isPrimaryKey())) {
 			ICondition condition = criteria.getConditions().create();
 			condition.setAlias(item.getName());
 			condition.setValue(String.valueOf(item.getValue()));
@@ -120,7 +120,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 		stringBuilder.append(boCode);
 		stringBuilder.append("]");
 		stringBuilder.append(".");
-		for (IFieldData item : this.getKeyFields()) {
+		for (IFieldData item : this.getFields(c -> c.isPrimaryKey())) {
 			if (stringBuilder.length() > boCode.length() + 4) {
 				stringBuilder.append("&");
 			}

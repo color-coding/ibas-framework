@@ -53,7 +53,7 @@ public class MaterialsJournalContractLogic extends BusinessLogic<IMaterialsJourn
 	protected void impact(IMaterialsJournalContract contract) {
 		// 正向逻辑，已标记删除的，撤销并重新赋值
 		if (this.getBeAffected().isDeleted()) {
-			this.getBeAffected().markUnDeleted();
+			this.getBeAffected().clearDeleted();
 		}
 		// 从新赋值
 		this.getBeAffected().setItemCode(contract.getItemCode());

@@ -14,6 +14,8 @@ import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
+import org.colorcoding.ibas.bobas.logics.IBusinessLogicContract;
+import org.colorcoding.ibas.bobas.logics.IBusinessLogicsHost;
 import org.colorcoding.ibas.bobas.mapping.DbField;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.rules.IBusinessRule;
@@ -29,7 +31,7 @@ import org.colorcoding.ibas.bobas.rules.common.BusinessRuleRequired;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = PurchaseOrderItem.BUSINESS_OBJECT_NAME)
 public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
-		implements IBODocumentLine, IMaterialsOrderQuantityContract, IMaterialsJournalContract, IBOTagCanceled {
+		implements IBODocumentLine, IBOTagCanceled, IBusinessLogicsHost {
 
 	/**
 	 * 序列化版本标记
@@ -1126,17 +1128,61 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 		};
 	}
 
-	// --IMaterialsJournalContract
-	public String getDocumentType() {
-		return this.getObjectCode();
-	}
+	@Override
+	public IBusinessLogicContract[] getContracts() {
+		PurchaseOrderItem that = this;
+		return new IBusinessLogicContract[] {
+				// 注册物料库存数量契约
+				new IMaterialsInventoryQuantityContract() {
 
-	public Integer getDocumentEntry() {
-		return this.getDocEntry();
-	}
+					@Override
+					public String getIdentifiers() {
+						return that.getIdentifiers();
+					}
 
-	public Integer getDocumentLineId() {
-		return this.getLineId();
+					@Override
+					public Decimal getQuantity() {
+						return that.getQuantity();
+					}
+
+					@Override
+					public String getItemCode() {
+						return that.getItemCode();
+					}
+				},
+				// 注册物料仓库库存契约
+				new IMaterialsJournalContract() {
+
+					@Override
+					public String getIdentifiers() {
+						return that.getIdentifiers();
+					}
+
+					@Override
+					public Decimal getQuantity() {
+						return that.getQuantity();
+					}
+
+					@Override
+					public String getItemCode() {
+						return that.getItemCode();
+					}
+
+					@Override
+					public String getDocumentType() {
+						return that.getObjectCode();
+					}
+
+					@Override
+					public Integer getDocumentLineId() {
+						return that.getLineId();
+					}
+
+					@Override
+					public Integer getDocumentEntry() {
+						return that.getDocEntry();
+					}
+				} };
 	}
 
 }

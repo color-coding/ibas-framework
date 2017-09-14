@@ -29,13 +29,6 @@ public interface IBusinessLogic<B extends IBusinessObjectBase> {
 	B getBeAffected();
 
 	/**
-	 * 是否完成
-	 * 
-	 * @return
-	 */
-	boolean isDone();
-
-	/**
 	 * 提交逻辑
 	 */
 	void commit();

@@ -33,7 +33,7 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 		}
 		if (this.value != null) {
 			// 移出事件监听
-			this.value.removePropertyChangeListener(this);
+			this.value.removeListener(this);
 		}
 		this.value = value;
 		if (this.getDbFields() != null) {
@@ -45,7 +45,7 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 		}
 		if (this.value != null) {
 			// 添加事件监听
-			this.value.addPropertyChangeListener(this);
+			this.value.registerListener(this);
 		}
 		this.setDirty(true);
 		return true;

@@ -16,7 +16,7 @@ public abstract class BindableBase implements IBindableBase {
 	transient private PropertyChangeSupport listeners;
 
 	@Override
-	public final void addPropertyChangeListener(PropertyChangeListener listener) {
+	public final void registerListener(PropertyChangeListener listener) {
 		if (this.listeners == null) {
 			this.listeners = new PropertyChangeSupport(this);
 		}
@@ -24,7 +24,7 @@ public abstract class BindableBase implements IBindableBase {
 	}
 
 	@Override
-	public final void removePropertyChangeListener(PropertyChangeListener listener) {
+	public final void removeListener(PropertyChangeListener listener) {
 		if (this.listeners == null) {
 			this.listeners = new PropertyChangeSupport(this);
 		}

@@ -44,7 +44,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		this.setChangeElementStatus(true);
 		this.setChangeParentStatus(true);
 		// 监听自身改变事件
-		this.addPropertyChangeListener(this.propertyListener);
+		this.registerListener(this.propertyListener);
 	}
 
 	public BusinessObjects(P parent) {
@@ -92,13 +92,13 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		if (this.parent instanceof IBindableBase) {
 			// 移出监听属性改变
 			IBindableBase boItem = (IBindableBase) this.parent;
-			boItem.removePropertyChangeListener(this.propertyListener);
+			boItem.removeListener(this.propertyListener);
 		}
 		this.parent = parent;
 		if (this.parent instanceof IBindableBase) {
 			// 监听属性改变
 			IBindableBase boItem = (IBindableBase) this.parent;
-			boItem.addPropertyChangeListener(this.propertyListener);
+			boItem.registerListener(this.propertyListener);
 		}
 	}
 
@@ -177,7 +177,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		if (item instanceof IBindableBase) {
 			// 监听属性改变
 			IBindableBase boItem = (IBindableBase) item;
-			boItem.addPropertyChangeListener(this.propertyListener);
+			boItem.registerListener(this.propertyListener);
 		}
 		// 修正子项编号
 		if (item instanceof IBOLine) {
@@ -656,7 +656,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		if (item instanceof IBindableBase) {
 			// 移出监听属性改变
 			IBindableBase boItem = (IBindableBase) item;
-			boItem.removePropertyChangeListener(this.propertyListener);
+			boItem.removeListener(this.propertyListener);
 		}
 	}
 

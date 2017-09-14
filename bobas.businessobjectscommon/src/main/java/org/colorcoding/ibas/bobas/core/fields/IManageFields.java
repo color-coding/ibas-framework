@@ -24,13 +24,6 @@ public interface IManageFields {
 	IFieldData[] getFields(Predicate<? super IFieldData> filter);
 
 	/**
-	 * 获取主键字段
-	 * 
-	 * @return 主键字段
-	 */
-	IFieldData[] getKeyFields();
-
-	/**
 	 * 获取字段
 	 * 
 	 * @return 字段

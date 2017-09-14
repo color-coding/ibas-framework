@@ -48,6 +48,21 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		this.contract = (L) contract;
 	}
 
+	private IBusinessObjectBase host;
+
+	/**
+	 * 获取-契约数据所属BO
+	 * 
+	 * @return
+	 */
+	public final IBusinessObjectBase getHost() {
+		return host;
+	}
+
+	public final void setHost(IBusinessObjectBase host) {
+		this.host = host;
+	}
+
 	private IBusinessObjectBase parent;
 
 	/**
@@ -170,8 +185,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 	@SuppressWarnings("unchecked")
 	protected L fetchExistingContract() {
 		try {
-			if (this.getContract() instanceof IBusinessObjectBase) {
-				IBusinessObjectBase bo = (IBusinessObjectBase) this.getContract();
+			if (this.getHost() instanceof IBusinessObjectBase) {
+				IBusinessObjectBase bo = (IBusinessObjectBase) this.getHost();
 				IOperationResult<?> opRslt = this.getRepository().fetchCopy(bo);
 				if (opRslt.getError() != null) {
 					throw opRslt.getError();
@@ -236,7 +251,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			return;
 		}
 		// 检查数据状态
-		if (!this.checkDataStatus(this.getContract())) {
+		if (!this.checkDataStatus(this.getHost())) {
 			// 数据状态不通过，跳过正向逻辑执行
 			return;
 		}
@@ -275,8 +290,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			return;
 		}
 		// 契约的数据为新建时，不执行反向逻辑
-		if (this.getContract() instanceof ITrackStatus) {
-			ITrackStatus status = (ITrackStatus) this.getContract();
+		if (this.getHost() instanceof ITrackStatus) {
+			ITrackStatus status = (ITrackStatus) this.getHost();
 			if (status.isNew()) {
 				return;
 			}
@@ -302,13 +317,6 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		return this.beAffected;
 	}
 
-	private boolean done;
-
-	@Override
-	public final boolean isDone() {
-		return this.done;
-	}
-
 	@Override
 	public void commit() {
 		if (this.getBeAffected() != null) {
@@ -323,7 +331,6 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 				throw new BusinessLogicsException(operationResult.getMessage());
 			}
 		}
-		this.done = true;
 	}
 
 	IBusinessLogicsChain logicsChain;

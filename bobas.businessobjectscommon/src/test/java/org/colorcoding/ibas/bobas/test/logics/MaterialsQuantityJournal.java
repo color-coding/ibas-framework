@@ -13,6 +13,8 @@ import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
+import org.colorcoding.ibas.bobas.logics.IBusinessLogicContract;
+import org.colorcoding.ibas.bobas.logics.IBusinessLogicsHost;
 import org.colorcoding.ibas.bobas.mapping.BOCode;
 import org.colorcoding.ibas.bobas.mapping.DbField;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
@@ -26,7 +28,7 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 @XmlRootElement(name = MaterialsQuantityJournal.BUSINESS_OBJECT_NAME)
 @BOCode(MaterialsQuantityJournal.BUSINESS_OBJECT_CODE)
 public class MaterialsQuantityJournal extends BusinessObject<MaterialsQuantityJournal>
-		implements IBOSimple, IMaterialsInventoryQuantityContract {
+		implements IBOSimple, IBusinessLogicsHost {
 
 	/**
 	 * 序列化版本标记
@@ -1020,5 +1022,28 @@ public class MaterialsQuantityJournal extends BusinessObject<MaterialsQuantityJo
 		this.setObjectCode(BUSINESS_OBJECT_CODE);
 		this.setActivated(emYesNo.YES);
 
+	}
+
+	@Override
+	public IBusinessLogicContract[] getContracts() {
+		MaterialsQuantityJournal that = this;
+		return new IBusinessLogicContract[] { new IMaterialsInventoryQuantityContract() {
+
+			@Override
+			public String getIdentifiers() {
+				return that.getIdentifiers();
+			}
+
+			@Override
+			public String getItemCode() {
+				return that.getItemCode();
+			}
+
+			@Override
+			public Decimal getQuantity() {
+				return that.getQuantity();
+			}
+
+		} };
 	}
 }

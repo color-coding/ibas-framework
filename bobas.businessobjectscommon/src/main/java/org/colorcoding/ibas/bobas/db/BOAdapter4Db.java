@@ -552,7 +552,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	 * @return 表名称（“OITM”）
 	 */
 	protected String getBOMasterTable(IManageFields boFields) {
-		for (IFieldData item : boFields.getKeyFields()) {
+		for (IFieldData item : boFields.getFields(c -> c.isPrimaryKey())) {
 			if (item instanceof IFieldDataDb) {
 				IFieldDataDb dbItem = (IFieldDataDb) item;
 				return dbItem.getDbTable();
@@ -578,7 +578,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				throw new BOParsingException(i18n.prop("msg_bobas_not_found_bo_table", bo.getClass().getName()));
 			}
 			table = String.format(sqlScripts.getDbObjectSign(), table);
-			String partWhere = this.getBOFieldValues(this.getDbFields(boFields.getKeyFields()),
+			String partWhere = this.getBOFieldValues(this.getDbFields(boFields.getFields(c -> c.isPrimaryKey())),
 					sqlScripts.getAndSign());
 			if (partWhere == null || partWhere.isEmpty()) {
 				// 没有条件的删除不允许执行
@@ -609,7 +609,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				throw new BOParsingException(i18n.prop("msg_bobas_not_found_bo_table", bo.getClass().getName()));
 			}
 			table = String.format(sqlScripts.getDbObjectSign(), table);
-			String partWhere = this.getBOFieldValues(this.getDbFields(boFields.getKeyFields()),
+			String partWhere = this.getBOFieldValues(this.getDbFields(boFields.getFields(c -> c.isPrimaryKey())),
 					sqlScripts.getAndSign());
 			if (partWhere == null || partWhere.isEmpty()) {
 				// 没有条件的删除不允许执行
@@ -1333,7 +1333,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				throw new SqlScriptsException(i18n.prop("msg_bobas_invaild_sql_scripts"));
 			}
 			String boCode = ((IBOStorageTag) bo).getObjectCode();
-			IFieldData[] keys = ((IManageFields) bo).getKeyFields();
+			IFieldData[] keys = ((IManageFields) bo).getFields(c -> c.isPrimaryKey());
 			int keyCount = keys.length;
 			StringBuilder keyNames = new StringBuilder(), keyValues = new StringBuilder();
 			for (int i = 0; i < keys.length; i++) {

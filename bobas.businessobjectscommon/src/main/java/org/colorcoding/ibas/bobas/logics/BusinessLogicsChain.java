@@ -111,39 +111,45 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 			}
 		}
 		// 分析数据有哪些契约
-		if (bo instanceof IBusinessLogicContract) {
-			IBusinessLogicsManager logicsManager = BusinessLogicsFactory.create().createManager();
-			Class<?> tmpClass = bo.getClass();
-			// 开始检查契约
-			while (tmpClass != null) {
-				for (Class<?> item : tmpClass.getInterfaces()) {
-					boolean exists = false;
-					for (Class<?> subItem : item.getInterfaces()) {
-						if (subItem.equals(IBusinessLogicContract.class)) {
-							// 业务逻辑契约的扩展类型
-							exists = true;
-							break;
+		if (bo instanceof IBusinessLogicsHost) {
+			IBusinessLogicsHost boHost = (IBusinessLogicsHost) bo;
+			IBusinessLogicContract[] hostContracts = boHost.getContracts();
+			if (hostContracts != null) {
+				IBusinessLogicsManager logicsManager = BusinessLogicsFactory.create().createManager();
+				for (IBusinessLogicContract contract : hostContracts) {
+					Class<?> tmpClass = contract.getClass();// 开始检查契约
+					while (tmpClass != null) {
+						for (Class<?> item : tmpClass.getInterfaces()) {
+							boolean exists = false;
+							for (Class<?> subItem : item.getInterfaces()) {
+								if (subItem.equals(IBusinessLogicContract.class)) {
+									// 业务逻辑契约的扩展类型
+									exists = true;
+									break;
+								}
+							}
+							if (exists) {
+								// 存在契约，创建契约对应的逻辑实例
+								RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_LOGICS_EXISTING_CONTRACT,
+										bo.getClass().getName(), item.getName());
+								IBusinessLogic<?> logic = logicsManager.createLogic(item);
+								if (logic == null) {
+									throw new NotFoundBusinessLogicsException(item.getName());
+								}
+								if (logic instanceof BusinessLogic<?, ?>) {
+									BusinessLogic<?, ?> aLogic = (BusinessLogic<?, ?>) logic;
+									aLogic.setContract(contract);
+									aLogic.setHost(bo);
+									aLogic.setRepository(this.getRepository());
+									aLogic.setLogicsChain(this);
+								}
+								contracts.add(logic);
+							}
 						}
-					}
-					if (exists) {
-						// 存在契约，创建契约对应的逻辑实例
-						RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_LOGICS_EXISTING_CONTRACT,
-								bo.getClass().getName(), item.getName());
-						IBusinessLogic<?> logic = logicsManager.createLogic(item);
-						if (logic == null) {
-							throw new NotFoundBusinessLogicsException(item.getName());
-						}
-						if (logic instanceof BusinessLogic<?, ?>) {
-							BusinessLogic<?, ?> aLogic = (BusinessLogic<?, ?>) logic;
-							aLogic.setContract((IBusinessLogicContract) bo);
-							aLogic.setRepository(this.getRepository());
-							aLogic.setLogicsChain(this);
-						}
-						contracts.add(logic);
+						// 检查基类的契约
+						tmpClass = tmpClass.getSuperclass();
 					}
 				}
-				// 检查基类的契约
-				tmpClass = tmpClass.getSuperclass();
 			}
 		}
 		return contracts.toArray(new IBusinessLogic<?>[] {});

@@ -25,11 +25,6 @@ public interface ITrackStatusOperator {
 	void markDirty();
 
 	/**
-	 * 对象置为未删除
-	 */
-	void markUnDeleted();
-
-	/**
 	 * 标记为未修改
 	 * 
 	 * @param 包括子项

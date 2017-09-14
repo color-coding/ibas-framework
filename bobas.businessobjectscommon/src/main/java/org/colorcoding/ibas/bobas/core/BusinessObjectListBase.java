@@ -32,7 +32,7 @@ public abstract class BusinessObjectListBase<E extends IBusinessObjectBase> exte
 	transient private PropertyChangeSupport listeners;
 
 	@Override
-	public final void addPropertyChangeListener(PropertyChangeListener listener) {
+	public final void registerListener(PropertyChangeListener listener) {
 		if (this.listeners == null) {
 			this.listeners = new PropertyChangeSupport(this);
 		}
@@ -40,7 +40,7 @@ public abstract class BusinessObjectListBase<E extends IBusinessObjectBase> exte
 	}
 
 	@Override
-	public final void removePropertyChangeListener(PropertyChangeListener listener) {
+	public final void removeListener(PropertyChangeListener listener) {
 		if (this.listeners == null) {
 			this.listeners = new PropertyChangeSupport(this);
 		}

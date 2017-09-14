@@ -28,12 +28,12 @@ public abstract class Measurement<V, U> extends Number implements IMeasurement<V
 	transient private PropertyChangeSupport propertyChangeisteners = new PropertyChangeSupport(this);
 
 	@Override
-	public final void addPropertyChangeListener(PropertyChangeListener listener) {
+	public final void registerListener(PropertyChangeListener listener) {
 		this.propertyChangeisteners.addPropertyChangeListener(listener);
 	}
 
 	@Override
-	public final void removePropertyChangeListener(PropertyChangeListener listener) {
+	public final void removeListener(PropertyChangeListener listener) {
 		this.propertyChangeisteners.removePropertyChangeListener(listener);
 	}
 

@@ -9,10 +9,10 @@ public interface IBindableBase {
 	/**
 	 * 添加属性变化监听
 	 */
-	void addPropertyChangeListener(PropertyChangeListener listener);
+	void registerListener(PropertyChangeListener listener);
 
 	/**
 	 * 移出属性变化监听
 	 */
-	void removePropertyChangeListener(PropertyChangeListener listener);
+	void removeListener(PropertyChangeListener listener);
 }
