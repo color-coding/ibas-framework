@@ -1130,24 +1130,23 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 
 	@Override
 	public IBusinessLogicContract[] getContracts() {
-		PurchaseOrderItem that = this;
 		return new IBusinessLogicContract[] {
 				// 注册物料库存数量契约
 				new IMaterialsInventoryQuantityContract() {
 
 					@Override
 					public String getIdentifiers() {
-						return that.getIdentifiers();
+						return PurchaseOrderItem.this.getIdentifiers();
 					}
 
 					@Override
 					public Decimal getQuantity() {
-						return that.getQuantity();
+						return PurchaseOrderItem.this.getQuantity();
 					}
 
 					@Override
 					public String getItemCode() {
-						return that.getItemCode();
+						return PurchaseOrderItem.this.getItemCode();
 					}
 				},
 				// 注册物料仓库库存契约
@@ -1155,32 +1154,32 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 
 					@Override
 					public String getIdentifiers() {
-						return that.getIdentifiers();
+						return PurchaseOrderItem.this.getIdentifiers();
 					}
 
 					@Override
 					public Decimal getQuantity() {
-						return that.getQuantity();
+						return PurchaseOrderItem.this.getQuantity();
 					}
 
 					@Override
 					public String getItemCode() {
-						return that.getItemCode();
+						return PurchaseOrderItem.this.getItemCode();
 					}
 
 					@Override
 					public String getDocumentType() {
-						return that.getObjectCode();
+						return PurchaseOrderItem.this.getObjectCode();
 					}
 
 					@Override
 					public Integer getDocumentLineId() {
-						return that.getLineId();
+						return PurchaseOrderItem.this.getLineId();
 					}
 
 					@Override
 					public Integer getDocumentEntry() {
-						return that.getDocEntry();
+						return PurchaseOrderItem.this.getDocEntry();
 					}
 				} };
 	}

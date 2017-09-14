@@ -1026,22 +1026,21 @@ public class MaterialsQuantityJournal extends BusinessObject<MaterialsQuantityJo
 
 	@Override
 	public IBusinessLogicContract[] getContracts() {
-		MaterialsQuantityJournal that = this;
 		return new IBusinessLogicContract[] { new IMaterialsInventoryQuantityContract() {
 
 			@Override
 			public String getIdentifiers() {
-				return that.getIdentifiers();
+				return MaterialsQuantityJournal.this.getIdentifiers();
 			}
 
 			@Override
 			public String getItemCode() {
-				return that.getItemCode();
+				return MaterialsQuantityJournal.this.getItemCode();
 			}
 
 			@Override
 			public Decimal getQuantity() {
-				return that.getQuantity();
+				return MaterialsQuantityJournal.this.getQuantity();
 			}
 
 		} };
