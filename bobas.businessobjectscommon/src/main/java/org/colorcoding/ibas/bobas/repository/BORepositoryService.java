@@ -38,9 +38,6 @@ import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
 public class BORepositoryService implements IBORepositoryService {
 
 	public BORepositoryService() {
-		// 是否使用缓存
-		this.setUseCache(
-				!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_REPOSITORY_DISABLED_CACHE, false));
 		// 是否保存后检索新实例
 		this.setRefetchAfterSave(
 				!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_REFETCH, false));
@@ -69,7 +66,6 @@ public class BORepositoryService implements IBORepositoryService {
 		return this.repository;
 	}
 
-	private BORepositoryService that = this;
 	private SaveActionsListener saveListener = new SaveActionsListener() {
 		@Override
 		public boolean actionsEvent(SaveActionsEvent event) {
@@ -77,12 +73,14 @@ public class BORepositoryService implements IBORepositoryService {
 				return true;
 			}
 			try {
-				if (that.getProcessing().contains(event.getBO())) {
+				if (BORepositoryService.this.getProcessing().contains(event.getBO())) {
 					// 根对象发生事件
-					return that.onSaveActionsEvent(event.getType(), event.getBO());
-				} else if (event.getRootBO() != null && that.getProcessing().contains(event.getRootBO())) {
+					return BORepositoryService.this.onSaveActionsEvent(event.getType(), event.getBO());
+				} else if (event.getRootBO() != null
+						&& BORepositoryService.this.getProcessing().contains(event.getRootBO())) {
 					// 子项对象发生事件
-					return that.onSaveActionsEvent(event.getType(), event.getBO(), event.getRootBO());
+					return BORepositoryService.this.onSaveActionsEvent(event.getType(), event.getBO(),
+							event.getRootBO());
 				}
 				return true;
 			} catch (SaveActionsException e) {
@@ -95,7 +93,7 @@ public class BORepositoryService implements IBORepositoryService {
 	public final void setRepository(IBORepository repository) {
 		if (this.repository != null) {
 			// 移出事件监听
-			this.repository.removeSaveActionsListener(this.saveListener);
+			this.repository.removeListener(this.saveListener);
 		}
 		this.repository = repository;
 		if (this.repository != null) {
@@ -109,7 +107,7 @@ public class BORepositoryService implements IBORepositoryService {
 				}
 			}
 			// 监听对象保存动作
-			this.repository.addSaveActionsListener(this.saveListener);
+			this.repository.registerListener(this.saveListener);
 		}
 	}
 
@@ -149,9 +147,6 @@ public class BORepositoryService implements IBORepositoryService {
 			if (this.repository instanceof IBORepository4Db) {
 				((IBORepository4Db) this.getRepository()).closeDbConnection();
 			}
-			if (this.cacheRepository != null) {
-				this.cacheRepository.dispose();
-			}
 		} catch (DbException e) {
 			throw new RepositoryException(e);
 		}
@@ -181,26 +176,6 @@ public class BORepositoryService implements IBORepositoryService {
 		if (this.repository != null) {
 			this.repository.dispose();
 			this.repository = null;
-		}
-		if (this.cacheRepository != null) {
-			this.cacheRepository.dispose();
-			this.cacheRepository = null;
-		}
-	}
-
-	private IBORepository4Cache cacheRepository = null;
-
-	public final IBORepository4Cache getCacheRepository() {
-		if (this.cacheRepository == null) {
-			this.setCacheRepository(new BORepository4Cache());
-		}
-		return this.cacheRepository;
-	}
-
-	public final void setCacheRepository(IBORepository4Cache repository) {
-		this.cacheRepository = repository;
-		if (this.cacheRepository != null && this.currentUser != null) {
-			this.cacheRepository.setCurrentUser(this.currentUser);
 		}
 	}
 
@@ -303,9 +278,6 @@ public class BORepositoryService implements IBORepositoryService {
 		if (this.repository != null) {
 			this.getRepository().setCurrentUser(this.getCurrentUser());
 		}
-		if (this.cacheRepository != null) {
-			this.getCacheRepository().setCurrentUser(this.getCurrentUser());
-		}
 		RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_CHANGED_USER, this.getCurrentUser());
 		this.onCurrentUserChanged();
 	}
@@ -392,24 +364,6 @@ public class BORepositoryService implements IBORepositoryService {
 	}
 
 	/**
-	 * 查询业务对象（缓存中）
-	 * 
-	 * @param criteria
-	 *            查询条件
-	 * 
-	 * @param token
-	 *            口令
-	 * 
-	 * @return 查询的结果
-	 * @throws InvalidTokenException
-	 */
-	<P extends IBusinessObjectBase> OperationResult<P> fetchInCache(ICriteria criteria, Class<P> boType) {
-		// 在缓冲中查询
-		RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_FETCHING_IN_CACHE, boType.getName());
-		return this.fetch(this.getCacheRepository(), criteria, boType);
-	}
-
-	/**
 	 * 查询业务对象 根据配置是否启用缓存
 	 * 
 	 * @param criteria
@@ -425,42 +379,6 @@ public class BORepositoryService implements IBORepositoryService {
 		try {
 			// 解析并设置当前用户
 			this.setCurrentUser(token);
-			if (this.isUseCache()) {
-				// 优先使用缓存数据
-				OperationResult<P> operationResult = this.fetchInCache(criteria, boType);
-				if (operationResult.getResultCode() != 0) {
-					// 缓存中查询出现错误，重置返回值
-					RuntimeLog.log(operationResult.getError());
-					operationResult = new OperationResult<P>();
-				}
-				if (operationResult.getResultCode() == 0
-						&& operationResult.getResultObjects().size() >= criteria.getResultCount()
-						&& criteria.getResultCount() > 0) {
-					// 缓存中存在匹配数据，且结果数量满足要求
-					return operationResult;
-				} else {
-					// 缓存中不存在数据，从数据库中查找
-					ICriteria nCriteria = criteria.clone();// 不满足查询的部分
-					nCriteria.setResultCount(criteria.getResultCount() - operationResult.getResultObjects().size());// 仅查询不够部分
-					OperationResult<P> dbOpRslt = this.fetchInDb(nCriteria, boType);
-					if (dbOpRslt.getError() != null) {
-						throw dbOpRslt.getError();
-					}
-					if (dbOpRslt.getResultCode() != 0) {
-						throw new RepositoryException(dbOpRslt.getMessage());
-					}
-					// 接收数据库查询结果
-					operationResult.addResultObjects(dbOpRslt.getResultObjects());
-					operationResult.addInformations(dbOpRslt.getInformations());
-					// 缓存新的数据
-					try {
-						this.getCacheRepository().cacheData(dbOpRslt.getResultObjects());
-					} catch (Exception e) {
-						RuntimeLog.log(e);
-					}
-					return operationResult;
-				}
-			}
 		} catch (Exception e) {
 			RuntimeLog.log(e);
 			return new OperationResult<P>(e);
@@ -641,14 +559,6 @@ public class BORepositoryService implements IBORepositoryService {
 				}
 			}
 			operationResult.addResultObjects(this.save(this.getRepository(), bo));
-			if (this.isUseCache() && operationResult.getResultCode() == 0) {
-				// 删除已缓存的数据
-				try {
-					this.getCacheRepository().clearData(bo);
-				} catch (Exception e) {
-					RuntimeLog.log(e);
-				}
-			}
 		} catch (Exception e) {
 			operationResult.setError(e);
 			RuntimeLog.log(e);

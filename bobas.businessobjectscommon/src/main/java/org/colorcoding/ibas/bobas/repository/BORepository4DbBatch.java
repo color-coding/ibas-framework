@@ -77,7 +77,6 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 
 	@Override
 	public <T extends IBusinessObjectBase> IOperationResult<T> saveEx(T[] bos) {
-
 		OperationResult<T> operationResult = new OperationResult<>();
 		try {
 			IBusinessObjectBase[] nBOs = this.mySave(bos, true);

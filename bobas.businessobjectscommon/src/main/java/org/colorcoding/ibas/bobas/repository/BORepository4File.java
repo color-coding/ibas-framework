@@ -179,11 +179,11 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 	 * @param listener
 	 */
 	@Override
-	public final void addSaveActionsListener(SaveActionsListener listener) {
+	public final void registerListener(SaveActionsListener listener) {
 		if (this.saveActionsSupport == null) {
 			this.saveActionsSupport = new SaveActionsSupport(this);
 		}
-		this.saveActionsSupport.addListener(listener);
+		this.saveActionsSupport.registerListener(listener);
 	}
 
 	/**
@@ -192,7 +192,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 	 * @param listener
 	 */
 	@Override
-	public final void removeSaveActionsListener(SaveActionsListener listener) {
+	public final void removeListener(SaveActionsListener listener) {
 		if (this.saveActionsSupport == null) {
 			return;
 		}

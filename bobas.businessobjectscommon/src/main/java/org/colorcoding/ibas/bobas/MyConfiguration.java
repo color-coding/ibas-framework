@@ -68,10 +68,6 @@ public class MyConfiguration extends Configuration {
 	 */
 	public final static String CONFIG_ITEM_BO_DISABLED_REFETCH = "DisabledRefetch";
 	/**
-	 * 配置项目-关闭仓库缓存
-	 */
-	public final static String CONFIG_ITEM_BO_REPOSITORY_DISABLED_CACHE = "DisabledCache";
-	/**
 	 * 配置项目-关闭业务对象业务逻辑
 	 */
 	public final static String CONFIG_ITEM_BO_DISABLED_BUSINESS_LOGICS = "DisabledBusinessLogics";
