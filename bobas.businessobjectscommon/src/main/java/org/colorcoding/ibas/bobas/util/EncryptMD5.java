@@ -4,7 +4,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.messages.Logger;
 
 /**
  * md5加密
@@ -60,7 +60,7 @@ public class EncryptMD5 extends Encrypt {
 				String result = toHexString(results);
 				return result;
 			} catch (NoSuchAlgorithmException e) {
-				RuntimeLog.log(e);
+				Logger.log(e);
 			}
 		}
 		return null;

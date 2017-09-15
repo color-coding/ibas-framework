@@ -2,7 +2,7 @@ package org.colorcoding.ibas.bobas.bo;
 
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
 /**
@@ -27,13 +27,13 @@ public class BOUtilities {
 			Class<?> b1Type = bo01.getClass();
 			Class<?> b2Type = bo02.getClass();
 			if (!b1Type.equals(b2Type)) {
-				difs.add(i18n.prop("msg_bobas_utilities_different_class", b1Type.getName(), b2Type.getName()));
+				difs.add(I18N.prop("msg_bobas_utilities_different_class", b1Type.getName(), b2Type.getName()));
 				return difs.toArray(new String[] {});
 			}
 			IFieldData[] fields01 = ((IManageFields) bo01).getFields();
 			IFieldData[] fields02 = ((IManageFields) bo02).getFields();
 			if (fields01.length != fields02.length) {
-				difs.add(i18n.prop("msg_bobas_utilities_different_fields_count", b1Type.getName(), b2Type.getName()));
+				difs.add(I18N.prop("msg_bobas_utilities_different_fields_count", b1Type.getName(), b2Type.getName()));
 				return difs.toArray(new String[] {});
 			}
 			// 比较每个字段
@@ -50,7 +50,7 @@ public class BOUtilities {
 					IBusinessObjects<?, ?> child02 = (IBusinessObjects<?, ?>) fd02.getValue();
 					// 集合数量不同
 					if (child01.size() != child02.size()) {
-						difs.add(i18n.prop("msg_bobas_utilities_different_field_children_count", fd01.getName()));
+						difs.add(I18N.prop("msg_bobas_utilities_different_field_children_count", fd01.getName()));
 					}
 					// 比较每个集合的元素
 					for (int j = 0; j < child01.size(); j++) {
@@ -64,16 +64,16 @@ public class BOUtilities {
 					if ((fd01.getValue() == null && fd02.getValue() != null)
 							|| (fd01.getValue() != null && fd02.getValue() == null)) {
 						// 字段比较不同或无法比较
-						difs.add(i18n.prop("msg_bobas_utilities_different_field_value", fd01.getName()));
+						difs.add(I18N.prop("msg_bobas_utilities_different_field_value", fd01.getName()));
 					} else if (fd01.getValue() != null && fd02.getValue() != null
 							&& !fd01.getValue().toString().equals(fd02.getValue().toString())) {
 						// 字符串比较不相同
-						difs.add(i18n.prop("msg_bobas_utilities_different_field_value", fd01.getName()));
+						difs.add(I18N.prop("msg_bobas_utilities_different_field_value", fd01.getName()));
 					}
 				}
 			}
 		} catch (Exception e) {
-			difs.add(i18n.prop("msg_bobas_utilities_unable_to_complete_task"));
+			difs.add(I18N.prop("msg_bobas_utilities_unable_to_complete_task"));
 		}
 		return difs.toArray(new String[] {});
 	}
@@ -125,7 +125,7 @@ public class BOUtilities {
 			}
 			return null;
 		} catch (Exception e) {
-			throw new BOException(i18n.prop("msg_bobas_not_found_property_path_value", path), e);
+			throw new BOException(I18N.prop("msg_bobas_not_found_property_path_value", path), e);
 		}
 	}
 

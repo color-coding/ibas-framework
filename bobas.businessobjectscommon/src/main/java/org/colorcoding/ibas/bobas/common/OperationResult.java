@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
 /**
@@ -19,8 +19,8 @@ import org.colorcoding.ibas.bobas.util.ArrayList;
  *            结果类型
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "OperationResult", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
-@XmlRootElement(name = "OperationResult", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
+@XmlType(name = "OperationResult", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
+@XmlRootElement(name = "OperationResult", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public class OperationResult<P> extends OperationMessages implements IOperationResult<P> {
 
 	/**

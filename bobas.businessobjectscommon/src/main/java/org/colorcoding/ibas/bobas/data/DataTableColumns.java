@@ -9,12 +9,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "DataTableColumns", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "DataTableColumns", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 @XmlSeeAlso({ DataTableColumn.class })
 public class DataTableColumns extends ArrayList<IDataTableColumn> implements IDataTableColumns {
 
@@ -39,7 +39,7 @@ public class DataTableColumns extends ArrayList<IDataTableColumn> implements IDa
 
 	private void check() {
 		if (this.getTable().getRows().size() > 0) {
-			throw new RuntimeException(i18n.prop("msg_bobas_data_table_data_already_exists"));
+			throw new RuntimeException(I18N.prop("msg_bobas_data_table_data_already_exists"));
 		}
 	}
 

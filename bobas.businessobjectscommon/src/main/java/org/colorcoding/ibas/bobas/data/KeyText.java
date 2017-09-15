@@ -4,13 +4,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 
 /**
  * 值及描述
  */
-@XmlType(name = "KeyText", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
-@XmlRootElement(name = "KeyText", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "KeyText", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlRootElement(name = "KeyText", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class KeyText implements IKeyText {
 	private final static String EMPTY = "";
 

@@ -2,13 +2,13 @@ package org.colorcoding.ibas.bobas.common;
 
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 排序
  */
-@XmlType(name = "SortType", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
+@XmlType(name = "SortType", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public enum SortType {
 
 	/** 降序 */

@@ -1,7 +1,7 @@
 package org.colorcoding.ibas.bobas.cxf;
 
 import org.colorcoding.ibas.bobas.core.BOFactory;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
 /**
@@ -37,7 +37,7 @@ public class WebServiceProviderPackages implements WebServiceProvider {
 				}
 				servers.add(service);
 			} catch (InstantiationException | IllegalAccessException e) {
-				RuntimeLog.log(e);
+				Logger.log(e);
 			}
 		}
 		return servers.toArray(new WebService[] {});

@@ -6,15 +6,15 @@ package org.colorcoding.ibas.bobas.i18n;
  * @author Niuren.Zhu
  *
  */
-public class i18n {
-	private i18n() {
+public class I18N {
+	private I18N() {
 	}
 
 	private volatile static ILanguageItemManager instance;
 
 	public static ILanguageItemManager getInstance() {
 		if (instance == null) {
-			synchronized (i18n.class) {
+			synchronized (I18N.class) {
 				if (instance == null) {
 					instance = new LanguageItemManager();
 					instance.readResources();

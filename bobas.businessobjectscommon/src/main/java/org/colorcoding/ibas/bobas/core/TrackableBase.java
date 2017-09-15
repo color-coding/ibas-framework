@@ -5,10 +5,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "TrackableBase", namespace = MyConsts.NAMESPACE_BOBAS_CORE)
+@XmlType(name = "TrackableBase", namespace = MyConfiguration.NAMESPACE_BOBAS_CORE)
 public abstract class TrackableBase extends BindableBase implements ITrackStatus, ITrackStatusOperator {
 
 	private boolean isValid = true;

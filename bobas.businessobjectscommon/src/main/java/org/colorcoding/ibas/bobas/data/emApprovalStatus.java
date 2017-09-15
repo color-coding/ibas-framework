@@ -2,7 +2,7 @@ package org.colorcoding.ibas.bobas.data;
 
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
@@ -11,7 +11,7 @@ import org.colorcoding.ibas.bobas.mapping.Value;
  * @author Niuren.Zhu
  *
  */
-@XmlType(name = "emApprovalStatus", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "emApprovalStatus", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public enum emApprovalStatus {
 
 	/**

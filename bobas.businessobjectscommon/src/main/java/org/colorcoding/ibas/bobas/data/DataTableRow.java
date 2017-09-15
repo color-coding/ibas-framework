@@ -5,11 +5,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "DataTableRow", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "DataTableRow", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class DataTableRow implements IDataTableRow {
 	public DataTableRow() {
 	}
@@ -65,7 +65,7 @@ public class DataTableRow implements IDataTableRow {
 		IDataTableColumn column = this.getColumns().get(col);
 		if (!column.getDataType().isInstance(value) && value != null) {
 			// 值与列定义的类型不符
-			throw new RuntimeException(i18n.prop("msg_bobas_data_table_data_type_was_not_column_definition"));
+			throw new RuntimeException(I18N.prop("msg_bobas_data_table_data_type_was_not_column_definition"));
 		}
 		if (column.getDataType() != String.class && String.class.isInstance(value)) {
 			this.values[col] = column.getDataType().cast(value);

@@ -12,7 +12,7 @@ import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.IKeyText;
 import org.colorcoding.ibas.bobas.expressions.IPropertyValueOperator;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.repository.IBORepository4DbReadonly;
 
 /**
@@ -48,11 +48,11 @@ public class SQLScriptValueOperator implements IPropertyValueOperator {
 		if (value instanceof IBusinessObjectBase) {
 			this.bo = (IBusinessObjectBase) value;
 			if (this.repository == null) {
-				throw new RuntimeException(i18n.prop("msg_bobas_invaild_bo_repository"));
+				throw new RuntimeException(I18N.prop("msg_bobas_invaild_bo_repository"));
 			}
 			if (this.propertyName == null || this.propertyName.isEmpty()) {
 				// 此时propertyName为查询命令
-				throw new RuntimeException(i18n.prop("msg_bobas_invalid_sql_query"));
+				throw new RuntimeException(I18N.prop("msg_bobas_invalid_sql_query"));
 			}
 			String query = this.propertyName;
 			// 替换查询中的变量

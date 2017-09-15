@@ -5,16 +5,16 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.KeyText;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 
 /**
  * 百分百
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "Percent", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "Percent", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class Percent extends MeasurementDecimal<emPercentUnit> {
 
 	/**
@@ -70,7 +70,7 @@ public class Percent extends MeasurementDecimal<emPercentUnit> {
 	@Override
 	public int compareTo(IMeasurement<Decimal, emPercentUnit> o) {
 		if (!this.getUnit().equals(o.getUnit())) {
-			throw new ClassCastException(i18n.prop("msg_bobas_measurement_unit_not_match"));
+			throw new ClassCastException(I18N.prop("msg_bobas_measurement_unit_not_match"));
 		}
 		return this.getValue().compareTo(o.getValue());
 	}

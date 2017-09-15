@@ -9,12 +9,12 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "LanguageItem", namespace = MyConsts.NAMESPACE_BOBAS_I18N)
-@XmlRootElement(name = "LanguageItem", namespace = MyConsts.NAMESPACE_BOBAS_I18N)
+@XmlType(name = "LanguageItem", namespace = MyConfiguration.NAMESPACE_BOBAS_I18N)
+@XmlRootElement(name = "LanguageItem", namespace = MyConfiguration.NAMESPACE_BOBAS_I18N)
 public class LanguageItem implements ILanguageItem {
 
 	private String key;

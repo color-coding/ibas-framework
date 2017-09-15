@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 
 /**
  * 集合数组
@@ -16,8 +16,8 @@ import org.colorcoding.ibas.bobas.MyConsts;
  * @param <E>
  *            集合类型
  */
-@XmlType(name = "ArrayList", namespace = MyConsts.NAMESPACE_BOBAS_UTIL)
-@XmlRootElement(name = "ArrayList", namespace = MyConsts.NAMESPACE_BOBAS_UTIL)
+@XmlType(name = "ArrayList", namespace = MyConfiguration.NAMESPACE_BOBAS_UTIL)
+@XmlRootElement(name = "ArrayList", namespace = MyConfiguration.NAMESPACE_BOBAS_UTIL)
 public class ArrayList<E> extends java.util.ArrayList<E> implements Collection<E> {
 
 	/**

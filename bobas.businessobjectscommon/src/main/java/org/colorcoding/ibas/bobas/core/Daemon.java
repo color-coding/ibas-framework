@@ -8,8 +8,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**
  * 框架守护进程
@@ -20,6 +20,11 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
  *
  */
 public class Daemon implements IDaemon {
+	public static final String MSG_DAEMON_REGISTER_TASK = "daemon: register task id [%s], name [%s].";
+	public static final String MSG_DAEMON_REMOVE_TASK = "daemon: remove task id [%s], name [%s].";
+	public static final String MSG_DAEMON_TASK_COMPLETED = "daemon: end task [%s - %s] %sth running and for [%s] milliseconds.";
+	public static final String MSG_DAEMON_TASK_START = "daemon: begin to run task [%s - %s], %sth running.";
+
 	/**
 	 * 注册后台任务
 	 * 
@@ -102,7 +107,7 @@ public class Daemon implements IDaemon {
 						try {
 							Thread.sleep(500);// 每500毫秒检查次任务
 						} catch (Exception e) {
-							RuntimeLog.log(e);
+							Logger.log(e);
 						}
 					}
 				}
@@ -156,7 +161,7 @@ public class Daemon implements IDaemon {
 			wrapping.setLog(isLog);
 			wrapping.setId(Math.abs(UUID.randomUUID().getLeastSignificantBits()));
 			this.getWrappings().add(wrapping);
-			RuntimeLog.log(RuntimeLog.MSG_DAEMON_REGISTER_TASK, wrapping.getId(), wrapping.getName());
+			Logger.log(MSG_DAEMON_REGISTER_TASK, wrapping.getId(), wrapping.getName());
 			return wrapping.getId();
 		}
 	}
@@ -175,7 +180,7 @@ public class Daemon implements IDaemon {
 				if (wrapping.getId() == taskId) {
 					this.getWrappings().remove(i);
 				}
-				RuntimeLog.log(RuntimeLog.MSG_DAEMON_REMOVE_TASK, wrapping.getId(), wrapping.getName());
+				Logger.log(MSG_DAEMON_REMOVE_TASK, wrapping.getId(), wrapping.getName());
 			}
 		}
 		return false;
@@ -216,8 +221,8 @@ public class Daemon implements IDaemon {
 					long start = System.currentTimeMillis();
 					long times = wrapping.getRunTimes() + 1;
 					if (wrapping.isLog()) {
-						RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_DAEMON_TASK_START, wrapping.getId(),
-								wrapping.getName(), times);
+						Logger.log(MessageLevel.DEBUG, MSG_DAEMON_TASK_START, wrapping.getId(), wrapping.getName(),
+								times);
 					}
 					// 从线程池中调用新的线程运行此任务
 					this.getThreadPool().execute(new Runnable() {
@@ -227,8 +232,8 @@ public class Daemon implements IDaemon {
 							wrapping.run();
 							long end = System.currentTimeMillis();
 							if (wrapping.isLog()) {
-								RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_DAEMON_TASK_COMPLETED,
-										wrapping.getId(), wrapping.getName(), times, (end - start));
+								Logger.log(MessageLevel.DEBUG, MSG_DAEMON_TASK_COMPLETED, wrapping.getId(),
+										wrapping.getName(), times, (end - start));
 							}
 						}
 					});

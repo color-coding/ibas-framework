@@ -2,14 +2,14 @@ package org.colorcoding.ibas.bobas.common;
 
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 对比条件
  * 
  */
-@XmlType(name = "ConditionOperation", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
+@XmlType(name = "ConditionOperation", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public enum ConditionOperation {
 	/** 无 */
 	@Value("NONE")

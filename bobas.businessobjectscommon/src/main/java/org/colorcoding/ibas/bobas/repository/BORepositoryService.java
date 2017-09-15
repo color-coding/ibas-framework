@@ -21,9 +21,9 @@ import org.colorcoding.ibas.bobas.core.SaveActionsListener;
 import org.colorcoding.ibas.bobas.core.SaveActionsType;
 import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.organization.IOrganizationManager;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
@@ -36,6 +36,11 @@ import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
  *
  */
 public class BORepositoryService implements IBORepositoryService {
+	public static final String MSG_REPOSITORY_FETCHING_IN_DB = "repository: fetching [%s] in db repository.";
+	public static final String MSG_REPOSITORY_CHANGED_USER = "repository: changed user [%s].";
+	public static final String MSG_REPOSITORY_REPLACED_BE_DELETED_BO = "repository: replaced be deleted bo [%s].";
+	public static final String MSG_REPOSITORY_NOT_FOUND_BE_DELETED_BO = "repository: not found be deleted bo [%s].";
+	public static final String MSG_TRANSACTION_SP_VALUES = "transaction: sp [%s] [%s] [%s - %s]";
 
 	public BORepositoryService() {
 		// 是否保存后检索新实例
@@ -278,7 +283,7 @@ public class BORepositoryService implements IBORepositoryService {
 		if (this.repository != null) {
 			this.getRepository().setCurrentUser(this.getCurrentUser());
 		}
-		RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_CHANGED_USER, this.getCurrentUser());
+		Logger.log(MSG_REPOSITORY_CHANGED_USER, this.getCurrentUser());
 		this.onCurrentUserChanged();
 	}
 
@@ -300,7 +305,7 @@ public class BORepositoryService implements IBORepositoryService {
 			IUser user = orgManager.getUser(token);
 			if (user == null) {
 				// 没有用户匹配次口令
-				throw new InvalidTokenException(i18n.prop("msg_bobas_no_user_match_the_token"));
+				throw new InvalidTokenException(I18N.prop("msg_bobas_no_user_match_the_token"));
 			}
 			this.setCurrentUser(user);
 		} catch (Exception e) {
@@ -359,7 +364,7 @@ public class BORepositoryService implements IBORepositoryService {
 	 */
 	<P extends IBusinessObjectBase> OperationResult<P> fetchInDb(ICriteria criteria, Class<P> boType) {
 		// 在数据库中查询
-		RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_FETCHING_IN_DB, boType.getName());
+		Logger.log(MSG_REPOSITORY_FETCHING_IN_DB, boType.getName());
 		return this.fetch(this.getRepository(), criteria, boType);
 	}
 
@@ -380,7 +385,7 @@ public class BORepositoryService implements IBORepositoryService {
 			// 解析并设置当前用户
 			this.setCurrentUser(token);
 		} catch (Exception e) {
-			RuntimeLog.log(e);
+			Logger.log(e);
 			return new OperationResult<P>(e);
 		}
 		return this.fetchInDb(criteria, boType);
@@ -447,11 +452,11 @@ public class BORepositoryService implements IBORepositoryService {
 							throw new Exception(operationResult.getMessage());
 						}
 						if (operationResult.getResultObjects().size() == 0) {
-							throw new Exception(i18n.prop("msg_bobas_not_found_bo_copy", returnBO));
+							throw new Exception(I18N.prop("msg_bobas_not_found_bo_copy", returnBO));
 						}
 						returnBO = (IBusinessObjectBase) operationResult.getResultObjects().firstOrDefault();
 					} catch (Exception e) {
-						throw new Exception(i18n.prop("msg_bobas_fetch_bo_copy_faild", returnBO), e);
+						throw new Exception(I18N.prop("msg_bobas_fetch_bo_copy_faild", returnBO), e);
 					}
 				}
 			}
@@ -508,11 +513,11 @@ public class BORepositoryService implements IBORepositoryService {
 				}
 				TransactionMessage message = spOpRslt.getResultObjects().firstOrDefault();
 				if (message == null) {
-					throw new Exception(i18n.prop("msg_bobas_invaild_bo_transaction_message"));
+					throw new Exception(I18N.prop("msg_bobas_invaild_bo_transaction_message"));
 				}
 				if (message.getCode() != 0) {
-					RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_TRANSACTION_SP_VALUES, type.toString(),
-							bo.toString(), message.getCode(), message.getMessage());
+					Logger.log(MessageLevel.DEBUG, MSG_TRANSACTION_SP_VALUES, type.toString(), bo.toString(),
+							message.getCode(), message.getMessage());
 					throw new Exception(message.getMessage());
 				}
 			}
@@ -552,16 +557,16 @@ public class BORepositoryService implements IBORepositoryService {
 					newBO.delete();
 					// 替换操作对象
 					bo = boCopy;
-					RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_REPOSITORY_REPLACED_BE_DELETED_BO, bo);
+					Logger.log(MessageLevel.DEBUG, MSG_REPOSITORY_REPLACED_BE_DELETED_BO, bo);
 				} else {
 					// 没有找到有效的副本
-					RuntimeLog.log(MessageLevel.WARN, RuntimeLog.MSG_REPOSITORY_NOT_FOUND_BE_DELETED_BO, bo);
+					Logger.log(MessageLevel.WARN, MSG_REPOSITORY_NOT_FOUND_BE_DELETED_BO, bo);
 				}
 			}
 			operationResult.addResultObjects(this.save(this.getRepository(), bo));
 		} catch (Exception e) {
 			operationResult.setError(e);
-			RuntimeLog.log(e);
+			Logger.log(e);
 		}
 		return operationResult;
 	}
@@ -590,17 +595,17 @@ public class BORepositoryService implements IBORepositoryService {
 						}
 						Object boCopy = opRslt.getResultObjects().firstOrDefault();
 						if (boCopy == null) {
-							throw new Exception(i18n.prop("msg_bobas_not_found_bo_copy", bo));
+							throw new Exception(I18N.prop("msg_bobas_not_found_bo_copy", bo));
 						}
 						IBOStorageTag boTag = (IBOStorageTag) bo;
 						IBOStorageTag copyTag = (IBOStorageTag) boCopy;
 						if (copyTag.getLogInst() >= boTag.getLogInst()) {
 							// 数据库版本更高
-							throw new Exception(i18n.prop("msg_bobas_bo_copy_version_is_more_new"));
+							throw new Exception(I18N.prop("msg_bobas_bo_copy_version_is_more_new"));
 						}
 					}
 				} catch (Exception e) {
-					throw new SaveActionsException(i18n.prop("msg_bobas_bo_version_check_faild", bo), e);
+					throw new SaveActionsException(I18N.prop("msg_bobas_bo_version_check_faild", bo), e);
 				}
 			}
 		}

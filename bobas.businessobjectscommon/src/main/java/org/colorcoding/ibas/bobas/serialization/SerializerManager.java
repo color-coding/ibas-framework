@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.serialization;
 
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 
 public class SerializerManager implements ISerializerManager {
 
@@ -15,7 +15,7 @@ public class SerializerManager implements ISerializerManager {
 			// 默认使用xml方式
 			return new SerializerXml();
 		}
-		throw new SerializationException(i18n.prop("msg_bobas_not_support_serialize_type", sign));
+		throw new SerializationException(I18N.prop("msg_bobas_not_support_serialize_type", sign));
 	}
 
 }

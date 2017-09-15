@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.test.messages;
 
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.messages.Logger;
 
 import junit.framework.TestCase;
 
@@ -28,7 +28,7 @@ public class testRuntimeLog extends TestCase {
 
 	public void testRuntimeLogSave() throws InterruptedException {
 		for (int i = 0; i < 1000000; i++) {
-			RuntimeLog.log("message [%s] by [%s]", i, Thread.currentThread().getName());
+			Logger.log("message [%s] by [%s]", i, Thread.currentThread().getName());
 		}
 		// Thread.sleep(10000);
 	}

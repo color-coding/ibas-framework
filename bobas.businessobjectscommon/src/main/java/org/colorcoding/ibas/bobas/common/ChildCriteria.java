@@ -6,14 +6,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 
 /**
  * 子项查询
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "ChildCriteria", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
-@XmlRootElement(name = "ChildCriteria", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
+@XmlType(name = "ChildCriteria", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
+@XmlRootElement(name = "ChildCriteria", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public class ChildCriteria extends Criteria implements IChildCriteria {
 
 	private String propertyPath = "";

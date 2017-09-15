@@ -16,7 +16,7 @@ import javax.xml.bind.JAXBException;
 
 import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.data.IKeyText;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.messages.Logger;
 
 /**
  * 配置
@@ -26,6 +26,8 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
  */
 public class Configuration {
 
+	public static final String MSG_CONFIG_READ_FILE_DATA = "config: read file's data [%s].";
+	public static final String MSG_CONFIG_READ_FILE_DATA_FAILD = "config: read file's data [%s] faild.";
 	private volatile static IConfigurationManager instance;
 
 	/**
@@ -50,11 +52,11 @@ public class Configuration {
 					}
 					if (instance == null) {
 						// 读取配置文件失败
-						System.err.println(String.format(RuntimeLog.MSG_CONFIG_READ_FILE_DATA_FAILD, configFile));
+						System.err.println(String.format(MSG_CONFIG_READ_FILE_DATA_FAILD, configFile));
 						instance = new ConfigurationManager();
 					} else {
 						// 读取配置文件成功
-						RuntimeLog.log(RuntimeLog.MSG_CONFIG_READ_FILE_DATA, configFile);
+						Logger.log(MSG_CONFIG_READ_FILE_DATA, configFile);
 					}
 				}
 			}
@@ -155,7 +157,7 @@ public class Configuration {
 				}
 				return (P) valueString;
 			} catch (Exception e) {
-				RuntimeLog.log(e);
+				Logger.log(e);
 				return defaultValue;
 			}
 		}
@@ -280,7 +282,7 @@ public class Configuration {
 	public static boolean update(String configFile) {
 		boolean done = create().update(configFile);
 		if (done) {
-			RuntimeLog.log(RuntimeLog.MSG_CONFIG_READ_FILE_DATA, configFile);
+			Logger.log(MSG_CONFIG_READ_FILE_DATA, configFile);
 		}
 		variableStringCache = null;
 		return done;

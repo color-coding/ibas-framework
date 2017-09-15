@@ -6,14 +6,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 
 /**
  * 查询排序
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "Sort", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
-@XmlRootElement(name = "Sort", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
+@XmlType(name = "Sort", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
+@XmlRootElement(name = "Sort", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public class Sort implements ISort {
 
 	private String alias = "";

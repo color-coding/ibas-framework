@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
 import org.colorcoding.ibas.bobas.bo.IBOMasterData;
@@ -25,8 +25,8 @@ import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
  * 查询
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "Criteria", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
-@XmlRootElement(name = "Criteria", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
+@XmlType(name = "Criteria", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
+@XmlRootElement(name = "Criteria", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public class Criteria implements ICriteria {
 	/**
 	 * 创建实例

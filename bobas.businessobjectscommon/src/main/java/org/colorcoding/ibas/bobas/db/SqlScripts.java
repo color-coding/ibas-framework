@@ -7,7 +7,7 @@ import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.common.SqlQuery;
 import org.colorcoding.ibas.bobas.data.KeyValue;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.util.StringBuilder;
 
@@ -130,7 +130,7 @@ public class SqlScripts implements ISqlScripts {
 		} else if (value == ConditionRelationship.NONE) {
 			return this.getFieldBreakSign();
 		}
-		throw new RuntimeException(i18n.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
+		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
 	}
 
 	@Override
@@ -254,7 +254,7 @@ public class SqlScripts implements ISqlScripts {
 			stringBuilder.append("%s");
 			return stringBuilder.toString();
 		}
-		throw new RuntimeException(i18n.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
+		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
 	}
 
 	@Override
@@ -285,7 +285,7 @@ public class SqlScripts implements ISqlScripts {
 		} else if (value == SortType.DESCENDING) {
 			return "DESC";
 		}
-		throw new RuntimeException(i18n.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
+		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
 	}
 
 	@Override

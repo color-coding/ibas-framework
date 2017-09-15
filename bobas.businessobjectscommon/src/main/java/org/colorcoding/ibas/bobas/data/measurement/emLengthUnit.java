@@ -2,14 +2,14 @@ package org.colorcoding.ibas.bobas.data.measurement;
 
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 长度单位
  */
-@XmlType(name = "emLengthUnit", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "emLengthUnit", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public enum emLengthUnit {
 	// 毫米
 	@Value("mm")

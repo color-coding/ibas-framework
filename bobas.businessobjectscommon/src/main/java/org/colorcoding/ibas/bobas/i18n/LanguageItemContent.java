@@ -6,11 +6,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "LanguageItemContent", namespace = MyConsts.NAMESPACE_BOBAS_I18N)
-@XmlRootElement(name = "LanguageItemContent", namespace = MyConsts.NAMESPACE_BOBAS_I18N)
+@XmlType(name = "LanguageItemContent", namespace = MyConfiguration.NAMESPACE_BOBAS_I18N)
+@XmlRootElement(name = "LanguageItemContent", namespace = MyConfiguration.NAMESPACE_BOBAS_I18N)
 public class LanguageItemContent implements ILanguageItemContent {
 	public LanguageItemContent() {
 

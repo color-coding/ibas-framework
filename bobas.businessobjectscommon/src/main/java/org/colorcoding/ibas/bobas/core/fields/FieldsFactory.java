@@ -6,7 +6,7 @@ import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.core.PropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.mapping.AssociationMode;
 import org.colorcoding.ibas.bobas.mapping.Associations;
 import org.colorcoding.ibas.bobas.mapping.ComplexField;
@@ -57,7 +57,7 @@ public class FieldsFactory {
 		} else if (IBusinessObjectListBase.class.isAssignableFrom(type)) {
 			return new FieldDataBOs(type);
 		} else {
-			throw new NotSupportTypeException(i18n.prop("msg_bobas_data_type_not_support", type));
+			throw new NotSupportTypeException(I18N.prop("msg_bobas_data_type_not_support", type));
 		}
 	}
 
@@ -68,7 +68,7 @@ public class FieldsFactory {
 		} else if (mode == AssociationMode.ONE_TO_MANY) {
 			return new AssociatedFieldDataArray(assoCount);
 		} else {
-			throw new NotSupportTypeException(i18n.prop("msg_bobas_association_mode_not_support", mode));
+			throw new NotSupportTypeException(I18N.prop("msg_bobas_association_mode_not_support", mode));
 		}
 	}
 
@@ -76,7 +76,7 @@ public class FieldsFactory {
 		if (type == ComplexFieldType.MEASUREMENT) {
 			return new ComplexFieldDataMeasurement();
 		} else {
-			throw new NotSupportTypeException(i18n.prop("msg_bobas_association_mode_not_support", type));
+			throw new NotSupportTypeException(I18N.prop("msg_bobas_association_mode_not_support", type));
 		}
 	}
 
@@ -102,7 +102,7 @@ public class FieldsFactory {
 		} else if (type.isEnum()) {// 判断是否为枚举
 			return new DbFieldDataEnum(type);
 		} else {
-			throw new NotSupportTypeException(i18n.prop("msg_bobas_data_type_not_support", type));
+			throw new NotSupportTypeException(I18N.prop("msg_bobas_data_type_not_support", type));
 		}
 	}
 

@@ -11,9 +11,9 @@ import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.expressions.ExpressionFactory;
 import org.colorcoding.ibas.bobas.expressions.JudgmentLinks;
 import org.colorcoding.ibas.bobas.expressions.JudmentOperationException;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
 /**
@@ -24,6 +24,7 @@ import org.colorcoding.ibas.bobas.util.ArrayList;
  */
 public class BusinessLogicsChain implements IBusinessLogicsChain {
 
+	public static final String MSG_LOGICS_EXISTING_CONTRACT = "logics: class [%s] existing contract [%s].";
 	private String id;
 
 	@Override
@@ -59,7 +60,7 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 	@Override
 	public final void useRepository(IBORepository boRepository) {
 		if (this.repository != null) {
-			throw new RuntimeException(i18n.prop("msg_bobas_not_supported"));
+			throw new RuntimeException(I18N.prop("msg_bobas_not_supported"));
 		}
 		this.repository = boRepository;
 	}
@@ -130,8 +131,8 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 							}
 							if (exists) {
 								// 存在契约，创建契约对应的逻辑实例
-								RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_LOGICS_EXISTING_CONTRACT,
-										bo.getClass().getName(), item.getName());
+								Logger.log(MessageLevel.DEBUG, MSG_LOGICS_EXISTING_CONTRACT, bo.getClass().getName(),
+										item.getName());
 								IBusinessLogic<?> logic = logicsManager.createLogic(item);
 								if (logic == null) {
 									throw new NotFoundBusinessLogicsException(item.getName());
@@ -240,7 +241,7 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 							return (B) logic.getBeAffected();
 						}
 					} catch (JudmentOperationException e) {
-						RuntimeLog.log(e);
+						Logger.log(e);
 					}
 				}
 			}
@@ -270,7 +271,7 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 								return (B) logic.getOldParent();
 							}
 						} catch (JudmentOperationException e) {
-							RuntimeLog.log(e);
+							Logger.log(e);
 						}
 					}
 				}

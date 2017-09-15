@@ -6,12 +6,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "Sorts", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
-@XmlRootElement(name = "Sorts", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
+@XmlType(name = "Sorts", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
+@XmlRootElement(name = "Sorts", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 @XmlSeeAlso({ Sort.class })
 public class Sorts extends ArrayList<ISort> implements ISorts {
 

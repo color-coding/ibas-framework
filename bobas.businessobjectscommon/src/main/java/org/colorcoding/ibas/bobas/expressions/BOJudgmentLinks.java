@@ -7,9 +7,9 @@ import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectListBase;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
 /**
@@ -34,7 +34,7 @@ public class BOJudgmentLinks extends JudgmentLinks {
 					this.field = this.value.getField(this.getPropertyName());
 				}
 				if (this.field == null) {
-					throw new JudgmentLinksException(i18n.prop("msg_bobas_not_found_bo_field", this.getPropertyName()));
+					throw new JudgmentLinksException(I18N.prop("msg_bobas_not_found_bo_field", this.getPropertyName()));
 				}
 				return this.field;
 			}
@@ -42,7 +42,7 @@ public class BOJudgmentLinks extends JudgmentLinks {
 			@Override
 			public void setValue(Object value) {
 				if (value != null && !(value instanceof IManageFields)) {
-					throw new JudgmentLinksException(i18n.prop("msg_bobas_invaild_bo_type"));
+					throw new JudgmentLinksException(I18N.prop("msg_bobas_invaild_bo_type"));
 				}
 				this.value = (IManageFields) value;
 				this.field = null;
@@ -106,7 +106,7 @@ public class BOJudgmentLinks extends JudgmentLinks {
 				if (propertyOperator.getPropertyName() != null && !propertyOperator.getPropertyName().isEmpty()
 						&& propertyOperator.getPropertyName().indexOf(".") > 0) {
 					// 存在子属性的判断
-					RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_JUDGMENT_ENTRY_SUB_JUDGMENT, item.toString());
+					Logger.log(MessageLevel.DEBUG, MSG_JUDGMENT_ENTRY_SUB_JUDGMENT, item.toString());
 					try {
 						// 比较子判断
 						boolean result = this.judge(bo, item);
@@ -156,7 +156,7 @@ public class BOJudgmentLinks extends JudgmentLinks {
 			IFieldData fieldData = ((IManageFields) bo).getField(property);
 			if (fieldData == null) {
 				// 未找到属性
-				RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_JUDGMENT_NOT_FOUND_PROPERTY, bo, property);
+				Logger.log(MessageLevel.DEBUG, MSG_JUDGMENT_NOT_FOUND_PROPERTY, bo, property);
 			} else {
 				values.add(bo);
 			}
@@ -169,7 +169,7 @@ public class BOJudgmentLinks extends JudgmentLinks {
 			IFieldData fieldData = ((IManageFields) bo).getField(property);
 			if (fieldData == null) {
 				// 未找到属性
-				RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_JUDGMENT_NOT_FOUND_PROPERTY, bo, property);
+				Logger.log(MessageLevel.DEBUG, MSG_JUDGMENT_NOT_FOUND_PROPERTY, bo, property);
 				break;
 			}
 			String[] lasts = new String[propertys.length - i - 1];

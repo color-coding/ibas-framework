@@ -27,11 +27,13 @@ import org.colorcoding.ibas.bobas.core.SaveActionsListener;
 import org.colorcoding.ibas.bobas.core.SaveActionsSupport;
 import org.colorcoding.ibas.bobas.core.SaveActionsType;
 import org.colorcoding.ibas.bobas.data.KeyValue;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 public class BORepository4File extends BORepository4FileReadonly implements IBORepository4File {
+	public static final String MSG_REPOSITORY_DELETED_DATA_FILE = "repository: deleted data file [%s].";
+	public static final String MSG_REPOSITORY_WRITED_DATA_FILE = "repository: writed data in file [%s].";
 
 	private IBOKeysManager keysManager;
 
@@ -223,7 +225,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 
 	private IBusinessObjectBase mySave(IBusinessObjectBase bo) throws RepositoryException {
 		if (bo == null) {
-			throw new RepositoryException(i18n.prop("msg_bobas_invalid_bo"));
+			throw new RepositoryException(I18N.prop("msg_bobas_invalid_bo"));
 		}
 		if (bo.isDirty()) {
 			// 仅修过的数据进行处理
@@ -270,7 +272,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 					// 自己打开的事务
 					this.rollbackTransaction();// 关闭事务
 				}
-				throw new RepositoryException(i18n.prop("msg_bobas_to_save_bo_faild", e.getMessage()), e);
+				throw new RepositoryException(I18N.prop("msg_bobas_to_save_bo_faild", e.getMessage()), e);
 			}
 		}
 		return bo;
@@ -283,7 +285,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 	private BOFile getBOFile(IBusinessObjectBase bo) throws RepositoryException, JAXBException {
 		BOFile[] boFiles = this.myFetchEx(bo.getCriteria(), bo.getClass());
 		if (boFiles.length == 0) {
-			throw new RepositoryException(i18n.prop("msg_bobas_not_found_bo_copy", bo));
+			throw new RepositoryException(I18N.prop("msg_bobas_not_found_bo_copy", bo));
 		}
 		return boFiles[0];
 	}
@@ -292,7 +294,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 		BOFile boFile = this.getBOFile(bo);
 		File file = new File(this.getRepositoryFolder() + File.separator + boFile.getFilePath());
 		if (file.exists()) {
-			RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_REPOSITORY_DELETED_DATA_FILE, file.getPath());
+			Logger.log(MessageLevel.DEBUG, MSG_REPOSITORY_DELETED_DATA_FILE, file.getPath());
 			return file.delete();
 		}
 		return false;
@@ -320,6 +322,6 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 		if (!file.exists()) {
 			file.createNewFile();
 		}
-		RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_REPOSITORY_WRITED_DATA_FILE, path);
+		Logger.log(MessageLevel.DEBUG, MSG_REPOSITORY_WRITED_DATA_FILE, path);
 	}
 }

@@ -7,7 +7,7 @@ import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.logics.BusinessLogic;
 import org.colorcoding.ibas.bobas.logics.BusinessLogicsException;
 import org.colorcoding.ibas.bobas.mapping.LogicContract;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.test.bo.IMaterials;
 import org.colorcoding.ibas.bobas.test.bo.Materials;
 import org.colorcoding.ibas.bobas.test.repository.BORepositoryTest;
@@ -43,14 +43,14 @@ public class MaterialsInventoryQuantityLogic extends BusinessLogic<IMaterialsInv
 	protected void impact(IMaterialsInventoryQuantityContract contract) {
 		// 增加订购数量
 		this.getBeAffected().setOnHand(this.getBeAffected().getOnHand().add(contract.getQuantity()));
-		RuntimeLog.log("logic: %s's hand quantity add %s.", this.getBeAffected(), contract.getQuantity());
+		Logger.log("logic: %s's hand quantity add %s.", this.getBeAffected(), contract.getQuantity());
 	}
 
 	@Override
 	protected void revoke(IMaterialsInventoryQuantityContract contract) {
 		// 减小订购数量
 		this.getBeAffected().setOnHand(this.getBeAffected().getOnHand().subtract(contract.getQuantity()));
-		RuntimeLog.log("logic: %s's hand quantity sub %s.", this.getBeAffected(), contract.getQuantity());
+		Logger.log("logic: %s's hand quantity sub %s.", this.getBeAffected(), contract.getQuantity());
 	}
 
 }

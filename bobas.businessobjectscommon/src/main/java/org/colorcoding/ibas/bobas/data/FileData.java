@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 
 /**
  * 文件数据
@@ -15,8 +15,8 @@ import org.colorcoding.ibas.bobas.MyConsts;
  * @author Niuren.Zhu
  *
  */
-@XmlType(name = "FileData", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
-@XmlRootElement(name = "FileData", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "FileData", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlRootElement(name = "FileData", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class FileData {
 
 	private String fileName;

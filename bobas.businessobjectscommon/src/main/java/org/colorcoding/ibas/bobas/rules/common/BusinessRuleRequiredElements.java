@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rules.BusinessRule;
 import org.colorcoding.ibas.bobas.rules.BusinessRuleContext;
 
@@ -37,7 +37,7 @@ public class BusinessRuleRequiredElements extends BusinessRule {
 
     @Override
     protected String getName() {
-        return i18n.prop("msg_bobas_business_rule_required_elements");
+        return I18N.prop("msg_bobas_business_rule_required_elements");
     }
 
     @Override
@@ -45,20 +45,20 @@ public class BusinessRuleRequiredElements extends BusinessRule {
         for (Map.Entry<IPropertyInfo<?>, Object> entry : context.getInputPropertyValues().entrySet()) {
             if (entry.getValue() == null) {
                 throw new Exception(
-                        i18n.prop("msg_bobas_business_rule_required_elements_error", entry.getKey().getName()));
+                        I18N.prop("msg_bobas_business_rule_required_elements_error", entry.getKey().getName()));
             }
             Class<?> valueType = entry.getValue().getClass();
             if (valueType.isArray()) {
                 // 数组
                 if (Array.getLength(entry.getValue()) == 0)
                     throw new Exception(
-                            i18n.prop("msg_bobas_business_rule_required_elements_error", entry.getKey().getName()));
+                            I18N.prop("msg_bobas_business_rule_required_elements_error", entry.getKey().getName()));
             } else if (entry.getValue() instanceof Collection<?>) {
                 // 是集合
                 Collection<?> collection = (Collection<?>) entry.getValue();
                 if (collection.isEmpty())
                     throw new Exception(
-                            i18n.prop("msg_bobas_business_rule_required_elements_error", entry.getKey().getName()));
+                            I18N.prop("msg_bobas_business_rule_required_elements_error", entry.getKey().getName()));
             }
         }
     }

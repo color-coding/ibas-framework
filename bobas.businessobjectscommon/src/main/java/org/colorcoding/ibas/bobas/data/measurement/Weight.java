@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.KeyText;
 
@@ -13,7 +13,7 @@ import org.colorcoding.ibas.bobas.data.KeyText;
  * 重量
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "Weight", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "Weight", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class Weight extends MeasurementDecimal<emWeightUnit> {
 
 	/**

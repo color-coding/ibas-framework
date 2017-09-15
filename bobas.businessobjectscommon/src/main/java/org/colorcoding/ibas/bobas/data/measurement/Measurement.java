@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.KeyText;
 import org.colorcoding.ibas.bobas.mapping.Value;
 import org.colorcoding.ibas.bobas.util.ArrayList;
@@ -18,7 +18,7 @@ import org.colorcoding.ibas.bobas.util.ArrayList;
  * 度量
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "Measurement", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "Measurement", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public abstract class Measurement<V, U> extends Number implements IMeasurement<V, U>, Comparable<IMeasurement<V, U>> {
 	/**
 	 * 

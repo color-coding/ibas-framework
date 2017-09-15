@@ -112,7 +112,7 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
                         }
                     }, false);
                 } catch (Exception e) {
-                    RuntimeLog.log(MessageLevel.FATAL, e);
+                    Logger.log(MessageLevel.FATAL, e);
                 }
             }
         }

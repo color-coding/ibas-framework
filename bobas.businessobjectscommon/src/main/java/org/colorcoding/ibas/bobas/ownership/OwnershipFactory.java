@@ -4,7 +4,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.IOperationInformation;
 import org.colorcoding.ibas.bobas.common.OperationInformation;
 import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.organization.IUser;
 
 /**
@@ -45,11 +45,11 @@ public class OwnershipFactory extends ConfigurableFactory<IOwnershipJudger> {
 		OperationInformation oifetch = new OperationInformation();
 		oifetch.setName(OPERATION_INFORMATION_DATA_OWNERSHIP_FETCH_COUNT);
 		oifetch.setTag(OPERATION_INFORMATION_DATA_OWNERSHIP_TAG);
-		oifetch.setContents(i18n.prop("msg_bobas_data_ownership_fetch_count", fetchCount));
+		oifetch.setContents(I18N.prop("msg_bobas_data_ownership_fetch_count", fetchCount));
 		OperationInformation oiFilter = new OperationInformation();
 		oiFilter.setName(OPERATION_INFORMATION_DATA_OWNERSHIP_FILTER_COUNT);
 		oiFilter.setTag(OPERATION_INFORMATION_DATA_OWNERSHIP_TAG);
-		oiFilter.setContents(i18n.prop("msg_bobas_data_ownership_filter_count", filterCount));
+		oiFilter.setContents(I18N.prop("msg_bobas_data_ownership_filter_count", filterCount));
 		return new IOperationInformation[] { oifetch, oiFilter };
 	}
 

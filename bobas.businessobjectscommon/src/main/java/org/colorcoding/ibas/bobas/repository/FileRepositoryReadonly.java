@@ -16,8 +16,8 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.db.DataConvert;
 import org.colorcoding.ibas.bobas.expressions.FileJudgmentLinks;
 import org.colorcoding.ibas.bobas.expressions.JudmentOperationException;
-import org.colorcoding.ibas.bobas.i18n.i18n;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
 /**
@@ -81,7 +81,7 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
 
     private FileData[] searchFiles(ICriteria criteria) throws Exception {
         if (criteria == null || criteria.getConditions().size() == 0) {
-            throw new RepositoryException(i18n.prop("msg_bobas_invaild_criteria"));
+            throw new RepositoryException(I18N.prop("msg_bobas_invaild_criteria"));
         }
         String workFolder = this.getRepositoryFolder();
         boolean include = false;
@@ -112,7 +112,7 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
         File folder = new File(workFolder);
         if (!folder.isDirectory() || !folder.exists()) {
             throw new RepositoryException(
-                    i18n.prop("msg_bobas_not_found_folder", workFolder.replace(this.getRepositoryFolder(), ".")));
+                    I18N.prop("msg_bobas_not_found_folder", workFolder.replace(this.getRepositoryFolder(), ".")));
         }
         // 查询符合条件的文件
         File[] files = this.searchFiles(folder, include, conditions);
@@ -157,7 +157,7 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
                         files.add(file);
                     }
                 } catch (JudmentOperationException e) {
-                    RuntimeLog.log(e);
+                    Logger.log(e);
                 }
             }
         }

@@ -7,7 +7,7 @@ import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.db.DbException;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.messages.Logger;
 
 /**
  * 聪明的业务仓库服务
@@ -18,6 +18,9 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
  *
  */
 public class BORepositorySmartService extends BORepositoryLogicService implements IBORepositorySmartService {
+
+	public static final String MSG_REPOSITORY_FETCHING_IN_READONLY_REPOSITORY = "repository: fetching [%s] in readonly repository.";
+	public static final String MSG_REPOSITORY_FETCHING_IN_MASTER_REPOSITORY = "repository: fetching [%s] in master repository.";
 
 	public BORepositorySmartService() {
 		this.setEnabledReadonlyRepository(
@@ -112,12 +115,12 @@ public class BORepositorySmartService extends BORepositoryLogicService implement
 			IBORepositoryReadonly repository = this.getReadonlyRepository();
 			if (repository != null) {
 				// 只读库有效
-				RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_FETCHING_IN_READONLY_REPOSITORY, boType.getName());
+				Logger.log(MSG_REPOSITORY_FETCHING_IN_READONLY_REPOSITORY, boType.getName());
 				return this.fetch(this.getReadonlyRepository(), criteria, boType);
 			}
 		}
 		// 处于事务中或只读库无效，则使用主库
-		RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_FETCHING_IN_MASTER_REPOSITORY, boType.getName());
+		Logger.log(MSG_REPOSITORY_FETCHING_IN_MASTER_REPOSITORY, boType.getName());
 		return this.fetch(this.getRepository(), criteria, boType);
 	}
 

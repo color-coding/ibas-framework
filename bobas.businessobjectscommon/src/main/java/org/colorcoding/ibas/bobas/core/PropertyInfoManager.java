@@ -5,9 +5,9 @@ import java.util.HashMap;
 
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.core.fields.NotRegisterTypeException;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**
  * 属性管理员
@@ -16,6 +16,10 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
  *
  */
 public class PropertyInfoManager {
+
+	public static final String MSG_PROPERTIES_GET_TYPE_PROPERTIES = "properties: get type [%s]'s properties.";
+	public static final String MSG_PROPERTIES_REGISTER_PROPERTIES = "properties: register type [%s]'s property [%s].";
+
 	volatile private static HashMap<Class<?>, PropertyInfoList> propertyInfoCache = new HashMap<Class<?>, PropertyInfoList>();
 
 	public static final String BO_PROPERTY_NAMING_RULES_UPPER = "PROPERTY_%s";
@@ -30,8 +34,7 @@ public class PropertyInfoManager {
 	 *            属性
 	 */
 	public static void registerProperty(Class<?> boType, PropertyInfo<?> property) {
-		RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_PROPERTIES_REGISTER_PROPERTIES, boType.getName(),
-				property.getName());
+		Logger.log(MessageLevel.DEBUG, MSG_PROPERTIES_REGISTER_PROPERTIES, boType.getName(), property.getName());
 		if (propertyInfoCache.containsKey(boType)) {
 			PropertyInfoList propertys = propertyInfoCache.get(boType);
 			synchronized (propertys) {
@@ -67,10 +70,10 @@ public class PropertyInfoManager {
 					property.addAnnotation(pField.getAnnotations());
 				}
 			} catch (Exception e2) {
-				RuntimeLog.log(e);
+				Logger.log(e);
 			}
 		} catch (Exception e) {
-			RuntimeLog.log(e);
+			Logger.log(e);
 		}
 	}
 
@@ -153,7 +156,7 @@ public class PropertyInfoManager {
 	 * @throws NotRegisterTypeException
 	 */
 	public static PropertyInfoList getPropertyInfoList(Class<?> boType) throws NotRegisterTypeException {
-		RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_PROPERTIES_GET_TYPE_PROPERTIES, boType.getName());
+		Logger.log(MessageLevel.DEBUG, MSG_PROPERTIES_GET_TYPE_PROPERTIES, boType.getName());
 		synchronized (propertyInfoCache) {
 			if (propertyInfoCache.containsKey(boType)) {
 				// 已注册的类型
@@ -176,7 +179,7 @@ public class PropertyInfoManager {
 					}
 				}
 			}
-			throw new NotRegisterTypeException(i18n.prop("msg_bobas_not_register_bo_type", boType.getName()));
+			throw new NotRegisterTypeException(I18N.prop("msg_bobas_not_register_bo_type", boType.getName()));
 		}
 	}
 
@@ -203,7 +206,7 @@ public class PropertyInfoManager {
 			BOFactory.create().getClass(className);
 			return true;
 		} catch (ClassNotFoundException e) {
-			RuntimeLog.log(e);
+			Logger.log(e);
 		}
 		return false;
 	}

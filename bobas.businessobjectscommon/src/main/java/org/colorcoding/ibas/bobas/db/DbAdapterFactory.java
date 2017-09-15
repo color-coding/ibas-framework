@@ -4,13 +4,16 @@ import java.util.HashMap;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
-import org.colorcoding.ibas.bobas.i18n.i18n;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.messages.Logger;
 
 /**
  * 数据库适配器工厂 根据配置创建适配器
  */
 public class DbAdapterFactory extends ConfigurableFactory<IDbAdapter> {
+
+	public static final String MSG_DB_ADAPTER_CREATED = "db adapter: created db adapter [%s].";
+
 	private DbAdapterFactory() {
 	}
 
@@ -29,7 +32,7 @@ public class DbAdapterFactory extends ConfigurableFactory<IDbAdapter> {
 
 	@Override
 	protected IDbAdapter createDefault(String typeName) {
-		throw new RuntimeException(i18n.prop("msg_bobas_not_found_db_dbtype"));
+		throw new RuntimeException(I18N.prop("msg_bobas_not_found_db_dbtype"));
 	}
 
 	/**
@@ -68,11 +71,11 @@ public class DbAdapterFactory extends ConfigurableFactory<IDbAdapter> {
 				if (adapter == null) {
 					throw new NullPointerException();
 				}
-				RuntimeLog.log(RuntimeLog.MSG_DB_ADAPTER_CREATED, dbType);
+				Logger.log(MSG_DB_ADAPTER_CREATED, dbType);
 				dbAdapters.put(dbType, adapter);
 				return adapter;
 			} catch (Exception e) {
-				throw new RuntimeException(i18n.prop("msg_bobas_create_db_adapter_falid"), e);
+				throw new RuntimeException(I18N.prop("msg_bobas_create_db_adapter_falid"), e);
 			}
 		}
 	}

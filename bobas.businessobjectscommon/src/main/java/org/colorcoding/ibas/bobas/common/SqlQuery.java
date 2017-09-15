@@ -6,11 +6,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "SqlQuery", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
-@XmlRootElement(name = "SqlQuery", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
+@XmlType(name = "SqlQuery", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
+@XmlRootElement(name = "SqlQuery", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public class SqlQuery implements ISqlQuery {
 
 	private static final String SQL_EMPTY = "";

@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.core.fields.IFieldDataDb;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
@@ -16,7 +16,7 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "UserField", namespace = MyConsts.NAMESPACE_BOBAS_BO)
+@XmlType(name = "UserField", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
 public class UserField implements IUserField {
     /**
      * 

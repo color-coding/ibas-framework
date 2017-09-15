@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.i18n.i18n;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.util.EncryptMD5;
 
 /**
@@ -17,6 +17,9 @@ import org.colorcoding.ibas.bobas.util.EncryptMD5;
  *
  */
 public abstract class DbAdapter implements IDbAdapter {
+
+	public static final String MSG_CONNECTION_USING_SERVER = "connection: using {%s}, user [%s] & server [%s] & db [%s].";
+	public static final String MSG_CONNECTION_USER_CONNECTED = "connection: user [%s] connected [%s|%s].";
 
 	public DbAdapter() {
 
@@ -37,7 +40,7 @@ public abstract class DbAdapter implements IDbAdapter {
 				.getConfigValue(String.format("%s%s", sign, MyConfiguration.CONFIG_ITEM_DB_USER_ID), "sa");
 		String userPassword = MyConfiguration
 				.getConfigValue(String.format("%s%s", sign, MyConfiguration.CONFIG_ITEM_DB_USER_PASSWORD), "1q2w3e");
-		RuntimeLog.log(RuntimeLog.MSG_CONNECTION_USING_SERVER, sign, userID, dbServer, dbName);
+		Logger.log(MSG_CONNECTION_USING_SERVER, sign, userID, dbServer, dbName);
 		return this.createDbConnection(dbServer, dbName, userID, userPassword);
 	}
 
@@ -58,8 +61,8 @@ public abstract class DbAdapter implements IDbAdapter {
 		Connection connection = this.createConnection(dbServer, dbName, dbUser, dbPassword, appName);
 		if (connection == null)
 			// 没有有效的数据库连接
-			throw new DbException(i18n.prop("msg_bobas_no_valid_database_connection"));
-		RuntimeLog.log(RuntimeLog.MSG_CONNECTION_USER_CONNECTED, dbUser, dbServer, dbName);
+			throw new DbException(I18N.prop("msg_bobas_no_valid_database_connection"));
+		Logger.log(MSG_CONNECTION_USER_CONNECTED, dbUser, dbServer, dbName);
 		// 检查返回的数据库连接与要求是否一致
 		String cURL = null, cUserName = null;
 		try {
@@ -71,14 +74,14 @@ public abstract class DbAdapter implements IDbAdapter {
 			}
 			cUserName = connection.getMetaData().getUserName();
 		} catch (SQLException e) {
-			throw new DbException(i18n.prop("msg_bobas_no_valid_database_connection"));
+			throw new DbException(I18N.prop("msg_bobas_no_valid_database_connection"));
 		}
 		if (cURL == null || cUserName == null) {
-			throw new DbException(i18n.prop("msg_bobas_no_valid_database_connection"));
+			throw new DbException(I18N.prop("msg_bobas_no_valid_database_connection"));
 		}
 		if (cURL.indexOf(dbServer) < 0 || cURL.indexOf(dbName) < 0 || cUserName.indexOf(dbUser) < 0) {
 			// 返回的连接与要求不匹配
-			throw new DbException(i18n.prop("msg_bobas_no_valid_database_connection"));
+			throw new DbException(I18N.prop("msg_bobas_no_valid_database_connection"));
 		}
 		DbConnection dbConnection = new DbConnection(connection);
 		dbConnection.setConnectionSign(connectionSign);

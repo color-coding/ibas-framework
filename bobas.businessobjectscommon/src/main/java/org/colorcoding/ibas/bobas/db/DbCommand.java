@@ -5,12 +5,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 public class DbCommand implements IDbCommand {
-	private DbCommand() {
 
+	public static final String MSG_SQL_SCRIPTS = "sql: %s";
+
+	private DbCommand() {
 	}
 
 	public DbCommand(Statement statement) throws DbException {
@@ -24,7 +26,7 @@ public class DbCommand implements IDbCommand {
 	@Override
 	public IDbDataReader executeReader(String sql) throws DbException {
 		try {
-			RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_SQL_SCRIPTS, sql);
+			Logger.log(MessageLevel.DEBUG, MSG_SQL_SCRIPTS, sql);
 			ResultSet resultSet = this.statement.executeQuery(sql);
 			return new DbDataReader(resultSet);
 		} catch (Exception e) {
@@ -56,7 +58,7 @@ public class DbCommand implements IDbCommand {
 	@Override
 	public int executeUpdate(String sql) throws DbException {
 		try {
-			RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_SQL_SCRIPTS, sql);
+			Logger.log(MessageLevel.DEBUG, MSG_SQL_SCRIPTS, sql);
 			return this.statement.executeUpdate(sql);
 		} catch (Exception e) {
 			throw new DbException(e);
@@ -66,7 +68,7 @@ public class DbCommand implements IDbCommand {
 	@Override
 	public void addBatch(String sql) throws DbException {
 		try {
-			RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_SQL_SCRIPTS, sql);
+			Logger.log(MessageLevel.DEBUG, MSG_SQL_SCRIPTS, sql);
 			this.statement.addBatch(sql);
 		} catch (SQLException e) {
 			throw new DbException(e);

@@ -8,8 +8,8 @@ import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
-import org.colorcoding.ibas.bobas.i18n.i18n;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.ownership.IDataOwnership;
 import org.colorcoding.ibas.bobas.ownership.IOwnershipJudger;
 import org.colorcoding.ibas.bobas.ownership.OwnershipFactory;
@@ -24,6 +24,7 @@ import org.colorcoding.ibas.bobas.ownership.UnauthorizedException;
  *
  */
 public class BORepositoryServiceApplication extends BORepositorySmartService implements IBORepositoryApplication {
+	public static final String MSG_REPOSITORY_FETCH_AND_FILTERING = "repository: fetch [%s] [%s] times, result [%s] filtering [%s].";
 
 	private String userToken = null;
 
@@ -129,8 +130,7 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 				// 发生数据过滤，返回过滤信息
 				operationResult.addInformations(OwnershipFactory.createOwnershipJudgeInfo(fetchTime, filterCount));
 			}
-			RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_FETCH_AND_FILTERING, boType.getName(), fetchTime, fetchCount,
-					filterCount);
+			Logger.log(MSG_REPOSITORY_FETCH_AND_FILTERING, boType.getName(), fetchTime, fetchCount, filterCount);
 		} catch (Exception e) {
 			// 如果出错，不返回处理一半的数据
 			operationResult = new OperationResult<P>();
@@ -159,7 +159,7 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 		if (this.getOwnershipJudger() != null && bo instanceof IDataOwnership) {
 			// 数据权限过滤
 			if (!this.getOwnershipJudger().canSave((IDataOwnership) bo, this.getCurrentUser(), true)) {
-				throw new UnauthorizedException(i18n.prop("msg_bobas_to_save_bo_unauthorized", bo.toString()));
+				throw new UnauthorizedException(I18N.prop("msg_bobas_to_save_bo_unauthorized", bo.toString()));
 			}
 		}
 		return super.save(boRepository, bo);

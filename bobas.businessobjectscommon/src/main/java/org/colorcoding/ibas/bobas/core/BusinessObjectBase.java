@@ -8,22 +8,24 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.core.fields.FieldManager;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.core.fields.NotRegisterTypeException;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "BusinessObjectBase", namespace = MyConsts.NAMESPACE_BOBAS_CORE)
+@XmlType(name = "BusinessObjectBase", namespace = MyConfiguration.NAMESPACE_BOBAS_CORE)
 public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends TrackableBase
 		implements IBusinessObjectBase, IManageProperties, IManageFields {
+
+	public static final String MSG_PROPERTIES_NOT_FOUND_PROPERTIES = "properties: not found type [%s]'s property [%s].";
 
 	/**
 	 * 
@@ -138,7 +140,7 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 				return true;
 			}
 		} catch (NotRegisterTypeException e) {
-			RuntimeLog.log(e);
+			Logger.log(e);
 		}
 		return false;
 	}
@@ -162,7 +164,7 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 				}
 			}
 		} catch (NotRegisterTypeException e) {
-			RuntimeLog.log(e);
+			Logger.log(e);
 		}
 		return false;
 	}
@@ -181,7 +183,7 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 				propertyInfoList.toArray(properties);
 			}
 		} catch (NotRegisterTypeException e) {
-			RuntimeLog.log(e);
+			Logger.log(e);
 		}
 		return properties;
 	}
@@ -203,8 +205,7 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 		IFieldData fieldData = this.fieldManager.getFieldData(property);
 		if (fieldData == null) {
 			// 没有定义的属性
-			RuntimeLog.log(RuntimeLog.MSG_PROPERTIES_NOT_FOUND_PROPERTIES, this.getClass().getName(),
-					property.getName());
+			Logger.log(MSG_PROPERTIES_NOT_FOUND_PROPERTIES, this.getClass().getName(), property.getName());
 			if (property.getDefaultValue() != null) {
 				return property.getDefaultValue();
 			}
@@ -231,8 +232,8 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 		IFieldData fieldData = this.fieldManager.getFieldData(property);
 		if (fieldData == null) {
 			// 没有定义的属性
-			RuntimeLog.log(MessageLevel.ERROR, RuntimeLog.MSG_PROPERTIES_NOT_FOUND_PROPERTIES,
-					this.getClass().getName(), property.getName());
+			Logger.log(MessageLevel.ERROR, MSG_PROPERTIES_NOT_FOUND_PROPERTIES, this.getClass().getName(),
+					property.getName());
 		} else {
 			Object oldValue = fieldData.getValue();// 旧值
 			boolean changed = fieldData.setValue(value);

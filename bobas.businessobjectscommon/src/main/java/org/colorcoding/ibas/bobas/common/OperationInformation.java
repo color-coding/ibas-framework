@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 
 /**
  * 操作信息
@@ -15,8 +15,8 @@ import org.colorcoding.ibas.bobas.MyConsts;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "OperationInformation", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
-@XmlRootElement(name = "OperationInformation", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
+@XmlType(name = "OperationInformation", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
+@XmlRootElement(name = "OperationInformation", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public class OperationInformation implements IOperationInformation {
     public OperationInformation() {
 

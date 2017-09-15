@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 
 /**
  * 键值
@@ -12,8 +12,8 @@ import org.colorcoding.ibas.bobas.MyConsts;
  * @author Niuren.Zhu
  *
  */
-@XmlType(name = "KeyValue", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
-@XmlRootElement(name = "KeyValue", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "KeyValue", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlRootElement(name = "KeyValue", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class KeyValue implements IKeyValue {
 
 	private final static String EMPTY = "";

@@ -35,9 +35,9 @@ import org.colorcoding.ibas.bobas.db.IDbConnection;
 import org.colorcoding.ibas.bobas.db.IDbDataReader;
 import org.colorcoding.ibas.bobas.db.ISqlScriptInspector;
 import org.colorcoding.ibas.bobas.db.SqlScriptsException;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.mapping.AssociationMode;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
 /**
@@ -115,7 +115,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	public void connectDb(String dbType, String dbServer, String dbName, String dbUser, String dbPassword)
 			throws DbException {
 		if (this.dbConnection != null) {
-			throw new DbException(i18n.prop("msg_bobas_db_already_connected", this.dbConnection.getURL()));
+			throw new DbException(I18N.prop("msg_bobas_db_already_connected", this.dbConnection.getURL()));
 		}
 		this.setDbType(dbType);
 		this.dbConnection = this.createDbAdapter().createDbConnection(dbServer, dbName, dbUser, dbPassword);
@@ -198,7 +198,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 				}
 			}
 		} catch (Exception e) {
-			RuntimeLog.log(e);
+			Logger.log(e);
 		}
 		return DateTime.getNow();
 	}
@@ -337,10 +337,10 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	private final IBusinessObjectBase[] myFetch(ISqlQuery sqlQuery, Class<?> boType)
 			throws RepositoryException, DbException, SQLException, BOParsingException {
 		if (boType == null) {
-			throw new RepositoryException(i18n.prop("msg_bobas_not_specify_bo_type"));
+			throw new RepositoryException(I18N.prop("msg_bobas_not_specify_bo_type"));
 		}
 		if (sqlQuery == null) {
-			throw new RepositoryException(i18n.prop("msg_bobas_invalid_sql_query"));
+			throw new RepositoryException(I18N.prop("msg_bobas_invalid_sql_query"));
 		}
 		IBOAdapter4Db adapter4Db = this.getBOAdapter();
 		IDbDataReader reader = null;
@@ -388,7 +388,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 			throws RepositoryException, DbException, SQLException, BOParsingException, SqlScriptsException,
 			ClassNotFoundException, InstantiationException, IllegalAccessException {
 		if (boType == null) {
-			throw new RepositoryException(i18n.prop("msg_bobas_not_specify_bo_type"));
+			throw new RepositoryException(I18N.prop("msg_bobas_not_specify_bo_type"));
 		}
 		boolean myOpenedDb = false;// 自己打开的数据库
 		try {
@@ -438,7 +438,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 			throws RepositoryException, DbException, SQLException, BOParsingException, SqlScriptsException,
 			ClassNotFoundException, InstantiationException, IllegalAccessException {
 		if (boType == null) {
-			throw new RepositoryException(i18n.prop("msg_bobas_not_specify_bo_type"));
+			throw new RepositoryException(I18N.prop("msg_bobas_not_specify_bo_type"));
 		}
 		boolean myOpenedDb = false;// 自己打开的数据库
 		try {

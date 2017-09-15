@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.expressions;
 import org.colorcoding.ibas.bobas.common.IConditions;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 
 public class ExpressionFactory {
 
@@ -48,7 +48,7 @@ public class ExpressionFactory {
 		} else if (type.isEnum()) {
 			return new JudgmentExpressionEnum();
 		}
-		throw new JudmentOperationException(i18n.prop("msg_bobas_not_support_type_expression", type.getName()));
+		throw new JudmentOperationException(I18N.prop("msg_bobas_not_support_type_expression", type.getName()));
 	}
 
 	/**

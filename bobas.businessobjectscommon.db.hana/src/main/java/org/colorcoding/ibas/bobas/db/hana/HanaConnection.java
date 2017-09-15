@@ -23,7 +23,7 @@ import java.util.concurrent.Executor;
 
 import org.colorcoding.ibas.bobas.db.ConnectionUrl;
 import org.colorcoding.ibas.bobas.db.DbException;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 
 import com.sap.db.jdbc.ConnectionSapDBFinalize;
 
@@ -48,7 +48,7 @@ public class HanaConnection implements Connection, ConnectionUrl {
 							sapDBFinalize = (ConnectionSapDBFinalize) field.get(connection);
 							url = sapDBFinalize.getMetaData().getURL() + "|" + sapDBFinalize.getSchema();
 						} catch (Exception e) {
-							throw new DbException(i18n.prop("msg_bobas_connect_database_faild"), e);
+							throw new DbException(I18N.prop("msg_bobas_connect_database_faild"), e);
 						}
 					}
 				}
@@ -66,7 +66,7 @@ public class HanaConnection implements Connection, ConnectionUrl {
 			this.connection = DriverManager.getConnection(dbURL, userName, dbPassword);
 			this.url = dbURL;
 		} catch (Exception e) {
-			throw new DbException(i18n.prop("msg_bobas_connect_database_faild"), e);
+			throw new DbException(I18N.prop("msg_bobas_connect_database_faild"), e);
 		}
 	}
 

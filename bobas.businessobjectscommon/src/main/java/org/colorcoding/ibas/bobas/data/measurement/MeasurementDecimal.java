@@ -5,12 +5,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.data.Decimal;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "MeasurementDecimal", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "MeasurementDecimal", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public abstract class MeasurementDecimal<U> extends Measurement<Decimal, U> {
 
 	/**

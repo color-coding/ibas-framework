@@ -18,7 +18,7 @@ import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
 import org.colorcoding.ibas.bobas.db.IDbCommand;
 import org.colorcoding.ibas.bobas.db.IDbDataReader;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
 /**
@@ -179,7 +179,7 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 	 */
 	private final IBusinessObjectBase[] mySave(IBusinessObjectBase[] bos, boolean recursion) throws Exception {
 		if (bos == null || bos.length <= 0) {
-			throw new RepositoryException(i18n.prop("msg_bobas_invalid_bo"));
+			throw new RepositoryException(I18N.prop("msg_bobas_invalid_bo"));
 		}
 		IDbDataReader reader = null;
 		IDbCommand command = null;

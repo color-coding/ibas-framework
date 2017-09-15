@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
@@ -26,8 +26,8 @@ import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.organization.IOrganizationManager;
 import org.colorcoding.ibas.bobas.rules.BusinessRuleException;
 import org.colorcoding.ibas.bobas.rules.BusinessRulesFactory;
@@ -42,11 +42,12 @@ import org.colorcoding.ibas.bobas.util.StringBuilder;
  * 业务对象基础类型
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "BusinessObject", namespace = MyConsts.NAMESPACE_BOBAS_BO)
+@XmlType(name = "BusinessObject", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
 public abstract class BusinessObject<T extends IBusinessObject> extends BusinessObjectBase<T> {
-	/**
-	 * 
-	 */
+
+	public static final String MSG_USER_SET_FIELD_VALUE = "user fields: set field [%s]'s value [%s].";
+	public static final String MSG_RULES_EXECUTING_FAILD = "rules: field [%s] triggered rules fail to run, %s.";
+
 	private static final long serialVersionUID = -8485128824221654376L;
 
 	public BusinessObject() {
@@ -301,8 +302,8 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 			return;
 		}
 		for (IUserField userField : value) {
-			RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_USER_SET_FIELD_VALUE, userField.getName(),
-					userField.getValue(), userField.getValueType());
+			Logger.log(MessageLevel.DEBUG, MSG_USER_SET_FIELD_VALUE, userField.getName(), userField.getValue(),
+					userField.getValueType());
 			IUserField has = this.userFields.get(userField.getName());
 			if (has != null) {
 				has.setValue(((UserFieldProxy) userField).convertValue(has.getValueType()));
@@ -442,8 +443,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 				}
 			} catch (BusinessRuleException e) {
 				// 运行中，仅记录错误，以被调试。
-				RuntimeLog.log(MessageLevel.ERROR, RuntimeLog.MSG_RULES_EXECUTING_FAILD, property.getName(),
-						e.getMessage());
+				Logger.log(MessageLevel.ERROR, MSG_RULES_EXECUTING_FAILD, property.getName(), e.getMessage());
 			}
 		}
 	}

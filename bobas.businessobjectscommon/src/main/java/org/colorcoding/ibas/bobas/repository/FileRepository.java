@@ -9,8 +9,8 @@ import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.data.FileData;
-import org.colorcoding.ibas.bobas.i18n.i18n;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.messages.Logger;
 
 /**
  * 文件仓库
@@ -19,6 +19,8 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
  *
  */
 public class FileRepository extends FileRepositoryReadonly implements IFileRepository {
+
+	public static final String MSG_REPOSITORY_WRITE_FILE = "repository: writed file [%s].";
 
 	@Override
 	public IOperationResult<FileData> save(FileData fileData) {
@@ -41,7 +43,7 @@ public class FileRepository extends FileRepositoryReadonly implements IFileRepos
 	 */
 	private FileData writeFile(FileData fileData) throws Exception {
 		if (fileData == null || fileData.getStream() == null) {
-			throw new RepositoryException(i18n.prop("msg_bobas_invalid_data"));
+			throw new RepositoryException(I18N.prop("msg_bobas_invalid_data"));
 		}
 		FileData nFileData = new FileData();
 		nFileData.setOriginalName(fileData.getOriginalName());
@@ -61,9 +63,8 @@ public class FileRepository extends FileRepositoryReadonly implements IFileRepos
 			outputStream.close();
 			fileData.getStream().close();
 		}
-		RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_WRITE_FILE,
-				nFileData.getOriginalName() == null ? nFileData.getLocation()
-						: String.format("%s|%s", nFileData.getOriginalName(), nFileData.getLocation()));
+		Logger.log(MSG_REPOSITORY_WRITE_FILE, nFileData.getOriginalName() == null ? nFileData.getLocation()
+				: String.format("%s|%s", nFileData.getOriginalName(), nFileData.getLocation()));
 		return nFileData;
 	}
 }

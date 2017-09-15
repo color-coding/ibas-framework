@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 
 public class SqlScriptInspector implements ISqlScriptInspector {
 
@@ -14,7 +14,7 @@ public class SqlScriptInspector implements ISqlScriptInspector {
 			return;
 		}
 		if (sql.getQueryString() == null || sql.getQueryString().isEmpty()) {
-			throw new SqlScriptsException(i18n.prop("msg_bobas_invalid_sql_query"));
+			throw new SqlScriptsException(I18N.prop("msg_bobas_invalid_sql_query"));
 		}
 		if (!sql.isAllowWrite()) {
 			String regex = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_INSPECTOR_SQL_WRITE_REGEX);
@@ -23,7 +23,7 @@ public class SqlScriptInspector implements ISqlScriptInspector {
 			}
 			Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
 			if (pattern.matcher(sql.getQueryString()).find()) {
-				throw new SecurityException(i18n.prop("msg_bobas_not_authorized_sql", sql.getQueryString()));
+				throw new SecurityException(I18N.prop("msg_bobas_not_authorized_sql", sql.getQueryString()));
 			}
 		}
 	}

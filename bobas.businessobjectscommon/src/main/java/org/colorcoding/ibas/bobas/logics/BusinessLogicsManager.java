@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 
 import org.colorcoding.ibas.bobas.core.BOFactory;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.mapping.LogicContract;
 
 /**
@@ -28,7 +28,7 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 	@Override
 	public synchronized IBusinessLogicsChain registerChain(String transId) {
 		if (transId == null || transId.isEmpty()) {
-			throw new BusinessLogicsException(i18n.prop("msg_bobas_invalid_data"));
+			throw new BusinessLogicsException(I18N.prop("msg_bobas_invalid_data"));
 		}
 		IBusinessLogicsChain chain = new BusinessLogicsChain();
 		chain.setId(transId);

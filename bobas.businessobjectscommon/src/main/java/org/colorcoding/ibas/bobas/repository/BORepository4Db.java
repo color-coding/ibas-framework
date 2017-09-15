@@ -18,7 +18,7 @@ import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
 import org.colorcoding.ibas.bobas.db.IDbCommand;
 import org.colorcoding.ibas.bobas.db.IDbDataReader;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 
 /**
  * 基本数据库仓库-读写
@@ -180,7 +180,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	 */
 	private final IBusinessObjectBase mySave(IBusinessObjectBase bo, IBusinessObjectBase root) throws Exception {
 		if (bo == null) {
-			throw new RepositoryException(i18n.prop("msg_bobas_invalid_bo"));
+			throw new RepositoryException(I18N.prop("msg_bobas_invalid_bo"));
 		}
 		if (bo.isDirty()) {
 			// 仅修过的数据进行处理
@@ -235,7 +235,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 					// 自己打开的事务
 					this.rollbackTransaction();// 关闭事务
 				}
-				throw new RepositoryException(i18n.prop("msg_bobas_to_save_bo_faild", e.getMessage()), e);
+				throw new RepositoryException(I18N.prop("msg_bobas_to_save_bo_faild", e.getMessage()), e);
 			} finally {
 				if (reader != null) {
 					reader.close();
@@ -264,7 +264,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	 */
 	private final IBusinessObjectBase mySaveEx(IBusinessObjectBase bo, IBusinessObjectBase root) throws Exception {
 		if (bo == null) {
-			throw new RepositoryException(i18n.prop("msg_bobas_invalid_bo"));
+			throw new RepositoryException(I18N.prop("msg_bobas_invalid_bo"));
 		}
 		if (root == null) {
 			// 设置触发事件的跟对象

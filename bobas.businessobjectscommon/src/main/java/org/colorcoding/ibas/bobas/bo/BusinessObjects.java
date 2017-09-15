@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.SortType;
@@ -31,7 +31,7 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
  *            父项类型
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "BusinessObjects", namespace = MyConsts.NAMESPACE_BOBAS_BO)
+@XmlType(name = "BusinessObjects", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
 public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusinessObject>
 		extends BusinessObjectListBase<E> implements IBusinessObjects<E, P> {
 

@@ -24,8 +24,8 @@ import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.expressions.ExpressionFactory;
 import org.colorcoding.ibas.bobas.expressions.JudgmentLinks;
 import org.colorcoding.ibas.bobas.expressions.JudmentOperationException;
-import org.colorcoding.ibas.bobas.i18n.i18n;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
 public class BORepository4FileReadonly extends BORepositoryBase implements IBORepository4FileReadonly {
@@ -114,7 +114,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 			return new BOFile[] {};
 		}
 		if (!file.isDirectory()) {
-			throw new RepositoryException(i18n.prop("msg_bobas_invaild_bo_repository_folder", criteria.getBOCode()));
+			throw new RepositoryException(I18N.prop("msg_bobas_invaild_bo_repository_folder", criteria.getBOCode()));
 		}
 		ArrayList<Class<?>> types = this.getTypes(file);
 		types.add(boType);
@@ -154,7 +154,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 					}
 				}
 			} catch (Exception e) {
-				RuntimeLog.log(e);
+				Logger.log(e);
 			}
 		}
 		return boFiles.toArray(new BOFile[] {});
@@ -174,7 +174,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 							bos.add(bo);
 						}
 					} catch (JudmentOperationException e) {
-						RuntimeLog.log(e);
+						Logger.log(e);
 					}
 				} else if (IBusinessObjectBase.class.isInstance(field.getValue())) {
 					bos.addAll((match(bo, judgmentLinks, type)));
@@ -186,7 +186,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 									bos.add(item);
 								}
 							} catch (JudmentOperationException e) {
-								RuntimeLog.log(e);
+								Logger.log(e);
 							}
 						} else {
 							bos.addAll((match(item, judgmentLinks, type)));
@@ -213,7 +213,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 						types.add(BOFactory.create()
 								.getClass(item.getName().substring(0, item.getName().lastIndexOf("."))));
 					} catch (ClassNotFoundException e) {
-						RuntimeLog.log(e);
+						Logger.log(e);
 					}
 				}
 			}

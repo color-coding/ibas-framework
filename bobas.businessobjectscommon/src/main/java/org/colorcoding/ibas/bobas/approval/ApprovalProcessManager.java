@@ -10,7 +10,7 @@ import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.messages.Logger;
 
 /**
  * 默认流程管理员
@@ -19,6 +19,7 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
  *
  */
 public abstract class ApprovalProcessManager implements IApprovalProcessManager {
+	public static final String MSG_APPROVAL_PROCESS_STARTED = "approval process: data [%s]'s approval process was started, name [%s].";
 
 	@Override
 	public IApprovalProcess checkProcess(IApprovalData data, IBORepository repository) {
@@ -41,7 +42,7 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
 				IApprovalProcess aProcess = process.next();
 				aProcess.setRepository(repository);
 				if (aProcess.start(data)) {
-					RuntimeLog.log(RuntimeLog.MSG_APPROVAL_PROCESS_STARTED, data, aProcess.getName());
+					Logger.log(MSG_APPROVAL_PROCESS_STARTED, data, aProcess.getName());
 					return aProcess;// 审批流程开始
 				}
 			}

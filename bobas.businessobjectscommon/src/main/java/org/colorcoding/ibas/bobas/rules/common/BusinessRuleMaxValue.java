@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.rules.common;
 import java.util.Map;
 
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rules.BusinessRule;
 import org.colorcoding.ibas.bobas.rules.BusinessRuleContext;
 
@@ -48,7 +48,7 @@ public class BusinessRuleMaxValue<T extends Comparable<?>> extends BusinessRule 
 
     @Override
     protected String getName() {
-        return i18n.prop("msg_bobas_business_rule_max_value");
+        return I18N.prop("msg_bobas_business_rule_max_value");
     }
 
     @Override
@@ -59,14 +59,14 @@ public class BusinessRuleMaxValue<T extends Comparable<?>> extends BusinessRule 
         }
         for (Map.Entry<IPropertyInfo<?>, Object> entry : context.getInputPropertyValues().entrySet()) {
             if (entry.getValue() == null) {
-                throw new Exception(i18n.prop("msg_bobas_business_rule_required_error", entry.getKey().getName()));
+                throw new Exception(I18N.prop("msg_bobas_business_rule_required_error", entry.getKey().getName()));
             }
             @SuppressWarnings("unchecked")
             T value = (T) entry.getValue();
             @SuppressWarnings("unchecked")
             Comparable<T> maxValue = (Comparable<T>) this.getMaxValue();
             if (maxValue.compareTo(value) < 0) {
-                throw new Exception(i18n.prop("msg_bobas_business_rule_max_value_error", entry.getKey().getName(),
+                throw new Exception(I18N.prop("msg_bobas_business_rule_max_value_error", entry.getKey().getName(),
                         value, this.getMaxValue()));
             }
         }

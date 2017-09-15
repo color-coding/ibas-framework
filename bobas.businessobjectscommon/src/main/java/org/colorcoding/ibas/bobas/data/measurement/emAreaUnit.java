@@ -2,14 +2,14 @@ package org.colorcoding.ibas.bobas.data.measurement;
 
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 面积单位
  */
-@XmlType(name = "emAreaUnit", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "emAreaUnit", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public enum emAreaUnit {
 	/**
 	 * 平方毫米

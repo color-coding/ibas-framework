@@ -7,10 +7,10 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "BindableBase", namespace = MyConsts.NAMESPACE_BOBAS_CORE)
+@XmlType(name = "BindableBase", namespace = MyConfiguration.NAMESPACE_BOBAS_CORE)
 public abstract class BindableBase implements IBindableBase {
 
 	transient private PropertyChangeSupport listeners;

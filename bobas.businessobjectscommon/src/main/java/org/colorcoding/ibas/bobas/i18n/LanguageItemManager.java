@@ -21,8 +21,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**
  * 默认语言项目管理员
@@ -31,7 +31,8 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
  *
  */
 public class LanguageItemManager implements ILanguageItemManager {
-
+	public static final String MSG_I18N_READ_FILE_DATA = "i18n: read file's data [%s].";
+	public static final String MSG_I18N_RESOURCES_FOLDER = "i18n: use folder [%s].";
 	private String languageCode;
 
 	public String getLanguageCode() {
@@ -106,7 +107,7 @@ public class LanguageItemManager implements ILanguageItemManager {
 				}
 			}
 			workFolder = new File(path).getPath();
-			RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_I18N_RESOURCES_FOLDER, workFolder);
+			Logger.log(MessageLevel.DEBUG, MSG_I18N_RESOURCES_FOLDER, workFolder);
 		}
 		return workFolder;
 	}
@@ -156,10 +157,10 @@ public class LanguageItemManager implements ILanguageItemManager {
 							this.getLanguageItems().put(item.getKey(), item);
 						}
 						if (languageItems.length > 0) {
-							RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_I18N_READ_FILE_DATA, file.toString());
+							Logger.log(MessageLevel.DEBUG, MSG_I18N_READ_FILE_DATA, file.toString());
 						}
 					} catch (UnsupportedEncodingException e) {
-						RuntimeLog.log(MessageLevel.DEBUG, e);
+						Logger.log(MessageLevel.DEBUG, e);
 					}
 					inputStream.close();
 				}
@@ -220,7 +221,7 @@ public class LanguageItemManager implements ILanguageItemManager {
 				this.loadResources(url, this.getLanguageCode());// 使用语言
 			}
 		} catch (IOException e) {
-			RuntimeLog.log(e);
+			Logger.log(e);
 		}
 		this.readResources(this.getWorkFolder(), null);// 默认语言
 		this.readResources(this.getWorkFolder(), this.getLanguageCode());// 使用语言
@@ -230,10 +231,10 @@ public class LanguageItemManager implements ILanguageItemManager {
 		try {
 			InputStreamReader reader = new InputStreamReader(new FileInputStream(file), "UTF-8");
 			ILanguageItem[] languageItems = this.loadFileContent(reader);
-			RuntimeLog.log(RuntimeLog.MSG_I18N_READ_FILE_DATA, file);
+			Logger.log(MSG_I18N_READ_FILE_DATA, file);
 			return languageItems;
 		} catch (UnsupportedEncodingException | FileNotFoundException e) {
-			RuntimeLog.log(e);
+			Logger.log(e);
 		}
 		return new ILanguageItem[] {};
 	}
@@ -262,7 +263,7 @@ public class LanguageItemManager implements ILanguageItemManager {
 				}
 			}
 		} catch (Exception e) {
-			RuntimeLog.log(e);
+			Logger.log(e);
 		}
 		return languageItems.toArray(new ILanguageItem[] {});
 	}

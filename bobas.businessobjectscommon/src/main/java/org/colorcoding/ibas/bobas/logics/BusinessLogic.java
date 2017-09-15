@@ -13,9 +13,9 @@ import org.colorcoding.ibas.bobas.core.ITrackStatus;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 
 /**
  * 业务逻辑
@@ -31,6 +31,9 @@ import org.colorcoding.ibas.bobas.messages.RuntimeLog;
  */
 public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends IBusinessObjectBase>
 		implements IBusinessLogic<B> {
+
+	public static final String MSG_LOGICS_RUNNING_LOGIC_FORWARD = "logics: forward logic [%s] by data [%s].";
+	public static final String MSG_LOGICS_RUNNING_LOGIC_REVERSE = "logics: reverse logic [%s] by data [%s].";
 
 	private L contract;
 
@@ -169,7 +172,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 				// 查询的数据有效
 				this.oldContract = tmpData;
 			} else {
-				throw new BusinessLogicsException(i18n.prop("msg_bobas_not_found_bo_copy", this.getContract()));
+				throw new BusinessLogicsException(I18N.prop("msg_bobas_not_found_bo_copy", this.getContract()));
 			}
 		}
 		return this.oldContract;
@@ -196,7 +199,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 				}
 				return (L) opRslt.getResultObjects().firstOrDefault();
 			}
-			throw new BusinessLogicsException(i18n.prop("msg_bobas_not_supported"));
+			throw new BusinessLogicsException(I18N.prop("msg_bobas_not_supported"));
 		} catch (BusinessLogicsException e) {
 			throw e;
 		} catch (Exception e) {
@@ -235,7 +238,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 				}
 				return opRslt.getResultObjects().firstOrDefault();
 			}
-			throw new BusinessLogicsException(i18n.prop("msg_bobas_not_supported"));
+			throw new BusinessLogicsException(I18N.prop("msg_bobas_not_supported"));
 		} catch (BusinessLogicsException e) {
 			throw e;
 		} catch (Exception e) {
@@ -256,7 +259,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			return;
 		}
 		// 执行正向逻辑
-		RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_LOGICS_RUNNING_LOGIC_FORWARD, this.getClass().getName(),
+		Logger.log(MessageLevel.DEBUG, MSG_LOGICS_RUNNING_LOGIC_FORWARD, this.getClass().getName(),
 				this.getContract().getIdentifiers());
 		if (this.beAffected == null) {
 			// 加载被影响的数据
@@ -281,7 +284,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 				// 查询的数据有效
 				this.oldParent = tmpData;
 			} else {
-				throw new BusinessLogicsException(i18n.prop("msg_bobas_not_found_bo_copy", this.getParent()));
+				throw new BusinessLogicsException(I18N.prop("msg_bobas_not_found_bo_copy", this.getParent()));
 			}
 		}
 		// 检查父项数据状态
@@ -302,7 +305,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			return;
 		}
 		// 执行撤销逻辑
-		RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_LOGICS_RUNNING_LOGIC_REVERSE, this.getClass().getName(),
+		Logger.log(MessageLevel.DEBUG, MSG_LOGICS_RUNNING_LOGIC_REVERSE, this.getClass().getName(),
 				this.getContract().getIdentifiers());
 		if (this.beAffected == null) {
 			// 加载被影响的数据

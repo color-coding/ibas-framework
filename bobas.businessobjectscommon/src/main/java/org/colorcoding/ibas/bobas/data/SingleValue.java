@@ -4,12 +4,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 
-@XmlType(name = "SingleValue", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
-@XmlRootElement(name = "SingleValue", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "SingleValue", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlRootElement(name = "SingleValue", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class SingleValue implements ISingleValue, IBusinessObjectBase {
 
 	/**

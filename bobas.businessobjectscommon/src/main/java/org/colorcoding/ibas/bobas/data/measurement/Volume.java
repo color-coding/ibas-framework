@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.KeyText;
 
@@ -13,7 +13,7 @@ import org.colorcoding.ibas.bobas.data.KeyText;
  * 体积
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "Volume", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "Volume", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class Volume extends MeasurementDecimal<emVolumeUnit> {
 
 	/**

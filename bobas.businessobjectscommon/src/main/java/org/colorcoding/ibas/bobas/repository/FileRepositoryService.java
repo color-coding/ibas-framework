@@ -4,8 +4,8 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.data.FileData;
-import org.colorcoding.ibas.bobas.i18n.i18n;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.organization.IOrganizationManager;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
@@ -18,6 +18,8 @@ import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
  *
  */
 public class FileRepositoryService implements IFileRepositoryService {
+
+	public static final String MSG_REPOSITORY_CHANGED_USER = "repository: changed user [%s].";
 
 	public FileRepositoryService() {
 
@@ -71,7 +73,7 @@ public class FileRepositoryService implements IFileRepositoryService {
 			IUser user = orgManager.getUser(token);
 			if (user == null) {
 				// 没有用户匹配次口令
-				throw new InvalidTokenException(i18n.prop("msg_bobas_no_user_match_the_token"));
+				throw new InvalidTokenException(I18N.prop("msg_bobas_no_user_match_the_token"));
 			}
 			this.setCurrentUser(user);
 		} catch (InvalidTokenException e) {
@@ -83,7 +85,7 @@ public class FileRepositoryService implements IFileRepositoryService {
 
 	void setCurrentUser(IUser user) {
 		this.currentUser = user;
-		RuntimeLog.log(RuntimeLog.MSG_REPOSITORY_CHANGED_USER, this.getCurrentUser());
+		Logger.log(MSG_REPOSITORY_CHANGED_USER, this.getCurrentUser());
 	}
 
 	/**
@@ -100,7 +102,7 @@ public class FileRepositoryService implements IFileRepositoryService {
 			this.setCurrentUser(token);
 			return this.getRepository().fetch(criteria);
 		} catch (Exception e) {
-			RuntimeLog.log(e);
+			Logger.log(e);
 			return new OperationResult<>(e);
 		}
 	}
@@ -119,7 +121,7 @@ public class FileRepositoryService implements IFileRepositoryService {
 			this.setCurrentUser(token);
 			return this.getRepository().save(fileData);
 		} catch (Exception e) {
-			RuntimeLog.log(e);
+			Logger.log(e);
 			return new OperationResult<>(e);
 		}
 	}

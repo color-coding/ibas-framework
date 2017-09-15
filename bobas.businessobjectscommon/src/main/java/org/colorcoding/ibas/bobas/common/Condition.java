@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.db.DataConvert;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
@@ -15,8 +15,8 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
  * 查询条件
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "Condition", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
-@XmlRootElement(name = "Condition", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
+@XmlType(name = "Condition", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
+@XmlRootElement(name = "Condition", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public class Condition implements ICondition {
 
 	private String alias = "";

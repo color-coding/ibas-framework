@@ -7,9 +7,9 @@ import java.math.RoundingMode;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 
-@XmlType(name = "Decimal", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "Decimal", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 @XmlJavaTypeAdapter(DecimalSerializer.class)
 public class Decimal extends BigDecimal {
 

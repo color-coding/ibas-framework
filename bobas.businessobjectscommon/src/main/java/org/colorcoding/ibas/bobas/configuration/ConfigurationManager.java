@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 
 /**
  * 配置项操作类-XML
@@ -27,8 +27,8 @@ import org.colorcoding.ibas.bobas.MyConsts;
  */
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "configuration", namespace = MyConsts.NAMESPACE_BOBAS_CONFIGURATION)
-@XmlRootElement(name = "configuration", namespace = MyConsts.NAMESPACE_BOBAS_CONFIGURATION)
+@XmlType(name = "configuration", namespace = MyConfiguration.NAMESPACE_BOBAS_CONFIGURATION)
+@XmlRootElement(name = "configuration", namespace = MyConfiguration.NAMESPACE_BOBAS_CONFIGURATION)
 public class ConfigurationManager implements IConfigurationManager {
 
 	public static IConfigurationManager create(String filePath) throws FileNotFoundException, JAXBException {

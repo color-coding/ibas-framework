@@ -6,8 +6,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 
 /**
  * 结果
@@ -16,8 +16,8 @@ import org.colorcoding.ibas.bobas.i18n.i18n;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "Result", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
-@XmlRootElement(name = "Result", namespace = MyConsts.NAMESPACE_BOBAS_COMMON)
+@XmlType(name = "Result", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
+@XmlRootElement(name = "Result", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public class Result implements IResult {
 
 	private int resultCode;
@@ -32,7 +32,7 @@ public class Result implements IResult {
 		this.resultCode = value;
 		this.message = null;
 		if (this.resultCode == 0 && this.message == null) {
-			this.setMessage(i18n.prop("msg_bobas_operation_successful"));
+			this.setMessage(I18N.prop("msg_bobas_operation_successful"));
 		}
 	}
 

@@ -8,7 +8,7 @@ import javax.xml.ws.Endpoint;
 import org.apache.cxf.BusFactory;
 import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.messages.Logger;
 
 /**
  * 不使用spring的CXFServlet
@@ -49,13 +49,13 @@ public class CXFServlet extends CXFNonSpringServlet {
 			}
 			// 调用服务提供者
 			String value = this.getInitParameter(key);
-			RuntimeLog.log(MessageLevel.DEBUG, String.format(MSG_SERVER_PROVIDER, name, value));
+			Logger.log(MessageLevel.DEBUG, String.format(MSG_SERVER_PROVIDER, name, value));
 			// 注册服务
 			WebService[] servers = serverProvider.getWebServices(value);
 			if (servers != null) {
 				BusFactory.setDefaultBus(this.getBus());
 				for (WebService server : servers) {
-					RuntimeLog.log(MessageLevel.DEBUG,
+					Logger.log(MessageLevel.DEBUG,
 							String.format(MSG_REGISTER_SERVER, server.getName(), server.getAddress()));
 					Endpoint.publish(server.getAddress(), server.getImplementor());
 				}

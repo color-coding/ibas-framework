@@ -9,13 +9,13 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "DataTable", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
-@XmlRootElement(name = "DataTable", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "DataTable", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlRootElement(name = "DataTable", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class DataTable implements IDataTable {
 	private String name;
 

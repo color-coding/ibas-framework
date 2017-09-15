@@ -26,7 +26,7 @@ import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.data.measurement.Time;
 import org.colorcoding.ibas.bobas.data.measurement.emTimeUnit;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.repository.BORepository4DbReadonly;
 import org.colorcoding.ibas.bobas.repository.IBORepository4DbReadonly;
@@ -56,7 +56,7 @@ public class ServiceBasic {
 		System.out.println("user.dir");
 		System.out.println(System.getProperty("user.dir").replace(";", "\n"));
 		System.out.println(criteria.toString("xml"));
-		System.out.println(i18n.prop("msg_bobas_operation_successful"));
+		System.out.println(I18N.prop("msg_bobas_operation_successful"));
 		return "ok.";
 	}
 

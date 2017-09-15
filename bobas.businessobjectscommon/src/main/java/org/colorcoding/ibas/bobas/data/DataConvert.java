@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 
 public class DataConvert {
 
@@ -52,7 +52,7 @@ public class DataConvert {
 				}
 			}
 		}
-		throw new DataConvertException(i18n.prop("msg_bobas_not_support_convert_to_type", type.getName()));
+		throw new DataConvertException(I18N.prop("msg_bobas_not_support_convert_to_type", type.getName()));
 	}
 
 	public static String toString(Object value) {
@@ -167,7 +167,7 @@ public class DataConvert {
 		} else if (value == emConditionRelationship.NONE) {
 			return ConditionRelationship.NONE;
 		}
-		throw new DataConvertException(i18n.prop("msg_bobas_not_support_convert_to_type", value));
+		throw new DataConvertException(I18N.prop("msg_bobas_not_support_convert_to_type", value));
 	}
 
 	public static ConditionOperation toOperation(emConditionOperation value) {
@@ -195,7 +195,7 @@ public class DataConvert {
 		} else if (value == emConditionOperation.END_WITH) {
 			return ConditionOperation.END;
 		}
-		throw new DataConvertException(i18n.prop("msg_bobas_not_support_convert_to_type", value));
+		throw new DataConvertException(I18N.prop("msg_bobas_not_support_convert_to_type", value));
 	}
 
 	public static emConditionRelationship toRelationship(ConditionRelationship value) {
@@ -209,7 +209,7 @@ public class DataConvert {
 		} else if (value == ConditionRelationship.NONE) {
 			return emConditionRelationship.NONE;
 		}
-		throw new DataConvertException(i18n.prop("msg_bobas_not_support_convert_to_type", value));
+		throw new DataConvertException(I18N.prop("msg_bobas_not_support_convert_to_type", value));
 	}
 
 	public static emConditionOperation toOperation(ConditionOperation value) {
@@ -237,6 +237,6 @@ public class DataConvert {
 		} else if (value == ConditionOperation.END) {
 			return emConditionOperation.END_WITH;
 		}
-		throw new DataConvertException(i18n.prop("msg_bobas_not_support_convert_to_type", value));
+		throw new DataConvertException(I18N.prop("msg_bobas_not_support_convert_to_type", value));
 	}
 }

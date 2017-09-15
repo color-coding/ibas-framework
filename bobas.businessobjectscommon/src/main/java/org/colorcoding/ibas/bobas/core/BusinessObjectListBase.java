@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
 /**
@@ -20,7 +20,7 @@ import org.colorcoding.ibas.bobas.util.ArrayList;
  * @param <E>
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "BusinessObjectListBase", namespace = MyConsts.NAMESPACE_BOBAS_CORE)
+@XmlType(name = "BusinessObjectListBase", namespace = MyConfiguration.NAMESPACE_BOBAS_CORE)
 public abstract class BusinessObjectListBase<E extends IBusinessObjectBase> extends ArrayList<E>
 		implements IBusinessObjectListBase<E>, IBindableBase {
 

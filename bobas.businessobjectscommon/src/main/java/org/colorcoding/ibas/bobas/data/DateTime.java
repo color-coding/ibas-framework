@@ -9,14 +9,14 @@ import java.util.Date;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.measurement.emTimeUnit;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 
 /**
  * 日期类型
  */
-@XmlType(name = "DateTime", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "DateTime", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 @XmlJavaTypeAdapter(DateTimeSerializer.class)
 public class DateTime extends Date implements Serializable {
 
@@ -149,7 +149,7 @@ public class DateTime extends Date implements Serializable {
          * else if (unit == emTimeUnit.day) { return interval / (1000 * 60 * 60
          * * 24); }
          */
-        throw new ComputeException(i18n.prop("msg_bobas_not_support_the_compute"));
+        throw new ComputeException(I18N.prop("msg_bobas_not_support_the_compute"));
     }
 
     public DateTime() {

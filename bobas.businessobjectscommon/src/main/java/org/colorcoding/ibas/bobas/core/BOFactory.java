@@ -20,8 +20,8 @@ import java.util.jar.JarFile;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.configuration.Configuration;
 import org.colorcoding.ibas.bobas.mapping.BOCode;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
 /**
@@ -33,6 +33,8 @@ import org.colorcoding.ibas.bobas.util.ArrayList;
  *
  */
 public class BOFactory implements IBOFactory {
+	public static final String MSG_BO_FACTORY_REGISTER_BO_CODE = "factory: register [%s] for [%s].";
+
 	volatile private static IBOFactory instance = null;
 
 	public static IBOFactory create() {
@@ -129,7 +131,7 @@ public class BOFactory implements IBOFactory {
 			}
 			this.getBOMaps().put(boCode, type.getName());
 			boCount++;
-			RuntimeLog.log(RuntimeLog.MSG_BO_FACTORY_REGISTER_BO_CODE, boCode, type.getName());
+			Logger.log(MSG_BO_FACTORY_REGISTER_BO_CODE, boCode, type.getName());
 		}
 		return boCount;
 	}
@@ -162,7 +164,7 @@ public class BOFactory implements IBOFactory {
 				}
 			}
 		} catch (Exception e) {
-			RuntimeLog.log(e);
+			Logger.log(e);
 		}
 		return knownClass.toArray(new Class<?>[] {});
 	}
@@ -188,7 +190,7 @@ public class BOFactory implements IBOFactory {
 				return this.getClass(this.getBOMaps().get(boCode));
 			}
 		} catch (Exception e) {
-			RuntimeLog.log(e);
+			Logger.log(e);
 		}
 		return null;
 	}
@@ -284,19 +286,19 @@ public class BOFactory implements IBOFactory {
 											// 添加到classes
 											classes.add(classLoader.loadClass(packageName + '.' + className));
 										} catch (ClassNotFoundException e) {
-											RuntimeLog.log(MessageLevel.DEBUG, e);
+											Logger.log(MessageLevel.DEBUG, e);
 										}
 									}
 								}
 							}
 						}
 					} catch (IOException e) {
-						RuntimeLog.log(MessageLevel.DEBUG, e);
+						Logger.log(MessageLevel.DEBUG, e);
 					}
 				}
 			}
 		} catch (IOException e) {
-			RuntimeLog.log(MessageLevel.DEBUG, e);
+			Logger.log(MessageLevel.DEBUG, e);
 		}
 		return classes.toArray(new Class<?>[] {});
 	}
@@ -337,7 +339,7 @@ public class BOFactory implements IBOFactory {
 					// 这里用forName有一些不好，会触发static方法，没有使用classLoader的load干净
 					classes.add(classLoader.loadClass(packageName + '.' + className));
 				} catch (ClassNotFoundException e) {
-					RuntimeLog.log(MessageLevel.DEBUG, e);
+					Logger.log(MessageLevel.DEBUG, e);
 				}
 			}
 		}

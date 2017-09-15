@@ -2,14 +2,14 @@ package org.colorcoding.ibas.bobas.data.measurement;
 
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 体积单位
  */
-@XmlType(name = "emVolumeUnit", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "emVolumeUnit", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public enum emVolumeUnit {
 	/**
 	 * 立方毫米

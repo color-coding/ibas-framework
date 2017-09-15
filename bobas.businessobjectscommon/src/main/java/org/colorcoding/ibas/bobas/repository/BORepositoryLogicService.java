@@ -14,11 +14,11 @@ import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.core.SaveActionsException;
 import org.colorcoding.ibas.bobas.core.SaveActionsType;
 import org.colorcoding.ibas.bobas.data.emYesNo;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logics.BusinessLogicsFactory;
 import org.colorcoding.ibas.bobas.logics.IBusinessLogicsChain;
 import org.colorcoding.ibas.bobas.logics.IBusinessLogicsManager;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
 import org.colorcoding.ibas.bobas.rules.BusinessRuleException;
 import org.colorcoding.ibas.bobas.rules.BusinessRulesFactory;
@@ -33,6 +33,9 @@ import org.colorcoding.ibas.bobas.rules.ICheckRules;
  *
  */
 public class BORepositoryLogicService extends BORepositoryService {
+
+	public static final String MSG_LOGICS_CHAIN_REMOVED = "logics: chain [%s] was removed, because [%s].";
+	public static final String MSG_LOGICS_CHAIN_CREATED = "logics: chain [%s] was created, by [%s].";
 
 	public BORepositoryLogicService() {
 		this.setCheckRules(
@@ -84,7 +87,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 					if (refBO.getReferenced() == emYesNo.YES) {
 						// 被引用的数据，不允许删除，可以标记删除
 						throw new SaveActionsException(
-								i18n.prop("msg_bobas_not_allow_delete_referenced_bo", bo.toString()));
+								I18N.prop("msg_bobas_not_allow_delete_referenced_bo", bo.toString()));
 					}
 				}
 			}
@@ -138,7 +141,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 				if (refBO.getReferenced() == emYesNo.YES) {
 					// 被引用的数据，不允许删除，可以标记删除
 					throw new SaveActionsException(
-							i18n.prop("msg_bobas_not_allow_delete_referenced_bo", bo.toString()));
+							I18N.prop("msg_bobas_not_allow_delete_referenced_bo", bo.toString()));
 				}
 			}
 		}
@@ -203,20 +206,20 @@ public class BORepositoryLogicService extends BORepositoryService {
 				if (bo.isDeleted()) {
 					// 删除数据，取消流程
 					approvalProcess.cancel(this.getCurrentUser().getToken(),
-							i18n.prop("msg_bobas_user_deleted_approval_data"));
+							I18N.prop("msg_bobas_user_deleted_approval_data"));
 				} else if (bo instanceof IBOTagDeleted) {
 					// 删除，取消流程
 					IBOTagDeleted referenced = (IBOTagDeleted) bo;
 					if (referenced.getDeleted() == emYesNo.YES) {
 						approvalProcess.cancel(this.getCurrentUser().getToken(),
-								i18n.prop("msg_bobas_user_deleted_approval_data"));
+								I18N.prop("msg_bobas_user_deleted_approval_data"));
 					}
 				} else if (bo instanceof IBOTagCanceled) {
 					// 取消，取消流程
 					IBOTagCanceled referenced = (IBOTagCanceled) bo;
 					if (referenced.getCanceled() == emYesNo.YES) {
 						approvalProcess.cancel(this.getCurrentUser().getToken(),
-								i18n.prop("msg_bobas_user_deleted_approval_data"));
+								I18N.prop("msg_bobas_user_deleted_approval_data"));
 					}
 				}
 			}
@@ -246,7 +249,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 			logicsChain.useRepository(this.getRepository());
 			// 记录触发者
 			logicsChain.setTrigger(bo);
-			RuntimeLog.log(RuntimeLog.MSG_LOGICS_CHAIN_CREATED, transId, bo.toString());
+			Logger.log(MSG_LOGICS_CHAIN_CREATED, transId, bo.toString());
 		}
 		try {
 			// 执行逻辑
@@ -270,7 +273,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 		} catch (Exception e) {
 			// 出现错误关闭逻辑链，释放资源
 			logicsManager.closeChain(logicsChain.getId());
-			RuntimeLog.log(RuntimeLog.MSG_LOGICS_CHAIN_REMOVED, transId, e.getMessage());
+			Logger.log(MSG_LOGICS_CHAIN_REMOVED, transId, e.getMessage());
 			throw e;
 		}
 		// 触发的BO完成操作，释放资源
@@ -278,7 +281,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 			if (logicsChain != null && logicsChain.getTrigger() == bo) {
 				// 释放业务链
 				logicsManager.closeChain(logicsChain.getId());
-				RuntimeLog.log(RuntimeLog.MSG_LOGICS_CHAIN_REMOVED, transId, "done");
+				Logger.log(MSG_LOGICS_CHAIN_REMOVED, transId, "done");
 			}
 		}
 	}

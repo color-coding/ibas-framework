@@ -2,14 +2,14 @@ package org.colorcoding.ibas.bobas.data.measurement;
 
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.mapping.Value;
 
 /**
  * 比例单位
  */
-@XmlType(name = "emPercentUnit", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "emPercentUnit", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public enum emPercentUnit {
 	// 百分百
 	@Value("%")

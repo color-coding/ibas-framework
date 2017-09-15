@@ -2,7 +2,7 @@ package org.colorcoding.ibas.bobas.expressions;
 
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.ICondition;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
 /**
@@ -52,7 +52,7 @@ public class BOJudgmentLinksCondition extends BOJudgmentLinks {
 			jLinkItems.add(jItem);
 		}
 		if (jLinkItems.size() == 0) {
-			throw new JudgmentLinksException(i18n.prop("msg_bobas_invaild_judgment_link_conditions"));
+			throw new JudgmentLinksException(I18N.prop("msg_bobas_invaild_judgment_link_conditions"));
 		}
 		super.setJudgmentItems(jLinkItems.toArray(new JudgmentLinkItem[] {}));
 	}

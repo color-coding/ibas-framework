@@ -2,9 +2,9 @@ package org.colorcoding.ibas.bobas.configuration;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.core.BOFactory;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.util.StringBuilder;
 
 /**
@@ -16,6 +16,9 @@ import org.colorcoding.ibas.bobas.util.StringBuilder;
  *            工厂创建的类型
  */
 public abstract class ConfigurableFactory<T> {
+
+	public static final String MSG_CONFIG_COMBINED_CLASS_NAME = "config: combined class name [%s].";
+	public static final String MSG_CONFIG_NOT_CONFIGURATION_USING_DEFALUT = "config: not configured [%s], using defalut [%s].";
 
 	/**
 	 * 获取类型
@@ -58,7 +61,7 @@ public abstract class ConfigurableFactory<T> {
 		}
 		// 获取类类型
 		String fullName = stringBuilder.toString();
-		RuntimeLog.log(MessageLevel.DEBUG, RuntimeLog.MSG_CONFIG_COMBINED_CLASS_NAME, fullName);
+		Logger.log(MessageLevel.DEBUG, MSG_CONFIG_COMBINED_CLASS_NAME, fullName);
 		return (Class<T>) BOFactory.create().getClass(fullName);
 	}
 
@@ -98,7 +101,7 @@ public abstract class ConfigurableFactory<T> {
 		try {
 			return this.newInstance(typeName);
 		} catch (Exception e) {
-			throw new RuntimeException(i18n.prop("msg_bobas_configurable_factory_create_instance_faild", typeName), e);
+			throw new RuntimeException(I18N.prop("msg_bobas_configurable_factory_create_instance_faild", typeName), e);
 		}
 	}
 
@@ -118,8 +121,7 @@ public abstract class ConfigurableFactory<T> {
 		String configValue = MyConfiguration.getConfigValue(configKey, "").toLowerCase();
 		if (configValue == null || configValue.isEmpty()) {
 			// 没有配置，则使用默认
-			RuntimeLog.log(MessageLevel.WARN, RuntimeLog.MSG_CONFIG_NOT_CONFIGURATION_USING_DEFALUT, configKey,
-					typeName);
+			Logger.log(MessageLevel.WARN, MSG_CONFIG_NOT_CONFIGURATION_USING_DEFALUT, configKey, typeName);
 			return this.createDefault(typeName);
 		}
 		// 使用配置的实例
@@ -127,7 +129,7 @@ public abstract class ConfigurableFactory<T> {
 			T instance = this.newInstance(configValue, typeName);
 			return instance;
 		} catch (Exception e) {
-			throw new RuntimeException(i18n.prop("msg_bobas_configurable_factory_create_instance_faild", typeName), e);
+			throw new RuntimeException(I18N.prop("msg_bobas_configurable_factory_create_instance_faild", typeName), e);
 		}
 	}
 

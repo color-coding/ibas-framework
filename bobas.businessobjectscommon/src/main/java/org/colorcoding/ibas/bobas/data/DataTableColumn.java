@@ -5,10 +5,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "DataTableColumn", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "DataTableColumn", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class DataTableColumn implements IDataTableColumn {
 	public DataTableColumn() {
 		

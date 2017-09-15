@@ -5,11 +5,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.DataConvert;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "MeasurementDouble", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "MeasurementDouble", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public abstract class MeasurementDouble<U> extends Measurement<Double, U> {
 
 	/**

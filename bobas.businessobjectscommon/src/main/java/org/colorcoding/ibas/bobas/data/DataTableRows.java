@@ -5,15 +5,15 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConsts;
-import org.colorcoding.ibas.bobas.i18n.i18n;
+import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
 /**
  * 行 集合
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "DataTableRows", namespace = MyConsts.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "DataTableRows", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 @XmlSeeAlso({ DataTableRow.class })
 public class DataTableRows extends ArrayList<IDataTableRow> implements IDataTableRows {
 
@@ -42,7 +42,7 @@ public class DataTableRows extends ArrayList<IDataTableRow> implements IDataTabl
 	 */
 	public IDataTableRow create() {
 		if (this.getTable().getColumns().size() == 0) {
-			throw new RuntimeException(i18n.prop("msg_bobas_data_table_no_columns_defined"));
+			throw new RuntimeException(I18N.prop("msg_bobas_data_table_no_columns_defined"));
 		}
 		DataTableRow row = new DataTableRow(this.getTable().getColumns());
 		if (super.add(row)) {

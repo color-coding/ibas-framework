@@ -8,7 +8,7 @@ import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.logics.BusinessLogic;
 import org.colorcoding.ibas.bobas.logics.BusinessLogicsException;
 import org.colorcoding.ibas.bobas.mapping.LogicContract;
-import org.colorcoding.ibas.bobas.messages.RuntimeLog;
+import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.test.repository.BORepositoryTest;
 
 @LogicContract(IMaterialsJournalContract.class)
@@ -61,7 +61,7 @@ public class MaterialsJournalContractLogic extends BusinessLogic<IMaterialsJourn
 		this.getBeAffected().setBaseDocumentEntry(contract.getDocumentEntry());
 		this.getBeAffected().setBaseDocumentLineId(contract.getDocumentLineId());
 		this.getBeAffected().setQuantity(new Decimal(contract.getQuantity()));
-		RuntimeLog.log("logic: create journal type:%s entry:%s line:%s.", this.getBeAffected().getBaseDocumentType(),
+		Logger.log("logic: create journal type:%s entry:%s line:%s.", this.getBeAffected().getBaseDocumentType(),
 				this.getBeAffected().getBaseDocumentEntry(), this.getBeAffected().getBaseDocumentLineId());
 	}
 
@@ -69,7 +69,7 @@ public class MaterialsJournalContractLogic extends BusinessLogic<IMaterialsJourn
 	protected void revoke(IMaterialsJournalContract contract) {
 		// 反向逻辑，删除数据
 		this.getBeAffected().delete();
-		RuntimeLog.log("logic: remove journal type:%s entry:%s line:%s.", this.getBeAffected().getBaseDocumentType(),
+		Logger.log("logic: remove journal type:%s entry:%s line:%s.", this.getBeAffected().getBaseDocumentType(),
 				this.getBeAffected().getBaseDocumentEntry(), this.getBeAffected().getBaseDocumentLineId());
 
 	}
