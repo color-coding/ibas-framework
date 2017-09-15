@@ -1,7 +1,5 @@
 package org.colorcoding.ibas.bobas.repository;
 
-import java.lang.reflect.Method;
-
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
@@ -14,16 +12,8 @@ import org.colorcoding.ibas.bobas.i18n.i18n;
 import org.colorcoding.ibas.bobas.messages.RuntimeLog;
 import org.colorcoding.ibas.bobas.ownership.IDataOwnership;
 import org.colorcoding.ibas.bobas.ownership.IOwnershipJudger;
-import org.colorcoding.ibas.bobas.ownership.IPermissionItem;
-import org.colorcoding.ibas.bobas.ownership.NotConfiguredException;
-import org.colorcoding.ibas.bobas.ownership.OwnershipException;
 import org.colorcoding.ibas.bobas.ownership.OwnershipFactory;
-import org.colorcoding.ibas.bobas.ownership.Permission;
-import org.colorcoding.ibas.bobas.ownership.PermissionGroup;
-import org.colorcoding.ibas.bobas.ownership.PermissionItem;
-import org.colorcoding.ibas.bobas.ownership.PermissionValue;
 import org.colorcoding.ibas.bobas.ownership.UnauthorizedException;
-import org.colorcoding.ibas.bobas.util.ArrayList;
 
 /**
  * 业务仓库服务应用
@@ -175,97 +165,4 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 		return super.save(boRepository, bo);
 	}
 
-	/**
-	 * 获取方法权限
-	 * 
-	 * @return
-	 */
-	protected IPermissionItem[] getMethodPermissions() {
-		ArrayList<IPermissionItem> permissions = new ArrayList<IPermissionItem>();
-		Method[] methods = this.getClass().getDeclaredMethods();
-		if (methods != null) {
-			String group = this.getClass().getName();
-			PermissionGroup permissionGroup = this.getClass().getAnnotation(PermissionGroup.class);
-			if (permissionGroup != null) {
-				group = permissionGroup.value();
-			}
-			for (Method method : methods) {
-				Permission permission = method.getAnnotation(Permission.class);
-				if (permission != null) {
-					PermissionItem permissionItem = new PermissionItem();
-					permissionItem.setGroup(permission.group());
-					permissionItem.setName(permission.name());
-					permissionItem.setValue(permission.defaultValue());
-					if (permissionItem.getGroup() == null || permissionItem.getGroup().isEmpty()) {
-						permissionItem.setGroup(group);
-					}
-					if (permissionItem.getName() == null || permissionItem.getName().isEmpty()) {
-						permissionItem.setName(method.getName());
-					}
-					permissions.add(permissionItem);
-				}
-			}
-		}
-		return permissions.toArray(new IPermissionItem[] {});
-	}
-
-	/**
-	 * 检查调用方法权限
-	 * 
-	 * @throws InvalidTokenException
-	 * 
-	 * @throws OwnershipException
-	 */
-	protected void checkMethodPermissions() throws UnauthorizedException {
-		StackTraceElement[] yste = Thread.currentThread().getStackTrace();
-		if (yste == null || yste.length < 3) {
-			throw new RuntimeException(i18n.prop("msg_bobas_not_found_method_name"));
-		}
-		this.checkMethodPermissions(yste[2].getMethodName());
-	}
-
-	/**
-	 * 检查调用方法权限
-	 * 
-	 * @param name
-	 *            方法名称
-	 * @throws SecurityException
-	 * @throws NoSuchMethodException
-	 * @throws OwnershipException
-	 */
-	protected void checkMethodPermissions(String name) throws UnauthorizedException {
-		if (this.getCurrentUser() == null) {
-			throw new UnauthorizedException(i18n.prop("msg_bobas_invalid_user"));
-		}
-		if (this.getOwnershipJudger() != null) {
-			Class<?> type = this.getClass();
-			try {
-				try {
-					this.getOwnershipJudger().canCall(type.getName(), name, this.getCurrentUser());
-				} catch (NotConfiguredException e) {
-					// 没有配置权限，获取默认值
-					Method[] methods = this.getClass().getDeclaredMethods();
-					if (methods != null) {
-						for (Method method : methods) {
-							if (method.getName().equals(name)) {
-								Permission permission = method.getAnnotation(Permission.class);
-								if (permission != null) {
-									if (permission.defaultValue() == PermissionValue.UNAVAILABLE) {
-										throw new UnauthorizedException(
-												i18n.prop("msg_bobas_not_authorized_method", name));
-									}
-								}
-							}
-						}
-					}
-				}
-			} catch (UnauthorizedException e) {
-				RuntimeLog.log(RuntimeLog.MSG_PERMISSIONS_NOT_AUTHORIZED, this.getCurrentUser(), type.getName(), name);
-				throw e;
-			} catch (Exception e) {
-				RuntimeLog.log(RuntimeLog.MSG_PERMISSIONS_NOT_AUTHORIZED, this.getCurrentUser(), type.getName(), name);
-				throw new UnauthorizedException(i18n.prop("msg_bobas_not_authorized_method", name));
-			}
-		}
-	}
 }

@@ -2,17 +2,10 @@ package org.colorcoding.ibas.bobas.test.repository;
 
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
-import org.colorcoding.ibas.bobas.common.OperationMessages;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.ownership.OwnershipException;
-import org.colorcoding.ibas.bobas.ownership.Permission;
-import org.colorcoding.ibas.bobas.ownership.PermissionGroup;
-import org.colorcoding.ibas.bobas.ownership.PermissionItem;
-import org.colorcoding.ibas.bobas.ownership.PermissionValue;
 import org.colorcoding.ibas.bobas.repository.BORepositoryServiceApplication;
-import org.colorcoding.ibas.bobas.repository.InvalidTokenException;
 import org.colorcoding.ibas.bobas.test.bo.IMaterials;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrder;
 import org.colorcoding.ibas.bobas.test.bo.Materials;
@@ -26,7 +19,6 @@ import org.colorcoding.ibas.bobas.test.logics.PurchaseOrder;
  * @author Niuren.Zhu
  *
  */
-@PermissionGroup("Test") // 权限分组的名称
 public class BORepositoryTest extends BORepositoryServiceApplication
 		implements IBORepositoryTestSvc, IBORepositoryTestApp {
 
@@ -148,43 +140,6 @@ public class BORepositoryTest extends BORepositoryServiceApplication
 		return new OperationResult<IMaterials>(this.saveMaterials((Materials) bo, this.getUserToken()));
 	}
 
-	@Permission(defaultValue = PermissionValue.AVAILABLE) // 权限标记，如果没有配置，则使用默认权限值
-	public OperationMessages closeOrders(String token) {
-		OperationMessages operationMessages = new OperationMessages();
-		try {
-			this.setUserToken(token);
-			this.checkMethodPermissions();
-		} catch (OwnershipException e) {
-			operationMessages.setError(e);
-		} catch (InvalidTokenException e) {
-			operationMessages.setError(e);
-		}
-		return operationMessages;
-	}
-
-	@Permission(defaultValue = PermissionValue.UNAVAILABLE) // 权限标记，如果没有配置，则使用默认权限值
-	public OperationMessages openOrders(String token) {
-		OperationMessages operationMessages = new OperationMessages();
-		try {
-			this.setUserToken(token);
-			this.checkMethodPermissions();
-		} catch (OwnershipException e) {
-			operationMessages.setError(e);
-		} catch (InvalidTokenException e) {
-			operationMessages.setError(e);
-		}
-		return operationMessages;
-	}
-
-	public OperationResult<PermissionItem> getPermissions() {
-		OperationResult<PermissionItem> operationResult = new OperationResult<PermissionItem>();
-		try {
-			operationResult.addResultObjects(super.getMethodPermissions());
-		} catch (Exception e) {
-			operationResult.setError(e);
-		}
-		return operationResult;
-	}
 	// --------------------------------------------------------------------------------------------//
 
 	/**

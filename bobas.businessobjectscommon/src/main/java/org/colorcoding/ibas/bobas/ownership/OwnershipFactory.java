@@ -86,12 +86,6 @@ public class OwnershipFactory extends ConfigurableFactory<IOwnershipJudger> {
 				return this.canSave(bo, user);
 			}
 
-			@Override
-			public boolean canCall(String className, String methodName, IUser user)
-					throws NotConfiguredException, UnauthorizedException {
-				return true;
-			}
-
 		};
 	}
 
