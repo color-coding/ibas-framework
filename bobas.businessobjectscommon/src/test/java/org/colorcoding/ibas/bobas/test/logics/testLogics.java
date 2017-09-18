@@ -32,10 +32,8 @@ public class testLogics extends TestCase {
 		IBORepository4File fileRepository = new BORepository4File();
 		// fileRepository.setRepositoryFolder("D:\\WorkTemp\\borepository");
 		BORepositoryTest boRepository = new BORepositoryTest();
-		boRepository.setUseCache(false);// 缓存会导致数据检索不到
 		boRepository.setRepository(fileRepository);
 		IOperationResult<?> operationResult;
-
 		operationResult = boRepository.saveMaterials(materials01);
 		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
 		operationResult = boRepository.saveMaterials(materials02);
@@ -129,7 +127,6 @@ public class testLogics extends TestCase {
 		IBORepository4File fileRepository = new BORepository4File();
 		// fileRepository.setRepositoryFolder("D:\\WorkTemp\\borepository");
 		BORepositoryTest boRepository = new BORepositoryTest();
-		boRepository.setUseCache(false);// 缓存会导致数据检索不到
 		boRepository.setRepository(fileRepository);
 		IOperationResult<?> operationResult;
 
@@ -227,7 +224,6 @@ public class testLogics extends TestCase {
 		// 保存物料到文件系统
 		IBORepository4File fileRepository = new BORepository4File();
 		BORepositoryTest boRepository = new BORepositoryTest();
-		boRepository.setUseCache(false);// 缓存会导致数据检索不到
 		boRepository.setRepository(fileRepository);
 		IOperationResult<?> operationResult;
 
@@ -345,7 +341,6 @@ public class testLogics extends TestCase {
 		// 保存物料到文件系统
 		IBORepository4File fileRepository = new BORepository4File();
 		BORepositoryTest boRepository = new BORepositoryTest();
-		boRepository.setUseCache(false);// 缓存会导致数据检索不到
 		boRepository.setRepository(fileRepository);
 		IOperationResult<?> operationResult;
 		// 创建物料数据

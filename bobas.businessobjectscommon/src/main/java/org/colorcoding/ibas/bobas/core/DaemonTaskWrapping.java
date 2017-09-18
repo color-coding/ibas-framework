@@ -14,7 +14,7 @@ import org.colorcoding.ibas.bobas.messages.MessageLevel;
  *
  */
 class DaemonTaskWrapping {
-	public static final String MSG_DAEMON_SINGLE_TASK_WORK_FOLDER_NOT_EXISTS = "daemon: single task work folder not exists.";
+	protected static final String MSG_DAEMON_SINGLE_TASK_WORK_FOLDER_NOT_EXISTS = "daemon: single task work folder not exists.";
 
 	public DaemonTaskWrapping(IDaemonTask task) throws InvalidDaemonTask {
 		this();

@@ -19,7 +19,7 @@ import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
  */
 public class FileRepositoryService implements IFileRepositoryService {
 
-	public static final String MSG_REPOSITORY_CHANGED_USER = "repository: changed user [%s].";
+	protected static final String MSG_REPOSITORY_CHANGED_USER = "repository: changed user [%s].";
 
 	public FileRepositoryService() {
 

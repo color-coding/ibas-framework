@@ -32,7 +32,7 @@ import org.colorcoding.ibas.bobas.repository.IBORepository4DbReadonly;
  *
  */
 public abstract class ApprovalProcess implements IApprovalProcess {
-	public static final String MSG_APPROVAL_PROCESS_STATUS_CHANGED = "approval process: [%s]'s status change to [%s].";
+	protected static final String MSG_APPROVAL_PROCESS_STATUS_CHANGED = "approval process: [%s]'s status change to [%s].";
 
 	public abstract void setApprovalData(IApprovalData value);
 

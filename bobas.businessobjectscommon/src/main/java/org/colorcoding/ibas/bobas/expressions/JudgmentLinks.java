@@ -8,12 +8,12 @@ import org.colorcoding.ibas.bobas.util.StringBuilder;
 
 public abstract class JudgmentLinks {
 
-	public static final String MSG_JUDGMENT_EXPRESSION = "judgment: expression %s = [%s]";
-	public static final String MSG_JUDGMENT_RELATION = "judgment: relation %s = [%s]";
-	public static final String MSG_JUDGMENT_LINK_INFO = "judgment: judgment item count [%s].";
-	public static final String MSG_JUDGMENT_ENTRY_SUB_JUDGMENT = "judgment: entry sub judgment [%s].";
-	public static final String MSG_JUDGMENT_NOT_FOUND_PROPERTY = "judgment: not found [%s]'s property [%s].";
-	public static final String MSG_JUDGMENT_PROPERTY_NULL = "judgment: [%s].[%s] value is null.";
+	protected static final String MSG_JUDGMENT_EXPRESSION = "judgment: expression %s = [%s]";
+	protected static final String MSG_JUDGMENT_RELATION = "judgment: relation %s = [%s]";
+	protected static final String MSG_JUDGMENT_LINK_INFO = "judgment: judgment item count [%s].";
+	protected static final String MSG_JUDGMENT_ENTRY_SUB_JUDGMENT = "judgment: entry sub judgment [%s].";
+	protected static final String MSG_JUDGMENT_NOT_FOUND_PROPERTY = "judgment: not found [%s]'s property [%s].";
+	protected static final String MSG_JUDGMENT_PROPERTY_NULL = "judgment: [%s].[%s] value is null.";
 
 	private JudgmentLinkItem[] judgmentItems;
 

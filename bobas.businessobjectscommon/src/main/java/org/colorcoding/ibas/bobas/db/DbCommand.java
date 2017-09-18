@@ -10,7 +10,7 @@ import org.colorcoding.ibas.bobas.messages.MessageLevel;
 
 public class DbCommand implements IDbCommand {
 
-	public static final String MSG_SQL_SCRIPTS = "sql: %s";
+	protected static final String MSG_SQL_SCRIPTS = "sql: %s";
 
 	private DbCommand() {
 	}

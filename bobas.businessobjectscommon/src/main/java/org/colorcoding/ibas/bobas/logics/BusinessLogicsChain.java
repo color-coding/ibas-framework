@@ -24,7 +24,7 @@ import org.colorcoding.ibas.bobas.util.ArrayList;
  */
 public class BusinessLogicsChain implements IBusinessLogicsChain {
 
-	public static final String MSG_LOGICS_EXISTING_CONTRACT = "logics: class [%s] existing contract [%s].";
+	protected static final String MSG_LOGICS_EXISTING_CONTRACT = "logics: class [%s] existing contract [%s].";
 	private String id;
 
 	@Override

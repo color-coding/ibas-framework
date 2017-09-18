@@ -18,8 +18,8 @@ import org.colorcoding.ibas.bobas.util.EncryptMD5;
  */
 public abstract class DbAdapter implements IDbAdapter {
 
-	public static final String MSG_CONNECTION_USING_SERVER = "connection: using {%s}, user [%s] & server [%s] & db [%s].";
-	public static final String MSG_CONNECTION_USER_CONNECTED = "connection: user [%s] connected [%s|%s].";
+	protected static final String MSG_CONNECTION_USING_SERVER = "connection: using {%s}, user [%s] & server [%s] & db [%s].";
+	protected static final String MSG_CONNECTION_USER_CONNECTED = "connection: user [%s] connected [%s|%s].";
 
 	public DbAdapter() {
 

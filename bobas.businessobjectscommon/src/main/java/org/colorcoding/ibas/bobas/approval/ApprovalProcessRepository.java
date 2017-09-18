@@ -20,7 +20,6 @@ class ApprovalProcessRepository extends BORepositoryLogicService {
 	public ApprovalProcessRepository() {
 		this.setRefetchBeforeDelete(false);// 删除前不替换数据
 		this.setRefetchAfterSave(false);// 保存后不查询数据
-		this.setUseCache(false); // 不使用缓存
 		this.setCheckApprovalProcess(false);// 此业务仓库不检查审批流程
 	}
 

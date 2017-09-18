@@ -33,7 +33,7 @@ import org.colorcoding.ibas.bobas.util.ArrayList;
  *
  */
 public class BOFactory implements IBOFactory {
-	public static final String MSG_BO_FACTORY_REGISTER_BO_CODE = "factory: register [%s] for [%s].";
+	protected static final String MSG_BO_FACTORY_REGISTER_BO_CODE = "factory: register [%s] for [%s].";
 
 	volatile private static IBOFactory instance = null;
 

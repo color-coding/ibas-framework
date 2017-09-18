@@ -12,7 +12,7 @@ import org.colorcoding.ibas.bobas.messages.MessageLevel;
 
 public class UserFieldsFactory {
 
-	public static final String MSG_USER_FIELDS_REGISTER = "user fields: register type [%s]'s user fields, count [%s].";
+	protected static final String MSG_USER_FIELDS_REGISTER = "user fields: register type [%s]'s user fields, count [%s].";
 
 	volatile private static UserFieldsFactory instance = null;
 

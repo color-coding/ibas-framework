@@ -26,8 +26,8 @@ import org.colorcoding.ibas.bobas.messages.Logger;
  */
 public class Configuration {
 
-	public static final String MSG_CONFIG_READ_FILE_DATA = "config: read file's data [%s].";
-	public static final String MSG_CONFIG_READ_FILE_DATA_FAILD = "config: read file's data [%s] faild.";
+	protected static final String MSG_CONFIG_READ_FILE_DATA = "config: read file's data [%s].";
+	protected static final String MSG_CONFIG_READ_FILE_DATA_FAILD = "config: read file's data [%s] faild.";
 	private volatile static IConfigurationManager instance;
 
 	/**

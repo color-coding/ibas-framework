@@ -12,7 +12,7 @@ import org.colorcoding.ibas.bobas.messages.Logger;
  */
 public class DbAdapterFactory extends ConfigurableFactory<IDbAdapter> {
 
-	public static final String MSG_DB_ADAPTER_CREATED = "db adapter: created db adapter [%s].";
+	protected static final String MSG_DB_ADAPTER_CREATED = "db adapter: created db adapter [%s].";
 
 	private DbAdapterFactory() {
 	}

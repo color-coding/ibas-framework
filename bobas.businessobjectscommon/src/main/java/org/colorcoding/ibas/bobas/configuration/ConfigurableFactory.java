@@ -17,8 +17,8 @@ import org.colorcoding.ibas.bobas.util.StringBuilder;
  */
 public abstract class ConfigurableFactory<T> {
 
-	public static final String MSG_CONFIG_COMBINED_CLASS_NAME = "config: combined class name [%s].";
-	public static final String MSG_CONFIG_NOT_CONFIGURATION_USING_DEFALUT = "config: not configured [%s], using defalut [%s].";
+	protected static final String MSG_CONFIG_COMBINED_CLASS_NAME = "config: combined class name [%s].";
+	protected static final String MSG_CONFIG_NOT_CONFIGURATION_USING_DEFALUT = "config: not configured [%s], using defalut [%s].";
 
 	/**
 	 * 获取类型

@@ -9,8 +9,8 @@ import org.colorcoding.ibas.bobas.messages.MessageLevel;
 
 class DbConnectionPool implements IDbConnectionPool {
 
-	public static final String MSG_DB_POOL_USING_CONNECTION = "db pool: using connection [%s].";
-	public static final String MSG_DB_POOL_RECYCLED_CONNECTION = "db pool: recycled connection [%s].";
+	protected static final String MSG_DB_POOL_USING_CONNECTION = "db pool: using connection [%s].";
+	protected static final String MSG_DB_POOL_RECYCLED_CONNECTION = "db pool: recycled connection [%s].";
 	static int POOLSIZE = -1;
 
 	/**

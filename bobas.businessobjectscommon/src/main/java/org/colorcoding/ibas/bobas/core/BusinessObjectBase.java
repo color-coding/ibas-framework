@@ -25,7 +25,7 @@ import org.colorcoding.ibas.bobas.util.ArrayList;
 public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends TrackableBase
 		implements IBusinessObjectBase, IManageProperties, IManageFields {
 
-	public static final String MSG_PROPERTIES_NOT_FOUND_PROPERTIES = "properties: not found type [%s]'s property [%s].";
+	protected static final String MSG_PROPERTIES_NOT_FOUND_PROPERTIES = "properties: not found type [%s]'s property [%s].";
 
 	/**
 	 * 

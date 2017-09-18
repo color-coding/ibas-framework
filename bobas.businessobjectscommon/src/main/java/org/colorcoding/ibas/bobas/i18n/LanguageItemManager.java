@@ -31,8 +31,8 @@ import org.colorcoding.ibas.bobas.messages.MessageLevel;
  *
  */
 public class LanguageItemManager implements ILanguageItemManager {
-	public static final String MSG_I18N_READ_FILE_DATA = "i18n: read file's data [%s].";
-	public static final String MSG_I18N_RESOURCES_FOLDER = "i18n: use folder [%s].";
+	protected static final String MSG_I18N_READ_FILE_DATA = "i18n: read file's data [%s].";
+	protected static final String MSG_I18N_RESOURCES_FOLDER = "i18n: use folder [%s].";
 	private String languageCode;
 
 	public String getLanguageCode() {

@@ -36,11 +36,11 @@ import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
  *
  */
 public class BORepositoryService implements IBORepositoryService {
-	public static final String MSG_REPOSITORY_FETCHING_IN_DB = "repository: fetching [%s] in db repository.";
-	public static final String MSG_REPOSITORY_CHANGED_USER = "repository: changed user [%s].";
-	public static final String MSG_REPOSITORY_REPLACED_BE_DELETED_BO = "repository: replaced be deleted bo [%s].";
-	public static final String MSG_REPOSITORY_NOT_FOUND_BE_DELETED_BO = "repository: not found be deleted bo [%s].";
-	public static final String MSG_TRANSACTION_SP_VALUES = "transaction: sp [%s] [%s] [%s - %s]";
+	protected static final String MSG_REPOSITORY_FETCHING_IN_DB = "repository: fetching [%s] in db repository.";
+	protected static final String MSG_REPOSITORY_CHANGED_USER = "repository: changed user [%s].";
+	protected static final String MSG_REPOSITORY_REPLACED_BE_DELETED_BO = "repository: replaced be deleted bo [%s].";
+	protected static final String MSG_REPOSITORY_NOT_FOUND_BE_DELETED_BO = "repository: not found be deleted bo [%s].";
+	protected static final String MSG_TRANSACTION_SP_VALUES = "transaction: sp [%s] [%s] [%s - %s]";
 
 	public BORepositoryService() {
 		// 是否保存后检索新实例
@@ -157,7 +157,7 @@ public class BORepositoryService implements IBORepositoryService {
 		}
 	}
 
-	protected final boolean inTransaction() {
+	public boolean inTransaction() {
 		if (this.repository == null) {
 			// 未初始化主仓库，则不存在事务
 			return false;
@@ -165,15 +165,15 @@ public class BORepositoryService implements IBORepositoryService {
 		return this.getRepository().inTransaction();
 	}
 
-	protected boolean beginTransaction() throws RepositoryException {
+	public boolean beginTransaction() throws RepositoryException {
 		return this.getRepository().beginTransaction();
 	}
 
-	protected void rollbackTransaction() throws RepositoryException {
+	public void rollbackTransaction() throws RepositoryException {
 		this.getRepository().rollbackTransaction();
 	}
 
-	protected void commitTransaction() throws RepositoryException {
+	public void commitTransaction() throws RepositoryException {
 		this.getRepository().commitTransaction();
 	}
 
@@ -182,21 +182,6 @@ public class BORepositoryService implements IBORepositoryService {
 			this.repository.dispose();
 			this.repository = null;
 		}
-	}
-
-	private boolean useCache;
-
-	/**
-	 * 是否使用缓存
-	 * 
-	 * @return
-	 */
-	public final boolean isUseCache() {
-		return useCache;
-	}
-
-	public final void setUseCache(boolean value) {
-		this.useCache = value;
 	}
 
 	private boolean refetchAfterSave;
@@ -334,38 +319,18 @@ public class BORepositoryService implements IBORepositoryService {
 	 * 
 	 * @return 查询的结果
 	 */
-	<P extends IBusinessObjectBase> OperationResult<P> fetch(IBORepositoryReadonly boRepository, ICriteria criteria,
+	<P extends IBusinessObjectBase> IOperationResult<P> fetch(IBORepositoryReadonly boRepository, ICriteria criteria,
 			Class<P> boType) {
-		OperationResult<P> operationResult = new OperationResult<P>();
 		if (criteria == null) {
 			criteria = new Criteria();
 		}
 		if (criteria.isNoChilds()) {
 			// 不加载子项
-			operationResult.copy(boRepository.fetch(criteria, boType));
+			return boRepository.fetch(criteria, boType);
 		} else {
 			// 加载子项
-			operationResult.copy(boRepository.fetchEx(criteria, boType));
+			return boRepository.fetchEx(criteria, boType);
 		}
-		return operationResult;
-	}
-
-	/**
-	 * 查询业务对象（数据库中）
-	 * 
-	 * @param criteria
-	 *            查询条件
-	 * 
-	 * @param token
-	 *            口令
-	 * 
-	 * @return 查询的结果
-	 * @throws InvalidTokenException
-	 */
-	<P extends IBusinessObjectBase> OperationResult<P> fetchInDb(ICriteria criteria, Class<P> boType) {
-		// 在数据库中查询
-		Logger.log(MSG_REPOSITORY_FETCHING_IN_DB, boType.getName());
-		return this.fetch(this.getRepository(), criteria, boType);
 	}
 
 	/**
@@ -388,7 +353,11 @@ public class BORepositoryService implements IBORepositoryService {
 			Logger.log(e);
 			return new OperationResult<P>(e);
 		}
-		return this.fetchInDb(criteria, boType);
+		return (OperationResult<P>) this.fetch(criteria, boType);
+	}
+
+	<P extends IBusinessObjectBase> IOperationResult<P> fetch(ICriteria criteria, Class<P> boType) {
+		return this.fetch(this.getRepository(), criteria, boType);
 	}
 
 	/**
@@ -402,17 +371,17 @@ public class BORepositoryService implements IBORepositoryService {
 	 * @return 注意删除时返回null
 	 * @throws Exception
 	 */
-	IBusinessObjectBase save(IBORepository boRepository, IBusinessObjectBase bo) throws Exception {
+	<P extends IBusinessObjectBase> P save(IBORepository boRepository, P bo) throws Exception {
 		boolean myDbTrans = false;
 		boolean myOpened = false;
 		try {
 			boolean toDelete = bo.isDeleted();
 			boolean toAdd = bo.isNew();
-			IBusinessObjectBase returnBO = null;// 返回的数据
+			P returnBO = null;// 返回的数据
 			myOpened = this.openRepository();// 打开仓库
 			myDbTrans = this.beginTransaction(); // 打开事务
 			this.getProcessing().add(bo);// 添加待处理数据到列表
-			IOperationResult<IBusinessObjectBase> operationResult = boRepository.saveEx(bo); // 保存BO
+			IOperationResult<P> operationResult = boRepository.saveEx(bo); // 保存BO
 			this.getProcessing().remove(bo);// 移出带处理数据
 			// 其他
 			if (operationResult.getError() != null) {
@@ -454,7 +423,7 @@ public class BORepositoryService implements IBORepositoryService {
 						if (operationResult.getResultObjects().size() == 0) {
 							throw new Exception(I18N.prop("msg_bobas_not_found_bo_copy", returnBO));
 						}
-						returnBO = (IBusinessObjectBase) operationResult.getResultObjects().firstOrDefault();
+						returnBO = operationResult.getResultObjects().firstOrDefault();
 					} catch (Exception e) {
 						throw new Exception(I18N.prop("msg_bobas_fetch_bo_copy_faild", returnBO), e);
 					}
@@ -471,6 +440,10 @@ public class BORepositoryService implements IBORepositoryService {
 				this.closeRepository();// 自己打开的连接，自己关闭
 			}
 		}
+	}
+
+	<P extends IBusinessObjectBase> P save(P bo) throws Exception {
+		return this.save(this.getRepository(), bo);
 	}
 
 	private LinkedList<IBusinessObjectBase> processing;
@@ -546,7 +519,7 @@ public class BORepositoryService implements IBORepositoryService {
 			if (bo != null && bo.isDeleted() && this.isRefetchBeforeDelete()) {
 				// 删除前重新查询数据，避免漏或多删子项
 				@SuppressWarnings("unchecked")
-				OperationResult<P> opRsltFetch = this.fetchInDb(bo.getCriteria(), (Class<P>) bo.getClass());
+				IOperationResult<P> opRsltFetch = this.fetch(bo.getCriteria(), (Class<P>) bo.getClass());
 				P boCopy = opRsltFetch.getResultObjects().firstOrDefault();
 				if (boCopy != null && boCopy.getClass() == bo.getClass() && boCopy instanceof BusinessObject
 						&& opRsltFetch.getResultCode() == 0) {
@@ -563,7 +536,7 @@ public class BORepositoryService implements IBORepositoryService {
 					Logger.log(MessageLevel.WARN, MSG_REPOSITORY_NOT_FOUND_BE_DELETED_BO, bo);
 				}
 			}
-			operationResult.addResultObjects(this.save(this.getRepository(), bo));
+			operationResult.addResultObjects(this.save(bo));
 		} catch (Exception e) {
 			operationResult.setError(e);
 			Logger.log(e);

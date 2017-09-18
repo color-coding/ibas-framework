@@ -24,7 +24,7 @@ import org.colorcoding.ibas.bobas.ownership.UnauthorizedException;
  *
  */
 public class BORepositoryServiceApplication extends BORepositorySmartService implements IBORepositoryApplication {
-	public static final String MSG_REPOSITORY_FETCH_AND_FILTERING = "repository: fetch [%s] [%s] times, result [%s] filtering [%s].";
+	protected static final String MSG_REPOSITORY_FETCH_AND_FILTERING = "repository: fetch [%s] [%s] times, result [%s] filtering [%s].";
 
 	private String userToken = null;
 
@@ -155,7 +155,7 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 	 * @throws Exception
 	 */
 	@Override
-	IBusinessObjectBase save(IBORepository boRepository, IBusinessObjectBase bo) throws Exception {
+	<P extends IBusinessObjectBase> P save(IBORepository boRepository, P bo) throws Exception {
 		if (this.getOwnershipJudger() != null && bo instanceof IDataOwnership) {
 			// 数据权限过滤
 			if (!this.getOwnershipJudger().canSave((IDataOwnership) bo, this.getCurrentUser(), true)) {

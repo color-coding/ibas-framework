@@ -13,7 +13,7 @@ import org.colorcoding.ibas.bobas.util.ArrayList;
 
 public abstract class BusinessRule implements IBusinessRule {
 
-	public static final String MSG_RULES_EXECUTING = "rules: bo %s executing rule [%s - %s].";
+	protected static final String MSG_RULES_EXECUTING = "rules: bo %s executing rule [%s - %s].";
 	private ArrayList<IPropertyInfo<?>> inputProperties;
 
 	@Override

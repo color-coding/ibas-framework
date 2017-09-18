@@ -20,7 +20,7 @@ import org.colorcoding.ibas.bobas.messages.Logger;
  */
 public class FileRepository extends FileRepositoryReadonly implements IFileRepository {
 
-	public static final String MSG_REPOSITORY_WRITE_FILE = "repository: writed file [%s].";
+	protected static final String MSG_REPOSITORY_WRITE_FILE = "repository: writed file [%s].";
 
 	@Override
 	public IOperationResult<FileData> save(FileData fileData) {

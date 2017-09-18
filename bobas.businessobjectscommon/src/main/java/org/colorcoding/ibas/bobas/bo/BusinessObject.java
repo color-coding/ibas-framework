@@ -45,8 +45,8 @@ import org.colorcoding.ibas.bobas.util.StringBuilder;
 @XmlType(name = "BusinessObject", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
 public abstract class BusinessObject<T extends IBusinessObject> extends BusinessObjectBase<T> {
 
-	public static final String MSG_USER_SET_FIELD_VALUE = "user fields: set field [%s]'s value [%s].";
-	public static final String MSG_RULES_EXECUTING_FAILD = "rules: field [%s] triggered rules fail to run, %s.";
+	protected static final String MSG_USER_SET_FIELD_VALUE = "user fields: set field [%s]'s value [%s].";
+	protected static final String MSG_RULES_EXECUTING_FAILD = "rules: field [%s] triggered rules fail to run, %s.";
 
 	private static final long serialVersionUID = -8485128824221654376L;
 

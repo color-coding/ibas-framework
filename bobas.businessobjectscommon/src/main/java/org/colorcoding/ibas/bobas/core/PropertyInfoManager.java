@@ -17,8 +17,8 @@ import org.colorcoding.ibas.bobas.messages.MessageLevel;
  */
 public class PropertyInfoManager {
 
-	public static final String MSG_PROPERTIES_GET_TYPE_PROPERTIES = "properties: get type [%s]'s properties.";
-	public static final String MSG_PROPERTIES_REGISTER_PROPERTIES = "properties: register type [%s]'s property [%s].";
+	protected static final String MSG_PROPERTIES_GET_TYPE_PROPERTIES = "properties: get type [%s]'s properties.";
+	protected static final String MSG_PROPERTIES_REGISTER_PROPERTIES = "properties: register type [%s]'s property [%s].";
 
 	volatile private static HashMap<Class<?>, PropertyInfoList> propertyInfoCache = new HashMap<Class<?>, PropertyInfoList>();
 

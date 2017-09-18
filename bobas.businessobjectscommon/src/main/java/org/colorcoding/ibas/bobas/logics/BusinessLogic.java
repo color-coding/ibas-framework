@@ -5,8 +5,10 @@ import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
 import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
 import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
+import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
+import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.ITrackStatus;
@@ -29,11 +31,11 @@ import org.colorcoding.ibas.bobas.messages.MessageLevel;
  * @param <L>
  *            业务逻辑的契约
  */
-public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends IBusinessObjectBase>
+public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends IBusinessObject>
 		implements IBusinessLogic<B> {
 
-	public static final String MSG_LOGICS_RUNNING_LOGIC_FORWARD = "logics: forward logic [%s] by data [%s].";
-	public static final String MSG_LOGICS_RUNNING_LOGIC_REVERSE = "logics: reverse logic [%s] by data [%s].";
+	protected static final String MSG_LOGICS_RUNNING_LOGIC_FORWARD = "logics: forward logic [%s] by data [%s].";
+	protected static final String MSG_LOGICS_RUNNING_LOGIC_REVERSE = "logics: reverse logic [%s] by data [%s].";
 
 	private L contract;
 
@@ -325,7 +327,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		if (this.getBeAffected() != null) {
 			BusinessLogicsRepository logicRepository = new BusinessLogicsRepository();
 			logicRepository.setRepository(this.getRepository());
-			IOperationResult<IBusinessObjectBase> operationResult = logicRepository.save(this.getBeAffected());
+			OperationResult<B> operationResult = logicRepository.save(this.getBeAffected());
 			logicRepository.setRepository(null);// 移出监听
 			if (operationResult.getError() != null) {
 				throw new BusinessLogicsException(operationResult.getError());

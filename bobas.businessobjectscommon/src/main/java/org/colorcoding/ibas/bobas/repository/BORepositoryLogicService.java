@@ -34,8 +34,8 @@ import org.colorcoding.ibas.bobas.rules.ICheckRules;
  */
 public class BORepositoryLogicService extends BORepositoryService {
 
-	public static final String MSG_LOGICS_CHAIN_REMOVED = "logics: chain [%s] was removed, because [%s].";
-	public static final String MSG_LOGICS_CHAIN_CREATED = "logics: chain [%s] was created, by [%s].";
+	protected static final String MSG_LOGICS_CHAIN_REMOVED = "logics: chain [%s] was removed, because [%s].";
+	protected static final String MSG_LOGICS_CHAIN_CREATED = "logics: chain [%s] was created, by [%s].";
 
 	public BORepositoryLogicService() {
 		this.setCheckRules(
@@ -287,14 +287,14 @@ public class BORepositoryLogicService extends BORepositoryService {
 	}
 
 	@Override
-	protected void rollbackTransaction() throws RepositoryException {
+	public void rollbackTransaction() throws RepositoryException {
 		// 关闭业务链
 		BusinessLogicsFactory.create().createManager().closeChain(this.getRepository().getTransactionId());
 		super.rollbackTransaction();
 	}
 
 	@Override
-	protected void commitTransaction() throws RepositoryException {
+	public void commitTransaction() throws RepositoryException {
 		// 关闭业务链
 		BusinessLogicsFactory.create().createManager().closeChain(this.getRepository().getTransactionId());
 		super.commitTransaction();

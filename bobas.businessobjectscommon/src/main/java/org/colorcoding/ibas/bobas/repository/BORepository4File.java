@@ -32,8 +32,8 @@ import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
 
 public class BORepository4File extends BORepository4FileReadonly implements IBORepository4File {
-	public static final String MSG_REPOSITORY_DELETED_DATA_FILE = "repository: deleted data file [%s].";
-	public static final String MSG_REPOSITORY_WRITED_DATA_FILE = "repository: writed data in file [%s].";
+	protected static final String MSG_REPOSITORY_DELETED_DATA_FILE = "repository: deleted data file [%s].";
+	protected static final String MSG_REPOSITORY_WRITED_DATA_FILE = "repository: writed data in file [%s].";
 
 	private IBOKeysManager keysManager;
 

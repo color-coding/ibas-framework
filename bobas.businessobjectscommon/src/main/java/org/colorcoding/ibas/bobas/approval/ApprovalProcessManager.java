@@ -19,7 +19,7 @@ import org.colorcoding.ibas.bobas.messages.Logger;
  *
  */
 public abstract class ApprovalProcessManager implements IApprovalProcessManager {
-	public static final String MSG_APPROVAL_PROCESS_STARTED = "approval process: data [%s]'s approval process was started, name [%s].";
+	protected static final String MSG_APPROVAL_PROCESS_STARTED = "approval process: data [%s]'s approval process was started, name [%s].";
 
 	@Override
 	public IApprovalProcess checkProcess(IApprovalData data, IBORepository repository) {

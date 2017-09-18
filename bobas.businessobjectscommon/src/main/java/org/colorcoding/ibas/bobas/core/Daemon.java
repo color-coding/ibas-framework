@@ -20,10 +20,10 @@ import org.colorcoding.ibas.bobas.messages.MessageLevel;
  *
  */
 public class Daemon implements IDaemon {
-	public static final String MSG_DAEMON_REGISTER_TASK = "daemon: register task id [%s], name [%s].";
-	public static final String MSG_DAEMON_REMOVE_TASK = "daemon: remove task id [%s], name [%s].";
-	public static final String MSG_DAEMON_TASK_COMPLETED = "daemon: end task [%s - %s] %sth running and for [%s] milliseconds.";
-	public static final String MSG_DAEMON_TASK_START = "daemon: begin to run task [%s - %s], %sth running.";
+	protected static final String MSG_DAEMON_REGISTER_TASK = "daemon: register task id [%s], name [%s].";
+	protected static final String MSG_DAEMON_REMOVE_TASK = "daemon: remove task id [%s], name [%s].";
+	protected static final String MSG_DAEMON_TASK_COMPLETED = "daemon: end task [%s - %s] %sth running and for [%s] milliseconds.";
+	protected static final String MSG_DAEMON_TASK_START = "daemon: begin to run task [%s - %s], %sth running.";
 
 	/**
 	 * 注册后台任务
