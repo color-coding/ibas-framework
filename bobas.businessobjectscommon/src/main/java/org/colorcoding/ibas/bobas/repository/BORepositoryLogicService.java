@@ -11,8 +11,8 @@ import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
 import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
-import org.colorcoding.ibas.bobas.core.SaveActionsException;
-import org.colorcoding.ibas.bobas.core.SaveActionsType;
+import org.colorcoding.ibas.bobas.core.SaveActionException;
+import org.colorcoding.ibas.bobas.core.SaveActionType;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logics.BusinessLogicsFactory;
@@ -76,50 +76,6 @@ public class BORepositoryLogicService extends BORepositoryService {
 		this.checkApprovalProcess = value;
 	}
 
-	@Override
-	protected boolean onSaveActionsEvent(SaveActionsType action, IBusinessObjectBase bo) {
-		try {
-			// 响应事件
-			if (action == SaveActionsType.BEFORE_DELETING) {
-				// 删除前检查
-				if (bo instanceof IBOReferenced) {
-					IBOReferenced refBO = (IBOReferenced) bo;
-					if (refBO.getReferenced() == emYesNo.YES) {
-						// 被引用的数据，不允许删除，可以标记删除
-						throw new SaveActionsException(
-								I18N.prop("msg_bobas_not_allow_delete_referenced_bo", bo.toString()));
-					}
-				}
-			}
-			if (action == SaveActionsType.BEFORE_ADDING || action == SaveActionsType.BEFORE_DELETING
-					|| action == SaveActionsType.BEFORE_UPDATING) {
-				// 业务规则检查
-				if (this.isCheckRules()) {
-					// 检查规则
-					this.checkRules(action, bo);
-				}
-				// 审批流程相关，先执行审批逻辑，可能对bo的状态有影响
-				if (this.isCheckApprovalProcess()) {
-					// 触发审批流程
-					this.triggerApprovals(bo);
-				}
-			}
-			if (action != SaveActionsType.BEFORE_ADDING) {
-				// 业务逻辑相关，最后执行业务逻辑，因为要求状态可用
-				if (this.isCheckLogics()) {
-					// 执行业务逻辑
-					this.runLogics(action, bo);
-				}
-			}
-			// 运行基类方法
-			return super.onSaveActionsEvent(action, bo);
-		} catch (SaveActionsException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new SaveActionsException(e);
-		}
-	}
-
 	/**
 	 * 对象的子项保存事件
 	 * 
@@ -129,35 +85,51 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 *            发生事件对象
 	 * @param parent
 	 *            所属的父项
-	 * @throws SaveActionsException
+	 * @throws SaveActionException
 	 */
 	@Override
-	protected boolean onSaveActionsEvent(SaveActionsType action, IBusinessObjectBase bo, IBusinessObjectBase root)
-			throws SaveActionsException {
-		if (action == SaveActionsType.BEFORE_DELETING) {
+	protected boolean onSaveActionEvent(SaveActionType action, IBusinessObjectBase bo, IBusinessObjectBase root)
+			throws SaveActionException {
+		if (action == SaveActionType.BEFORE_DELETING) {
 			// 删除前检查
 			if (bo instanceof IBOReferenced) {
 				IBOReferenced refBO = (IBOReferenced) bo;
 				if (refBO.getReferenced() == emYesNo.YES) {
 					// 被引用的数据，不允许删除，可以标记删除
-					throw new SaveActionsException(
-							I18N.prop("msg_bobas_not_allow_delete_referenced_bo", bo.toString()));
+					throw new SaveActionException(I18N.prop("msg_bobas_not_allow_delete_referenced_bo", bo.toString()));
 				}
 			}
 		}
-		if (action == SaveActionsType.BEFORE_ADDING || action == SaveActionsType.BEFORE_DELETING
-				|| action == SaveActionsType.BEFORE_UPDATING) {
+		if (action == SaveActionType.BEFORE_ADDING || action == SaveActionType.BEFORE_DELETING
+				|| action == SaveActionType.BEFORE_UPDATING) {
 			// 业务规则检查
 			if (this.isCheckRules()) {
 				// 检查规则
 				try {
 					this.checkRules(action, bo);
 				} catch (BusinessRuleException e) {
-					throw new SaveActionsException(e);
+					throw new SaveActionException(e);
+				}
+			}
+			// 审批流程相关，先执行审批逻辑，可能对bo的状态有影响
+			if (this.isCheckApprovalProcess() && root == null) {
+				// 触发审批流程
+				try {
+					this.triggerApprovals(bo);
+				} catch (InvalidAuthorizationException | ApprovalException e) {
+					throw new SaveActionException(e);
 				}
 			}
 		}
-		return true;
+		if (action != SaveActionType.BEFORE_ADDING) {
+			// 业务逻辑相关，最后执行业务逻辑，因为要求状态可用
+			if (this.isCheckLogics()) {
+				// 执行业务逻辑
+				this.runLogics(action, bo);
+			}
+		}
+		// 运行基类方法
+		return super.onSaveActionEvent(action, bo, root);
 	}
 
 	/**
@@ -168,7 +140,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 * @throws BusinessRuleException
 	 * @throws BusinessRuleExecuteException
 	 */
-	private void checkRules(SaveActionsType type, IBusinessObjectBase bo) throws BusinessRuleException {
+	private void checkRules(SaveActionType type, IBusinessObjectBase bo) throws BusinessRuleException {
 		// 运行对象业务规则
 		IBusinessRules rules = BusinessRulesFactory.create().createManager().getRules(bo.getClass());
 		if (rules != null)
@@ -238,7 +210,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 * @param bo
 	 *            业务数据
 	 */
-	private void runLogics(SaveActionsType type, IBusinessObjectBase bo) {
+	private void runLogics(SaveActionType type, IBusinessObjectBase bo) {
 		String transId = this.getRepository().getTransactionId();// 事务链标记，结束事务时关闭
 		IBusinessLogicsManager logicsManager = BusinessLogicsFactory.create().createManager();
 		IBusinessLogicsChain logicsChain = logicsManager.getChain(transId);
@@ -253,19 +225,19 @@ public class BORepositoryLogicService extends BORepositoryService {
 		}
 		try {
 			// 执行逻辑
-			if (type == SaveActionsType.ADDED) {
+			if (type == SaveActionType.ADDED) {
 				// 新建数据，正向逻辑
 				logicsChain.forwardLogics(bo);
 				logicsChain.commit(bo);
-			} else if (type == SaveActionsType.BEFORE_DELETING) {
+			} else if (type == SaveActionType.BEFORE_DELETING) {
 				// 删除数据前，反向逻辑
 				logicsChain.reverseLogics(bo);
 				logicsChain.commit(bo);
-			} else if (type == SaveActionsType.BEFORE_UPDATING) {
+			} else if (type == SaveActionType.BEFORE_UPDATING) {
 				// 更新数据前，反向逻辑
 				logicsChain.reverseLogics(bo);
 				// 等待更新完成提交
-			} else if (type == SaveActionsType.UPDATED) {
+			} else if (type == SaveActionType.UPDATED) {
 				// 更新数据后，正向逻辑
 				logicsChain.forwardLogics(bo);
 				logicsChain.commit(bo);
@@ -277,7 +249,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 			throw e;
 		}
 		// 触发的BO完成操作，释放资源
-		if (type == SaveActionsType.ADDED || type == SaveActionsType.UPDATED || type == SaveActionsType.DELETED) {
+		if (type == SaveActionType.ADDED || type == SaveActionType.UPDATED || type == SaveActionType.DELETED) {
 			if (logicsChain != null && logicsChain.getTrigger() == bo) {
 				// 释放业务链
 				logicsManager.closeChain(logicsChain.getId());

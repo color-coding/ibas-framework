@@ -6,7 +6,7 @@ package org.colorcoding.ibas.bobas.core;
  * @author Niuren.Zhu
  *
  */
-public enum SaveActionsType {
+public enum SaveActionType {
 	/**
 	 * 添加前
 	 */

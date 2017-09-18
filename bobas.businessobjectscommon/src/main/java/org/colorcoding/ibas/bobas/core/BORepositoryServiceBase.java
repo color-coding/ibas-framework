@@ -1,5 +1,5 @@
 package org.colorcoding.ibas.bobas.core;
 
-public abstract class BORepositoryServiceBase implements SaveActionsListener {
+public abstract class BORepositoryServiceBase implements SaveActionListener {
 
 }

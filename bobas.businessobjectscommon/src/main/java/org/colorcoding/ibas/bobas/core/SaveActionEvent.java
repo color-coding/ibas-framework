@@ -8,39 +8,39 @@ import java.util.EventObject;
  * @author Niuren.Zhu
  *
  */
-public class SaveActionsEvent extends EventObject {
+public class SaveActionEvent extends EventObject {
 
     /**
      * 
      */
     private static final long serialVersionUID = 985060795180206279L;
 
-    public SaveActionsEvent(Object source) {
+    public SaveActionEvent(Object source) {
         super(source);
 
     }
 
-    public SaveActionsEvent(Object source, SaveActionsType type, IBusinessObjectBase bo) {
+    public SaveActionEvent(Object source, SaveActionType type, IBusinessObjectBase bo) {
         this(source);
         this.setType(type);
         this.setBO(bo);
     }
 
-    public SaveActionsEvent(Object source, SaveActionsType type, IBusinessObjectBase bo, IBusinessObjectBase root) {
+    public SaveActionEvent(Object source, SaveActionType type, IBusinessObjectBase bo, IBusinessObjectBase root) {
         this(source);
         this.setType(type);
         this.setBO(bo);
         this.setRootBO(root);
     }
 
-    private SaveActionsType type;
+    private SaveActionType type;
 
     /**
      * 获取-事件类型
      * 
      * @return
      */
-    public final SaveActionsType getType() {
+    public final SaveActionType getType() {
         return type;
     }
 
@@ -49,7 +49,7 @@ public class SaveActionsEvent extends EventObject {
      * 
      * @return
      */
-    private final void setType(SaveActionsType type) {
+    private final void setType(SaveActionType type) {
         this.type = type;
     }
 

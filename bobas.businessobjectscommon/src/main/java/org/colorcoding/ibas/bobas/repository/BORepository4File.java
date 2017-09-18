@@ -22,10 +22,10 @@ import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.ITrackStatusOperator;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
-import org.colorcoding.ibas.bobas.core.SaveActionsException;
-import org.colorcoding.ibas.bobas.core.SaveActionsListener;
-import org.colorcoding.ibas.bobas.core.SaveActionsSupport;
-import org.colorcoding.ibas.bobas.core.SaveActionsType;
+import org.colorcoding.ibas.bobas.core.SaveActionException;
+import org.colorcoding.ibas.bobas.core.SaveActionListener;
+import org.colorcoding.ibas.bobas.core.SaveActionSupport;
+import org.colorcoding.ibas.bobas.core.SaveActionType;
 import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.messages.Logger;
@@ -156,7 +156,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 		return this.inTransaction;
 	}
 
-	private volatile SaveActionsSupport saveActionsSupport;
+	private volatile SaveActionSupport saveActionsSupport;
 
 	/**
 	 * 通知事务
@@ -165,14 +165,14 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 	 *            事务类型
 	 * @param bo
 	 *            发生业务对象
-	 * @throws SaveActionsException
+	 * @throws SaveActionException
 	 *             运行时错误
 	 */
-	private void notifyActions(SaveActionsType type, IBusinessObjectBase bo) throws SaveActionsException {
+	private void fireAction(SaveActionType type, IBusinessObjectBase bo) throws SaveActionException {
 		if (this.saveActionsSupport == null) {
 			return;
 		}
-		this.saveActionsSupport.fireActions(type, bo);
+		this.saveActionsSupport.fireAction(type, bo, null);
 	}
 
 	/**
@@ -181,9 +181,9 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 	 * @param listener
 	 */
 	@Override
-	public final void registerListener(SaveActionsListener listener) {
+	public final void registerListener(SaveActionListener listener) {
 		if (this.saveActionsSupport == null) {
-			this.saveActionsSupport = new SaveActionsSupport(this);
+			this.saveActionsSupport = new SaveActionSupport(this);
 		}
 		this.saveActionsSupport.registerListener(listener);
 	}
@@ -194,7 +194,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 	 * @param listener
 	 */
 	@Override
-	public final void removeListener(SaveActionsListener listener) {
+	public final void removeListener(SaveActionListener listener) {
 		if (this.saveActionsSupport == null) {
 			return;
 		}
@@ -246,22 +246,22 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 				if (bo.isNew()) {
 					// 新建的对象
 					this.getKeysManager().usePrimaryKeys(bo, this.getRepositoryFolder(), this.getTransactionId());
-					this.notifyActions(SaveActionsType.BEFORE_ADDING, bo);
+					this.fireAction(SaveActionType.BEFORE_ADDING, bo);
 					String fileName = String.format("%s%s%s.bo", boFolder, File.separator, this.getFileName(bo));
 					this.writeBOFile(bo, fileName);
-					this.notifyActions(SaveActionsType.ADDED, bo);
+					this.fireAction(SaveActionType.ADDED, bo);
 				} else if (bo.isDeleted()) {
 					// 删除对象
-					this.notifyActions(SaveActionsType.BEFORE_DELETING, bo);
+					this.fireAction(SaveActionType.BEFORE_DELETING, bo);
 					this.deleteBOFile(bo);
-					this.notifyActions(SaveActionsType.DELETED, bo);
+					this.fireAction(SaveActionType.DELETED, bo);
 				} else {
 					// 修改对象，先删除数据，再添加新的实例
-					this.notifyActions(SaveActionsType.BEFORE_UPDATING, bo);
+					this.fireAction(SaveActionType.BEFORE_UPDATING, bo);
 					this.deleteBOFile(bo);
 					String fileName = String.format("%s%s%s.bo", boFolder, File.separator, this.getFileName(bo));
 					this.writeBOFile(bo, fileName);
-					this.notifyActions(SaveActionsType.UPDATED, bo);
+					this.fireAction(SaveActionType.UPDATED, bo);
 				}
 				if (myTrans) {
 					// 自己打开的事务

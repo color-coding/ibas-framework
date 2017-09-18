@@ -2,9 +2,9 @@ package org.colorcoding.ibas.bobas.core;
 
 import java.util.ArrayList;
 
-public class SaveActionsSupport {
+public class SaveActionSupport {
 
-	public SaveActionsSupport(Object source) {
+	public SaveActionSupport(Object source) {
 		if (source == null) {
 			throw new NullPointerException();
 		}
@@ -12,9 +12,9 @@ public class SaveActionsSupport {
 	}
 
 	private Object source = null;
-	private ArrayList<SaveActionsListener> listeners;
+	private ArrayList<SaveActionListener> listeners;
 
-	public void registerListener(SaveActionsListener listener) {
+	public void registerListener(SaveActionListener listener) {
 		if (listener == null) {
 			return;
 		}
@@ -30,7 +30,7 @@ public class SaveActionsSupport {
 		this.listeners.add(listener);
 	}
 
-	public void removeListener(SaveActionsListener listener) {
+	public void removeListener(SaveActionListener listener) {
 		if (listener == null) {
 			return;
 		}
@@ -40,15 +40,16 @@ public class SaveActionsSupport {
 		this.listeners.remove(listener);
 	}
 
-	public boolean fireActions(SaveActionsType type, IBusinessObjectBase bo, IBusinessObjectBase root) {
+	public boolean fireAction(SaveActionType type, IBusinessObjectBase bo, IBusinessObjectBase root)
+			throws SaveActionException {
 		if (this.listeners == null) {
 			return true;
 		}
-		for (SaveActionsListener item : this.listeners) {
+		for (SaveActionListener item : this.listeners) {
 			if (item == null) {
 				continue;
 			}
-			boolean value = item.actionsEvent(new SaveActionsEvent(this.source, type, bo, root));
+			boolean value = item.onActionEvent(new SaveActionEvent(this.source, type, bo, root));
 			if (!value) {
 				// 返回为false，直接退出
 				return value;
@@ -57,7 +58,4 @@ public class SaveActionsSupport {
 		return true;
 	}
 
-	public boolean fireActions(SaveActionsType type, IBusinessObjectBase bo) {
-		return this.fireActions(type, bo, null);
-	}
 }

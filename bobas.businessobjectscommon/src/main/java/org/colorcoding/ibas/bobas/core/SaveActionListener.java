@@ -6,13 +6,14 @@ package org.colorcoding.ibas.bobas.core;
  * @author Niuren.Zhu
  *
  */
-public interface SaveActionsListener {
+public interface SaveActionListener {
 	/**
 	 * 动作通知
 	 * 
 	 * @param event
 	 *            事件参数
 	 * @return
+	 * @throws SaveActionException
 	 */
-	boolean actionsEvent(SaveActionsEvent event);
+	boolean onActionEvent(SaveActionEvent event) throws SaveActionException;
 }

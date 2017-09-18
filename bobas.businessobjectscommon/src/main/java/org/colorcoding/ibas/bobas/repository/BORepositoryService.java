@@ -15,10 +15,10 @@ import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
-import org.colorcoding.ibas.bobas.core.SaveActionsEvent;
-import org.colorcoding.ibas.bobas.core.SaveActionsException;
-import org.colorcoding.ibas.bobas.core.SaveActionsListener;
-import org.colorcoding.ibas.bobas.core.SaveActionsType;
+import org.colorcoding.ibas.bobas.core.SaveActionEvent;
+import org.colorcoding.ibas.bobas.core.SaveActionException;
+import org.colorcoding.ibas.bobas.core.SaveActionListener;
+import org.colorcoding.ibas.bobas.core.SaveActionType;
 import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
 import org.colorcoding.ibas.bobas.i18n.I18N;
@@ -71,26 +71,17 @@ public class BORepositoryService implements IBORepositoryService {
 		return this.repository;
 	}
 
-	private SaveActionsListener saveListener = new SaveActionsListener() {
+	private SaveActionListener saveListener = new SaveActionListener() {
 		@Override
-		public boolean actionsEvent(SaveActionsEvent event) {
+		public boolean onActionEvent(SaveActionEvent event) throws SaveActionException {
 			if (event == null) {
 				return true;
 			}
-			try {
-				if (BORepositoryService.this.getProcessing().contains(event.getBO())) {
-					// 根对象发生事件
-					return BORepositoryService.this.onSaveActionsEvent(event.getType(), event.getBO());
-				} else if (event.getRootBO() != null
-						&& BORepositoryService.this.getProcessing().contains(event.getRootBO())) {
-					// 子项对象发生事件
-					return BORepositoryService.this.onSaveActionsEvent(event.getType(), event.getBO(),
-							event.getRootBO());
-				}
-				return true;
-			} catch (SaveActionsException e) {
-				throw e;
+			if (BORepositoryService.this.getProcessing().contains(event.getBO())
+					|| BORepositoryService.this.getProcessing().contains(event.getRootBO())) {
+				return BORepositoryService.this.onSaveActionEvent(event.getType(), event.getBO(), event.getRootBO());
 			}
+			return true;
 		}
 	};
 
@@ -553,9 +544,10 @@ public class BORepositoryService implements IBORepositoryService {
 	 *            发生对象
 	 * @return
 	 */
-	protected boolean onSaveActionsEvent(SaveActionsType action, IBusinessObjectBase bo) throws SaveActionsException {
-		if (action == SaveActionsType.BEFORE_UPDATING) {
-			if (this.isCheckVersion()) {
+	protected boolean onSaveActionEvent(SaveActionType action, IBusinessObjectBase bo, IBusinessObjectBase root)
+			throws SaveActionException {
+		if (action == SaveActionType.BEFORE_UPDATING) {
+			if (this.isCheckVersion() && root == null) {
 				// 更新前，检查版本是否有效
 				try {
 					if (bo instanceof IBOStorageTag) {
@@ -578,26 +570,10 @@ public class BORepositoryService implements IBORepositoryService {
 						}
 					}
 				} catch (Exception e) {
-					throw new SaveActionsException(I18N.prop("msg_bobas_bo_version_check_faild", bo), e);
+					throw new SaveActionException(I18N.prop("msg_bobas_bo_version_check_faild", bo), e);
 				}
 			}
 		}
-		return true;
-	}
-
-	/**
-	 * 保存事件
-	 * 
-	 * @param action
-	 *            事件类型
-	 * @param bo
-	 *            发生对象
-	 * @param root
-	 *            根节点对象
-	 * @return
-	 */
-	protected boolean onSaveActionsEvent(SaveActionsType action, IBusinessObjectBase bo, IBusinessObjectBase root)
-			throws SaveActionsException {
 		return true;
 	}
 

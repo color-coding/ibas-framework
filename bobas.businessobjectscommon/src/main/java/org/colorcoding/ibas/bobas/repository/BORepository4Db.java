@@ -8,10 +8,10 @@ import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectListBase;
 import org.colorcoding.ibas.bobas.core.ITrackStatusOperator;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
-import org.colorcoding.ibas.bobas.core.SaveActionsException;
-import org.colorcoding.ibas.bobas.core.SaveActionsListener;
-import org.colorcoding.ibas.bobas.core.SaveActionsSupport;
-import org.colorcoding.ibas.bobas.core.SaveActionsType;
+import org.colorcoding.ibas.bobas.core.SaveActionException;
+import org.colorcoding.ibas.bobas.core.SaveActionListener;
+import org.colorcoding.ibas.bobas.core.SaveActionSupport;
+import org.colorcoding.ibas.bobas.core.SaveActionType;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.db.DbException;
@@ -75,7 +75,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 		}
 	}
 
-	private volatile SaveActionsSupport saveActionsSupport;
+	private volatile SaveActionSupport saveActionsSupport;
 
 	/**
 	 * 通知事务
@@ -84,15 +84,15 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	 *            事务类型
 	 * @param bo
 	 *            发生业务对象
-	 * @throws SaveActionsException
+	 * @throws SaveActionException
 	 *             运行时错误
 	 */
-	private void fireSaveActions(SaveActionsType type, IBusinessObjectBase bo, IBusinessObjectBase root)
-			throws SaveActionsException {
+	private void fireSaveActions(SaveActionType type, IBusinessObjectBase bo, IBusinessObjectBase root)
+			throws SaveActionException {
 		if (this.saveActionsSupport == null) {
 			return;
 		}
-		this.saveActionsSupport.fireActions(type, bo, root);
+		this.saveActionsSupport.fireAction(type, bo, root);
 	}
 
 	/**
@@ -101,9 +101,9 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	 * @param listener
 	 */
 	@Override
-	public final void registerListener(SaveActionsListener listener) {
+	public final void registerListener(SaveActionListener listener) {
 		if (this.saveActionsSupport == null) {
-			this.saveActionsSupport = new SaveActionsSupport(this);
+			this.saveActionsSupport = new SaveActionSupport(this);
 		}
 		this.saveActionsSupport.registerListener(listener);
 	}
@@ -114,7 +114,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	 * @param listener
 	 */
 	@Override
-	public final void removeListener(SaveActionsListener listener) {
+	public final void removeListener(SaveActionListener listener) {
 		if (this.saveActionsSupport == null) {
 			return;
 		}
@@ -200,15 +200,15 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 					// 新建的对象
 					this.getKeysManager().usePrimaryKeys(bo, command);// 获取并更新主键
 					this.getKeysManager().useSeriesKey(bo, command);// 获取并更新系列号
-					this.fireSaveActions(SaveActionsType.BEFORE_ADDING, bo, root);
+					this.fireSaveActions(SaveActionType.BEFORE_ADDING, bo, root);
 					sqlQuery = adapter4Db.parseInsertScript(bo);
 				} else if (bo.isDeleted()) {
 					// 删除对象
-					this.fireSaveActions(SaveActionsType.BEFORE_DELETING, bo, root);
+					this.fireSaveActions(SaveActionType.BEFORE_DELETING, bo, root);
 					sqlQuery = adapter4Db.parseDeleteScript(bo);
 				} else {
 					// 修改对象，先删除数据，再添加新的实例
-					this.fireSaveActions(SaveActionsType.BEFORE_UPDATING, bo, root);
+					this.fireSaveActions(SaveActionType.BEFORE_UPDATING, bo, root);
 					sqlQuery = adapter4Db.parseDeleteScript(bo);
 					command.executeUpdate(sqlQuery);// 执行删除副本
 					sqlQuery = adapter4Db.parseInsertScript(bo);
@@ -218,13 +218,13 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 				// 通知事务
 				if (bo.isNew()) {
 					// 新建的对象
-					this.fireSaveActions(SaveActionsType.ADDED, bo, root);
+					this.fireSaveActions(SaveActionType.ADDED, bo, root);
 				} else if (bo.isDeleted()) {
 					// 删除对象
-					this.fireSaveActions(SaveActionsType.DELETED, bo, root);
+					this.fireSaveActions(SaveActionType.DELETED, bo, root);
 				} else {
 					// 修改对象
-					this.fireSaveActions(SaveActionsType.UPDATED, bo, root);
+					this.fireSaveActions(SaveActionType.UPDATED, bo, root);
 				}
 				if (myTrans) {
 					// 自己打开的事务
