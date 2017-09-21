@@ -18,7 +18,7 @@ import org.colorcoding.ibas.bobas.util.ArrayList;
  * @author Niuren.Zhu
  *
  */
-public class BOJudgmentLinks extends JudgmentLinks {
+public class BOJudgmentLink extends JudgmentLink {
 	/**
 	 * 创建属性操作者
 	 * 
@@ -34,7 +34,7 @@ public class BOJudgmentLinks extends JudgmentLinks {
 					this.field = this.value.getField(this.getPropertyName());
 				}
 				if (this.field == null) {
-					throw new JudgmentLinksException(I18N.prop("msg_bobas_not_found_bo_field", this.getPropertyName()));
+					throw new JudgmentLinkException(I18N.prop("msg_bobas_not_found_bo_field", this.getPropertyName()));
 				}
 				return this.field;
 			}
@@ -42,7 +42,7 @@ public class BOJudgmentLinks extends JudgmentLinks {
 			@Override
 			public void setValue(Object value) {
 				if (value != null && !(value instanceof IManageFields)) {
-					throw new JudgmentLinksException(I18N.prop("msg_bobas_invaild_bo_type"));
+					throw new JudgmentLinkException(I18N.prop("msg_bobas_invaild_bo_type"));
 				}
 				this.value = (IManageFields) value;
 				this.field = null;
@@ -116,7 +116,7 @@ public class BOJudgmentLinks extends JudgmentLinks {
 						jItem.setOpenBracket(item.getOpenBracket());
 						jItem.setLeftOperter(this.createValueOperator());
 						jItem.getLeftOperter().setValue(true);
-						jItem.setOperation(JudmentOperations.EQUAL);
+						jItem.setOperation(JudmentOperation.EQUAL);
 						jItem.setRightOperter(this.createValueOperator());
 						jItem.getRightOperter().setValue(result);
 						jItem.setCloseBracket(item.getCloseBracket());
@@ -207,7 +207,7 @@ public class BOJudgmentLinks extends JudgmentLinks {
 		ArrayList<JudgmentLinkItem> jItems = new ArrayList<>();
 		for (Object item : values) {
 			JudgmentLinkItem jItem = new JudgmentLinkItem();
-			jItem.setRelationship(JudmentOperations.OR);
+			jItem.setRelationship(JudmentOperation.OR);
 			// 左值
 			IPropertyValueOperator propertyValueOperator = this.createPropertyValueOperator();
 			propertyValueOperator.setPropertyName(property);

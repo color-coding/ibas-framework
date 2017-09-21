@@ -14,7 +14,7 @@ import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.repository.BORepository4DbBatch;
-import org.colorcoding.ibas.bobas.repository.InvalidRepositoryException;
+import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.repository.InvalidTokenException;
 import org.colorcoding.ibas.bobas.test.bo.IMaterials;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrder;
@@ -78,7 +78,7 @@ public class testBORepository extends TestCase {
 
 	}
 
-	public void testFetchBO() throws InvalidRepositoryException, InvalidTokenException {
+	public void testFetchBO() throws RepositoryException, InvalidTokenException {
 		BORepositoryTest boRepository = new BORepositoryTest();
 		// boRepository.connectRepository("MSSQL", "localhost", "ibas_demo",
 		// "sa", "1q2w3e");
@@ -131,7 +131,7 @@ public class testBORepository extends TestCase {
 		}
 	}
 
-	public void testSaveBO() throws InvalidRepositoryException, InvalidTokenException {
+	public void testSaveBO() throws RepositoryException, InvalidTokenException {
 		BORepositoryTest boRepository = new BORepositoryTest();
 		// boRepository.connectRepository("MSSQL", "localhost", "ibas_demo",
 		// "sa", "1q2w3e");
@@ -173,7 +173,7 @@ public class testBORepository extends TestCase {
 		// System.out.println(i18n.prop("msg_bobas_operation_successful"));
 	}
 
-	public void testBOAssociations() throws InvalidRepositoryException, InvalidTokenException {
+	public void testBOAssociations() throws RepositoryException, InvalidTokenException {
 		BORepositoryTest boRepository = new BORepositoryTest();
 		boRepository.connectRepository("MYSQL", "192.168.3.53:3306", "ibas_demo", "root", "1q2w3e");
 		boRepository.setUserToken("");

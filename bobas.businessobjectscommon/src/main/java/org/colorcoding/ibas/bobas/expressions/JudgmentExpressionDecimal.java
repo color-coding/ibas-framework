@@ -16,7 +16,7 @@ public class JudgmentExpressionDecimal extends JudgmentExpressionComparable<BigD
 
 	}
 
-	public JudgmentExpressionDecimal(Decimal leftValue, JudmentOperations operation, Decimal rightValue) {
+	public JudgmentExpressionDecimal(Decimal leftValue, JudmentOperation operation, Decimal rightValue) {
 		super(leftValue, operation, rightValue);
 	}
 

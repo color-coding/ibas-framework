@@ -111,7 +111,7 @@ public interface IApprovalProcess {
 	 * @throws RepositoryException
 	 */
 	void approval(int stepId, emApprovalResult apResult, String authorizationCode, String judgment)
-			throws InvalidAuthorizationException, ApprovalException, RepositoryException;
+			throws InvalidAuthorizationException, ApprovalProcessException, RepositoryException;
 
 	/**
 	 * 取消流程

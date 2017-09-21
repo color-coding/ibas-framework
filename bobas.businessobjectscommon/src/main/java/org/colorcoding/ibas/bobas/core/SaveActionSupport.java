@@ -40,7 +40,7 @@ public class SaveActionSupport {
 		this.listeners.remove(listener);
 	}
 
-	public boolean fireAction(SaveActionType type, IBusinessObjectBase bo) throws SaveActionException {
+	public boolean fireAction(SaveActionType type, IBusinessObjectBase bo) throws RepositoryException {
 		if (this.listeners == null) {
 			return true;
 		}

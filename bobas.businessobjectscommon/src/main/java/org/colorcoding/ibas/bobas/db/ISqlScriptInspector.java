@@ -13,7 +13,7 @@ public interface ISqlScriptInspector {
 	 * 检查语句
 	 * 
 	 * @throws SecurityException
-	 * @throws SqlScriptsException
+	 * @throws SqlScriptException
 	 */
-	void check(ISqlQuery sql) throws SecurityException, SqlScriptsException;
+	void check(ISqlQuery sql) throws SecurityException, SqlScriptException;
 }

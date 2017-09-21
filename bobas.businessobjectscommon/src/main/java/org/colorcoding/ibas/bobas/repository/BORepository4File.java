@@ -22,7 +22,6 @@ import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.ITrackStatusOperator;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
-import org.colorcoding.ibas.bobas.core.SaveActionException;
 import org.colorcoding.ibas.bobas.core.SaveActionListener;
 import org.colorcoding.ibas.bobas.core.SaveActionSupport;
 import org.colorcoding.ibas.bobas.core.SaveActionType;
@@ -168,7 +167,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 	 * @throws SaveActionException
 	 *             运行时错误
 	 */
-	private void fireAction(SaveActionType type, IBusinessObjectBase bo) throws SaveActionException {
+	private void fireAction(SaveActionType type, IBusinessObjectBase bo) throws Exception {
 		if (this.saveActionsSupport == null) {
 			return;
 		}

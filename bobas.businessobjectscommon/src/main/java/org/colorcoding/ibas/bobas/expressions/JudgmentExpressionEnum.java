@@ -31,7 +31,7 @@ public class JudgmentExpressionEnum extends JudgmentExpression<Object> {
 	@Override
 	public boolean result() throws NotSupportOperationException {
 		// 等
-		if (this.getOperation() == JudmentOperations.EQUAL) {
+		if (this.getOperation() == JudmentOperation.EQUAL) {
 			String tmpLeft = DataConvert.toString(this.getLeftValue());
 			String tmpLeftDb = DataConvert.toDbValue(this.getLeftValue());
 			String tmpRight = DataConvert.toString(this.getRightValue());
@@ -45,7 +45,7 @@ public class JudgmentExpressionEnum extends JudgmentExpression<Object> {
 			return false;
 		}
 		// 不等
-		else if (this.getOperation() == JudmentOperations.NOT_EQUAL) {
+		else if (this.getOperation() == JudmentOperation.NOT_EQUAL) {
 			String tmpLeft = DataConvert.toString(this.getLeftValue());
 			String tmpLeftDb = DataConvert.toDbValue(this.getLeftValue());
 			String tmpRight = DataConvert.toString(this.getRightValue());

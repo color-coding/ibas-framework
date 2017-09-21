@@ -31,9 +31,9 @@ public class Daemon implements IDaemon {
 	 * @param task
 	 *            任务
 	 * @return 任务ID，小于0任务注册失败
-	 * @throws InvalidDaemonTask
+	 * @throws InvalidDaemonTaskException
 	 */
-	public static long register(IDaemonTask task) throws InvalidDaemonTask {
+	public static long register(IDaemonTask task) throws InvalidDaemonTaskException {
 		return register(task, true);
 	}
 
@@ -45,9 +45,9 @@ public class Daemon implements IDaemon {
 	 * @param log
 	 *            是否记录日志
 	 * @return 任务ID，小于0任务注册失败
-	 * @throws InvalidDaemonTask
+	 * @throws InvalidDaemonTaskException
 	 */
-	public static long register(IDaemonTask task, boolean log) throws InvalidDaemonTask {
+	public static long register(IDaemonTask task, boolean log) throws InvalidDaemonTaskException {
 		synchronized (Daemon.class) {
 			return create().add(task, log);
 		}
@@ -145,15 +145,15 @@ public class Daemon implements IDaemon {
 	}
 
 	@Override
-	public long add(IDaemonTask task, boolean isLog) throws InvalidDaemonTask {
+	public long add(IDaemonTask task, boolean isLog) throws InvalidDaemonTaskException {
 		if (task == null || task.getName() == null || task.getName().isEmpty()) {
-			throw new InvalidDaemonTask();
+			throw new InvalidDaemonTaskException();
 		}
 		if (task instanceof ISingleDaemonTask) {
 			ISingleDaemonTask singleTask = (ISingleDaemonTask) task;
 			if (singleTask.getKeepTime() < 1 || singleTask.getLockSignature() == null
 					|| singleTask.getLockSignature().isEmpty()) {
-				throw new InvalidDaemonTask();
+				throw new InvalidDaemonTaskException();
 			}
 		}
 		synchronized (this.getWrappings()) {

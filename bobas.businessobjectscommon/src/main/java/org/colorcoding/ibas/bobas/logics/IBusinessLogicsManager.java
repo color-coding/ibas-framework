@@ -14,7 +14,7 @@ public interface IBusinessLogicsManager {
 	 *            事务标记
 	 * @return
 	 */
-	IBusinessLogicsChain getChain(String transId);
+	IBusinessLogicChain getChain(String transId);
 
 	/**
 	 * 创建新的逻辑链
@@ -23,7 +23,7 @@ public interface IBusinessLogicsManager {
 	 *            事务标记
 	 * @return
 	 */
-	IBusinessLogicsChain registerChain(String transId);
+	IBusinessLogicChain registerChain(String transId);
 
 	/**
 	 * 关闭逻辑链
@@ -40,7 +40,7 @@ public interface IBusinessLogicsManager {
 	 * @param contract
 	 *            契约
 	 * @return
-	 * @throws NotFoundBusinessLogicsException
+	 * @throws NotFoundBusinessLogicException
 	 */
-	IBusinessLogic<?> createLogic(Class<?> contract) throws NotFoundBusinessLogicsException;
+	IBusinessLogic<?> createLogic(Class<?> contract) throws NotFoundBusinessLogicException;
 }

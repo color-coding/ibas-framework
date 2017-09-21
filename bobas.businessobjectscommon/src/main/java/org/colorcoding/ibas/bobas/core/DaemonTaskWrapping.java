@@ -16,10 +16,10 @@ import org.colorcoding.ibas.bobas.messages.MessageLevel;
 class DaemonTaskWrapping {
 	protected static final String MSG_DAEMON_SINGLE_TASK_WORK_FOLDER_NOT_EXISTS = "daemon: single task work folder not exists.";
 
-	public DaemonTaskWrapping(IDaemonTask task) throws InvalidDaemonTask {
+	public DaemonTaskWrapping(IDaemonTask task) throws InvalidDaemonTaskException {
 		this();
 		if (task == null) {
-			throw new InvalidDaemonTask();
+			throw new InvalidDaemonTaskException();
 		}
 		this.setTask(task);
 		// 设置首次运行时间

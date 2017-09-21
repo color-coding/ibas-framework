@@ -9,13 +9,13 @@ import org.colorcoding.ibas.bobas.util.StringBuilder;
  *
  */
 public class JudgmentLinkItem {
-	private JudmentOperations relationship;
+	private JudmentOperation relationship;
 
-	public final JudmentOperations getRelationship() {
+	public final JudmentOperation getRelationship() {
 		return relationship;
 	}
 
-	public final void setRelationship(JudmentOperations operation) {
+	public final void setRelationship(JudmentOperation operation) {
 		this.relationship = operation;
 	}
 
@@ -39,13 +39,13 @@ public class JudgmentLinkItem {
 		this.leftOperter = leftOperter;
 	}
 
-	private JudmentOperations operation;
+	private JudmentOperation operation;
 
-	public final JudmentOperations getOperation() {
+	public final JudmentOperation getOperation() {
 		return operation;
 	}
 
-	public final void setOperation(JudmentOperations operation) {
+	public final void setOperation(JudmentOperation operation) {
 		this.operation = operation;
 	}
 

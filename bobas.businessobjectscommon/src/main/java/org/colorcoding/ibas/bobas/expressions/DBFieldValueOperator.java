@@ -4,7 +4,7 @@ import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IFieldDataDb;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.expressions.IPropertyValueOperator;
-import org.colorcoding.ibas.bobas.expressions.JudgmentLinksException;
+import org.colorcoding.ibas.bobas.expressions.JudgmentLinkException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 
 /**
@@ -30,7 +30,7 @@ public class DBFieldValueOperator implements IPropertyValueOperator {
 			}
 		}
 		if (this.field == null) {
-			throw new JudgmentLinksException(I18N.prop("msg_bobas_not_found_bo_field", this.getPropertyName()));
+			throw new JudgmentLinkException(I18N.prop("msg_bobas_not_found_bo_field", this.getPropertyName()));
 		}
 		return this.field;
 	}
@@ -38,7 +38,7 @@ public class DBFieldValueOperator implements IPropertyValueOperator {
 	@Override
 	public void setValue(Object value) {
 		if (value != null && !(value instanceof IManageFields)) {
-			throw new JudgmentLinksException(I18N.prop("msg_bobas_invaild_bo_type"));
+			throw new JudgmentLinkException(I18N.prop("msg_bobas_invaild_bo_type"));
 		}
 		this.value = (IManageFields) value;
 		this.field = null;

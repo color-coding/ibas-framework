@@ -11,7 +11,7 @@ public class JudgmentExpressionLong extends JudgmentExpressionComparable<Long> {
 
 	}
 
-	public JudgmentExpressionLong(long leftValue, JudmentOperations operation, long rightValue) {
+	public JudgmentExpressionLong(long leftValue, JudmentOperation operation, long rightValue) {
 		super(leftValue, operation, rightValue);
 	}
 

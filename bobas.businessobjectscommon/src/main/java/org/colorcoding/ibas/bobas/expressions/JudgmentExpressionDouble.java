@@ -11,7 +11,7 @@ public class JudgmentExpressionDouble extends JudgmentExpressionComparable<Doubl
 
 	}
 
-	public JudgmentExpressionDouble(double leftValue, JudmentOperations operation, double rightValue) {
+	public JudgmentExpressionDouble(double leftValue, JudmentOperation operation, double rightValue) {
 		super(leftValue, operation, rightValue);
 	}
 

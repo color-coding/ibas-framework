@@ -174,7 +174,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 				// 查询的数据有效
 				this.oldContract = tmpData;
 			} else {
-				throw new BusinessLogicsException(I18N.prop("msg_bobas_not_found_bo_copy", this.getContract()));
+				throw new BusinessLogicException(I18N.prop("msg_bobas_not_found_bo_copy", this.getContract()));
 			}
 		}
 		return this.oldContract;
@@ -197,15 +197,15 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 					throw opRslt.getError();
 				}
 				if (opRslt.getResultCode() != 0) {
-					throw new BusinessLogicsException(opRslt.getMessage());
+					throw new BusinessLogicException(opRslt.getMessage());
 				}
 				return (L) opRslt.getResultObjects().firstOrDefault();
 			}
-			throw new BusinessLogicsException(I18N.prop("msg_bobas_not_supported"));
-		} catch (BusinessLogicsException e) {
+			throw new BusinessLogicException(I18N.prop("msg_bobas_not_supported"));
+		} catch (BusinessLogicException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new BusinessLogicsException(e);
+			throw new BusinessLogicException(e);
 		}
 	}
 
@@ -236,15 +236,15 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 					throw opRslt.getError();
 				}
 				if (opRslt.getResultCode() != 0) {
-					throw new BusinessLogicsException(opRslt.getMessage());
+					throw new BusinessLogicException(opRslt.getMessage());
 				}
 				return opRslt.getResultObjects().firstOrDefault();
 			}
-			throw new BusinessLogicsException(I18N.prop("msg_bobas_not_supported"));
-		} catch (BusinessLogicsException e) {
+			throw new BusinessLogicException(I18N.prop("msg_bobas_not_supported"));
+		} catch (BusinessLogicException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new BusinessLogicsException(e);
+			throw new BusinessLogicException(e);
 		}
 	}
 
@@ -286,7 +286,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 				// 查询的数据有效
 				this.oldParent = tmpData;
 			} else {
-				throw new BusinessLogicsException(I18N.prop("msg_bobas_not_found_bo_copy", this.getParent()));
+				throw new BusinessLogicException(I18N.prop("msg_bobas_not_found_bo_copy", this.getParent()));
 			}
 		}
 		// 检查父项数据状态
@@ -330,21 +330,21 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			OperationResult<B> operationResult = logicRepository.save(this.getBeAffected());
 			logicRepository.setRepository(null);// 移出监听
 			if (operationResult.getError() != null) {
-				throw new BusinessLogicsException(operationResult.getError());
+				throw new BusinessLogicException(operationResult.getError());
 			}
 			if (operationResult.getResultCode() != 0) {
-				throw new BusinessLogicsException(operationResult.getMessage());
+				throw new BusinessLogicException(operationResult.getMessage());
 			}
 		}
 	}
 
-	IBusinessLogicsChain logicsChain;
+	IBusinessLogicChain logicsChain;
 
-	final IBusinessLogicsChain getLogicsChain() {
+	final IBusinessLogicChain getLogicsChain() {
 		return this.logicsChain;
 	}
 
-	final void setLogicsChain(IBusinessLogicsChain value) {
+	final void setLogicsChain(IBusinessLogicChain value) {
 		this.logicsChain = value;
 	}
 

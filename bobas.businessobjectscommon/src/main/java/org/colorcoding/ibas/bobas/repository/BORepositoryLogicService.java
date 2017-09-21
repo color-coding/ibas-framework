@@ -1,8 +1,8 @@
 package org.colorcoding.ibas.bobas.repository;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.approval.ApprovalException;
 import org.colorcoding.ibas.bobas.approval.ApprovalFactory;
+import org.colorcoding.ibas.bobas.approval.ApprovalProcessException;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcess;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcessManager;
@@ -11,12 +11,11 @@ import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
 import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
-import org.colorcoding.ibas.bobas.core.SaveActionException;
 import org.colorcoding.ibas.bobas.core.SaveActionType;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logics.BusinessLogicsFactory;
-import org.colorcoding.ibas.bobas.logics.IBusinessLogicsChain;
+import org.colorcoding.ibas.bobas.logics.IBusinessLogicChain;
 import org.colorcoding.ibas.bobas.logics.IBusinessLogicsManager;
 import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
@@ -88,14 +87,15 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 * @throws SaveActionException
 	 */
 	@Override
-	protected boolean onSaveActionEvent(SaveActionType action, IBusinessObjectBase trigger) throws SaveActionException {
+	protected boolean onSaveActionEvent(SaveActionType action, IBusinessObjectBase trigger) throws RepositoryException {
 		if (action == SaveActionType.BEFORE_DELETING) {
 			// 删除前检查
 			if (trigger instanceof IBOReferenced) {
 				IBOReferenced refBO = (IBOReferenced) trigger;
 				if (refBO.getReferenced() == emYesNo.YES) {
 					// 被引用的数据，不允许删除，可以标记删除
-					throw new SaveActionException(I18N.prop("msg_bobas_not_allow_delete_referenced_bo", trigger.toString()));
+					throw new RepositoryException(
+							I18N.prop("msg_bobas_not_allow_delete_referenced_bo", trigger.toString()));
 				}
 			}
 		}
@@ -107,7 +107,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 				try {
 					this.checkRules(action, trigger);
 				} catch (BusinessRuleException e) {
-					throw new SaveActionException(e);
+					throw new RepositoryException(e);
 				}
 			}
 			// 审批流程相关，先执行审批逻辑，可能对bo的状态有影响
@@ -115,8 +115,8 @@ public class BORepositoryLogicService extends BORepositoryService {
 				// 触发审批流程
 				try {
 					this.triggerApprovals(trigger);
-				} catch (InvalidAuthorizationException | ApprovalException e) {
-					throw new SaveActionException(e);
+				} catch (InvalidAuthorizationException | ApprovalProcessException e) {
+					throw new RepositoryException(e);
 				}
 			}
 		}
@@ -161,7 +161,8 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 * @throws ApprovalException
 	 * @throws InvalidAuthorizationException
 	 */
-	private void triggerApprovals(IBusinessObjectBase bo) throws ApprovalException, InvalidAuthorizationException {
+	private void triggerApprovals(IBusinessObjectBase bo)
+			throws ApprovalProcessException, InvalidAuthorizationException {
 		if (!(bo instanceof IApprovalData)) {
 			// 业务对象不是需要审批的数据，退出处理
 			return;
@@ -212,7 +213,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 	private void runLogics(SaveActionType type, IBusinessObjectBase bo) {
 		String transId = this.getRepository().getTransactionId();// 事务链标记，结束事务时关闭
 		IBusinessLogicsManager logicsManager = BusinessLogicsFactory.create().createManager();
-		IBusinessLogicsChain logicsChain = logicsManager.getChain(transId);
+		IBusinessLogicChain logicsChain = logicsManager.getChain(transId);
 		if (logicsChain == null) {
 			// 没有已存在的，创建并注册
 			logicsChain = logicsManager.registerChain(transId);

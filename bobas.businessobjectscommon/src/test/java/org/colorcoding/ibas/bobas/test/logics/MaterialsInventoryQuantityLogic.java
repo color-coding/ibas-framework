@@ -5,7 +5,7 @@ import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.logics.BusinessLogic;
-import org.colorcoding.ibas.bobas.logics.BusinessLogicsException;
+import org.colorcoding.ibas.bobas.logics.BusinessLogicException;
 import org.colorcoding.ibas.bobas.mapping.LogicContract;
 import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.test.bo.IMaterials;
@@ -29,10 +29,10 @@ public class MaterialsInventoryQuantityLogic extends BusinessLogic<IMaterialsInv
 			boRepositry.setRepository(this.getRepository());
 			IOperationResult<IMaterials> operationResult = boRepositry.fetchMaterials(criteria);
 			if (operationResult.getError() != null) {
-				throw new BusinessLogicsException(operationResult.getError());
+				throw new BusinessLogicException(operationResult.getError());
 			}
 			if (operationResult.getResultCode() != 0) {
-				throw new BusinessLogicsException(operationResult.getMessage());
+				throw new BusinessLogicException(operationResult.getMessage());
 			}
 			materials = operationResult.getResultObjects().firstOrDefault();
 		}

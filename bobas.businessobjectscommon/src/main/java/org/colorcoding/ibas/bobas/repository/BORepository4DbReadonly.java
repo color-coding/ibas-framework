@@ -25,7 +25,7 @@ import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.SingleValue;
-import org.colorcoding.ibas.bobas.db.BOParsingException;
+import org.colorcoding.ibas.bobas.db.ParsingException;
 import org.colorcoding.ibas.bobas.db.DbAdapterFactory;
 import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
@@ -34,7 +34,7 @@ import org.colorcoding.ibas.bobas.db.IDbCommand;
 import org.colorcoding.ibas.bobas.db.IDbConnection;
 import org.colorcoding.ibas.bobas.db.IDbDataReader;
 import org.colorcoding.ibas.bobas.db.ISqlScriptInspector;
-import org.colorcoding.ibas.bobas.db.SqlScriptsException;
+import org.colorcoding.ibas.bobas.db.SqlScriptException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.mapping.AssociationMode;
 import org.colorcoding.ibas.bobas.messages.Logger;
@@ -332,10 +332,10 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 * @throws RepositoryException
 	 * @throws DbException
 	 * @throws SQLException
-	 * @throws BOParsingException
+	 * @throws ParsingException
 	 */
 	private final IBusinessObjectBase[] myFetch(ISqlQuery sqlQuery, Class<?> boType)
-			throws RepositoryException, DbException, SQLException, BOParsingException {
+			throws RepositoryException, DbException, SQLException, ParsingException {
 		if (boType == null) {
 			throw new RepositoryException(I18N.prop("msg_bobas_not_specify_bo_type"));
 		}
@@ -378,14 +378,14 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 * @throws RepositoryException
 	 * @throws DbException
 	 * @throws SQLException
-	 * @throws BOParsingException
-	 * @throws SqlScriptsException
+	 * @throws ParsingException
+	 * @throws SqlScriptException
 	 * @throws ClassNotFoundException
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
 	private final IBusinessObjectBase[] myFetchEx(ICriteria criteria, Class<?> boType)
-			throws RepositoryException, DbException, SQLException, BOParsingException, SqlScriptsException,
+			throws RepositoryException, DbException, SQLException, ParsingException, SqlScriptException,
 			ClassNotFoundException, InstantiationException, IllegalAccessException {
 		if (boType == null) {
 			throw new RepositoryException(I18N.prop("msg_bobas_not_specify_bo_type"));
@@ -428,14 +428,14 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 * @throws RepositoryException
 	 * @throws DbException
 	 * @throws SQLException
-	 * @throws BOParsingException
-	 * @throws SqlScriptsException
+	 * @throws ParsingException
+	 * @throws SqlScriptException
 	 * @throws ClassNotFoundException
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
 	private final IBusinessObjectBase[] myFetchEx(ISqlQuery sqlQuery, Class<?> boType)
-			throws RepositoryException, DbException, SQLException, BOParsingException, SqlScriptsException,
+			throws RepositoryException, DbException, SQLException, ParsingException, SqlScriptException,
 			ClassNotFoundException, InstantiationException, IllegalAccessException {
 		if (boType == null) {
 			throw new RepositoryException(I18N.prop("msg_bobas_not_specify_bo_type"));
@@ -462,14 +462,14 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 * @param criteria
 	 *            可能存在的子项查询
 	 * @throws DbException
-	 * @throws SqlScriptsException
-	 * @throws BOParsingException
+	 * @throws SqlScriptException
+	 * @throws ParsingException
 	 * @throws ClassNotFoundException
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
-	private final void myFetchEx(IBusinessObjectBase[] bos, ICriteria criteria) throws DbException, SqlScriptsException,
-			BOParsingException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+	private final void myFetchEx(IBusinessObjectBase[] bos, ICriteria criteria) throws DbException, SqlScriptException,
+			ParsingException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 		boolean myOpenedDb = false;// 自己打开的数据库
 		IDbDataReader reader = null;
 		IDbCommand command = null;

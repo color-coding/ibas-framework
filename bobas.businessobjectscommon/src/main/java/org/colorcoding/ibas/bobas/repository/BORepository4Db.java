@@ -8,7 +8,6 @@ import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectListBase;
 import org.colorcoding.ibas.bobas.core.ITrackStatusOperator;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
-import org.colorcoding.ibas.bobas.core.SaveActionException;
 import org.colorcoding.ibas.bobas.core.SaveActionListener;
 import org.colorcoding.ibas.bobas.core.SaveActionSupport;
 import org.colorcoding.ibas.bobas.core.SaveActionType;
@@ -87,7 +86,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	 * @throws SaveActionException
 	 *             运行时错误
 	 */
-	private void fireSaveAction(SaveActionType type, IBusinessObjectBase bo) throws SaveActionException {
+	private void fireSaveAction(SaveActionType type, IBusinessObjectBase bo) throws RepositoryException {
 		if (this.saveActionSupport == null) {
 			return;
 		}

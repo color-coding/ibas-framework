@@ -165,7 +165,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 		for (IApprovalProcessStep item : this.getProcessSteps()) {
 			ApprovalProcessStep stepItem = (ApprovalProcessStep) item;
 			try {
-				ApprovalDataJudgmentLinks judgmentLinks = new ApprovalDataJudgmentLinks();
+				ApprovalDataJudgmentLink judgmentLinks = new ApprovalDataJudgmentLink();
 				if (this.getRepository() instanceof IBORepository4DbReadonly) {
 					judgmentLinks.setRepository((IBORepository4DbReadonly) this.getRepository());
 				}
@@ -195,17 +195,18 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	 * 激活下一个步骤
 	 * 
 	 * @throws JudmentOperationException
-	 * @throws ApprovalException
+	 * @throws ApprovalProcessException
 	 * @throws RepositoryException
 	 */
-	private ApprovalProcessStep nextStep() throws JudmentOperationException, ApprovalException, RepositoryException {
+	private ApprovalProcessStep nextStep()
+			throws JudmentOperationException, ApprovalProcessException, RepositoryException {
 		for (IApprovalProcessStep item : this.getProcessSteps()) {
 			if (item.getStatus() != emApprovalStepStatus.PENDING) {
 				// 只考虑挂起的步骤
 				continue;
 			}
 			ApprovalProcessStep stepItem = (ApprovalProcessStep) item;
-			ApprovalDataJudgmentLinks judgmentLinks = new ApprovalDataJudgmentLinks();
+			ApprovalDataJudgmentLink judgmentLinks = new ApprovalDataJudgmentLink();
 			if (this.getRepository() instanceof IBORepository4DbReadonly) {
 				judgmentLinks.setRepository((IBORepository4DbReadonly) this.getRepository());
 			}
@@ -233,7 +234,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	}
 
 	public final void approval(int stepId, emApprovalResult apResult, String authorizationCode, String judgment)
-			throws InvalidAuthorizationException, ApprovalException, RepositoryException {
+			throws InvalidAuthorizationException, ApprovalProcessException, RepositoryException {
 		ApprovalProcessStep apStep = this.getProcessStep(stepId);
 		if (apStep == null) {
 			throw new ApprovalProcessException(I18N.prop("msg_bobas_not_found_approval_process_step", stepId));
@@ -398,10 +399,10 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	 * 获取审批数据
 	 * 
 	 * @return
-	 * @throws ApprovalException
+	 * @throws ApprovalProcessException
 	 * @throws RepositoryException
 	 */
-	protected IApprovalData getApprovalData(boolean real) throws ApprovalException, RepositoryException {
+	protected IApprovalData getApprovalData(boolean real) throws ApprovalProcessException, RepositoryException {
 		if (!real) {
 			return this.getApprovalData();
 		}
@@ -409,7 +410,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 			// 审批数据不是业务对象，则查询实际业务对象
 			ICriteria criteria = this.getApprovalData().getCriteria();
 			if (criteria == null || criteria.getConditions().size() == 0) {
-				throw new ApprovalException(I18N.prop("msg_bobas_approval_data_identifiers_unrecognizable",
+				throw new ApprovalProcessException(I18N.prop("msg_bobas_approval_data_identifiers_unrecognizable",
 						this.getApprovalData().getIdentifiers()));
 			}
 			if (this.getRepository() == null) {
@@ -423,14 +424,14 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 				apRepository.closeRepository();
 			}
 			if (opRsltFetch.getError() != null) {
-				throw new ApprovalException(opRsltFetch.getError());
+				throw new ApprovalProcessException(opRsltFetch.getError());
 			}
 			if (opRsltFetch.getResultCode() != 0) {
-				throw new ApprovalException(opRsltFetch.getMessage());
+				throw new ApprovalProcessException(opRsltFetch.getMessage());
 			}
 			Object tmpBO = opRsltFetch.getResultObjects().firstOrDefault();
 			if (!(tmpBO instanceof IApprovalData)) {
-				throw new ApprovalException(
+				throw new ApprovalProcessException(
 						I18N.prop("msg_bobas_approval_data_not_exist", this.getApprovalData().getIdentifiers()));
 			}
 			IApprovalData data = (IApprovalData) tmpBO;
@@ -465,10 +466,10 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 					// 保存审批数据
 					IOperationResult<?> opRsltSave = apRepository.save((IBusinessObject) approvalData);
 					if (opRsltSave.getError() != null) {
-						throw new ApprovalException(opRsltSave.getError());
+						throw new ApprovalProcessException(opRsltSave.getError());
 					}
 					if (opRsltSave.getResultCode() != 0) {
-						throw new ApprovalException(opRsltSave.getMessage());
+						throw new ApprovalProcessException(opRsltSave.getMessage());
 					}
 				}
 			}

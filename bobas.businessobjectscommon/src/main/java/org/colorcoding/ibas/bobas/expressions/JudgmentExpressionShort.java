@@ -11,7 +11,7 @@ public class JudgmentExpressionShort extends JudgmentExpressionComparable<Short>
 
 	}
 
-	public JudgmentExpressionShort(short leftValue, JudmentOperations operation, short rightValue) {
+	public JudgmentExpressionShort(short leftValue, JudmentOperation operation, short rightValue) {
 		super(leftValue, operation, rightValue);
 	}
 

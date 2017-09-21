@@ -11,7 +11,7 @@ public class JudgmentExpressionInteger extends JudgmentExpressionComparable<Inte
 
 	}
 
-	public JudgmentExpressionInteger(int leftValue, JudmentOperations operation, int rightValue) {
+	public JudgmentExpressionInteger(int leftValue, JudmentOperation operation, int rightValue) {
 		super(leftValue, operation, rightValue);
 	}
 

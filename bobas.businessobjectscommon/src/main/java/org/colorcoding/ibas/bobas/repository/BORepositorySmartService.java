@@ -73,27 +73,27 @@ public class BORepositorySmartService extends BORepositoryLogicService implement
 
 	@Override
 	public void connectRepository(String type, String server, String name, String user, String password)
-			throws InvalidRepositoryException {
+			throws RepositoryException {
 		super.connectRepository(type, server, name, user, password);
 		this.setEnabledReadonlyRepository(false);// 手动连接不启动只读库
 	}
 
 	@Override
 	public void connectReadonlyRepository(String type, String server, String name, String user, String password)
-			throws InvalidRepositoryException {
+			throws RepositoryException {
 		try {
 			IBORepository4DbReadonly dbRepository = new BORepository4DbReadonly();
 			dbRepository.connectDb(type, server, name, user, password);
 			this.setReadonlyRepository(dbRepository);
 			this.setEnabledReadonlyRepository(true);// 启动只读库
 		} catch (DbException e) {
-			throw new InvalidRepositoryException(e);
+			throw new RepositoryException(e);
 		}
 	}
 
 	@Override
 	public void connectReadonlyRepository(String server, String name, String user, String password)
-			throws InvalidRepositoryException {
+			throws RepositoryException {
 		this.connectReadonlyRepository(null, server, name, user, password);
 	}
 

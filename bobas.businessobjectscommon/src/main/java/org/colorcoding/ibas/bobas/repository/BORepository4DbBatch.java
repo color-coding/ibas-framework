@@ -13,7 +13,7 @@ import org.colorcoding.ibas.bobas.core.ITrackStatusOperator;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
-import org.colorcoding.ibas.bobas.db.BOParsingException;
+import org.colorcoding.ibas.bobas.db.ParsingException;
 import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
 import org.colorcoding.ibas.bobas.db.IDbCommand;
@@ -103,10 +103,10 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 	 *            包含子项
 	 * @return 对象保存语句数组
 	 * @throws DbException
-	 * @throws BOParsingException
+	 * @throws ParsingException
 	 */
 	private ISqlQuery[] parseSaveQueries(IBusinessObjectBase bo, boolean recursion)
-			throws DbException, BOParsingException {
+			throws DbException, ParsingException {
 		IBOAdapter4Db adapter4Db = this.getBOAdapter();
 		ArrayList<ISqlQuery> sqlQueries = new ArrayList<>();
 		// 不是更新状态，不做处理

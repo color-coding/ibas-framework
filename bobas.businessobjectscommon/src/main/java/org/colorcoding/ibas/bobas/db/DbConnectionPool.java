@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.db;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.core.Daemon;
 import org.colorcoding.ibas.bobas.core.IDaemonTask;
-import org.colorcoding.ibas.bobas.core.InvalidDaemonTask;
+import org.colorcoding.ibas.bobas.core.InvalidDaemonTaskException;
 import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
 
@@ -166,7 +166,7 @@ class DbConnectionPool implements IDbConnectionPool {
 					}
 
 				});
-			} catch (InvalidDaemonTask e) {
+			} catch (InvalidDaemonTaskException e) {
 				Logger.log(e);
 			}
 		}

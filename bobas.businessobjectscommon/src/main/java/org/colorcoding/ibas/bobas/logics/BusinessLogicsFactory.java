@@ -34,7 +34,7 @@ public class BusinessLogicsFactory extends ConfigurableFactory<IBusinessLogicsMa
 		return new BusinessLogicsManager();
 	}
 
-	public synchronized IBusinessLogicsManager createManager() throws BusinessLogicsException {
+	public synchronized IBusinessLogicsManager createManager() throws BusinessLogicException {
 		if (defaultManager == null) {
 			defaultManager = this.create(MyConfiguration.CONFIG_ITEM_BUSINESS_LOGICS_WAY, "BusinessLogicsManager");
 		}

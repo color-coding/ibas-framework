@@ -19,9 +19,9 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	 * @param criteria
 	 *            查询
 	 * @return 查询语句
-	 * @throws BOParsingException
+	 * @throws ParsingException
 	 */
-	ISqlQuery parseSqlQuery(ICriteria criteria) throws BOParsingException;
+	ISqlQuery parseSqlQuery(ICriteria criteria) throws ParsingException;
 
 	/**
 	 * 解析查询条件
@@ -29,9 +29,9 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	 * @param conditions
 	 *            查询条件
 	 * @return 查询语句
-	 * @throws BOParsingException
+	 * @throws ParsingException
 	 */
-	ISqlQuery parseSqlQuery(IConditions conditions) throws BOParsingException;
+	ISqlQuery parseSqlQuery(IConditions conditions) throws ParsingException;
 
 	/**
 	 * 解析查询
@@ -42,7 +42,7 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	 *            对象类型
 	 * @return 查询脚本
 	 */
-	ISqlQuery parseSqlQuery(ICriteria criteria, Class<?> boType) throws BOParsingException;
+	ISqlQuery parseSqlQuery(ICriteria criteria, Class<?> boType) throws ParsingException;
 
 	/**
 	 * 解析查询
@@ -50,17 +50,17 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	 * @param sp
 	 *            调用的存储过程信息
 	 * @return 查询对象
-	 * @throws SqlScriptsException
+	 * @throws SqlScriptException
 	 */
-	ISqlQuery parseSqlQuery(ISqlStoredProcedure sp) throws BOParsingException;
+	ISqlQuery parseSqlQuery(ISqlStoredProcedure sp) throws ParsingException;
 
 	/**
 	 * 获取服务器时间脚本
 	 * 
 	 * @return 脚本
-	 * @throws BOParsingException
+	 * @throws ParsingException
 	 */
-	ISqlQuery getServerTimeQuery() throws BOParsingException;
+	ISqlQuery getServerTimeQuery() throws ParsingException;
 
 	/**
 	 * 获取插入语句
@@ -68,9 +68,9 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	 * @param bo
 	 *            业务对象
 	 * @return 插入语句
-	 * @throws BOParsingException
+	 * @throws ParsingException
 	 */
-	ISqlQuery parseInsertScript(IBusinessObjectBase bo) throws BOParsingException;
+	ISqlQuery parseInsertScript(IBusinessObjectBase bo) throws ParsingException;
 
 	/**
 	 * 获取删除语句
@@ -78,9 +78,9 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	 * @param bo
 	 *            业务对象
 	 * @return 删除语句
-	 * @throws BOParsingException
+	 * @throws ParsingException
 	 */
-	ISqlQuery parseDeleteScript(IBusinessObjectBase bo) throws BOParsingException;
+	ISqlQuery parseDeleteScript(IBusinessObjectBase bo) throws ParsingException;
 
 	/**
 	 * 获取更新语句
@@ -88,9 +88,9 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	 * @param bo
 	 *            业务对象
 	 * @return 更新语句
-	 * @throws BOParsingException
+	 * @throws ParsingException
 	 */
-	ISqlQuery parseUpdateScript(IBusinessObjectBase bo) throws BOParsingException;
+	ISqlQuery parseUpdateScript(IBusinessObjectBase bo) throws ParsingException;
 
 	/**
 	 * 解析业务对象
@@ -101,9 +101,9 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	 *            业务对象
 	 * 
 	 * @return 解析的对象数组
-	 * @throws BOParsingException
+	 * @throws ParsingException
 	 */
-	IBusinessObjectBase[] parseBOs(IDbDataReader reader, Class<?> boType) throws BOParsingException;
+	IBusinessObjectBase[] parseBOs(IDbDataReader reader, Class<?> boType) throws ParsingException;
 
 	/**
 	 * 解析业务对象
@@ -114,9 +114,9 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	 *            业务对象实例
 	 * 
 	 * @return 解析的对象
-	 * @throws BOParsingException
+	 * @throws ParsingException
 	 */
-	IBusinessObjectBase[] parseBOs(IDbDataReader reader, IBusinessObjectListBase<?> bos) throws BOParsingException;
+	IBusinessObjectBase[] parseBOs(IDbDataReader reader, IBusinessObjectListBase<?> bos) throws ParsingException;
 
 	/**
 	 * 获取事务通知语句
@@ -124,8 +124,8 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	 * @param bo
 	 *            业务对象
 	 * @return 通知语句
-	 * @throws BOParsingException
+	 * @throws ParsingException
 	 */
-	ISqlQuery parseTransactionNotification(TransactionType type, IBusinessObjectBase bo) throws BOParsingException;
+	ISqlQuery parseTransactionNotification(TransactionType type, IBusinessObjectBase bo) throws ParsingException;
 
 }

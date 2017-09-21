@@ -65,7 +65,7 @@ public interface ISqlScripts {
 	 * @param value
 	 *            字符串
 	 * @return 语句值 （N'%s'）
-	 * @throws SqlScriptsException
+	 * @throws SqlScriptException
 	 */
 	String getSqlString(DbFieldType type, String value);
 
@@ -77,7 +77,7 @@ public interface ISqlScripts {
 	 * @param opValue
 	 *            操作的值
 	 * @return 语句值（ = %s）
-	 * @throws SqlScriptsException
+	 * @throws SqlScriptException
 	 */
 	String getSqlString(ConditionOperation value, String opValue);
 
@@ -87,7 +87,7 @@ public interface ISqlScripts {
 	 * @param value
 	 *            操作符
 	 * @return 语句值（ = %s）
-	 * @throws SqlScriptsException
+	 * @throws SqlScriptException
 	 */
 	String getSqlString(ConditionOperation value);
 
@@ -97,7 +97,7 @@ public interface ISqlScripts {
 	 * @param value
 	 *            关系符
 	 * @return 语句值 （and）
-	 * @throws SqlScriptsException
+	 * @throws SqlScriptException
 	 */
 	String getSqlString(ConditionRelationship value);
 
@@ -107,7 +107,7 @@ public interface ISqlScripts {
 	 * @param value
 	 *            排序
 	 * @return 语句值 （DESC;ASC）
-	 * @throws SqlScriptsException
+	 * @throws SqlScriptException
 	 */
 	String getSqlString(SortType value);
 
@@ -118,7 +118,7 @@ public interface ISqlScripts {
 	 *            业务对象
 	 * @return 主键查询语句，例:SELECT "AutoKey" FROM "CC_SYS_ONNM" WHERE "ObjectCode" =
 	 *         '%s'
-	 * @throws SqlScriptsException
+	 * @throws SqlScriptException
 	 */
 	String getPrimaryKeyQuery(String boCode);
 
@@ -129,7 +129,7 @@ public interface ISqlScripts {
 	 *            业务对象
 	 * @return 主键查询语句，例:SELECT "DefSeries" FROM "CC_SYS_ONNM" WHERE "ObjectCode"
 	 *         = '%s'
-	 * @throws SqlScriptsException
+	 * @throws SqlScriptException
 	 */
 	String getDefalutSeriesQuery(String boCode);
 
@@ -140,7 +140,7 @@ public interface ISqlScripts {
 	 *            业务对象
 	 * @return 主键查询语句，例:SELECT "NextNum", "Template" FROM "CC_SYS_NNM1" WHERE
 	 *         "ObjectCode" = '%s' AND "Series" = %s AND "Locked" = 'N'
-	 * @throws SqlScriptsException
+	 * @throws SqlScriptException
 	 */
 	String getSeriesKeyQuery(String boCode, int series);
 
@@ -154,7 +154,7 @@ public interface ISqlScripts {
 	 * @return 主键查询语句，例:UPDATE "CC_SYS_NNM1" SET "NextNum" = "NextNum" +
 	 *         {addValue} WHERE "ObjectCode" = '%s' AND "Series" = %s AND
 	 *         "Locked" = 'N'
-	 * @throws SqlScriptsException
+	 * @throws SqlScriptException
 	 */
 	String getUpdateSeriesKeyScript(String boCode, int series, int addValue);
 
@@ -167,7 +167,7 @@ public interface ISqlScripts {
 	 *            增加值
 	 * @return 主键查询语句，例:UPDATE "CC_SYS_ONNM" SET "AutoKey" = "AutoKey" +
 	 *         {addValue} WHERE "ObjectCode" = '%s'
-	 * @throws SqlScriptsException
+	 * @throws SqlScriptException
 	 */
 	String getUpdatePrimaryKeyScript(String boCode, int addValue);
 
@@ -185,7 +185,7 @@ public interface ISqlScripts {
 	 * @param keyValues
 	 *            对象主键值
 	 * @return
-	 * @throws SqlScriptsException
+	 * @throws SqlScriptException
 	 */
 	String getTransactionNotificationQuery(String boCode, String type, int keyCount, String keyNames,
 			String keyValues);
@@ -204,7 +204,7 @@ public interface ISqlScripts {
 	 * @param result
 	 *            结果数量（-1，不限制；100）
 	 * @return 组合后的查询
-	 * @throws SqlScriptsException
+	 * @throws SqlScriptException
 	 */
 	String groupSelectQuery(String partSelect, String table, String partWhere, String partOrder, int result);
 
@@ -216,7 +216,7 @@ public interface ISqlScripts {
 	 * @param partWhere
 	 *            条件
 	 * @return
-	 * @throws SqlScriptsException
+	 * @throws SqlScriptException
 	 */
 	String groupDeleteScript(String table, String partWhere);
 
@@ -230,7 +230,7 @@ public interface ISqlScripts {
 	 * @param partWhere
 	 *            条件
 	 * @return
-	 * @throws SqlScriptsException
+	 * @throws SqlScriptException
 	 */
 	String groupUpdateScript(String table, String partFieldValues, String partWhere);
 
@@ -244,7 +244,7 @@ public interface ISqlScripts {
 	 * @param partValues
 	 *            值
 	 * @return
-	 * @throws SqlScriptsException
+	 * @throws SqlScriptException
 	 */
 	String groupInsertScript(String table, String partFields, String partValues);
 
@@ -258,7 +258,7 @@ public interface ISqlScripts {
 	 * @param partWhere
 	 *            条件
 	 * @return
-	 * @throws SqlScriptsException
+	 * @throws SqlScriptException
 	 */
 	String groupMaxValueQuery(String field, String table, String partWhere);
 
@@ -272,7 +272,7 @@ public interface ISqlScripts {
 	 * @param parameters
 	 *            参数
 	 * @return
-	 * @throws SqlScriptsException
+	 * @throws SqlScriptException
 	 */
 	String groupStoredProcedure(String spName, KeyValue[] parameters);
 }

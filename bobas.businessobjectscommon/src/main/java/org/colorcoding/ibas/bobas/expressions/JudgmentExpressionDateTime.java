@@ -13,7 +13,7 @@ public class JudgmentExpressionDateTime extends JudgmentExpression<DateTime> {
 
 	}
 
-	public JudgmentExpressionDateTime(DateTime leftValue, JudmentOperations operation, DateTime rightValue) {
+	public JudgmentExpressionDateTime(DateTime leftValue, JudmentOperation operation, DateTime rightValue) {
 		super(leftValue, operation, rightValue);
 	}
 
@@ -21,7 +21,7 @@ public class JudgmentExpressionDateTime extends JudgmentExpression<DateTime> {
 	public boolean result() throws NotSupportOperationException {
 
 		// 等于
-		if (this.getOperation() == JudmentOperations.EQUAL) {
+		if (this.getOperation() == JudmentOperation.EQUAL) {
 			// 左值为空
 			if (this.getLeftValue() == null) {
 				if (this.getRightValue() == null) {
@@ -36,7 +36,7 @@ public class JudgmentExpressionDateTime extends JudgmentExpression<DateTime> {
 			return false;
 		}
 		// 不等于
-		else if (this.getOperation() == JudmentOperations.NOT_EQUAL) {
+		else if (this.getOperation() == JudmentOperation.NOT_EQUAL) {
 			// 左值为空
 			if (this.getLeftValue() == null) {
 				if (this.getRightValue() != null) {
@@ -51,7 +51,7 @@ public class JudgmentExpressionDateTime extends JudgmentExpression<DateTime> {
 			return false;
 		}
 		// 大于
-		else if (this.getOperation() == JudmentOperations.GRATER_THAN) {
+		else if (this.getOperation() == JudmentOperation.GRATER_THAN) {
 			// 左值为空或右值为空
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
@@ -63,7 +63,7 @@ public class JudgmentExpressionDateTime extends JudgmentExpression<DateTime> {
 			return false;
 		}
 		// 小于
-		else if (this.getOperation() == JudmentOperations.LESS_THAN) {
+		else if (this.getOperation() == JudmentOperation.LESS_THAN) {
 			// 左值为空或右值为空
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
@@ -75,7 +75,7 @@ public class JudgmentExpressionDateTime extends JudgmentExpression<DateTime> {
 			return false;
 		}
 		// 大于等于
-		else if (this.getOperation() == JudmentOperations.GRATER_EQUAL) {
+		else if (this.getOperation() == JudmentOperation.GRATER_EQUAL) {
 			// 左值为空或右值为空
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
@@ -87,7 +87,7 @@ public class JudgmentExpressionDateTime extends JudgmentExpression<DateTime> {
 			return false;
 		}
 		// 小于等于
-		else if (this.getOperation() == JudmentOperations.LESS_EQUAL) {
+		else if (this.getOperation() == JudmentOperation.LESS_EQUAL) {
 			// 左值为空或右值为空
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;

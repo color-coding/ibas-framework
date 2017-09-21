@@ -9,12 +9,12 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 public class SqlScriptInspector implements ISqlScriptInspector {
 
 	@Override
-	public void check(ISqlQuery sql) throws SecurityException, SqlScriptsException {
+	public void check(ISqlQuery sql) throws SecurityException, SqlScriptException {
 		if (sql == null) {
 			return;
 		}
 		if (sql.getQueryString() == null || sql.getQueryString().isEmpty()) {
-			throw new SqlScriptsException(I18N.prop("msg_bobas_invalid_sql_query"));
+			throw new SqlScriptException(I18N.prop("msg_bobas_invalid_sql_query"));
 		}
 		if (!sql.isAllowWrite()) {
 			String regex = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_INSPECTOR_SQL_WRITE_REGEX);

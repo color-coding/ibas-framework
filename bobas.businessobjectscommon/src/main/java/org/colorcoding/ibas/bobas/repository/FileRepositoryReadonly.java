@@ -14,7 +14,7 @@ import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.data.FileData;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.db.DataConvert;
-import org.colorcoding.ibas.bobas.expressions.FileJudgmentLinks;
+import org.colorcoding.ibas.bobas.expressions.FileJudgmentLink;
 import org.colorcoding.ibas.bobas.expressions.JudmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.messages.Logger;
@@ -40,12 +40,12 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
     /**
      * 检索条件项目：文件名称。如：ibas.*.jar，条件仅可等于，其他忽略。
      */
-    public static final String CRITERIA_CONDITION_ALIAS_FILE_NAME = FileJudgmentLinks.CRITERIA_CONDITION_ALIAS_FILE_NAME;
+    public static final String CRITERIA_CONDITION_ALIAS_FILE_NAME = FileJudgmentLink.CRITERIA_CONDITION_ALIAS_FILE_NAME;
 
     /**
      * 检索条件项目：最后修改时间（文件时间）。如：1479965348，条件可等于，大小等于。
      */
-    public static final String CRITERIA_CONDITION_ALIAS_MODIFIED_TIME = FileJudgmentLinks.CRITERIA_CONDITION_ALIAS_MODIFIED_TIME;
+    public static final String CRITERIA_CONDITION_ALIAS_MODIFIED_TIME = FileJudgmentLink.CRITERIA_CONDITION_ALIAS_MODIFIED_TIME;
 
     private String repositoryFolder;
 
@@ -142,13 +142,13 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
      */
     private File[] searchFiles(File folder, boolean include, IConditions conditions) {
         ArrayList<File> files = new ArrayList<>();
-        FileJudgmentLinks judgmentLinks = null;
+        FileJudgmentLink judgmentLinks = null;
         for (File file : folder.listFiles()) {
             if (file.isDirectory() && include) {
                 files.addAll(this.searchFiles(file, include, conditions));
             } else if (file.isFile()) {
                 if (judgmentLinks == null) {
-                    judgmentLinks = new FileJudgmentLinks();
+                    judgmentLinks = new FileJudgmentLink();
                     judgmentLinks.parsingConditions(conditions);
                 }
                 try {

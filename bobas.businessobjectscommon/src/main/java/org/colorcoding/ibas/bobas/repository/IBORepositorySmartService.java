@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.repository;
 
 import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
+import org.colorcoding.ibas.bobas.core.RepositoryException;
 
 /**
  * 业务仓库服务（智能），对外发布使用
@@ -33,11 +34,10 @@ public interface IBORepositorySmartService extends IBORepositoryService {
 	 *            用户
 	 * @param password
 	 *            密码
-	 * @throws InvalidRepositoryException
-	 *             连接不成功或无效
+	 * @throws RepositoryException
 	 */
 	void connectReadonlyRepository(String type, String server, String name, String user, String password)
-			throws InvalidRepositoryException;
+			throws RepositoryException;
 
 	/**
 	 * 连接业务仓库（默认类型）
@@ -50,10 +50,8 @@ public interface IBORepositorySmartService extends IBORepositoryService {
 	 *            用户
 	 * @param password
 	 *            密码
-	 * @throws InvalidRepositoryException
-	 *             连接不成功或无效
+	 * @throws RepositoryException
 	 */
-	void connectReadonlyRepository(String server, String name, String user, String password)
-			throws InvalidRepositoryException;
+	void connectReadonlyRepository(String server, String name, String user, String password) throws RepositoryException;
 
 }

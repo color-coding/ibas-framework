@@ -12,35 +12,35 @@ public class JudgmentExpressionBoolean extends JudgmentExpression<Boolean> {
 
 	}
 
-	public JudgmentExpressionBoolean(Boolean leftValue, JudmentOperations operation, Boolean rightValue) {
+	public JudgmentExpressionBoolean(Boolean leftValue, JudmentOperation operation, Boolean rightValue) {
 		super(leftValue, operation, rightValue);
 	}
 
 	@Override
 	public boolean result() throws NotSupportOperationException {
 		// 等
-		if (this.getOperation() == JudmentOperations.EQUAL) {
+		if (this.getOperation() == JudmentOperation.EQUAL) {
 			if (this.getLeftValue() == this.getRightValue()) {
 				return true;
 			}
 			return false;
 		}
 		// 不等
-		else if (this.getOperation() == JudmentOperations.NOT_EQUAL) {
+		else if (this.getOperation() == JudmentOperation.NOT_EQUAL) {
 			if (this.getLeftValue() != this.getRightValue()) {
 				return true;
 			}
 			return false;
 		}
 		// 且
-		else if (this.getOperation() == JudmentOperations.AND) {
+		else if (this.getOperation() == JudmentOperation.AND) {
 			if (this.getLeftValue() && this.getRightValue()) {
 				return true;
 			}
 			return false;
 		}
 		// 或
-		else if (this.getOperation() == JudmentOperations.OR) {
+		else if (this.getOperation() == JudmentOperation.OR) {
 			if (this.getLeftValue() || this.getRightValue()) {
 				return true;
 			}

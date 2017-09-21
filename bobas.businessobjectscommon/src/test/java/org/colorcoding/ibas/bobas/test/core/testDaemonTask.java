@@ -2,13 +2,13 @@ package org.colorcoding.ibas.bobas.test.core;
 
 import org.colorcoding.ibas.bobas.core.Daemon;
 import org.colorcoding.ibas.bobas.core.ISingleDaemonTask;
-import org.colorcoding.ibas.bobas.core.InvalidDaemonTask;
+import org.colorcoding.ibas.bobas.core.InvalidDaemonTaskException;
 
 import junit.framework.TestCase;
 
 public class testDaemonTask extends TestCase {
 
-	public void testSingleTask() throws InvalidDaemonTask, InterruptedException {
+	public void testSingleTask() throws InvalidDaemonTaskException, InterruptedException {
 		long i;
 		for (i = 0; i < 200; i++) {
 			Daemon.register(new ISingleDaemonTask() {

@@ -6,7 +6,7 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.logics.BusinessLogic;
-import org.colorcoding.ibas.bobas.logics.BusinessLogicsException;
+import org.colorcoding.ibas.bobas.logics.BusinessLogicException;
 import org.colorcoding.ibas.bobas.mapping.LogicContract;
 import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.test.repository.BORepositoryTest;
@@ -35,10 +35,10 @@ public class MaterialsJournalContractLogic extends BusinessLogic<IMaterialsJourn
 			IOperationResult<MaterialsQuantityJournal> operationResult = boRepositry
 					.fetchMaterialsQuantityJournal(criteria);
 			if (operationResult.getError() != null) {
-				throw new BusinessLogicsException(operationResult.getError());
+				throw new BusinessLogicException(operationResult.getError());
 			}
 			if (operationResult.getResultCode() != 0) {
-				throw new BusinessLogicsException(operationResult.getMessage());
+				throw new BusinessLogicException(operationResult.getMessage());
 			}
 			journal = operationResult.getResultObjects().firstOrDefault();
 		}

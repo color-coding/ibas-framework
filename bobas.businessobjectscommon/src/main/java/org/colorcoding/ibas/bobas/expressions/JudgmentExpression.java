@@ -14,21 +14,21 @@ public abstract class JudgmentExpression<T> implements IJudgmentExpression {
 
     }
 
-    public JudgmentExpression(T leftValue, JudmentOperations operation, T rightValue) {
+    public JudgmentExpression(T leftValue, JudmentOperation operation, T rightValue) {
         this.setLeftValue(leftValue);
         this.setRightValue(rightValue);
         this.setOperation(operation);
     }
 
-    private JudmentOperations operation;
+    private JudmentOperation operation;
 
     @Override
-    public final JudmentOperations getOperation() {
+    public final JudmentOperation getOperation() {
         return this.operation;
     }
 
     @Override
-    public final void setOperation(JudmentOperations value) {
+    public final void setOperation(JudmentOperation value) {
         this.operation = value;
     }
 

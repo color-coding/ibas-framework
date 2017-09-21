@@ -11,7 +11,7 @@ import org.colorcoding.ibas.bobas.data.emConditionRelationship;
  * @author Niuren.Zhu
  *
  */
-public enum JudmentOperations {
+public enum JudmentOperation {
 	/**
 	 * 等于
 	 */
@@ -69,82 +69,82 @@ public enum JudmentOperations {
 	 */
 	OR;
 
-	public static JudmentOperations valueOf(ConditionOperation value) {
+	public static JudmentOperation valueOf(ConditionOperation value) {
 		if (value == null) {
 			return null;
 		}
 		if (value == ConditionOperation.CONTAIN) {
-			return JudmentOperations.CONTAIN;
+			return JudmentOperation.CONTAIN;
 		} else if (value == ConditionOperation.NOT_CONTAIN) {
-			return JudmentOperations.NOT_CONTAIN;
+			return JudmentOperation.NOT_CONTAIN;
 		} else if (value == ConditionOperation.EQUAL) {
-			return JudmentOperations.EQUAL;
+			return JudmentOperation.EQUAL;
 		} else if (value == ConditionOperation.NOT_EQUAL) {
-			return JudmentOperations.NOT_EQUAL;
+			return JudmentOperation.NOT_EQUAL;
 		} else if (value == ConditionOperation.GRATER_EQUAL) {
-			return JudmentOperations.GRATER_EQUAL;
+			return JudmentOperation.GRATER_EQUAL;
 		} else if (value == ConditionOperation.GRATER_THAN) {
-			return JudmentOperations.GRATER_THAN;
+			return JudmentOperation.GRATER_THAN;
 		} else if (value == ConditionOperation.LESS_EQUAL) {
-			return JudmentOperations.LESS_EQUAL;
+			return JudmentOperation.LESS_EQUAL;
 		} else if (value == ConditionOperation.LESS_THAN) {
-			return JudmentOperations.LESS_THAN;
+			return JudmentOperation.LESS_THAN;
 		} else if (value == ConditionOperation.START) {
-			return JudmentOperations.BEGIN_WITH;
+			return JudmentOperation.BEGIN_WITH;
 		} else if (value == ConditionOperation.END) {
-			return JudmentOperations.END_WITH;
+			return JudmentOperation.END_WITH;
 		}
 		return null;
 	}
 
-	public static JudmentOperations valueOf(ConditionRelationship value) {
+	public static JudmentOperation valueOf(ConditionRelationship value) {
 		if (value == null) {
 			return null;
 		}
 		if (value == ConditionRelationship.AND) {
-			return JudmentOperations.AND;
+			return JudmentOperation.AND;
 		} else if (value == ConditionRelationship.OR) {
-			return JudmentOperations.OR;
+			return JudmentOperation.OR;
 		}
 		return null;
 	}
 
-	public static JudmentOperations valueOf(emConditionOperation value) {
+	public static JudmentOperation valueOf(emConditionOperation value) {
 		if (value == null) {
 			return null;
 		}
 		if (value == emConditionOperation.CONTAIN) {
-			return JudmentOperations.CONTAIN;
+			return JudmentOperation.CONTAIN;
 		} else if (value == emConditionOperation.NOT_CONTAIN) {
-			return JudmentOperations.NOT_CONTAIN;
+			return JudmentOperation.NOT_CONTAIN;
 		} else if (value == emConditionOperation.EQUAL) {
-			return JudmentOperations.EQUAL;
+			return JudmentOperation.EQUAL;
 		} else if (value == emConditionOperation.NOT_EQUAL) {
-			return JudmentOperations.NOT_EQUAL;
+			return JudmentOperation.NOT_EQUAL;
 		} else if (value == emConditionOperation.GRATER_EQUAL) {
-			return JudmentOperations.GRATER_EQUAL;
+			return JudmentOperation.GRATER_EQUAL;
 		} else if (value == emConditionOperation.GRATER_THAN) {
-			return JudmentOperations.GRATER_THAN;
+			return JudmentOperation.GRATER_THAN;
 		} else if (value == emConditionOperation.LESS_EQUAL) {
-			return JudmentOperations.LESS_EQUAL;
+			return JudmentOperation.LESS_EQUAL;
 		} else if (value == emConditionOperation.LESS_THAN) {
-			return JudmentOperations.LESS_THAN;
+			return JudmentOperation.LESS_THAN;
 		} else if (value == emConditionOperation.BEGIN_WITH) {
-			return JudmentOperations.BEGIN_WITH;
+			return JudmentOperation.BEGIN_WITH;
 		} else if (value == emConditionOperation.END_WITH) {
-			return JudmentOperations.END_WITH;
+			return JudmentOperation.END_WITH;
 		}
 		return null;
 	}
 
-	public static JudmentOperations valueOf(emConditionRelationship value) {
+	public static JudmentOperation valueOf(emConditionRelationship value) {
 		if (value == null) {
 			return null;
 		}
 		if (value == emConditionRelationship.AND) {
-			return JudmentOperations.AND;
+			return JudmentOperation.AND;
 		} else if (value == emConditionRelationship.OR) {
-			return JudmentOperations.OR;
+			return JudmentOperation.OR;
 		}
 		return null;
 	}

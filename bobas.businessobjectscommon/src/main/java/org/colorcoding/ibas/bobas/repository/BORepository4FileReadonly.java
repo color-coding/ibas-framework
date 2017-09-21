@@ -22,7 +22,7 @@ import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.expressions.ExpressionFactory;
-import org.colorcoding.ibas.bobas.expressions.JudgmentLinks;
+import org.colorcoding.ibas.bobas.expressions.JudgmentLink;
 import org.colorcoding.ibas.bobas.expressions.JudmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.messages.Logger;
@@ -120,7 +120,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 		types.add(boType);
 		JAXBContext context = JAXBContext.newInstance(types.toArray(new Class<?>[] {}));
 		Unmarshaller unmarshaller = context.createUnmarshaller();
-		JudgmentLinks judgmentLinks = null;
+		JudgmentLink judgmentLinks = null;
 		if (criteria.getConditions().size() > 0) {
 			// 要求有条件
 			judgmentLinks = ExpressionFactory.create().createBOJudgmentLinks(criteria.getConditions());
@@ -160,7 +160,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 		return boFiles.toArray(new BOFile[] {});
 	}
 
-	private IBusinessObjectBase[] match(IBusinessObjectBase bo, JudgmentLinks judgmentLinks, Class<?> type) {
+	private IBusinessObjectBase[] match(IBusinessObjectBase bo, JudgmentLink judgmentLinks, Class<?> type) {
 		ArrayList<IBusinessObjectBase> bos = new ArrayList<>();
 		if (bo instanceof IManageFields) {
 			IManageFields boFields = (IManageFields) bo;

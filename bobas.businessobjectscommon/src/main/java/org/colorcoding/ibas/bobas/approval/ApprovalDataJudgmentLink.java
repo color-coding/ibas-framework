@@ -1,19 +1,19 @@
 package org.colorcoding.ibas.bobas.approval;
 
 import org.colorcoding.ibas.bobas.data.emConditionRelationship;
-import org.colorcoding.ibas.bobas.expressions.BOJudgmentLinks;
+import org.colorcoding.ibas.bobas.expressions.BOJudgmentLink;
 import org.colorcoding.ibas.bobas.expressions.DBFieldValueOperator;
 import org.colorcoding.ibas.bobas.expressions.IPropertyValueOperator;
 import org.colorcoding.ibas.bobas.expressions.IValueOperator;
 import org.colorcoding.ibas.bobas.expressions.JudgmentLinkItem;
-import org.colorcoding.ibas.bobas.expressions.JudgmentLinksException;
-import org.colorcoding.ibas.bobas.expressions.JudmentOperations;
+import org.colorcoding.ibas.bobas.expressions.JudgmentLinkException;
+import org.colorcoding.ibas.bobas.expressions.JudmentOperation;
 import org.colorcoding.ibas.bobas.expressions.SQLScriptValueOperator;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.repository.IBORepository4DbReadonly;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
-public class ApprovalDataJudgmentLinks extends BOJudgmentLinks {
+public class ApprovalDataJudgmentLink extends BOJudgmentLink {
 
 	private IBORepository4DbReadonly repository;
 
@@ -39,11 +39,11 @@ public class ApprovalDataJudgmentLinks extends BOJudgmentLinks {
 		for (IApprovalProcessStepCondition item : conditions) {
 			JudgmentLinkItem jItem = new JudgmentLinkItem();
 			if (item.getRelation() == emConditionRelationship.NONE || item.getRelation() == null) {
-				jItem.setRelationship(JudmentOperations.AND);
+				jItem.setRelationship(JudmentOperation.AND);
 			} else {
-				jItem.setRelationship(JudmentOperations.valueOf(item.getRelation()));
+				jItem.setRelationship(JudmentOperation.valueOf(item.getRelation()));
 			}
-			jItem.setOperation(JudmentOperations.valueOf(item.getOperation()));
+			jItem.setOperation(JudmentOperation.valueOf(item.getOperation()));
 			// 左边取值
 			IPropertyValueOperator propertyValueOperator = this
 					.createPropertyValueOperator(item.getPropertyValueMode());
@@ -67,7 +67,7 @@ public class ApprovalDataJudgmentLinks extends BOJudgmentLinks {
 			jLinkItems.add(jItem);
 		}
 		if (jLinkItems.size() == 0) {
-			throw new JudgmentLinksException(I18N.prop("msg_bobas_invaild_judgment_link_conditions"));
+			throw new JudgmentLinkException(I18N.prop("msg_bobas_invaild_judgment_link_conditions"));
 		}
 		super.setJudgmentItems(jLinkItems.toArray(new JudgmentLinkItem[] {}));
 	}

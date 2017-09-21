@@ -15,5 +15,5 @@ public interface SaveActionListener {
 	 * @return
 	 * @throws SaveActionException
 	 */
-	boolean onActionEvent(SaveActionEvent event) throws SaveActionException;
+	boolean onActionEvent(SaveActionEvent event) throws RepositoryException;
 }

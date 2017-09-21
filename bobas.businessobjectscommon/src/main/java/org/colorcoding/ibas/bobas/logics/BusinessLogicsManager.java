@@ -16,7 +16,7 @@ import org.colorcoding.ibas.bobas.mapping.LogicContract;
 public class BusinessLogicsManager implements IBusinessLogicsManager {
 
 	@Override
-	public synchronized IBusinessLogicsChain getChain(String transId) {
+	public synchronized IBusinessLogicChain getChain(String transId) {
 		if (transId != null) {
 			if (this.getLogicsChains().containsKey(transId)) {
 				return this.getLogicsChains().get(transId);
@@ -26,11 +26,11 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 	}
 
 	@Override
-	public synchronized IBusinessLogicsChain registerChain(String transId) {
+	public synchronized IBusinessLogicChain registerChain(String transId) {
 		if (transId == null || transId.isEmpty()) {
-			throw new BusinessLogicsException(I18N.prop("msg_bobas_invalid_data"));
+			throw new BusinessLogicException(I18N.prop("msg_bobas_invalid_data"));
 		}
-		IBusinessLogicsChain chain = new BusinessLogicsChain();
+		IBusinessLogicChain chain = new BusinessLogicChain();
 		chain.setId(transId);
 		this.getLogicsChains().put(chain.getId(), chain);
 		return chain;
@@ -47,13 +47,13 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 		return false;
 	}
 
-	private volatile HashMap<String, IBusinessLogicsChain> logicsChains;
+	private volatile HashMap<String, IBusinessLogicChain> logicsChains;
 
-	protected HashMap<String, IBusinessLogicsChain> getLogicsChains() {
+	protected HashMap<String, IBusinessLogicChain> getLogicsChains() {
 		if (this.logicsChains == null) {
 			synchronized (BusinessLogicsManager.class) {
 				if (this.logicsChains == null) {
-					this.logicsChains = new HashMap<String, IBusinessLogicsChain>();
+					this.logicsChains = new HashMap<String, IBusinessLogicChain>();
 				}
 			}
 		}
@@ -110,7 +110,7 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 			try {
 				return (IBusinessLogic<?>) logicClass.newInstance();
 			} catch (Exception e) {
-				throw new NotFoundBusinessLogicsException(e);
+				throw new NotFoundBusinessLogicException(e);
 			}
 		}
 		return null;

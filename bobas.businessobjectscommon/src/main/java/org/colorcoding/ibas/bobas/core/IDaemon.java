@@ -25,9 +25,9 @@ public interface IDaemon {
 	 * @param log
 	 *            是否记录日志
 	 * @return 分配的任务id
-	 * @throws InvalidDaemonTask
+	 * @throws InvalidDaemonTaskException
 	 */
-	long add(IDaemonTask task, boolean log) throws InvalidDaemonTask;
+	long add(IDaemonTask task, boolean log) throws InvalidDaemonTaskException;
 
 	/**
 	 * 移出任务

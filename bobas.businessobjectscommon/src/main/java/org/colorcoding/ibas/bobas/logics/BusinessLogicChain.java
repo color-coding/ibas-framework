@@ -9,7 +9,7 @@ import org.colorcoding.ibas.bobas.core.IBusinessObjectListBase;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.expressions.ExpressionFactory;
-import org.colorcoding.ibas.bobas.expressions.JudgmentLinks;
+import org.colorcoding.ibas.bobas.expressions.JudgmentLink;
 import org.colorcoding.ibas.bobas.expressions.JudmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.messages.Logger;
@@ -22,7 +22,7 @@ import org.colorcoding.ibas.bobas.util.ArrayList;
  * @author Niuren.Zhu
  *
  */
-public class BusinessLogicsChain implements IBusinessLogicsChain {
+public class BusinessLogicChain implements IBusinessLogicChain {
 
 	protected static final String MSG_LOGICS_EXISTING_CONTRACT = "logics: class [%s] existing contract [%s].";
 	private String id;
@@ -135,7 +135,7 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 										item.getName());
 								IBusinessLogic<?> logic = logicsManager.createLogic(item);
 								if (logic == null) {
-									throw new NotFoundBusinessLogicsException(item.getName());
+									throw new NotFoundBusinessLogicException(item.getName());
 								}
 								if (logic instanceof BusinessLogic<?, ?>) {
 									BusinessLogic<?, ?> aLogic = (BusinessLogic<?, ?>) logic;
@@ -224,7 +224,7 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <B> B fetchBeAffected(ICriteria criteria, Class<B> type) {
-		JudgmentLinks judgmentLinks = ExpressionFactory.create().createBOJudgmentLinks(criteria.getConditions());
+		JudgmentLink judgmentLinks = ExpressionFactory.create().createBOJudgmentLinks(criteria.getConditions());
 		for (IBusinessLogic<?>[] logics : this.getLogics().values()) {
 			for (IBusinessLogic<?> logic : logics) {
 				if (logic.getBeAffected() == null) {
@@ -252,7 +252,7 @@ public class BusinessLogicsChain implements IBusinessLogicsChain {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <B> B fetchOldParent(ICriteria criteria, Class<B> type) {
-		JudgmentLinks judgmentLinks = ExpressionFactory.create().createBOJudgmentLinks(criteria.getConditions());
+		JudgmentLink judgmentLinks = ExpressionFactory.create().createBOJudgmentLinks(criteria.getConditions());
 		for (IBusinessLogic<?>[] logics : this.getLogics().values()) {
 			for (IBusinessLogic<?> item : logics) {
 				if (item instanceof BusinessLogic<?, ?>) {

@@ -11,7 +11,7 @@ import org.colorcoding.ibas.bobas.util.ArrayList;
  * @author Niuren.Zhu
  *
  */
-public class BOJudgmentLinksCondition extends BOJudgmentLinks {
+public class BOJudgmentLinkCondition extends BOJudgmentLink {
 	/**
 	 * 初始化判断条件
 	 * 
@@ -28,11 +28,11 @@ public class BOJudgmentLinksCondition extends BOJudgmentLinks {
 			jItem.setOpenBracket(item.getBracketOpen());
 			jItem.setCloseBracket(item.getBracketClose());
 			if (item.getRelationship() == ConditionRelationship.NONE) {
-				jItem.setRelationship(JudmentOperations.AND);
+				jItem.setRelationship(JudmentOperation.AND);
 			} else {
-				jItem.setRelationship(JudmentOperations.valueOf(item.getRelationship()));
+				jItem.setRelationship(JudmentOperation.valueOf(item.getRelationship()));
 			}
-			jItem.setOperation(JudmentOperations.valueOf(item.getOperation()));
+			jItem.setOperation(JudmentOperation.valueOf(item.getOperation()));
 			// 左边取值
 			IPropertyValueOperator propertyValueOperator = this.createPropertyValueOperator();
 			propertyValueOperator.setPropertyName(item.getAlias());
@@ -52,7 +52,7 @@ public class BOJudgmentLinksCondition extends BOJudgmentLinks {
 			jLinkItems.add(jItem);
 		}
 		if (jLinkItems.size() == 0) {
-			throw new JudgmentLinksException(I18N.prop("msg_bobas_invaild_judgment_link_conditions"));
+			throw new JudgmentLinkException(I18N.prop("msg_bobas_invaild_judgment_link_conditions"));
 		}
 		super.setJudgmentItems(jLinkItems.toArray(new JudgmentLinkItem[] {}));
 	}

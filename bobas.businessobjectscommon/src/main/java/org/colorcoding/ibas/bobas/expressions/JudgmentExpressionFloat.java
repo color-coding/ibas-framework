@@ -11,7 +11,7 @@ public class JudgmentExpressionFloat extends JudgmentExpressionComparable<Float>
 
 	}
 
-	public JudgmentExpressionFloat(float leftValue, JudmentOperations operation, float rightValue) {
+	public JudgmentExpressionFloat(float leftValue, JudmentOperation operation, float rightValue) {
 		super(leftValue, operation, rightValue);
 	}
 

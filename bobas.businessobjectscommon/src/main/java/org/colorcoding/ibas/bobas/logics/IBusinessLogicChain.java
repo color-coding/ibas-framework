@@ -10,7 +10,7 @@ import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
  * @author Niuren.Zhu
  *
  */
-public interface IBusinessLogicsChain {
+public interface IBusinessLogicChain {
 	/**
 	 * 设置-标记
 	 * 

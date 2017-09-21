@@ -13,7 +13,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 
 	}
 
-	public JudgmentExpressionString(String leftValue, JudmentOperations operation, String rightValue) {
+	public JudgmentExpressionString(String leftValue, JudmentOperation operation, String rightValue) {
 		super(leftValue, operation, rightValue);
 	}
 
@@ -52,7 +52,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 	@Override
 	public boolean result() throws NotSupportOperationException {
 		// 开始与
-		if (this.getOperation() == JudmentOperations.BEGIN_WITH) {
+		if (this.getOperation() == JudmentOperation.BEGIN_WITH) {
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
 			}
@@ -62,7 +62,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 			return false;
 		}
 		// 结束于
-		else if (this.getOperation() == JudmentOperations.END_WITH) {
+		else if (this.getOperation() == JudmentOperation.END_WITH) {
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
 			}
@@ -72,7 +72,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 			return false;
 		}
 		// 非开始于
-		else if (this.getOperation() == JudmentOperations.NOT_BEGIN_WITH) {
+		else if (this.getOperation() == JudmentOperation.NOT_BEGIN_WITH) {
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
 			}
@@ -82,7 +82,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 			return false;
 		}
 		// 非结束于
-		else if (this.getOperation() == JudmentOperations.NOT_END_WITH) {
+		else if (this.getOperation() == JudmentOperation.NOT_END_WITH) {
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
 			}
@@ -92,7 +92,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 			return false;
 		}
 		// 包含
-		else if (this.getOperation() == JudmentOperations.CONTAIN) {
+		else if (this.getOperation() == JudmentOperation.CONTAIN) {
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
 			}
@@ -102,7 +102,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 			return false;
 		}
 		// 不包含
-		else if (this.getOperation() == JudmentOperations.NOT_CONTAIN) {
+		else if (this.getOperation() == JudmentOperation.NOT_CONTAIN) {
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
 			}

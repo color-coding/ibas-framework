@@ -21,7 +21,6 @@ import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.measurement.emTimeUnit;
 import org.colorcoding.ibas.bobas.repository.BORepository4DbReadonly;
 import org.colorcoding.ibas.bobas.repository.IBORepository4DbReadonly;
-import org.colorcoding.ibas.bobas.repository.InvalidRepositoryException;
 import org.colorcoding.ibas.bobas.repository.InvalidTokenException;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrder;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrderItem;
@@ -37,7 +36,7 @@ public class testBORepository extends TestCase {
 
 	public boolean details_out = true;
 
-	public void testCriteria() throws InvalidRepositoryException, InvalidTokenException {
+	public void testCriteria() throws RepositoryException, InvalidTokenException {
 		ICriteria criteria = new Criteria();
 		criteria.setNoChilds(true);
 		criteria.setResultCount(100);
@@ -84,7 +83,7 @@ public class testBORepository extends TestCase {
 
 	}
 
-	public void testConnectBORepository() throws InvalidTokenException, InvalidRepositoryException {
+	public void testConnectBORepository() throws InvalidTokenException, RepositoryException {
 		// System.out.println(System.getProperty("java.class.path"));
 		// System.out.println(System.getProperty("user.dir"));
 		BORepositoryTest boRepository = new BORepositoryTest();
@@ -131,7 +130,7 @@ public class testBORepository extends TestCase {
 
 	}
 
-	public void testFetchBO() throws InvalidRepositoryException, InvalidTokenException {
+	public void testFetchBO() throws RepositoryException, InvalidTokenException {
 		BORepositoryTest boRepository = new BORepositoryTest();
 		// boRepository.connectRepository("MSSQL", "localhost", "ibas_demo",
 		// "sa", "1q2w3e");
@@ -192,7 +191,7 @@ public class testBORepository extends TestCase {
 		}
 	}
 
-	public void testSaveBO() throws InvalidRepositoryException, InvalidTokenException {
+	public void testSaveBO() throws RepositoryException, InvalidTokenException {
 		BORepositoryTest boRepository = new BORepositoryTest();
 		// boRepository.connectRepository("MSSQL", "localhost", "ibas_demo",
 		// "sa", "1q2w3e");
@@ -247,7 +246,7 @@ public class testBORepository extends TestCase {
 		// assertEquals(operationResult.getResultCode(), 0);
 	}
 
-	public void testBOAssociations() throws InvalidRepositoryException, InvalidTokenException {
+	public void testBOAssociations() throws RepositoryException, InvalidTokenException {
 		BORepositoryTest boRepository = new BORepositoryTest();
 		// boRepository.connectRepository("MSSQL", "localhost", "ibas_demo",
 		// "sa", "1q2w3e");

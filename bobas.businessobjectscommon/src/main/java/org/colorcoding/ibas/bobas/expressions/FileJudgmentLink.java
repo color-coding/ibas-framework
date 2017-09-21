@@ -15,7 +15,7 @@ import org.colorcoding.ibas.bobas.util.ArrayList;
  *
  */
 
-public class FileJudgmentLinks extends JudgmentLinks {
+public class FileJudgmentLink extends JudgmentLink {
 
     /**
      * 检索条件项目：文件名称。如：ibas.*.jar，条件仅可等于，其他忽略。
@@ -113,11 +113,11 @@ public class FileJudgmentLinks extends JudgmentLinks {
             jItem.setOpenBracket(item.getBracketOpen());
             jItem.setCloseBracket(item.getBracketClose());
             if (item.getRelationship() == ConditionRelationship.NONE) {
-                jItem.setRelationship(JudmentOperations.AND);
+                jItem.setRelationship(JudmentOperation.AND);
             } else {
-                jItem.setRelationship(JudmentOperations.valueOf(item.getRelationship()));
+                jItem.setRelationship(JudmentOperation.valueOf(item.getRelationship()));
             }
-            jItem.setOperation(JudmentOperations.valueOf(item.getOperation()));
+            jItem.setOperation(JudmentOperation.valueOf(item.getOperation()));
             // 左边取值
             IPropertyValueOperator propertyValueOperator = this.createPropertyValueOperator();
             propertyValueOperator.setPropertyName(item.getAlias());
@@ -129,7 +129,7 @@ public class FileJudgmentLinks extends JudgmentLinks {
             jLinkItems.add(jItem);
         }
         if (jLinkItems.size() == 0) {
-            throw new JudgmentLinksException(I18N.prop("msg_bobas_invaild_judgment_link_conditions"));
+            throw new JudgmentLinkException(I18N.prop("msg_bobas_invaild_judgment_link_conditions"));
         }
         super.setJudgmentItems(jLinkItems.toArray(new JudgmentLinkItem[] {}));
     }

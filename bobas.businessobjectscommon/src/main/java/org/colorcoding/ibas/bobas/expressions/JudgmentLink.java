@@ -6,7 +6,7 @@ import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 import org.colorcoding.ibas.bobas.util.StringBuilder;
 
-public abstract class JudgmentLinks {
+public abstract class JudgmentLink {
 
 	protected static final String MSG_JUDGMENT_EXPRESSION = "judgment: expression %s = [%s]";
 	protected static final String MSG_JUDGMENT_RELATION = "judgment: relation %s = [%s]";
@@ -149,7 +149,7 @@ public abstract class JudgmentLinks {
 		}
 		if (!done) {
 			// 未标记完成，存在不匹配的括号
-			throw new JudgmentLinksException(I18N.prop("msg_bobas_invaild_judgment_link_bracket", bracket));
+			throw new JudgmentLinkException(I18N.prop("msg_bobas_invaild_judgment_link_bracket", bracket));
 		}
 		JudgmentLinkItem[] jItems = currentJudgmentItems.toArray(new JudgmentLinkItem[] {});
 		return jItems;
@@ -198,7 +198,7 @@ public abstract class JudgmentLinks {
 				// 第一个表达式
 				rootJudExp = factory.createJudgment(Boolean.class);
 				rootJudExp.setLeftValue(currentValue);
-				rootJudExp.setOperation(JudmentOperations.AND);
+				rootJudExp.setOperation(JudmentOperation.AND);
 				rootJudExp.setRightValue(true);
 			} else {
 				// 后续表达式
