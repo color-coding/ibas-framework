@@ -40,8 +40,7 @@ public class SaveActionSupport {
 		this.listeners.remove(listener);
 	}
 
-	public boolean fireAction(SaveActionType type, IBusinessObjectBase bo, IBusinessObjectBase root)
-			throws SaveActionException {
+	public boolean fireAction(SaveActionType type, IBusinessObjectBase bo) throws SaveActionException {
 		if (this.listeners == null) {
 			return true;
 		}
@@ -49,7 +48,7 @@ public class SaveActionSupport {
 			if (item == null) {
 				continue;
 			}
-			boolean value = item.onActionEvent(new SaveActionEvent(this.source, type, bo, root));
+			boolean value = item.onActionEvent(new SaveActionEvent(this.source, type, bo));
 			if (!value) {
 				// 返回为false，直接退出
 				return value;

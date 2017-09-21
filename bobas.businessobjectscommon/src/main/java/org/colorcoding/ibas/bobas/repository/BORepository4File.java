@@ -172,7 +172,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 		if (this.saveActionsSupport == null) {
 			return;
 		}
-		this.saveActionsSupport.fireAction(type, bo, null);
+		this.saveActionsSupport.fireAction(type, bo);
 	}
 
 	/**

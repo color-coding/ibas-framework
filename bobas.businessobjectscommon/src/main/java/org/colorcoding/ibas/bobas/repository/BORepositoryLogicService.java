@@ -81,22 +81,21 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 * 
 	 * @param action
 	 *            事件
-	 * @param bo
+	 * @param trigger
 	 *            发生事件对象
 	 * @param parent
 	 *            所属的父项
 	 * @throws SaveActionException
 	 */
 	@Override
-	protected boolean onSaveActionEvent(SaveActionType action, IBusinessObjectBase bo, IBusinessObjectBase root)
-			throws SaveActionException {
+	protected boolean onSaveActionEvent(SaveActionType action, IBusinessObjectBase trigger) throws SaveActionException {
 		if (action == SaveActionType.BEFORE_DELETING) {
 			// 删除前检查
-			if (bo instanceof IBOReferenced) {
-				IBOReferenced refBO = (IBOReferenced) bo;
+			if (trigger instanceof IBOReferenced) {
+				IBOReferenced refBO = (IBOReferenced) trigger;
 				if (refBO.getReferenced() == emYesNo.YES) {
 					// 被引用的数据，不允许删除，可以标记删除
-					throw new SaveActionException(I18N.prop("msg_bobas_not_allow_delete_referenced_bo", bo.toString()));
+					throw new SaveActionException(I18N.prop("msg_bobas_not_allow_delete_referenced_bo", trigger.toString()));
 				}
 			}
 		}
@@ -106,16 +105,16 @@ public class BORepositoryLogicService extends BORepositoryService {
 			if (this.isCheckRules()) {
 				// 检查规则
 				try {
-					this.checkRules(action, bo);
+					this.checkRules(action, trigger);
 				} catch (BusinessRuleException e) {
 					throw new SaveActionException(e);
 				}
 			}
 			// 审批流程相关，先执行审批逻辑，可能对bo的状态有影响
-			if (this.isCheckApprovalProcess() && root == null) {
+			if (this.isCheckApprovalProcess()) {
 				// 触发审批流程
 				try {
-					this.triggerApprovals(bo);
+					this.triggerApprovals(trigger);
 				} catch (InvalidAuthorizationException | ApprovalException e) {
 					throw new SaveActionException(e);
 				}
@@ -125,11 +124,11 @@ public class BORepositoryLogicService extends BORepositoryService {
 			// 业务逻辑相关，最后执行业务逻辑，因为要求状态可用
 			if (this.isCheckLogics()) {
 				// 执行业务逻辑
-				this.runLogics(action, bo);
+				this.runLogics(action, trigger);
 			}
 		}
 		// 运行基类方法
-		return super.onSaveActionEvent(action, bo, root);
+		return super.onSaveActionEvent(action, trigger);
 	}
 
 	/**

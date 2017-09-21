@@ -75,7 +75,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 		}
 	}
 
-	private volatile SaveActionSupport saveActionsSupport;
+	private volatile SaveActionSupport saveActionSupport;
 
 	/**
 	 * 通知事务
@@ -87,12 +87,11 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	 * @throws SaveActionException
 	 *             运行时错误
 	 */
-	private void fireSaveActions(SaveActionType type, IBusinessObjectBase bo, IBusinessObjectBase root)
-			throws SaveActionException {
-		if (this.saveActionsSupport == null) {
+	private void fireSaveAction(SaveActionType type, IBusinessObjectBase bo) throws SaveActionException {
+		if (this.saveActionSupport == null) {
 			return;
 		}
-		this.saveActionsSupport.fireAction(type, bo, root);
+		this.saveActionSupport.fireAction(type, bo);
 	}
 
 	/**
@@ -102,10 +101,10 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	 */
 	@Override
 	public final void registerListener(SaveActionListener listener) {
-		if (this.saveActionsSupport == null) {
-			this.saveActionsSupport = new SaveActionSupport(this);
+		if (this.saveActionSupport == null) {
+			this.saveActionSupport = new SaveActionSupport(this);
 		}
-		this.saveActionsSupport.registerListener(listener);
+		this.saveActionSupport.registerListener(listener);
 	}
 
 	/**
@@ -115,17 +114,17 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	 */
 	@Override
 	public final void removeListener(SaveActionListener listener) {
-		if (this.saveActionsSupport == null) {
+		if (this.saveActionSupport == null) {
 			return;
 		}
-		this.saveActionsSupport.removeListener(listener);
+		this.saveActionSupport.removeListener(listener);
 	}
 
 	@Override
 	public <T extends IBusinessObjectBase> IOperationResult<T> save(T bo) {
 		OperationResult<T> operationResult = new OperationResult<>();
 		try {
-			IBusinessObjectBase nBO = this.mySave(bo, null);
+			IBusinessObjectBase nBO = this.mySave(bo);
 			if (nBO instanceof ITrackStatusOperator) {
 				// 保存成功，标记对象为OLD
 				ITrackStatusOperator operator = (ITrackStatusOperator) nBO;
@@ -142,7 +141,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	public <T extends IBusinessObjectBase> IOperationResult<T> saveEx(T bo) {
 		OperationResult<T> operationResult = new OperationResult<>();
 		try {
-			IBusinessObjectBase nBO = this.mySaveEx(bo, null);
+			IBusinessObjectBase nBO = this.mySaveEx(bo);
 			if (nBO instanceof ITrackStatusOperator) {
 				// 保存成功，标记对象为OLD
 				ITrackStatusOperator operator = (ITrackStatusOperator) nBO;
@@ -178,7 +177,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	 * @return 保存的对象
 	 * @throws Exception
 	 */
-	private final IBusinessObjectBase mySave(IBusinessObjectBase bo, IBusinessObjectBase root) throws Exception {
+	private final IBusinessObjectBase mySave(IBusinessObjectBase bo) throws Exception {
 		if (bo == null) {
 			throw new RepositoryException(I18N.prop("msg_bobas_invalid_bo"));
 		}
@@ -200,15 +199,15 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 					// 新建的对象
 					this.getKeysManager().usePrimaryKeys(bo, command);// 获取并更新主键
 					this.getKeysManager().useSeriesKey(bo, command);// 获取并更新系列号
-					this.fireSaveActions(SaveActionType.BEFORE_ADDING, bo, root);
+					this.fireSaveAction(SaveActionType.BEFORE_ADDING, bo);
 					sqlQuery = adapter4Db.parseInsertScript(bo);
 				} else if (bo.isDeleted()) {
 					// 删除对象
-					this.fireSaveActions(SaveActionType.BEFORE_DELETING, bo, root);
+					this.fireSaveAction(SaveActionType.BEFORE_DELETING, bo);
 					sqlQuery = adapter4Db.parseDeleteScript(bo);
 				} else {
 					// 修改对象，先删除数据，再添加新的实例
-					this.fireSaveActions(SaveActionType.BEFORE_UPDATING, bo, root);
+					this.fireSaveAction(SaveActionType.BEFORE_UPDATING, bo);
 					sqlQuery = adapter4Db.parseDeleteScript(bo);
 					command.executeUpdate(sqlQuery);// 执行删除副本
 					sqlQuery = adapter4Db.parseInsertScript(bo);
@@ -218,13 +217,13 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 				// 通知事务
 				if (bo.isNew()) {
 					// 新建的对象
-					this.fireSaveActions(SaveActionType.ADDED, bo, root);
+					this.fireSaveAction(SaveActionType.ADDED, bo);
 				} else if (bo.isDeleted()) {
 					// 删除对象
-					this.fireSaveActions(SaveActionType.DELETED, bo, root);
+					this.fireSaveAction(SaveActionType.DELETED, bo);
 				} else {
 					// 修改对象
-					this.fireSaveActions(SaveActionType.UPDATED, bo, root);
+					this.fireSaveAction(SaveActionType.UPDATED, bo);
 				}
 				if (myTrans) {
 					// 自己打开的事务
@@ -262,13 +261,9 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	 * @return 保存的对象
 	 * @throws Exception
 	 */
-	private final IBusinessObjectBase mySaveEx(IBusinessObjectBase bo, IBusinessObjectBase root) throws Exception {
+	private final IBusinessObjectBase mySaveEx(IBusinessObjectBase bo) throws Exception {
 		if (bo == null) {
 			throw new RepositoryException(I18N.prop("msg_bobas_invalid_bo"));
-		}
-		if (root == null) {
-			// 设置触发事件的跟对象
-			root = bo;
 		}
 		if (bo.isDirty()) {
 			// 仅修过的数据进行处理
@@ -279,7 +274,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 				myOpenedDb = this.openDbConnection();
 				myTrans = this.beginTransaction();
 				// 保存主对象
-				this.mySave(bo, root);
+				this.mySave(bo);
 				// 保存子项
 				if (bo instanceof IManageFields) {
 					IManageFields boFields = (IManageFields) bo;
@@ -298,11 +293,11 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 							IBusinessObjectListBase<?> childs = (IBusinessObjectListBase<?>) fdValue;
 							// 每个子项保存时，自主获取主键
 							for (IBusinessObjectBase childBO : childs) {
-								this.mySaveEx(childBO, root);
+								this.mySaveEx(childBO);
 							}
 						} else if (fdValue instanceof IBusinessObjectBase) {
 							// 对象属性
-							this.mySaveEx((IBusinessObjectBase) fdValue, root);// 继续带子项的保存
+							this.mySaveEx((IBusinessObjectBase) fdValue);// 继续带子项的保存
 						}
 						/*
 						 * 不处理数组了
