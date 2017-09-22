@@ -16,7 +16,6 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logics.BusinessLogicsFactory;
 import org.colorcoding.ibas.bobas.logics.IBusinessLogicChain;
-import org.colorcoding.ibas.bobas.logics.IBusinessLogicsHost;
 import org.colorcoding.ibas.bobas.logics.IBusinessLogicsManager;
 import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
 import org.colorcoding.ibas.bobas.rules.BusinessRuleException;
@@ -84,7 +83,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 * @throws SaveActionException
 	 */
 	@Override
-	protected boolean onSaveActionEvent(SaveActionType action, IBusinessObject trigger) throws RepositoryException {
+	protected void onSaveActionEvent(SaveActionType action, IBusinessObject trigger) throws RepositoryException {
 		if (action == SaveActionType.BEFORE_DELETING) {
 			// 删除前检查
 			if (trigger instanceof IBOReferenced) {
@@ -117,15 +116,13 @@ public class BORepositoryLogicService extends BORepositoryService {
 				}
 			}
 		}
-		if (action != SaveActionType.BEFORE_ADDING) {
-			// 业务逻辑相关，最后执行业务逻辑，因为要求状态可用
-			if (this.isCheckLogics()) {
-				// 执行业务逻辑
-				this.runLogics(action, trigger);
-			}
+		// 业务逻辑相关，最后执行业务逻辑，因为要求状态可用
+		if (this.isCheckLogics()) {
+			// 执行业务逻辑
+			this.runLogics(action, trigger);
 		}
 		// 运行基类方法
-		return super.onSaveActionEvent(action, trigger);
+		super.onSaveActionEvent(action, trigger);
 	}
 
 	/**
@@ -209,17 +206,12 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 *            业务数据
 	 */
 	private void runLogics(SaveActionType type, IBusinessObject bo) {
-		if (!(bo instanceof IBusinessLogicsHost)) {
-			// 业务对象不是业务逻辑宿主，退出
-			return;
-		}
-		IBusinessLogicsHost logicsHost = (IBusinessLogicsHost) bo;
 		String transId = this.getRepository().getTransactionId();// 事务链标记，结束事务时关闭
 		if (this.logicsManager == null) {
 			this.logicsManager = BusinessLogicsFactory.create().createManager();
 		}
 		IBusinessLogicsManager logicsManager = this.logicsManager;
-		IBusinessLogicChain logicChain = logicsManager.getChain(logicsHost);
+		IBusinessLogicChain logicChain = logicsManager.getChain(bo);
 		if (logicChain == null) {
 			// 没有已存在的，创建并注册
 			logicChain = logicsManager.createChain();
@@ -228,7 +220,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 			// 设置使用仓库
 			logicChain.useRepository(this.getRepository());
 			// 设置触发者
-			logicChain.setTrigger(logicsHost);
+			logicChain.setTrigger(bo);
 		}
 		// 执行逻辑
 		if (type == SaveActionType.ADDED) {
@@ -237,6 +229,10 @@ public class BORepositoryLogicService extends BORepositoryService {
 			logicChain.commit();
 		} else if (type == SaveActionType.BEFORE_DELETING) {
 			// 删除数据前，反向逻辑
+			if (this.isRefetchBeforeDelete()) {
+				// 已重装了删除对象，提高性能直接使用
+				logicChain.setTriggerCopy();
+			}
 			logicChain.reverseLogics();
 			logicChain.commit();
 		} else if (type == SaveActionType.BEFORE_UPDATING) {

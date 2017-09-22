@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
+import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.core.BOFactory;
 import org.colorcoding.ibas.bobas.mapping.LogicContract;
 
@@ -18,13 +19,13 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 
 	@Override
 	public synchronized IBusinessLogicChain createChain() {
-		IBusinessLogicChain logicChain = new BusinessLogicChain();
+		IBusinessLogicChain logicChain = new BusinessLogicChain(this);
 		this.getLogicChains().add(logicChain);
 		return logicChain;
 	}
 
 	@Override
-	public synchronized IBusinessLogicChain getChain(IBusinessLogicsHost host) {
+	public synchronized IBusinessLogicChain getChain(IBusinessObject host) {
 		if (host == null) {
 			return null;
 		}
@@ -33,7 +34,7 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 			if (logicChain == null) {
 				continue;
 			}
-			if (logicChain.getTrigger() == host) {
+			if (logicChain.getTrigger() != host) {
 				continue;
 			}
 			return logicChain;

@@ -58,7 +58,7 @@ public class ExpressionFactory {
 	 *            条件
 	 * @return
 	 */
-	public JudgmentLink createBOJudgmentLinks(IConditions conditions) {
+	public JudgmentLink createBOJudgmentLink(IConditions conditions) {
 		BOJudgmentLinkCondition judgmentLinks = new BOJudgmentLinkCondition();
 		judgmentLinks.parsingConditions(conditions);
 		return judgmentLinks;
@@ -71,7 +71,7 @@ public class ExpressionFactory {
 	 *            条件
 	 * @return
 	 */
-	public JudgmentLink createFileJudgmentLinks(IConditions conditions) {
+	public JudgmentLink createFileJudgmentLink(IConditions conditions) {
 		FileJudgmentLink judgmentLinks = new FileJudgmentLink();
 		judgmentLinks.parsingConditions(conditions);
 		return judgmentLinks;

@@ -97,10 +97,6 @@ public class MyConfiguration extends Configuration {
 	 */
 	public final static String CONFIG_ITEM_BO_ENABLED_USER_FIELDS = "EnabledUserFields";
 	/**
-	 * 配置项目-关闭业务对象版本检查
-	 */
-	public final static String CONFIG_ITEM_BO_DISABLED_VERSION_CHECK = "DisabledVersionCheck";
-	/**
 	 * 配置项目-关闭业务对象事务通知
 	 */
 	public final static String CONFIG_ITEM_BO_DISABLED_POST_TRANSACTION = "DisabledPostTransaction";

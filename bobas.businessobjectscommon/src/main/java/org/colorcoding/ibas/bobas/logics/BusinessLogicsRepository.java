@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.logics;
 
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
+import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.repository.BORepositoryLogicService;
 
@@ -18,15 +19,13 @@ class BusinessLogicsRepository extends BORepositoryLogicService {
 		this.setCheckApprovalProcess(false);// 不检查审批逻辑
 	}
 
-	/**
-	 * 保存对象
-	 * 
-	 * @param bo
-	 *            业务对象
-	 * @return
-	 */
 	public <P extends IBusinessObject> OperationResult<P> saveData(P bo) {
 		String token = this.getCurrentUser().getToken();
 		return super.save(bo, token);
+	}
+
+	public <P extends IBusinessObject> OperationResult<P> fetchData(ICriteria criteria, Class<P> boType) {
+		String token = this.getCurrentUser().getToken();
+		return super.fetch(criteria, token, boType);
 	}
 }

@@ -40,21 +40,16 @@ public class SaveActionSupport {
 		this.listeners.remove(listener);
 	}
 
-	public boolean fireAction(SaveActionType type, IBusinessObjectBase bo) throws RepositoryException {
+	public void fireAction(SaveActionType type, IBusinessObjectBase bo) throws RepositoryException {
 		if (this.listeners == null) {
-			return true;
+			return;
 		}
 		for (SaveActionListener item : this.listeners) {
 			if (item == null) {
 				continue;
 			}
-			boolean value = item.onActionEvent(new SaveActionEvent(this.source, type, bo));
-			if (!value) {
-				// 返回为false，直接退出
-				return value;
-			}
+			item.onActionEvent(new SaveActionEvent(this.source, type, bo));
 		}
-		return true;
 	}
 
 }

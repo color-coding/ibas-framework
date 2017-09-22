@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.logics;
 
+import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.core.IBORepository;
 
 /**
@@ -28,14 +29,21 @@ public interface IBusinessLogicChain {
 	 * 
 	 * @return
 	 */
-	IBusinessLogicsHost getTrigger();
+	IBusinessObject getTrigger();
 
 	/**
 	 * 设置-触发逻辑链对象
 	 * 
 	 * @param bo
 	 */
-	void setTrigger(IBusinessLogicsHost trigger);
+	void setTrigger(IBusinessObject trigger);
+
+	/**
+	 * 使用触发者作为已存在副本
+	 * 
+	 * @param bo
+	 */
+	void setTriggerCopy();
 
 	/**
 	 * 改变业务对象仓库

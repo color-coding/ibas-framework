@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Vector;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.bo.BusinessObject;
-import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICriteria;
@@ -49,9 +47,6 @@ public class BORepositoryService implements IBORepositoryService {
 		// 是否通知事务
 		this.setPostTransaction(
 				!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_POST_TRANSACTION, false));
-		// 是否检查版本
-		this.setCheckVersion(
-				!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_VERSION_CHECK, false));
 		// 是否删除前重新查询
 		this.setRefetchBeforeDelete(
 				MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_REFETCH_BEFORE_DELETE, false));
@@ -73,18 +68,13 @@ public class BORepositoryService implements IBORepositoryService {
 
 	private SaveActionListener saveListener = new SaveActionListener() {
 		@Override
-		public boolean onActionEvent(SaveActionEvent event) throws RepositoryException {
-			if (event == null) {
-				return true;
-			}
+		public void onActionEvent(SaveActionEvent event) throws RepositoryException {
 			if (BORepositoryService.this.getProcessing().contains(event.getTrigger())) {
 				if (event.getTrigger() instanceof IBusinessObject) {
-					return BORepositoryService.this.onSaveActionEvent(event.getType(),
-							(IBusinessObject) event.getTrigger());
+					BORepositoryService.this.onSaveActionEvent(event.getType(), (IBusinessObject) event.getTrigger());
 
 				}
 			}
-			return true;
 		}
 	};
 
@@ -133,7 +123,6 @@ public class BORepositoryService implements IBORepositoryService {
 			if (this.getRepository() instanceof IBORepository4Db) {
 				return ((IBORepository4Db) this.getRepository()).openDbConnection();
 			}
-			Logger.log(MessageLevel.ERROR, MSG_REPOSITORY_CANNOT_BE_OPENED);
 			return false;
 		} catch (DbException e) {
 			throw new RepositoryException(e);
@@ -220,16 +209,6 @@ public class BORepositoryService implements IBORepositoryService {
 
 	public final void setPostTransaction(boolean value) {
 		this.postTransaction = value;
-	}
-
-	private boolean checkVersion;
-
-	public final boolean isCheckVersion() {
-		return checkVersion;
-	}
-
-	public final void setCheckVersion(boolean checkVersion) {
-		this.checkVersion = checkVersion;
 	}
 
 	private IUser currentUser = null;
@@ -509,14 +488,9 @@ public class BORepositoryService implements IBORepositoryService {
 				@SuppressWarnings("unchecked")
 				IOperationResult<P> opRsltFetch = this.fetch(bo.getCriteria(), (Class<P>) bo.getClass());
 				P boCopy = opRsltFetch.getResultObjects().firstOrDefault();
-				if (boCopy != null && boCopy.getClass() == bo.getClass() && boCopy instanceof BusinessObject
-						&& opRsltFetch.getResultCode() == 0) {
-					// 查到了数据库副本
-					@SuppressWarnings("unchecked")
-					BusinessObject<IBusinessObject> newBO = (BusinessObject<IBusinessObject>) boCopy;
+				if (boCopy != null && boCopy.getClass() == bo.getClass()) {
 					// 使用BO的删除方法，引用对象时不进行删除操作
-					newBO.delete();
-					// 替换操作对象
+					boCopy.delete();
 					bo = boCopy;
 					Logger.log(MessageLevel.DEBUG, MSG_REPOSITORY_REPLACED_BE_DELETED_BO, bo);
 				} else {
@@ -541,36 +515,7 @@ public class BORepositoryService implements IBORepositoryService {
 	 *            发生对象
 	 * @return
 	 */
-	protected boolean onSaveActionEvent(SaveActionType action, IBusinessObject trigger) throws RepositoryException {
-		if (action == SaveActionType.BEFORE_UPDATING) {
-			if (this.isCheckVersion()) {
-				// 更新前，检查版本是否有效
-				try {
-					if (trigger instanceof IBOStorageTag) {
-						IOperationResult<?> opRslt = this.getRepository().fetchCopy(trigger);
-						if (opRslt.getError() != null) {
-							throw opRslt.getError();
-						}
-						if (opRslt.getResultCode() != 0) {
-							throw new Exception(opRslt.getMessage());
-						}
-						Object boCopy = opRslt.getResultObjects().firstOrDefault();
-						if (boCopy == null) {
-							throw new Exception(I18N.prop("msg_bobas_not_found_bo_copy", trigger));
-						}
-						IBOStorageTag boTag = (IBOStorageTag) trigger;
-						IBOStorageTag copyTag = (IBOStorageTag) boCopy;
-						if (copyTag.getLogInst() >= boTag.getLogInst()) {
-							// 数据库版本更高
-							throw new Exception(I18N.prop("msg_bobas_bo_copy_is_more_newer"));
-						}
-					}
-				} catch (Exception e) {
-					throw new RepositoryException(I18N.prop("msg_bobas_bo_version_check_faild", trigger), e);
-				}
-			}
-		}
-		return true;
+	protected void onSaveActionEvent(SaveActionType action, IBusinessObject trigger) throws RepositoryException {
 	}
 
 }

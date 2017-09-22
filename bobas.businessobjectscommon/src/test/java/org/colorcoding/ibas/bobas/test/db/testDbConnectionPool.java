@@ -8,9 +8,9 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.SortType;
+import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
-import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.repository.InvalidTokenException;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrder;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrderItem;
@@ -72,7 +72,6 @@ public class testDbConnectionPool extends TestCase {
 		MyConfiguration.addConfigValue(MyConfiguration.CONFIG_ITEM_DB_TYPE, "org.colorcoding.ibas.bobas.test.db");
 		MyConfiguration.addConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_POST_TRANSACTION, "true");
 		MyConfiguration.addConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_REFETCH, "true");
-		MyConfiguration.addConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_VERSION_CHECK, "true");
 		BORepositoryTest boRepository = new BORepositoryTest();
 		boRepository.setUserToken("");
 		ISalesOrder order = new SalesOrder();

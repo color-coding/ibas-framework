@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.logics;
 
+import org.colorcoding.ibas.bobas.bo.IBusinessObject;
+
 /**
  * 业务逻辑管理员
  * 
@@ -14,7 +16,7 @@ public interface IBusinessLogicsManager {
 	 *            业务逻辑宿主
 	 * @return
 	 */
-	IBusinessLogicChain getChain(IBusinessLogicsHost host);
+	IBusinessLogicChain getChain(IBusinessObject host);
 
 	/**
 	 * 创建新的逻辑链

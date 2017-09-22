@@ -7,14 +7,12 @@ import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
 import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ICriteria;
-import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.ITrackStatus;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
-import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
 
@@ -33,6 +31,7 @@ import org.colorcoding.ibas.bobas.messages.MessageLevel;
 public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends IBusinessObject>
 		implements IBusinessLogic<B> {
 
+	protected static final String MSG_LOGICS_FOUND_DATA_IN_CHAIN = "logics: found affected data in chain.";
 	protected static final String MSG_LOGICS_RUNNING_LOGIC_FORWARD = "logics: forward logic [%s] by data [%s].";
 	protected static final String MSG_LOGICS_RUNNING_LOGIC_REVERSE = "logics: reverse logic [%s] by data [%s].";
 
@@ -43,7 +42,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 	 * 
 	 * @return
 	 */
-	public final L getContract() {
+	protected final L getContract() {
 		return this.contract;
 	}
 
@@ -52,33 +51,33 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		this.contract = (L) contract;
 	}
 
-	private IBusinessObject host;
+	private IBusinessLogicsHost host;
 
 	/**
 	 * 获取-契约数据所属BO
 	 * 
 	 * @return
 	 */
-	public final IBusinessObject getHost() {
+	protected final IBusinessLogicsHost getHost() {
 		return host;
 	}
 
-	public final void setHost(IBusinessObject host) {
+	final void setHost(IBusinessLogicsHost host) {
 		this.host = host;
 	}
 
-	private IBusinessObject parent;
+	private Object parent;
 
 	/**
 	 * 获取-契约数据所属父项BO
 	 * 
 	 * @return
 	 */
-	protected final IBusinessObject getParent() {
+	protected final Object getParent() {
 		return parent;
 	}
 
-	final void setParent(IBusinessObject parent) {
+	final void setParent(Object parent) {
 		this.parent = parent;
 	}
 
@@ -159,95 +158,10 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		return true;
 	}
 
-	private L oldContract;
-
-	/**
-	 * 获取-旧的契约数据
-	 * 
-	 * @return
-	 */
-	public final L getOldContract() {
-		if (this.oldContract == null) {
-			L tmpData = this.fetchExistingContract();
-			if (tmpData != null && tmpData.getClass().equals(this.getContract().getClass())) {
-				// 查询的数据有效
-				this.oldContract = tmpData;
-			} else {
-				throw new BusinessLogicException(I18N.prop("msg_bobas_not_found_bo_copy", this.getContract()));
-			}
-		}
-		return this.oldContract;
-	}
-
-	/**
-	 * 查询契约数据的已存在副本（用于回滚旧逻辑影响）
-	 * 
-	 * 默认实现查询业务对象副本，可重载
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	protected L fetchExistingContract() {
-		try {
-			if (this.getHost() instanceof IBusinessObject) {
-				IBusinessObject bo = (IBusinessObject) this.getHost();
-				IOperationResult<?> opRslt = this.getRepository().fetchCopy(bo);
-				if (opRslt.getError() != null) {
-					throw opRslt.getError();
-				}
-				if (opRslt.getResultCode() != 0) {
-					throw new BusinessLogicException(opRslt.getMessage());
-				}
-				return (L) opRslt.getResultObjects().firstOrDefault();
-			}
-			throw new BusinessLogicException(I18N.prop("msg_bobas_not_supported"));
-		} catch (BusinessLogicException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new BusinessLogicException(e);
-		}
-	}
-
-	private IBusinessObject oldParent;
-
-	/**
-	 * 获取-旧的契约数据
-	 * 
-	 * @return
-	 */
-	final IBusinessObject getOldParent() {
-		return this.oldParent;
-	}
-
-	/**
-	 * 查询已存在的父项
-	 * 
-	 * 默认实现查询业务对象副本，可重载
-	 * 
-	 * @return
-	 */
-	protected IBusinessObject fetchExistingParent() {
-		try {
-			if (this.getParent() instanceof IBusinessObject) {
-				IBusinessObject bo = (IBusinessObject) this.getParent();
-				IOperationResult<IBusinessObject> opRslt = this.getRepository().fetchCopy(bo);
-				if (opRslt.getError() != null) {
-					throw opRslt.getError();
-				}
-				if (opRslt.getResultCode() != 0) {
-					throw new BusinessLogicException(opRslt.getMessage());
-				}
-				return opRslt.getResultObjects().firstOrDefault();
-			}
-			throw new BusinessLogicException(I18N.prop("msg_bobas_not_supported"));
-		} catch (BusinessLogicException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new BusinessLogicException(e);
-		}
-	}
-
 	@Override
+	/**
+	 * 运行正向逻辑
+	 */
 	public final void forward() {
 		// 检查父项数据状态
 		if (this.getParent() != null && !this.checkDataStatus(this.getParent())) {
@@ -270,26 +184,12 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 	}
 
 	@Override
+	/**
+	 * 运行方向逻辑
+	 */
 	public final void reverse() {
-		// 加载旧的父项数据
-		if (this.getParent() != null && !this.getParent().isNew()) {
-			// 查询已存在的父项
-			// 逻辑事务中查询
-			IBusinessObject tmpData = this.getLogicsChain().fetchOldParent(this.getParent().getCriteria(),
-					this.getParent().getClass());
-			if (tmpData == null) {
-				// 数据库中查询
-				tmpData = this.fetchExistingParent();
-			}
-			if (tmpData != null && tmpData.getClass().equals(this.getParent().getClass())) {
-				// 查询的数据有效
-				this.oldParent = tmpData;
-			} else {
-				throw new BusinessLogicException(I18N.prop("msg_bobas_not_found_bo_copy", this.getParent()));
-			}
-		}
 		// 检查父项数据状态
-		if (this.getParent() != null && !this.checkDataStatus(this.getOldParent())) {
+		if (this.getParent() != null && !this.checkDataStatus(this.getParent())) {
 			// 数据状态不通过，跳过正向逻辑执行
 			return;
 		}
@@ -301,7 +201,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			}
 		}
 		// 检查数据状态
-		if (!this.checkDataStatus(this.getOldContract())) {
+		if (!this.checkDataStatus(this.getHost())) {
 			// 数据状态不通过，跳过反向逻辑执行
 			return;
 		}
@@ -312,7 +212,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			// 加载被影响的数据
 			this.beAffected = this.fetchBeAffected(this.getContract());
 		}
-		this.revoke(this.getOldContract());
+		this.revoke(this.getContract());
 	}
 
 	private B beAffected;
@@ -322,6 +222,9 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 	}
 
 	@Override
+	/**
+	 * 提交
+	 */
 	public void commit() {
 		if (this.getBeAffected() != null) {
 			BusinessLogicsRepository logicRepository = new BusinessLogicsRepository();
@@ -337,32 +240,32 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		}
 	}
 
-	IBusinessLogicChain logicsChain;
+	private BusinessLogicChain logicChain;
 
-	final IBusinessLogicChain getLogicsChain() {
-		return this.logicsChain;
+	protected final BusinessLogicChain getLogicChain() {
+		return this.logicChain;
 	}
 
-	final void setLogicsChain(IBusinessLogicChain value) {
-		this.logicsChain = value;
+	final void setLogicChain(BusinessLogicChain value) {
+		this.logicChain = value;
 	}
 
 	/**
-	 * 在逻辑所处仓库中查询被影响数据
-	 * 
-	 * 多逻辑影响同一个对象时，不能让每个逻辑中的对象为单独实例，此方法是从逻辑链中查询已存在的对象
+	 * 缓存中查询被影响的数据
 	 * 
 	 * @param criteria
-	 *            查询
 	 * @param type
-	 *            数据类型（即返回值类型）
 	 * @return
 	 */
-	protected final B fetchBeAffected(ICriteria criteria, Class<B> type) {
-		if (this.getLogicsChain() == null) {
-			return null;
+	protected B fetchBeAffected(ICriteria criteria, Class<B> type) {
+		if (this.getLogicChain() != null) {
+			B data = this.getLogicChain().fetchBeAffected(criteria, type);
+			if (data != null) {
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_FOUND_DATA_IN_CHAIN);
+				return data;
+			}
 		}
-		return this.getLogicsChain().fetchBeAffected(criteria, type);
+		return null;
 	}
 
 	/**

@@ -10,6 +10,13 @@ import org.colorcoding.ibas.bobas.bo.IBusinessObject;
  */
 public interface IBusinessLogic<B extends IBusinessObject> {
 	/**
+	 * 被影响的对象
+	 * 
+	 * @return
+	 */
+	B getBeAffected();
+
+	/**
 	 * 正向执行逻辑
 	 * 
 	 */
@@ -20,13 +27,6 @@ public interface IBusinessLogic<B extends IBusinessObject> {
 	 * 
 	 */
 	void reverse();
-
-	/**
-	 * 被影响的对象
-	 * 
-	 * @return
-	 */
-	B getBeAffected();
 
 	/**
 	 * 提交逻辑
