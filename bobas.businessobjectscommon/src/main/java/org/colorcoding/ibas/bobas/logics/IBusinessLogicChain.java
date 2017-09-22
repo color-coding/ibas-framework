@@ -1,8 +1,6 @@
 package org.colorcoding.ibas.bobas.logics;
 
-import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.core.IBORepository;
-import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 
 /**
  * 业务逻辑链
@@ -12,32 +10,32 @@ import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
  */
 public interface IBusinessLogicChain {
 	/**
-	 * 设置-标记
+	 * 设置-组标记
 	 * 
 	 * @param value
 	 */
-	void setId(String value);
+	void setGroup(String value);
 
 	/**
-	 * 获取-标记
+	 * 获取-组标记
 	 * 
 	 * @param value
 	 */
-	String getId();
+	String getGroup();
 
 	/**
 	 * 获取-触发逻辑链对象
 	 * 
 	 * @return
 	 */
-	IBusinessObjectBase getTrigger();
+	IBusinessLogicsHost getTrigger();
 
 	/**
 	 * 设置-触发逻辑链对象
 	 * 
 	 * @param bo
 	 */
-	void setTrigger(IBusinessObjectBase bo);
+	void setTrigger(IBusinessLogicsHost trigger);
 
 	/**
 	 * 改变业务对象仓库
@@ -51,43 +49,17 @@ public interface IBusinessLogicChain {
 	/**
 	 * 正向执行逻辑
 	 * 
-	 * @param bo
-	 *            契约数据
 	 */
-	void forwardLogics(IBusinessObjectBase bo);
+	void forwardLogics();
 
 	/**
 	 * 反向执行逻辑
 	 * 
-	 * @param bo
-	 *            契约数据
 	 */
-	void reverseLogics(IBusinessObjectBase bo);
+	void reverseLogics();
 
 	/**
 	 * 提交逻辑
 	 */
-	void commit(IBusinessObjectBase bo);
-
-	/**
-	 * 检索被影响的数据
-	 * 
-	 * @param criteria
-	 *            条件
-	 * @param type
-	 *            数据类型
-	 * @return
-	 */
-	<B> B fetchBeAffected(ICriteria criteria, Class<B> type);
-
-	/**
-	 * 检索父项副本
-	 * 
-	 * @param criteria
-	 *            条件
-	 * @param type
-	 *            数据类型
-	 * @return
-	 */
-	<B> B fetchOldParent(ICriteria criteria, Class<B> type);
+	void commit();
 }

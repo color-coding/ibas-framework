@@ -2,9 +2,10 @@ package org.colorcoding.ibas.bobas.logics;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Vector;
 
 import org.colorcoding.ibas.bobas.core.BOFactory;
-import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.mapping.LogicContract;
 
 /**
@@ -16,48 +17,58 @@ import org.colorcoding.ibas.bobas.mapping.LogicContract;
 public class BusinessLogicsManager implements IBusinessLogicsManager {
 
 	@Override
-	public synchronized IBusinessLogicChain getChain(String transId) {
-		if (transId != null) {
-			if (this.getLogicsChains().containsKey(transId)) {
-				return this.getLogicsChains().get(transId);
+	public synchronized IBusinessLogicChain createChain() {
+		IBusinessLogicChain logicChain = new BusinessLogicChain();
+		this.getLogicChains().add(logicChain);
+		return logicChain;
+	}
+
+	@Override
+	public synchronized IBusinessLogicChain getChain(IBusinessLogicsHost host) {
+		if (host == null) {
+			return null;
+		}
+		for (int i = this.getLogicChains().size() - 1; i >= 0; i--) {
+			IBusinessLogicChain logicChain = this.getLogicChains().get(i);
+			if (logicChain == null) {
+				continue;
 			}
+			if (logicChain.getTrigger() == host) {
+				continue;
+			}
+			return logicChain;
 		}
 		return null;
 	}
 
 	@Override
-	public synchronized IBusinessLogicChain registerChain(String transId) {
-		if (transId == null || transId.isEmpty()) {
-			throw new BusinessLogicException(I18N.prop("msg_bobas_invalid_data"));
+	public synchronized void closeChains(String transId) {
+		if (transId == null) {
+			return;
 		}
-		IBusinessLogicChain chain = new BusinessLogicChain();
-		chain.setId(transId);
-		this.getLogicsChains().put(chain.getId(), chain);
-		return chain;
-	}
-
-	@Override
-	public synchronized boolean closeChain(String transId) {
-		if (transId != null) {
-			if (this.getLogicsChains().containsKey(transId)) {
-				this.getLogicsChains().remove(transId);
-				return true;
+		for (int i = this.getLogicChains().size() - 1; i >= 0; i--) {
+			IBusinessLogicChain logicChain = this.getLogicChains().get(i);
+			if (logicChain == null) {
+				continue;
 			}
+			if (transId.equals(logicChain.getGroup())) {
+				continue;
+			}
+			this.getLogicChains().remove(i);
 		}
-		return false;
 	}
 
-	private volatile HashMap<String, IBusinessLogicChain> logicsChains;
+	private List<IBusinessLogicChain> logicChains;
 
-	protected HashMap<String, IBusinessLogicChain> getLogicsChains() {
-		if (this.logicsChains == null) {
-			synchronized (BusinessLogicsManager.class) {
-				if (this.logicsChains == null) {
-					this.logicsChains = new HashMap<String, IBusinessLogicChain>();
+	protected List<IBusinessLogicChain> getLogicChains() {
+		if (this.logicChains == null) {
+			synchronized (this) {
+				if (this.logicChains == null) {
+					this.logicChains = new Vector<>();
 				}
 			}
 		}
-		return this.logicsChains;
+		return this.logicChains;
 	}
 
 	private volatile HashMap<Class<?>, Class<?>> logicClasses;

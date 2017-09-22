@@ -3,8 +3,8 @@ package org.colorcoding.ibas.bobas.expressions;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
-import org.colorcoding.ibas.bobas.core.IBusinessObjectListBase;
+import org.colorcoding.ibas.bobas.bo.IBusinessObject;
+import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.i18n.I18N;
@@ -91,7 +91,7 @@ public class BOJudgmentLink extends JudgmentLink {
 	 * @return true，满足条件；false，不满足
 	 * @throws JudmentOperationException
 	 */
-	public boolean judge(IBusinessObjectBase bo) throws JudmentOperationException {
+	public boolean judge(IBusinessObject bo) throws JudmentOperationException {
 		// 无条件
 		if (this.getJudgmentItems() == null) {
 			return true;
@@ -140,12 +140,12 @@ public class BOJudgmentLink extends JudgmentLink {
 		return this.judge(0, jItems.toArray(new JudgmentLinkItem[] {}));
 	}
 
-	private List<IBusinessObjectBase> getValues(IBusinessObjectBase bo, String path) {
+	private List<IBusinessObject> getValues(IBusinessObject bo, String path) {
 		return this.getValues(bo, path.split("\\."));
 	}
 
-	private List<IBusinessObjectBase> getValues(IBusinessObjectBase bo, String[] propertys) {
-		ArrayList<IBusinessObjectBase> values = new ArrayList<>();
+	private List<IBusinessObject> getValues(IBusinessObject bo, String[] propertys) {
+		ArrayList<IBusinessObject> values = new ArrayList<>();
 		if (!(bo instanceof IManageFields)) {
 			// 不能识别的对象
 			return values;
@@ -176,21 +176,21 @@ public class BOJudgmentLink extends JudgmentLink {
 			for (int j = 0; j < lasts.length; j++) {
 				lasts[j] = propertys[i + j + 1];
 			}
-			if (fieldData.getValue() instanceof IBusinessObjectListBase<?>) {
+			if (fieldData.getValue() instanceof IBusinessObjects<?, ?>) {
 				// 值是业务对象列表
-				IBusinessObjectListBase<?> boList = (IBusinessObjectListBase<?>) fieldData.getValue();
-				for (IBusinessObjectBase item : boList) {
+				IBusinessObjects<?, ?> boList = (IBusinessObjects<?, ?>) fieldData.getValue();
+				for (IBusinessObject item : boList) {
 					values.addAll(this.getValues(item, lasts));
 				}
-			} else if (fieldData.getValue() instanceof IBusinessObjectBase) {
+			} else if (fieldData.getValue() instanceof IBusinessObject) {
 				// 值是对象
-				values.add((IBusinessObjectBase) fieldData.getValue());
+				values.add((IBusinessObject) fieldData.getValue());
 			}
 		}
 		return values;
 	}
 
-	protected boolean judge(IBusinessObjectBase bo, JudgmentLinkItem parent)
+	protected boolean judge(IBusinessObject bo, JudgmentLinkItem parent)
 			throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, JudmentOperationException {
 		String path = ((IPropertyValueOperator) parent.getLeftOperter()).getPropertyName();
@@ -198,7 +198,7 @@ public class BOJudgmentLink extends JudgmentLink {
 			// 无属性
 			return false;
 		}
-		List<IBusinessObjectBase> values = this.getValues(bo, path);
+		List<IBusinessObject> values = this.getValues(bo, path);
 		if (values.isEmpty()) {
 			// 没有待比较的值
 			return false;

@@ -43,7 +43,8 @@ import org.colorcoding.ibas.bobas.util.StringBuilder;
  */
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "BusinessObject", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
-public abstract class BusinessObject<T extends IBusinessObject> extends BusinessObjectBase<T> {
+public abstract class BusinessObject<T extends IBusinessObject> extends BusinessObjectBase<T>
+		implements IBusinessObject {
 
 	protected static final String MSG_USER_SET_FIELD_VALUE = "user fields: set field [%s]'s value [%s].";
 	protected static final String MSG_RULES_EXECUTING_FAILD = "rules: field [%s] triggered rules fail to run, %s.";

@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.logics;
 
-import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
+import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 
 /**
  * 业务逻辑
@@ -8,7 +8,7 @@ import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
  * @author Niuren.Zhu
  *
  */
-public interface IBusinessLogic<B extends IBusinessObjectBase> {
+public interface IBusinessLogic<B extends IBusinessObject> {
 	/**
 	 * 正向执行逻辑
 	 * 

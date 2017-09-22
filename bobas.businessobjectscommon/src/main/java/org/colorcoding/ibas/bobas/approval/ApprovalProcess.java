@@ -8,7 +8,6 @@ import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepository;
-import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalResult;
@@ -170,7 +169,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 					judgmentLinks.setRepository((IBORepository4DbReadonly) this.getRepository());
 				}
 				judgmentLinks.parsingConditions(stepItem.getConditions());
-				boolean done = judgmentLinks.judge((IBusinessObjectBase) data);
+				boolean done = judgmentLinks.judge((IBusinessObject) data);
 				if (done) {
 					// 满足条件，开启此步骤
 					stepItem.start();
@@ -215,9 +214,9 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 			if (judgmentLinks.getJudgmentItems() != null && judgmentLinks.getJudgmentItems().length > 0) {
 				// 有条件，则加载实际数据进行比较
 				// 审批的数据可能存在是代理数据情况
-				if (this.getApprovalData(true) instanceof IBusinessObjectBase) {
+				if (this.getApprovalData(true) instanceof IBusinessObject) {
 					// 数据为业务对象时进行属性的条件判断
-					IBusinessObjectBase bo = (IBusinessObjectBase) this.getApprovalData();
+					IBusinessObject bo = (IBusinessObject) this.getApprovalData();
 					done = judgmentLinks.judge(bo);
 				}
 			}
@@ -464,7 +463,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 				if (this.freshData) {
 					// 是业务对象实例时，业务对象实例已在保存队列中
 					// 保存审批数据
-					IOperationResult<?> opRsltSave = apRepository.save((IBusinessObject) approvalData);
+					IOperationResult<?> opRsltSave = apRepository.saveData((IBusinessObject) approvalData);
 					if (opRsltSave.getError() != null) {
 						throw new ApprovalProcessException(opRsltSave.getError());
 					}

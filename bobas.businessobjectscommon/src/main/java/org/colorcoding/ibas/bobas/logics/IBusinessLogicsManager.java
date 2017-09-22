@@ -10,20 +10,18 @@ public interface IBusinessLogicsManager {
 	/**
 	 * 获取已存在的逻辑链
 	 * 
-	 * @param transId
-	 *            事务标记
+	 * @param host
+	 *            业务逻辑宿主
 	 * @return
 	 */
-	IBusinessLogicChain getChain(String transId);
+	IBusinessLogicChain getChain(IBusinessLogicsHost host);
 
 	/**
 	 * 创建新的逻辑链
 	 * 
-	 * @param transId
-	 *            事务标记
 	 * @return
 	 */
-	IBusinessLogicChain registerChain(String transId);
+	IBusinessLogicChain createChain();
 
 	/**
 	 * 关闭逻辑链
@@ -32,7 +30,7 @@ public interface IBusinessLogicsManager {
 	 *            事务标记
 	 * @return 成功移出，true；不成功或不存在，false
 	 */
-	boolean closeChain(String transId);
+	void closeChains(String transId);
 
 	/**
 	 * 创建业务逻辑实例

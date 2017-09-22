@@ -1,12 +1,12 @@
 package org.colorcoding.ibas.bobas.repository;
 
+import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
-import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.messages.Logger;
@@ -73,7 +73,7 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 	 * @return 查询的结果
 	 */
 	@Override
-	<P extends IBusinessObjectBase> OperationResult<P> fetch(IBORepositoryReadonly boRepository, ICriteria criteria,
+	<P extends IBusinessObject> OperationResult<P> fetch(IBORepositoryReadonly boRepository, ICriteria criteria,
 			Class<P> boType) {
 		OperationResult<P> operationResult = new OperationResult<P>();
 		try {
@@ -122,7 +122,7 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 				}
 				if (!dataFull) {
 					// 结果数量不满足，进行下一组数据查询
-					IBusinessObjectBase lastBO = opRslt.getResultObjects().lastOrDefault();
+					IBusinessObject lastBO = opRslt.getResultObjects().lastOrDefault();
 					criteria = criteria.next(lastBO);// 下组数据的查询条件
 				}
 			} while (!dataFull);
@@ -155,7 +155,7 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 	 * @throws Exception
 	 */
 	@Override
-	<P extends IBusinessObjectBase> P save(IBORepository boRepository, P bo) throws Exception {
+	<P extends IBusinessObject> P save(IBORepository boRepository, P bo) throws Exception {
 		if (this.getOwnershipJudger() != null && bo instanceof IDataOwnership) {
 			// 数据权限过滤
 			if (!this.getOwnershipJudger().canSave((IDataOwnership) bo, this.getCurrentUser(), true)) {

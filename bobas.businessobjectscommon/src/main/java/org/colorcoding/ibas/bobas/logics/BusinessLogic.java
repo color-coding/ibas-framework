@@ -10,7 +10,6 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepository;
-import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.ITrackStatus;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
@@ -53,33 +52,33 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		this.contract = (L) contract;
 	}
 
-	private IBusinessObjectBase host;
+	private IBusinessObject host;
 
 	/**
 	 * 获取-契约数据所属BO
 	 * 
 	 * @return
 	 */
-	public final IBusinessObjectBase getHost() {
+	public final IBusinessObject getHost() {
 		return host;
 	}
 
-	public final void setHost(IBusinessObjectBase host) {
+	public final void setHost(IBusinessObject host) {
 		this.host = host;
 	}
 
-	private IBusinessObjectBase parent;
+	private IBusinessObject parent;
 
 	/**
 	 * 获取-契约数据所属父项BO
 	 * 
 	 * @return
 	 */
-	protected final IBusinessObjectBase getParent() {
+	protected final IBusinessObject getParent() {
 		return parent;
 	}
 
-	final void setParent(IBusinessObjectBase parent) {
+	final void setParent(IBusinessObject parent) {
 		this.parent = parent;
 	}
 
@@ -190,8 +189,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 	@SuppressWarnings("unchecked")
 	protected L fetchExistingContract() {
 		try {
-			if (this.getHost() instanceof IBusinessObjectBase) {
-				IBusinessObjectBase bo = (IBusinessObjectBase) this.getHost();
+			if (this.getHost() instanceof IBusinessObject) {
+				IBusinessObject bo = (IBusinessObject) this.getHost();
 				IOperationResult<?> opRslt = this.getRepository().fetchCopy(bo);
 				if (opRslt.getError() != null) {
 					throw opRslt.getError();
@@ -209,14 +208,14 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		}
 	}
 
-	private IBusinessObjectBase oldParent;
+	private IBusinessObject oldParent;
 
 	/**
 	 * 获取-旧的契约数据
 	 * 
 	 * @return
 	 */
-	final IBusinessObjectBase getOldParent() {
+	final IBusinessObject getOldParent() {
 		return this.oldParent;
 	}
 
@@ -227,11 +226,11 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 	 * 
 	 * @return
 	 */
-	protected IBusinessObjectBase fetchExistingParent() {
+	protected IBusinessObject fetchExistingParent() {
 		try {
-			if (this.getParent() instanceof IBusinessObjectBase) {
-				IBusinessObjectBase bo = (IBusinessObjectBase) this.getParent();
-				IOperationResult<IBusinessObjectBase> opRslt = this.getRepository().fetchCopy(bo);
+			if (this.getParent() instanceof IBusinessObject) {
+				IBusinessObject bo = (IBusinessObject) this.getParent();
+				IOperationResult<IBusinessObject> opRslt = this.getRepository().fetchCopy(bo);
 				if (opRslt.getError() != null) {
 					throw opRslt.getError();
 				}
@@ -276,7 +275,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		if (this.getParent() != null && !this.getParent().isNew()) {
 			// 查询已存在的父项
 			// 逻辑事务中查询
-			IBusinessObjectBase tmpData = this.getLogicsChain().fetchOldParent(this.getParent().getCriteria(),
+			IBusinessObject tmpData = this.getLogicsChain().fetchOldParent(this.getParent().getCriteria(),
 					this.getParent().getClass());
 			if (tmpData == null) {
 				// 数据库中查询
@@ -327,7 +326,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		if (this.getBeAffected() != null) {
 			BusinessLogicsRepository logicRepository = new BusinessLogicsRepository();
 			logicRepository.setRepository(this.getRepository());
-			OperationResult<B> operationResult = logicRepository.save(this.getBeAffected());
+			OperationResult<B> operationResult = logicRepository.saveData(this.getBeAffected());
 			logicRepository.setRepository(null);// 移出监听
 			if (operationResult.getError() != null) {
 				throw new BusinessLogicException(operationResult.getError());

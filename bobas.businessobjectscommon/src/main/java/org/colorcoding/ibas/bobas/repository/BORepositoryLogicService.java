@@ -9,15 +9,15 @@ import org.colorcoding.ibas.bobas.approval.IApprovalProcessManager;
 import org.colorcoding.ibas.bobas.bo.IBOReferenced;
 import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
 import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
-import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
+import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.core.SaveActionType;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logics.BusinessLogicsFactory;
 import org.colorcoding.ibas.bobas.logics.IBusinessLogicChain;
+import org.colorcoding.ibas.bobas.logics.IBusinessLogicsHost;
 import org.colorcoding.ibas.bobas.logics.IBusinessLogicsManager;
-import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
 import org.colorcoding.ibas.bobas.rules.BusinessRuleException;
 import org.colorcoding.ibas.bobas.rules.BusinessRulesFactory;
@@ -32,9 +32,6 @@ import org.colorcoding.ibas.bobas.rules.ICheckRules;
  *
  */
 public class BORepositoryLogicService extends BORepositoryService {
-
-	protected static final String MSG_LOGICS_CHAIN_REMOVED = "logics: chain [%s] was removed, because [%s].";
-	protected static final String MSG_LOGICS_CHAIN_CREATED = "logics: chain [%s] was created, by [%s].";
 
 	public BORepositoryLogicService() {
 		this.setCheckRules(
@@ -87,7 +84,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 * @throws SaveActionException
 	 */
 	@Override
-	protected boolean onSaveActionEvent(SaveActionType action, IBusinessObjectBase trigger) throws RepositoryException {
+	protected boolean onSaveActionEvent(SaveActionType action, IBusinessObject trigger) throws RepositoryException {
 		if (action == SaveActionType.BEFORE_DELETING) {
 			// 删除前检查
 			if (trigger instanceof IBOReferenced) {
@@ -139,7 +136,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 * @throws BusinessRuleException
 	 * @throws BusinessRuleExecuteException
 	 */
-	private void checkRules(SaveActionType type, IBusinessObjectBase bo) throws BusinessRuleException {
+	private void checkRules(SaveActionType type, IBusinessObject bo) throws BusinessRuleException {
 		// 运行对象业务规则
 		IBusinessRules rules = BusinessRulesFactory.create().createManager().getRules(bo.getClass());
 		if (rules != null)
@@ -161,8 +158,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 * @throws ApprovalException
 	 * @throws InvalidAuthorizationException
 	 */
-	private void triggerApprovals(IBusinessObjectBase bo)
-			throws ApprovalProcessException, InvalidAuthorizationException {
+	private void triggerApprovals(IBusinessObject bo) throws ApprovalProcessException, InvalidAuthorizationException {
 		if (!(bo instanceof IApprovalData)) {
 			// 业务对象不是需要审批的数据，退出处理
 			return;
@@ -200,6 +196,8 @@ public class BORepositoryLogicService extends BORepositoryService {
 		}
 	}
 
+	private IBusinessLogicsManager logicsManager;
+
 	/**
 	 * 执行业务逻辑
 	 * 
@@ -210,65 +208,63 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 * @param bo
 	 *            业务数据
 	 */
-	private void runLogics(SaveActionType type, IBusinessObjectBase bo) {
+	private void runLogics(SaveActionType type, IBusinessObject bo) {
+		if (!(bo instanceof IBusinessLogicsHost)) {
+			// 业务对象不是业务逻辑宿主，退出
+			return;
+		}
+		IBusinessLogicsHost logicsHost = (IBusinessLogicsHost) bo;
 		String transId = this.getRepository().getTransactionId();// 事务链标记，结束事务时关闭
-		IBusinessLogicsManager logicsManager = BusinessLogicsFactory.create().createManager();
-		IBusinessLogicChain logicsChain = logicsManager.getChain(transId);
-		if (logicsChain == null) {
+		if (this.logicsManager == null) {
+			this.logicsManager = BusinessLogicsFactory.create().createManager();
+		}
+		IBusinessLogicsManager logicsManager = this.logicsManager;
+		IBusinessLogicChain logicChain = logicsManager.getChain(logicsHost);
+		if (logicChain == null) {
 			// 没有已存在的，创建并注册
-			logicsChain = logicsManager.registerChain(transId);
-			// 传递仓库
-			logicsChain.useRepository(this.getRepository());
-			// 记录触发者
-			logicsChain.setTrigger(bo);
-			Logger.log(MSG_LOGICS_CHAIN_CREATED, transId, bo.toString());
+			logicChain = logicsManager.createChain();
+			// 设置事务标记
+			logicChain.setGroup(transId);
+			// 设置使用仓库
+			logicChain.useRepository(this.getRepository());
+			// 设置触发者
+			logicChain.setTrigger(logicsHost);
 		}
-		try {
-			// 执行逻辑
-			if (type == SaveActionType.ADDED) {
-				// 新建数据，正向逻辑
-				logicsChain.forwardLogics(bo);
-				logicsChain.commit(bo);
-			} else if (type == SaveActionType.BEFORE_DELETING) {
-				// 删除数据前，反向逻辑
-				logicsChain.reverseLogics(bo);
-				logicsChain.commit(bo);
-			} else if (type == SaveActionType.BEFORE_UPDATING) {
-				// 更新数据前，反向逻辑
-				logicsChain.reverseLogics(bo);
-				// 等待更新完成提交
-			} else if (type == SaveActionType.UPDATED) {
-				// 更新数据后，正向逻辑
-				logicsChain.forwardLogics(bo);
-				logicsChain.commit(bo);
-			}
-		} catch (Exception e) {
-			// 出现错误关闭逻辑链，释放资源
-			logicsManager.closeChain(logicsChain.getId());
-			Logger.log(MSG_LOGICS_CHAIN_REMOVED, transId, e.getMessage());
-			throw e;
-		}
-		// 触发的BO完成操作，释放资源
-		if (type == SaveActionType.ADDED || type == SaveActionType.UPDATED || type == SaveActionType.DELETED) {
-			if (logicsChain != null && logicsChain.getTrigger() == bo) {
-				// 释放业务链
-				logicsManager.closeChain(logicsChain.getId());
-				Logger.log(MSG_LOGICS_CHAIN_REMOVED, transId, "done");
-			}
+		// 执行逻辑
+		if (type == SaveActionType.ADDED) {
+			// 新建数据，正向逻辑
+			logicChain.forwardLogics();
+			logicChain.commit();
+		} else if (type == SaveActionType.BEFORE_DELETING) {
+			// 删除数据前，反向逻辑
+			logicChain.reverseLogics();
+			logicChain.commit();
+		} else if (type == SaveActionType.BEFORE_UPDATING) {
+			// 更新数据前，反向逻辑
+			logicChain.reverseLogics();
+			// 等待更新完成提交
+		} else if (type == SaveActionType.UPDATED) {
+			// 更新数据后，正向逻辑
+			logicChain.forwardLogics();
+			logicChain.commit();
 		}
 	}
 
 	@Override
 	public void rollbackTransaction() throws RepositoryException {
 		// 关闭业务链
-		BusinessLogicsFactory.create().createManager().closeChain(this.getRepository().getTransactionId());
+		if (this.logicsManager != null) {
+			this.logicsManager.closeChains(this.getRepository().getTransactionId());
+		}
 		super.rollbackTransaction();
 	}
 
 	@Override
 	public void commitTransaction() throws RepositoryException {
 		// 关闭业务链
-		BusinessLogicsFactory.create().createManager().closeChain(this.getRepository().getTransactionId());
+		if (this.logicsManager != null) {
+			this.logicsManager.closeChains(this.getRepository().getTransactionId());
+		}
 		super.commitTransaction();
 	}
 }

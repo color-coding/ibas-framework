@@ -3,15 +3,14 @@ package org.colorcoding.ibas.bobas.expressions;
 import java.util.Iterator;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.SqlQuery;
-import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IFieldDataDb;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.IKeyText;
-import org.colorcoding.ibas.bobas.expressions.IPropertyValueOperator;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.repository.IBORepository4DbReadonly;
 
@@ -40,13 +39,13 @@ public class SQLScriptValueOperator implements IPropertyValueOperator {
 		return this.value;
 	}
 
-	private IBusinessObjectBase bo;
+	private IBusinessObject bo;
 
 	@Override
 	public void setValue(Object value) {
 		this.value = null;
-		if (value instanceof IBusinessObjectBase) {
-			this.bo = (IBusinessObjectBase) value;
+		if (value instanceof IBusinessObject) {
+			this.bo = (IBusinessObject) value;
 			if (this.repository == null) {
 				throw new RuntimeException(I18N.prop("msg_bobas_invaild_bo_repository"));
 			}

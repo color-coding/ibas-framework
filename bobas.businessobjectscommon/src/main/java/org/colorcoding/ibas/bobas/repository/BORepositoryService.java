@@ -14,7 +14,6 @@ import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
-import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.core.SaveActionEvent;
 import org.colorcoding.ibas.bobas.core.SaveActionListener;
@@ -79,7 +78,11 @@ public class BORepositoryService implements IBORepositoryService {
 				return true;
 			}
 			if (BORepositoryService.this.getProcessing().contains(event.getTrigger())) {
-				return BORepositoryService.this.onSaveActionEvent(event.getType(), event.getTrigger());
+				if (event.getTrigger() instanceof IBusinessObject) {
+					return BORepositoryService.this.onSaveActionEvent(event.getType(),
+							(IBusinessObject) event.getTrigger());
+
+				}
 			}
 			return true;
 		}
@@ -309,7 +312,7 @@ public class BORepositoryService implements IBORepositoryService {
 	 * 
 	 * @return 查询的结果
 	 */
-	<P extends IBusinessObjectBase> IOperationResult<P> fetch(IBORepositoryReadonly boRepository, ICriteria criteria,
+	<P extends IBusinessObject> IOperationResult<P> fetch(IBORepositoryReadonly boRepository, ICriteria criteria,
 			Class<P> boType) {
 		if (criteria == null) {
 			criteria = new Criteria();
@@ -334,7 +337,7 @@ public class BORepositoryService implements IBORepositoryService {
 	 * 
 	 * @return 查询的结果
 	 */
-	protected final <P extends IBusinessObjectBase> OperationResult<P> fetch(ICriteria criteria, String token,
+	protected final <P extends IBusinessObject> OperationResult<P> fetch(ICriteria criteria, String token,
 			Class<P> boType) {
 		try {
 			// 解析并设置当前用户
@@ -346,7 +349,7 @@ public class BORepositoryService implements IBORepositoryService {
 		return (OperationResult<P>) this.fetch(criteria, boType);
 	}
 
-	<P extends IBusinessObjectBase> IOperationResult<P> fetch(ICriteria criteria, Class<P> boType) {
+	<P extends IBusinessObject> IOperationResult<P> fetch(ICriteria criteria, Class<P> boType) {
 		return this.fetch(this.getRepository(), criteria, boType);
 	}
 
@@ -361,7 +364,7 @@ public class BORepositoryService implements IBORepositoryService {
 	 * @return 注意删除时返回null
 	 * @throws Exception
 	 */
-	<P extends IBusinessObjectBase> P save(IBORepository boRepository, P bo) throws Exception {
+	<P extends IBusinessObject> P save(IBORepository boRepository, P bo) throws Exception {
 		boolean myDbTrans = false;
 		boolean myOpened = false;
 		try {
@@ -432,18 +435,18 @@ public class BORepositoryService implements IBORepositoryService {
 		}
 	}
 
-	<P extends IBusinessObjectBase> P save(P bo) throws Exception {
+	<P extends IBusinessObject> P save(P bo) throws Exception {
 		return this.save(this.getRepository(), bo);
 	}
 
-	private List<IBusinessObjectBase> processing;
+	private List<IBusinessObject> processing;
 
 	/**
 	 * 处理中的数据
 	 * 
 	 * @return
 	 */
-	private List<IBusinessObjectBase> getProcessing() {
+	private List<IBusinessObject> getProcessing() {
 		if (processing == null) {
 			processing = new Vector<>();
 		}
@@ -460,7 +463,7 @@ public class BORepositoryService implements IBORepositoryService {
 	 * @throws Exception
 	 * @throws BOTransactionException
 	 */
-	private void postTransaction(TransactionType type, IBusinessObjectBase bo) throws Exception {
+	private void postTransaction(TransactionType type, IBusinessObject bo) throws Exception {
 		// 通知事务
 		if (this.getRepository() instanceof IBORepository4Db) {
 			// 数据库仓库
@@ -497,7 +500,7 @@ public class BORepositoryService implements IBORepositoryService {
 	 * 
 	 * @return 查询的结果
 	 */
-	protected final <P extends IBusinessObjectBase> OperationResult<P> save(P bo, String token) {
+	protected final <P extends IBusinessObject> OperationResult<P> save(P bo, String token) {
 		OperationResult<P> operationResult = new OperationResult<P>();
 		try {
 			this.setCurrentUser(token);// 解析并设置当前用户
@@ -538,7 +541,7 @@ public class BORepositoryService implements IBORepositoryService {
 	 *            发生对象
 	 * @return
 	 */
-	protected boolean onSaveActionEvent(SaveActionType action, IBusinessObjectBase trigger) throws RepositoryException {
+	protected boolean onSaveActionEvent(SaveActionType action, IBusinessObject trigger) throws RepositoryException {
 		if (action == SaveActionType.BEFORE_UPDATING) {
 			if (this.isCheckVersion()) {
 				// 更新前，检查版本是否有效
@@ -559,7 +562,7 @@ public class BORepositoryService implements IBORepositoryService {
 						IBOStorageTag copyTag = (IBOStorageTag) boCopy;
 						if (copyTag.getLogInst() >= boTag.getLogInst()) {
 							// 数据库版本更高
-							throw new Exception(I18N.prop("msg_bobas_bo_copy_version_is_more_new"));
+							throw new Exception(I18N.prop("msg_bobas_bo_copy_is_more_newer"));
 						}
 					}
 				} catch (Exception e) {

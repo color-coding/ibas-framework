@@ -1,10 +1,10 @@
 package org.colorcoding.ibas.bobas.repository;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
-import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.messages.Logger;
@@ -109,7 +109,7 @@ public class BORepositorySmartService extends BORepositoryLogicService implement
 	 * 重写数据库查询（处于事务中使用主库查询；非事务中使用只读库）
 	 */
 	@Override
-	<P extends IBusinessObjectBase> IOperationResult<P> fetch(ICriteria criteria, Class<P> boType) {
+	<P extends IBusinessObject> IOperationResult<P> fetch(ICriteria criteria, Class<P> boType) {
 		if (!this.inTransaction() && this.isEnabledReadonlyRepository()) {
 			// 没在事务中，则使用只读库
 			IBORepositoryReadonly repository = this.getReadonlyRepository();

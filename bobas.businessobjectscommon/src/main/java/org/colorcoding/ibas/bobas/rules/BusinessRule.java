@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.rules;
 import java.util.List;
 
 import org.colorcoding.ibas.bobas.bo.IBODescription;
-import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
+import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.core.IManageProperties;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.i18n.I18N;
@@ -35,7 +35,7 @@ public abstract class BusinessRule implements IBusinessRule {
 	}
 
 	@Override
-	public final void execute(IBusinessObjectBase bo) throws BusinessRuleException {
+	public final void execute(IBusinessObject bo) throws BusinessRuleException {
 		try {
 			BusinessRuleContext context = new BusinessRuleContext();
 			context.setRule(this);
