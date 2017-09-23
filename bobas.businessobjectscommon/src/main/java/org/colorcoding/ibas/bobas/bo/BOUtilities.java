@@ -1,5 +1,10 @@
 package org.colorcoding.ibas.bobas.bo;
 
+import java.lang.reflect.Array;
+
+import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
+import org.colorcoding.ibas.bobas.core.IBusinessObjectListBase;
+import org.colorcoding.ibas.bobas.core.ITrackStatus;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.i18n.I18N;
@@ -129,4 +134,46 @@ public class BOUtilities {
 		}
 	}
 
+	/**
+	 * 移除业务对象的标记删除数据
+	 * 
+	 * @param bo
+	 */
+	public static void removeDeleted(IBusinessObjectBase bo) {
+		if (bo instanceof IManageFields) {
+			IManageFields boFields = (IManageFields) bo;
+			for (IFieldData item : boFields.getFields()) {
+				Object data = item.getValue();
+				if (data == null) {
+					continue;
+				}
+				if (data instanceof ITrackStatus) {
+					// 值是业务对象
+					if (((ITrackStatus) data).isDeleted()) {
+						item.setValue(null);
+					}
+				} else if (data instanceof IBusinessObjectListBase<?>) {
+					// 值是业务对象列表
+					IBusinessObjectListBase<?> boList = (IBusinessObjectListBase<?>) data;
+					for (int i = boList.size() - 1; i >= 0; i--) {
+						IBusinessObjectBase childItem = boList.get(i);
+						if (childItem.isDeleted()) {
+							boList.remove(childItem);
+						}
+					}
+				} else if (data.getClass().isArray()) {
+					// 值是数组
+					int length = Array.getLength(data);
+					for (int i = 0; i < length; i++) {
+						Object childItem = Array.get(data, i);
+						if (childItem instanceof ITrackStatus) {
+							if (((ITrackStatus) childItem).isDeleted()) {
+								Array.set(data, i, null);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }

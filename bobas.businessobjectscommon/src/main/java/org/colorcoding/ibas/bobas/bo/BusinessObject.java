@@ -3,9 +3,9 @@ package org.colorcoding.ibas.bobas.bo;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Array;
+import java.util.function.Consumer;
 
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -19,6 +19,7 @@ import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.core.BusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
+import org.colorcoding.ibas.bobas.core.ITrackStatusOperator;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.data.DateTime;
@@ -313,6 +314,75 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	}
 
 	/**
+	 * 循环属性，值为IBusinessObject执行方法
+	 * 
+	 * @param action
+	 */
+	protected void traverse(Consumer<IBusinessObject> action) {
+		if (action == null) {
+			return;
+		}
+		for (IFieldData item : this.getFields()) {
+			Object data = item.getValue();
+			if (data == null) {
+				continue;
+			}
+			if (data instanceof IBusinessObject) {
+				// 值是业务对象
+				action.accept((IBusinessObject) data);
+			} else if (data instanceof IBusinessObjects<?, ?>) {
+				// 值是业务对象列表
+				IBusinessObjects<?, ?> boList = (IBusinessObjects<?, ?>) data;
+				for (IBusinessObject childItem : boList) {
+					if (childItem instanceof IBusinessObject) {
+						action.accept((IBusinessObject) childItem);
+					}
+				}
+			} else if (data.getClass().isArray()) {
+				// 值是数组
+				int length = Array.getLength(data);
+				for (int i = 0; i < length; i++) {
+					Object childItem = Array.get(data, i);
+					if (childItem instanceof IBusinessObject) {
+						action.accept((IBusinessObject) childItem);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * 标记为未修改
+	 * 
+	 * @param forced
+	 *            包括子项及属性
+	 */
+	@Override
+	public final void markOld(boolean forced) {
+		super.markOld();
+		if (forced) {
+			this.traverse((data) -> {
+				if (data instanceof ITrackStatusOperator) {
+					((ITrackStatusOperator) data).markOld(true);
+				}
+			});
+		}
+	}
+
+	/**
+	 * 取消删除的数据
+	 * 
+	 * @param forced
+	 *            包括子项及属性
+	 */
+	public final void undelete() {
+		super.clearDeleted();
+		this.traverse((data) -> {
+			data.undelete();
+		});
+	}
+
+	/**
 	 * 删除数据
 	 */
 	public void delete() {
@@ -326,82 +396,11 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 					return;
 				}
 			}
-			this.markDeleted(true);
+			this.markDeleted();
 		}
-	}
-
-	/**
-	 * 反序列化之前调用
-	 * 
-	 * @param parent
-	 *            所属父项
-	 */
-	protected void beforeUnmarshal(Object parent) {
-		this.setLoading(true);
-	}
-
-	/**
-	 * 反序列化之后调用
-	 * 
-	 * @param parent
-	 *            所属父项
-	 */
-	protected void afterUnmarshal(Object parent) {
-		this.setLoading(false);
-	}
-
-	/**
-	 * 序列化之前调用
-	 */
-	protected void beforeMarshal() {
-
-	}
-
-	/**
-	 * 序列化之后调用
-	 */
-	protected void afterMarshal() {
-
-	}
-
-	/**
-	 * （系统）回掉方法-反序列化之前
-	 * 
-	 * @param target
-	 * @param parent
-	 */
-	final void beforeUnmarshal(Unmarshaller target, Object parent) {
-		this.beforeUnmarshal(parent);
-	}
-
-	/**
-	 * （系统）回掉方法-反序列化之后
-	 * 
-	 * @param target
-	 * @param parent
-	 */
-	final void afterUnmarshal(Unmarshaller target, Object parent) {
-		this.afterUnmarshal(parent);
-	}
-
-	/**
-	 * （系统）回掉方法-序列化之前
-	 * 
-	 * @param target
-	 * @param parent
-	 */
-	final void beforeMarshal(Marshaller marshaller) {
-		this.beforeMarshal();
-	}
-
-	/**
-	 * （系统）回掉方法-序列化之后
-	 * 
-	 * @param target
-	 * @param parent
-	 */
-	final void afterMarshal(Marshaller marshaller) {
-		this.afterMarshal();
+		this.traverse((data) -> {
+			data.delete();
+		});
 	}
 
 	/**

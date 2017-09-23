@@ -52,7 +52,7 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 			if (logicChain == null) {
 				continue;
 			}
-			if (transId.equals(logicChain.getGroup())) {
+			if (!transId.equals(logicChain.getGroup())) {
 				continue;
 			}
 			this.getLogicChains().remove(i);

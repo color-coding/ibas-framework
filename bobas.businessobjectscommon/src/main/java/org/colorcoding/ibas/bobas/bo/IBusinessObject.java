@@ -10,9 +10,14 @@ public interface IBusinessObject extends IBusinessObjectBase {
 	 * @return
 	 */
 	String getIdentifiers();
-	
+
 	/**
 	 * 删除数据
 	 */
 	void delete();
+
+	/**
+	 * 取消删除数据
+	 */
+	void undelete();
 }

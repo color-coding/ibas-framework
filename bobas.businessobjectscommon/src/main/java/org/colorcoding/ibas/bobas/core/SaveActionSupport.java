@@ -44,7 +44,9 @@ public class SaveActionSupport {
 		if (this.listeners == null) {
 			return;
 		}
-		for (SaveActionListener item : this.listeners) {
+		// 复制监听数组，防止循环过程监听发生变化
+		SaveActionListener[] tmpListeners = this.listeners.toArray(new SaveActionListener[] {});
+		for (SaveActionListener item : tmpListeners) {
 			if (item == null) {
 				continue;
 			}

@@ -31,15 +31,4 @@ public interface ITrackStatusOperator {
 	 */
 	void markOld(boolean forced);
 
-	/**
-	 * 对象置为实际删除
-	 * 
-	 * @param 真是删除
-	 */
-	void markDeleted(boolean forced);
-
-	/**
-	 * 清理标记删除的数据
-	 */
-	void clearDeleted();
 }

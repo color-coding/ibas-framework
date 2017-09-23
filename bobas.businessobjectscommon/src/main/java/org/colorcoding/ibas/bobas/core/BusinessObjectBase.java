@@ -1,9 +1,10 @@
 package org.colorcoding.ibas.bobas.core;
 
-import java.lang.reflect.Array;
 import java.util.Objects;
 import java.util.function.Predicate;
 
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
@@ -260,129 +261,6 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 	}
 
 	/**
-	 * 标记为未修改
-	 * 
-	 * @param forced
-	 *            包括子项及属性
-	 */
-	@Override
-	public final void markOld(boolean forced) {
-		super.markOld();
-		if (forced) {
-			for (IFieldData item : this.fieldManager) {
-				item.markOld();// 数据字段标记未修改
-				Object data = item.getValue();
-				if (data == null) {
-					continue;
-				}
-				if (data instanceof ITrackStatusOperator) {
-					// 值是业务对象
-					((ITrackStatusOperator) data).markOld(true);
-				} else if (data instanceof IBusinessObjectListBase<?>) {
-					// 值是业务对象列表
-					IBusinessObjectListBase<?> boList = (IBusinessObjectListBase<?>) data;
-					for (IBusinessObjectBase childItem : boList) {
-						if (childItem instanceof ITrackStatusOperator) {
-							((ITrackStatusOperator) childItem).markOld(true);
-						}
-					}
-				} else if (data.getClass().isArray()) {
-					// 值是数组
-					int length = Array.getLength(data);
-					for (int i = 0; i < length; i++) {
-						Object childItem = Array.get(data, i);
-						if (childItem instanceof ITrackStatusOperator) {
-							((ITrackStatusOperator) childItem).markOld(true);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * 标记为删除
-	 * 
-	 * @param forced
-	 *            包括子项及属性
-	 */
-	@Override
-	public final void markDeleted(boolean forced) {
-		super.markDeleted();
-		if (forced) {
-			for (IFieldData item : this.fieldManager) {
-				Object data = item.getValue();
-				if (data == null) {
-					continue;
-				}
-				if (data instanceof ITrackStatusOperator) {
-					// 值是业务对象
-					((ITrackStatusOperator) data).markDeleted(true);
-				} else if (data instanceof IBusinessObjectListBase<?>) {
-					// 值是业务对象列表
-					IBusinessObjectListBase<?> boList = (IBusinessObjectListBase<?>) data;
-					for (IBusinessObjectBase childItem : boList) {
-						if (childItem instanceof ITrackStatusOperator) {
-							((ITrackStatusOperator) childItem).markDeleted(true);
-						}
-					}
-				} else if (data.getClass().isArray()) {
-					// 值是数组
-					int length = Array.getLength(data);
-					for (int i = 0; i < length; i++) {
-						Object childItem = Array.get(data, i);
-						if (childItem instanceof ITrackStatusOperator) {
-							((ITrackStatusOperator) childItem).markDeleted(true);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * 清理标记删除的数据
-	 * 
-	 * @param forced
-	 *            包括子项及属性
-	 */
-	@Override
-	public final void clearDeleted() {
-		for (IFieldData item : this.fieldManager) {
-			Object data = item.getValue();
-			if (data == null) {
-				continue;
-			}
-			if (data instanceof ITrackStatus) {
-				// 值是业务对象
-				if (((ITrackStatus) data).isDeleted()) {
-					item.setValue(null);
-				}
-			} else if (data instanceof IBusinessObjectListBase<?>) {
-				// 值是业务对象列表
-				IBusinessObjectListBase<?> boList = (IBusinessObjectListBase<?>) data;
-				for (int i = boList.size() - 1; i >= 0; i--) {
-					IBusinessObjectBase childItem = boList.get(i);
-					if (childItem.isDeleted()) {
-						boList.remove(childItem);
-					}
-				}
-			} else if (data.getClass().isArray()) {
-				// 值是数组
-				int length = Array.getLength(data);
-				for (int i = 0; i < length; i++) {
-					Object childItem = Array.get(data, i);
-					if (childItem instanceof ITrackStatus) {
-						if (((ITrackStatus) childItem).isDeleted()) {
-							Array.set(data, i, null);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
 	 * 克隆
 	 * 
 	 * @return 对象副本
@@ -402,6 +280,80 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 	@Override
 	public ICriteria getCriteria() {
 		return null;
+	}
+
+	/**
+	 * 反序列化之前调用
+	 * 
+	 * @param parent
+	 *            所属父项
+	 */
+	protected void beforeUnmarshal(Object parent) {
+		this.setLoading(true);
+	}
+
+	/**
+	 * 反序列化之后调用
+	 * 
+	 * @param parent
+	 *            所属父项
+	 */
+	protected void afterUnmarshal(Object parent) {
+		this.setLoading(false);
+	}
+
+	/**
+	 * 序列化之前调用
+	 */
+	protected void beforeMarshal() {
+
+	}
+
+	/**
+	 * 序列化之后调用
+	 */
+	protected void afterMarshal() {
+
+	}
+
+	/**
+	 * （系统）回掉方法-反序列化之前
+	 * 
+	 * @param target
+	 * @param parent
+	 */
+	final void beforeUnmarshal(Unmarshaller target, Object parent) {
+		this.beforeUnmarshal(parent);
+	}
+
+	/**
+	 * （系统）回掉方法-反序列化之后
+	 * 
+	 * @param target
+	 * @param parent
+	 */
+	final void afterUnmarshal(Unmarshaller target, Object parent) {
+		this.afterUnmarshal(parent);
+	}
+
+	/**
+	 * （系统）回掉方法-序列化之前
+	 * 
+	 * @param target
+	 * @param parent
+	 */
+	final void beforeMarshal(Marshaller marshaller) {
+		this.beforeMarshal();
+	}
+
+	/**
+	 * （系统）回掉方法-序列化之后
+	 * 
+	 * @param target
+	 * @param parent
+	 */
+	final void afterMarshal(Marshaller marshaller) {
+		this.afterMarshal();
 	}
 
 }

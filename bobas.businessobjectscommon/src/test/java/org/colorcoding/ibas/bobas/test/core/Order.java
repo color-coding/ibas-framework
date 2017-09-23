@@ -243,7 +243,12 @@ public class Order extends BusinessObjectBase<Order> {
 
 	@Override
 	public String toString(String type) {
-		return null;
+		return this.toString();
+	}
+
+	@Override
+	public void markOld(boolean forced) {
+		this.markOld();
 	}
 
 }

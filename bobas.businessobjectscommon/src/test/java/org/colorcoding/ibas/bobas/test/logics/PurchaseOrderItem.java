@@ -1132,7 +1132,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	public IBusinessLogicContract[] getContracts() {
 		return new IBusinessLogicContract[] {
 				// 注册物料库存数量契约
-				new IMaterialsInventoryQuantityContract() {
+				new IMaterialsOrderQuantityContract() {
 
 					@Override
 					public String getIdentifiers() {

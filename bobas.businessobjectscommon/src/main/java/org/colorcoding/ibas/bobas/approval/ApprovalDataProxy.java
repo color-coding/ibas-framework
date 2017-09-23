@@ -23,11 +23,6 @@ public class ApprovalDataProxy extends TrackableBase implements IApprovalData {
 		this.markOld();
 	}
 
-	@Override
-	public void markDeleted(boolean forced) {
-		this.markDeleted();
-	}
-
 	private String objectCode;
 
 	@Override
@@ -80,11 +75,6 @@ public class ApprovalDataProxy extends TrackableBase implements IApprovalData {
 	@Override
 	public ICriteria getCriteria() {
 		return Criteria.create(this.getIdentifiers());
-	}
-
-	@Override
-	public void clearDeleted() {
-
 	}
 
 	public String toString() {

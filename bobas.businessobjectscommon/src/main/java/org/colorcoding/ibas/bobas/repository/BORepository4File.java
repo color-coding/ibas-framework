@@ -12,6 +12,7 @@ import javax.xml.bind.JAXBException;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.BOException;
+import org.colorcoding.ibas.bobas.bo.BOUtilities;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBOKeysManager;
 import org.colorcoding.ibas.bobas.bo.IBOMasterData;
@@ -309,7 +310,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 		if (bo instanceof ITrackStatusOperator) {
 			ITrackStatusOperator operator = (ITrackStatusOperator) bo;
 			// 清理标记删除的数据
-			operator.clearDeleted();
+			BOUtilities.removeDeleted(bo);
 			// 重置状态
 			operator.markOld(true);
 		}

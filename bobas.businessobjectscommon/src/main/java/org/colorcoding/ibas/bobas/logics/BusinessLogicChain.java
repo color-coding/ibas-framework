@@ -72,6 +72,11 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 
 		@Override
 		public String toString(String type) {
+			return this.toString();
+		}
+
+		@Override
+		public String toString() {
 			return "{Empty Proxy}";
 		}
 
@@ -82,11 +87,15 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 
 		@Override
 		public String getIdentifiers() {
-			return null;
+			return this.toString();
 		}
 
 		@Override
 		public void delete() {
+		}
+
+		@Override
+		public void undelete() {
 		}
 	};
 
