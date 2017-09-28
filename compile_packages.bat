@@ -26,7 +26,9 @@ if not exist %WORK_FOLDER%compile_order.txt dir /a:d /b %WORK_FOLDER% >%WORK_FOL
 echo --清除项目缓存
 if exist %WORK_FOLDER%release\ rd /s /q %WORK_FOLDER%release\
 if not exist %WORK_FOLDER%release md %WORK_FOLDER%release
-call "%MAVEN_HOME%\bin\mvn" clean install -f %WORK_FOLDER% >>%LOGFILE%
+if exist %WORK_FOLDER%pom.xml (
+  call "%MAVEN_HOME%\bin\mvn" clean install -f %WORK_FOLDER%pom.xml >>%LOGFILE%
+)
 
 echo --开始编译[compile_order.txt]内容
 for /f %%m in (%WORK_FOLDER%compile_order.txt) do (
@@ -35,12 +37,12 @@ for /f %%m in (%WORK_FOLDER%compile_order.txt) do (
     if !MY_PACKAGES_FOLDER:~-8!==.service (
       REM 网站，编译war包
       echo --开始编译[%%m]
-      call "%MAVEN_HOME%\bin\mvn" clean package -Dmaven.test.skip=true -f %WORK_FOLDER%%%m >>%LOGFILE%
+      call "%MAVEN_HOME%\bin\mvn" clean package -Dmaven.test.skip=true -f %WORK_FOLDER%%%m\pom.xml >>%LOGFILE%
       if exist %WORK_FOLDER%%%m\target\%%m*.war copy /y %WORK_FOLDER%%%m\target\%%m*.war %WORK_FOLDER%release >>%LOGFILE%
     ) else (
       REM 非网站，编译jar包并安装到本地
       echo --开始编译[%%m]+安装
-      call "%MAVEN_HOME%\bin\mvn" clean package install -Dmaven.test.skip=true -f %WORK_FOLDER%%%m >>%LOGFILE%
+      call "%MAVEN_HOME%\bin\mvn" clean package install -Dmaven.test.skip=true -f %WORK_FOLDER%%%m\pom.xml >>%LOGFILE%
       if exist %WORK_FOLDER%%%m\target\%%m*.jar copy /y %WORK_FOLDER%%%m\target\%%m*.jar %WORK_FOLDER%release >>%LOGFILE%
     )
     REM 检查并复制编译结果
