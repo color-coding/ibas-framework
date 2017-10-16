@@ -6,93 +6,95 @@ import org.colorcoding.ibas.bobas.util.ArrayList;
 
 public class PropertyInfo<P> implements IPropertyInfo<P> {
 
-    public PropertyInfo(String name, Class<P> type) {
-        this.setName(name);
-        this.setValueType(type);
-    }
+	public final static String DEFALUT_NAME = "";
 
-    private String name = "";
+	public PropertyInfo(String name, Class<P> type) {
+		this.setName(name);
+		this.setValueType(type);
+	}
 
-    public String getName() {
-        return this.name;
-    }
+	private String name = DEFALUT_NAME;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getName() {
+		return this.name;
+	}
 
-    private int index = -1;
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public int getIndex() {
-        return this.index;
-    }
+	private int index = -1;
 
-    public void setIndex(int value) {
-        this.index = value;
-    }
+	public int getIndex() {
+		return this.index;
+	}
 
-    private Class<P> valueType = null;
+	public void setIndex(int value) {
+		this.index = value;
+	}
 
-    public Class<P> getValueType() {
-        return this.valueType;
-    }
+	private Class<P> valueType = null;
 
-    public void setValueType(Class<P> value) {
-        this.valueType = value;
-    }
+	public Class<P> getValueType() {
+		return this.valueType;
+	}
 
-    private P defaultValue;
+	public void setValueType(Class<P> value) {
+		this.valueType = value;
+	}
 
-    public P getDefaultValue() {
-        return this.defaultValue;
-    }
+	private P defaultValue;
 
-    public void setDefaultValue(P value) {
-        this.defaultValue = value;
-    }
+	public P getDefaultValue() {
+		return this.defaultValue;
+	}
 
-    private ArrayList<Annotation> annotations = null;
+	public void setDefaultValue(P value) {
+		this.defaultValue = value;
+	}
 
-    public Annotation[] getAnnotations() {
-        if (this.annotations == null) {
-            this.annotations = new ArrayList<Annotation>();
-        }
-        return this.annotations.toArray(new Annotation[] {});
-    }
+	private ArrayList<Annotation> annotations = null;
 
-    public Annotation getAnnotation(Class<?> type) {
-        if (this.annotations == null) {
-            return null;
-        }
-        for (Annotation annotation : this.annotations) {
-            if (annotation.annotationType() == type) {
-                return annotation;
-            }
-        }
-        return null;
-    }
+	public Annotation[] getAnnotations() {
+		if (this.annotations == null) {
+			this.annotations = new ArrayList<Annotation>();
+		}
+		return this.annotations.toArray(new Annotation[] {});
+	}
 
-    public void addAnnotation(Annotation item) {
-        if (item == null) {
-            return;
-        }
-        if (this.annotations == null) {
-            this.annotations = new ArrayList<Annotation>();
-        }
-        this.annotations.add(item);
-    }
+	public Annotation getAnnotation(Class<?> type) {
+		if (this.annotations == null) {
+			return null;
+		}
+		for (Annotation annotation : this.annotations) {
+			if (annotation.annotationType() == type) {
+				return annotation;
+			}
+		}
+		return null;
+	}
 
-    public void addAnnotation(Annotation[] items) {
-        if (items == null) {
-            return;
-        }
-        for (Annotation item : items) {
-            this.addAnnotation(item);
-        }
-    }
+	public void addAnnotation(Annotation item) {
+		if (item == null) {
+			return;
+		}
+		if (this.annotations == null) {
+			this.annotations = new ArrayList<Annotation>();
+		}
+		this.annotations.add(item);
+	}
 
-    @Override
-    public String toString() {
-        return String.format("{property info: %s}", this.getName());
-    }
+	public void addAnnotation(Annotation[] items) {
+		if (items == null) {
+			return;
+		}
+		for (Annotation item : items) {
+			this.addAnnotation(item);
+		}
+	}
+
+	@Override
+	public String toString() {
+		return String.format("{property info: %s}", this.getName());
+	}
 }
