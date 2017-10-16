@@ -61,24 +61,6 @@ public abstract class Serializer<S> implements ISerializer<S> {
 		return this.deserialize(new ByteArrayInputStream(data.getBytes()), types);
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T deserialize(String data, Class<T> type, Class<?>... types) throws SerializationException {
-		Class<?>[] knwonTypes = new Class<?>[types.length + 1];
-		knwonTypes[0] = type;
-		System.arraycopy(types, 0, knwonTypes, 1, types.length);
-		return (T) this.deserialize(data, knwonTypes);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T deserialize(InputStream inputStream, Class<T> type, Class<?>... types) throws SerializationException {
-		Class<?>[] knwonTypes = new Class<?>[types.length + 1];
-		knwonTypes[0] = type;
-		System.arraycopy(types, 0, knwonTypes, 1, types.length);
-		return (T) this.deserialize(inputStream, knwonTypes);
-	}
-
 	/**
 	 * 获取可能被序列化的元素
 	 * 

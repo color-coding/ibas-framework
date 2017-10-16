@@ -47,11 +47,11 @@ public class testSerialization extends TestCase {
 		System.out.println(materials.toString("xml"));
 		String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Materials><ItemCode>A0003</ItemCode><ItemDescription>A0003</ItemDescription><CreateDate>2099-11-11</CreateDate><OnHand>999.99</OnHand></Materials>";
 
-		IBusinessObject bo = serializer.deserialize(xml, Materials.class);
+		IBusinessObject bo = (IBusinessObject) serializer.deserialize(xml, Materials.class);
 		System.out.println(bo.toString("xml"));
-		bo = serializer.deserialize(xml.replace("2099-11-11", "2099/11/12"), Materials.class);
+		bo = (IBusinessObject) serializer.deserialize(xml.replace("2099-11-11", "2099/11/12"), Materials.class);
 		System.out.println(bo.toString("xml"));
-		bo = serializer.deserialize(xml.replace("2099-11-11", "2099/1/2"), Materials.class);
+		bo = (IBusinessObject) serializer.deserialize(xml.replace("2099-11-11", "2099/1/2"), Materials.class);
 		System.out.println(bo.toString("xml"));
 
 	}

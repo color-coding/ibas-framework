@@ -61,7 +61,7 @@ public class testBusinessObject extends TestCase {
 		String json = order.toString("json");
 		System.out.println(json);
 		ISerializer<?> serializer = SerializerFactory.create().createManager().create("json");
-		order = serializer.deserialize(json, order.getClass());
+		order = (SalesOrder) serializer.deserialize(json, order.getClass());
 		String jsonNew = order.toString("json");
 		System.out.println(jsonNew);
 		// 此处会报错，因为自定义字段
@@ -95,7 +95,7 @@ public class testBusinessObject extends TestCase {
 		stringBuilder.append("}}");
 		ISerializer<?> serializer = new SerializerJson();
 		serializer.validate(SalesOrder.class, stringBuilder.toString());
-		IBusinessObject bo = serializer.deserialize(stringBuilder.toString(), SalesOrder.class);
+		IBusinessObject bo = (IBusinessObject) serializer.deserialize(stringBuilder.toString(), SalesOrder.class);
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.serialize(bo, writer, true);
 		System.out.println(writer.toString());

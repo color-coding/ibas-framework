@@ -363,15 +363,15 @@ public class testBusinessObjects extends TestCase {
 		stringBuilder.append("</ns:SalesOrder>");
 		ISerializerManager manager = SerializerFactory.create().createManager();
 		ISerializer<?> serializer = manager.create("xml");
-		SalesOrder bo = serializer.deserialize(stringBuilder.toString(), SalesOrder.class);
+		SalesOrder order = (SalesOrder) serializer.deserialize(stringBuilder.toString(), SalesOrder.class);
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
-		serializer.serialize(bo, writer, true);
+		serializer.serialize(order, writer, true);
 		System.out.println(writer.toString());
 
 		System.out.println(String.format(
-				"DocEntry: %s Status: %s DocumentStatus: %s Canceled: %s isNew: %s isDirty: %s", bo.getDocEntry(),
-				bo.getStatus(), bo.getDocumentStatus(), bo.getCanceled(), bo.isNew(), bo.isDirty()));
-		for (ISalesOrderItem line : bo.getSalesOrderItems()) {
+				"DocEntry: %s Status: %s DocumentStatus: %s Canceled: %s isNew: %s isDirty: %s", order.getDocEntry(),
+				order.getStatus(), order.getDocumentStatus(), order.getCanceled(), order.isNew(), order.isDirty()));
+		for (ISalesOrderItem line : order.getSalesOrderItems()) {
 			System.out.println(String.format(
 					"DocEntry: %s LineId: %s Status: %s DocumentStatus: %s Canceled: %s isNew: %s isDirty: %s",
 					line.getDocEntry(), line.getLineId(), line.getStatus(), line.getLineStatus(), line.getCanceled(),

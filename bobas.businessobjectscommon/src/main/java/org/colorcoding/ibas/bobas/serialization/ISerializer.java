@@ -57,18 +57,6 @@ public interface ISerializer<S> {
 			throws SerializationException;
 
 	/**
-	 * 反序列化
-	 * 
-	 * @param inputStream
-	 *            输入流
-	 * @param types
-	 *            已知类型
-	 * @return 对象实例
-	 * @throws SerializationException
-	 */
-	Object deserialize(InputStream inputStream, Class<?>... types) throws SerializationException;
-
-	/**
 	 * 获取schema
 	 * 
 	 * @param type
@@ -139,36 +127,20 @@ public interface ISerializer<S> {
 	 * @param data
 	 *            数据
 	 * @param types
-	 *            已知类型
+	 *            其他已知类型
 	 * @return 新对象实例
-	 * @throws SerializationException
 	 */
 	Object deserialize(String data, Class<?>... types) throws SerializationException;
 
 	/**
 	 * 反序列化
 	 * 
-	 * @param data
-	 *            数据
-	 * @param type
-	 *            目标类型
-	 * @param types
-	 *            其他已知类型
-	 * @return 新对象实例
-	 */
-	<T> T deserialize(String data, Class<T> type, Class<?>... types) throws SerializationException;
-
-	/**
-	 * 反序列化
-	 * 
 	 * @param inputStream
 	 *            数据
-	 * @param type
-	 *            目标类型
 	 * @param types
 	 *            其他已知类型
 	 * @return 新对象实例
 	 */
-	<T> T deserialize(InputStream inputStream, Class<T> type, Class<?>... types) throws SerializationException;
+	Object deserialize(InputStream inputStream, Class<?>... types) throws SerializationException;
 
 }
