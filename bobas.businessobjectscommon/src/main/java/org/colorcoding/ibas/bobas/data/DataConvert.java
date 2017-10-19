@@ -239,4 +239,26 @@ public class DataConvert {
 		}
 		throw new DataConvertException(I18N.prop("msg_bobas_not_support_convert_to_type", value));
 	}
+
+	/**
+	 * 转换类型为KeyValue
+	 * 
+	 * @param type
+	 *            目前可识别的类型：枚举类型
+	 * @return
+	 */
+	public static KeyValue[] toKeyValues(Class<?> type) {
+		if (type.isEnum()) {
+			Object[] constants = type.getEnumConstants();
+			if (constants.length > 0) {
+				KeyValue[] values = new KeyValue[constants.length];
+				for (int i = 0; i < values.length; i++) {
+					Enum<?> item = (Enum<?>) constants[i];
+					values[i] = new KeyValue(item.name(), item.ordinal());
+				}
+				return values;
+			}
+		}
+		return new KeyValue[] {};
+	}
 }

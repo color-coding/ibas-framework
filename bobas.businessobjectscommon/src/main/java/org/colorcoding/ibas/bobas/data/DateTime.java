@@ -31,7 +31,7 @@ public class DateTime extends Date implements Serializable {
 	public static String FORMAT_DATETIME = "yyyy-MM-dd'T'HH:mm:ss";
 
 	/**
-	 * 获取值
+	 * 转换值
 	 * 
 	 * @param date
 	 *            日期的字符串
@@ -39,6 +39,39 @@ public class DateTime extends Date implements Serializable {
 	 */
 	public static DateTime valueOf(String date) {
 		return valueOf(date, FORMAT_DATE);
+	}
+
+	/**
+	 * 转换值
+	 * 
+	 * @param date
+	 *            日期字符串
+	 * @param format
+	 *            字符串格式
+	 * @return 日期
+	 */
+	public static DateTime valueOf(String date, String format) {
+		try {
+			if (date == null || format == null) {
+				return DateTime.minValue;
+			}
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+			Date dateValue = simpleDateFormat.parse(date);
+			return new DateTime(dateValue.getTime());
+		} catch (ParseException e) {
+			return DateTime.minValue;
+		}
+	}
+
+	/**
+	 * 转换值
+	 * 
+	 * @param date
+	 *            日期值
+	 * @return 日期
+	 */
+	public static DateTime valueOf(long date) {
+		return new DateTime(date);
 	}
 
 	/**
@@ -91,28 +124,6 @@ public class DateTime extends Date implements Serializable {
 	 * 最大日期
 	 */
 	public static final DateTime maxValue = getMaxValue();
-
-	/**
-	 * 获取值
-	 * 
-	 * @param date
-	 *            日期字符串
-	 * @param format
-	 *            字符串格式
-	 * @return 日期
-	 */
-	public static DateTime valueOf(String date, String format) {
-		try {
-			if (date == null || format == null) {
-				return DateTime.minValue;
-			}
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-			Date dateValue = simpleDateFormat.parse(date);
-			return new DateTime(dateValue.getTime());
-		} catch (ParseException e) {
-			return DateTime.minValue;
-		}
-	}
 
 	/**
 	 * 计算间隔时间

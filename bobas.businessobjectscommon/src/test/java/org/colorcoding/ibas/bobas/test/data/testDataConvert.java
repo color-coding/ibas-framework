@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.test.data;
 
+import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.data.emConditionOperation;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.db.DataConvert;
@@ -23,5 +24,9 @@ public class testDataConvert extends TestCase {
 		emConditionOperation emcpValue = (emConditionOperation) DataConvert.toEnumValue(emConditionOperation.class,
 				emConditionOperation.CONTAIN.getValue());
 		assertEquals(emConditionOperation.CONTAIN, emcpValue);
+
+		for (KeyValue item : DataConvert.toKeyValues(emYesNo.class)) {
+			System.out.println(item.toString());
+		}
 	}
 }
