@@ -9,7 +9,7 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
  * @author Niuren.Zhu
  *
  */
-public interface IBOReferenced {
+public interface IBOTagReferenced {
     /**
      * 是否被引用
      * 

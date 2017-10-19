@@ -9,7 +9,7 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
  * @author Niuren.Zhu
  *
  */
-public interface IBOTagDeleted extends IBOReferenced {
+public interface IBOTagDeleted extends IBOTagReferenced {
 
     /**
      * 是否标记删除

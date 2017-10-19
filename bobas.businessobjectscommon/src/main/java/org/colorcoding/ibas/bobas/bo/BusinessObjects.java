@@ -445,18 +445,18 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		IFieldData parentField = null;
 		// 被引用，子项被引用，父项被引用
 		if (evt.getPropertyName().equals("Referenced")) {
-			if (evt.getSource() instanceof IBOReferenced) {
-				if (this.getParent() instanceof IBOReferenced && this.getParent() instanceof IManageFields) {
+			if (evt.getSource() instanceof IBOTagReferenced) {
+				if (this.getParent() instanceof IBOTagReferenced && this.getParent() instanceof IManageFields) {
 					parentField = ((IManageFields) this.getParent()).getField(evt.getPropertyName());
 					if (parentField == null) {
 						return;
 					}
 					// 子项全部为修改值，则父项也修改
 					for (E item : this) {
-						if (!(item instanceof IBOReferenced)) {
+						if (!(item instanceof IBOTagReferenced)) {
 							continue;
 						}
-						IBOReferenced lineItem = (IBOReferenced) item;
+						IBOTagReferenced lineItem = (IBOTagReferenced) item;
 						if (lineItem.getReferenced() == emYesNo.YES) {
 							// 任意子项被引用，父项被引用
 							parentField.setValue(emYesNo.YES);

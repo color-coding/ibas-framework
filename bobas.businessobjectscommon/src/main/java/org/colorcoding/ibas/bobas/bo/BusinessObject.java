@@ -188,8 +188,8 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 			tagBO.setUpdateUserSign(IOrganizationManager.UNKNOWN_USER_SIGN);
 		}
 		// 重置引用状态
-		if (this instanceof IBOReferenced) {
-			IBOReferenced tagBO = (IBOReferenced) this;
+		if (this instanceof IBOTagReferenced) {
+			IBOTagReferenced tagBO = (IBOTagReferenced) this;
 			tagBO.setReferenced(emYesNo.NO);
 		}
 		// 重置删除状态

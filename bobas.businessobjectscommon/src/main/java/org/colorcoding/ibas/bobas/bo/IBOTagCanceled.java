@@ -8,7 +8,7 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
  * @author Niuren.Zhu
  *
  */
-public interface IBOTagCanceled extends IBOReferenced {
+public interface IBOTagCanceled extends IBOTagReferenced {
 
     /**
      * 是否取消

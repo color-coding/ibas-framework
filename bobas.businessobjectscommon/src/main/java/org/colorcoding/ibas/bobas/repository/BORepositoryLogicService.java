@@ -6,7 +6,7 @@ import org.colorcoding.ibas.bobas.approval.ApprovalProcessException;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcess;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcessManager;
-import org.colorcoding.ibas.bobas.bo.IBOReferenced;
+import org.colorcoding.ibas.bobas.bo.IBOTagReferenced;
 import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
 import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
@@ -86,8 +86,8 @@ public class BORepositoryLogicService extends BORepositoryService {
 	protected void onSaveActionEvent(SaveActionType action, IBusinessObject trigger) throws RepositoryException {
 		if (action == SaveActionType.BEFORE_DELETING) {
 			// 删除前检查
-			if (trigger instanceof IBOReferenced) {
-				IBOReferenced refBO = (IBOReferenced) trigger;
+			if (trigger instanceof IBOTagReferenced) {
+				IBOTagReferenced refBO = (IBOTagReferenced) trigger;
 				if (refBO.getReferenced() == emYesNo.YES) {
 					// 被引用的数据，不允许删除，可以标记删除
 					throw new RepositoryException(

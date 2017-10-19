@@ -84,7 +84,7 @@ public class UserFields extends BindableBase implements Iterable<IUserField> {
 	 * @param type
 	 *            类型
 	 */
-	public void addUserField(String name, DbFieldType type) {
+	public IUserField addUserField(String name, DbFieldType type) {
 		UserField userField = UserFieldsFactory.create().create(name, type);
 		if (userField != null) {
 			ArrayList<UserField> tmpUserFields = new ArrayList<>();
@@ -92,6 +92,7 @@ public class UserFields extends BindableBase implements Iterable<IUserField> {
 			tmpUserFields.add(userField);
 			this.setUserFields(tmpUserFields.toArray(new UserField[] {}));
 		}
+		return userField;
 	}
 
 	/**
