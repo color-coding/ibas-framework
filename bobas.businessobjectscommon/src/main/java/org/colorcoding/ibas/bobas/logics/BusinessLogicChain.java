@@ -1,10 +1,12 @@
 package org.colorcoding.ibas.bobas.logics;
 
+import java.lang.reflect.Method;
 import java.util.Iterator;
 
 import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
+import org.colorcoding.ibas.bobas.common.IChildCriteria;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepository;
@@ -384,7 +386,6 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 
 	@SuppressWarnings("unchecked")
 	public <B> B fetchBeAffected(ICriteria criteria, Class<B> type) {
-		JudgmentLink judgmentLink = ExpressionFactory.create().createBOJudgmentLink(criteria.getConditions());
 		Iterator<IBusinessLogic<?>> logics = this.getAllLogics();
 		while (logics.hasNext()) {
 			IBusinessLogic<?> logic = logics.next();
@@ -400,15 +401,60 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 				// 类型不符
 				continue;
 			}
-			try {
-				if (judgmentLink.judge(logic.getBeAffected())) {
-					return (B) logic.getBeAffected();
-				}
-			} catch (JudmentOperationException e) {
-				Logger.log(e);
+			if (this.judge(logic.getBeAffected(), criteria)) {
+				// 值比较通过
+				return (B) logic.getBeAffected();
 			}
 		}
 		return null;
+	}
+
+	private boolean judge(Object data, ICriteria criteria) {
+		try {
+			JudgmentLink judgmentLink = ExpressionFactory.create().createBOJudgmentLink(criteria.getConditions());
+			if (judgmentLink.judge(data)) {
+				boolean pass = true;
+				if (criteria.getChildCriterias().size() > 0) {
+					// 存在子项查询
+					for (IChildCriteria child : criteria.getChildCriterias()) {
+						try {
+							Method method = data.getClass().getMethod("get" + child.getPropertyPath());
+							if (method == null) {
+								// 对象没有带比较的属性
+								pass = false;
+							}
+							Object pData = method.invoke(data);
+							if (pData == null) {
+								// 属性没有值，不能进行比较
+								pass = false;
+							}
+							if (pData instanceof Iterable) {
+								for (Object pDataItem : (Iterable<?>) pData) {
+									pass = this.judge(pDataItem, child);
+									if (!pass) {
+										// 比较不通过，后续不在处理
+										break;
+									}
+								}
+							} else {
+								pass = this.judge(pData, child);
+							}
+							if (!pass) {
+								// 比较不通过，后续不在处理
+								break;
+							}
+						} catch (Exception e) {
+							Logger.log(e);
+						}
+					}
+					return pass;
+				}
+				return pass;
+			}
+		} catch (JudmentOperationException e) {
+			Logger.log(e);
+		}
+		return false;
 	}
 
 	@Override
