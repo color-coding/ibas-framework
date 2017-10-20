@@ -13,11 +13,11 @@ import org.colorcoding.ibas.bobas.core.ITrackStatusOperator;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
-import org.colorcoding.ibas.bobas.db.ParsingException;
 import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
 import org.colorcoding.ibas.bobas.db.IDbCommand;
 import org.colorcoding.ibas.bobas.db.IDbDataReader;
+import org.colorcoding.ibas.bobas.db.ParsingException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.util.ArrayList;
 
@@ -110,7 +110,7 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 		IBOAdapter4Db adapter4Db = this.getBOAdapter();
 		ArrayList<ISqlQuery> sqlQueries = new ArrayList<>();
 		// 不是更新状态，不做处理
-		if (!bo.isDirty())
+		if (!bo.isDirty() || !bo.isSavable())
 			return sqlQueries.toArray(new ISqlQuery[] {});
 		// 存储标记
 		this.tagStorage(bo);
@@ -199,7 +199,7 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 			for (IBusinessObjectBase bo : bos) {
 				if (bo == null)
 					continue;
-				if (!bo.isDirty())
+				if (!bo.isDirty() || !bo.isSavable())
 					continue;
 				// 解析BO保存语句，并添加到批量命令
 				for (ISqlQuery sqlQuery : this.parseSaveQueries(bo, recursion)) {

@@ -311,7 +311,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 		if (bo instanceof IManageFields) {
 			IManageFields boFields = (IManageFields) bo;
 			for (IFieldData item : boFields.getFields()) {
-				if (item == null || !item.isSavable() || item.getValue() == null) {
+				if (item == null || item.getValue() == null) {
 					continue;
 				}
 				if (item.getValue() instanceof IBusinessObject) {

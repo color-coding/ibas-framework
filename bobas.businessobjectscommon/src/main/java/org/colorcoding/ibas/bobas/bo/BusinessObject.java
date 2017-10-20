@@ -155,8 +155,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	/*
 	 * 创建副本 可重载
 	 * 
-	 * @see
-	 * club.ibas.bobas.businessobjectscommon.core.BusinessObjectBase#clone()
+	 * @see club.ibas.bobas.businessobjectscommon.core.BusinessObjectBase#clone()
 	 */
 	@Override
 	public T clone() {
@@ -367,6 +366,13 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 				}
 			});
 		}
+	}
+
+	/**
+	 * 不能被保存，不影响子项此状态
+	 */
+	public void unsavable() {
+		super.setSavable(false);
 	}
 
 	/**

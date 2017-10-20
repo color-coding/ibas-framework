@@ -196,7 +196,7 @@ public class testBORepository extends TestCase {
 		// boRepository.connectRepository("MSSQL", "localhost", "ibas_demo",
 		// "sa", "1q2w3e");
 		boRepository.setUserToken("");
-		ISalesOrder order = new SalesOrder();
+		SalesOrder order = new SalesOrder();
 		order.setDocumentUser(new User());
 		order.getDocumentUser().setUserCode(DateTime.getNow().toString("HHmmss") + "00");
 		order.setTeamUsers(new User[] { new User(), new User() });

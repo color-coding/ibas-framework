@@ -126,6 +126,7 @@ public abstract class TrackableBase extends BindableBase implements ITrackStatus
 		this.setNew(true);
 		this.setDirty(true);
 		this.setDeleted(false);
+		this.setSavable(true);
 	}
 
 	@Override

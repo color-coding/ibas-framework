@@ -180,8 +180,8 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 		if (bo == null) {
 			throw new RepositoryException(I18N.prop("msg_bobas_invalid_bo"));
 		}
-		if (bo.isDirty()) {
-			// 仅修过的数据进行处理
+		if (bo.isDirty() && bo.isSavable()) {
+			// 仅修过的且可保存的数据进行处理
 			IBOAdapter4Db adapter4Db = this.getBOAdapter();
 			IDbDataReader reader = null;
 			IDbCommand command = null;
@@ -301,13 +301,11 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 						/*
 						 * 不处理数组了
 						 * 
-						 * else if (fdValue.getClass().isArray()) { // 对象数组 int
-						 * length = Array.getLength(fdValue); for (int i = 0; i
-						 * < length; i++) { Object child = Array.get(fdValue,
-						 * i); if (child instanceof IBusinessObjectBase) {
-						 * IBusinessObjectBase childBO = (IBusinessObjectBase)
-						 * child; this.mySaveEx(childBO, true, root);// 继续带子项的保存
-						 * } } }
+						 * else if (fdValue.getClass().isArray()) { // 对象数组 int length =
+						 * Array.getLength(fdValue); for (int i = 0; i < length; i++) { Object child =
+						 * Array.get(fdValue, i); if (child instanceof IBusinessObjectBase) {
+						 * IBusinessObjectBase childBO = (IBusinessObjectBase) child;
+						 * this.mySaveEx(childBO, true, root);// 继续带子项的保存 } } }
 						 */
 					}
 				}
