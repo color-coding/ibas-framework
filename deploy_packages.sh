@@ -33,6 +33,17 @@ if [ $? -ne 0 ]; then
 fi
 
 echo --发布地址：${REPOSITORY_URL}
+# 发布父项
+if [ -e ${WORK_FOLDER}/pom.xml ]
+then
+  mvn deploy:deploy-file \
+    -Dfile=${WORK_FOLDER}/pom.xml \
+    -DpomFile=${WORK_FOLDER}/pom.xml \
+    -Durl=${REPOSITORY_URL} \
+    -DrepositoryId=${REPOSITORY_ID} \
+    -Dpackaging=pom
+fi
+# 发布子项
 while read line
 do
   if [ -e ${WORK_FOLDER}/${line}/pom.xml ]

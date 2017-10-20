@@ -28,6 +28,16 @@ echo --检查maven运行环境
 call mvn -v >nul || goto :CHECK_MAVEN_FAILD
 
 echo --发布地址：%REPOSITORY_URL%
+REM 发布父项
+if exist %WORK_FOLDER%\pom.xml (
+  call mvn deploy:deploy-file ^
+    -Dfile=%WORK_FOLDER%\pom.xml ^
+    -DpomFile=%WORK_FOLDER%\pom.xml ^
+    -Durl=%REPOSITORY_URL% ^
+    -DrepositoryId=%REPOSITORY_ID% ^
+    -Dpackaging=pom
+)
+REM 发布子项
 for /f %%m in (%WORKFOLDER%compile_order.txt) do (
   if exist %WORK_FOLDER%%%m\pom.xml (
     for /f %%l in ('dir /s /a /b %WORK_FOLDER%release\%%m-*.jar' ) do (
