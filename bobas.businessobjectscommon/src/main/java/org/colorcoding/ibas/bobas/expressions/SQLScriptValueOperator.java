@@ -86,7 +86,7 @@ public class SQLScriptValueOperator implements IPropertyValueOperator {
 
 							@Override
 							public String toString() {
-								return String.format("{keyText: %s %s}", this.getKey(), this.getText());
+								return String.format("{key text: %s %s}", this.getKey(), this.getText());
 							}
 
 						};

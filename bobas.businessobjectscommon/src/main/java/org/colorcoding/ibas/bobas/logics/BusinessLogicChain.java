@@ -79,7 +79,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 
 		@Override
 		public String toString() {
-			return "{Empty Proxy}";
+			return "{empty proxy}";
 		}
 
 		@Override

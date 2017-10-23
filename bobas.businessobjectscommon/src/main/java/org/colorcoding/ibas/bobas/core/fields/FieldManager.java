@@ -64,4 +64,9 @@ public class FieldManager implements Iterable<IFieldData> {
 	public IFieldData[] toArray() {
 		return this.fieldDatas;
 	}
+
+	@Override
+	public String toString() {
+		return String.format("{fields: count=%s}", this.fieldDatas == null ? 0 : this.fieldDatas.length);
+	}
 }

@@ -60,6 +60,6 @@ public class KeyValue implements IKeyValue {
 
 	@Override
 	public String toString() {
-		return String.format("{keyValue: %s %s}", this.getKey(), this.getValue());
+		return String.format("{key value: %s %s}", this.getKey(), this.getValue());
 	}
 }
