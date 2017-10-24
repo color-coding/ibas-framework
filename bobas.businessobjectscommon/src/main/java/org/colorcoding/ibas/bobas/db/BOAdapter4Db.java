@@ -43,6 +43,7 @@ import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IFieldDataDb;
 import org.colorcoding.ibas.bobas.core.fields.IFieldDataDbs;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.KeyValue;
@@ -50,8 +51,6 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.mapping.DbField;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.repository.TransactionType;
-import org.colorcoding.ibas.bobas.data.ArrayList;
-import org.colorcoding.ibas.bobas.util.StringBuilder;
 
 public abstract class BOAdapter4Db implements IBOAdapter4Db {
 
@@ -205,9 +204,9 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 								|| condition.getOperation() == ConditionOperation.NOT_CONTAIN)) {
 					// 数值类型的字段且需要作为字符比较的
 					String toVarchar = sqlScripts.getCastTypeString(DbFieldType.ALPHANUMERIC);
-					stringBuilder.appendFormat(toVarchar, String.format(dbObject, condition.getAlias()));
+					stringBuilder.append(String.format(toVarchar, String.format(dbObject, condition.getAlias())));
 				} else {
-					stringBuilder.appendFormat(dbObject, condition.getAlias());
+					stringBuilder.append(String.format(dbObject, condition.getAlias()));
 				}
 				stringBuilder.append(" ");
 				if (condition.getComparedAlias() != null && !condition.getComparedAlias().isEmpty()) {
@@ -225,8 +224,8 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 					// 彭文磊 解决数字和字符串相比较的情况 如“<>”
 					// 如果不是字符串，就将比较的字段类型转换成 条件字段的类型
 					String toDbFiledType = sqlScripts.getCastTypeString(condition.getAliasDataType());
-					stringBuilder.appendFormat(sqlScripts.getSqlString(condition.getOperation()),
-							String.format(toDbFiledType, String.format(dbObject, condition.getComparedAlias())));
+					stringBuilder.append(String.format(sqlScripts.getSqlString(condition.getOperation()),
+							String.format(toDbFiledType, String.format(dbObject, condition.getComparedAlias()))));
 
 				} else {
 					// 字段与值的比较
@@ -245,12 +244,12 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 						if (condition.getAliasDataType() == DbFieldType.NUMERIC
 								|| condition.getAliasDataType() == DbFieldType.DECIMAL) {
 							// 数值类型的字段
-							stringBuilder.appendFormat(sqlScripts.getSqlString(condition.getOperation()),
-									condition.getValue());
+							stringBuilder.append(String.format(sqlScripts.getSqlString(condition.getOperation()),
+									condition.getValue()));
 						} else {
 							// 非数值类型字段
-							stringBuilder.appendFormat(sqlScripts.getSqlString(condition.getOperation()),
-									sqlScripts.getSqlString(condition.getAliasDataType(), condition.getValue()));
+							stringBuilder.append(String.format(sqlScripts.getSqlString(condition.getOperation()),
+									sqlScripts.getSqlString(condition.getAliasDataType(), condition.getValue())));
 						}
 					}
 				}
@@ -290,7 +289,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				if (stringBuilder.length() > 0) {
 					stringBuilder.append(sqlScripts.getFieldBreakSign());
 				}
-				stringBuilder.appendFormat(dbObject, sort.getAlias());
+				stringBuilder.append(String.format(dbObject, sort.getAlias()));
 				stringBuilder.append(" ");
 				stringBuilder.append(sqlScripts.getSqlString(sort.getSortType()));
 			}
@@ -485,13 +484,13 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				if (valuesBuilder.length() > 0) {
 					valuesBuilder.append(sqlScripts.getFieldBreakSign());
 				}
-				fieldsBuilder.appendFormat(sqlScripts.getDbObjectSign(), dbItem.getDbField());
+				fieldsBuilder.append(String.format(sqlScripts.getDbObjectSign(), dbItem.getDbField()));
 				Object value = dbItem.getValue();
 				if (value == null) {
 					valuesBuilder.append(sqlScripts.getNullSign());
 				} else {
-					valuesBuilder
-							.appendFormat(sqlScripts.getSqlString(dbItem.getFieldType(), DataConvert.toDbValue(value)));
+					valuesBuilder.append(String
+							.format(sqlScripts.getSqlString(dbItem.getFieldType(), DataConvert.toDbValue(value))));
 				}
 			}
 			if (fieldsBuilder.length() == 0) {
@@ -529,7 +528,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			if (stringBuilder.length() > 0) {
 				stringBuilder.append(split);
 			}
-			stringBuilder.appendFormat(sqlScripts.getDbObjectSign(), dbItem.getDbField());
+			stringBuilder.append(String.format(sqlScripts.getDbObjectSign(), dbItem.getDbField()));
 			stringBuilder.append(" ");
 			stringBuilder.append("=");
 			stringBuilder.append(" ");
@@ -537,8 +536,8 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			if (value == null) {
 				stringBuilder.append(sqlScripts.getNullSign());
 			} else {
-				stringBuilder
-						.appendFormat(sqlScripts.getSqlString(dbItem.getFieldType(), DataConvert.toDbValue(value)));
+				stringBuilder.append(
+						String.format(sqlScripts.getSqlString(dbItem.getFieldType(), DataConvert.toDbValue(value))));
 			}
 		}
 		return stringBuilder.toString();

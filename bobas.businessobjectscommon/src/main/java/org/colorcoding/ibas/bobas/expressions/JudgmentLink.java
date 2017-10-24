@@ -1,10 +1,9 @@
 package org.colorcoding.ibas.bobas.expressions;
 
+import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
-import org.colorcoding.ibas.bobas.data.ArrayList;
-import org.colorcoding.ibas.bobas.util.StringBuilder;
 
 public abstract class JudgmentLink {
 
@@ -103,7 +102,7 @@ public abstract class JudgmentLink {
 			return;
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.appendFormat(MSG_JUDGMENT_LINK_INFO, judgmentItems.length);
+		stringBuilder.append(String.format(MSG_JUDGMENT_LINK_INFO, judgmentItems.length));
 		String line = System.getProperty("line.seperator", "\n");
 		for (JudgmentLinkItem jItem : judgmentItems) {
 			stringBuilder.append(line);

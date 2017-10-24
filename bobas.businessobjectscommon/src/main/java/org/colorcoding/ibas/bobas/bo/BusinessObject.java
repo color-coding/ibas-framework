@@ -37,7 +37,6 @@ import org.colorcoding.ibas.bobas.rules.IBusinessRules;
 import org.colorcoding.ibas.bobas.rules.IBusinessRulesManager;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
-import org.colorcoding.ibas.bobas.util.StringBuilder;
 
 /*
  * 业务对象基础类型
@@ -118,7 +117,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 		if (boCode == null || boCode.isEmpty()) {
 			return super.toString();
 		}
-		stringBuilder.appendFormat("{");
+		stringBuilder.append("{");
 		stringBuilder.append("[");
 		stringBuilder.append(boCode);
 		stringBuilder.append("]");

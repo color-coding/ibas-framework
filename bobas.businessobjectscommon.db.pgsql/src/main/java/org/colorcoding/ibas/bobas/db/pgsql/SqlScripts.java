@@ -5,7 +5,6 @@ import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.SqlQuery;
 import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
-import org.colorcoding.ibas.bobas.util.StringBuilder;
 
 public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 
@@ -160,7 +159,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 		stringBuilder.append(" ");
 		stringBuilder.append("FROM");
 		stringBuilder.append(" ");
-		stringBuilder.appendFormat("\"%s_SYS_ONNM\"", this.getCompanyId());
+		stringBuilder.append(String.format("\"%s_SYS_ONNM\"", this.getCompanyId()));
 		stringBuilder.append(" ");
 		stringBuilder.append("WHERE");
 		stringBuilder.append(" ");
@@ -214,7 +213,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 		stringBuilder.append(" ");
 		stringBuilder.append("FROM");
 		stringBuilder.append(" ");
-		stringBuilder.appendFormat("\"%s_SP_TRANSACTION_NOTIFICATION\"", this.getCompanyId());
+		stringBuilder.append(String.format("\"%s_SP_TRANSACTION_NOTIFICATION\"", this.getCompanyId()));
 		stringBuilder.append("(");
 		stringBuilder.append(" ");
 		stringBuilder.append("N'");

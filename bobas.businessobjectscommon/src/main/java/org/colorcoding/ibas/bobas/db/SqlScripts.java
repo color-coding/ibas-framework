@@ -9,7 +9,6 @@ import org.colorcoding.ibas.bobas.common.SqlQuery;
 import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
-import org.colorcoding.ibas.bobas.util.StringBuilder;
 
 public class SqlScripts implements ISqlScripts {
 
@@ -385,7 +384,7 @@ public class SqlScripts implements ISqlScripts {
 		stringBuilder.append(" ");
 		stringBuilder.append("FROM");
 		stringBuilder.append(" ");
-		stringBuilder.appendFormat("\"%s_SYS_ONNM\"", this.getCompanyId());
+		stringBuilder.append(String.format("\"%s_SYS_ONNM\"", this.getCompanyId()));
 		stringBuilder.append(" ");
 		stringBuilder.append("WITH (UPDLOCK)");
 		stringBuilder.append(" ");
@@ -406,7 +405,7 @@ public class SqlScripts implements ISqlScripts {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("UPDATE");
 		stringBuilder.append(" ");
-		stringBuilder.appendFormat("\"%s_SYS_ONNM\"", this.getCompanyId());
+		stringBuilder.append(String.format("\"%s_SYS_ONNM\"", this.getCompanyId()));
 		stringBuilder.append(" ");
 		stringBuilder.append("SET");
 		stringBuilder.append(" ");
@@ -458,7 +457,7 @@ public class SqlScripts implements ISqlScripts {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("EXEC");
 		stringBuilder.append(" ");
-		stringBuilder.appendFormat("\"%s_SP_TRANSACTION_NOTIFICATION\"", this.getCompanyId());
+		stringBuilder.append(String.format("\"%s_SP_TRANSACTION_NOTIFICATION\"", this.getCompanyId()));
 		stringBuilder.append(" ");
 		stringBuilder.append("N'");
 		stringBuilder.append(this.checkSecurity(boCode));
@@ -523,7 +522,7 @@ public class SqlScripts implements ISqlScripts {
 		stringBuilder.append(" ");
 		stringBuilder.append("FROM");
 		stringBuilder.append(" ");
-		stringBuilder.appendFormat("\"%s_SYS_ONNM\"", this.getCompanyId());
+		stringBuilder.append(String.format("\"%s_SYS_ONNM\"", this.getCompanyId()));
 		stringBuilder.append(" ");
 		stringBuilder.append("WHERE");
 		stringBuilder.append(" ");
@@ -549,7 +548,7 @@ public class SqlScripts implements ISqlScripts {
 		stringBuilder.append(" ");
 		stringBuilder.append("FROM");
 		stringBuilder.append(" ");
-		stringBuilder.appendFormat("\"%s_SYS_NNM1\"", this.getCompanyId());
+		stringBuilder.append(String.format("\"%s_SYS_NNM1\"", this.getCompanyId()));
 		stringBuilder.append(" ");
 		stringBuilder.append("WHERE");
 		stringBuilder.append(" ");
@@ -586,7 +585,7 @@ public class SqlScripts implements ISqlScripts {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("UPDATE");
 		stringBuilder.append(" ");
-		stringBuilder.appendFormat("\"%s_SYS_NNM1\"", this.getCompanyId());
+		stringBuilder.append(String.format("\"%s_SYS_NNM1\"", this.getCompanyId()));
 		stringBuilder.append(" ");
 		stringBuilder.append("SET");
 		stringBuilder.append(" ");

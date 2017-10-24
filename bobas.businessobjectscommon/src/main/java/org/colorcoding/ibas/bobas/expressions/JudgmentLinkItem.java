@@ -1,7 +1,5 @@
 package org.colorcoding.ibas.bobas.expressions;
 
-import org.colorcoding.ibas.bobas.util.StringBuilder;
-
 /**
  * 判断链项目
  * 
