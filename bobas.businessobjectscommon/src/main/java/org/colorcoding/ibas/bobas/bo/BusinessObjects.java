@@ -103,10 +103,6 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 	}
 
 	/**
-	 * 指向当前实例
-	 */
-	private BusinessObjects<E, P> that = this;
-	/**
 	 * 属性监听实例（隐藏接口实现）
 	 */
 	private PropertyChangeListener propertyListener = new PropertyChangeListener() {
@@ -114,28 +110,31 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			if (evt != null && evt.getPropertyName() != null) {
-				if (evt.getSource() == that.getParent()) {
+				if (evt.getSource() == BusinessObjects.this.getParent()) {
 					// 父项属性改变
-					that.onParentPropertyChanged(evt);
-				} else if (that.contains(evt.getSource())) {
+					BusinessObjects.this.onParentPropertyChanged(evt);
+				} else if (BusinessObjects.this.contains(evt.getSource())) {
 					// 此集合中的子项的属性改变
 					if (evt.getPropertyName() != null && evt.getPropertyName().equals("isDirty")
 							&& evt.getNewValue().equals(true)) {
 						// 元素状态为Dirty时修改父项状态
-						if (that.getParent() instanceof ITrackStatusOperator) {
+						if (BusinessObjects.this.getParent() instanceof ITrackStatusOperator) {
 							// 改变父项的状态跟踪
-							ITrackStatusOperator statusOperator = (ITrackStatusOperator) that.getParent();
+							ITrackStatusOperator statusOperator = (ITrackStatusOperator) BusinessObjects.this
+									.getParent();
 							statusOperator.markDirty();
 						}
 					} else {
-						that.onElementPropertyChanged(evt);
+						BusinessObjects.this.onElementPropertyChanged(evt);
 					}
-				} else if (evt.getSource() == that && evt.getPropertyName().equals(PROPERTY_NAME_SIZE)) {
-					if (that.parent != null && !that.parent.isLoading()) {
+				} else if (evt.getSource() == BusinessObjects.this
+						&& evt.getPropertyName().equals(PROPERTY_NAME_SIZE)) {
+					if (BusinessObjects.this.parent != null && !BusinessObjects.this.parent.isLoading()) {
 						// 集合自身的属性改变事件
-						if (that.getParent() instanceof ITrackStatusOperator) {
+						if (BusinessObjects.this.getParent() instanceof ITrackStatusOperator) {
 							// 改变父项的状态跟踪
-							ITrackStatusOperator statusOperator = (ITrackStatusOperator) that.getParent();
+							ITrackStatusOperator statusOperator = (ITrackStatusOperator) BusinessObjects.this
+									.getParent();
 							statusOperator.markDirty();
 						}
 					}
