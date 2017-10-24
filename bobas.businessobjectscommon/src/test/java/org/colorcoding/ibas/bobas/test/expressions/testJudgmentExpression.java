@@ -18,7 +18,7 @@ import org.colorcoding.ibas.bobas.expressions.JudmentOperationException;
 import org.colorcoding.ibas.bobas.expressions.JudmentOperation;
 import org.colorcoding.ibas.bobas.expressions.NotSupportOperationException;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
-import org.colorcoding.ibas.bobas.util.ArrayList;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 
 import junit.framework.TestCase;
 

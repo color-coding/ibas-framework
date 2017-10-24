@@ -1,10 +1,8 @@
 package org.colorcoding.ibas.bobas.core;
 
-import java.util.List;
+import org.colorcoding.ibas.bobas.data.List;
 
-import org.colorcoding.ibas.bobas.util.Collection;
-
-public interface IBusinessObjectListBase<E extends IBusinessObjectBase> extends List<E>, Collection<E> {
+public interface IBusinessObjectListBase<E extends IBusinessObjectBase> extends List<E> {
 	/**
 	 * 创建新的元素实例
 	 * 

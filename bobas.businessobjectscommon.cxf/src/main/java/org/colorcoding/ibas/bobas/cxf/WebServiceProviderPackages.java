@@ -2,7 +2,7 @@ package org.colorcoding.ibas.bobas.cxf;
 
 import org.colorcoding.ibas.bobas.core.BOFactory;
 import org.colorcoding.ibas.bobas.messages.Logger;
-import org.colorcoding.ibas.bobas.util.ArrayList;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 
 /**
  * 服务提供者，命令空间方式

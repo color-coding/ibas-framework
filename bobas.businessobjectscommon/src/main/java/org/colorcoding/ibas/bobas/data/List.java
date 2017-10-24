@@ -1,8 +1,15 @@
-package org.colorcoding.ibas.bobas.util;
+package org.colorcoding.ibas.bobas.data;
 
 import java.util.function.Predicate;
 
-public interface Collection<E> extends java.util.Collection<E> {
+/**
+ * 列表
+ * 
+ * @author Niuren.Zhu
+ *
+ * @param <E>
+ */
+public interface List<E> extends java.util.List<E> {
 
 	/**
 	 * 第一个或默认值
@@ -30,5 +37,5 @@ public interface Collection<E> extends java.util.Collection<E> {
 	 * 
 	 * @return 元素实例
 	 */
-	E lastOrfault(Predicate<? super E> filter);
+	E lastOrDefault(Predicate<? super E> filter);
 }

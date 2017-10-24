@@ -1,6 +1,8 @@
 package org.colorcoding.ibas.bobas.data;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Date;
 
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
@@ -21,29 +23,37 @@ public class DataConvert {
 		if (type == null || value == null) {
 			return value;
 		}
+		if (type == value.getClass()) {
+			return value;
+		}
 		if (type == String.class) {
 			return toString(value);
-		} else if (type == Integer.class) {
-			String tmp = toString(value);
-			return Integer.valueOf(tmp);
-		} else if (type == Double.class) {
-			String tmp = toString(value);
-			return Double.valueOf(tmp);
-		} else if (type == Long.class) {
-			String tmp = toString(value);
-			return Long.valueOf(tmp);
 		} else if (type == Short.class) {
-			String tmp = toString(value);
-			return Short.valueOf(tmp);
-		} else if (type == Boolean.class) {
-			String tmp = toString(value);
-			return Boolean.valueOf(tmp);
-		} else if (type == DateTime.class) {
-			String tmp = toString(value);
-			return DateTime.valueOf(tmp);
+			return Short.valueOf(toString(value));
+		} else if (type == Integer.class) {
+			return Integer.valueOf(toString(value));
+		} else if (type == Long.class) {
+			return Long.valueOf(toString(value));
+		} else if (type == BigInteger.class) {
+			return new BigInteger(toString(value));
+		} else if (type == Double.class) {
+			return Double.valueOf(toString(value));
+		} else if (type == Float.class) {
+			return Float.valueOf(toString(value));
 		} else if (type == Decimal.class) {
-			String tmp = toString(value);
-			return new Decimal(tmp);
+			return new Decimal(toString(value));
+		} else if (type == BigDecimal.class) {
+			return new BigDecimal(toString(value));
+		} else if (type == Boolean.class) {
+			return Boolean.valueOf(toString(value));
+		} else if (type == DateTime.class) {
+			if (value.getClass() == Long.class) {
+				return DateTime.valueOf((long) value);
+			} else if (value.getClass() == Date.class) {
+				return DateTime.valueOf((Date) value);
+			} else {
+				return DateTime.valueOf(toString(value));
+			}
 		} else if (type.isEnum()) {
 			String tmp = toString(value);
 			for (Object item : type.getEnumConstants()) {

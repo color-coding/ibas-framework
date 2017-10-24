@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.common;
 
-import org.colorcoding.ibas.bobas.util.Collection;
+import org.colorcoding.ibas.bobas.data.List;
 
 /**
  * 查询排序集合
@@ -8,7 +8,7 @@ import org.colorcoding.ibas.bobas.util.Collection;
  * @author Niuren.Zhu
  *
  */
-public interface ISorts extends Collection<ISort> {
+public interface ISorts extends List<ISort> {
 	/**
 	 * 新建Sort
 	 *

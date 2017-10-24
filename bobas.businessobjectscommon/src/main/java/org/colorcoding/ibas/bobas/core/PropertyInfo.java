@@ -2,7 +2,7 @@ package org.colorcoding.ibas.bobas.core;
 
 import java.lang.annotation.Annotation;
 
-import org.colorcoding.ibas.bobas.util.ArrayList;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 
 public class PropertyInfo<P> implements IPropertyInfo<P> {
 

@@ -38,7 +38,7 @@ import org.colorcoding.ibas.bobas.db.SqlScriptException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.mapping.AssociationMode;
 import org.colorcoding.ibas.bobas.messages.Logger;
-import org.colorcoding.ibas.bobas.util.ArrayList;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 
 /**
  * 业务对象仓库-只读数据库

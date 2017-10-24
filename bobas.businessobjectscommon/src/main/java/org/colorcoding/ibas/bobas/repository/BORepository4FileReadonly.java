@@ -26,7 +26,7 @@ import org.colorcoding.ibas.bobas.expressions.JudgmentLink;
 import org.colorcoding.ibas.bobas.expressions.JudmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.messages.Logger;
-import org.colorcoding.ibas.bobas.util.ArrayList;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 
 public class BORepository4FileReadonly extends BORepositoryBase implements IBORepository4FileReadonly {
 

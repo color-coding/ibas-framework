@@ -27,7 +27,7 @@ import org.colorcoding.ibas.bobas.test.logics.MaterialsQuantityJournal;
 import org.colorcoding.ibas.bobas.test.logics.PurchaseOrder;
 import org.colorcoding.ibas.bobas.test.logics.PurchaseOrderItem;
 import org.colorcoding.ibas.bobas.test.repository.BORepositoryTest;
-import org.colorcoding.ibas.bobas.util.ArrayList;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 
 import junit.framework.TestCase;
 

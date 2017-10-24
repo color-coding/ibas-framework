@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.util.ArrayList;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "LanguageItem", namespace = MyConfiguration.NAMESPACE_BOBAS_I18N)

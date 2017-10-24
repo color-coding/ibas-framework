@@ -34,6 +34,17 @@ public class DateTime extends Date implements Serializable {
 	 * 转换值
 	 * 
 	 * @param date
+	 *            日期
+	 * @return 日期
+	 */
+	public static DateTime valueOf(Date date) {
+		return new DateTime(date.getTime());
+	}
+
+	/**
+	 * 转换值
+	 * 
+	 * @param date
 	 *            日期的字符串
 	 * @return 日期
 	 */
