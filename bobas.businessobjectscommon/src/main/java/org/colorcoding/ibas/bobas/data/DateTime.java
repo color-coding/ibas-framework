@@ -91,7 +91,7 @@ public class DateTime extends Date implements Serializable {
 	public static DateTime getMinValue() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.clear();
-		calendar.set(1899, 12, 1);
+		calendar.set(1899, 11, 1);
 		return new DateTime(calendar.getTimeInMillis());
 	}
 

@@ -2,8 +2,8 @@ package org.colorcoding.ibas.bobas.expressions;
 
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.ICondition;
-import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.data.ArrayList;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 
 /**
  * 业务对象判断链
@@ -19,7 +19,7 @@ public class BOJudgmentLinkCondition extends BOJudgmentLink {
 	 */
 	public void parsingConditions(Iterable<ICondition> conditions) {
 		// 判断无条件
-		if (conditions != null && conditions.toString().equals("[]")) {
+		if (conditions == null || conditions.toString().equals("[]")) {
 			return;
 		}
 		ArrayList<JudgmentLinkItem> jLinkItems = new ArrayList<JudgmentLinkItem>();

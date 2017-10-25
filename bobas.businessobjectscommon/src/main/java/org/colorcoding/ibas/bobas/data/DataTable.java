@@ -50,11 +50,7 @@ public class DataTable implements IDataTable {
 	@Override
 	public IDataTableColumns getColumns() {
 		if (this.columns == null) {
-			synchronized (this) {
-				if (this.columns == null) {
-					this.columns = new DataTableColumns(this);
-				}
-			}
+			this.columns = new DataTableColumns(this);
 		}
 		return this.columns;
 	}
@@ -71,11 +67,7 @@ public class DataTable implements IDataTable {
 	@Override
 	public IDataTableRows getRows() {
 		if (this.rows == null) {
-			synchronized (this) {
-				if (this.rows == null) {
-					this.rows = new DataTableRows(this);
-				}
-			}
+			this.rows = new DataTableRows(this);
 		}
 		return this.rows;
 	}

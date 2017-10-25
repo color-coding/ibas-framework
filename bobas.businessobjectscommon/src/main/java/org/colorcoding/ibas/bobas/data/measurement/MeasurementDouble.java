@@ -63,7 +63,7 @@ public abstract class MeasurementDouble<U> extends Measurement<Double, U> {
 
 	@Override
 	public void setValue(Object value) {
-		this.setValue(value);
+		this.setValue((double) value);
 	}
 
 	@Override

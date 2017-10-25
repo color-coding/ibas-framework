@@ -30,7 +30,7 @@ class DbConnectionPool implements IDbConnectionPool {
 		return POOLSIZE;
 	}
 
-	void setPoolSize(int value) {
+	static void setPoolSize(int value) {
 		POOLSIZE = value;
 	}
 
@@ -172,7 +172,7 @@ class DbConnectionPool implements IDbConnectionPool {
 		}
 	}
 
-	private volatile ConnectionWrapping[] availableConnections = null;
+	private ConnectionWrapping[] availableConnections = null;
 
 	@Override
 	public IDbConnection obtain(String sign) {

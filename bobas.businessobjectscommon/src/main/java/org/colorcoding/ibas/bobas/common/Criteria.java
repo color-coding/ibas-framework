@@ -27,7 +27,7 @@ import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "Criteria", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 @XmlRootElement(name = "Criteria", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
-public class Criteria implements ICriteria {
+public class Criteria implements ICriteria, Cloneable {
 	/**
 	 * 创建实例
 	 * 

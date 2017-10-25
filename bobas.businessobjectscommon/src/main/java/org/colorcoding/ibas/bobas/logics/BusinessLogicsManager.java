@@ -63,11 +63,7 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 
 	protected List<IBusinessLogicChain> getLogicChains() {
 		if (this.logicChains == null) {
-			synchronized (this) {
-				if (this.logicChains == null) {
-					this.logicChains = new Vector<>();
-				}
-			}
+			this.logicChains = new Vector<>();
 		}
 		return this.logicChains;
 	}

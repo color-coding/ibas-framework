@@ -148,7 +148,7 @@ public class SerializerJson extends Serializer<JsonSchema> {
 		}
 	}
 
-	private static JAXBContext context;
+	private JAXBContext context;
 
 	/**
 	 * 创建json序列化类

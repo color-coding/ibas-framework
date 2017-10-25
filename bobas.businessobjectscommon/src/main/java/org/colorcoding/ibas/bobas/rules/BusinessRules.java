@@ -47,11 +47,7 @@ public class BusinessRules implements IBusinessRules {
 
 	protected final ArrayList<IBusinessRule> getRules() {
 		if (this.rules == null) {
-			synchronized (this) {
-				if (this.rules == null) {
-					this.rules = new ArrayList<>();
-				}
-			}
+			this.rules = new ArrayList<>();
 		}
 		return this.rules;
 	}

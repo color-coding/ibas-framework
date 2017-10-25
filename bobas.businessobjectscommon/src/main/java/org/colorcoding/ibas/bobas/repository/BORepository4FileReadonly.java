@@ -20,13 +20,13 @@ import org.colorcoding.ibas.bobas.core.IBusinessObjectListBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.expressions.ExpressionFactory;
 import org.colorcoding.ibas.bobas.expressions.JudgmentLink;
 import org.colorcoding.ibas.bobas.expressions.JudmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.messages.Logger;
-import org.colorcoding.ibas.bobas.data.ArrayList;
 
 public class BORepository4FileReadonly extends BORepositoryBase implements IBORepository4FileReadonly {
 
@@ -125,36 +125,38 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 			// 要求有条件
 			judgmentLinks = ExpressionFactory.create().createBOJudgmentLink(criteria.getConditions());
 		}
-		File[] files = file.listFiles();
 		ArrayList<BOFile> boFiles = new ArrayList<BOFile>();
-		for (int i = 0; i < files.length; i++) {
-			file = files[i];
-			if (!file.isFile()) {
-				continue;
-			}
-			if (!file.getName().endsWith(".bo")) {
-				continue;
-			}
-			if (boFiles.size() >= criteria.getResultCount() && criteria.getResultCount() >= 0) {
-				// 数据已够
-				break;
-			}
-			try {
-				FileInputStream fileStream = new FileInputStream(file);
-				IBusinessObjectBase nBO = (IBusinessObjectBase) unmarshaller.unmarshal(fileStream);
-				if (nBO.getClass().equals(boType)) {
-					if (judgmentLinks == null || judgmentLinks.judge(nBO)) {
-						boFiles.add(new BOFile(file.getPath().replace(this.getRepositoryFolder(), ""), nBO));
-					}
-				} else {
-					// 对象类型与查找类型不符，则尝试比较属性
-					// 匹配的属性实例返回
-					for (IBusinessObjectBase item : this.match(nBO, judgmentLinks, boType)) {
-						boFiles.add(new BOFile(file.getPath().replace(this.getRepositoryFolder(), ""), item));
-					}
+		File[] files = file.listFiles();
+		if (files != null) {
+			for (int i = 0; i < files.length; i++) {
+				file = files[i];
+				if (!file.isFile()) {
+					continue;
 				}
-			} catch (Exception e) {
-				Logger.log(e);
+				if (!file.getName().endsWith(".bo")) {
+					continue;
+				}
+				if (boFiles.size() >= criteria.getResultCount() && criteria.getResultCount() >= 0) {
+					// 数据已够
+					break;
+				}
+				try {
+					FileInputStream fileStream = new FileInputStream(file);
+					IBusinessObjectBase nBO = (IBusinessObjectBase) unmarshaller.unmarshal(fileStream);
+					if (nBO.getClass().equals(boType)) {
+						if (judgmentLinks == null || judgmentLinks.judge(nBO)) {
+							boFiles.add(new BOFile(file.getPath().replace(this.getRepositoryFolder(), ""), nBO));
+						}
+					} else {
+						// 对象类型与查找类型不符，则尝试比较属性
+						// 匹配的属性实例返回
+						for (IBusinessObjectBase item : this.match(nBO, judgmentLinks, boType)) {
+							boFiles.add(new BOFile(file.getPath().replace(this.getRepositoryFolder(), ""), item));
+						}
+					}
+				} catch (Exception e) {
+					Logger.log(e);
+				}
 			}
 		}
 		return boFiles.toArray(new BOFile[] {});
@@ -206,14 +208,17 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 	 */
 	protected ArrayList<Class<?>> getTypes(File boFolder) {
 		ArrayList<Class<?>> types = new ArrayList<>();
-		for (File item : boFolder.listFiles()) {
-			if (item.isFile()) {
-				if (item.getName().endsWith(".type")) {
-					try {
-						types.add(BOFactory.create()
-								.getClass(item.getName().substring(0, item.getName().lastIndexOf("."))));
-					} catch (ClassNotFoundException e) {
-						Logger.log(e);
+		File[] files = boFolder.listFiles();
+		if (files != null) {
+			for (File item : files) {
+				if (item.isFile()) {
+					if (item.getName().endsWith(".type")) {
+						try {
+							types.add(BOFactory.create()
+									.getClass(item.getName().substring(0, item.getName().lastIndexOf("."))));
+						} catch (ClassNotFoundException e) {
+							Logger.log(e);
+						}
 					}
 				}
 			}

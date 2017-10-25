@@ -1,17 +1,17 @@
 package org.colorcoding.ibas.bobas.approval;
 
+import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.emConditionRelationship;
 import org.colorcoding.ibas.bobas.expressions.BOJudgmentLink;
 import org.colorcoding.ibas.bobas.expressions.DBFieldValueOperator;
 import org.colorcoding.ibas.bobas.expressions.IPropertyValueOperator;
 import org.colorcoding.ibas.bobas.expressions.IValueOperator;
-import org.colorcoding.ibas.bobas.expressions.JudgmentLinkItem;
 import org.colorcoding.ibas.bobas.expressions.JudgmentLinkException;
+import org.colorcoding.ibas.bobas.expressions.JudgmentLinkItem;
 import org.colorcoding.ibas.bobas.expressions.JudmentOperation;
 import org.colorcoding.ibas.bobas.expressions.SQLScriptValueOperator;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.repository.IBORepository4DbReadonly;
-import org.colorcoding.ibas.bobas.data.ArrayList;
 
 public class ApprovalDataJudgmentLink extends BOJudgmentLink {
 
@@ -32,7 +32,7 @@ public class ApprovalDataJudgmentLink extends BOJudgmentLink {
 	 */
 	public void parsingConditions(IApprovalProcessStepCondition[] conditions) {
 		// 判断无条件
-		if (conditions != null && conditions.length == 0) {
+		if (conditions == null || conditions.length == 0) {
 			return;
 		}
 		ArrayList<JudgmentLinkItem> jLinkItems = new ArrayList<JudgmentLinkItem>();

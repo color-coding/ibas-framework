@@ -155,7 +155,7 @@ public class SerializerJsonNoRoot extends Serializer<JsonSchema> {
 		}
 	}
 
-	private static JAXBContext context;
+	private JAXBContext context;
 
 	/**
 	 * 创建json序列化类
@@ -166,7 +166,6 @@ public class SerializerJsonNoRoot extends Serializer<JsonSchema> {
 	 * @throws JAXBException
 	 */
 	protected JAXBContext createJAXBContextJson(Class<?>... types) throws JAXBException {
-
 		if (context != null) {
 			return context;
 		}

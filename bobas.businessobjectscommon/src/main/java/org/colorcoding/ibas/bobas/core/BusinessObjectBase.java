@@ -15,11 +15,11 @@ import org.colorcoding.ibas.bobas.core.fields.FieldManager;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.core.fields.NotRegisterTypeException;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
-import org.colorcoding.ibas.bobas.data.ArrayList;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "BusinessObjectBase", namespace = MyConfiguration.NAMESPACE_BOBAS_CORE)
@@ -201,7 +201,7 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 	@SuppressWarnings("unchecked")
 	public final <P> P getProperty(IPropertyInfo<P> property) {
 		if (property == null) {
-			throw null;
+			return null;
 		}
 		IFieldData fieldData = this.fieldManager.getFieldData(property);
 		if (fieldData == null) {

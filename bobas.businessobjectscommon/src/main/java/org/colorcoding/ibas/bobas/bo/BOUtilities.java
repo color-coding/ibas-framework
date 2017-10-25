@@ -7,8 +7,8 @@ import org.colorcoding.ibas.bobas.core.IBusinessObjectListBase;
 import org.colorcoding.ibas.bobas.core.ITrackStatus;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
-import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.data.ArrayList;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 
 /**
  * 业务对象的实用工具
@@ -118,9 +118,9 @@ public class BOUtilities {
 								for (int j = 1; j < indexs.length; j++) {
 									cIndex[j - 1] = indexs[j];
 								}
+								IBusinessObjects<?, ?> boValues = (IBusinessObjects<?, ?>) fieldData.getValue();
+								return getPropertyValue((IBusinessObject) boValues.get(indexs[0]), cPath, cIndex);
 							}
-							IBusinessObjects<?, ?> boValues = (IBusinessObjects<?, ?>) fieldData.getValue();
-							return getPropertyValue((IBusinessObject) boValues.get(indexs[0]), cPath, cIndex);
 						} else {
 							// 路径终止
 							return fieldData.getValue();

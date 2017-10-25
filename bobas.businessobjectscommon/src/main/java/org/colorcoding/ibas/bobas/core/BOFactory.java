@@ -19,10 +19,10 @@ import java.util.jar.JarFile;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.configuration.Configuration;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.mapping.BOCode;
 import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
-import org.colorcoding.ibas.bobas.data.ArrayList;
 
 /**
  * 业务对象工厂
@@ -325,24 +325,25 @@ public class BOFactory implements IBOFactory {
 				return (file.isDirectory()) || (file.getName().endsWith(".class"));
 			}
 		});
-		ClassLoader classLoader = this.getClassLoader();
-		// 循环所有文件
-		for (File file : dirfiles) {
-			// 如果是目录 则继续扫描
-			if (file.isDirectory()) {
-				findClassesInPackageByFile(packageName + "." + file.getName(), file.getAbsolutePath(), classes);
-			} else {
-				// 如果是java类文件 去掉后面的.class 只留下类名
-				String className = file.getName().substring(0, file.getName().length() - 6);
-				try {
-					// 添加到集合中去
-					// 这里用forName有一些不好，会触发static方法，没有使用classLoader的load干净
-					classes.add(classLoader.loadClass(packageName + '.' + className));
-				} catch (ClassNotFoundException e) {
-					Logger.log(MessageLevel.DEBUG, e);
+		if (dirfiles != null) {
+			ClassLoader classLoader = this.getClassLoader();
+			// 循环所有文件
+			for (File file : dirfiles) {
+				// 如果是目录 则继续扫描
+				if (file.isDirectory()) {
+					findClassesInPackageByFile(packageName + "." + file.getName(), file.getAbsolutePath(), classes);
+				} else {
+					// 如果是java类文件 去掉后面的.class 只留下类名
+					String className = file.getName().substring(0, file.getName().length() - 6);
+					try {
+						// 添加到集合中去
+						// 这里用forName有一些不好，会触发static方法，没有使用classLoader的load干净
+						classes.add(classLoader.loadClass(packageName + '.' + className));
+					} catch (ClassNotFoundException e) {
+						Logger.log(MessageLevel.DEBUG, e);
+					}
 				}
 			}
 		}
 	}
-
 }

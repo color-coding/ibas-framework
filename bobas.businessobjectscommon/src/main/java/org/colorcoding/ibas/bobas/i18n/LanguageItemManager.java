@@ -189,20 +189,23 @@ public class LanguageItemManager implements ILanguageItemManager {
 					this.getLanguageItems().put(item.getKey(), item);
 				}
 			} else {
-				for (File fileItem : file.listFiles()) {
-					if (!fileItem.getName().endsWith(".properties")) {
-						continue;
-					}
-					if (langCode == null || langCode.isEmpty()) {
-						if (fileItem.getName().indexOf("_") > 0) {
+				File[] files = file.listFiles();
+				if (files != null) {
+					for (File fileItem : files) {
+						if (!fileItem.getName().endsWith(".properties")) {
 							continue;
 						}
-					} else {
-						if (fileItem.getName().indexOf(langCode) < 0) {
-							continue;
+						if (langCode == null || langCode.isEmpty()) {
+							if (fileItem.getName().indexOf("_") > 0) {
+								continue;
+							}
+						} else {
+							if (fileItem.getName().indexOf(langCode) < 0) {
+								continue;
+							}
 						}
+						this.readResources(fileItem.getPath(), langCode);
 					}
-					this.readResources(fileItem.getPath(), langCode);
 				}
 			}
 		}
