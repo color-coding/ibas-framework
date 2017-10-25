@@ -18,14 +18,14 @@ import org.colorcoding.ibas.bobas.mapping.LogicContract;
 public class BusinessLogicsManager implements IBusinessLogicsManager {
 
 	@Override
-	public synchronized IBusinessLogicChain createChain() {
+	public IBusinessLogicChain createChain() {
 		IBusinessLogicChain logicChain = new BusinessLogicChain(this);
 		this.getLogicChains().add(logicChain);
 		return logicChain;
 	}
 
 	@Override
-	public synchronized IBusinessLogicChain getChain(IBusinessObject host) {
+	public IBusinessLogicChain getChain(IBusinessObject host) {
 		if (host == null) {
 			return null;
 		}
@@ -43,7 +43,7 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 	}
 
 	@Override
-	public synchronized void closeChains(String transId) {
+	public void closeChains(String transId) {
 		if (transId == null) {
 			return;
 		}
@@ -59,11 +59,15 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 		}
 	}
 
-	private List<IBusinessLogicChain> logicChains;
+	private volatile List<IBusinessLogicChain> logicChains;
 
 	protected List<IBusinessLogicChain> getLogicChains() {
-		if (this.logicChains == null) {
-			this.logicChains = new Vector<>();
+		if (logicClasses == null) {
+			synchronized (this) {
+				if (this.logicChains == null) {
+					this.logicChains = new Vector<>();
+				}
+			}
 		}
 		return this.logicChains;
 	}
@@ -72,7 +76,7 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 
 	protected HashMap<Class<?>, Class<?>> getLogicClasses() {
 		if (logicClasses == null) {
-			synchronized (BusinessLogicsManager.class) {
+			synchronized (this) {
 				if (logicClasses == null) {
 					logicClasses = new HashMap<>();
 				}
