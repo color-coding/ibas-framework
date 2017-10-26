@@ -7,14 +7,6 @@ package org.colorcoding.ibas.bobas.organization;
  *
  */
 public interface IOrganizationManager {
-	/**
-	 * 未知用户ID
-	 */
-	static final int UNKNOWN_USER_SIGN = -1;
-	/**
-	 * 系统用户ID
-	 */
-	static final int SYSTEM_USER_SIGN = -9;
 
 	/**
 	 * 初始化
@@ -37,4 +29,20 @@ public interface IOrganizationManager {
 	 * @return
 	 */
 	IUser getUser(int id);
+
+	/**
+	 * 注册用户
+	 * 
+	 * @param user
+	 */
+	void register(IUser user);
+
+	/**
+	 * 获取用户角色
+	 * 
+	 * @param user
+	 *            查询的用户
+	 * @return
+	 */
+	String[] getRoles(IUser user);
 }

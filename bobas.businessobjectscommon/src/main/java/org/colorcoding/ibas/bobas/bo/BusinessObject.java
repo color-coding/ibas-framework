@@ -29,7 +29,7 @@ import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.messages.Logger;
 import org.colorcoding.ibas.bobas.messages.MessageLevel;
-import org.colorcoding.ibas.bobas.organization.IOrganizationManager;
+import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
 import org.colorcoding.ibas.bobas.rules.BusinessRuleException;
 import org.colorcoding.ibas.bobas.rules.BusinessRulesFactory;
 import org.colorcoding.ibas.bobas.rules.IBusinessRule;
@@ -179,11 +179,11 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 			tagBO.setCreateActionId(null);
 			tagBO.setCreateDate(DateTime.minValue);
 			tagBO.setCreateTime((short) 0);
-			tagBO.setCreateUserSign(IOrganizationManager.UNKNOWN_USER_SIGN);
+			tagBO.setCreateUserSign(OrganizationFactory.UNKNOWN_USER.getId());
 			tagBO.setUpdateActionId(null);
 			tagBO.setUpdateDate(DateTime.minValue);
 			tagBO.setUpdateTime((short) 0);
-			tagBO.setUpdateUserSign(IOrganizationManager.UNKNOWN_USER_SIGN);
+			tagBO.setUpdateUserSign(OrganizationFactory.UNKNOWN_USER.getId());
 		}
 		// 重置引用状态
 		if (this instanceof IBOTagReferenced) {
