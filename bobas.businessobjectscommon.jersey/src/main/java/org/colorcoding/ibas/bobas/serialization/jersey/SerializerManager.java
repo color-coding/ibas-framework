@@ -11,7 +11,7 @@ public class SerializerManager extends org.colorcoding.ibas.bobas.serialization.
 	public ISerializer<?> create(String sign) {
 		if (sign != null && sign.equalsIgnoreCase(TYPE_JSON)) {
 			// 使用json方式
-			if (MyConfiguration.getConfigValue(CONFIG_ITEM_SERIALIZATION_INCLUDE_JSON_ROOT, false)) {
+			if (MyConfiguration.getConfigValue(CONFIG_ITEM_SERIALIZATION_INCLUDE_JSON_ROOT, true)) {
 				// 包含对象ROOT
 				return new SerializerJson();
 			} else {
