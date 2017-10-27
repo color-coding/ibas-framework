@@ -2,8 +2,8 @@ package org.colorcoding.ibas.bobas.test.logics;
 
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.Decimal;
-import org.colorcoding.ibas.bobas.rules.BusinessRule;
-import org.colorcoding.ibas.bobas.rules.BusinessRuleContext;
+import org.colorcoding.ibas.bobas.rule.BusinessRule;
+import org.colorcoding.ibas.bobas.rule.BusinessRuleContext;
 
 /**
  * 业务规则-计算总计

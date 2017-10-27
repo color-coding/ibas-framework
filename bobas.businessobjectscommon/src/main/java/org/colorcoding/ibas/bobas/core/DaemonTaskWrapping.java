@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.messages.Logger;
-import org.colorcoding.ibas.bobas.messages.MessageLevel;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 /**
  * 后台任务收纳盒

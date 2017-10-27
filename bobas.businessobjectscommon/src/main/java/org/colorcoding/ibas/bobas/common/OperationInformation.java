@@ -18,67 +18,66 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 @XmlType(name = "OperationInformation", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 @XmlRootElement(name = "OperationInformation", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public class OperationInformation implements IOperationInformation {
-    public OperationInformation() {
+	public OperationInformation() {
 
-    }
+	}
 
-    public OperationInformation(String name) {
-        this.setName(name);
-    }
+	public OperationInformation(String name) {
+		this.setName(name);
+	}
 
-    public OperationInformation(String name, String contents) {
-        this(name);
-        this.setContents(contents);
-    }
+	public OperationInformation(String name, String content) {
+		this(name);
+		this.setContent(content);
+	}
 
-    public OperationInformation(String name, String tag, String contents) {
-        this(name);
-        this.setTag(tag);
-        this.setContents(contents);
-    }
+	public OperationInformation(String name, String content, String tag) {
+		this(name, content);
+		this.setTag(tag);
+	}
 
-    // 名称
-    private String name;
+	// 名称
+	private String name;
 
-    @Override
-    @XmlElement(name = "Name")
-    public final String getName() {
-        return this.name;
-    }
+	@Override
+	@XmlElement(name = "Name")
+	public final String getName() {
+		return this.name;
+	}
 
-    public final void setName(String value) {
-        this.name = value;
-    }
+	public final void setName(String value) {
+		this.name = value;
+	}
 
-    // 内容
-    private String contents;
+	// 内容
+	private String content;
 
-    @Override
-    @XmlElement(name = "Contents")
-    public final String getContents() {
-        return this.contents;
-    }
+	@Override
+	@XmlElement(name = "Content")
+	public final String getContent() {
+		return this.content;
+	}
 
-    public final void setContents(String value) {
-        this.contents = value;
-    }
+	public final void setContent(String value) {
+		this.content = value;
+	}
 
-    // 标签
-    private String tag;
+	// 标签
+	private String tag;
 
-    @Override
-    @XmlElement(name = "Tag")
-    public final String getTag() {
-        return this.tag;
-    }
+	@Override
+	@XmlElement(name = "Tag")
+	public final String getTag() {
+		return this.tag;
+	}
 
-    public final void setTag(String value) {
-        this.tag = value;
-    }
+	public final void setTag(String value) {
+		this.tag = value;
+	}
 
-    @Override
-    public String toString() {
-        return String.format("{operation information: %s - %s}", this.getName(), this.getContents());
-    }
+	@Override
+	public String toString() {
+		return String.format("{operation information: %s - %s}", this.getName(), this.getContent());
+	}
 
 }

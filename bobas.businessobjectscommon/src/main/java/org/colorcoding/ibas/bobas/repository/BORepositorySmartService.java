@@ -7,7 +7,7 @@ import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.db.DbException;
-import org.colorcoding.ibas.bobas.messages.Logger;
+import org.colorcoding.ibas.bobas.message.Logger;
 
 /**
  * 聪明的业务仓库服务

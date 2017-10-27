@@ -11,9 +11,9 @@ import javax.xml.bind.annotation.XmlType;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.core.BindableBase;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
-import org.colorcoding.ibas.bobas.data.ArrayList;
 
 /**
  * 自定义字段集合
@@ -30,7 +30,7 @@ public class UserFields extends BindableBase implements Iterable<IUserField> {
 	}
 
 	public UserFields(Class<?> boType) {
-		this.setUserFields(UserFieldsFactory.create().create(boType));
+		this.setUserFields(UserFieldFactory.create().create(boType));
 		this.boType = boType;
 	}
 
@@ -85,7 +85,7 @@ public class UserFields extends BindableBase implements Iterable<IUserField> {
 	 *            类型
 	 */
 	public IUserField addUserField(String name, DbFieldType type) {
-		UserField userField = UserFieldsFactory.create().create(name, type);
+		UserField userField = UserFieldFactory.create().create(name, type);
 		if (userField != null) {
 			ArrayList<UserField> tmpUserFields = new ArrayList<>();
 			tmpUserFields.addAll(this.getUserFields());
@@ -106,7 +106,7 @@ public class UserFields extends BindableBase implements Iterable<IUserField> {
 				fieldInfos[index] = new UserFieldInfo(item.getName(), item.getValueType());
 				index++;
 			}
-			UserFieldsFactory.create().register(this.boType, fieldInfos);
+			UserFieldFactory.create().register(this.boType, fieldInfos);
 		}
 	}
 
@@ -161,7 +161,7 @@ public class UserFields extends BindableBase implements Iterable<IUserField> {
 		if (userField != null) {
 			return userField.getValue();
 		} else {
-			throw new UserFieldException(I18N.prop("msg_bobas_user_field_not_exist", name));
+			throw new RuntimeException(I18N.prop("msg_bobas_user_field_not_exist", name));
 		}
 	}
 
@@ -170,7 +170,7 @@ public class UserFields extends BindableBase implements Iterable<IUserField> {
 		if (userField != null) {
 			return userField.getValue();
 		} else {
-			throw new UserFieldException(I18N.prop("msg_bobas_user_field_not_exist", index));
+			throw new RuntimeException(I18N.prop("msg_bobas_user_field_not_exist", index));
 		}
 	}
 
@@ -183,7 +183,7 @@ public class UserFields extends BindableBase implements Iterable<IUserField> {
 				this.firePropertyChange(userField.getName(), oldValue, userField.getValue());
 			}
 		} else {
-			throw new UserFieldException(I18N.prop("msg_bobas_user_field_not_exist", name));
+			throw new RuntimeException(I18N.prop("msg_bobas_user_field_not_exist", name));
 		}
 	}
 
@@ -196,7 +196,7 @@ public class UserFields extends BindableBase implements Iterable<IUserField> {
 				this.firePropertyChange(userField.getName(), oldValue, userField.getValue());
 			}
 		} else {
-			throw new UserFieldException(I18N.prop("msg_bobas_user_field_not_exist", index));
+			throw new RuntimeException(I18N.prop("msg_bobas_user_field_not_exist", index));
 		}
 	}
 }

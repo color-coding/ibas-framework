@@ -21,43 +21,14 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "OperationResult", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 @XmlRootElement(name = "OperationResult", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
-public class OperationResult<P> extends OperationMessages implements IOperationResult<P> {
+public class OperationResult<P> extends OperationMessage implements IOperationResult<P> {
 
-	/**
-	 * 
-	 */
 	public OperationResult() {
 		super();
 	}
 
-	/**
-	 * @param exception
-	 */
 	public OperationResult(Exception exception) {
 		super(exception);
-	}
-
-	/**
-	 * @param userSign
-	 * @param exception
-	 */
-	public OperationResult(String userSign, Exception exception) {
-		super(userSign, exception);
-	}
-
-	/**
-	 * @param userSign
-	 * @param message
-	 */
-	public OperationResult(String userSign, String message) {
-		super(userSign, message);
-	}
-
-	/**
-	 * @param userSign
-	 */
-	public OperationResult(String userSign) {
-		super(userSign);
 	}
 
 	public OperationResult(IOperationResult<?> result) {
@@ -76,40 +47,30 @@ public class OperationResult<P> extends OperationMessages implements IOperationR
 		return this.resultObjects;
 	}
 
-	public final void setResultObjects(ArrayList<P> value) {
-		this.resultObjects = value;
-	}
-
 	public final void addResultObjects(Iterable<?> values) {
-		if (this.resultObjects == null) {
-			this.resultObjects = new ArrayList<P>();
+		if (values == null) {
+			return;
 		}
-		if (values != null) {
-			for (Object object : values) {
-				this.addResultObjects(object);
-			}
+		for (Object value : values) {
+			this.addResultObjects(value);
 		}
 	}
 
 	public final void addResultObjects(Object[] values) {
-		if (this.resultObjects == null) {
-			this.resultObjects = new ArrayList<P>();
+		if (values == null) {
+			return;
 		}
-		if (values != null) {
-			for (Object object : values) {
-				this.addResultObjects(object);
-			}
+		for (Object value : values) {
+			this.addResultObjects(value);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public final void addResultObjects(Object value) {
-		if (this.resultObjects == null) {
-			this.resultObjects = new ArrayList<P>();
+		if (value == null) {
+			return;
 		}
-		if (value != null) {
-			this.resultObjects.add((P) value);
-		}
+		this.getResultObjects().add((P) value);
 	}
 
 	private ArrayList<IOperationInformation> informations = null;
@@ -124,34 +85,36 @@ public class OperationResult<P> extends OperationMessages implements IOperationR
 		return this.informations;
 	}
 
-	public final void setInformations(ArrayList<IOperationInformation> value) {
-		this.informations = value;
+	public final void addInformations(String name, String content, String tag) {
+		this.getInformations().add(new OperationInformation(name, content, tag));
+	}
+
+	public final void addInformations(String name, String content) {
+		this.getInformations().add(new OperationInformation(name, content));
 	}
 
 	public final void addInformations(IOperationInformation value) {
-		if (this.informations == null) {
-			this.informations = new ArrayList<IOperationInformation>();
+		if (value == null) {
+			return;
 		}
-		if (value != null) {
-			this.informations.add(value);
-		}
+		this.getInformations().add(value);
 	}
 
 	public final void addInformations(Iterable<IOperationInformation> values) {
-		if (this.informations == null) {
-			this.informations = new ArrayList<IOperationInformation>();
+		if (values == null) {
+			return;
 		}
-		if (values != null) {
-			this.informations.addAll(values);
+		for (IOperationInformation value : values) {
+			this.addInformations(value);
 		}
 	}
 
 	public final void addInformations(IOperationInformation[] values) {
-		if (this.informations == null) {
-			this.informations = new ArrayList<IOperationInformation>();
+		if (values == null) {
+			return;
 		}
-		if (values != null) {
-			this.informations.addAll(values);
+		for (IOperationInformation value : values) {
+			this.addInformations(value);
 		}
 	}
 

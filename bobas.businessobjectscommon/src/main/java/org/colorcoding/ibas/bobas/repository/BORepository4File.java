@@ -28,8 +28,8 @@ import org.colorcoding.ibas.bobas.core.SaveActionSupport;
 import org.colorcoding.ibas.bobas.core.SaveActionType;
 import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.messages.Logger;
-import org.colorcoding.ibas.bobas.messages.MessageLevel;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 public class BORepository4File extends BORepository4FileReadonly implements IBORepository4File {
 	protected static final String MSG_REPOSITORY_DELETED_DATA_FILE = "repository: deleted data file [%s].";

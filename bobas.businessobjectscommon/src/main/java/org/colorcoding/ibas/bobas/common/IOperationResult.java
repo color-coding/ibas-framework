@@ -11,7 +11,7 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
  * 			<P>
  *            返回的对象类型
  */
-public interface IOperationResult<P> extends IOperationMessages {
+public interface IOperationResult<P> extends IOperationMessage {
 	/**
 	 * 返回对象
 	 * 

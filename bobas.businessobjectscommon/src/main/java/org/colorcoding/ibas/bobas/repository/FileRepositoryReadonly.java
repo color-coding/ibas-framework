@@ -15,10 +15,10 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.FileData;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.db.DataConvert;
-import org.colorcoding.ibas.bobas.expressions.FileJudgmentLink;
-import org.colorcoding.ibas.bobas.expressions.JudmentOperationException;
+import org.colorcoding.ibas.bobas.expression.FileJudgmentLink;
+import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.messages.Logger;
+import org.colorcoding.ibas.bobas.message.Logger;
 
 /**
  * 文件仓库只读

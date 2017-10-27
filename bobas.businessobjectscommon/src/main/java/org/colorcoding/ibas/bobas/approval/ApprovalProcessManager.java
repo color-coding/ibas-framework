@@ -10,7 +10,7 @@ import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
-import org.colorcoding.ibas.bobas.messages.Logger;
+import org.colorcoding.ibas.bobas.message.Logger;
 
 /**
  * 默认流程管理员

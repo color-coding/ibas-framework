@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.messages.Logger;
+import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.util.EncryptMD5;
 
 /**

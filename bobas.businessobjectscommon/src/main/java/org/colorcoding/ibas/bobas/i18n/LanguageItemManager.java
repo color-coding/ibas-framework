@@ -21,8 +21,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.messages.Logger;
-import org.colorcoding.ibas.bobas.messages.MessageLevel;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 /**
  * 默认语言项目管理员

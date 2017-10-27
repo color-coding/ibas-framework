@@ -37,7 +37,7 @@ import org.colorcoding.ibas.bobas.db.ParsingException;
 import org.colorcoding.ibas.bobas.db.SqlScriptException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.mapping.AssociationMode;
-import org.colorcoding.ibas.bobas.messages.Logger;
+import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 
 /**

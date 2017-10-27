@@ -15,7 +15,7 @@ public interface IOperationInformation {
 	/**
 	 * 获取-内容
 	 */
-	String getContents();
+	String getContent();
 
 	/**
 	 * 获取-标签

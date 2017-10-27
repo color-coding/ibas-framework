@@ -9,7 +9,7 @@ import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.messages.Logger;
+import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.ownership.IDataOwnership;
 import org.colorcoding.ibas.bobas.ownership.IOwnershipJudger;
 import org.colorcoding.ibas.bobas.ownership.OwnershipFactory;
@@ -24,7 +24,21 @@ import org.colorcoding.ibas.bobas.ownership.UnauthorizedException;
  *
  */
 public class BORepositoryServiceApplication extends BORepositorySmartService implements IBORepositoryApplication {
+
 	protected static final String MSG_REPOSITORY_FETCH_AND_FILTERING = "repository: fetch [%s] [%s] times, result [%s] filtering [%s].";
+
+	/**
+	 * 操作信息：数据检索数量
+	 */
+	public final static String OPERATION_INFORMATION_DATA_OWNERSHIP_FETCH_COUNT = "DATA_OWNERSHIP_FETCH_COUNT";
+	/**
+	 * 操作信息：数据过滤数量
+	 */
+	public final static String OPERATION_INFORMATION_DATA_OWNERSHIP_FILTER_COUNT = "DATA_OWNERSHIP_FILTER_COUNT";
+	/**
+	 * 操作信息标签：权限判断
+	 */
+	public final static String OPERATION_INFORMATION_DATA_OWNERSHIP_TAG = "DATA_OWNERSHIP_JUDGE";
 
 	private String userToken = null;
 
@@ -128,7 +142,12 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 			} while (!dataFull);
 			if (filterCount > 0) {
 				// 发生数据过滤，返回过滤信息
-				operationResult.addInformations(OwnershipFactory.createOwnershipJudgeInfo(fetchTime, filterCount));
+				operationResult.addInformations(OPERATION_INFORMATION_DATA_OWNERSHIP_FETCH_COUNT,
+						I18N.prop("msg_bobas_data_ownership_fetch_count", fetchCount),
+						OPERATION_INFORMATION_DATA_OWNERSHIP_TAG);
+				operationResult.addInformations(OPERATION_INFORMATION_DATA_OWNERSHIP_FILTER_COUNT,
+						I18N.prop("msg_bobas_data_ownership_filter_count", filterCount),
+						OPERATION_INFORMATION_DATA_OWNERSHIP_TAG);
 			}
 			Logger.log(MSG_REPOSITORY_FETCH_AND_FILTERING, boType.getName(), fetchTime, fetchCount, filterCount);
 		} catch (Exception e) {

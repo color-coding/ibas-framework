@@ -14,15 +14,15 @@ import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
-import org.colorcoding.ibas.bobas.logics.IBusinessLogicContract;
-import org.colorcoding.ibas.bobas.logics.IBusinessLogicsHost;
+import org.colorcoding.ibas.bobas.logic.IBusinessLogicContract;
+import org.colorcoding.ibas.bobas.logic.IBusinessLogicsHost;
 import org.colorcoding.ibas.bobas.mapping.DbField;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
-import org.colorcoding.ibas.bobas.rules.IBusinessRule;
-import org.colorcoding.ibas.bobas.rules.common.BusinessRuleMaxLength;
-import org.colorcoding.ibas.bobas.rules.common.BusinessRuleMaxValue;
-import org.colorcoding.ibas.bobas.rules.common.BusinessRuleMinValue;
-import org.colorcoding.ibas.bobas.rules.common.BusinessRuleRequired;
+import org.colorcoding.ibas.bobas.rule.IBusinessRule;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMaxLength;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMaxValue;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMinValue;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleRequired;
 
 /**
  * 获取-采购订单-行

@@ -22,11 +22,11 @@ import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.expressions.ExpressionFactory;
-import org.colorcoding.ibas.bobas.expressions.JudgmentLink;
-import org.colorcoding.ibas.bobas.expressions.JudmentOperationException;
+import org.colorcoding.ibas.bobas.expression.ExpressionFactory;
+import org.colorcoding.ibas.bobas.expression.JudgmentLink;
+import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.messages.Logger;
+import org.colorcoding.ibas.bobas.message.Logger;
 
 public class BORepository4FileReadonly extends BORepositoryBase implements IBORepository4FileReadonly {
 
@@ -95,7 +95,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 			for (int i = 0; i < boFiles.length; i++) {
 				BOFile boFile = boFiles[i];
 				operationResult.addResultObjects(boFile.getBO());
-				operationResult.addInformations(new OperationInformation(BOFile.OF_BO_FILE_PATH, boFile.getFilePath()));
+				operationResult.addInformations(BOFile.OF_BO_FILE_PATH, boFile.getFilePath());
 			}
 		} catch (Exception e) {
 			operationResult.setError(e);

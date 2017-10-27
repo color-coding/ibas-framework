@@ -18,59 +18,53 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "UserField", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
 public class UserField implements IUserField {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -4092373163622194831L;
 
-    /**
-     * 用户自定义字段前缀标记
-     */
-    public static final String USER_FIELD_PREFIX_SIGN = "U_";
+	private static final long serialVersionUID = -4092373163622194831L;
 
-    public UserField(IFieldDataDb fieldData) {
-        this.setFieldData(fieldData);
-    }
+	/**
+	 * 用户自定义字段前缀标记
+	 */
+	public static final String USER_FIELD_PREFIX_SIGN = "U_";
 
-    private IFieldDataDb fieldData = null;
+	public UserField(IFieldDataDb fieldData) {
+		this.setFieldData(fieldData);
+	}
 
-    IFieldDataDb getFieldData() {
-        return fieldData;
-    }
+	private IFieldDataDb fieldData = null;
 
-    void setFieldData(IFieldDataDb value) {
-        this.fieldData = value;
-    }
+	IFieldDataDb getFieldData() {
+		return fieldData;
+	}
 
-    @Override
-    @XmlElement(name = "Name")
-    public String getName() {
-        return this.fieldData.getName();
-    }
+	void setFieldData(IFieldDataDb value) {
+		this.fieldData = value;
+	}
 
-    @Override
-    @XmlElement(name = "ValueType")
-    public DbFieldType getValueType() {
-        return this.fieldData.getFieldType();
-    }
+	@Override
+	@XmlElement(name = "Name")
+	public String getName() {
+		return this.fieldData.getName();
+	}
 
-    public void setValueType(DbFieldType value) {
+	@Override
+	@XmlElement(name = "ValueType")
+	public DbFieldType getValueType() {
+		return this.fieldData.getFieldType();
+	}
 
-    }
+	@Override
+	@XmlElement(name = "Value")
+	public Object getValue() {
+		return this.fieldData.getValue();
+	}
 
-    @Override
-    @XmlElement(name = "Value")
-    public Object getValue() {
-        return this.fieldData.getValue();
-    }
+	@Override
+	public boolean setValue(Object value) {
+		return this.fieldData.setValue(value);
+	}
 
-    @Override
-    public boolean setValue(Object value) {
-        return this.fieldData.setValue(value);
-    }
-
-    @Override
-    public String toString() {
-        return String.format("{user field: %s %s %s}", this.getName(), this.getValue(), this.getValueType());
-    }
+	@Override
+	public String toString() {
+		return String.format("{user field: %s %s %s}", this.getName(), this.getValue(), this.getValueType());
+	}
 }

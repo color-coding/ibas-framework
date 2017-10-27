@@ -5,10 +5,10 @@ import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.data.Decimal;
-import org.colorcoding.ibas.bobas.logics.BusinessLogic;
-import org.colorcoding.ibas.bobas.logics.BusinessLogicException;
+import org.colorcoding.ibas.bobas.logic.BusinessLogic;
+import org.colorcoding.ibas.bobas.logic.BusinessLogicException;
 import org.colorcoding.ibas.bobas.mapping.LogicContract;
-import org.colorcoding.ibas.bobas.messages.Logger;
+import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.test.repository.BORepositoryTest;
 
 @LogicContract(IMaterialsJournalContract.class)

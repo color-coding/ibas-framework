@@ -8,7 +8,6 @@ import javax.xml.bind.Marshaller;
 
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
-import org.colorcoding.ibas.bobas.common.OperationInformation;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 
 import junit.framework.TestCase;
@@ -18,7 +17,7 @@ public class testOperationResult extends TestCase {
 	public void testToXML() throws JAXBException {
 		OperationResult<?> operationResult = new OperationResult<Object>();
 		operationResult.setResultCode(0);
-		operationResult.addInformations(new OperationInformation("信息"));
+		operationResult.addInformations("NAME", "信息");
 		Criteria criteria = new Criteria();
 		ICondition condition = criteria.getConditions().create();
 		condition.setAlias("ItemCode");

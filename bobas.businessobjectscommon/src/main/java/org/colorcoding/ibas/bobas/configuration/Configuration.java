@@ -16,7 +16,7 @@ import javax.xml.bind.JAXBException;
 
 import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.data.IKeyText;
-import org.colorcoding.ibas.bobas.messages.Logger;
+import org.colorcoding.ibas.bobas.message.Logger;
 
 /**
  * 配置

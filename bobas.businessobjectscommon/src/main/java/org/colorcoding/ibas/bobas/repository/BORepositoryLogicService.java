@@ -14,14 +14,14 @@ import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.core.SaveActionType;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.logics.BusinessLogicsFactory;
-import org.colorcoding.ibas.bobas.logics.IBusinessLogicChain;
-import org.colorcoding.ibas.bobas.logics.IBusinessLogicsManager;
+import org.colorcoding.ibas.bobas.logic.BusinessLogicsFactory;
+import org.colorcoding.ibas.bobas.logic.IBusinessLogicChain;
+import org.colorcoding.ibas.bobas.logic.IBusinessLogicsManager;
 import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
-import org.colorcoding.ibas.bobas.rules.BusinessRuleException;
-import org.colorcoding.ibas.bobas.rules.BusinessRulesFactory;
-import org.colorcoding.ibas.bobas.rules.IBusinessRules;
-import org.colorcoding.ibas.bobas.rules.ICheckRules;
+import org.colorcoding.ibas.bobas.rule.BusinessRuleException;
+import org.colorcoding.ibas.bobas.rule.BusinessRulesFactory;
+import org.colorcoding.ibas.bobas.rule.IBusinessRules;
+import org.colorcoding.ibas.bobas.rule.ICheckRules;
 
 /**
  * 业务仓库服务，带业务逻辑处理

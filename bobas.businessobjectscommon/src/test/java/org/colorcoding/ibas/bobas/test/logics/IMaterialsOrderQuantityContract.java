@@ -1,7 +1,7 @@
 package org.colorcoding.ibas.bobas.test.logics;
 
 import org.colorcoding.ibas.bobas.data.Decimal;
-import org.colorcoding.ibas.bobas.logics.IBusinessLogicContract;
+import org.colorcoding.ibas.bobas.logic.IBusinessLogicContract;
 
 /**
  * 物料订购数量逻辑契约

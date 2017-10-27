@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.messages.Logger;
+import org.colorcoding.ibas.bobas.message.Logger;
 
 public class DbConnection implements IDbConnection {
 

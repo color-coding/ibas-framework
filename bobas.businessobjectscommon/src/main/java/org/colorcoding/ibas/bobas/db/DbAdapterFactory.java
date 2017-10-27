@@ -5,7 +5,7 @@ import java.util.HashMap;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.messages.Logger;
+import org.colorcoding.ibas.bobas.message.Logger;
 
 /**
  * 数据库适配器工厂 根据配置创建适配器

@@ -2,14 +2,14 @@ package org.colorcoding.ibas.bobas.approval;
 
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.emConditionRelationship;
-import org.colorcoding.ibas.bobas.expressions.BOJudgmentLink;
-import org.colorcoding.ibas.bobas.expressions.DBFieldValueOperator;
-import org.colorcoding.ibas.bobas.expressions.IPropertyValueOperator;
-import org.colorcoding.ibas.bobas.expressions.IValueOperator;
-import org.colorcoding.ibas.bobas.expressions.JudgmentLinkException;
-import org.colorcoding.ibas.bobas.expressions.JudgmentLinkItem;
-import org.colorcoding.ibas.bobas.expressions.JudmentOperation;
-import org.colorcoding.ibas.bobas.expressions.SQLScriptValueOperator;
+import org.colorcoding.ibas.bobas.expression.BOJudgmentLink;
+import org.colorcoding.ibas.bobas.expression.DBFieldValueOperator;
+import org.colorcoding.ibas.bobas.expression.IPropertyValueOperator;
+import org.colorcoding.ibas.bobas.expression.IValueOperator;
+import org.colorcoding.ibas.bobas.expression.JudgmentLinkException;
+import org.colorcoding.ibas.bobas.expression.JudgmentLinkItem;
+import org.colorcoding.ibas.bobas.expression.JudmentOperation;
+import org.colorcoding.ibas.bobas.expression.SQLScriptValueOperator;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.repository.IBORepository4DbReadonly;
 

@@ -20,7 +20,7 @@ import org.colorcoding.ibas.bobas.bo.IFieldMaxValueKey;
 import org.colorcoding.ibas.bobas.bo.UserField;
 import org.colorcoding.ibas.bobas.bo.UserFieldInfo;
 import org.colorcoding.ibas.bobas.bo.UserFieldInfoList;
-import org.colorcoding.ibas.bobas.bo.UserFieldsFactory;
+import org.colorcoding.ibas.bobas.bo.UserFieldFactory;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
@@ -428,7 +428,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				}
 				if (hasUserFields) {
 					// 存在用户字段查询，修正查询字段类型
-					UserFieldInfoList userFieldInfoList = UserFieldsFactory.create().getUserFieldInfoList(boType);
+					UserFieldInfoList userFieldInfoList = UserFieldFactory.create().getUserFieldInfoList(boType);
 					if (userFieldInfoList != null) {
 						for (UserFieldInfo userFieldInfo : userFieldInfoList) {
 							for (ICondition condition : criteria.getConditions()) {

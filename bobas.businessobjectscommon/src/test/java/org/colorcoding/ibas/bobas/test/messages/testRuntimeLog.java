@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.test.messages;
 
-import org.colorcoding.ibas.bobas.messages.Logger;
+import org.colorcoding.ibas.bobas.message.Logger;
 
 import junit.framework.TestCase;
 

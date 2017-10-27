@@ -4,8 +4,8 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.core.Daemon;
 import org.colorcoding.ibas.bobas.core.IDaemonTask;
 import org.colorcoding.ibas.bobas.core.InvalidDaemonTaskException;
-import org.colorcoding.ibas.bobas.messages.Logger;
-import org.colorcoding.ibas.bobas.messages.MessageLevel;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 class DbConnectionPool implements IDbConnectionPool {
 

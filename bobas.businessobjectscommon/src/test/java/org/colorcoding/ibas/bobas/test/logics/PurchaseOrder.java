@@ -21,11 +21,11 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.mapping.BOCode;
 import org.colorcoding.ibas.bobas.mapping.DbField;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
-import org.colorcoding.ibas.bobas.rules.IBusinessRule;
-import org.colorcoding.ibas.bobas.rules.common.BusinessRuleMaxLength;
-import org.colorcoding.ibas.bobas.rules.common.BusinessRuleMinValue;
-import org.colorcoding.ibas.bobas.rules.common.BusinessRuleRequired;
-import org.colorcoding.ibas.bobas.rules.common.BusinessRuleRequiredElements;
+import org.colorcoding.ibas.bobas.rule.IBusinessRule;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMaxLength;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMinValue;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleRequired;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleRequiredElements;
 
 /**
  * 获取-采购订单

@@ -5,8 +5,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
-import org.colorcoding.ibas.bobas.messages.Logger;
-import org.colorcoding.ibas.bobas.messages.MessageLevel;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 public class DbCommand implements IDbCommand {
 

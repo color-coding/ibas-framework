@@ -7,8 +7,8 @@ import javax.xml.ws.Endpoint;
 
 import org.apache.cxf.BusFactory;
 import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
-import org.colorcoding.ibas.bobas.messages.MessageLevel;
-import org.colorcoding.ibas.bobas.messages.Logger;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 /**
  * 不使用spring的CXFServlet
