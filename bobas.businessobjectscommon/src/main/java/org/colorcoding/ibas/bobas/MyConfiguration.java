@@ -52,26 +52,14 @@ public class MyConfiguration extends Configuration {
 	 */
 	public static final String NAMESPACE_BOBAS_BO = NAMESPACE_BOBAS + "/bo";
 	/**
-	 * 业务仓库命名空间
-	 */
-	public static final String NAMESPACE_BOBAS_REPOSITORY = NAMESPACE_BOBAS + "/repository";
-	/**
 	 * 国际化语言命名空间
 	 */
 	public static final String NAMESPACE_BOBAS_I18N = NAMESPACE_BOBAS + "/i18n";
-	/**
-	 * 语言扩展命名空间
-	 */
-	public static final String NAMESPACE_BOBAS_UTIL = NAMESPACE_BOBAS + "/util";
 
 	/**
 	 * 配置项命名空间
 	 */
 	public static final String NAMESPACE_BOBAS_CONFIGURATION = NAMESPACE_BOBAS + "/configuration";
-	/**
-	 * 表达式命名空间
-	 */
-	public static final String NAMESPACE_BOBAS_EXPRESSIONS = NAMESPACE_BOBAS + "/expressions";
 	/**
 	 * 配置项目-本模块名称
 	 */
@@ -159,7 +147,7 @@ public class MyConfiguration extends Configuration {
 	/**
 	 * 配置项目-国际化文件路径
 	 */
-	public final static String CONFIG_ITEM_I18N_PATH = "i18nFolder";
+	public final static String CONFIG_ITEM_I18N_PATH = "I18nFolder";
 	/**
 	 * 配置项目-语言编码
 	 */
