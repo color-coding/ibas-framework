@@ -106,7 +106,6 @@ public interface IBOFactory {
 	 *            编码
 	 * @param type
 	 *            类型
-	 * @return
 	 */
 	void register(String boCode, Class<?> type);
 
@@ -117,7 +116,6 @@ public interface IBOFactory {
 	 *            编码
 	 * @param className
 	 *            类名称
-	 * @return
 	 */
 	void register(String boCode, String className);
 
@@ -125,9 +123,8 @@ public interface IBOFactory {
 	 * 注册业务对象
 	 * 
 	 * @param type
-	 *            类型
-	 * @return
+	 * @return 是否成功
 	 */
-	void register(Class<?> type);
+	boolean register(Class<?> type);
 
 }

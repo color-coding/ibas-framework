@@ -185,7 +185,7 @@ public class BOFactory implements IBOFactory {
 											// 添加到classes
 											classes.add(classLoader.loadClass(packageName + '.' + className));
 										} catch (ClassNotFoundException e) {
-											Logger.log(MessageLevel.DEBUG, e);
+											// Logger.log(MessageLevel.DEBUG, e);
 										}
 									}
 								}
@@ -231,7 +231,7 @@ public class BOFactory implements IBOFactory {
 						// 这里用forName有一些不好，会触发static方法，没有使用classLoader的load干净
 						classes.add(classLoader.loadClass(packageName + '.' + className));
 					} catch (ClassNotFoundException e) {
-						Logger.log(MessageLevel.DEBUG, e);
+						// Logger.log(MessageLevel.DEBUG, e);
 					}
 				}
 			}
@@ -287,8 +287,13 @@ public class BOFactory implements IBOFactory {
 	}
 
 	@Override
-	public void register(Class<?> type) {
-		this.register(this.getCode(type), type);
+	public boolean register(Class<?> type) {
+		String boCode = this.getCode(type);
+		if (boCode != null && !boCode.isEmpty()) {
+			this.register(boCode, type);
+			return true;
+		}
+		return false;
 	}
 
 	@Override
