@@ -203,7 +203,7 @@ public class PropertyInfoManager {
 	 */
 	public static boolean registerClass(String className) {
 		try {
-			BOFactory.create().getClass(className);
+			BOFactory.create().loadClass(className);
 			return true;
 		} catch (ClassNotFoundException e) {
 			Logger.log(e);

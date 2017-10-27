@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
 import org.colorcoding.ibas.bobas.data.ArrayList;
+import org.colorcoding.ibas.bobas.data.List;
 
 /**
  * 审批工厂
@@ -34,15 +35,14 @@ public class OrganizationFactory extends ConfigurableFactory<IOrganizationManage
 		return new IOrganizationManager() {
 			@Override
 			public IUser getUser(String token) {
-				if (token == null) {
-					return UNKNOWN_USER;
-				}
-				if (token.equals(SYSTEM_USER.getToken())) {
-					return SYSTEM_USER;
-				}
-				for (IUser item : this.users) {
-					if (token.equals(item.getToken())) {
-						return item;
+				if (token != null) {
+					if (token.equals(SYSTEM_USER.getToken())) {
+						return SYSTEM_USER;
+					}
+					for (IUser item : this.getUsers()) {
+						if (token.equals(item.getToken())) {
+							return item;
+						}
 					}
 				}
 				return UNKNOWN_USER;
@@ -50,13 +50,10 @@ public class OrganizationFactory extends ConfigurableFactory<IOrganizationManage
 
 			@Override
 			public IUser getUser(int id) {
-				if (id == UNKNOWN_USER.getId()) {
-					return UNKNOWN_USER;
-				}
 				if (id == SYSTEM_USER.getId()) {
 					return SYSTEM_USER;
 				}
-				for (IUser item : this.users) {
+				for (IUser item : this.getUsers()) {
 					if (id == item.getId()) {
 						return item;
 					}
@@ -66,11 +63,12 @@ public class OrganizationFactory extends ConfigurableFactory<IOrganizationManage
 
 			@Override
 			public void initialize() {
+				this.users = new ArrayList<>();
 			}
 
 			@Override
 			public String[] getRoles(IUser user) {
-				for (IUser item : this.users) {
+				for (IUser item : this.getUsers()) {
 					if (item == user) {
 						return new String[] { item.getBelong() };
 					}
@@ -78,19 +76,35 @@ public class OrganizationFactory extends ConfigurableFactory<IOrganizationManage
 				return new String[] {};
 			}
 
-			private ArrayList<IUser> users = new ArrayList<>();
+			private volatile ArrayList<IUser> users;
+
+			public List<IUser> getUsers() {
+				if (this.users == null) {
+					synchronized (this) {
+						if (this.users == null) {
+							this.users = new ArrayList<>();
+						}
+					}
+				}
+				return this.users;
+			}
 
 			@Override
 			public void register(IUser user) {
 				if (user == null) {
 					return;
 				}
-				for (IUser item : this.users) {
-					if (user == item) {
+				for (int i = 0; i < this.getUsers().size(); i++) {
+					IUser item = this.getUsers().get(i);
+					if (item == null) {
+						continue;
+					}
+					if (item.getId() == user.getId()) {
+						this.getUsers().set(i, user);
 						return;
 					}
 				}
-				this.users.add(user);
+				this.getUsers().add(user);
 			}
 		};
 	}

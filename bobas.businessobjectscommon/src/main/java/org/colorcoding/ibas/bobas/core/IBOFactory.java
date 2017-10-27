@@ -9,47 +9,6 @@ import java.net.URL;
 public interface IBOFactory {
 
 	/**
-	 * 获取-扫描的命名空间
-	 * 
-	 * @return 分号分隔
-	 */
-	String getScanNamespaces();
-
-	/**
-	 * 设置-扫描的命名空间
-	 */
-	void setScanNamespaces(String value);
-
-	/**
-	 * 加载包
-	 * 
-	 * @param path
-	 *            路径
-	 * @throws IOException
-	 */
-	void loadPackage(String path) throws IOException;
-
-	/**
-	 * 加载包
-	 * 
-	 * @param url
-	 *            地址
-	 * @throws IOException
-	 */
-	void loadPackage(URL url) throws IOException;
-
-	/**
-	 * 获取业务对象类型
-	 * 
-	 * @param boCode
-	 *            业务对象编码
-	 * 
-	 * @return 业务对象的类型
-	 * @throws BOFactoryException
-	 */
-	Class<?> getBOClass(String boCode);
-
-	/**
 	 * 创建业务对象实例
 	 * 
 	 * @param type
@@ -76,52 +35,99 @@ public interface IBOFactory {
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException;
 
 	/**
+	 * 加载包
+	 * 
+	 * @param path
+	 *            路径
+	 * @throws IOException
+	 */
+	void loadPackage(String path) throws IOException;
+
+	/**
+	 * 加载包
+	 * 
+	 * @param url
+	 *            地址
+	 * @throws IOException
+	 */
+	void loadPackage(URL url) throws IOException;
+
+	/**
 	 * 获取类型
 	 * 
 	 * @param className
 	 *            类型名称
-	 * @return 类型
+	 * @return
 	 * @throws ClassNotFoundException
 	 */
-	Class<?> getClass(String className) throws ClassNotFoundException;
+	Class<?> loadClass(String name) throws ClassNotFoundException;
 
 	/**
-	 * 获取命名空间下所有类型
+	 * 获取类型
+	 * 
+	 * @param boCode
+	 *            业务对象编码
+	 * @return
+	 * @throws ClassNotFoundException
+	 */
+	Class<?> getClass(String boCode) throws ClassNotFoundException;
+
+	/**
+	 * 加载类型
 	 * 
 	 * @param packageName
-	 *            命名空间
-	 * @return 类型数组
-	 * @throws BOFactoryException
+	 *            加载的命名空间
+	 * @return
+	 */
+	Class<?>[] loadClasses(String packageName);
+
+	/**
+	 * 获取命名空间下的类型
+	 * 
+	 * @param packageName
+	 *            获取的命名空间
+	 * @return
 	 */
 	Class<?>[] getClasses(String packageName);
-
-	/**
-	 * 获取已加载的所有类型
-	 * 
-	 * @param packageName
-	 *            命名空间，null为全部
-	 * @return 类型数组
-	 */
-	Class<?>[] getKnownClasses(String packageName);
 
 	/**
 	 * 获取业务对象编码
 	 * 
 	 * @param type
 	 *            类型
-	 * @return 编码
-	 * @throws BOFactoryException
+	 * @return
 	 */
-	String getBOCode(Class<?> type);
+	String getCode(Class<?> type);
 
 	/**
-	 * 注册业务对象编码
+	 * 注册业务对象
 	 * 
-	 * @param types
-	 *            对象类型
-	 * @return 成功注册业务对象编码个数
-	 * @throws BOFactoryException
+	 * @param boCode
+	 *            编码
+	 * @param type
+	 *            类型
+	 * @return
 	 */
-	int registerBOCode(Class<?>[] types);
+	void register(String boCode, Class<?> type);
+
+	/**
+	 * 注册业务对象
+	 * 
+	 * @param boCode
+	 *            编码
+	 * @param className
+	 *            类名称
+	 * @return
+	 */
+	void register(String boCode, String className);
+
+	/**
+	 * 注册业务对象
+	 * 
+	 * @param type
+	 *            类型
+	 * @return
+	 */
+	void register(Class<?> type);
 
 }

@@ -61,7 +61,7 @@ public abstract class ConfigurableFactory<T> {
 		// 获取类类型
 		String fullName = stringBuilder.toString();
 		Logger.log(MessageLevel.DEBUG, MSG_CONFIG_COMBINED_CLASS_NAME, fullName);
-		return (Class<T>) BOFactory.create().getClass(fullName);
+		return (Class<T>) BOFactory.create().loadClass(fullName);
 	}
 
 	/**

@@ -96,7 +96,7 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 		}
 		if (logicClass == null) {
 			// 优先从契约接口所在命名空间查询
-			Class<?>[] packClass = BOFactory.create().getClasses(contract.getPackage().getName());
+			Class<?>[] packClass = BOFactory.create().loadClasses(contract.getPackage().getName());
 			for (Class<?> item : packClass) {
 				// 检查是否标记契约
 				Annotation annotation = item.getAnnotation(LogicContract.class);

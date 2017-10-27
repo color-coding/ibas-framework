@@ -35,7 +35,7 @@ public class DbDataReader extends DbDataReaderBase {
 						name = String.format("col_%s", i);
 					}
 					dtColumn.setName(name);
-					dtColumn.setDataType(BOFactory.create().getClass(metaData.getColumnClassName(i)));
+					dtColumn.setDataType(BOFactory.create().loadClass(metaData.getColumnClassName(i)));
 				}
 				// 添加行数据
 				while (this.next()) {

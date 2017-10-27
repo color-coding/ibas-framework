@@ -5,7 +5,7 @@ import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.repository.IBORepositorySmartService;
 import org.colorcoding.ibas.bobas.test.bo.IMaterials;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrder;
-import org.colorcoding.ibas.bobas.test.logics.PurchaseOrder;
+import org.colorcoding.ibas.bobas.test.logic.PurchaseOrder;
 
 /**
  * 测试业务仓库应用

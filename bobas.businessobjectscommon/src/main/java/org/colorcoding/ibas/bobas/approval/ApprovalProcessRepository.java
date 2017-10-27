@@ -58,7 +58,7 @@ class ApprovalProcessRepository extends BORepositoryLogicService {
 	public <P extends IBusinessObject> OperationResult<P> fetch(ICriteria criteria) {
 		try {
 			// 加载命名空间的类
-			Class<?> boClass = BOFactory.create().getBOClass(criteria.getBOCode());
+			Class<?> boClass = BOFactory.create().getClass(criteria.getBOCode());
 			if (boClass == null) {
 				throw new ClassNotFoundException(I18N.prop("msg_bobas_not_found_bo_class", criteria.getBOCode()));
 			}

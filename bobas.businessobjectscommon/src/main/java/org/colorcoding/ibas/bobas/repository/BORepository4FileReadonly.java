@@ -10,7 +10,6 @@ import javax.xml.bind.Unmarshaller;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
-import org.colorcoding.ibas.bobas.common.OperationInformation;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.configuration.Configuration;
 import org.colorcoding.ibas.bobas.core.BOFactory;
@@ -106,7 +105,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 	BOFile[] myFetchEx(ICriteria criteria, Class<? extends IBusinessObjectBase> boType)
 			throws RepositoryException, JAXBException {
 		if (criteria.getBOCode() == null || criteria.getBOCode().isEmpty()) {
-			criteria.setBOCode(this.getBOFactory().getBOCode(boType));
+			criteria.setBOCode(this.getBOFactory().getCode(boType));
 		}
 		String boFolder = this.getRepositoryFolder() + File.separator + criteria.getBOCode().toLowerCase();
 		File file = new File(boFolder);
@@ -215,7 +214,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 					if (item.getName().endsWith(".type")) {
 						try {
 							types.add(BOFactory.create()
-									.getClass(item.getName().substring(0, item.getName().lastIndexOf("."))));
+									.loadClass(item.getName().substring(0, item.getName().lastIndexOf("."))));
 						} catch (ClassNotFoundException e) {
 							Logger.log(e);
 						}

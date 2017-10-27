@@ -33,6 +33,7 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
  *
  */
 public class BOFactory implements IBOFactory {
+
 	protected static final String MSG_BO_FACTORY_REGISTER_BO_CODE = "factory: register [%s] for [%s].";
 
 	volatile private static IBOFactory instance = null;
@@ -56,27 +57,6 @@ public class BOFactory implements IBOFactory {
 		return Thread.currentThread().getContextClassLoader();
 	}
 
-	private String scanNamespaces;
-
-	public synchronized String getScanNamespaces() {
-		if (this.scanNamespaces == null) {
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("org.colorcoding.ibas;");
-			stringBuilder.append("cc.colorcoding.ibas;");
-			stringBuilder.append("club.ibas;");
-			String tmp = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BUSINESS_LIBRARY_SCAN_NAMESPACES);
-			if (tmp != null && !tmp.isEmpty()) {
-				stringBuilder.append(tmp);
-			}
-			this.scanNamespaces = stringBuilder.toString();
-		}
-		return scanNamespaces;
-	}
-
-	public void setScanNamespaces(String value) {
-		this.scanNamespaces = value;
-	}
-
 	@Override
 	public void loadPackage(String path) throws IOException {
 		URL url = null;
@@ -95,118 +75,6 @@ public class BOFactory implements IBOFactory {
 		classLoader.close();
 	}
 
-	private volatile HashMap<String, String> boMaps;
-
-	/**
-	 * boCode对应的类名称
-	 * 
-	 * 不缓存Class，避免引用导CG不回收未使用的资源
-	 * 
-	 * @return
-	 */
-	protected HashMap<String, String> getBOMaps() {
-		if (boMaps == null) {
-			synchronized (this) {
-				if (boMaps == null) {
-					boMaps = new HashMap<String, String>();
-				}
-			}
-		}
-		return boMaps;
-	}
-
-	@Override
-	public int registerBOCode(Class<?>[] types) {
-		if (types == null) {
-			return 0;
-		}
-		int boCount = 0;
-		for (Class<?> type : types) {
-			String boCode = this.getBOCode(type);
-			if (boCode == null || boCode.isEmpty()) {
-				continue;
-			}
-			if (this.getBOMaps().containsKey(boCode)) {
-				continue;
-			}
-			this.getBOMaps().put(boCode, type.getName());
-			boCount++;
-			Logger.log(MSG_BO_FACTORY_REGISTER_BO_CODE, boCode, type.getName());
-		}
-		return boCount;
-	}
-
-	@Override
-	public Class<?>[] getKnownClasses(String packageName) {
-		ArrayList<Class<?>> knownClass = new ArrayList<Class<?>>();
-		// 根据boCode获取class
-		ClassLoader classLoader = this.getClassLoader();
-		// 获取根类型
-		Class<?> rootClass = classLoader.getClass();
-		while (rootClass != ClassLoader.class)
-			rootClass = rootClass.getSuperclass();
-		try {
-			if (rootClass != null) {
-				// 反射根类型，并设置已加载类可见
-				Field field = rootClass.getDeclaredField("classes");
-				field.setAccessible(true);
-				// 获取已加载的类
-				Vector<?> v = (Vector<?>) field.get(classLoader);
-				// 遍历并分析类型
-				for (int i = 0; i < v.size(); i++) {
-					Class<?> type = (Class<?>) v.get(i);
-					if (packageName != null && !packageName.isEmpty()) {
-						// 过滤命名空间
-						if (!type.getName().startsWith(packageName))
-							continue;
-					}
-					knownClass.add(type);
-				}
-			}
-		} catch (Exception e) {
-			Logger.log(e);
-		}
-		return knownClass.toArray(new Class<?>[] {});
-	}
-
-	@Override
-	public synchronized Class<?> getBOClass(String boCode) {
-		try {
-			if (this.getBOMaps().containsKey(boCode)) {
-				// 已缓存数据
-				return this.getClass(this.getBOMaps().get(boCode));
-			}
-			// 获取已加载类并分析boCode
-			if (this.getScanNamespaces() != null) {
-				for (String item : this.getScanNamespaces().split(";")) {
-					if (item == null || item.isEmpty()) {
-						continue;
-					}
-					this.registerBOCode(this.getClasses(item));
-				}
-			}
-			if (this.getBOMaps().containsKey(boCode)) {
-				// 已缓存数据
-				return this.getClass(this.getBOMaps().get(boCode));
-			}
-		} catch (Exception e) {
-			Logger.log(e);
-		}
-		return null;
-	}
-
-	@Override
-	public String getBOCode(Class<?> type) {
-		if (type == null) {
-			return null;
-		}
-		Annotation annotation = type.getAnnotation(BOCode.class);
-		if (annotation != null) {
-			return MyConfiguration.applyVariables(((BOCode) annotation).value());
-		}
-		return null;
-	}
-
 	@Override
 	public <P> P createInstance(Class<P> type) throws InstantiationException, IllegalAccessException {
 		if (type == null) {
@@ -223,12 +91,43 @@ public class BOFactory implements IBOFactory {
 	}
 
 	@Override
-	public Class<?> getClass(String className) throws ClassNotFoundException {
-		return Class.forName(className, true, this.getClassLoader());
+	public Class<?> loadClass(String name) throws ClassNotFoundException {
+		return Class.forName(name, true, this.getClassLoader());
 	}
 
 	@Override
 	public Class<?>[] getClasses(String packageName) {
+		if (packageName == null || packageName.isEmpty()) {
+			return new Class<?>[] {};
+		}
+		ArrayList<Class<?>> classes = new ArrayList<>();
+		ClassLoader classLoader = this.getClassLoader();
+		Class<?> rootClass = classLoader.getClass();
+		while (rootClass != ClassLoader.class)
+			rootClass = rootClass.getSuperclass();
+		if (rootClass != null) {
+			try {
+				// 反射根类型，并设置已加载类可见
+				Field field = rootClass.getDeclaredField("classes");
+				field.setAccessible(true);
+				// 获取已加载的类
+				Vector<?> v = (Vector<?>) field.get(classLoader);
+				// 遍历并分析类型
+				for (int i = 0; i < v.size(); i++) {
+					Class<?> type = (Class<?>) v.get(i);
+					if (!type.getName().startsWith(packageName))
+						continue;
+					classes.add(type);
+				}
+				field.setAccessible(false);
+			} catch (Exception e) {
+			}
+		}
+		return classes.toArray(new Class<?>[] {});
+	}
+
+	@Override
+	public Class<?>[] loadClasses(String packageName) {
 		// 第一个class类的集合
 		Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
 		String packageDirName = packageName.replace('.', '/');
@@ -303,14 +202,6 @@ public class BOFactory implements IBOFactory {
 		return classes.toArray(new Class<?>[] {});
 	}
 
-	/**
-	 * 以文件的形式来获取包下的所有Class
-	 * 
-	 * @param packageName
-	 * @param packagePath
-	 * @param recursive
-	 * @param classes
-	 */
 	private void findClassesInPackageByFile(String packageName, String packagePath, Set<Class<?>> classes) {
 		// 获取此包的目录 建立一个File
 		File dir = new File(packagePath);
@@ -346,4 +237,75 @@ public class BOFactory implements IBOFactory {
 			}
 		}
 	}
+
+	@Override
+	public String getCode(Class<?> type) {
+		if (type == null) {
+			return null;
+		}
+		Annotation annotation = type.getAnnotation(BOCode.class);
+		if (annotation != null) {
+			return MyConfiguration.applyVariables(((BOCode) annotation).value());
+		}
+		return null;
+	}
+
+	private volatile HashMap<String, String> classMap;
+
+	/**
+	 * boCode对应的类名称
+	 * 
+	 * 不缓存Class，避免引用导CG不回收未使用的资源
+	 * 
+	 * @return
+	 */
+	protected HashMap<String, String> getClassMap() {
+		if (this.classMap == null) {
+			synchronized (this) {
+				if (this.classMap == null) {
+					this.classMap = new HashMap<String, String>();
+				}
+			}
+		}
+		return this.classMap;
+	}
+
+	@Override
+	public void register(String boCode, String className) {
+		if (boCode == null || boCode.isEmpty()) {
+			return;
+		}
+		if (className == null || className.isEmpty()) {
+			return;
+		}
+		if (this.getClassMap().containsKey(boCode)) {
+			this.getClassMap().put(boCode, className);
+		} else {
+			this.getClassMap().put(boCode, className);
+		}
+		Logger.log(MessageLevel.DEBUG, MSG_BO_FACTORY_REGISTER_BO_CODE, className, boCode);
+	}
+
+	@Override
+	public void register(Class<?> type) {
+		this.register(this.getCode(type), type);
+	}
+
+	@Override
+	public void register(String boCode, Class<?> type) {
+		if (type == null) {
+			return;
+		}
+		this.register(boCode, type.getName());
+	}
+
+	@Override
+	public Class<?> getClass(String boCode) throws ClassNotFoundException {
+		if (this.getClassMap().containsKey(boCode)) {
+			// 已缓存，加载类
+			return this.loadClass(this.getClassMap().get(boCode));
+		}
+		throw new ClassNotFoundException(boCode);
+	}
+
 }

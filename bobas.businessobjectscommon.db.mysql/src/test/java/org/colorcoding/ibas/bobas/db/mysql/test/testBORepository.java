@@ -23,9 +23,9 @@ import org.colorcoding.ibas.bobas.test.bo.IUser;
 import org.colorcoding.ibas.bobas.test.bo.Materials;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 import org.colorcoding.ibas.bobas.test.bo.User;
-import org.colorcoding.ibas.bobas.test.logics.MaterialsQuantityJournal;
-import org.colorcoding.ibas.bobas.test.logics.PurchaseOrder;
-import org.colorcoding.ibas.bobas.test.logics.PurchaseOrderItem;
+import org.colorcoding.ibas.bobas.test.logic.MaterialsQuantityJournal;
+import org.colorcoding.ibas.bobas.test.logic.PurchaseOrder;
+import org.colorcoding.ibas.bobas.test.logic.PurchaseOrderItem;
 import org.colorcoding.ibas.bobas.test.repository.BORepositoryTest;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 

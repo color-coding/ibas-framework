@@ -200,7 +200,7 @@ public class SerializerXml extends Serializer<Schema> {
 				// 此处获取子项
 				itemName = itemName.substring(0, itemName.length() - 1);
 				try {
-					Class<?> itemType = BOFactory.create().getClass(itemName);
+					Class<?> itemType = BOFactory.create().loadClass(itemName);
 					elementSequence
 							.appendChild(this.createSchemaElement(document, itemType, itemType.getSimpleName(), false));
 				} catch (ClassNotFoundException e) {

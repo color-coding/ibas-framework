@@ -10,8 +10,8 @@ import org.colorcoding.ibas.bobas.test.bo.IMaterials;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrder;
 import org.colorcoding.ibas.bobas.test.bo.Materials;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
-import org.colorcoding.ibas.bobas.test.logics.MaterialsQuantityJournal;
-import org.colorcoding.ibas.bobas.test.logics.PurchaseOrder;
+import org.colorcoding.ibas.bobas.test.logic.MaterialsQuantityJournal;
+import org.colorcoding.ibas.bobas.test.logic.PurchaseOrder;
 
 /**
  * 业务对象仓库（测试）

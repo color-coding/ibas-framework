@@ -19,7 +19,7 @@ public class WebServiceProviderPackages implements WebServiceProvider {
 		}
 		String packages = String.valueOf(pars[0]);
 		ArrayList<WebService> servers = new ArrayList<>();
-		for (Class<?> item : BOFactory.create().getClasses(packages)) {
+		for (Class<?> item : BOFactory.create().loadClasses(packages)) {
 			javax.jws.WebService annotation = item.getDeclaredAnnotation(javax.jws.WebService.class);
 			if (annotation == null) {
 				continue;
