@@ -131,14 +131,14 @@ public class testCriteria extends TestCase {
 		String identifiers1 = "{[CC_TT_SALESORDER].[DocEntry = 1]}";
 		criteria = Criteria.create(identifiers1);
 		assertEquals("from identifiers faild.", 1, criteria.getConditions().size());
-		assertEquals("from identifiers faild.", "CC_TT_SALESORDER", criteria.getBOCode());
+		assertEquals("from identifiers faild.", "CC_TT_SALESORDER", criteria.getBusinessObject());
 		assertEquals("from identifiers faild.", "DocEntry", criteria.getConditions().get(0).getAlias());
 		assertEquals("from identifiers faild.", "1", criteria.getConditions().get(0).getValue());
 
 		String identifiers2 = "{[CC_TT_SALESORDER].[DocEntry = 1]&[LineId = 2]}";
 		criteria = Criteria.create(identifiers2);
 		assertEquals("from identifiers faild.", 2, criteria.getConditions().size());
-		assertEquals("from identifiers faild.", "CC_TT_SALESORDER", criteria.getBOCode());
+		assertEquals("from identifiers faild.", "CC_TT_SALESORDER", criteria.getBusinessObject());
 		assertEquals("from identifiers faild.", "DocEntry", criteria.getConditions().get(0).getAlias());
 		assertEquals("from identifiers faild.", "1", criteria.getConditions().get(0).getValue());
 		assertEquals("from identifiers faild.", "LineId", criteria.getConditions().get(1).getAlias());

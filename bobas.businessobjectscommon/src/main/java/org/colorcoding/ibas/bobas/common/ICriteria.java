@@ -16,7 +16,7 @@ public interface ICriteria {
 	 * 
 	 * @return
 	 */
-	String getBOCode();
+	String getBusinessObject();
 
 	/**
 	 * 设置业务对象编码
@@ -24,7 +24,7 @@ public interface ICriteria {
 	 * @param value
 	 *            业务对象编码
 	 */
-	void setBOCode(String value);
+	void setBusinessObject(String value);
 
 	/**
 	 * 获取查询结果数量

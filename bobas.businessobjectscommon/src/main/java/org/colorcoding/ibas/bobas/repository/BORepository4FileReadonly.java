@@ -104,16 +104,16 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 
 	BOFile[] myFetchEx(ICriteria criteria, Class<? extends IBusinessObjectBase> boType)
 			throws RepositoryException, JAXBException {
-		if (criteria.getBOCode() == null || criteria.getBOCode().isEmpty()) {
-			criteria.setBOCode(this.getBOFactory().getCode(boType));
+		if (criteria.getBusinessObject() == null || criteria.getBusinessObject().isEmpty()) {
+			criteria.setBusinessObject(this.getBOFactory().getCode(boType));
 		}
-		String boFolder = this.getRepositoryFolder() + File.separator + criteria.getBOCode().toLowerCase();
+		String boFolder = this.getRepositoryFolder() + File.separator + criteria.getBusinessObject().toLowerCase();
 		File file = new File(boFolder);
 		if (!file.exists()) {
 			return new BOFile[] {};
 		}
 		if (!file.isDirectory()) {
-			throw new RepositoryException(I18N.prop("msg_bobas_invaild_bo_repository_folder", criteria.getBOCode()));
+			throw new RepositoryException(I18N.prop("msg_bobas_invaild_bo_repository_folder", criteria.getBusinessObject()));
 		}
 		ArrayList<Class<?>> types = this.getTypes(file);
 		types.add(boType);

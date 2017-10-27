@@ -79,7 +79,7 @@ public class Criteria implements ICriteria, Cloneable {
 	private static ICriteria fromIdentifiers(String identifiers) {
 		Criteria criteria = new Criteria();
 		String[] tmps = identifiers.split("\\]\\.\\[");
-		criteria.setBOCode(tmps[0].replace("{[", ""));
+		criteria.setBusinessObject(tmps[0].replace("{[", ""));
 		tmps = tmps[1].split("\\]\\&\\[");
 		for (int i = 0; i < tmps.length; i++) {
 			String[] tmpFields = tmps[i].split("=");
@@ -93,20 +93,20 @@ public class Criteria implements ICriteria, Cloneable {
 		return criteria;
 	}
 
-	private String boCode = "";
+	private String businessObject = "";
 
 	@Override
-	@XmlElement(name = "BOCode")
-	public final String getBOCode() {
-		if (this.boCode == null) {
-			this.boCode = "";
+	@XmlElement(name = "BusinessObject")
+	public final String getBusinessObject() {
+		if (this.businessObject == null) {
+			this.businessObject = "";
 		}
-		return this.boCode;
+		return this.businessObject;
 	}
 
 	@Override
-	public final void setBOCode(String value) {
-		this.boCode = value;
+	public final void setBusinessObject(String value) {
+		this.businessObject = value;
 	}
 
 	private int resultCount = -1;
@@ -217,7 +217,7 @@ public class Criteria implements ICriteria, Cloneable {
 		if (bo instanceof IBOSimple) {
 			IBOSimple simple = (IBOSimple) bo;
 			boCriteria = new Criteria();
-			boCriteria.setBOCode(simple.getObjectCode());
+			boCriteria.setBusinessObject(simple.getObjectCode());
 			ICondition condition = boCriteria.getConditions().create();
 			condition.setAlias(IBOSimple.MASTER_PRIMARY_KEY_NAME);
 			condition.setValue(simple.getObjectKey());
@@ -225,7 +225,7 @@ public class Criteria implements ICriteria, Cloneable {
 		} else if (bo instanceof IBODocument || bo instanceof IBOMasterData) {
 			IBODocument document = (IBODocument) bo;
 			boCriteria = new Criteria();
-			boCriteria.setBOCode(document.getObjectCode());
+			boCriteria.setBusinessObject(document.getObjectCode());
 			ICondition condition = boCriteria.getConditions().create();
 			condition.setAlias(IBODocument.MASTER_PRIMARY_KEY_NAME);
 			condition.setValue(document.getDocEntry());
@@ -233,7 +233,7 @@ public class Criteria implements ICriteria, Cloneable {
 		} else if (bo instanceof IBOSimpleLine) {
 			IBOSimpleLine line = (IBOSimpleLine) bo;
 			boCriteria = new Criteria();
-			boCriteria.setBOCode(line.getObjectCode());
+			boCriteria.setBusinessObject(line.getObjectCode());
 			// 父项相等时，lineid比较方式
 			ICondition condition = boCriteria.getConditions().create();
 			condition.setBracketOpen(2);
@@ -253,7 +253,7 @@ public class Criteria implements ICriteria, Cloneable {
 		} else if (bo instanceof IBODocumentLine) {
 			IBODocumentLine line = (IBODocumentLine) bo;
 			boCriteria = new Criteria();
-			boCriteria.setBOCode(line.getObjectCode());
+			boCriteria.setBusinessObject(line.getObjectCode());
 			// 父项相等时，lineid比较方式
 			ICondition condition = boCriteria.getConditions().create();
 			condition.setBracketOpen(2);
@@ -273,7 +273,7 @@ public class Criteria implements ICriteria, Cloneable {
 		} else if (bo instanceof IBOMasterDataLine) {
 			IBOMasterDataLine line = (IBOMasterDataLine) bo;
 			boCriteria = new Criteria();
-			boCriteria.setBOCode(line.getObjectCode());
+			boCriteria.setBusinessObject(line.getObjectCode());
 			// 父项相等时，lineid比较方式
 			ICondition condition = boCriteria.getConditions().create();
 			condition.setBracketOpen(2);
