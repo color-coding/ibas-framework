@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.bobas.test.logics;
+package org.colorcoding.ibas.bobas.test.logic;
 
 import java.beans.PropertyChangeEvent;
 

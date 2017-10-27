@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.bobas.test.expressions;
+package org.colorcoding.ibas.bobas.test.expression;
 
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;

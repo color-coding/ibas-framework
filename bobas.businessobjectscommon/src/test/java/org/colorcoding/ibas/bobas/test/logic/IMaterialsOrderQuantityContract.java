@@ -1,15 +1,15 @@
-package org.colorcoding.ibas.bobas.test.logics;
+package org.colorcoding.ibas.bobas.test.logic;
 
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.logic.IBusinessLogicContract;
 
 /**
- * 物料库存数量逻辑契约
+ * 物料订购数量逻辑契约
  * 
  * @author Niuren.Zhu
  *
  */
-public interface IMaterialsInventoryQuantityContract extends IBusinessLogicContract {
+public interface IMaterialsOrderQuantityContract extends IBusinessLogicContract {
 	/**
 	 * 物料编码
 	 * 

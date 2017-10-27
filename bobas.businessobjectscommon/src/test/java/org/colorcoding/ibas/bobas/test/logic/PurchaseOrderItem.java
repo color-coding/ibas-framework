@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.bobas.test.logics;
+package org.colorcoding.ibas.bobas.test.logic;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
