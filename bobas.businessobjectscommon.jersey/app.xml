@@ -2,13 +2,13 @@
 <!DOCTYPE configuration>
 <ns2:configuration xmlns:ns2="http://colorcoding.org/ibas/bobas/configuration">
     <appSettings>
-        <!--配置项目-是否开启调试模式-->
+        <!-- 配置项目-是否开启调试模式 -->
         <add key="DebugMode" value="false" />
-        <!--配置项目-序列化管理方式-->
+        <!-- 配置项目-序列化管理方式 -->
         <add key="SerializationWay" value="jersey" />
-        <!--配置项目-是否格式化输出-->
+        <!-- 配置项目-是否格式化输出 -->
         <add key="FormattedOutput" value="true"  />
-        <!--配置项目-包含对象ROOT-->
+        <!-- 配置项目-包含对象ROOT -->
         <add key="IncludeJsonRoot" value="true"  />
     </appSettings>
 </ns2:configuration>

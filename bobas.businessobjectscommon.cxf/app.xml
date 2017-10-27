@@ -2,7 +2,7 @@
 <!DOCTYPE configuration>
 <ns2:configuration xmlns:ns2="http://colorcoding.org/ibas/bobas/configuration">
     <appSettings>
-        <!--配置项目-是否开启调试模式-->
+        <!-- 配置项目-是否开启调试模式 -->
         <add key="DebugMode" value="true" />
     </appSettings>
 </ns2:configuration>
