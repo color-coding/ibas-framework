@@ -124,8 +124,9 @@ public class testCriteria extends TestCase {
 		inputStream.reset();
 		criteria = (Criteria) unmarshaller.unmarshal(inputStream);
 
-		assertEquals("marshal and unmarshal not equal", oldJSON.replace("\r\n", "").replace(" ", ""),
-				criteria.toString("json"));
+		assertEquals("marshal and unmarshal not equal",
+				oldJSON.replace(System.getProperty("line.separator"), "").replace(" ", ""),
+				criteria.toString("json").replace(System.getProperty("line.separator"), "").replace(" ", ""));
 
 	}
 }

@@ -60,7 +60,7 @@ public class Criteria implements ICriteria, Cloneable {
 						Sorts.class, Sort.class, ChildCriterias.class, ChildCriteria.class);
 			} else if (value.startsWith("{") && value.endsWith("}")) {
 				// json
-				ISerializer<?> serializer = manager.create(ISerializerManager.TYPE_XML);
+				ISerializer<?> serializer = manager.create(ISerializerManager.TYPE_JSON);
 				return (ICriteria) serializer.deserialize(value, Criteria.class, Conditions.class, Condition.class,
 						Sorts.class, Sort.class, ChildCriterias.class, ChildCriteria.class);
 			}

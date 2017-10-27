@@ -9,6 +9,6 @@
         <!--配置项目-是否格式化输出-->
         <add key="FormattedOutput" value="true"  />
         <!--配置项目-包含对象ROOT-->
-        <add key="IncludeJsonRoot" value="false"  />
+        <add key="IncludeJsonRoot" value="true"  />
     </appSettings>
 </ns2:configuration>
