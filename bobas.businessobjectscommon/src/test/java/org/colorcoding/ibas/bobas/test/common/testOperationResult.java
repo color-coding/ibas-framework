@@ -3,7 +3,6 @@ package org.colorcoding.ibas.bobas.test.common;
 import java.io.StringWriter;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import org.colorcoding.ibas.bobas.common.Criteria;
@@ -14,10 +13,16 @@ import junit.framework.TestCase;
 
 public class testOperationResult extends TestCase {
 
-	public void testToXML() throws JAXBException {
+	public void testToXML() throws Exception {
 		OperationResult<?> operationResult = new OperationResult<Object>();
-		operationResult.setResultCode(0);
+		operationResult.setResultCode(1);
+		operationResult.setMessage("GOOD DAY!");
 		operationResult.addInformations("NAME", "信息");
+		System.out.println(operationResult.getError());
+		operationResult = new OperationResult<Object>();
+		operationResult.setError(new ClassNotFoundException(Criteria.class.getName()));
+		System.out.println(operationResult.getMessage());
+
 		Criteria criteria = new Criteria();
 		ICondition condition = criteria.getConditions().create();
 		condition.setAlias("ItemCode");

@@ -18,6 +18,7 @@ public interface IOrganizationManager {
 	 * 
 	 * @param token
 	 *            用户的口令
+	 * @return 未找到应返回null
 	 */
 	IUser getUser(String token);
 
@@ -26,7 +27,7 @@ public interface IOrganizationManager {
 	 * 
 	 * @param id
 	 *            用户ID
-	 * @return
+	 * @return 未找到返回UnknownUser
 	 */
 	IUser getUser(int id);
 

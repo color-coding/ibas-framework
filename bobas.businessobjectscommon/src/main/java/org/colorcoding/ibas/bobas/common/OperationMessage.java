@@ -84,6 +84,11 @@ public class OperationMessage extends Result implements IOperationMessage {
 
 	@Override
 	public final Exception getError() {
+		if (this.error == null && this.getResultCode() != 0 && this.getMessage() != null
+				&& !this.getMessage().isEmpty()) {
+			// 发生错误，有描述，自动创建异常对象
+			this.error = new Exception(this.getMessage());
+		}
 		return this.error;
 	}
 
@@ -94,10 +99,9 @@ public class OperationMessage extends Result implements IOperationMessage {
 				this.setResultCode(-1);
 			}
 			if (this.getMessage() == null || this.getMessage().isEmpty()) {
-				this.setMessage(this.error.getMessage());
+				this.setMessage(String.format("%s: %s", this.error.getClass().getName(), this.error.getMessage()));
 			}
 		}
-
 	}
 
 	@Override
