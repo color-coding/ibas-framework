@@ -8,6 +8,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.common.ConditionOperation;
+import org.colorcoding.ibas.bobas.common.Criteria;
+import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.SortType;
@@ -664,7 +667,35 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		if (this.getParent() == null) {
 			return null;
 		}
-		ICriteria criteria = this.getParent().getCriteria();
+		ICriteria criteria = null;
+		if (this.getParent() instanceof IBOMasterData) {
+			if (IBOMasterDataLine.class.isAssignableFrom(this.getElementType())) {
+				criteria = new Criteria();
+				ICondition condition = criteria.getConditions().create();
+				condition.setAlias(IBOMasterDataLine.MASTER_PRIMARY_KEY_NAME);
+				condition.setValue(((IBOMasterData) this.getParent()).getCode());
+				condition.setOperation(ConditionOperation.EQUAL);
+			}
+		} else if (this.getParent() instanceof IBODocument) {
+			if (IBODocumentLine.class.isAssignableFrom(this.getElementType())) {
+				criteria = new Criteria();
+				ICondition condition = criteria.getConditions().create();
+				condition.setAlias(IBODocumentLine.MASTER_PRIMARY_KEY_NAME);
+				condition.setValue(((IBODocument) this.getParent()).getDocEntry());
+				condition.setOperation(ConditionOperation.EQUAL);
+			}
+		} else if (this.getParent() instanceof IBOSimple) {
+			if (IBOSimpleLine.class.isAssignableFrom(this.getElementType())) {
+				criteria = new Criteria();
+				ICondition condition = criteria.getConditions().create();
+				condition.setAlias(IBOSimpleLine.MASTER_PRIMARY_KEY_NAME);
+				condition.setValue(((IBOSimple) this.getParent()).getObjectKey());
+				condition.setOperation(ConditionOperation.EQUAL);
+			}
+		}
+		if (criteria == null) {
+			criteria = this.getParent().getCriteria();
+		}
 		if (IBOLine.class.isAssignableFrom(this.getElementType())) {
 			// 元素类型是行类型，则添加排序字段
 			ISort sort = criteria.getSorts().create();
