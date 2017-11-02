@@ -18,8 +18,8 @@ import org.colorcoding.ibas.bobas.data.DateTime;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "OperationMessages", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
-@XmlRootElement(name = "OperationMessages", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
+@XmlType(name = "OperationMessage", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
+@XmlRootElement(name = "OperationMessage", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public class OperationMessage extends Result implements IOperationMessage {
 
 	public OperationMessage() {
