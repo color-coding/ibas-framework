@@ -45,13 +45,23 @@ public class FileRepository extends FileRepositoryReadonly implements IFileRepos
 		if (fileData == null || fileData.getStream() == null) {
 			throw new RepositoryException(I18N.prop("msg_bobas_invalid_data"));
 		}
+		File workFolder = new File(this.getRepositoryFolder());
+		if (!workFolder.exists()) {
+			workFolder.mkdirs();
+		}
 		FileData nFileData = new FileData();
 		nFileData.setOriginalName(fileData.getOriginalName());
-		if (fileData.getFileName() != null && !fileData.getFileName().isEmpty())
-			nFileData.setFileName(fileData.getFileName() + "_" + UUID.randomUUID().toString());
-		else
-			nFileData.setFileName(UUID.randomUUID().toString());
-		nFileData.setLocation(this.getRepositoryFolder() + File.separator + nFileData.getFileName());
+		nFileData.setFileName(fileData.getFileName());
+		if (nFileData.getFileName() == null || nFileData.getFileName().isEmpty()) {
+			String exName = null;
+			int index = nFileData.getOriginalName().lastIndexOf(".");
+			if (index > 0 && index < nFileData.getOriginalName().length()) {
+				exName = nFileData.getOriginalName().substring(index);
+			}
+			nFileData
+					.setFileName(exName != null ? UUID.randomUUID().toString() + exName : UUID.randomUUID().toString());
+		}
+		nFileData.setLocation(workFolder.getPath() + File.separator + nFileData.getFileName());
 		OutputStream outputStream = new FileOutputStream(nFileData.getLocation());
 		try {
 			int bytesRead = 0;

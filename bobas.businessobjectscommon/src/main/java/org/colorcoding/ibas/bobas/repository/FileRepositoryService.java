@@ -62,7 +62,7 @@ public class FileRepositoryService implements IFileRepositoryService {
 	 *            用户口令
 	 * @throws InvalidTokenException
 	 */
-	void setCurrentUser(String token) throws InvalidTokenException {
+	protected void setCurrentUser(String token) throws InvalidTokenException {
 		try {
 			if (this.currentUser != null && this.currentUser.getToken() != null
 					&& this.currentUser.getToken().equals(token)) {
