@@ -35,11 +35,17 @@ import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 
 @Path("")
 public class ServiceBasic {
+
+	private static int total;
+	private int count;
+
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("hello")
 	public String sayHello() {
-		return "Hello Jersey";
+		total++;
+		count++;
+		return String.format("Hello Jersey, total %s, count %s.", total, count);
 	}
 
 	@POST
