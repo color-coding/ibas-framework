@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
+import org.colorcoding.ibas.bobas.core.IDaemonTask;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.List;
 
@@ -23,7 +24,42 @@ public class OrganizationFactory extends ConfigurableFactory<IOrganizationManage
 		if (instance == null) {
 			synchronized (OrganizationFactory.class) {
 				if (instance == null) {
-					instance = new OrganizationFactory();
+					instance = new OrganizationFactory();// 注册释放任务
+					instance.register(new IDaemonTask() {
+
+						@Override
+						public void run() {
+							synchronized (instance) {
+								instance.organizationManager = null;
+							}
+						}
+
+						private boolean activated = true;
+
+						@Override
+						public boolean isActivated() {
+							if (this.getInterval() <= 0) {
+								return false;
+							}
+							return this.activated;
+						}
+
+						private String name = "organization cleanner";
+
+						@Override
+						public String getName() {
+							return this.name;
+						}
+
+						private long interval = MyConfiguration.getConfigValue(
+								MyConfiguration.CONFIG_ITEM_ORGANIZATION_MANAGER_EXPIRY_VALUE,
+								MyConfiguration.isDebugMode() ? 60 : 600);
+
+						@Override
+						public long getInterval() {
+							return this.interval;
+						}
+					});
 				}
 			}
 		}
@@ -109,15 +145,15 @@ public class OrganizationFactory extends ConfigurableFactory<IOrganizationManage
 		};
 	}
 
-	private volatile static IOrganizationManager defaultManager = null;
+	private IOrganizationManager organizationManager = null;
 
 	public synchronized IOrganizationManager createManager() {
-		if (defaultManager == null) {
-			defaultManager = this.create(MyConfiguration.CONFIG_ITEM_ORGANIZATION_WAY, "OrganizationManager");
+		if (this.organizationManager == null) {
+			this.organizationManager = this.create(MyConfiguration.CONFIG_ITEM_ORGANIZATION_WAY, "OrganizationManager");
 			// 有效数据，进行初始化
-			defaultManager.initialize();
+			this.organizationManager.initialize();
 		}
-		return defaultManager;
+		return this.organizationManager;
 
 	}
 

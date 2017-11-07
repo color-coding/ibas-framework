@@ -208,4 +208,12 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-SQL写入语句检查表达式
 	 */
 	public final static String CONFIG_ITEM_INSPECTOR_SQL_WRITE_REGEX = "SqlWriteRegex";
+	/**
+	 * 配置项目-组织管理员失效时间
+	 */
+	public final static String CONFIG_ITEM_ORGANIZATION_MANAGER_EXPIRY_VALUE = "OrgManagerExpiry";
+	/**
+	 * 配置项目-权限判断员失效时间
+	 */
+	public final static String CONFIG_ITEM_OWNERSHIP_JUDGER_EXPIRY_VALUE = "OwnJudgerExpiry";
 }

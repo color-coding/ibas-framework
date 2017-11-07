@@ -222,13 +222,21 @@ public class Criteria implements ICriteria, Cloneable {
 			condition.setAlias(IBOSimple.MASTER_PRIMARY_KEY_NAME);
 			condition.setValue(simple.getObjectKey());
 			condition.setOperation(operation);
-		} else if (bo instanceof IBODocument || bo instanceof IBOMasterData) {
+		} else if (bo instanceof IBODocument) {
 			IBODocument document = (IBODocument) bo;
 			boCriteria = new Criteria();
 			boCriteria.setBusinessObject(document.getObjectCode());
 			ICondition condition = boCriteria.getConditions().create();
 			condition.setAlias(IBODocument.MASTER_PRIMARY_KEY_NAME);
 			condition.setValue(document.getDocEntry());
+			condition.setOperation(operation);
+		} else if (bo instanceof IBOMasterData) {
+			IBOMasterData masterData = (IBOMasterData) bo;
+			boCriteria = new Criteria();
+			boCriteria.setBusinessObject(masterData.getObjectCode());
+			ICondition condition = boCriteria.getConditions().create();
+			condition.setAlias(IBOMasterData.SERIAL_NUMBER_KEY_NAME);
+			condition.setValue(masterData.getDocEntry());
 			condition.setOperation(operation);
 		} else if (bo instanceof IBOSimpleLine) {
 			IBOSimpleLine line = (IBOSimpleLine) bo;

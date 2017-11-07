@@ -10,6 +10,7 @@ import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
 import org.colorcoding.ibas.bobas.ownership.IDataOwnership;
 import org.colorcoding.ibas.bobas.ownership.IOwnershipJudger;
 import org.colorcoding.ibas.bobas.ownership.OwnershipFactory;
@@ -113,8 +114,8 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 					throw new RepositoryException(opRslt.getMessage(), opRslt.getError());
 				}
 				fetchCount += opRslt.getResultObjects().size();
-				if (this.getOwnershipJudger() != null) {
-					// 数据权限过滤
+				if (this.getOwnershipJudger() != null && this.getCurrentUser() != OrganizationFactory.SYSTEM_USER) {
+					// 数据权限过滤，系统用户不考虑权限
 					for (Object item : opRslt.getResultObjects()) {
 						if ((item instanceof IDataOwnership)) {
 							// 有继承数据权限
@@ -125,6 +126,10 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 							}
 						}
 						operationResult.addResultObjects(item);
+						if (operationResult.getResultObjects().size() >= criteria.getResultCount()) {
+							// 够了退出
+							break;
+						}
 					}
 				} else {
 					operationResult.addResultObjects(opRslt.getResultObjects());
@@ -175,8 +180,9 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 	 */
 	@Override
 	<P extends IBusinessObject> P save(IBORepository boRepository, P bo) throws Exception {
-		if (this.getOwnershipJudger() != null && bo instanceof IDataOwnership) {
-			// 数据权限过滤
+		if (this.getOwnershipJudger() != null && bo instanceof IDataOwnership
+				&& this.getCurrentUser() != OrganizationFactory.SYSTEM_USER) {
+			// 数据权限过滤，系统用户不考虑权限
 			if (!this.getOwnershipJudger().canSave((IDataOwnership) bo, this.getCurrentUser(), true)) {
 				throw new UnauthorizedException(I18N.prop("msg_bobas_to_save_bo_unauthorized", bo.toString()));
 			}

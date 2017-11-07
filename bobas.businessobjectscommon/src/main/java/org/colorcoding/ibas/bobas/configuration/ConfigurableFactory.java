@@ -2,6 +2,9 @@ package org.colorcoding.ibas.bobas.configuration;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.core.BOFactory;
+import org.colorcoding.ibas.bobas.core.Daemon;
+import org.colorcoding.ibas.bobas.core.IDaemonTask;
+import org.colorcoding.ibas.bobas.core.InvalidDaemonTaskException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
@@ -139,4 +142,22 @@ public abstract class ConfigurableFactory<T> {
 	 * @return
 	 */
 	protected abstract T createDefault(String typeName);
+
+	/**
+	 * 注册后台任务
+	 * 
+	 * @param task
+	 * @return 是否成功
+	 */
+	protected boolean register(IDaemonTask task) {
+		if (task == null) {
+			return false;
+		}
+		try {
+			Daemon.register(task, false);
+		} catch (InvalidDaemonTaskException e) {
+			throw new RuntimeException(e);
+		}
+		return true;
+	}
 }

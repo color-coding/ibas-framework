@@ -156,7 +156,8 @@ public class PropertyInfoManager {
 	 * @throws NotRegisterTypeException
 	 */
 	public static PropertyInfoList getPropertyInfoList(Class<?> boType) throws NotRegisterTypeException {
-		Logger.log(MessageLevel.DEBUG, MSG_PROPERTIES_GET_TYPE_PROPERTIES, boType.getName());
+		// Logger.log(MessageLevel.DEBUG, MSG_PROPERTIES_GET_TYPE_PROPERTIES,
+		// boType.getName());
 		synchronized (propertyInfoCache) {
 			if (propertyInfoCache.containsKey(boType)) {
 				// 已注册的类型
