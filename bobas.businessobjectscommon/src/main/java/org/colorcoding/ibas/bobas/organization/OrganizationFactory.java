@@ -7,6 +7,7 @@ import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
 import org.colorcoding.ibas.bobas.core.IDaemonTask;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.List;
+import org.colorcoding.ibas.bobas.message.Logger;
 
 /**
  * 审批工厂
@@ -24,13 +25,26 @@ public class OrganizationFactory extends ConfigurableFactory<IOrganizationManage
 		if (instance == null) {
 			synchronized (OrganizationFactory.class) {
 				if (instance == null) {
-					instance = new OrganizationFactory();// 注册释放任务
+					instance = new OrganizationFactory();
+					// 注册刷新任务
 					instance.register(new IDaemonTask() {
 
 						@Override
 						public void run() {
-							synchronized (instance) {
+							if (instance.organizationManager == null) {
+								// 未初始化，不做处理
+								return;
+							}
+							// 刷新组织
+							try {
+								IOrganizationManager orgManager = instance
+										.create(MyConfiguration.CONFIG_ITEM_ORGANIZATION_WAY, "OrganizationManager");
+								orgManager.initialize();
+								instance.organizationManager = orgManager;
+							} catch (Exception e) {
+								// 组织刷新失败，清空
 								instance.organizationManager = null;
+								Logger.log(e);
 							}
 						}
 
@@ -53,7 +67,7 @@ public class OrganizationFactory extends ConfigurableFactory<IOrganizationManage
 
 						private long interval = MyConfiguration.getConfigValue(
 								MyConfiguration.CONFIG_ITEM_ORGANIZATION_MANAGER_EXPIRY_VALUE,
-								MyConfiguration.isDebugMode() ? 60 : 600);
+								MyConfiguration.isDebugMode() ? 180 : 600);
 
 						@Override
 						public long getInterval() {
@@ -154,7 +168,6 @@ public class OrganizationFactory extends ConfigurableFactory<IOrganizationManage
 			this.organizationManager.initialize();
 		}
 		return this.organizationManager;
-
 	}
 
 	public static IUser UNKNOWN_USER = new IUser() {
