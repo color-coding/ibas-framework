@@ -126,7 +126,8 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 							}
 						}
 						operationResult.addResultObjects(item);
-						if (operationResult.getResultObjects().size() >= criteria.getResultCount()) {
+						if (operationResult.getResultObjects().size() >= criteria.getResultCount()
+								&& criteria.getResultCount() > 0) {
 							// 够了退出
 							break;
 						}
