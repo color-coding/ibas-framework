@@ -51,13 +51,14 @@ public class testConfiguration extends TestCase {
 
 	public void testConfigurableFactory() throws ClassNotFoundException {
 		// DbAdapter
-		TestFactory.create().getClass("DbAdapter.");// 不需要额外处理时，最后位为“.”
+		TestFactory.create().classOf("DbAdapter.");// 不需要额外处理时，最后位为“.”
 		// org.colorcoding.ibas.bobas.test.configuration.DbAdapter
-		TestFactory.create().getClass("DbAdapter");
+		TestFactory.create().classOf("DbAdapter");
 		// db.mssql.DbAdapter
-		TestFactory.create().getClass("db.mssql", "DbAdapter");
+		TestFactory.create().classOf("db.mssql", "DbAdapter");
 		// org.colorcoding.ibas.bobas.test.configuration.mssql.DbAdapter
-		TestFactory.create().getClass("mssql", "DbAdapter");
+		TestFactory.create().classOf("mssql", "DbAdapter");
+
 	}
 
 }
@@ -65,6 +66,10 @@ public class testConfiguration extends TestCase {
 class TestFactory extends ConfigurableFactory<Object> {
 
 	private TestFactory() {
+	}
+
+	public Class<Object> classOf(String... names) throws ClassNotFoundException {
+		return super.classOf(names);
 	}
 
 	private volatile static TestFactory factory;

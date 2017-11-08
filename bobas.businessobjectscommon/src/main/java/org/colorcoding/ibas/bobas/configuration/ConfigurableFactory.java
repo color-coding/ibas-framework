@@ -19,8 +19,8 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
  */
 public abstract class ConfigurableFactory<T> {
 
-	protected static final String MSG_CONFIG_COMBINED_CLASS_NAME = "config: combined class name [%s].";
-	protected static final String MSG_CONFIG_NOT_CONFIGURATION_USING_DEFALUT = "config: not configured [%s], using defalut [%s].";
+	protected static final String MSG_CONFIG_COMBINED_CLASS_NAME = "configurable factory: combined class name [%s].";
+	protected static final String MSG_CONFIG_NOT_CONFIGURATION_USING_DEFALUT = "configurable factory: not configured [%s], using defalut [%s].";
 
 	/**
 	 * 获取类型
@@ -31,7 +31,7 @@ public abstract class ConfigurableFactory<T> {
 	 * @throws BOFactoryException
 	 */
 	@SuppressWarnings("unchecked")
-	public Class<T> getClass(String... names) throws ClassNotFoundException {
+	protected Class<T> classOf(String... names) throws ClassNotFoundException {
 		StringBuilder stringBuilder = new StringBuilder();
 		boolean nsDone = false;
 		for (String item : names) {
@@ -77,34 +77,13 @@ public abstract class ConfigurableFactory<T> {
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
-	public T newInstance(String... names)
+	protected T newInstance(String... names)
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-		Class<T> type = this.getClass(names);
+		Class<T> type = this.classOf(names);
 		if (type == null) {
 			return null;
 		}
 		return type.newInstance();
-	}
-
-	/**
-	 * 创建实例
-	 * 
-	 * @param configKey
-	 *            配置项，提供命名空间
-	 * @param typeName
-	 *            类名
-	 * @return
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 * @throws BOFactoryException
-	 */
-	protected T create(String typeName) {
-		// 使用配置的实例
-		try {
-			return this.newInstance(typeName);
-		} catch (Exception e) {
-			throw new RuntimeException(I18N.prop("msg_bobas_configurable_factory_create_instance_faild", typeName), e);
-		}
 	}
 
 	/**
@@ -154,7 +133,7 @@ public abstract class ConfigurableFactory<T> {
 			return false;
 		}
 		try {
-			Daemon.register(task, false);
+			Daemon.register(task);
 		} catch (InvalidDaemonTaskException e) {
 			throw new RuntimeException(e);
 		}
