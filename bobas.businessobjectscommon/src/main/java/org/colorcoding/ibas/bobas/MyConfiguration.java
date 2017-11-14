@@ -171,7 +171,7 @@ public class MyConfiguration extends Configuration {
 	/**
 	 * 配置项目-日志消息级别
 	 */
-	public final static String CONFIG_ITEM_LOG_MESSAGE_LEVEL = "MsgLevel";
+	public final static String CONFIG_ITEM_LOG_MESSAGE_LEVEL = "MessageLevel";
 	/**
 	 * 配置项目-日志文件输出频率(毫秒,默认5000)
 	 */

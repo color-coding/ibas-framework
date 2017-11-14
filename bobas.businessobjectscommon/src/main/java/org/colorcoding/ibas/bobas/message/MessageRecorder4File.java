@@ -10,11 +10,6 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.core.Daemon;
 import org.colorcoding.ibas.bobas.core.IDaemonTask;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.message.IMessage;
-import org.colorcoding.ibas.bobas.message.IMessageRecorder4File;
-import org.colorcoding.ibas.bobas.message.Logger;
-import org.colorcoding.ibas.bobas.message.MessageLevel;
-import org.colorcoding.ibas.bobas.message.MessageRecorder;
 
 /**
  * 消息记录者，到文件
@@ -24,185 +19,202 @@ import org.colorcoding.ibas.bobas.message.MessageRecorder;
  */
 public class MessageRecorder4File extends MessageRecorder implements IMessageRecorder4File {
 
-    private int limitSize;
+	public MessageRecorder4File() {
+		if (MyConfiguration.isDebugMode()) {
+			// debug模式输出到控制台
+			this.setPrint(true);
+		}
+	}
 
-    /**
-     * 获取-文件大小限制（兆）
-     * 
-     * @return
-     */
-    public int getLimitSize() {
-        return this.limitSize;
-    }
+	public MessageRecorder4File(String sign) {
+		this();
+		this.setFileSign(sign);
+	}
 
-    /**
-     * 设置-文件大小限制（兆）
-     * 
-     * @return
-     */
-    public void setLimitSize(int limitSize) {
-        this.limitSize = limitSize;
-    }
+	private boolean print;
 
-    /**
-     * 获取日志文件路径
-     */
-    private String workFolder;
+	public final boolean isPrint() {
+		return print;
+	}
 
-    @Override
-    public String getWorkFolder() {
-        if (this.workFolder == null || this.workFolder.isEmpty()) {
-            this.workFolder = MyConfiguration.getLogFolder();
-        }
-        return this.workFolder;
-    }
+	public final void setPrint(boolean print) {
+		this.print = print;
+	}
 
-    @Override
-    public void setWorkFolder(String value) {
-        this.workFolder = value;
-    }
+	private int limitSize;
 
-    private String fileSign;
+	/**
+	 * 获取-文件大小限制（兆）
+	 * 
+	 * @return
+	 */
+	public int getLimitSize() {
+		return this.limitSize;
+	}
 
-    @Override
-    public String getFileSign() {
-        return this.fileSign;
-    }
+	/**
+	 * 设置-文件大小限制（兆）
+	 * 
+	 * @return
+	 */
+	public void setLimitSize(int limitSize) {
+		this.limitSize = limitSize;
+	}
 
-    @Override
-    public void setFileSign(String value) {
+	/**
+	 * 获取日志文件路径
+	 */
+	private String workFolder;
 
-        this.fileSign = value;
-    }
+	@Override
+	public String getWorkFolder() {
+		if (this.workFolder == null || this.workFolder.isEmpty()) {
+			this.workFolder = MyConfiguration.getLogFolder();
+		}
+		return this.workFolder;
+	}
 
-    private volatile Queue<IMessage> messageQueue;
+	@Override
+	public void setWorkFolder(String value) {
+		this.workFolder = value;
+	}
 
-    /**
-     * 消息队列
-     * 
-     * @return
-     */
-    protected Queue<IMessage> getMessageQueue() {
-        if (this.messageQueue == null) {
-            synchronized (this) {
-                if (this.messageQueue == null) {
-                    messageQueue = new ConcurrentLinkedQueue<IMessage>();// 非阻塞队列，支持异步
-                }
-                // 注册日志输出文件任务
-                try {
-                    Daemon.register(new IDaemonTask() {
+	private String fileSign;
 
-                        @Override
-                        public void run() {
-                            writeFile();
-                        }
+	@Override
+	public String getFileSign() {
+		return this.fileSign;
+	}
 
-                        @Override
-                        public String getName() {
-                            return "write message to file";
-                        }
+	@Override
+	public void setFileSign(String value) {
 
-                        @Override
-                        public long getInterval() {
-                            return 1;
-                        }
+		this.fileSign = value;
+	}
 
-                        @Override
-                        public boolean isActivated() {
-                            if (messageQueue == null)
-                                return false;
-                            if (messageQueue.size() == 0)
-                                return false;
-                            return true;
-                        }
-                    }, false);
-                } catch (Exception e) {
-                    Logger.log(MessageLevel.FATAL, e);
-                }
-            }
-        }
-        return this.messageQueue;
-    }
+	private volatile Queue<IMessage> messageQueue;
 
-    public MessageRecorder4File() {
-    }
+	/**
+	 * 消息队列
+	 * 
+	 * @return
+	 */
+	protected Queue<IMessage> getMessageQueue() {
+		if (this.messageQueue == null) {
+			synchronized (this) {
+				if (this.messageQueue == null) {
+					messageQueue = new ConcurrentLinkedQueue<IMessage>();// 非阻塞队列，支持异步
+				}
+				// 注册日志输出文件任务
+				try {
+					Daemon.register(new IDaemonTask() {
 
-    public MessageRecorder4File(String sign) {
-        this.setFileSign(sign);
-    }
+						@Override
+						public void run() {
+							writeFile();
+						}
 
-    /**
-     * 获取记录文件名称
-     * 
-     * @throws IOException
-     */
-    public String getFileName() throws IOException {
-        String filePath = this.getWorkFolder() + File.separator;
-        String partName = DateTime.getToday().toString("yyyyMMdd");
-        // 分文件
-        int maxCount = 999;
-        if (this.getLimitSize() <= 0) {
-            // 错误的文件大小
-            maxCount = 0;
-        }
-        for (int i = 1; i < maxCount; i++) {
-            // 查找未写满的文件
-            File file = new File(filePath + String.format(this.getFileSign(), String.format("%s_%03d", partName, i)));
-            if (!file.exists()) {
-                return file.getPath();
-            }
-            if (file.isFile()) {
-                long size = file.length() / 1024 / 1024;
-                if (size < this.getLimitSize()) {
-                    return file.getPath();
-                }
-            }
-        }
-        // 不分文件
-        return filePath + String.format(this.getFileSign(), partName);
-    }
+						@Override
+						public String getName() {
+							return "write message to file";
+						}
 
-    /**
-     * 将日志消息写入到文本中
-     */
-    @Override
-    public void record(IMessage message) {
-        // 调用基类，消息记录到控制台
-        super.record(message);
-        // 消息记录到其他
-        this.getMessageQueue().offer(message);
-    }
+						@Override
+						public long getInterval() {
+							return 1;
+						}
 
-    /**
-     * 输出消息到文件
-     */
-    public void writeFile() {
-        if (this.getMessageQueue().size() <= 0) {
-            return;
-        }
-        FileWriter fileWriter = null;
-        try {
-            File file = new File(this.getFileName());
-            if (!file.exists()) {
-                file.getParentFile().mkdirs();
-                file.createNewFile();
-            }
-            fileWriter = new FileWriter(file, true);
-            while (!this.getMessageQueue().isEmpty()) {
-                IMessage message = this.getMessageQueue().poll();
-                if (message != null) {
-                    message.outString(fileWriter);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (fileWriter != null)
-                    fileWriter.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+						@Override
+						public boolean isActivated() {
+							if (messageQueue == null)
+								return false;
+							if (messageQueue.size() == 0)
+								return false;
+							return true;
+						}
+					}, false);
+				} catch (Exception e) {
+					Logger.log(MessageLevel.FATAL, e);
+				}
+			}
+		}
+		return this.messageQueue;
+	}
+
+	/**
+	 * 获取记录文件名称
+	 * 
+	 * @throws IOException
+	 */
+	public String getFileName() throws IOException {
+		String filePath = this.getWorkFolder() + File.separator;
+		String partName = DateTime.getToday().toString("yyyyMMdd");
+		// 分文件
+		int maxCount = 999;
+		if (this.getLimitSize() <= 0) {
+			// 错误的文件大小
+			maxCount = 0;
+		}
+		for (int i = 1; i < maxCount; i++) {
+			// 查找未写满的文件
+			File file = new File(filePath + String.format(this.getFileSign(), String.format("%s_%03d", partName, i)));
+			if (!file.exists()) {
+				return file.getPath();
+			}
+			if (file.isFile()) {
+				long size = file.length() / 1024 / 1024;
+				if (size < this.getLimitSize()) {
+					return file.getPath();
+				}
+			}
+		}
+		// 不分文件
+		return filePath + String.format(this.getFileSign(), partName);
+	}
+
+	/**
+	 * 将日志消息写入到文本中
+	 */
+	@Override
+	public void record(IMessage message) {
+		if (this.isPrint()) {
+			// 调用基类，消息记录到控制台
+			super.record(message);
+		}
+		// 消息记录到其他
+		this.getMessageQueue().offer(message);
+	}
+
+	/**
+	 * 输出消息到文件
+	 */
+	public void writeFile() {
+		if (this.getMessageQueue().size() <= 0) {
+			return;
+		}
+		FileWriter fileWriter = null;
+		try {
+			File file = new File(this.getFileName());
+			if (!file.exists()) {
+				file.getParentFile().mkdirs();
+				file.createNewFile();
+			}
+			fileWriter = new FileWriter(file, true);
+			while (!this.getMessageQueue().isEmpty()) {
+				IMessage message = this.getMessageQueue().poll();
+				if (message != null) {
+					message.outString(fileWriter);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (fileWriter != null)
+					fileWriter.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }
