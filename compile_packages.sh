@@ -39,7 +39,7 @@ while read line
 do
   if [ -e ${WORK_FOLDER}/${line}/pom.xml ]
   then
-    if [[ ${line} = *.service ]]
+    if [ ${line} = *.service ]
     then
       # 网站，编译war包
       echo --开始编译[${line}]
