@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 echo '*****************************************************************'
 echo '              deploy_packages.sh                                 '
 echo '                    by niuren.zhu                                '
