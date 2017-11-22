@@ -39,7 +39,8 @@ while read line
 do
   if [ -e ${WORK_FOLDER}/${line}/pom.xml ]
   then
-    if [ ${line} = *.service ]
+    isService=`echo ${line}|grep '.service'|wc -l`
+    if [ ${isService} != 0 ]
     then
       # 网站，编译war包
       echo --开始编译[${line}]
