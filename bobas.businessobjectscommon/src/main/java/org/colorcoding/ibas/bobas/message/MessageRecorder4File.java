@@ -208,6 +208,13 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+			// 日志文件创建失败，日志输出到控制台
+			while (!this.getMessageQueue().isEmpty()) {
+				IMessage message = this.getMessageQueue().poll();
+				if (message != null) {
+					System.err.println(message.toString());
+				}
+			}
 		} finally {
 			try {
 				if (fileWriter != null)
