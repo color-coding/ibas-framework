@@ -13,6 +13,15 @@ import org.colorcoding.ibas.bobas.data.KeyValue;
  */
 public class SqlStoredProcedure implements ISqlStoredProcedure {
 
+	public SqlStoredProcedure() {
+
+	}
+
+	public SqlStoredProcedure(String name) {
+		this();
+		this.setName(name);
+	}
+
 	private String name;
 
 	@Override

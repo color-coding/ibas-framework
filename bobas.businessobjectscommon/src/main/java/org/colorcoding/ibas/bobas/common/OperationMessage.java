@@ -23,15 +23,15 @@ import org.colorcoding.ibas.bobas.data.DateTime;
 public class OperationMessage extends Result implements IOperationMessage {
 
 	public OperationMessage() {
+		super();
 		this.setSignID(UUID.randomUUID().toString());
-		this.setResultCode(0);
 		this.setTime(DateTime.getNow());
 	}
 
-	public OperationMessage(String message) {
-		this();
-		this.setUserSign(userSign);
-		this.setMessage(message);
+	public OperationMessage(int resultCode, String message) {
+		super(resultCode, message);
+		this.setSignID(UUID.randomUUID().toString());
+		this.setTime(DateTime.getNow());
 	}
 
 	public OperationMessage(Exception exception) {

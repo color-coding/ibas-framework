@@ -20,6 +20,16 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 @XmlRootElement(name = "Result", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public class Result implements IResult {
 
+	public Result() {
+		this.setResultCode(0);
+	}
+
+	public Result(int resultCode, String message) {
+		this();
+		this.setResultCode(resultCode);
+		this.setMessage(message);
+	}
+
 	private int resultCode;
 
 	@Override

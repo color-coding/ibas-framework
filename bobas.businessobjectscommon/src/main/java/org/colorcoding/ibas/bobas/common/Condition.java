@@ -108,16 +108,24 @@ public class Condition implements ICondition {
 	@Override
 	public final void setValue(String value) {
 		this.value = value;
+		if (this.value == null) {
+			// 设置null时，自动改变计算方式
+			if (this.getOperation() == ConditionOperation.EQUAL) {
+				this.setOperation(ConditionOperation.IS_NULL);
+			} else if (this.getOperation() == ConditionOperation.NOT_EQUAL) {
+				this.setOperation(ConditionOperation.NOT_NULL);
+			}
+		}
 	}
 
 	@Override
 	public final void setValue(Object value) {
-		this.value = this.toValue(value);
+		this.setValue(this.toValue(value));
 	}
 
 	protected String toValue(Object value) {
 		if (value == null) {
-			return "";
+			return null;
 		}
 		return DataConvert.toDbValue(value);
 	}

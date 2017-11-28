@@ -27,11 +27,16 @@ public class OperationResult<P> extends OperationMessage implements IOperationRe
 		super();
 	}
 
+	public OperationResult(int resultCode, String message) {
+		super(resultCode, message);
+	}
+
 	public OperationResult(Exception exception) {
 		super(exception);
 	}
 
 	public OperationResult(IOperationResult<?> result) {
+		this();
 		this.copy(result);
 	}
 

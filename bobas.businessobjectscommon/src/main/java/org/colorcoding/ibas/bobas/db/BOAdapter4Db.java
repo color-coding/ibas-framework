@@ -227,7 +227,6 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 					String toDbFiledType = sqlScripts.getCastTypeString(condition.getAliasDataType());
 					stringBuilder.append(String.format(sqlScripts.getSqlString(condition.getOperation()),
 							String.format(toDbFiledType, String.format(dbObject, condition.getComparedAlias()))));
-
 				} else {
 					// 字段与值的比较
 					if (condition.getOperation() == ConditionOperation.IS_NULL
