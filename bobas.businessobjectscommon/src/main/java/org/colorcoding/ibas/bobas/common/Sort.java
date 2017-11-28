@@ -15,6 +15,15 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 @XmlType(name = "Sort", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 @XmlRootElement(name = "Sort", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public class Sort implements ISort {
+	public Sort() {
+
+	}
+
+	public Sort(String alias, SortType sortType) {
+		this();
+		this.setAlias(alias);
+		this.setSortType(sortType);
+	}
 
 	private String alias = "";
 

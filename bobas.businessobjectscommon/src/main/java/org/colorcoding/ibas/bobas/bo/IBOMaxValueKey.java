@@ -1,7 +1,8 @@
 package org.colorcoding.ibas.bobas.bo;
 
-import org.colorcoding.ibas.bobas.common.IConditions;
+import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.core.fields.IFieldDataDb;
+
 /**
  * 自定义主键
  * 
@@ -10,7 +11,7 @@ import org.colorcoding.ibas.bobas.core.fields.IFieldDataDb;
  * @author Niuren.Zhu
  *
  */
-public interface IFieldMaxValueKey extends ICustomPrimaryKeys {
+public interface IBOMaxValueKey extends IBOCustomKey {
 	/**
 	 * 获取最大值的字段名称
 	 * 
@@ -25,5 +26,5 @@ public interface IFieldMaxValueKey extends ICustomPrimaryKeys {
 	 * 
 	 * @return 条件
 	 */
-	IConditions getMaxValueConditions();
+	ICondition[] getMaxValueConditions();
 }

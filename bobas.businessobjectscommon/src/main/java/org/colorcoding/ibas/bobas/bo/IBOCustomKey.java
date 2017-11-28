@@ -6,7 +6,6 @@ package org.colorcoding.ibas.bobas.bo;
  * @author Niuren.Zhu
  *
  */
-public interface ICustomPrimaryKeys {
-
+public interface IBOCustomKey {
 
 }

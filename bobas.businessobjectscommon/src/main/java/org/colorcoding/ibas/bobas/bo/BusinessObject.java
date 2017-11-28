@@ -113,6 +113,8 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 		if (this instanceof IBOStorageTag) {
 			IBOStorageTag tagBO = (IBOStorageTag) this;
 			boCode = tagBO.getObjectCode();
+		} else {
+			boCode = this.getClass().getSimpleName();
 		}
 		if (boCode == null || boCode.isEmpty()) {
 			return super.toString();

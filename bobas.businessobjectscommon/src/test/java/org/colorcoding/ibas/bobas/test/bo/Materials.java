@@ -1019,11 +1019,6 @@ public class Materials extends BusinessObject<Materials> implements IMaterials, 
 	}
 
 	@Override
-	public Object getSeriesValue() {
-		return this.getItemCode();
-	}
-
-	@Override
 	public void setSeriesValue(Object value) {
 		this.setItemCode((String) value);
 	}

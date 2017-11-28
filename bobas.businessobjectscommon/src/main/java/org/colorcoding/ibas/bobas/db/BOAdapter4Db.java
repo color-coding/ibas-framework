@@ -5,23 +5,24 @@ import java.sql.SQLException;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.BOException;
+import org.colorcoding.ibas.bobas.bo.IBOCustomKey;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
 import org.colorcoding.ibas.bobas.bo.IBOLine;
 import org.colorcoding.ibas.bobas.bo.IBOMasterData;
 import org.colorcoding.ibas.bobas.bo.IBOMasterDataLine;
+import org.colorcoding.ibas.bobas.bo.IBOMaxValueKey;
 import org.colorcoding.ibas.bobas.bo.IBOSeriesKey;
 import org.colorcoding.ibas.bobas.bo.IBOSimple;
 import org.colorcoding.ibas.bobas.bo.IBOSimpleLine;
 import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.bo.IBOUserFields;
-import org.colorcoding.ibas.bobas.bo.ICustomPrimaryKeys;
-import org.colorcoding.ibas.bobas.bo.IFieldMaxValueKey;
 import org.colorcoding.ibas.bobas.bo.UserField;
+import org.colorcoding.ibas.bobas.bo.UserFieldFactory;
 import org.colorcoding.ibas.bobas.bo.UserFieldInfo;
 import org.colorcoding.ibas.bobas.bo.UserFieldInfoList;
-import org.colorcoding.ibas.bobas.bo.UserFieldFactory;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
+import org.colorcoding.ibas.bobas.common.Conditions;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.IConditions;
@@ -308,7 +309,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	 *            属性列表
 	 * @return
 	 */
-	protected IConditions fixConditions(IConditions conditions, PropertyInfoList pInfoList) {
+	protected void fixConditions(IConditions conditions, PropertyInfoList pInfoList) {
 		DbField dbField = null;
 		for (int i = 0; i < pInfoList.size(); i++) {
 			PropertyInfo<?> cProperty = (PropertyInfo<?>) pInfoList.get(i);
@@ -332,7 +333,6 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				}
 			}
 		}
-		return conditions;
 	}
 
 	/**
@@ -489,8 +489,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				if (value == null) {
 					valuesBuilder.append(sqlScripts.getNullSign());
 				} else {
-					valuesBuilder.append(String
-							.format(sqlScripts.getSqlString(dbItem.getFieldType(), DataConvert.toDbValue(value))));
+					valuesBuilder.append(sqlScripts.getSqlString(dbItem.getFieldType(), DataConvert.toDbValue(value)));
 				}
 			}
 			if (fieldsBuilder.length() == 0) {
@@ -536,8 +535,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			if (value == null) {
 				stringBuilder.append(sqlScripts.getNullSign());
 			} else {
-				stringBuilder.append(
-						String.format(sqlScripts.getSqlString(dbItem.getFieldType(), DataConvert.toDbValue(value))));
+				stringBuilder.append(sqlScripts.getSqlString(dbItem.getFieldType(), DataConvert.toDbValue(value)));
 			}
 		}
 		return stringBuilder.toString();
@@ -958,10 +956,10 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 					boKey.setLineId((int) (key.getValue()));
 				}
 			}
-		} else if (bo instanceof ICustomPrimaryKeys) {
+		} else if (bo instanceof IBOCustomKey) {
 			// 自定义主键
-			if (bo instanceof IFieldMaxValueKey) {
-				IFieldMaxValueKey maxValueKey = (IFieldMaxValueKey) bo;
+			if (bo instanceof IBOMaxValueKey) {
+				IBOMaxValueKey maxValueKey = (IBOMaxValueKey) bo;
 				IFieldDataDb dbField = maxValueKey.getMaxValueField();
 				for (KeyValue key : keys) {
 					if (key.getValue() == null) {
@@ -979,7 +977,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	public KeyValue[] usePrimaryKeys(IBusinessObjectBase bo, IDbCommand command) throws BOException {
 		// 获取主键
 		KeyValue[] keys = this.parsePrimaryKeys(bo, command);
-		if (keys == null || keys.length == 0) {
+		if ((keys == null || keys.length == 0) && !(bo instanceof IBOCustomKey)) {
 			throw new BOException(I18N.prop("msg_bobas_not_found_bo_primary_keys", bo.getClass().getName()));
 		}
 		// 主键赋值
@@ -1139,16 +1137,22 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				 */
 			}
 			// 额外主键获取
-			if (bo instanceof ICustomPrimaryKeys) {
+			if (bo instanceof IBOCustomKey) {
 				// 自定义主键
-				if (bo instanceof IFieldMaxValueKey) {
+				if (bo instanceof IBOMaxValueKey) {
 					// 字段最大值
-					IFieldMaxValueKey maxValueKey = (IFieldMaxValueKey) bo;
+					IBOMaxValueKey maxValueKey = (IBOMaxValueKey) bo;
 					IFieldDataDb dbField = maxValueKey.getMaxValueField();
 					String table = String.format(sqlScripts.getDbObjectSign(), dbField.getDbTable());
 					String field = String.format(sqlScripts.getDbObjectSign(), dbField.getDbField());
-					PropertyInfoList pInfoList = PropertyInfoManager.getPropertyInfoList(bo.getClass());
-					IConditions conditions = this.fixConditions(maxValueKey.getMaxValueConditions(), pInfoList);
+					ICondition[] tmpConditions = maxValueKey.getMaxValueConditions();
+					IConditions conditions = new Conditions();
+					if (tmpConditions != null) {
+						for (ICondition item : tmpConditions) {
+							conditions.add(item);
+						}
+					}
+					this.fixConditions(conditions, PropertyInfoManager.getPropertyInfoList(bo.getClass()));
 					String where = this.parseSqlQuery(conditions).getQueryString();
 					reader = command.executeReader(sqlScripts.groupMaxValueQuery(field, table, where));
 					if (reader.next()) {
@@ -1182,6 +1186,10 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				// 对象行，不做处理
 				return;
 			}
+			if (bo instanceof IBOCustomKey) {
+				// 自定义主键，不做处理
+				return;
+			}
 			ISqlScripts sqlScripts = this.getSqlScripts();
 			if (sqlScripts == null) {
 				throw new SqlScriptException(I18N.prop("msg_bobas_invaild_sql_scripts"));
@@ -1206,7 +1214,8 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			}
 			if (boCode == null || nextValue == 0) {
 				// 未能有效解析
-				throw new ParsingException(I18N.prop("msg_bobas_not_specify_primary_keys_obtaining_method"));
+				throw new ParsingException(
+						I18N.prop("msg_bobas_not_specify_primary_keys_obtaining_method", bo.toString()));
 			}
 			// 更新数据记录
 			command.executeUpdate(sqlScripts.getUpdatePrimaryKeyScript(boCode, addValue));
@@ -1331,23 +1340,31 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			if (sqlScripts == null) {
 				throw new SqlScriptException(I18N.prop("msg_bobas_invaild_sql_scripts"));
 			}
-			String boCode = ((IBOStorageTag) bo).getObjectCode();
-			IFieldData[] keys = ((IManageFields) bo).getFields(c -> c.isPrimaryKey());
-			int keyCount = keys.length;
+			String boCode = null;
+			if (bo instanceof IBOStorageTag) {
+				boCode = ((IBOStorageTag) bo).getObjectCode();
+			} else {
+				boCode = bo.getClass().getSimpleName();
+			}
+			int keyCount = 0;
 			StringBuilder keyNames = new StringBuilder(), keyValues = new StringBuilder();
-			for (int i = 0; i < keys.length; i++) {
-				if (keys[i] instanceof IFieldDataDb) {
-					IFieldDataDb dbItem = (IFieldDataDb) keys[i];
-					if (keyNames.length() > 0) {
-						keyNames.append(",");
-						keyNames.append(" ");
+			if (bo instanceof IManageFields) {
+				IFieldData[] keys = ((IManageFields) bo).getFields(c -> c.isPrimaryKey());
+				keyCount = keys.length;
+				for (int i = 0; i < keys.length; i++) {
+					if (keys[i] instanceof IFieldDataDb) {
+						IFieldDataDb dbItem = (IFieldDataDb) keys[i];
+						if (keyNames.length() > 0) {
+							keyNames.append(",");
+							keyNames.append(" ");
+						}
+						if (keyValues.length() > 0) {
+							keyValues.append(",");
+							keyValues.append(" ");
+						}
+						keyNames.append(dbItem.getDbField());
+						keyValues.append(DataConvert.toString(dbItem.getValue()));
 					}
-					if (keyValues.length() > 0) {
-						keyValues.append(",");
-						keyValues.append(" ");
-					}
-					keyNames.append(dbItem.getDbField());
-					keyValues.append(DataConvert.toString(dbItem.getValue()));
 				}
 			}
 			return new SqlQuery(sqlScripts.getTransactionNotificationQuery(boCode, DataConvert.toDbValue(type),

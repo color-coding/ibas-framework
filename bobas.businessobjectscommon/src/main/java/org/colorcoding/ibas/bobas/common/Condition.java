@@ -19,6 +19,17 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 @XmlRootElement(name = "Condition", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public class Condition implements ICondition {
 
+	public Condition() {
+
+	}
+
+	public Condition(String alias, ConditionOperation operation, Object value) {
+		this();
+		this.setAlias(alias);
+		this.setOperation(operation);
+		this.setValue(value);
+	}
+
 	private String alias = "";
 
 	@Override

@@ -12,12 +12,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBOSeriesKey;
-import org.colorcoding.ibas.bobas.common.Criteria;
-import org.colorcoding.ibas.bobas.common.ICondition;
-import org.colorcoding.ibas.bobas.common.IConditions;
-import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
-import org.colorcoding.ibas.bobas.core.fields.IFieldDataDb;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
@@ -1512,24 +1507,6 @@ public class SalesOrder extends BusinessObject<SalesOrder> implements ISalesOrde
 	@Override
 	public final void setCycle(Time value) {
 		this.setProperty(PROPERTY_CYCLE, value);
-	}
-
-	public IFieldDataDb getMaxValueField() {
-		return (IFieldDataDb) this.getField(PROPERTY_DOCNUM_NAME);
-	}
-
-	public IConditions getMaxValueConditions() {
-		ICriteria criteria = new Criteria();
-		ICondition condition = criteria.getConditions().create();
-		condition.setAlias(PROPERTY_CUSTOMERCODE_NAME);
-		condition.setValue(this.getCustomerCode());
-
-		return criteria.getConditions();
-	}
-
-	@Override
-	public Object getSeriesValue() {
-		return this.getDocNum();
 	}
 
 	@Override

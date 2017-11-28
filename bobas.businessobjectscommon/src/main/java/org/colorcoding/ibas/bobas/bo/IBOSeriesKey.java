@@ -23,13 +23,6 @@ public interface IBOSeriesKey extends IBOStorageTag {
 	void setSeries(Integer value);
 
 	/**
-	 * 获取-系列编号
-	 * 
-	 * @return
-	 */
-	Object getSeriesValue();
-
-	/**
 	 * 设置-系列编号
 	 * 
 	 * @param value
