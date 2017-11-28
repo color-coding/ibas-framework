@@ -18,10 +18,12 @@ import org.colorcoding.ibas.bobas.core.BOFactory;
 import org.colorcoding.ibas.bobas.core.BORepositoryBase;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
+import org.colorcoding.ibas.bobas.core.TrackableBase;
 import org.colorcoding.ibas.bobas.core.fields.AssociatedFieldDataBase;
 import org.colorcoding.ibas.bobas.core.fields.FieldRelation;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.SingleValue;
@@ -38,7 +40,6 @@ import org.colorcoding.ibas.bobas.db.SqlScriptException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.mapping.AssociationMode;
 import org.colorcoding.ibas.bobas.message.Logger;
-import org.colorcoding.ibas.bobas.data.ArrayList;
 
 /**
  * 业务对象仓库-只读数据库
@@ -487,6 +488,10 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 					continue;
 				}
 				IManageFields boFields = ((IManageFields) bo);
+				if (bo instanceof TrackableBase) {
+					// 赋值阶段，不跟踪状态变化
+					((TrackableBase) bo).setLoading(true);
+				}
 				for (IFieldData fieldData : boFields.getFields()) {
 					// 遍历BO的集合属性
 					if (fieldData.getValue() instanceof IBusinessObjects<?, ?>) {
@@ -576,6 +581,10 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 							}
 						}
 					}
+				}
+				if (bo instanceof TrackableBase) {
+					// 退出赋值阶段
+					((TrackableBase) bo).setLoading(false);
 				}
 			}
 		} finally {

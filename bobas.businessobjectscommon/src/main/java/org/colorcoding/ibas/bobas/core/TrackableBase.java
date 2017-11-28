@@ -165,7 +165,7 @@ public abstract class TrackableBase extends BindableBase implements ITrackStatus
 	 * 
 	 * @param value
 	 */
-	protected void setLoading(boolean value) {
+	public void setLoading(boolean value) {
 		this.isLoading = value;
 	}
 }
