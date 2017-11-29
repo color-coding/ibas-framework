@@ -126,7 +126,7 @@ class DaemonTaskWrapping {
 		}
 	}
 
-	private boolean isLog;
+	private boolean log;
 
 	/**
 	 * 是否记录日志
@@ -134,11 +134,11 @@ class DaemonTaskWrapping {
 	 * @return
 	 */
 	public final boolean isLog() {
-		return isLog;
+		return log;
 	}
 
 	public final void setLog(boolean isLog) {
-		this.isLog = isLog;
+		this.log = isLog;
 	}
 
 	private IDaemonTask task;

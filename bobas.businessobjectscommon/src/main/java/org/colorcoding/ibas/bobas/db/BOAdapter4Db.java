@@ -60,7 +60,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_ENABLED_USER_FIELDS, true));
 	}
 
-	private boolean isEnabledUserFields;
+	private boolean enabledUserFields;
 
 	/**
 	 * 是否启用自定义字段
@@ -68,11 +68,11 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	 * @return
 	 */
 	public boolean isEnabledUserFields() {
-		return isEnabledUserFields;
+		return enabledUserFields;
 	}
 
 	public void setEnabledUserFields(boolean value) {
-		this.isEnabledUserFields = value;
+		this.enabledUserFields = value;
 	}
 
 	/**

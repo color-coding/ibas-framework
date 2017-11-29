@@ -39,6 +39,11 @@ public interface IFieldData {
 	boolean isPrimaryKey();
 
 	/**
+	 * 索引键
+	 */
+	boolean isUniqueKey();
+
+	/**
 	 * 附件的数据，如定义字段
 	 */
 	boolean isOriginal();

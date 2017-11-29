@@ -63,6 +63,7 @@ public abstract class FieldDataDbBase<T> extends FieldDataBase<T> implements IFi
 
 	public void mapping(DbField mapping) {
 		this.setPrimaryKey(mapping.primaryKey());
+		this.setUniqueKey(mapping.uniqueKey());
 		this.setSavable(true);
 		this.setOriginal(true);
 		this.fieldMapping = mapping;

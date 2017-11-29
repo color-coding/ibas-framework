@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.core;
 import java.lang.annotation.Annotation;
 
 import org.colorcoding.ibas.bobas.data.ArrayList;
+import org.colorcoding.ibas.bobas.data.List;
 
 public class PropertyInfo<P> implements IPropertyInfo<P> {
 
@@ -53,14 +54,7 @@ public class PropertyInfo<P> implements IPropertyInfo<P> {
 		this.defaultValue = value;
 	}
 
-	private ArrayList<Annotation> annotations = null;
-
-	public Annotation[] getAnnotations() {
-		if (this.annotations == null) {
-			this.annotations = new ArrayList<Annotation>();
-		}
-		return this.annotations.toArray(new Annotation[] {});
-	}
+	private List<Annotation> annotations = null;
 
 	public Annotation getAnnotation(Class<?> type) {
 		if (this.annotations == null) {

@@ -63,55 +63,65 @@ public abstract class FieldDataBase<T> implements IFieldData {
 		this.name = value;
 	}
 
-	private boolean isSavable = false;
+	private boolean savable = false;
 
 	@Override
 	public final boolean isSavable() {
-		return this.isSavable;
+		return this.savable;
 	}
 
 	public final void setSavable(boolean value) {
-		this.isSavable = value;
+		this.savable = value;
 	}
 
-	private boolean isPrimaryKey = false;
+	private boolean primaryKey = false;
 
 	@Override
 	public final boolean isPrimaryKey() {
-		return this.isPrimaryKey;
+		return this.primaryKey;
 	}
 
 	public final void setPrimaryKey(boolean value) {
-		this.isPrimaryKey = value;
+		this.primaryKey = value;
 	}
 
-	private boolean isOriginal = false;
+	private boolean uniqueKey = false;
+
+	public final boolean isUniqueKey() {
+		return uniqueKey;
+	}
+
+	public final void setUniqueKey(boolean uniqueKey) {
+		this.uniqueKey = uniqueKey;
+	}
+
+	private boolean original = false;
 
 	@Override
 	public final boolean isOriginal() {
-		return this.isOriginal;
+		return this.original;
 	}
 
 	public final void setOriginal(boolean value) {
-		this.isOriginal = value;
+		this.original = value;
 	}
 
-	private boolean isLinkage = true;
+	private boolean linkage = true;
 
 	@Override
 	public final boolean isLinkage() {
-		return this.isLinkage;
+		return this.linkage;
 	}
 
 	public final void setLinkage(boolean value) {
-		this.isLinkage = value;
+		this.linkage = value;
 	}
 
-	private boolean isDirty = false;
+	private boolean dirty = false;
 
 	@Override
 	public final boolean isDirty() {
-		return this.isDirty;
+		return this.dirty;
 	}
 
 	@Override
@@ -120,7 +130,7 @@ public abstract class FieldDataBase<T> implements IFieldData {
 	}
 
 	protected void setDirty(boolean value) {
-		this.isDirty = value;
+		this.dirty = value;
 	}
 
 	@Override

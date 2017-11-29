@@ -8,7 +8,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface DbField {
-
 	/**
 	 * 字段名称
 	 * 
@@ -31,17 +30,24 @@ public @interface DbField {
 	public String table() default "";
 
 	/**
-	 * 是否主键？
+	 * 是否主键
 	 * 
 	 * @return
 	 */
 	public boolean primaryKey() default false;
 
 	/**
-	 * 是否保存？
+	 * 是否保存
 	 * 
 	 * @return
 	 */
 	public boolean savable() default true;
+
+	/**
+	 * 是否索引键
+	 * 
+	 * @return
+	 */
+	public boolean uniqueKey() default false;
 
 }

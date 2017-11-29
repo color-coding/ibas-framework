@@ -80,24 +80,48 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	}
 
 	/**
-	 * 获取自身查询条件
+	 * 获取自身查询条件（isNew使用唯一键，否则为主键）
 	 * 
-	 * @return 自身的查询条件 ,新数据返回null
+	 * @return 没有查询条件，返回null
 	 */
 	@Override
 	public ICriteria getCriteria() {
-		if (this.isNew()) {
-			return null;
-		}
 		Criteria criteria = new Criteria();
 		if (this instanceof IBOStorageTag) {
 			IBOStorageTag tagBO = (IBOStorageTag) this;
 			criteria.setBusinessObject(tagBO.getObjectCode());
 		}
-		for (IFieldData item : this.getFields(c -> c.isPrimaryKey())) {
-			ICondition condition = criteria.getConditions().create();
-			condition.setAlias(item.getName());
-			condition.setValue(item.getValue());
+		if (this.isNew()) {
+			// 新建状态，使用唯一索引条件（主数据除外）
+			if (this instanceof IBOMasterData) {
+				ICondition condition = criteria.getConditions().create();
+				condition.setAlias(IBOMasterData.MASTER_PRIMARY_KEY_NAME);
+				condition.setValue(((IBOMasterData) this).getCode());
+			} else if (this instanceof IBOMasterDataLine) {
+				ICondition condition = criteria.getConditions().create();
+				condition.setAlias(IBOMasterDataLine.MASTER_PRIMARY_KEY_NAME);
+				condition.setValue(((IBOMasterDataLine) this).getCode());
+				condition = criteria.getConditions().create();
+				condition.setAlias(IBOMasterDataLine.SECONDARY_PRIMARY_KEY_NAME);
+				condition.setValue(((IBOMasterDataLine) this).getLineId());
+			} else {
+				for (IFieldData item : this.getFields(c -> c.isUniqueKey())) {
+					ICondition condition = criteria.getConditions().create();
+					condition.setAlias(item.getName());
+					condition.setValue(item.getValue());
+				}
+			}
+		} else {
+			// 非新建状态，使用主键条件
+			for (IFieldData item : this.getFields(c -> c.isPrimaryKey())) {
+				ICondition condition = criteria.getConditions().create();
+				condition.setAlias(item.getName());
+				condition.setValue(item.getValue());
+			}
+		}
+		if (criteria.getConditions().isEmpty()) {
+			// 没有条件，返回空
+			return null;
 		}
 		return criteria;
 	}
