@@ -123,17 +123,6 @@ public interface ISqlScripts {
 	String getPrimaryKeyQuery(String boCode);
 
 	/**
-	 * 获取业务对象默认系列
-	 * 
-	 * @param boCode
-	 *            业务对象
-	 * @return 主键查询语句，例:SELECT "DefSeries" FROM "CC_SYS_ONNM" WHERE "ObjectCode"
-	 *         = '%s'
-	 * @throws SqlScriptException
-	 */
-	String getDefalutSeriesQuery(String boCode);
-
-	/**
 	 * 获取业务对象系列
 	 * 
 	 * @param boCode
@@ -151,9 +140,8 @@ public interface ISqlScripts {
 	 *            业务对象
 	 * @param addValue
 	 *            增加值
-	 * @return 主键查询语句，例:UPDATE "CC_SYS_NNM1" SET "NextNum" = "NextNum" +
-	 *         {addValue} WHERE "ObjectCode" = '%s' AND "Series" = %s AND
-	 *         "Locked" = 'N'
+	 * @return 主键查询语句，例:UPDATE "CC_SYS_NNM1" SET "NextNum" = "NextNum" + {addValue}
+	 *         WHERE "ObjectCode" = '%s' AND "Series" = %s AND "Locked" = 'N'
 	 * @throws SqlScriptException
 	 */
 	String getUpdateSeriesKeyScript(String boCode, int series, int addValue);
@@ -165,8 +153,8 @@ public interface ISqlScripts {
 	 *            业务对象
 	 * @param addValue
 	 *            增加值
-	 * @return 主键查询语句，例:UPDATE "CC_SYS_ONNM" SET "AutoKey" = "AutoKey" +
-	 *         {addValue} WHERE "ObjectCode" = '%s'
+	 * @return 主键查询语句，例:UPDATE "CC_SYS_ONNM" SET "AutoKey" = "AutoKey" + {addValue}
+	 *         WHERE "ObjectCode" = '%s'
 	 * @throws SqlScriptException
 	 */
 	String getUpdatePrimaryKeyScript(String boCode, int addValue);
@@ -187,8 +175,7 @@ public interface ISqlScripts {
 	 * @return
 	 * @throws SqlScriptException
 	 */
-	String getTransactionNotificationQuery(String boCode, String type, int keyCount, String keyNames,
-			String keyValues);
+	String getTransactionNotificationQuery(String boCode, String type, int keyCount, String keyNames, String keyValues);
 
 	/**
 	 * 组合select查询

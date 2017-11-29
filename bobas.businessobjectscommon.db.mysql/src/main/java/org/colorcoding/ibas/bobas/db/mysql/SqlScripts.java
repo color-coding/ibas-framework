@@ -286,29 +286,6 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	@Override
-	public String getDefalutSeriesQuery(String boCode) {
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("SELECT");
-		stringBuilder.append(" ");
-		stringBuilder.append("`DefSeries`");
-		stringBuilder.append(" ");
-		stringBuilder.append("FROM");
-		stringBuilder.append(" ");
-		stringBuilder.append(String.format("`%s_SYS_ONNM`", this.getCompanyId()));
-		stringBuilder.append(" ");
-		stringBuilder.append("WHERE");
-		stringBuilder.append(" ");
-		stringBuilder.append("`ObjectCode`");
-		stringBuilder.append(" ");
-		stringBuilder.append("=");
-		stringBuilder.append(" ");
-		stringBuilder.append("'");
-		stringBuilder.append(this.checkSecurity(boCode));
-		stringBuilder.append("'");
-		return stringBuilder.toString();
-	}
-
-	@Override
 	public String getSeriesKeyQuery(String boCode, int series) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("SELECT");
