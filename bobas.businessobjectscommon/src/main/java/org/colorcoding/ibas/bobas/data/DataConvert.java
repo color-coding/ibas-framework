@@ -67,7 +67,7 @@ public class DataConvert {
 
 	public static String toString(Object value) {
 		if (value == null) {
-			return null;
+			return "";
 		}
 		return value.toString();
 	}

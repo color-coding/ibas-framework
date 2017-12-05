@@ -115,6 +115,13 @@ public class Condition implements ICondition {
 			} else if (this.getOperation() == ConditionOperation.NOT_EQUAL) {
 				this.setOperation(ConditionOperation.NOT_NULL);
 			}
+		} else {
+			// 非null时，自动改变计算方式
+			if (this.getOperation() == ConditionOperation.IS_NULL) {
+				this.setOperation(ConditionOperation.EQUAL);
+			} else if (this.getOperation() == ConditionOperation.NOT_NULL) {
+				this.setOperation(ConditionOperation.NOT_EQUAL);
+			}
 		}
 	}
 
@@ -196,4 +203,18 @@ public class Condition implements ICondition {
 		this.remarks = value;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("{condition: ");
+		stringBuilder.append(this.getAlias());
+		stringBuilder.append(" ");
+		stringBuilder.append(this.getOperation());
+		stringBuilder.append(" ");
+		stringBuilder
+				.append(this.getComparedAlias() != null && !this.getComparedAlias().isEmpty() ? this.getComparedAlias()
+						: this.getValue());
+		stringBuilder.append("}");
+		return stringBuilder.toString();
+	}
 }

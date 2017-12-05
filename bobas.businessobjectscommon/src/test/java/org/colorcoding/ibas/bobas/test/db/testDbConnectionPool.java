@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.test.db;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
@@ -46,6 +47,21 @@ public class testDbConnectionPool extends TestCase {
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
 		condition.setValue(emDocumentStatus.RELEASED);
 		condition.setRelationship(ConditionRelationship.OR);
+		// "CardCode" IS NOT NULL
+		condition = criteria.getConditions().create();
+		condition.setBracketOpen(1);
+		condition.setAlias(SalesOrder.PROPERTY_CUSTOMERCODE.getName());
+		condition.setOperation(ConditionOperation.NOT_NULL);
+		condition.setValue(null);
+		// "CardName" LIKE "%"
+		condition = criteria.getConditions().create();
+		condition.setAlias(SalesOrder.PROPERTY_CUSTOMERCODE.getName());
+		condition.setOperation(ConditionOperation.CONTAIN);
+		// "CardCode" NOT EQUAL "CardName"
+		condition = criteria.getConditions().create();
+		condition.setBracketClose(1);
+		condition.setAlias(SalesOrder.PROPERTY_CUSTOMERCODE.getName());
+		condition.setComparedAlias(SalesOrder.PROPERTY_CUSTOMERNAME.getName());
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC
 		ISort sort = criteria.getSorts().create();
 		sort.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());

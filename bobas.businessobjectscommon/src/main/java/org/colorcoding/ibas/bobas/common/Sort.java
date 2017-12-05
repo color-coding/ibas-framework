@@ -57,4 +57,14 @@ public class Sort implements ISort {
 		this.sortType = value;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("{sort: ");
+		stringBuilder.append(this.getAlias());
+		stringBuilder.append(" ");
+		stringBuilder.append(this.getSortType());
+		stringBuilder.append("}");
+		return stringBuilder.toString();
+	}
 }

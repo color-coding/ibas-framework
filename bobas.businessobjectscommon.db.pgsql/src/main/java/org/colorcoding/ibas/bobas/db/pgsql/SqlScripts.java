@@ -94,16 +94,11 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	@Override
-	public String getSqlString(ConditionOperation value, String opValue) {
+	public String getSqlString(ConditionOperation value) {
 		if (value == ConditionOperation.NOT_EQUAL) {
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("!");
-			stringBuilder.append("=");
-			stringBuilder.append(" ");
-			stringBuilder.append("%s");
-			return stringBuilder.toString();
+			return "!=";
 		} else {
-			return super.getSqlString(value, opValue);
+			return super.getSqlString(value);
 		}
 	}
 

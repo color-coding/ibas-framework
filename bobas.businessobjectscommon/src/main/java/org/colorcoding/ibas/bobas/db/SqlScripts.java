@@ -134,7 +134,32 @@ public class SqlScripts implements ISqlScripts {
 
 	@Override
 	public String getSqlString(ConditionOperation value) {
-		return this.getSqlString(value, null);
+		if (value == ConditionOperation.EQUAL) {
+			return "=";
+		} else if (value == ConditionOperation.NOT_EQUAL) {
+			return "<>";
+		} else if (value == ConditionOperation.GRATER_THAN) {
+			return ">";
+		} else if (value == ConditionOperation.LESS_THAN) {
+			return "<";
+		} else if (value == ConditionOperation.GRATER_EQUAL) {
+			return ">=";
+		} else if (value == ConditionOperation.LESS_EQUAL) {
+			return "<=";
+		} else if (value == ConditionOperation.IS_NULL) {
+			return "IS NULL";
+		} else if (value == ConditionOperation.NOT_NULL) {
+			return "IS NOT NULL";
+		} else if (value == ConditionOperation.CONTAIN) {
+			return "LIKE";
+		} else if (value == ConditionOperation.NOT_CONTAIN) {
+			return "NOT LIKE";
+		} else if (value == ConditionOperation.START) {
+			return "LIKE";
+		} else if (value == ConditionOperation.END) {
+			return "LIKE";
+		}
+		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
 	}
 
 	/**
@@ -155,7 +180,7 @@ public class SqlScripts implements ISqlScripts {
 		opValue = this.checkSecurity(opValue);
 		if (value == ConditionOperation.CONTAIN) {
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("LIKE");
+			stringBuilder.append(this.getSqlString(value));
 			stringBuilder.append(" ");
 			stringBuilder.append("N'");
 			stringBuilder.append("%");
@@ -167,9 +192,7 @@ public class SqlScripts implements ISqlScripts {
 			return stringBuilder.toString();
 		} else if (value == ConditionOperation.NOT_CONTAIN) {
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("NOT");
-			stringBuilder.append(" ");
-			stringBuilder.append("LIKE");
+			stringBuilder.append(this.getSqlString(value));
 			stringBuilder.append(" ");
 			stringBuilder.append("N'");
 			stringBuilder.append("%");
@@ -181,7 +204,7 @@ public class SqlScripts implements ISqlScripts {
 			return stringBuilder.toString();
 		} else if (value == ConditionOperation.END) {
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("LIKE");
+			stringBuilder.append(this.getSqlString(value));
 			stringBuilder.append(" ");
 			stringBuilder.append("N'");
 			stringBuilder.append("%");
@@ -191,7 +214,7 @@ public class SqlScripts implements ISqlScripts {
 			return stringBuilder.toString();
 		} else if (value == ConditionOperation.START) {
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("LIKE");
+			stringBuilder.append(this.getSqlString(value));
 			stringBuilder.append(" ");
 			stringBuilder.append("N'");
 			stringBuilder.append(opValue);
@@ -201,54 +224,45 @@ public class SqlScripts implements ISqlScripts {
 			return stringBuilder.toString();
 		} else if (value == ConditionOperation.EQUAL) {
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("=");
+			stringBuilder.append(this.getSqlString(value));
 			stringBuilder.append(" ");
 			stringBuilder.append("%s");
 			return stringBuilder.toString();
 		} else if (value == ConditionOperation.NOT_EQUAL) {
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("<");
-			stringBuilder.append(">");
+			stringBuilder.append(this.getSqlString(value));
 			stringBuilder.append(" ");
 			stringBuilder.append("%s");
 			return stringBuilder.toString();
 		} else if (value == ConditionOperation.GRATER_EQUAL) {
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append(">");
-			stringBuilder.append("=");
+			stringBuilder.append(this.getSqlString(value));
 			stringBuilder.append(" ");
 			stringBuilder.append("%s");
 			return stringBuilder.toString();
 		} else if (value == ConditionOperation.GRATER_THAN) {
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append(">");
+			stringBuilder.append(this.getSqlString(value));
 			stringBuilder.append(" ");
 			stringBuilder.append("%s");
 			return stringBuilder.toString();
 		} else if (value == ConditionOperation.IS_NULL) {
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("IS");
-			stringBuilder.append(" ");
-			stringBuilder.append("NULL");
+			stringBuilder.append(this.getSqlString(value));
 			return stringBuilder.toString();
 		} else if (value == ConditionOperation.NOT_NULL) {
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("IS");
-			stringBuilder.append(" ");
-			stringBuilder.append("NOT");
-			stringBuilder.append(" ");
-			stringBuilder.append("NULL");
+			stringBuilder.append(this.getSqlString(value));
 			return stringBuilder.toString();
 		} else if (value == ConditionOperation.LESS_EQUAL) {
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("<");
-			stringBuilder.append("=");
+			stringBuilder.append(this.getSqlString(value));
 			stringBuilder.append(" ");
 			stringBuilder.append("%s");
 			return stringBuilder.toString();
 		} else if (value == ConditionOperation.LESS_THAN) {
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("<");
+			stringBuilder.append(this.getSqlString(value));
 			stringBuilder.append(" ");
 			stringBuilder.append("%s");
 			return stringBuilder.toString();

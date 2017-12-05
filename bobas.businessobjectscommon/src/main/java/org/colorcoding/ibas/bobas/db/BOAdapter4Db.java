@@ -206,33 +206,25 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 					// 数值类型的字段且需要作为字符比较的
 					String toVarchar = sqlScripts.getCastTypeString(DbFieldType.ALPHANUMERIC);
 					stringBuilder.append(String.format(toVarchar, String.format(dbObject, condition.getAlias())));
+				} else if (condition.getComparedAlias() != null && !condition.getComparedAlias().isEmpty()) {
+					// 字段之间比较，都按字符串比较
+					String toVarchar = sqlScripts.getCastTypeString(DbFieldType.ALPHANUMERIC);
+					stringBuilder.append(String.format(toVarchar, String.format(dbObject, condition.getAlias())));
+					stringBuilder.append(" ");
+					stringBuilder.append(sqlScripts.getSqlString(condition.getOperation()));
+					stringBuilder.append(" ");
+					stringBuilder
+							.append(String.format(toVarchar, String.format(dbObject, condition.getComparedAlias())));
 				} else {
 					stringBuilder.append(String.format(dbObject, condition.getAlias()));
 				}
-				stringBuilder.append(" ");
-				if (condition.getComparedAlias() != null && !condition.getComparedAlias().isEmpty()) {
-					// 两字段间比较， [ItemCode] <> [ItemName]
-					if (condition.getOperation() == ConditionOperation.NONE
-							|| condition.getOperation() == ConditionOperation.START
-							|| condition.getOperation() == ConditionOperation.END
-							|| condition.getOperation() == ConditionOperation.IS_NULL
-							|| condition.getOperation() == ConditionOperation.NOT_NULL
-							|| condition.getOperation() == ConditionOperation.CONTAIN
-							|| condition.getOperation() == ConditionOperation.NOT_CONTAIN) {
-						// 字段间不支持以上操作
-						throw new ParsingException(I18N.prop("msg_bobas_invaild_condition_operation"));
-					}
-					// 彭文磊 解决数字和字符串相比较的情况 如“<>”
-					// 如果不是字符串，就将比较的字段类型转换成 条件字段的类型
-					String toDbFiledType = sqlScripts.getCastTypeString(condition.getAliasDataType());
-					stringBuilder.append(String.format(sqlScripts.getSqlString(condition.getOperation()),
-							String.format(toDbFiledType, String.format(dbObject, condition.getComparedAlias()))));
-				} else {
+				if (condition.getComparedAlias() == null || condition.getComparedAlias().isEmpty()) {
 					// 字段与值的比较
+					stringBuilder.append(" ");
 					if (condition.getOperation() == ConditionOperation.IS_NULL
 							|| condition.getOperation() == ConditionOperation.NOT_NULL) {
 						// 不需要值的比较，[ItemName] is NULL
-						stringBuilder.append(sqlScripts.getSqlString(condition.getOperation()));
+						stringBuilder.append(sqlScripts.getSqlString(condition.getOperation(), condition.getValue()));
 					} else if (condition.getOperation() == ConditionOperation.START
 							|| condition.getOperation() == ConditionOperation.END
 							|| condition.getOperation() == ConditionOperation.CONTAIN
@@ -244,12 +236,15 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 						if (condition.getAliasDataType() == DbFieldType.NUMERIC
 								|| condition.getAliasDataType() == DbFieldType.DECIMAL) {
 							// 数值类型的字段
-							stringBuilder.append(String.format(sqlScripts.getSqlString(condition.getOperation()),
-									condition.getValue()));
+							stringBuilder.append(sqlScripts.getSqlString(condition.getOperation()));
+							stringBuilder.append(" ");
+							stringBuilder.append(condition.getValue());
 						} else {
 							// 非数值类型字段
-							stringBuilder.append(String.format(sqlScripts.getSqlString(condition.getOperation()),
-									sqlScripts.getSqlString(condition.getAliasDataType(), condition.getValue())));
+							stringBuilder.append(sqlScripts.getSqlString(condition.getOperation()));
+							stringBuilder.append(" ");
+							stringBuilder.append(
+									sqlScripts.getSqlString(condition.getAliasDataType(), condition.getValue()));
 						}
 					}
 				}
@@ -259,8 +254,6 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				}
 			}
 			return new SqlQuery(stringBuilder.toString());
-		} catch (ParsingException e) {
-			throw e;
 		} catch (SqlScriptException e) {
 			throw new ParsingException(e);
 		}
@@ -468,7 +461,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				throw new SqlScriptException(I18N.prop("msg_bobas_invaild_sql_scripts"));
 			}
 			IManageFields boFields = (IManageFields) bo;
-			String table = this.getBOMasterTable(boFields);
+			String table = this.getMasterTable(boFields);
 			if (table == null || table.isEmpty()) {
 				// 没有获取到表
 				throw new ParsingException(I18N.prop("msg_bobas_not_found_bo_table", bo.getClass().getName()));
@@ -516,7 +509,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	 * @return 语句（"ItemCode" = 'A00001' ，"ItemName" = 'CPU I9'）
 	 * @throws SqlScriptException
 	 */
-	protected String getBOFieldValues(Iterable<IFieldDataDb> fields, String split) throws SqlScriptException {
+	protected String getFieldValues(Iterable<IFieldDataDb> fields, String split) throws SqlScriptException {
 		ISqlScripts sqlScripts = this.getSqlScripts();
 		if (sqlScripts == null) {
 			throw new SqlScriptException(I18N.prop("msg_bobas_invaild_sql_scripts"));
@@ -526,14 +519,13 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			if (stringBuilder.length() > 0) {
 				stringBuilder.append(split);
 			}
+			Object value = dbItem.getValue();
 			stringBuilder.append(String.format(sqlScripts.getDbObjectSign(), dbItem.getDbField()));
 			stringBuilder.append(" ");
-			stringBuilder.append("=");
-			stringBuilder.append(" ");
-			Object value = dbItem.getValue();
-			if (value == null) {
-				stringBuilder.append(sqlScripts.getNullSign());
-			} else {
+			stringBuilder.append(value != null ? sqlScripts.getSqlString(ConditionOperation.EQUAL)
+					: sqlScripts.getSqlString(ConditionOperation.IS_NULL));
+			if (value != null) {
+				stringBuilder.append(" ");
 				stringBuilder.append(sqlScripts.getSqlString(dbItem.getFieldType(), DataConvert.toDbValue(value)));
 			}
 		}
@@ -547,7 +539,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	 *            字段列表
 	 * @return 表名称（“OITM”）
 	 */
-	protected String getBOMasterTable(IManageFields boFields) {
+	protected String getMasterTable(IManageFields boFields) {
 		for (IFieldData item : boFields.getFields(c -> c.isPrimaryKey())) {
 			if (item instanceof IFieldDataDb) {
 				IFieldDataDb dbItem = (IFieldDataDb) item;
@@ -568,13 +560,13 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				throw new SqlScriptException(I18N.prop("msg_bobas_invaild_sql_scripts"));
 			}
 			IManageFields boFields = (IManageFields) bo;
-			String table = this.getBOMasterTable(boFields);
+			String table = this.getMasterTable(boFields);
 			if (table == null || table.isEmpty()) {
 				// 没有获取到表
 				throw new ParsingException(I18N.prop("msg_bobas_not_found_bo_table", bo.getClass().getName()));
 			}
 			table = String.format(sqlScripts.getDbObjectSign(), table);
-			String partWhere = this.getBOFieldValues(this.getDbFields(boFields.getFields(c -> c.isPrimaryKey())),
+			String partWhere = this.getFieldValues(this.getDbFields(boFields.getFields(c -> c.isPrimaryKey())),
 					sqlScripts.getAndSign());
 			if (partWhere == null || partWhere.isEmpty()) {
 				// 没有条件的删除不允许执行
@@ -599,13 +591,13 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				throw new SqlScriptException(I18N.prop("msg_bobas_invaild_sql_scripts"));
 			}
 			IManageFields boFields = (IManageFields) bo;
-			String table = this.getBOMasterTable(boFields);
+			String table = this.getMasterTable(boFields);
 			if (table == null || table.isEmpty()) {
 				// 没有获取到表
 				throw new ParsingException(I18N.prop("msg_bobas_not_found_bo_table", bo.getClass().getName()));
 			}
 			table = String.format(sqlScripts.getDbObjectSign(), table);
-			String partWhere = this.getBOFieldValues(this.getDbFields(boFields.getFields(c -> c.isPrimaryKey())),
+			String partWhere = this.getFieldValues(this.getDbFields(boFields.getFields(c -> c.isPrimaryKey())),
 					sqlScripts.getAndSign());
 			if (partWhere == null || partWhere.isEmpty()) {
 				// 没有条件的删除不允许执行
@@ -617,7 +609,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 					fieldDatas.add(iFieldData);
 				}
 			}
-			String partFieldValues = this.getBOFieldValues(fieldDatas, sqlScripts.getFieldBreakSign());
+			String partFieldValues = this.getFieldValues(fieldDatas, sqlScripts.getFieldBreakSign());
 			return new SqlQuery(sqlScripts.groupUpdateScript(table, partFieldValues, partWhere));
 		} catch (ParsingException e) {
 			throw e;
@@ -1046,7 +1038,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				condition.setAlias(IBODocumentLine.MASTER_PRIMARY_KEY_NAME);
 				condition.setAliasDataType(DbFieldType.NUMERIC);
 				condition.setValue(item.getDocEntry().toString());
-				String table = String.format(sqlScripts.getDbObjectSign(), this.getBOMasterTable((IManageFields) bo));
+				String table = String.format(sqlScripts.getDbObjectSign(), this.getMasterTable((IManageFields) bo));
 				String field = String.format(sqlScripts.getDbObjectSign(), IBODocumentLine.SECONDARY_PRIMARY_KEY_NAME);
 				String where = this.parseSqlQuery(criteria.getConditions()).getQueryString();
 				reader = command.executeReader(sqlScripts.groupMaxValueQuery(field, table, where));
@@ -1079,7 +1071,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				ICondition condition = criteria.getConditions().create();
 				condition.setAlias(IBOMasterDataLine.MASTER_PRIMARY_KEY_NAME);
 				condition.setValue(item.getCode());
-				String table = String.format(sqlScripts.getDbObjectSign(), this.getBOMasterTable((IManageFields) bo));
+				String table = String.format(sqlScripts.getDbObjectSign(), this.getMasterTable((IManageFields) bo));
 				String field = String.format(sqlScripts.getDbObjectSign(),
 						IBOMasterDataLine.SECONDARY_PRIMARY_KEY_NAME);
 				String where = this.parseSqlQuery(criteria.getConditions()).getQueryString();
@@ -1113,7 +1105,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				condition.setAlias(IBOSimpleLine.MASTER_PRIMARY_KEY_NAME);
 				condition.setAliasDataType(DbFieldType.NUMERIC);
 				condition.setValue(item.getObjectKey());
-				String table = String.format(sqlScripts.getDbObjectSign(), this.getBOMasterTable((IManageFields) bo));
+				String table = String.format(sqlScripts.getDbObjectSign(), this.getMasterTable((IManageFields) bo));
 				String field = String.format(sqlScripts.getDbObjectSign(), IBOSimpleLine.SECONDARY_PRIMARY_KEY_NAME);
 				String where = this.parseSqlQuery(criteria.getConditions()).getQueryString();
 				reader = command.executeReader(sqlScripts.groupMaxValueQuery(field, table, where));
