@@ -62,7 +62,11 @@ public class FileRepository extends FileRepositoryReadonly implements IFileRepos
 					.setFileName(exName != null ? UUID.randomUUID().toString() + exName : UUID.randomUUID().toString());
 		}
 		nFileData.setLocation(workFolder.getPath() + File.separator + nFileData.getFileName());
-		OutputStream outputStream = new FileOutputStream(nFileData.getLocation());
+		File ouFile = new File(nFileData.getLocation());
+		if (!ouFile.exists()) {
+			ouFile.getParentFile().mkdirs();
+		}
+		OutputStream outputStream = new FileOutputStream(ouFile);
 		try {
 			int bytesRead = 0;
 			byte[] buffer = new byte[512];
