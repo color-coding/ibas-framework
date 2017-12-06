@@ -11,7 +11,7 @@ public class SerializerManager implements ISerializerManager {
 
 	@Override
 	public ISerializer<?> create(String sign) {
-		if (sign == null || sign.isEmpty() || sign.equalsIgnoreCase(TYPE_XML)) {
+		if (TYPE_XML.equalsIgnoreCase(sign)) {
 			// 默认使用xml方式
 			return new SerializerXml();
 		}
