@@ -199,6 +199,7 @@ public class SerializerJsonNoRoot extends Serializer<JsonSchema> {
 			marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
 			marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
 			marshaller.setProperty(MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
+			marshaller.setProperty(MarshallerProperties.JSON_TYPE_COMPATIBILITY, true);
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);
 			marshaller.marshal(object, outputStream);
 		} catch (JAXBException e) {

@@ -134,10 +134,25 @@ public class testBusinessObject extends TestCase {
 		orderItem.setQuantity(10);
 		orderItem.setPrice(199.99);
 
+		System.out.println("-------------------common---------------------");
 		ISerializer<?> serializer = SerializerFactory.create().createManager().create("json");
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.getSchema(order.getClass(), writer);
 		System.out.println(writer.toString());
-		serializer.validate(order.getClass(), order.toString("json"));
+		writer = new ByteArrayOutputStream();
+		serializer.serialize(order, writer);
+		System.out.println(writer.toString());
+		serializer.validate(order.getClass(), writer.toString());
+		System.out.println(serializer.deserialize(writer.toString(), order.getClass()));
+		System.out.println("-------------------no root---------------------");
+		serializer = SerializerFactory.create().createManager().create("json_no_root");
+		writer = new ByteArrayOutputStream();
+		serializer.getSchema(order.getClass(), writer);
+		System.out.println(writer.toString());
+		writer = new ByteArrayOutputStream();
+		serializer.serialize(order, writer);
+		System.out.println(writer.toString());
+		serializer.validate(order.getClass(), writer.toString());
+		System.out.println(serializer.deserialize(writer.toString(), order.getClass()));
 	}
 }
