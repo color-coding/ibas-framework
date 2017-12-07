@@ -37,6 +37,8 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory;
 /**
  * JSON序列化，不包含ROOT
  * 
+ * 注意： 无ROOT反序列化时需要type属性，没有基类的对象序列化时没有此属性 以上情况可继承Serializable解决
+ * 
  * @author Niuren.Zhu
  *
  */

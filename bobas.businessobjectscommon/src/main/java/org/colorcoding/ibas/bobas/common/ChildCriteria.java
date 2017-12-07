@@ -16,6 +16,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 @XmlRootElement(name = "ChildCriteria", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public class ChildCriteria extends Criteria implements IChildCriteria {
 
+	private static final long serialVersionUID = -4641570686942910575L;
 	private String propertyPath = "";
 
 	@Override

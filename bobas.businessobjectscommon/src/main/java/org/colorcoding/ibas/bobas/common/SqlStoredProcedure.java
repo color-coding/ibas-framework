@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.colorcoding.ibas.bobas.data.KeyValue;
+import org.colorcoding.ibas.bobas.serialization.Serializable;
 
 /**
  * 数据库存储过程
@@ -11,7 +12,9 @@ import org.colorcoding.ibas.bobas.data.KeyValue;
  * @author Niuren.Zhu
  *
  */
-public class SqlStoredProcedure implements ISqlStoredProcedure {
+public class SqlStoredProcedure extends Serializable implements ISqlStoredProcedure {
+
+	private static final long serialVersionUID = 8400088898134597897L;
 
 	public SqlStoredProcedure() {
 

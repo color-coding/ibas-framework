@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.serialization.Serializable;
 
 /**
  * 键值
@@ -14,7 +15,9 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
  */
 @XmlType(name = "KeyValue", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 @XmlRootElement(name = "KeyValue", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
-public class KeyValue implements IKeyValue {
+public class KeyValue extends Serializable implements IKeyValue {
+
+	private static final long serialVersionUID = 5102847294361392265L;
 
 	private final static String EMPTY = "";
 

@@ -11,12 +11,16 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
+import org.colorcoding.ibas.bobas.serialization.Serializable;
 import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "DataTable", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 @XmlRootElement(name = "DataTable", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
-public class DataTable implements IDataTable {
+public class DataTable extends Serializable implements IDataTable {
+
+	private static final long serialVersionUID = -5646933951739886585L;
+
 	private String name;
 
 	@XmlElement(name = "Name")

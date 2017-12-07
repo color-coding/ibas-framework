@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.serialization.Serializable;
 
 /**
  * 查询排序
@@ -14,7 +15,10 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "Sort", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 @XmlRootElement(name = "Sort", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
-public class Sort implements ISort {
+public class Sort extends Serializable implements ISort {
+
+	private static final long serialVersionUID = 2186775431210517706L;
+
 	public Sort() {
 
 	}

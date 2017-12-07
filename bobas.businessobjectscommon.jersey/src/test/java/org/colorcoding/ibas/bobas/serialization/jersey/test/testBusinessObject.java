@@ -17,6 +17,7 @@ import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
 import org.colorcoding.ibas.bobas.serialization.ValidateException;
 import org.colorcoding.ibas.bobas.serialization.jersey.SerializerJson;
+import org.colorcoding.ibas.bobas.serialization.jersey.SerializerManager;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrderItem;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 import org.colorcoding.ibas.bobas.test.bo.User;
@@ -134,8 +135,9 @@ public class testBusinessObject extends TestCase {
 		orderItem.setQuantity(10);
 		orderItem.setPrice(199.99);
 
-		System.out.println("-------------------common---------------------");
-		ISerializer<?> serializer = SerializerFactory.create().createManager().create("json");
+		System.out.println("-------------------has root--------------------");
+		ISerializer<?> serializer = SerializerFactory.create().createManager()
+				.create(SerializerManager.TYPE_JSON_HAS_ROOT);
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.getSchema(order.getClass(), writer);
 		System.out.println(writer.toString());
@@ -145,7 +147,7 @@ public class testBusinessObject extends TestCase {
 		serializer.validate(order.getClass(), writer.toString());
 		System.out.println(serializer.deserialize(writer.toString(), order.getClass()));
 		System.out.println("-------------------no root---------------------");
-		serializer = SerializerFactory.create().createManager().create("json_no_root");
+		serializer = SerializerFactory.create().createManager().create(SerializerManager.TYPE_JSON_NO_ROOT);
 		writer = new ByteArrayOutputStream();
 		serializer.getSchema(order.getClass(), writer);
 		System.out.println(writer.toString());

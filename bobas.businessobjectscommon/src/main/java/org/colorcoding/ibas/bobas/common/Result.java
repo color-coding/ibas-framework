@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.serialization.Serializable;
 
 /**
  * 结果
@@ -18,7 +19,9 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "Result", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 @XmlRootElement(name = "Result", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
-public class Result implements IResult {
+public class Result extends Serializable implements IResult {
+
+	private static final long serialVersionUID = 4221626741557277709L;
 
 	public Result() {
 		this.setResultCode(0);

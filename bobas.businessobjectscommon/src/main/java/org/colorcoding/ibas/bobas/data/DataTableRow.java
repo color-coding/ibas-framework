@@ -7,10 +7,14 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.serialization.Serializable;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "DataTableRow", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
-public class DataTableRow implements IDataTableRow {
+public class DataTableRow extends Serializable implements IDataTableRow {
+
+	private static final long serialVersionUID = -1613267620773820698L;
+
 	public DataTableRow() {
 	}
 

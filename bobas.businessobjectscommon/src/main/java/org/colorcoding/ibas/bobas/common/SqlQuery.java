@@ -7,12 +7,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.serialization.Serializable;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "SqlQuery", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 @XmlRootElement(name = "SqlQuery", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
-public class SqlQuery implements ISqlQuery {
+public class SqlQuery extends Serializable implements ISqlQuery {
 
+	private static final long serialVersionUID = -4755976465377026859L;
 	private static final String SQL_EMPTY = "";
 
 	/**

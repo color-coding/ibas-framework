@@ -23,6 +23,8 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
 @XmlRootElement(name = "OperationResult", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public class OperationResult<P> extends OperationMessage implements IOperationResult<P> {
 
+	private static final long serialVersionUID = 3450498667313147437L;
+
 	public OperationResult() {
 		super();
 	}

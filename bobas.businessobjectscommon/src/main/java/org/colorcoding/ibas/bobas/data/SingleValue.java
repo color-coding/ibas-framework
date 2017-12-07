@@ -7,14 +7,12 @@ import javax.xml.bind.annotation.XmlType;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
+import org.colorcoding.ibas.bobas.serialization.Serializable;
 
 @XmlType(name = "SingleValue", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 @XmlRootElement(name = "SingleValue", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
-public class SingleValue implements ISingleValue, IBusinessObjectBase {
+public class SingleValue extends Serializable implements ISingleValue, IBusinessObjectBase {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 8757890513425535280L;
 
 	public SingleValue() {

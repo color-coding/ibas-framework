@@ -61,6 +61,10 @@ public class MyConfiguration extends Configuration {
 	 */
 	public static final String NAMESPACE_BOBAS_CONFIGURATION = NAMESPACE_BOBAS + "/configuration";
 	/**
+	 * 序列化命名空间
+	 */
+	public static final String NAMESPACE_BOBAS_SERIALIZATION = NAMESPACE_BOBAS + "/serialization";
+	/**
 	 * 配置项目-本模块名称
 	 */
 	public final static String CONFIG_ITEM_MODULE_NAME = "ModuleName";

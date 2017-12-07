@@ -6,14 +6,17 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.serialization.Serializable;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "DataTableColumn", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
-public class DataTableColumn implements IDataTableColumn {
+public class DataTableColumn extends Serializable implements IDataTableColumn {
+
+	private static final long serialVersionUID = 1631814339522850980L;
+
 	public DataTableColumn() {
-		
 	}
-	
+
 	private String name;
 
 	@XmlElement(name = "Name")
@@ -39,6 +42,7 @@ public class DataTableColumn implements IDataTableColumn {
 	public void setDataType(Class<?> type) {
 		this.dataType = type;
 	}
+
 	private String description;
 
 	@XmlElement(name = "Description")

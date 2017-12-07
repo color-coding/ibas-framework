@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.serialization.Serializable;
 
 /**
  * 文件数据
@@ -20,7 +21,9 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "FileData", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 @XmlRootElement(name = "FileData", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
-public class FileData {
+public class FileData extends Serializable {
+
+	private static final long serialVersionUID = 8583908279754401069L;
 
 	private String fileName;
 

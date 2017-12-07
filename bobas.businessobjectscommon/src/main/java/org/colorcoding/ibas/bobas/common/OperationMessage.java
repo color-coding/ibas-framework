@@ -23,6 +23,8 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 @XmlRootElement(name = "OperationMessage", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public class OperationMessage extends Result implements IOperationMessage {
 
+	private static final long serialVersionUID = -4506576628874995959L;
+
 	public OperationMessage() {
 		super();
 		this.setSignID(UUID.randomUUID().toString());

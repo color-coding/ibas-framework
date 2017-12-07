@@ -19,6 +19,7 @@ import org.colorcoding.ibas.bobas.bo.IBOSimpleLine;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.ISerializerManager;
+import org.colorcoding.ibas.bobas.serialization.Serializable;
 import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
 
 /**
@@ -27,7 +28,10 @@ import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "Criteria", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 @XmlRootElement(name = "Criteria", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
-public class Criteria implements ICriteria, Cloneable {
+public class Criteria extends Serializable implements ICriteria, Cloneable {
+
+	private static final long serialVersionUID = -2340536835606017565L;
+
 	/**
 	 * 创建实例
 	 * 
@@ -411,4 +415,17 @@ public class Criteria implements ICriteria, Cloneable {
 		return nCriteria;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("{criteria: ");
+		if (this.getBusinessObject() != null && !this.getBusinessObject().isEmpty()) {
+			stringBuilder.append(this.getBusinessObject());
+			stringBuilder.append(", ");
+		}
+		stringBuilder.append("result|");
+		stringBuilder.append(this.getResultCount());
+		stringBuilder.append("}");
+		return stringBuilder.toString();
+	}
 }

@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.serialization.jersey.test;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,13 +20,17 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
+import org.colorcoding.ibas.bobas.serialization.ISerializer;
+import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
+import org.colorcoding.ibas.bobas.serialization.ValidateException;
+import org.colorcoding.ibas.bobas.serialization.jersey.SerializerManager;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrderItem;
 
 import junit.framework.TestCase;
 
 public class testCriteria extends TestCase {
-	public void testFromString() {
+	private ICriteria createCriteria() {
 		ICriteria criteria = new Criteria();
 		criteria.setResultCount(100);
 		// ("DocStatus" = 'P' OR "DocStatus" = 'F')
@@ -51,7 +56,11 @@ public class testCriteria extends TestCase {
 		condition.setAlias(SalesOrderItem.PROPERTY_ITEMCODE.getName());
 		condition.setOperation(ConditionOperation.CONTAIN);
 		condition.setValue("T000");
+		return criteria;
+	}
 
+	public void testFromString() {
+		ICriteria criteria = this.createCriteria();
 		ICriteria jsonCriteria = Criteria.create(criteria.toString("json"));
 		assertEquals("json marshal and unmarshal not equal", criteria.toString("json"), jsonCriteria.toString("json"));
 
@@ -73,6 +82,23 @@ public class testCriteria extends TestCase {
 		assertEquals("from identifiers faild.", "1", criteria.getConditions().get(0).getValue());
 		assertEquals("from identifiers faild.", "LineId", criteria.getConditions().get(1).getAlias());
 		assertEquals("from identifiers faild.", "2", criteria.getConditions().get(1).getValue());
+	}
+
+	public void testJsonSchema() throws ValidateException {
+		ICriteria criteria = this.createCriteria();
+		System.out.println("-------------------has root--------------------");
+		ISerializer<?> serializer = SerializerFactory.create().createManager()
+				.create(SerializerManager.TYPE_JSON_HAS_ROOT);
+		ByteArrayOutputStream writer = new ByteArrayOutputStream();
+		serializer.serialize(criteria, writer);
+		System.out.println(writer.toString());
+		System.out.println(serializer.deserialize(writer.toString(), criteria.getClass()));
+		System.out.println("-------------------no root---------------------");
+		serializer = SerializerFactory.create().createManager().create(SerializerManager.TYPE_JSON_NO_ROOT);
+		writer = new ByteArrayOutputStream();
+		serializer.serialize(criteria, writer);
+		System.out.println(writer.toString());
+		System.out.println(serializer.deserialize(writer.toString(), criteria.getClass()));
 	}
 
 	public void testToJSON() throws JAXBException {

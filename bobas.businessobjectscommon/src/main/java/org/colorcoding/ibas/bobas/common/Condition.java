@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.db.DataConvert;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
+import org.colorcoding.ibas.bobas.serialization.Serializable;
 
 /**
  * 查询条件
@@ -17,7 +18,9 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "Condition", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 @XmlRootElement(name = "Condition", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
-public class Condition implements ICondition {
+public class Condition extends Serializable implements ICondition {
+
+	private static final long serialVersionUID = 3151721602767228504L;
 
 	public Condition() {
 
