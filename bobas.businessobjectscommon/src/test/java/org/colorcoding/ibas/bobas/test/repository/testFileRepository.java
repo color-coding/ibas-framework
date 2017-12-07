@@ -30,6 +30,12 @@ public class testFileRepository extends TestCase {
 		IOperationResult<FileData> operationResult = fileRepository.save(fileData);
 		System.out.println(operationResult.getMessage());
 		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
+		ICriteria criteria = new Criteria();
+		ICondition condition = criteria.getConditions().create();
+		condition.setAlias(FileRepository.CRITERIA_CONDITION_ALIAS_FILE_NAME);
+		condition.setValue("~tmp");
+		operationResult = fileRepository.delete(criteria);
+		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
 	}
 
 	public void testFetchFile() {

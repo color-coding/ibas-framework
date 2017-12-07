@@ -128,7 +128,7 @@ public class FileJudgmentLink extends JudgmentLink {
 			jItem.setRightOperter(ValueOperator);
 			jLinkItems.add(jItem);
 		}
-		if (jLinkItems.size() == 0) {
+		if (jLinkItems.isEmpty()) {
 			throw new JudgmentLinkException(I18N.prop("msg_bobas_invaild_judgment_link_conditions"));
 		}
 		super.setJudgmentItems(jLinkItems.toArray(new JudgmentLinkItem[] {}));

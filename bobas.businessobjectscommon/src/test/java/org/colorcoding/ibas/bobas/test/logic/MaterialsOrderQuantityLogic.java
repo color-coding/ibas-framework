@@ -37,9 +37,6 @@ public class MaterialsOrderQuantityLogic extends BusinessLogic<IMaterialsOrderQu
 			if (operationResult.getError() != null) {
 				throw new BusinessLogicException(operationResult.getError());
 			}
-			if (operationResult.getResultCode() != 0) {
-				throw new BusinessLogicException(operationResult.getMessage());
-			}
 			materials = operationResult.getResultObjects().firstOrDefault();
 		}
 		if (materials == null) {

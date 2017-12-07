@@ -7,7 +7,6 @@ import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
-import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
@@ -109,9 +108,6 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 				fetchTime++;// 查询计数加1
 				if (opRslt.getError() != null) {
 					throw opRslt.getError();
-				}
-				if (opRslt.getResultCode() != 0) {
-					throw new RepositoryException(opRslt.getMessage(), opRslt.getError());
 				}
 				fetchCount += opRslt.getResultObjects().size();
 				if (this.getOwnershipJudger() != null && this.getCurrentUser() != OrganizationFactory.SYSTEM_USER) {

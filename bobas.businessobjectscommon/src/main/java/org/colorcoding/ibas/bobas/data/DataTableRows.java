@@ -40,7 +40,7 @@ public class DataTableRows extends ArrayList<IDataTableRow> implements IDataTabl
 	 * @return
 	 */
 	public IDataTableRow create() {
-		if (this.getTable().getColumns().size() == 0) {
+		if (this.getTable().getColumns().isEmpty()) {
 			throw new RuntimeException(I18N.prop("msg_bobas_data_table_no_columns_defined"));
 		}
 		DataTableRow row = new DataTableRow(this.getTable().getColumns());

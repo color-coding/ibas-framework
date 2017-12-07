@@ -37,9 +37,6 @@ public class MaterialsJournalContractLogic extends BusinessLogic<IMaterialsJourn
 			if (operationResult.getError() != null) {
 				throw new BusinessLogicException(operationResult.getError());
 			}
-			if (operationResult.getResultCode() != 0) {
-				throw new BusinessLogicException(operationResult.getMessage());
-			}
 			journal = operationResult.getResultObjects().firstOrDefault();
 		}
 		if (journal == null) {

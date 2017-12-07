@@ -12,13 +12,13 @@ import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
-import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.message.Logger;
-import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.expression.ExpressionFactory;
 import org.colorcoding.ibas.bobas.expression.JudgmentLink;
 import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
+import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 /**
  * 业务逻辑链
@@ -210,9 +210,6 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 		IOperationResult<?> operationResult = repository.fetchData(criteria, type);
 		if (operationResult.getError() != null) {
 			throw new BusinessLogicException(operationResult.getError());
-		}
-		if (operationResult.getResultCode() != 0) {
-			throw new BusinessLogicException(operationResult.getMessage());
 		}
 		return (IBusinessObject) operationResult.getResultObjects().firstOrDefault();
 	}

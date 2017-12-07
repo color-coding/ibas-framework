@@ -29,7 +29,6 @@ import org.colorcoding.ibas.bobas.core.SaveActionType;
 import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
-import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 public class BORepository4File extends BORepository4FileReadonly implements IBORepository4File {
 	protected static final String MSG_REPOSITORY_DELETED_DATA_FILE = "repository: deleted data file [%s].";
@@ -294,7 +293,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 		BOFile boFile = this.getBOFile(bo);
 		File file = new File(this.getRepositoryFolder() + File.separator + boFile.getFilePath());
 		if (file.exists()) {
-			Logger.log(MessageLevel.DEBUG, MSG_REPOSITORY_DELETED_DATA_FILE, file.getPath());
+			Logger.log(MSG_REPOSITORY_DELETED_DATA_FILE, file.getPath());
 			return file.delete();
 		}
 		return false;
@@ -322,6 +321,6 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 		if (!file.exists()) {
 			file.createNewFile();
 		}
-		Logger.log(MessageLevel.DEBUG, MSG_REPOSITORY_WRITED_DATA_FILE, path);
+		Logger.log(MSG_REPOSITORY_WRITED_DATA_FILE, path);
 	}
 }

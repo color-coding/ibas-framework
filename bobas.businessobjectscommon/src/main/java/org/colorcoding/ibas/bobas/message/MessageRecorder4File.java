@@ -128,7 +128,7 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 						public boolean isActivated() {
 							if (messageQueue == null)
 								return false;
-							if (messageQueue.size() == 0)
+							if (messageQueue.isEmpty())
 								return false;
 							return true;
 						}

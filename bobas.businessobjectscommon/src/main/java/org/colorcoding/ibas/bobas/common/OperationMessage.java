@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.DateTime;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 
 /**
  * 操作消息
@@ -84,10 +85,15 @@ public class OperationMessage extends Result implements IOperationMessage {
 
 	@Override
 	public final Exception getError() {
-		if (this.error == null && this.getResultCode() != 0 && this.getMessage() != null
-				&& !this.getMessage().isEmpty()) {
+		if (this.error == null && this.getResultCode() != 0) {
 			// 发生错误，有描述，自动创建异常对象
-			this.error = new Exception(this.getMessage());
+			if (this.getMessage() == null || !this.getMessage().isEmpty()) {
+				// 没有描述，未知错误
+				this.error = new Exception(I18N.prop("msg_bobas_unknown_exception"));
+			} else {
+				// 描述错误
+				this.error = new Exception(this.getMessage());
+			}
 		}
 		return this.error;
 	}

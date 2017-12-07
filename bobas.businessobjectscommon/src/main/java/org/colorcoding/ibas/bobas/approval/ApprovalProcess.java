@@ -408,7 +408,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 		if (!this.getApprovalData().isSavable()) {
 			// 审批数据不是业务对象，则查询实际业务对象
 			ICriteria criteria = this.getApprovalData().getCriteria();
-			if (criteria == null || criteria.getConditions().size() == 0) {
+			if (criteria == null || criteria.getConditions().isEmpty()) {
 				throw new ApprovalProcessException(I18N.prop("msg_bobas_approval_data_identifiers_unrecognizable",
 						this.getApprovalData().getIdentifiers()));
 			}
@@ -424,9 +424,6 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 			}
 			if (opRsltFetch.getError() != null) {
 				throw new ApprovalProcessException(opRsltFetch.getError());
-			}
-			if (opRsltFetch.getResultCode() != 0) {
-				throw new ApprovalProcessException(opRsltFetch.getMessage());
 			}
 			Object tmpBO = opRsltFetch.getResultObjects().firstOrDefault();
 			if (!(tmpBO instanceof IApprovalData)) {
@@ -466,9 +463,6 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 					IOperationResult<?> opRsltSave = apRepository.saveData((IBusinessObject) approvalData);
 					if (opRsltSave.getError() != null) {
 						throw new ApprovalProcessException(opRsltSave.getError());
-					}
-					if (opRsltSave.getResultCode() != 0) {
-						throw new ApprovalProcessException(opRsltSave.getMessage());
 					}
 				}
 			}

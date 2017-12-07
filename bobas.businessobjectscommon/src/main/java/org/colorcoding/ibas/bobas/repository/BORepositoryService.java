@@ -359,9 +359,6 @@ public class BORepositoryService implements IBORepositoryService {
 			if (operationResult.getError() != null) {
 				throw operationResult.getError();
 			}
-			if (operationResult.getResultCode() != 0) {
-				throw new Exception(operationResult.getMessage());
-			}
 			// 成功保存
 			returnBO = operationResult.getResultObjects().firstOrDefault();
 			if (this.isPostTransaction()) {
@@ -389,10 +386,7 @@ public class BORepositoryService implements IBORepositoryService {
 						if (operationResult.getError() != null) {
 							throw operationResult.getError();
 						}
-						if (operationResult.getResultCode() != 0) {
-							throw new Exception(operationResult.getMessage());
-						}
-						if (operationResult.getResultObjects().size() == 0) {
+						if (operationResult.getResultObjects().isEmpty()) {
 							throw new Exception(I18N.prop("msg_bobas_not_found_bo_copy", returnBO));
 						}
 						returnBO = operationResult.getResultObjects().firstOrDefault();
@@ -452,9 +446,6 @@ public class BORepositoryService implements IBORepositoryService {
 			IOperationResult<TransactionMessage> spOpRslt = dbRepository.fetch(sqlQuery, TransactionMessage.class);
 			if (spOpRslt.getError() != null) {
 				throw spOpRslt.getError();
-			}
-			if (spOpRslt.getResultCode() != 0) {
-				throw new Exception(spOpRslt.getMessage());
 			}
 			TransactionMessage message = spOpRslt.getResultObjects().firstOrDefault();
 			if (message == null) {
