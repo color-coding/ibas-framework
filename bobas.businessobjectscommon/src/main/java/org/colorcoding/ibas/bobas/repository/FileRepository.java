@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
+import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
@@ -21,11 +22,12 @@ import org.colorcoding.ibas.bobas.message.Logger;
 public class FileRepository extends FileRepositoryReadonly implements IFileRepository {
 
 	protected static final String MSG_REPOSITORY_WRITE_FILE = "repository: writed file [%s].";
+	protected static final String MSG_REPOSITORY_DELETE_FILE = "repository: deleted file [%s].";
 
 	@Override
 	public IOperationResult<FileData> save(FileData fileData) {
-		OperationResult<FileData> operationResult = new OperationResult<>();
 		try {
+			OperationResult<FileData> operationResult = new OperationResult<>();
 			operationResult.addResultObjects(this.writeFile(fileData));
 			return operationResult;
 		} catch (Exception e) {
@@ -80,5 +82,31 @@ public class FileRepository extends FileRepositoryReadonly implements IFileRepos
 		Logger.log(MSG_REPOSITORY_WRITE_FILE, nFileData.getOriginalName() == null ? nFileData.getLocation()
 				: String.format("%s|%s", nFileData.getOriginalName(), nFileData.getLocation()));
 		return nFileData;
+	}
+
+	@Override
+	public IOperationResult<FileData> delete(ICriteria criteria) {
+		try {
+			if (criteria == null || criteria.getConditions().isEmpty()) {
+				// 没有条件，不允许删除
+				return new OperationResult<>();
+			}
+			IOperationResult<FileData> opRsltFetch = this.fetch(criteria);
+			if (opRsltFetch.getError() != null) {
+				throw opRsltFetch.getError();
+			}
+			OperationResult<FileData> operationResult = new OperationResult<>();
+			for (FileData item : opRsltFetch.getResultObjects()) {
+				File file = new File(item.getLocation());
+				if (file.exists()) {
+					file.delete();
+					Logger.log(MSG_REPOSITORY_DELETE_FILE, file.getPath());
+					operationResult.addResultObjects(item);
+				}
+			}
+			return operationResult;
+		} catch (Exception e) {
+			return new OperationResult<>(e);
+		}
 	}
 }

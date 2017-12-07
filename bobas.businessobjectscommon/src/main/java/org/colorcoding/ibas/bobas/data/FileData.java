@@ -2,6 +2,8 @@ package org.colorcoding.ibas.bobas.data;
 
 import java.io.InputStream;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -15,6 +17,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
  * @author Niuren.Zhu
  *
  */
+@XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "FileData", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 @XmlRootElement(name = "FileData", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class FileData {

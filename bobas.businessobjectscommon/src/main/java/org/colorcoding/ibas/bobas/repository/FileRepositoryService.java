@@ -125,4 +125,23 @@ public class FileRepositoryService implements IFileRepositoryService {
 			return new OperationResult<>(e);
 		}
 	}
+
+	/**
+	 * 删除文件数据
+	 * 
+	 * @param criteria
+	 *            查询
+	 * @param token
+	 *            用户口令
+	 * @return
+	 */
+	protected IOperationResult<FileData> delete(ICriteria criteria, String token) {
+		try {
+			this.setCurrentUser(token);
+			return this.getRepository().delete(criteria);
+		} catch (Exception e) {
+			Logger.log(e);
+			return new OperationResult<>(e);
+		}
+	}
 }

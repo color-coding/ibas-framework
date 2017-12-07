@@ -80,7 +80,7 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
 	}
 
 	private FileData[] searchFiles(ICriteria criteria) throws Exception {
-		if (criteria == null || criteria.getConditions().size() == 0) {
+		if (criteria == null || criteria.getConditions().isEmpty()) {
 			throw new RepositoryException(I18N.prop("msg_bobas_invaild_criteria"));
 		}
 		String workFolder = this.getRepositoryFolder();
@@ -118,13 +118,11 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
 		File[] files = this.searchFiles(folder, include, conditions);
 		// 输出文件数据
 		ArrayList<FileData> nFileDatas = new ArrayList<>();
-		if (files != null) {
-			for (File file : files) {
-				FileData fileData = new FileData();
-				fileData.setFileName(file.getName());
-				fileData.setLocation(file.getPath());
-				nFileDatas.add(fileData);
-			}
+		for (File file : files) {
+			FileData fileData = new FileData();
+			fileData.setFileName(file.getName());
+			fileData.setLocation(file.getPath());
+			nFileDatas.add(fileData);
 		}
 		return nFileDatas.toArray(new FileData[] {});
 	}
