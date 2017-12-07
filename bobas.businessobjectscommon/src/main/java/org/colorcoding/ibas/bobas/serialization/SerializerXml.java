@@ -57,6 +57,13 @@ public class SerializerXml extends Serializer<Schema> {
 			marshaller.marshal(object, outputStream);
 		} catch (JAXBException e) {
 			throw new SerializationException(e);
+		} finally {
+			if (outputStream != null) {
+				try {
+					outputStream.close();
+				} catch (IOException e) {
+				}
+			}
 		}
 	}
 
@@ -68,6 +75,13 @@ public class SerializerXml extends Serializer<Schema> {
 			return unmarshaller.unmarshal(inputStream);
 		} catch (JAXBException e) {
 			throw new SerializationException(e);
+		} finally {
+			if (inputStream != null) {
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+				}
+			}
 		}
 	}
 
@@ -79,6 +93,13 @@ public class SerializerXml extends Serializer<Schema> {
 			validator.validate(xmlSource);
 		} catch (SAXException | IOException e) {
 			throw new ValidateException(e);
+		} finally {
+			if (data != null) {
+				try {
+					data.close();
+				} catch (IOException e) {
+				}
+			}
 		}
 	}
 
@@ -121,6 +142,13 @@ public class SerializerXml extends Serializer<Schema> {
 			transformer.transform(source, new StreamResult(outputStream));
 		} catch (ParserConfigurationException | TransformerException e) {
 			throw new SerializationException(e);
+		} finally {
+			if (outputStream != null) {
+				try {
+					outputStream.close();
+				} catch (IOException e) {
+				}
+			}
 		}
 	}
 

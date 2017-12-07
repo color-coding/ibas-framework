@@ -60,6 +60,13 @@ public class SerializerJson extends Serializer<JsonSchema> {
 			jsonGenerator.close();
 		} catch (IOException e) {
 			throw new SerializationException(e);
+		} finally {
+			if (outputStream != null) {
+				try {
+					outputStream.close();
+				} catch (IOException e) {
+				}
+			}
 		}
 	}
 
@@ -195,6 +202,13 @@ public class SerializerJson extends Serializer<JsonSchema> {
 			marshaller.marshal(object, outputStream);
 		} catch (JAXBException e) {
 			throw new SerializationException(e);
+		} finally {
+			if (outputStream != null) {
+				try {
+					outputStream.close();
+				} catch (IOException e) {
+				}
+			}
 		}
 	}
 
@@ -208,6 +222,13 @@ public class SerializerJson extends Serializer<JsonSchema> {
 			return unmarshaller.unmarshal(inputStream);
 		} catch (JAXBException e) {
 			throw new SerializationException(e);
+		} finally {
+			if (inputStream != null) {
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+				}
+			}
 		}
 	}
 
@@ -218,6 +239,13 @@ public class SerializerJson extends Serializer<JsonSchema> {
 			this.validate(schema, jsonData);
 		} catch (IOException e) {
 			throw new ValidateException(e);
+		} finally {
+			if (data != null) {
+				try {
+					data.close();
+				} catch (IOException e) {
+				}
+			}
 		}
 	}
 
