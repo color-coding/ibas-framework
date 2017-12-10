@@ -54,15 +54,4 @@ public interface IFieldData {
 	 */
 	boolean isLinkage();
 
-	/**
-	 * 是否修改过
-	 * 
-	 */
-	boolean isDirty();
-
-	/**
-	 * 置为未修改过
-	 */
-	void markOld();
-
 }

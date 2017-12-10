@@ -30,7 +30,6 @@ class FieldDataInteger extends FieldDataBase<Integer> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 
@@ -65,7 +64,6 @@ class FieldDataShort extends FieldDataBase<Short> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 
@@ -101,7 +99,6 @@ class FieldDataChar extends FieldDataBase<Character> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 
@@ -133,7 +130,6 @@ class FieldDataString extends FieldDataBase<String> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 
@@ -164,7 +160,6 @@ class FieldDataDecimal extends FieldDataBase<Decimal> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 
@@ -195,7 +190,6 @@ class FieldDataDateTime extends FieldDataBase<DateTime> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 
@@ -229,7 +223,6 @@ class FieldDataFloat extends FieldDataBase<Float> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 
@@ -263,7 +256,6 @@ class FieldDataDouble extends FieldDataBase<Double> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 
@@ -294,7 +286,6 @@ class FieldDataBoolean extends FieldDataBase<Boolean> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 
@@ -329,7 +320,6 @@ class FieldDataEnum extends FieldDataBase<Enum<?>> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 
@@ -361,7 +351,6 @@ class FieldDataBO extends FieldDataBase<IBusinessObjectBase> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 
@@ -393,7 +382,6 @@ class FieldDataBOs extends FieldDataBase<IBusinessObjectListBase<?>> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 

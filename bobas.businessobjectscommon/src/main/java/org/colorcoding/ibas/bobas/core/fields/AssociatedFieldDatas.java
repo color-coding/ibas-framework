@@ -24,7 +24,6 @@ class AssociatedFieldDataBO extends AssociatedFieldDataBase<Object> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 }
@@ -50,7 +49,6 @@ class AssociatedFieldDataArray extends AssociatedFieldDataBase<Object> {
 		if (value == null) {
 			// 置空
 			this.value = null;
-			this.setDirty(true);
 			return true;
 		}
 		if (this.value != null && this.value.equals(value)) {
@@ -65,7 +63,6 @@ class AssociatedFieldDataArray extends AssociatedFieldDataBase<Object> {
 				Array.set(newValue, i, Array.get(value, i));
 			}
 			this.value = newValue;
-			this.setDirty(true);
 			return true;
 		}
 		return false;

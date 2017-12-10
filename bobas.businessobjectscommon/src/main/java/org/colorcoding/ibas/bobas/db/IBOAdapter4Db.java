@@ -83,16 +83,6 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	ISqlQuery parseDeleteScript(IBusinessObjectBase bo) throws ParsingException;
 
 	/**
-	 * 获取更新语句
-	 * 
-	 * @param bo
-	 *            业务对象
-	 * @return 更新语句
-	 * @throws ParsingException
-	 */
-	ISqlQuery parseUpdateScript(IBusinessObjectBase bo) throws ParsingException;
-
-	/**
 	 * 解析业务对象
 	 * 
 	 * @param reader

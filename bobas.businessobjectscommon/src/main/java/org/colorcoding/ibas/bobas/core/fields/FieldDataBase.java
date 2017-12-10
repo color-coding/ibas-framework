@@ -117,22 +117,6 @@ public abstract class FieldDataBase<T> implements IFieldData {
 		this.linkage = value;
 	}
 
-	private boolean dirty = false;
-
-	@Override
-	public final boolean isDirty() {
-		return this.dirty;
-	}
-
-	@Override
-	public void markOld() {
-		this.setDirty(false);
-	}
-
-	protected void setDirty(boolean value) {
-		this.dirty = value;
-	}
-
 	@Override
 	public abstract T getValue();
 

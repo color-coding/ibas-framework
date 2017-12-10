@@ -15,8 +15,8 @@ import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.measurement.Time;
 import org.colorcoding.ibas.bobas.data.measurement.emTimeUnit;
-import org.colorcoding.ibas.bobas.db.ParsingException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
+import org.colorcoding.ibas.bobas.db.ParsingException;
 import org.colorcoding.ibas.bobas.db.hana.BOAdapter;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.test.bo.ISalesOrder;
@@ -101,17 +101,11 @@ public class testBOAdapter extends TestCase {
 		ISqlQuery sqlQuery = boAdapter.parseInsertScript(order);
 		System.out.println(sqlQuery.getQueryString());
 
-		sqlQuery = boAdapter.parseUpdateScript(order);
-		System.out.println(sqlQuery.getQueryString());
-
 		sqlQuery = boAdapter.parseDeleteScript(order);
 		System.out.println(sqlQuery.getQueryString());
 
 		for (ISalesOrderItem item : order.getSalesOrderItems()) {
 			sqlQuery = boAdapter.parseInsertScript(item);
-			System.out.println(sqlQuery.getQueryString());
-
-			sqlQuery = boAdapter.parseUpdateScript(item);
 			System.out.println(sqlQuery.getQueryString());
 
 			sqlQuery = boAdapter.parseDeleteScript(item);

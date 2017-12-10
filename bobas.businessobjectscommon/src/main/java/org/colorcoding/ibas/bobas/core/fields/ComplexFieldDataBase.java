@@ -1,7 +1,5 @@
 package org.colorcoding.ibas.bobas.core.fields;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -16,8 +14,7 @@ import org.colorcoding.ibas.bobas.mapping.ComplexField;
  *
  * @param <T>
  */
-public abstract class ComplexFieldDataBase<T> extends FieldDataBase<T>
-		implements IFieldDataDbs, PropertyChangeListener {
+public abstract class ComplexFieldDataBase<T> extends FieldDataBase<T> implements IFieldDataDbs {
 
 	private FieldDataDb4Complex<?>[] dbFields;
 
@@ -49,22 +46,6 @@ public abstract class ComplexFieldDataBase<T> extends FieldDataBase<T>
 				return dbFields[nextSlot++];
 			}
 		};
-	}
-
-	@Override
-	protected void setDirty(boolean value) {
-		super.setDirty(value);
-		if (this.getDbFields() != null) {
-			for (FieldDataDb4Complex<?> item : this.getDbFields()) {
-				item.setDirty(value);
-			}
-		}
-	}
-
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		// 度量属性发生改变，改变映射的数据库字段状态
-		this.setDirty(true);
 	}
 
 	@Override
@@ -114,11 +95,6 @@ public abstract class ComplexFieldDataBase<T> extends FieldDataBase<T>
 }
 
 abstract class FieldDataDb4Complex<T> extends FieldDataDbBase<T> {
-
-	@Override
-	public void setDirty(boolean value) {
-		super.setDirty(value);
-	}
 
 	public abstract Object getData();
 

@@ -28,7 +28,6 @@ class DbFieldDataInteger extends FieldDataDbBase<Integer> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 
@@ -63,7 +62,6 @@ class DbFieldDataShort extends FieldDataDbBase<Short> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 
@@ -95,7 +93,6 @@ class DbFieldDataChar extends FieldDataDbBase<Character> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 
@@ -127,7 +124,6 @@ class DbFieldDataString extends FieldDataDbBase<String> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 
@@ -158,7 +154,6 @@ class DbFieldDataDecimal extends FieldDataDbBase<Decimal> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 
@@ -189,7 +184,6 @@ class DbFieldDataDateTime extends FieldDataDbBase<DateTime> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 
@@ -223,7 +217,6 @@ class DbFieldDataFloat extends FieldDataDbBase<Float> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 
@@ -257,7 +250,6 @@ class DbFieldDataDouble extends FieldDataDbBase<Double> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 
@@ -288,7 +280,6 @@ class DbFieldDataBoolean extends FieldDataDbBase<Boolean> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 
@@ -323,7 +314,6 @@ class DbFieldDataEnum extends FieldDataDbBase<Enum<?>> {
 			return false;
 		}
 		this.value = value;
-		this.setDirty(true);
 		return true;
 	}
 

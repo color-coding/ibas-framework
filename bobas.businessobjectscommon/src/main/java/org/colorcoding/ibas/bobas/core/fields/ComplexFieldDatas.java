@@ -31,10 +31,6 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 		if (this.value != null && this.value.equals(value)) {
 			return false;
 		}
-		if (this.value != null) {
-			// 移出事件监听
-			this.value.removeListener(this);
-		}
 		this.value = value;
 		if (this.getDbFields() != null) {
 			for (FieldDataDb4Complex<?> item : this.getDbFields()) {
@@ -43,11 +39,6 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 		} else {
 			this.mapping();
 		}
-		if (this.value != null) {
-			// 添加事件监听
-			this.value.registerListener(this);
-		}
-		this.setDirty(true);
 		return true;
 	}
 
