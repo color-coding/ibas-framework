@@ -9,9 +9,6 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 public class SalesOrder2 extends SalesOrder {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -243448784277376241L;
 
 	/**

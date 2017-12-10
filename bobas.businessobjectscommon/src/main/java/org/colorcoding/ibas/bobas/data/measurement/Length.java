@@ -16,10 +16,8 @@ import org.colorcoding.ibas.bobas.data.KeyText;
 @XmlType(name = "Length", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class Length extends MeasurementDecimal<emLengthUnit> {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -443387451382047557L;
+
 	static KeyText[] unitCharacters = null;
 
 	public Length() {

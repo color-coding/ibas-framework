@@ -17,10 +17,8 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 @XmlType(name = "Percent", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class Percent extends MeasurementDecimal<emPercentUnit> {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -2434264026253052566L;
+
 	static KeyText[] unitCharacters = null;
 
 	public Percent() {

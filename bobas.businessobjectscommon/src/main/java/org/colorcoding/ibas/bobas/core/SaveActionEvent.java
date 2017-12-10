@@ -10,9 +10,6 @@ import java.util.EventObject;
  */
 public class SaveActionEvent extends EventObject {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 985060795180206279L;
 
 	public SaveActionEvent(Object source) {

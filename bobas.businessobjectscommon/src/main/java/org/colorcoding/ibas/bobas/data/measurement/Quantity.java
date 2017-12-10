@@ -16,9 +16,6 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 @XmlType(name = "Quantity", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class Quantity extends MeasurementDecimal<String> {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -125358402117609587L;
 
 	public Quantity() {

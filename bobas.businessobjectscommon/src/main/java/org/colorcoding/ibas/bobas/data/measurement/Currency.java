@@ -15,9 +15,7 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "Currency", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class Currency extends MeasurementDecimal<String> {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1010546725622041464L;
 
 	public Currency() {

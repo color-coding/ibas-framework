@@ -13,9 +13,6 @@ import org.colorcoding.ibas.bobas.data.Decimal;
 @XmlType(name = "MeasurementDecimal", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public abstract class MeasurementDecimal<U> extends Measurement<Decimal, U> {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 6473479770614930990L;
 
 	public MeasurementDecimal() {

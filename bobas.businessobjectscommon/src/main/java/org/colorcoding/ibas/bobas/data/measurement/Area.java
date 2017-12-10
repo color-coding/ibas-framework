@@ -16,10 +16,8 @@ import org.colorcoding.ibas.bobas.data.KeyText;
 @XmlType(name = "Area", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class Area extends MeasurementDecimal<emAreaUnit> {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -7240444474472101668L;
+
 	static KeyText[] unitCharacters = null;
 
 	public Area() {

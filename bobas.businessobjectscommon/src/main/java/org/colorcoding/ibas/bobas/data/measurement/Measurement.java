@@ -20,9 +20,7 @@ import org.colorcoding.ibas.bobas.mapping.Value;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "Measurement", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public abstract class Measurement<V, U> extends Number implements IMeasurement<V, U>, Comparable<IMeasurement<V, U>> {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 3951630803024284525L;
 
 	transient private PropertyChangeSupport propertyChangeisteners = new PropertyChangeSupport(this);

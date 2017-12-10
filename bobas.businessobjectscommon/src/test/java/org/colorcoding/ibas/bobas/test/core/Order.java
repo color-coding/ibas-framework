@@ -13,9 +13,7 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 @XmlRootElement(name = "Order", namespace = "httpL//ibas.club/bobas/test")
 public class Order extends BusinessObjectBase<Order> {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 4771656989360317386L;
 
 	/**

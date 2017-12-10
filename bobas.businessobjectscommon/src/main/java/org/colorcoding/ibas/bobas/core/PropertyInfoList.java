@@ -10,9 +10,6 @@ import java.util.ArrayList;
  */
 public class PropertyInfoList extends ArrayList<IPropertyInfo<?>> {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -6320914335175298868L;
 
 	/**

@@ -12,9 +12,6 @@ import org.colorcoding.ibas.bobas.data.DataConvert;
 @XmlType(name = "MeasurementDouble", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public abstract class MeasurementDouble<U> extends Measurement<Double, U> {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 3691255331802819111L;
 
 	public MeasurementDouble() {

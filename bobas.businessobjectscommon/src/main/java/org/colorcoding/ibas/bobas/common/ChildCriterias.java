@@ -18,9 +18,6 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
 @XmlSeeAlso({ ChildCriteria.class })
 public final class ChildCriterias extends ArrayList<IChildCriteria> implements IChildCriterias {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -2702445645664575985L;
 
 	@Override

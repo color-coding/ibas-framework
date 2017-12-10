@@ -15,9 +15,6 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
 @XmlSeeAlso({ Sort.class })
 public class Sorts extends ArrayList<ISort> implements ISorts {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 3748654397825099641L;
 
 	@Override

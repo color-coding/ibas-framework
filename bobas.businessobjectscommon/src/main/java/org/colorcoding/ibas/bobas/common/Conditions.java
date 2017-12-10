@@ -18,9 +18,6 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
 @XmlSeeAlso({ Condition.class })
 public class Conditions extends ArrayList<ICondition> implements IConditions {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 5496591915962628897L;
 
 	public void Add(ICondition item) {

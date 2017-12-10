@@ -38,9 +38,6 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
 public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusinessObject>
 		extends BusinessObjectListBase<E> implements IBusinessObjects<E, P> {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7360645136974073845L;
 
 	public BusinessObjects() {

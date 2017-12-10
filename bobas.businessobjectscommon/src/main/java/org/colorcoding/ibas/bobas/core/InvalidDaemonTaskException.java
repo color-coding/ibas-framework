@@ -8,16 +8,14 @@ package org.colorcoding.ibas.bobas.core;
  */
 public class InvalidDaemonTaskException extends Exception {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 398846462991172932L;
 
 	public InvalidDaemonTaskException() {
 		super();
 	}
 
-	public InvalidDaemonTaskException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+	public InvalidDaemonTaskException(String message, Throwable cause, boolean enableSuppression,
+			boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
 

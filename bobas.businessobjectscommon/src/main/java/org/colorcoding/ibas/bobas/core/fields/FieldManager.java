@@ -65,6 +65,18 @@ public class FieldManager implements Iterable<IFieldData> {
 		return this.fieldDatas;
 	}
 
+	/**
+	 * 长度
+	 * 
+	 * @return
+	 */
+	public int size() {
+		if (this.fieldDatas == null) {
+			return 0;
+		}
+		return this.fieldDatas.length;
+	}
+
 	@Override
 	public String toString() {
 		return String.format("{fields: count=%s}", this.fieldDatas == null ? 0 : this.fieldDatas.length);

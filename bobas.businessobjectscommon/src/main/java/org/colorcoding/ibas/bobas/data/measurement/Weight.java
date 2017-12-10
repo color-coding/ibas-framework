@@ -16,10 +16,8 @@ import org.colorcoding.ibas.bobas.data.KeyText;
 @XmlType(name = "Weight", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class Weight extends MeasurementDecimal<emWeightUnit> {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 5827904441419366879L;
+
 	static KeyText[] unitCharacters = null;
 
 	public Weight() {

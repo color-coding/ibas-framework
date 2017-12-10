@@ -2,9 +2,6 @@ package org.colorcoding.ibas.bobas.test.bo;
 
 public class SalesOrderItems2 extends SalesOrderItems {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -4062784903911615013L;
 
 	public SalesOrderItems2() {

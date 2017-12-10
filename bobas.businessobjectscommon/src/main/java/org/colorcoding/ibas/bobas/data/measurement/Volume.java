@@ -16,10 +16,8 @@ import org.colorcoding.ibas.bobas.data.KeyText;
 @XmlType(name = "Volume", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class Volume extends MeasurementDecimal<emVolumeUnit> {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 4463068051027966746L;
+
 	static KeyText[] unitCharacters = null;
 
 	public Volume() {

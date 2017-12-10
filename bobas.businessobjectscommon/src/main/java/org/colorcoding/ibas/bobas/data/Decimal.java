@@ -14,6 +14,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 public class Decimal extends BigDecimal implements Cloneable {
 
 	private static final long serialVersionUID = -3383909107151269118L;
+
 	/**
 	 * 存储时，保留小数位数
 	 */

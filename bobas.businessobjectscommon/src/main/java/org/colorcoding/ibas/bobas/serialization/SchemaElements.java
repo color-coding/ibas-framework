@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class SchemaElements extends ArrayList<SchemaElement> {
+
 	private static final long serialVersionUID = 5525571009797394981L;
 
 	public void add(SchemaElement[] items) {

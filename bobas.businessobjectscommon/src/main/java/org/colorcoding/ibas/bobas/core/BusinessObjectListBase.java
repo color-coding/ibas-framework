@@ -24,9 +24,6 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
 public abstract class BusinessObjectListBase<E extends IBusinessObjectBase> extends ArrayList<E>
 		implements IBusinessObjectListBase<E>, IBindableBase {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -5212226199781937273L;
 
 	transient private PropertyChangeSupport listeners;

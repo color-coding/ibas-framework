@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.data;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -21,6 +22,18 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 
 	private static final long serialVersionUID = 721283937680328856L;
+
+	public ArrayList() {
+		super();
+	}
+
+	public ArrayList(Collection<? extends E> arg0) {
+		super(arg0);
+	}
+
+	public ArrayList(int arg0) {
+		super(arg0);
+	}
 
 	@Override
 	public E firstOrDefault() {

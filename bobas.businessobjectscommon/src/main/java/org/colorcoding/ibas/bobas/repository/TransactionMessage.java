@@ -16,9 +16,6 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
  */
 public class TransactionMessage extends BusinessObject<TransactionMessage> implements IBusinessObject {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2602868482377739486L;
 
 	/**

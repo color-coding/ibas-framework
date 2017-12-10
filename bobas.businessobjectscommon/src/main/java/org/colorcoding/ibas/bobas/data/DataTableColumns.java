@@ -17,9 +17,6 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 @XmlSeeAlso({ DataTableColumn.class })
 public class DataTableColumns extends ArrayList<IDataTableColumn> implements IDataTableColumns {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -592228599611799067L;
 
 	private IDataTable table;

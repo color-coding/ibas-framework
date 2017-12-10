@@ -21,6 +21,7 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 public class DateTime extends Date implements Serializable {
 
 	private static final long serialVersionUID = 9197442988053540497L;
+
 	/**
 	 * 日期格式，默认yyyy-MM-dd
 	 */

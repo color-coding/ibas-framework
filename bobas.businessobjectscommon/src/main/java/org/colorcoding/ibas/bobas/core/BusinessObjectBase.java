@@ -28,9 +28,6 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 
 	protected static final String MSG_PROPERTIES_NOT_FOUND_PROPERTIES = "properties: not found type [%s]'s property [%s].";
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -9005802565228088068L;
 
 	/**
@@ -92,7 +89,7 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 	public IFieldData[] getFields(Predicate<? super IFieldData> filter) {
 		Objects.requireNonNull(filter);
 		ArrayList<IFieldData> fieldDatas = new ArrayList<>();
-		for (IFieldData item : fieldManager) {
+		for (IFieldData item : this.fieldManager) {
 			if (filter.test(item)) {
 				fieldDatas.add(item);
 			}

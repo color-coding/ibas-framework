@@ -16,9 +16,6 @@ import org.colorcoding.ibas.bobas.data.KeyText;
 @XmlType(name = "Time", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class Time extends MeasurementDecimal<emTimeUnit> {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 6668026582997115744L;
 
 	static KeyText[] unitCharacters = null;
