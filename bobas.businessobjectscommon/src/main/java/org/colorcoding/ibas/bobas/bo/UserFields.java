@@ -10,6 +10,8 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.core.BindableBase;
+import org.colorcoding.ibas.bobas.core.PropertyInfo;
+import org.colorcoding.ibas.bobas.core.PropertyInfoList;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.i18n.I18N;
@@ -30,7 +32,7 @@ public class UserFields extends BindableBase implements Iterable<IUserField> {
 	}
 
 	public UserFields(Class<?> boType) {
-		this.setUserFields(UserFieldFactory.create().create(boType));
+		this.setUserFields(UserFieldManager.create(boType));
 		this.boType = boType;
 	}
 
@@ -84,8 +86,8 @@ public class UserFields extends BindableBase implements Iterable<IUserField> {
 	 * @param type
 	 *            类型
 	 */
-	public IUserField addUserField(String name, DbFieldType type) {
-		UserField userField = UserFieldFactory.create().create(name, type);
+	public IUserField register(String name, DbFieldType type) {
+		UserField userField = UserFieldManager.create(name, type);
 		if (userField != null) {
 			ArrayList<UserField> tmpUserFields = new ArrayList<>();
 			tmpUserFields.addAll(this.getUserFields());
@@ -96,17 +98,15 @@ public class UserFields extends BindableBase implements Iterable<IUserField> {
 	}
 
 	/**
-	 * 注册已有用户字段（下次创建实例自动带出）
+	 * 注册到全局，新实例自动带出
 	 */
 	public void register() {
 		if (this.getUserFields() != null) {
-			UserFieldInfo[] fieldInfos = new UserFieldInfo[this.size()];
-			int index = 0;
-			for (IUserField item : this.getUserFields()) {
-				fieldInfos[index] = new UserFieldInfo(item.getName(), item.getValueType());
-				index++;
+			PropertyInfoList propertyInfoList = new PropertyInfoList(this.size());
+			for (UserField item : this.getUserFields()) {
+				propertyInfoList.add(new PropertyInfo<>(item.getName(), item.getFieldData().getValueType()));
 			}
-			UserFieldFactory.create().register(this.boType, fieldInfos);
+			UserFieldManager.register(this.boType, propertyInfoList);
 		}
 	}
 

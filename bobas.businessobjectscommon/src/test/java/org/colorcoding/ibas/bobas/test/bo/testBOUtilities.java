@@ -26,10 +26,10 @@ public class testBOUtilities extends TestCase {
 		order.setCycle(new Time(1.05, emTimeUnit.HOUR));
 		order.getCycle().setValue(0.9988);
 
-		order.getUserFields().addUserField("U_OrderType", DbFieldType.ALPHANUMERIC);
-		order.getUserFields().addUserField("U_OrderId", DbFieldType.NUMERIC);
-		order.getUserFields().addUserField("U_OrderDate", DbFieldType.DATE);
-		order.getUserFields().addUserField("U_OrderTotal", DbFieldType.DECIMAL);
+		order.getUserFields().register("U_OrderType", DbFieldType.ALPHANUMERIC);
+		order.getUserFields().register("U_OrderId", DbFieldType.NUMERIC);
+		order.getUserFields().register("U_OrderDate", DbFieldType.DATE);
+		order.getUserFields().register("U_OrderTotal", DbFieldType.DECIMAL);
 
 		order.getUserFields().setValue("U_OrderType", "S0000");
 		order.getUserFields().setValue("U_OrderId", 5768);
@@ -40,7 +40,7 @@ public class testBOUtilities extends TestCase {
 		orderItem.setItemCode("A00001");
 		orderItem.setQuantity(new Decimal(10));
 		orderItem.setPrice(new Decimal(99.99));
-		((SalesOrderItem) orderItem).getUserFields().addUserField("U_LineType", DbFieldType.ALPHANUMERIC);
+		((SalesOrderItem) orderItem).getUserFields().register("U_LineType", DbFieldType.ALPHANUMERIC);
 		((SalesOrderItem) orderItem).getUserFields().setValue("U_LineType", "L0000");
 
 		orderItem = order.getSalesOrderItems().create();

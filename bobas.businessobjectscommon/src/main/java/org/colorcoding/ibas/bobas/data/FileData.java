@@ -1,5 +1,8 @@
 package org.colorcoding.ibas.bobas.data;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -10,6 +13,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.serialization.Serializable;
 
 /**
@@ -87,6 +91,36 @@ public class FileData extends Serializable {
 
 	public void setOriginalName(String originalName) {
 		this.originalName = originalName;
+	}
+
+	/**
+	 * 获取文件字节数组
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public byte[] getFileBytes() throws IOException {
+		FileInputStream inputStream = null;
+		try {
+			File file = new File(this.getLocation());
+			long fileSize = file.length();
+			if (fileSize > Integer.MAX_VALUE) {
+				throw new IOException(I18N.prop("msg_bobas_invalid_data"));
+			}
+			inputStream = new FileInputStream(file);
+			byte[] buffer = new byte[(int) fileSize];
+			int offset = 0;
+			int numRead = 0;
+			while (offset < buffer.length
+					&& (numRead = inputStream.read(buffer, offset, buffer.length - offset)) >= 0) {
+				offset += numRead;
+			}
+			return buffer;
+		} finally {
+			if (inputStream != null) {
+				inputStream.close();
+			}
+		}
 	}
 
 	@Override

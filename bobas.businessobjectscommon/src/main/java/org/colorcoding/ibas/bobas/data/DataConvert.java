@@ -271,4 +271,22 @@ public class DataConvert {
 		}
 		return new KeyValue[] {};
 	}
+
+	/**
+	 * 判断字符串是否为数字
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static boolean isNumeric(String value) {
+		if (value == null || value.isEmpty()) {
+			return false;
+		}
+		for (int i = 0; i < value.length(); i++) {
+			if (!Character.isDigit(value.charAt(i))) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.repository.jersey;
 
 import java.io.InputStream;
+import java.net.URLDecoder;
 
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.data.FileData;
@@ -13,7 +14,7 @@ public class FileRepositoryService extends org.colorcoding.ibas.bobas.repository
 		try {
 			FileData fileData = new FileData();
 			fileData.setStream(fileStream);
-			fileData.setOriginalName(fileDisposition.getFileName());
+			fileData.setOriginalName(URLDecoder.decode(fileDisposition.getFileName(), "UTF-8"));
 			return new OperationResult<>(super.save(fileData, token));
 		} catch (Exception e) {
 			return new OperationResult<>(e);

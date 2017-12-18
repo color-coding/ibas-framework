@@ -12,19 +12,12 @@ public class PropertyInfoList extends ArrayList<IPropertyInfo<?>> {
 
 	private static final long serialVersionUID = -6320914335175298868L;
 
-	/**
-	 * 是否包含属性
-	 * 
-	 * @param propertyName
-	 *            属性名称
-	 */
-	public boolean containsProperty(String propertyName) {
-		for (IPropertyInfo<?> item : this) {
-			if (item.getName().equals(propertyName)) {
-				return true;
-			}
-		}
-		return false;
+	public PropertyInfoList() {
+		super();
+	}
+
+	public PropertyInfoList(int initialCapacity) {
+		super(initialCapacity);
 	}
 
 	@Override

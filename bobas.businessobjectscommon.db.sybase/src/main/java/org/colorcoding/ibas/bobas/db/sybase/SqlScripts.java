@@ -67,9 +67,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 			stringBuilder.append(" ");
 			stringBuilder.append("'");
 			stringBuilder.append("%");
-			stringBuilder.append("%");
 			stringBuilder.append(opValue);
-			stringBuilder.append("%");
 			stringBuilder.append("%");
 			stringBuilder.append("'");
 			return stringBuilder.toString();
@@ -79,9 +77,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 			stringBuilder.append(" ");
 			stringBuilder.append("'");
 			stringBuilder.append("%");
-			stringBuilder.append("%");
 			stringBuilder.append(opValue);
-			stringBuilder.append("%");
 			stringBuilder.append("%");
 			stringBuilder.append("'");
 			return stringBuilder.toString();
@@ -90,7 +86,6 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 			stringBuilder.append(this.getSqlString(value));
 			stringBuilder.append(" ");
 			stringBuilder.append("'");
-			stringBuilder.append("%");
 			stringBuilder.append("%");
 			stringBuilder.append(opValue);
 			stringBuilder.append("'");
@@ -101,7 +96,6 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 			stringBuilder.append(" ");
 			stringBuilder.append("'");
 			stringBuilder.append(opValue);
-			stringBuilder.append("%");
 			stringBuilder.append("%");
 			stringBuilder.append("'");
 			return stringBuilder.toString();

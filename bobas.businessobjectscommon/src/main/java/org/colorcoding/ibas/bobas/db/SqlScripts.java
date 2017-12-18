@@ -184,9 +184,7 @@ public class SqlScripts implements ISqlScripts {
 			stringBuilder.append(" ");
 			stringBuilder.append("N'");
 			stringBuilder.append("%");
-			stringBuilder.append("%");
 			stringBuilder.append(opValue);
-			stringBuilder.append("%");
 			stringBuilder.append("%");
 			stringBuilder.append("'");
 			return stringBuilder.toString();
@@ -196,9 +194,7 @@ public class SqlScripts implements ISqlScripts {
 			stringBuilder.append(" ");
 			stringBuilder.append("N'");
 			stringBuilder.append("%");
-			stringBuilder.append("%");
 			stringBuilder.append(opValue);
-			stringBuilder.append("%");
 			stringBuilder.append("%");
 			stringBuilder.append("'");
 			return stringBuilder.toString();
@@ -207,7 +203,6 @@ public class SqlScripts implements ISqlScripts {
 			stringBuilder.append(this.getSqlString(value));
 			stringBuilder.append(" ");
 			stringBuilder.append("N'");
-			stringBuilder.append("%");
 			stringBuilder.append("%");
 			stringBuilder.append(opValue);
 			stringBuilder.append("'");
@@ -218,7 +213,6 @@ public class SqlScripts implements ISqlScripts {
 			stringBuilder.append(" ");
 			stringBuilder.append("N'");
 			stringBuilder.append(opValue);
-			stringBuilder.append("%");
 			stringBuilder.append("%");
 			stringBuilder.append("'");
 			return stringBuilder.toString();

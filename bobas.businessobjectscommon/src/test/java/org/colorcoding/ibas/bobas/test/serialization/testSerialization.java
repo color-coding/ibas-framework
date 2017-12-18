@@ -269,10 +269,10 @@ public class testSerialization extends TestCase {
 		order.setTeamUsers(new User[] { new User(), new User() });
 		order.setCycle(new Time(1.05, emTimeUnit.HOUR));
 		order.getCycle().setValue(0.9988);
-		order.getUserFields().addUserField("U_OrderType", DbFieldType.ALPHANUMERIC);
-		order.getUserFields().addUserField("U_OrderId", DbFieldType.NUMERIC);
-		order.getUserFields().addUserField("U_OrderDate", DbFieldType.DATE);
-		order.getUserFields().addUserField("U_OrderTotal", DbFieldType.DECIMAL);
+		order.getUserFields().register("U_OrderType", DbFieldType.ALPHANUMERIC);
+		order.getUserFields().register("U_OrderId", DbFieldType.NUMERIC);
+		order.getUserFields().register("U_OrderDate", DbFieldType.DATE);
+		order.getUserFields().register("U_OrderTotal", DbFieldType.DECIMAL);
 		order.getUserFields().setValue("U_OrderType", "S0000");
 		order.getUserFields().setValue("U_OrderId", 5768);
 		order.getUserFields().setValue("U_OrderDate", DateTime.getToday());

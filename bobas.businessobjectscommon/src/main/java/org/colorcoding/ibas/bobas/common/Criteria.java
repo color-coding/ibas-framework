@@ -161,7 +161,6 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 		if (this.conditions == null) {
 			this.conditions = new Conditions();
 		}
-		;
 		return this.conditions;
 	}
 

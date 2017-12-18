@@ -95,7 +95,7 @@ public abstract class FieldDataBase<T> implements IFieldData {
 		this.uniqueKey = uniqueKey;
 	}
 
-	private boolean original = false;
+	private boolean original = true;
 
 	@Override
 	public final boolean isOriginal() {

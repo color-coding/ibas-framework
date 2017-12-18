@@ -18,9 +18,7 @@ import org.colorcoding.ibas.bobas.bo.IBOSimpleLine;
 import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.bo.IBOUserFields;
 import org.colorcoding.ibas.bobas.bo.UserField;
-import org.colorcoding.ibas.bobas.bo.UserFieldFactory;
-import org.colorcoding.ibas.bobas.bo.UserFieldInfo;
-import org.colorcoding.ibas.bobas.bo.UserFieldInfoList;
+import org.colorcoding.ibas.bobas.bo.UserFieldManager;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.Conditions;
 import org.colorcoding.ibas.bobas.common.Criteria;
@@ -293,7 +291,24 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	}
 
 	/**
-	 * 修正查询条件（包括：db字段名，类型）
+	 * 修复查询数据库相关
+	 * 
+	 * @param criteria
+	 * @param pInfoList
+	 */
+	protected void fixCriteria(ICriteria criteria, PropertyInfoList pInfoList) {
+		if (pInfoList == null || pInfoList.isEmpty()) {
+			return;
+		}
+		this.fixConditions(criteria.getConditions(), pInfoList);
+		this.fixSorts(criteria.getSorts(), pInfoList);
+		for (ICriteria item : criteria.getChildCriterias()) {
+			this.fixCriteria(item, pInfoList);
+		}
+	}
+
+	/**
+	 * 修正查询条件
 	 * 
 	 * @param conditions
 	 *            查询条件
@@ -302,25 +317,43 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	 * @return
 	 */
 	protected void fixConditions(IConditions conditions, PropertyInfoList pInfoList) {
-		DbField dbField = null;
+		if (conditions == null || conditions.isEmpty() || pInfoList == null || pInfoList.isEmpty()) {
+			return;
+		}
 		for (int i = 0; i < pInfoList.size(); i++) {
 			PropertyInfo<?> cProperty = (PropertyInfo<?>) pInfoList.get(i);
 			if (cProperty.getName() == null || cProperty.getName().isEmpty()) {
 				continue;
 			}
 			Object annotation = cProperty.getAnnotation(DbField.class);
-			if (annotation != null) {
-				// 绑定数据库的字段
-				dbField = (DbField) annotation;
-				if (dbField.name() == null || dbField.name().isEmpty()) {
+			if (annotation == null) {
+				continue;
+			}
+			// 绑定数据库的字段
+			DbField dbField = (DbField) annotation;
+			if (dbField.name() == null || dbField.name().isEmpty()) {
+				continue;
+			}
+			for (ICondition condition : conditions) {
+				if (!cProperty.getName().equalsIgnoreCase(condition.getAlias())) {
 					continue;
 				}
-				// 修正查询条件的字段名称
-				for (ICondition condition : conditions) {
-					if (cProperty.getName().equalsIgnoreCase(condition.getAlias())) {
-						condition.setAlias(dbField.name());
-						DbFieldType dbFieldType = dbField.type();
-						condition.setAliasDataType(dbFieldType);
+				// 修正字段名称
+				condition.setAlias(dbField.name());
+				// 修正类型
+				condition.setAliasDataType(dbField.type());
+				// 修正枚举值
+				if (cProperty.getValueType().isEnum()) {
+					Object value = null;
+					if (DataConvert.isNumeric(condition.getValue())) {
+						// 数字转枚举
+						value = DataConvert.toEnumValue(cProperty.getValueType(),
+								Integer.valueOf(condition.getValue()));
+					} else {
+						value = DataConvert.toEnumValue(cProperty.getValueType(), condition.getValue());
+					}
+					if (value != null) {
+						condition.setValue(value);
 					}
 				}
 			}
@@ -336,113 +369,59 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	 *            属性列表
 	 * @return
 	 */
-	protected ISorts fixSorts(ISorts sorts, PropertyInfoList pInfoList) {
-		DbField dbField = null;
+	protected void fixSorts(ISorts sorts, PropertyInfoList pInfoList) {
+		if (sorts == null || sorts.isEmpty() || pInfoList == null || pInfoList.isEmpty()) {
+			return;
+		}
 		for (int i = 0; i < pInfoList.size(); i++) {
 			PropertyInfo<?> cProperty = (PropertyInfo<?>) pInfoList.get(i);
 			if (cProperty.getName() == null || cProperty.getName().isEmpty()) {
 				continue;
 			}
 			Object annotation = cProperty.getAnnotation(DbField.class);
-			if (annotation != null) {
-				// 绑定数据库的字段
-				dbField = (DbField) annotation;
-				if (dbField.name() == null || dbField.name().isEmpty()) {
+			if (annotation == null) {
+				continue;
+			}
+			// 绑定数据库的字段
+			DbField dbField = (DbField) annotation;
+			if (dbField.name() == null || dbField.name().isEmpty()) {
+				continue;
+			}
+			// 修正排序的字段名称
+			for (ISort sort : sorts) {
+				if (!cProperty.getName().equalsIgnoreCase(sort.getAlias())) {
 					continue;
 				}
-				// 修正排序的字段名称
-				for (ISort sort : sorts) {
-					if (cProperty.getName().equalsIgnoreCase(sort.getAlias())) {
-						sort.setAlias(dbField.name());
-					}
-				}
+				sort.setAlias(dbField.name());
 			}
 		}
-		return sorts;
 	}
 
 	@Override
 	public ISqlQuery parseSqlQuery(ICriteria criteria, Class<?> boType) throws ParsingException {
 		try {
-			// select top 100 * from "OUSR" where "Supper" = 'Y' order by "Code"
-			// select * from "OUSR" where "Supper" = 'Y' order by "Code LIMIT
-			// 100 "
 			ISqlScripts sqlScripts = this.getSqlScripts();
 			if (sqlScripts == null) {
 				throw new SqlScriptException(I18N.prop("msg_bobas_invaild_sql_scripts"));
 			}
-			String table = null;
 			if (criteria == null) {
 				criteria = new Criteria();
 			}
-			try {
-				DbField dbField = null;
-				boolean hasUserFields = false;
-				PropertyInfoList pInfoList = PropertyInfoManager.getPropertyInfoList(boType);
-				for (int i = 0; i < pInfoList.size(); i++) {
-					PropertyInfo<?> cProperty = (PropertyInfo<?>) pInfoList.get(i);
-					if (cProperty.getName() == null || cProperty.getName().isEmpty()) {
-						continue;
-					}
-					Object annotation = cProperty.getAnnotation(DbField.class);
-					if (annotation != null) {
-						// 绑定数据库的字段
-						dbField = (DbField) annotation;
-						if (dbField.name() == null || dbField.name().isEmpty()) {
-							continue;
-						}
-						if (dbField.primaryKey()) {
-							table = dbField.table();
-						}
-						// 修正查询条件的字段名称
-						for (ICondition condition : criteria.getConditions()) {
-							if (cProperty.getName().equalsIgnoreCase(condition.getAlias())) {
-								condition.setAlias(dbField.name());
-								DbFieldType dbFieldType = dbField.type();
-								condition.setAliasDataType(dbFieldType);
-							}
-							if (!hasUserFields && condition.getAlias().startsWith(UserField.USER_FIELD_PREFIX_SIGN)) {
-								// 存在用户字段
-								hasUserFields = true;
-							}
-						}
-						// 修正排序的字段名称
-						for (ISort sort : criteria.getSorts()) {
-							if (cProperty.getName().equalsIgnoreCase(sort.getAlias())) {
-								sort.setAlias(dbField.name());
-							}
-						}
-					}
-				}
-				if (table == null && dbField != null) {
-					// 没有主键
-					table = dbField.table();
-				}
-				if (hasUserFields) {
-					// 存在用户字段查询，修正查询字段类型
-					UserFieldInfoList userFieldInfoList = UserFieldFactory.create().getUserFieldInfoList(boType);
-					if (userFieldInfoList != null) {
-						for (UserFieldInfo userFieldInfo : userFieldInfoList) {
-							for (ICondition condition : criteria.getConditions()) {
-								if (userFieldInfo.getName().equalsIgnoreCase(condition.getAlias())) {
-									condition.setAliasDataType(userFieldInfo.getValueType());
-								}
-							}
-						}
-					}
-				}
-			} catch (Exception e) {
-				throw new SqlScriptException(e.getMessage(), e);
-			}
+			// 获取主表
+			String table = this.getMasterTable(PropertyInfoManager.getPropertyInfoList(boType));
 			if (table == null || table.isEmpty()) {
 				throw new ParsingException(I18N.prop("msg_bobas_not_found_bo_table", boType.getName()));
 			}
-			int result = criteria.getResultCount();
-			table = MyConfiguration.applyVariables(String.format(sqlScripts.getDbObjectSign(), table));
 			// 修正其中公司变量
+			table = MyConfiguration.applyVariables(String.format(sqlScripts.getDbObjectSign(), table));
+			// 修正属性
+			this.fixCriteria(criteria, PropertyInfoManager.getPropertyInfoList(boType));
+			// 修正自定义字段
+			this.fixCriteria(criteria, UserFieldManager.getUserFieldInfoList(boType));
+			// 拼接语句
 			String order = this.parseSqlQuery(criteria.getSorts()).getQueryString();
 			String where = this.parseSqlQuery(criteria.getConditions()).getQueryString();
-			return new SqlQuery(sqlScripts.groupSelectQuery("*", table, where, order, result));
+			return new SqlQuery(sqlScripts.groupSelectQuery("*", table, where, order, criteria.getResultCount()));
 		} catch (ParsingException e) {
 			throw e;
 		} catch (SqlScriptException e) {
@@ -549,6 +528,36 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 		return null;
 	}
 
+	/**
+	 * 获取属性集合的主表
+	 * 
+	 * @param pInfoList
+	 * @return
+	 */
+	protected String getMasterTable(PropertyInfoList pInfoList) {
+		String table = null;
+		for (int i = 0; i < pInfoList.size(); i++) {
+			PropertyInfo<?> cProperty = (PropertyInfo<?>) pInfoList.get(i);
+			if (cProperty.getName() == null || cProperty.getName().isEmpty()) {
+				continue;
+			}
+			Object annotation = cProperty.getAnnotation(DbField.class);
+			if (annotation == null) {
+				continue;
+			}
+			// 绑定数据库的字段
+			DbField dbField = (DbField) annotation;
+			if (dbField.name() == null || dbField.name().isEmpty()) {
+				continue;
+			}
+			if (dbField.primaryKey()) {
+				return dbField.table();
+			}
+			table = dbField.table();
+		}
+		return table;
+	}
+
 	@Override
 	public ISqlQuery parseDeleteScript(IBusinessObjectBase bo) throws ParsingException {
 		try {
@@ -651,7 +660,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 						if (uBO.getUserFields() != null) {
 							String name = metaData.getColumnName(rCol);
 							if (name != null && name.startsWith(UserField.USER_FIELD_PREFIX_SIGN)) {
-								uBO.getUserFields().addUserField(name,
+								uBO.getUserFields().register(name,
 										sqlScripts.toDbFieldType(metaData.getColumnTypeName(rCol)));
 								dfIndex[i] = bo.getFields().length - 1;// 记录自定义字段编号
 							}
