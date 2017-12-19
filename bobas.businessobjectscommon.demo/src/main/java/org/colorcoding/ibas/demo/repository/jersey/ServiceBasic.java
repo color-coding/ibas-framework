@@ -106,6 +106,7 @@ public class ServiceBasic {
 		OperationResult<Criteria> operationResult = new OperationResult<Criteria>();
 		operationResult.addResultObjects(this.create());
 		operationResult.addResultObjects(this.create());
+		operationResult.addInformations("INFO", "I'm Niuren.Zhu.");
 		return operationResult;
 	}
 

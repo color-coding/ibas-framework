@@ -181,6 +181,35 @@
                 }
             });
         }
+        var addressMonitor = window.location.origin + '/demo/services/monitor';
+        var testMonitor = function () {
+            var url = addressMonitor + '/diagnosing?token=hahaha';
+            $.ajax({
+                type: 'GET',
+                contentType: "application/json",
+                url: url,
+                success: function (data, status) {
+                    showResult(data);
+                },
+                error: function (err) {
+                    showErrors(err);
+                }
+            });
+        }
+        var testBeating = function () {
+            var url = addressMonitor + '/beating';
+            $.ajax({
+                type: 'GET',
+                contentType: "application/json",
+                url: url,
+                success: function (data, status) {
+                    showResult(data);
+                },
+                error: function (err) {
+                    showErrors(err);
+                }
+            });
+        }
     </script>
 </head>
 <body>
@@ -197,6 +226,10 @@
         <input type="button" value="fetchSalesOrder" onclick="testFetchSalesOrder();" />
         <input type="button" value="saveSalesOrder" onclick="testSaveSalesOrder();" />
         <input type="button" value="querySalesOrder" onclick="testQuerySalesOrder();" />
+        <br />
+        <br />
+        <input type="button" value="monitor" onclick="testMonitor();" />
+        <input type="button" value="beating" onclick="testBeating();" />
         <br />
         <br />
         <label>please click buttons one by one.</label>
