@@ -82,6 +82,7 @@ public abstract class TrackableBase extends BindableBase implements ITrackStatus
 		this.firePropertyChange("isNew", oldValue, this.isNew);
 	}
 
+	@XmlElement
 	private boolean isSavable = true;
 
 	@Override
