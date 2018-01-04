@@ -303,14 +303,14 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 	 * 序列化之前调用
 	 */
 	protected void beforeMarshal() {
-
+		this.setLoading(true);
 	}
 
 	/**
 	 * 序列化之后调用
 	 */
 	protected void afterMarshal() {
-
+		this.setLoading(false);
 	}
 
 	/**

@@ -48,14 +48,12 @@ public class OrganizationFactory extends ConfigurableFactory<IOrganizationManage
 							}
 						}
 
-						private boolean activated = true;
-
 						@Override
 						public boolean isActivated() {
 							if (this.getInterval() <= 0) {
 								return false;
 							}
-							return this.activated;
+							return true;
 						}
 
 						private String name = "organization cleanner";

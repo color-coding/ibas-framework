@@ -25,19 +25,19 @@ public class OwnershipFactory extends ConfigurableFactory<IOwnershipJudger> {
 
 						@Override
 						public void run() {
-							synchronized (instance) {
-								instance.ownershipJudger = null;
+							if (instance.ownershipJudger == null) {
+								// 未初始化，不做处理
+								return;
 							}
+							instance.ownershipJudger = null;
 						}
-
-						private boolean activated = true;
 
 						@Override
 						public boolean isActivated() {
 							if (this.getInterval() <= 0) {
 								return false;
 							}
-							return this.activated;
+							return true;
 						}
 
 						private String name = "ownership cleanner";
