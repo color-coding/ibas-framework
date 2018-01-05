@@ -99,6 +99,10 @@ public class SerializerJson extends Serializer<JsonSchema> {
 			jsonGenerator.writeFieldName("properties");
 			jsonGenerator.writeStartObject();
 			for (SchemaElement item : this.getSerializedElements(type, true)) {
+				if (type.equals(item.getType())) {
+					// 子项是自身，不做处理
+					continue;
+				}
 				if (item.getWrapper() != null && !item.getWrapper().isEmpty()) {
 					jsonGenerator.writeFieldName(item.getWrapper());
 					jsonGenerator.writeStartObject();

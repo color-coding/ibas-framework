@@ -80,6 +80,10 @@ public class SerializerJsonNoRoot extends Serializer<JsonSchema> {
 	protected void createSchemaElement(JsonGenerator jsonGenerator, Class<?> type)
 			throws JsonGenerationException, IOException {
 		for (SchemaElement item : this.getSerializedElements(type, true)) {
+			if (type.equals(item.getType())) {
+				// 子项是自身，不做处理
+				continue;
+			}
 			jsonGenerator.writeFieldName(
 					item.getWrapper() != null && !item.getWrapper().isEmpty() ? item.getWrapper() : item.getName());
 			jsonGenerator.writeStartObject();

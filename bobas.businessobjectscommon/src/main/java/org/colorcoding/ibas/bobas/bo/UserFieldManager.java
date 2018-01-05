@@ -54,8 +54,9 @@ public class UserFieldManager {
 
 	public static UserField create(IPropertyInfo<?> propertyInfo) {
 		FieldDataDbBase<?> dfieldData = FieldsFactory.create().createDbField(propertyInfo.getValueType());
-		dfieldData.setOriginal(false);
+		dfieldData.setName(propertyInfo.getName());
 		dfieldData.setDbField(propertyInfo.getName());
+		dfieldData.setOriginal(false);
 		return new UserField(dfieldData);
 	}
 
@@ -65,11 +66,10 @@ public class UserFieldManager {
 		}
 		FieldDataDbBase<?> dfieldData = FieldsFactory.create().createDbField(getFieldType(type));
 		dfieldData.setName(name);
+		dfieldData.setDbField(name);
 		dfieldData.setPrimaryKey(false);
 		dfieldData.setOriginal(false);
 		dfieldData.setSavable(true);
-		dfieldData.setDbField(name);
-		dfieldData.setFieldType(type);
 		return new UserField(dfieldData);
 	}
 

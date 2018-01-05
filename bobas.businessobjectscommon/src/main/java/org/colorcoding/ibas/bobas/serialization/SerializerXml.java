@@ -251,6 +251,10 @@ public class SerializerXml extends Serializer<Schema> {
 			Element elementType = document.createElement("xs:complexType");
 			Element elementSequence = document.createElement("xs:sequence");
 			for (SchemaElement item : this.getSerializedElements(type, true)) {
+				if (type.equals(item.getType())) {
+					// 子项是自身，不做处理
+					continue;
+				}
 				if (item.getWrapper() != null && !item.getWrapper().isEmpty()) {
 					Element itemElement = document.createElement("xs:element");
 					itemElement.setAttribute("name", item.getWrapper());

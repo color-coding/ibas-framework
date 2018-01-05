@@ -2,7 +2,6 @@ package org.colorcoding.ibas.bobas.core.fields;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.mapping.DbField;
-import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 public abstract class FieldDataDbBase<T> extends FieldDataBase<T> implements IFieldDataDb {
 
@@ -43,20 +42,6 @@ public abstract class FieldDataDbBase<T> extends FieldDataBase<T> implements IFi
 
 	public void setDbIndex(int value) {
 		this.dbIndex = value;
-	}
-
-	private DbFieldType fieldType;
-
-	@Override
-	public DbFieldType getFieldType() {
-		if (this.fieldMapping != null) {
-			return this.fieldMapping.type();
-		}
-		return this.fieldType;
-	}
-
-	public void setFieldType(DbFieldType value) {
-		this.fieldType = value;
 	}
 
 	private DbField fieldMapping;

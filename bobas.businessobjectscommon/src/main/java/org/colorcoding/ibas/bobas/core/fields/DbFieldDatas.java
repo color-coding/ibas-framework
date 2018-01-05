@@ -2,6 +2,7 @@ package org.colorcoding.ibas.bobas.core.fields;
 
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
+import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 //以下均为package内类型
 /**
@@ -34,6 +35,11 @@ class DbFieldDataInteger extends FieldDataDbBase<Integer> {
 	@Override
 	public boolean setValue(Object value) {
 		return this.setValue((Integer) value);
+	}
+
+	@Override
+	public DbFieldType getFieldType() {
+		return DbFieldType.NUMERIC;
 	}
 
 }
@@ -70,6 +76,11 @@ class DbFieldDataShort extends FieldDataDbBase<Short> {
 		return this.setValue((Short) value);
 	}
 
+	@Override
+	public DbFieldType getFieldType() {
+		return DbFieldType.NUMERIC;
+	}
+
 }
 
 /**
@@ -99,6 +110,11 @@ class DbFieldDataChar extends FieldDataDbBase<Character> {
 	@Override
 	public boolean setValue(Object value) {
 		return this.setValue((Character) value);
+	}
+
+	@Override
+	public DbFieldType getFieldType() {
+		return DbFieldType.ALPHANUMERIC;
 	}
 
 }
@@ -131,6 +147,12 @@ class DbFieldDataString extends FieldDataDbBase<String> {
 	public boolean setValue(Object value) {
 		return this.setValue((String) value);
 	}
+
+	@Override
+	public DbFieldType getFieldType() {
+		return DbFieldType.ALPHANUMERIC;
+	}
+
 }
 
 /**
@@ -161,6 +183,12 @@ class DbFieldDataDecimal extends FieldDataDbBase<Decimal> {
 	public boolean setValue(Object value) {
 		return this.setValue((Decimal) value);
 	}
+
+	@Override
+	public DbFieldType getFieldType() {
+		return DbFieldType.DECIMAL;
+	}
+
 }
 
 /**
@@ -191,6 +219,12 @@ class DbFieldDataDateTime extends FieldDataDbBase<DateTime> {
 	public boolean setValue(Object value) {
 		return this.setValue((DateTime) value);
 	}
+
+	@Override
+	public DbFieldType getFieldType() {
+		return DbFieldType.DATE;
+	}
+
 }
 
 /**
@@ -224,6 +258,12 @@ class DbFieldDataFloat extends FieldDataDbBase<Float> {
 	public boolean setValue(Object value) {
 		return this.setValue((Float) value);
 	}
+
+	@Override
+	public DbFieldType getFieldType() {
+		return DbFieldType.DECIMAL;
+	}
+
 }
 
 /**
@@ -257,6 +297,12 @@ class DbFieldDataDouble extends FieldDataDbBase<Double> {
 	public boolean setValue(Object value) {
 		return this.setValue((Double) value);
 	}
+
+	@Override
+	public DbFieldType getFieldType() {
+		return DbFieldType.DECIMAL;
+	}
+
 }
 
 /**
@@ -287,6 +333,12 @@ class DbFieldDataBoolean extends FieldDataDbBase<Boolean> {
 	public boolean setValue(Object value) {
 		return this.setValue((Boolean) value);
 	}
+
+	@Override
+	public DbFieldType getFieldType() {
+		return DbFieldType.NUMERIC;
+	}
+
 }
 
 /**
@@ -321,4 +373,10 @@ class DbFieldDataEnum extends FieldDataDbBase<Enum<?>> {
 	public boolean setValue(Object value) {
 		return this.setValue((Enum<?>) value);
 	}
+
+	@Override
+	public DbFieldType getFieldType() {
+		return DbFieldType.ALPHANUMERIC;
+	}
+
 }

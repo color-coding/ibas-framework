@@ -56,7 +56,6 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 		fdValue.setOriginal(true);
 		fdValue.setDbField(fieldName);
 		fdValue.setDbTable(table);
-		fdValue.setFieldType(DbFieldType.DECIMAL);
 		fdValue.setValueType(Decimal.class);
 		fieldDataDbs[0] = fdValue;
 		FieldData4Unit fdUnit = new FieldData4Unit(this.getValue());
@@ -67,7 +66,6 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 		fdUnit.setOriginal(true);
 		fdUnit.setDbField(fieldName);
 		fdUnit.setDbTable(table);
-		fdUnit.setFieldType(DbFieldType.ALPHANUMERIC);
 		if (this.value.getUnit() != null) {
 			fdUnit.setValueType(this.value.getUnit().getClass());
 		}
@@ -124,6 +122,11 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 			return (Decimal) this.getMeasurement().getValue();
 		}
 
+		@Override
+		public DbFieldType getFieldType() {
+			return DbFieldType.DECIMAL;
+		}
+
 	}
 
 	/**
@@ -173,6 +176,11 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 				return null;
 			}
 			return this.getMeasurement().getUnit();
+		}
+
+		@Override
+		public DbFieldType getFieldType() {
+			return DbFieldType.ALPHANUMERIC;
 		}
 
 	}
