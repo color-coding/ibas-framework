@@ -19,7 +19,6 @@ public class JudgmentExpressionDateTime extends JudgmentExpression<DateTime> {
 
 	@Override
 	public boolean result() throws NotSupportOperationException {
-
 		// 等于
 		if (this.getOperation() == JudmentOperation.EQUAL) {
 			// 左值为空
