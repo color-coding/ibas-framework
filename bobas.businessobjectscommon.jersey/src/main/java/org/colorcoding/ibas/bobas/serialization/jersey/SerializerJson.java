@@ -22,6 +22,7 @@ import org.colorcoding.ibas.bobas.serialization.ValidateException;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.MediaType;
+import org.xml.sax.InputSource;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -217,22 +218,15 @@ public class SerializerJson extends Serializer<JsonSchema> {
 	}
 
 	@Override
-	public Object deserialize(InputStream inputStream, Class<?>... types) throws SerializationException {
+	public Object deserialize(InputSource inputSource, Class<?>... types) throws SerializationException {
 		try {
 			JAXBContext context = createJAXBContextJson(types);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
 			unmarshaller.setProperty(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
-			return unmarshaller.unmarshal(inputStream);
+			return unmarshaller.unmarshal(inputSource);
 		} catch (JAXBException e) {
 			throw new SerializationException(e);
-		} finally {
-			if (inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-				}
-			}
 		}
 	}
 

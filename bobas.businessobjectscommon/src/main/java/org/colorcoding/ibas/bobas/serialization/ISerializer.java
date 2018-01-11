@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.serialization;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
@@ -143,4 +144,14 @@ public interface ISerializer<S> {
 	 */
 	Object deserialize(InputStream inputStream, Class<?>... types) throws SerializationException;
 
+	/**
+	 * 反序列化
+	 * 
+	 * @param inputSource
+	 *            数据
+	 * @param types
+	 *            其他已知类型
+	 * @return 新对象实例
+	 */
+	Object deserialize(InputSource inputSource, Class<?>... types) throws SerializationException;
 }

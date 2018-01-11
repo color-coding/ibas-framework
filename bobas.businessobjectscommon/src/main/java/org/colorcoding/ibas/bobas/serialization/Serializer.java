@@ -2,6 +2,7 @@ package org.colorcoding.ibas.bobas.serialization;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
@@ -13,6 +14,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.xml.sax.InputSource;
 
 /**
  * 序列化对象
@@ -59,6 +61,20 @@ public abstract class Serializer<S> implements ISerializer<S> {
 	@Override
 	public Object deserialize(String data, Class<?>... types) throws SerializationException {
 		return this.deserialize(new ByteArrayInputStream(data.getBytes()), types);
+	}
+
+	@Override
+	public Object deserialize(InputStream inputStream, Class<?>... types) throws SerializationException {
+		try {
+			return this.deserialize(new InputSource(inputStream), types);
+		} finally {
+			if (inputStream != null) {
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+				}
+			}
+		}
 	}
 
 	/**
@@ -184,7 +200,7 @@ public abstract class Serializer<S> implements ISerializer<S> {
 	public abstract void serialize(Object object, OutputStream outputStream, boolean formated, Class<?>... types);
 
 	@Override
-	public abstract Object deserialize(InputStream inputStream, Class<?>... types) throws SerializationException;
+	public abstract Object deserialize(InputSource inputSource, Class<?>... types) throws SerializationException;
 
 	@Override
 	public abstract void validate(S schema, InputStream data) throws ValidateException;

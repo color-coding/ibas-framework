@@ -23,6 +23,7 @@ import org.colorcoding.ibas.bobas.serialization.ValidateException;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.MediaType;
+import org.xml.sax.InputSource;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -228,7 +229,7 @@ public class SerializerJsonNoRoot extends Serializer<JsonSchema> {
 	}
 
 	@Override
-	public Object deserialize(InputStream inputStream, Class<?>... types) throws SerializationException {
+	public Object deserialize(InputSource inputSource, Class<?>... types) throws SerializationException {
 		try {
 			JAXBContext context = createJAXBContextJson(types);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -236,7 +237,7 @@ public class SerializerJsonNoRoot extends Serializer<JsonSchema> {
 			unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
 			unmarshaller.setProperty(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
 			unmarshaller.setProperty(UnmarshallerProperties.JSON_TYPE_COMPATIBILITY, true);
-			Object object = unmarshaller.unmarshal(inputStream);
+			Object object = unmarshaller.unmarshal(inputSource);
 			if (object instanceof JAXBElement) {
 				// 因为不包括头，此处返回的是这个玩意儿
 				return ((JAXBElement<?>) object).getValue();
@@ -245,13 +246,6 @@ public class SerializerJsonNoRoot extends Serializer<JsonSchema> {
 			}
 		} catch (JAXBException e) {
 			throw new SerializationException(e);
-		} finally {
-			if (inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-				}
-			}
 		}
 	}
 

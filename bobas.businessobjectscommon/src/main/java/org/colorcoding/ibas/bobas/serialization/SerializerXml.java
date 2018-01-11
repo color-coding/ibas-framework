@@ -34,6 +34,7 @@ import org.colorcoding.ibas.bobas.data.DateTime;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
@@ -68,20 +69,13 @@ public class SerializerXml extends Serializer<Schema> {
 	}
 
 	@Override
-	public Object deserialize(InputStream inputStream, Class<?>... types) throws SerializationException {
+	public Object deserialize(InputSource inputSource, Class<?>... types) throws SerializationException {
 		try {
 			JAXBContext context = JAXBContext.newInstance(types);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
-			return unmarshaller.unmarshal(inputStream);
+			return unmarshaller.unmarshal(inputSource);
 		} catch (JAXBException e) {
 			throw new SerializationException(e);
-		} finally {
-			if (inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-				}
-			}
 		}
 	}
 
