@@ -254,9 +254,9 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 	 * @param type
 	 * @return
 	 */
-	protected B fetchBeAffected(ICriteria criteria, Class<B> type) {
+	protected <D> D fetchBeAffected(ICriteria criteria, Class<D> type) {
 		if (this.getLogicChain() != null) {
-			B data = this.getLogicChain().fetchBeAffected(criteria, type);
+			D data = this.getLogicChain().fetchBeAffected(criteria, type);
 			if (data != null) {
 				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_FOUND_DATA_IN_CHAIN);
 				return data;
