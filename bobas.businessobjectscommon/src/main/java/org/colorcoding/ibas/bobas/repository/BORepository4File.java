@@ -8,8 +8,6 @@ import java.io.OutputStream;
 import java.util.Properties;
 import java.util.UUID;
 
-import javax.xml.bind.JAXBException;
-
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.BOException;
 import org.colorcoding.ibas.bobas.bo.BOUtilities;
@@ -87,7 +85,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 					String transId = (String) others[1];
 					try {
 						return this.usePrimaryKeys(bo, workFolder, transId);
-					} catch (Exception e) {
+					} catch (IOException e) {
 						throw new BOException(e);
 					}
 				}
@@ -222,9 +220,9 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 		return operationResult;
 	}
 
-	private IBusinessObjectBase mySave(IBusinessObjectBase bo) throws RepositoryException {
+	private IBusinessObjectBase mySave(IBusinessObjectBase bo) throws Exception {
 		if (bo == null) {
-			throw new RepositoryException(I18N.prop("msg_bobas_invalid_bo"));
+			throw new Exception(I18N.prop("msg_bobas_invalid_bo"));
 		}
 		if (bo.isDirty()) {
 			// 仅修过的数据进行处理
@@ -271,7 +269,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 					// 自己打开的事务
 					this.rollbackTransaction();// 关闭事务
 				}
-				throw new RepositoryException(I18N.prop("msg_bobas_to_save_bo_faild", e.getMessage()), e);
+				throw e;
 			}
 		}
 		return bo;
@@ -281,15 +279,15 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 		return UUID.randomUUID().toString();// bo.toString();
 	}
 
-	private BOFile getBOFile(IBusinessObjectBase bo) throws RepositoryException, JAXBException {
+	private BOFile getBOFile(IBusinessObjectBase bo) throws Exception {
 		BOFile[] boFiles = this.myFetchEx(bo.getCriteria(), bo.getClass());
 		if (boFiles.length == 0) {
-			throw new RepositoryException(I18N.prop("msg_bobas_not_found_bo_copy", bo));
+			throw new Exception(I18N.prop("msg_bobas_not_found_bo_copy", bo));
 		}
 		return boFiles[0];
 	}
 
-	private boolean deleteBOFile(IBusinessObjectBase bo) throws RepositoryException, JAXBException {
+	private boolean deleteBOFile(IBusinessObjectBase bo) throws Exception {
 		BOFile boFile = this.getBOFile(bo);
 		File file = new File(this.getRepositoryFolder() + File.separator + boFile.getFilePath());
 		if (file.exists()) {

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
@@ -102,8 +101,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 		return operationResult;
 	}
 
-	BOFile[] myFetchEx(ICriteria criteria, Class<? extends IBusinessObjectBase> boType)
-			throws RepositoryException, JAXBException {
+	BOFile[] myFetchEx(ICriteria criteria, Class<? extends IBusinessObjectBase> boType) throws Exception {
 		if (criteria.getBusinessObject() == null || criteria.getBusinessObject().isEmpty()) {
 			criteria.setBusinessObject(this.getBOFactory().getCode(boType));
 		}
@@ -113,7 +111,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 			return new BOFile[] {};
 		}
 		if (!file.isDirectory()) {
-			throw new RepositoryException(I18N.prop("msg_bobas_invaild_bo_repository_folder", criteria.getBusinessObject()));
+			throw new Exception(I18N.prop("msg_bobas_invaild_bo_repository_folder", criteria.getBusinessObject()));
 		}
 		ArrayList<Class<?>> types = this.getTypes(file);
 		types.add(boType);

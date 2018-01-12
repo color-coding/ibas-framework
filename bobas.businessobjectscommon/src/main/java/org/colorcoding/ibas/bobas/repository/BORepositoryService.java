@@ -252,22 +252,18 @@ public class BORepositoryService implements IBORepositoryService {
 	 * @throws InvalidTokenException
 	 */
 	protected final void setCurrentUser(String token) throws InvalidTokenException {
-		try {
-			if (this.currentUser != null && this.currentUser.getToken() != null
-					&& this.currentUser.getToken().equals(token)) {
-				// 与当前的口令相同，不做处理
-				return;
-			}
-			IOrganizationManager orgManager = OrganizationFactory.create().createManager();
-			IUser user = orgManager.getUser(token);
-			if (user == null) {
-				// 没有用户匹配次口令
-				throw new InvalidTokenException(I18N.prop("msg_bobas_no_user_match_the_token"));
-			}
-			this.setCurrentUser(user);
-		} catch (Exception e) {
-			throw new InvalidTokenException(e.getMessage(), e);
+		if (this.currentUser != null && this.currentUser.getToken() != null
+				&& this.currentUser.getToken().equals(token)) {
+			// 与当前的口令相同，不做处理
+			return;
 		}
+		IOrganizationManager orgManager = OrganizationFactory.create().createManager();
+		IUser user = orgManager.getUser(token);
+		if (user == null) {
+			// 没有用户匹配次口令
+			throw new InvalidTokenException(I18N.prop("msg_bobas_no_user_match_the_token"));
+		}
+		this.setCurrentUser(user);
 	}
 
 	/**

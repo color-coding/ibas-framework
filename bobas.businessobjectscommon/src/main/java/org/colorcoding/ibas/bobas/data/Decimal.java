@@ -151,6 +151,13 @@ public class Decimal extends BigDecimal implements Cloneable {
 		return new Decimal(this);
 	}
 
+	public boolean isZero() {
+		if (this.equals(ZERO)) {
+			return true;
+		}
+		return false;
+	}
+
 	public Decimal divide(Decimal divisor) {
 		return new Decimal(super.divide(divisor, RESERVED_DECIMAL_PLACES_RUNNING, ROUNDING_MODE_RUNNING));
 	}

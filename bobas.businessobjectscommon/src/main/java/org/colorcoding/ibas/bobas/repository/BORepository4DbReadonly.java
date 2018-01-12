@@ -1,6 +1,5 @@
 package org.colorcoding.ibas.bobas.repository;
 
-import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
@@ -35,8 +34,6 @@ import org.colorcoding.ibas.bobas.db.IDbCommand;
 import org.colorcoding.ibas.bobas.db.IDbConnection;
 import org.colorcoding.ibas.bobas.db.IDbDataReader;
 import org.colorcoding.ibas.bobas.db.ISqlScriptInspector;
-import org.colorcoding.ibas.bobas.db.ParsingException;
-import org.colorcoding.ibas.bobas.db.SqlScriptException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.mapping.AssociationMode;
 import org.colorcoding.ibas.bobas.message.Logger;
@@ -176,8 +173,8 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	public void dispose() throws RepositoryException {
 		try {
 			this.closeDbConnection();
-		} catch (Exception e) {
-			throw new RepositoryException(e.getMessage(), e);
+		} catch (DbException e) {
+			throw new RepositoryException(e);
 		}
 	}
 
@@ -330,18 +327,14 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 * @param bo
 	 *            对象实例，可基于类型构造新实例
 	 * @return 操作结果
-	 * @throws RepositoryException
-	 * @throws DbException
-	 * @throws SQLException
-	 * @throws ParsingException
+	 * @throws Exception
 	 */
-	private final IBusinessObjectBase[] myFetch(ISqlQuery sqlQuery, Class<?> boType)
-			throws RepositoryException, DbException, SQLException, ParsingException {
+	private final IBusinessObjectBase[] myFetch(ISqlQuery sqlQuery, Class<?> boType) throws Exception {
 		if (boType == null) {
-			throw new RepositoryException(I18N.prop("msg_bobas_not_specify_bo_type"));
+			throw new Exception(I18N.prop("msg_bobas_not_specify_bo_type"));
 		}
 		if (sqlQuery == null) {
-			throw new RepositoryException(I18N.prop("msg_bobas_invalid_sql_query"));
+			throw new Exception(I18N.prop("msg_bobas_invalid_sql_query"));
 		}
 		IBOAdapter4Db adapter4Db = this.getBOAdapter();
 		IDbDataReader reader = null;
@@ -376,20 +369,11 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 * @param boType
 	 *            填充对象
 	 * @return 操作结果
-	 * @throws RepositoryException
-	 * @throws DbException
-	 * @throws SQLException
-	 * @throws ParsingException
-	 * @throws SqlScriptException
-	 * @throws ClassNotFoundException
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
+	 * @throws Exception
 	 */
-	private final IBusinessObjectBase[] myFetchEx(ICriteria criteria, Class<?> boType)
-			throws RepositoryException, DbException, SQLException, ParsingException, SqlScriptException,
-			ClassNotFoundException, InstantiationException, IllegalAccessException {
+	private final IBusinessObjectBase[] myFetchEx(ICriteria criteria, Class<?> boType) throws Exception {
 		if (boType == null) {
-			throw new RepositoryException(I18N.prop("msg_bobas_not_specify_bo_type"));
+			throw new Exception(I18N.prop("msg_bobas_not_specify_bo_type"));
 		}
 		boolean myOpenedDb = false;// 自己打开的数据库
 		try {
@@ -426,20 +410,11 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 * @param boType
 	 *            填充对象
 	 * @return 操作结果
-	 * @throws RepositoryException
-	 * @throws DbException
-	 * @throws SQLException
-	 * @throws ParsingException
-	 * @throws SqlScriptException
-	 * @throws ClassNotFoundException
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
+	 * @throws Exception
 	 */
-	private final IBusinessObjectBase[] myFetchEx(ISqlQuery sqlQuery, Class<?> boType)
-			throws RepositoryException, DbException, SQLException, ParsingException, SqlScriptException,
-			ClassNotFoundException, InstantiationException, IllegalAccessException {
+	private final IBusinessObjectBase[] myFetchEx(ISqlQuery sqlQuery, Class<?> boType) throws Exception {
 		if (boType == null) {
-			throw new RepositoryException(I18N.prop("msg_bobas_not_specify_bo_type"));
+			throw new Exception(I18N.prop("msg_bobas_not_specify_bo_type"));
 		}
 		boolean myOpenedDb = false;// 自己打开的数据库
 		try {
@@ -462,15 +437,9 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 *            已知对象
 	 * @param criteria
 	 *            可能存在的子项查询
-	 * @throws DbException
-	 * @throws SqlScriptException
-	 * @throws ParsingException
-	 * @throws ClassNotFoundException
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
+	 * @throws Exception
 	 */
-	private final void myFetchEx(IBusinessObjectBase[] bos, ICriteria criteria) throws DbException, SqlScriptException,
-			ParsingException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+	private final void myFetchEx(IBusinessObjectBase[] bos, ICriteria criteria) throws Exception {
 		boolean myOpenedDb = false;// 自己打开的数据库
 		IDbDataReader reader = null;
 		IDbCommand command = null;

@@ -479,6 +479,9 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 			} catch (RepositoryException e1) {
 				throw new ApprovalProcessException(e1);
 			}
+			if (e instanceof ApprovalProcessException) {
+				throw (ApprovalProcessException) e;
+			}
 			throw new ApprovalProcessException(e);
 		} finally {
 			if (myOpend && apRepository != null) {

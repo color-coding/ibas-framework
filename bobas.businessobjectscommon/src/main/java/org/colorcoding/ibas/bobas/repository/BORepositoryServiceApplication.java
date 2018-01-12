@@ -154,8 +154,7 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 			Logger.log(MSG_REPOSITORY_FETCH_AND_FILTERING, boType.getName(), fetchTime, fetchCount, filterCount);
 		} catch (Exception e) {
 			// 如果出错，不返回处理一半的数据
-			operationResult = new OperationResult<P>();
-			operationResult.setError(e);
+			operationResult = new OperationResult<P>(e);
 		}
 		return operationResult;
 	}

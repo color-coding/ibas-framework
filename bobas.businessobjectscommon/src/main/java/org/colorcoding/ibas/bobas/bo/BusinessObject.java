@@ -47,7 +47,6 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 		implements IBusinessObject {
 
 	protected static final String MSG_USER_SET_FIELD_VALUE = "user fields: set field [%s]'s value [%s].";
-	protected static final String MSG_RULES_EXECUTING_FAILD = "rules: field [%s] triggered rules fail to run, %s.";
 
 	private static final long serialVersionUID = -8485128824221654376L;
 
@@ -474,7 +473,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 				}
 			} catch (BusinessRuleException e) {
 				// 运行中，仅记录错误，以被调试。
-				Logger.log(MessageLevel.ERROR, MSG_RULES_EXECUTING_FAILD, property.getName(), e.getMessage());
+				Logger.log(MessageLevel.DEBUG, e);
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.logic;
 
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
+import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
 import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
@@ -179,6 +180,13 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		if (this.beAffected == null) {
 			// 加载被影响的数据
 			this.beAffected = this.fetchBeAffected(this.getContract());
+		}
+		if (this.beAffected instanceof BusinessObject<?>) {
+			BusinessObject<?> bo = (BusinessObject<?>) this.beAffected;
+			if (bo.isDeleted()) {
+				// 恢复bo删除状态
+				bo.undelete();
+			}
 		}
 		this.impact(this.getContract());
 	}

@@ -178,7 +178,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	 */
 	private final IBusinessObjectBase mySave(IBusinessObjectBase bo) throws Exception {
 		if (bo == null) {
-			throw new RepositoryException(I18N.prop("msg_bobas_invalid_bo"));
+			throw new Exception(I18N.prop("msg_bobas_invalid_bo"));
 		}
 		if (bo.isDirty() && bo.isSavable()) {
 			// 仅修过的且可保存的数据进行处理
@@ -233,7 +233,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 					// 自己打开的事务
 					this.rollbackTransaction();// 关闭事务
 				}
-				throw new RepositoryException(I18N.prop("msg_bobas_to_save_bo_faild", e.getMessage()), e);
+				throw e;
 			} finally {
 				if (reader != null) {
 					reader.close();
@@ -262,7 +262,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 	 */
 	private final IBusinessObjectBase mySaveEx(IBusinessObjectBase bo) throws Exception {
 		if (bo == null) {
-			throw new RepositoryException(I18N.prop("msg_bobas_invalid_bo"));
+			throw new Exception(I18N.prop("msg_bobas_invalid_bo"));
 		}
 		if (bo.isDirty()) {
 			// 仅修过的数据进行处理

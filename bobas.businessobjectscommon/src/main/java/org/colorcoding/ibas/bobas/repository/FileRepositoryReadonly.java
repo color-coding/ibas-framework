@@ -10,7 +10,6 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.configuration.Configuration;
-import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.FileData;
 import org.colorcoding.ibas.bobas.data.emYesNo;
@@ -81,7 +80,7 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
 
 	private FileData[] searchFiles(ICriteria criteria) throws Exception {
 		if (criteria == null || criteria.getConditions().isEmpty()) {
-			throw new RepositoryException(I18N.prop("msg_bobas_invaild_criteria"));
+			throw new Exception(I18N.prop("msg_bobas_invaild_criteria"));
 		}
 		String workFolder = this.getRepositoryFolder();
 		boolean include = false;
@@ -111,7 +110,7 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
 		// 检查文件夹内文件是否符合条件
 		File folder = new File(workFolder);
 		if (!folder.isDirectory() || !folder.exists()) {
-			throw new RepositoryException(
+			throw new Exception(
 					I18N.prop("msg_bobas_not_found_folder", workFolder.replace(this.getRepositoryFolder(), ".")));
 		}
 		// 查询符合条件的文件

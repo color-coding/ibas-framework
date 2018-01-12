@@ -10,16 +10,15 @@ import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectListBase;
 import org.colorcoding.ibas.bobas.core.ITrackStatusOperator;
-import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
 import org.colorcoding.ibas.bobas.db.IDbCommand;
 import org.colorcoding.ibas.bobas.db.IDbDataReader;
 import org.colorcoding.ibas.bobas.db.ParsingException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.data.ArrayList;
 
 /**
  * 基本数据库仓库-读写(批量)
@@ -179,7 +178,7 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 	 */
 	private final IBusinessObjectBase[] mySave(IBusinessObjectBase[] bos, boolean recursion) throws Exception {
 		if (bos == null || bos.length <= 0) {
-			throw new RepositoryException(I18N.prop("msg_bobas_invalid_bo"));
+			throw new Exception(I18N.prop("msg_bobas_invalid_bo"));
 		}
 		IDbDataReader reader = null;
 		IDbCommand command = null;
