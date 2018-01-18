@@ -118,7 +118,7 @@ public class Condition extends Serializable implements ICondition {
 			} else if (this.getOperation() == ConditionOperation.NOT_EQUAL) {
 				this.setOperation(ConditionOperation.NOT_NULL);
 			}
-		} else {
+		} else if (this.value != null && !this.value.isEmpty()) {
 			// 非null时，自动改变计算方式
 			if (this.getOperation() == ConditionOperation.IS_NULL) {
 				this.setOperation(ConditionOperation.EQUAL);

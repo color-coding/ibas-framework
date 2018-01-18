@@ -52,6 +52,9 @@ public class testCriteria extends TestCase {
 		condition.setAlias(SalesOrderItem.PROPERTY_ITEMCODE.getName());
 		condition.setOperation(ConditionOperation.CONTAIN);
 		condition.setValue("T000");
+		condition = childCriteria.getConditions().create();
+		condition.setAlias(SalesOrderItem.PROPERTY_ITEMCODE.getName());
+		condition.setOperation(ConditionOperation.NOT_NULL);
 
 		// 测试Condition
 		JAXBContext context = JAXBContext.newInstance(condition.getClass());
