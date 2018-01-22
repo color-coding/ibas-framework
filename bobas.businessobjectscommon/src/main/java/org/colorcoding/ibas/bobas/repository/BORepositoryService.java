@@ -373,6 +373,8 @@ public class BORepositoryService implements IBORepositoryService {
 			if (toDelete) {
 				// 删除操作，不返回实例
 				returnBO = null;
+			} else if (!bo.isSavable()) {
+				// 此对象没有保存，则直接返回
 			} else {
 				// 非删除操作
 				if (this.isRefetchAfterSave()) {
