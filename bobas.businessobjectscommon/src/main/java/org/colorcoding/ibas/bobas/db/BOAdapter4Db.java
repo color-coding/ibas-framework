@@ -575,8 +575,16 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				throw new ParsingException(I18N.prop("msg_bobas_not_found_bo_table", bo.getClass().getName()));
 			}
 			table = String.format(sqlScripts.getDbObjectSign(), table);
-			String partWhere = this.getFieldValues(this.getDbFields(boFields.getFields(c -> c.isPrimaryKey())),
-					sqlScripts.getAndSign());
+			String partWhere = null;
+			if (bo.isNew()) {
+				// 新建状态删除，使用唯一属性
+				partWhere = this.getFieldValues(this.getDbFields(boFields.getFields(c -> c.isUniqueKey())),
+						sqlScripts.getAndSign());
+			} else {
+				// 非新建删除，使用主键属性
+				partWhere = this.getFieldValues(this.getDbFields(boFields.getFields(c -> c.isPrimaryKey())),
+						sqlScripts.getAndSign());
+			}
 			if (partWhere == null || partWhere.isEmpty()) {
 				// 没有条件的删除不允许执行
 				throw new ParsingException(I18N.prop("msg_bobas_not_allow_sql_scripts"));

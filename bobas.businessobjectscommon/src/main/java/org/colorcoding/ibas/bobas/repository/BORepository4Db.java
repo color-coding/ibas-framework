@@ -180,73 +180,74 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 		if (bo == null) {
 			throw new Exception(I18N.prop("msg_bobas_invalid_bo"));
 		}
-		if (bo.isDirty() && bo.isSavable()) {
-			// 仅修过的且可保存的数据进行处理
-			IBOAdapter4Db adapter4Db = this.getBOAdapter();
-			IDbDataReader reader = null;
-			IDbCommand command = null;
-			boolean myOpenedDb = false;// 自己打开的数据库
-			boolean myTrans = false;// 自己打开的事务
-			try {
-				ISqlQuery sqlQuery = null;
-				// 开始保存数据
-				myOpenedDb = this.openDbConnection();
-				myTrans = this.beginTransaction();
-				command = this.getDbConnection().createCommand();
-				this.tagStorage(bo);// 存储标记
-				if (bo.isNew()) {
-					// 新建的对象
-					this.getKeysManager().usePrimaryKeys(bo, command);// 获取并更新主键
-					this.getKeysManager().useSeriesKey(bo, command);// 获取并更新系列号
-					this.fireSaveAction(SaveActionType.BEFORE_ADDING, bo);
-					sqlQuery = adapter4Db.parseInsertScript(bo);
-				} else if (bo.isDeleted()) {
-					// 删除对象
-					this.fireSaveAction(SaveActionType.BEFORE_DELETING, bo);
-					sqlQuery = adapter4Db.parseDeleteScript(bo);
-				} else {
-					// 修改对象，先删除数据，再添加新的实例
-					this.fireSaveAction(SaveActionType.BEFORE_UPDATING, bo);
-					sqlQuery = adapter4Db.parseDeleteScript(bo);
-					command.executeUpdate(sqlQuery);// 执行删除副本
-					sqlQuery = adapter4Db.parseInsertScript(bo);
-				}
-				// 运行保存语句
-				command.executeUpdate(sqlQuery);
-				// 通知事务
-				if (bo.isNew()) {
-					// 新建的对象
-					this.fireSaveAction(SaveActionType.ADDED, bo);
-				} else if (bo.isDeleted()) {
-					// 删除对象
-					this.fireSaveAction(SaveActionType.DELETED, bo);
-				} else {
-					// 修改对象
-					this.fireSaveAction(SaveActionType.UPDATED, bo);
-				}
-				if (myTrans) {
-					// 自己打开的事务
-					this.commitTransaction();// 关闭事务
-				}
-			} catch (Exception e) {
-				if (myTrans) {
-					// 自己打开的事务
-					this.rollbackTransaction();// 关闭事务
-				}
-				throw e;
-			} finally {
-				if (reader != null) {
-					reader.close();
-				}
-				if (command != null) {
-					command.close();
-				}
-				reader = null;
-				command = null;
-				if (myOpenedDb) {
-					// 自己开打自己关闭
-					this.closeDbConnection();// 关闭数据库连接
-				}
+		if (!bo.isDirty() || !bo.isSavable()) {
+			return bo;
+		}
+		// 仅修过的且可保存的数据进行处理
+		IBOAdapter4Db adapter4Db = this.getBOAdapter();
+		IDbDataReader reader = null;
+		IDbCommand command = null;
+		boolean myOpenedDb = false;// 自己打开的数据库
+		boolean myTrans = false;// 自己打开的事务
+		try {
+			ISqlQuery sqlQuery = null;
+			// 开始保存数据
+			myOpenedDb = this.openDbConnection();
+			myTrans = this.beginTransaction();
+			command = this.getDbConnection().createCommand();
+			this.tagStorage(bo);// 存储标记
+			if (bo.isNew() && !bo.isDeleted()) {
+				// 新建的对象
+				this.getKeysManager().usePrimaryKeys(bo, command);// 获取并更新主键
+				this.getKeysManager().useSeriesKey(bo, command);// 获取并更新系列号
+				this.fireSaveAction(SaveActionType.BEFORE_ADDING, bo);
+				sqlQuery = adapter4Db.parseInsertScript(bo);
+			} else if (bo.isDeleted()) {
+				// 删除对象
+				this.fireSaveAction(SaveActionType.BEFORE_DELETING, bo);
+				sqlQuery = adapter4Db.parseDeleteScript(bo);
+			} else {
+				// 修改对象，先删除数据，再添加新的实例
+				this.fireSaveAction(SaveActionType.BEFORE_UPDATING, bo);
+				sqlQuery = adapter4Db.parseDeleteScript(bo);
+				command.executeUpdate(sqlQuery);// 执行删除副本
+				sqlQuery = adapter4Db.parseInsertScript(bo);
+			}
+			// 运行保存语句
+			command.executeUpdate(sqlQuery);
+			// 通知事务
+			if (bo.isNew()) {
+				// 新建的对象
+				this.fireSaveAction(SaveActionType.ADDED, bo);
+			} else if (bo.isDeleted()) {
+				// 删除对象
+				this.fireSaveAction(SaveActionType.DELETED, bo);
+			} else {
+				// 修改对象
+				this.fireSaveAction(SaveActionType.UPDATED, bo);
+			}
+			if (myTrans) {
+				// 自己打开的事务
+				this.commitTransaction();// 关闭事务
+			}
+		} catch (Exception e) {
+			if (myTrans) {
+				// 自己打开的事务
+				this.rollbackTransaction();// 关闭事务
+			}
+			throw e;
+		} finally {
+			if (reader != null) {
+				reader.close();
+			}
+			if (command != null) {
+				command.close();
+			}
+			reader = null;
+			command = null;
+			if (myOpenedDb) {
+				// 自己开打自己关闭
+				this.closeDbConnection();// 关闭数据库连接
 			}
 		}
 		return bo;
@@ -264,66 +265,67 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 		if (bo == null) {
 			throw new Exception(I18N.prop("msg_bobas_invalid_bo"));
 		}
-		if (bo.isDirty()) {
-			// 仅修过的数据进行处理
-			boolean myOpenedDb = false;// 自己打开的数据库
-			boolean myTrans = false;// 自己打开的事务
-			try {
-				// 开始保存数据
-				myOpenedDb = this.openDbConnection();
-				myTrans = this.beginTransaction();
-				// 保存主对象
-				this.mySave(bo);
-				// 保存子项
-				if (bo instanceof IManageFields) {
-					IManageFields boFields = (IManageFields) bo;
-					for (IFieldData fieldData : boFields.getFields()) {
-						if (!fieldData.isSavable()) {
-							// 不保存字段，继续下一个
-							continue;
-						}
-						Object fdValue = fieldData.getValue();
-						if (fdValue == null) {
-							// 空值，继续下一个
-							continue;
-						}
-						if (fdValue instanceof IBusinessObjectListBase<?>) {
-							// 对象列表
-							IBusinessObjectListBase<?> childs = (IBusinessObjectListBase<?>) fdValue;
-							// 每个子项保存时，自主获取主键
-							for (IBusinessObjectBase childBO : childs) {
-								this.mySaveEx(childBO);
-							}
-						} else if (fdValue instanceof IBusinessObjectBase) {
-							// 对象属性
-							this.mySaveEx((IBusinessObjectBase) fdValue);// 继续带子项的保存
-						}
-						/*
-						 * 不处理数组了
-						 * 
-						 * else if (fdValue.getClass().isArray()) { // 对象数组 int length =
-						 * Array.getLength(fdValue); for (int i = 0; i < length; i++) { Object child =
-						 * Array.get(fdValue, i); if (child instanceof IBusinessObjectBase) {
-						 * IBusinessObjectBase childBO = (IBusinessObjectBase) child;
-						 * this.mySaveEx(childBO, true, root);// 继续带子项的保存 } } }
-						 */
+		if (!bo.isDirty()) {
+			return bo;
+		}
+		// 仅修过的数据进行处理
+		boolean myOpenedDb = false;// 自己打开的数据库
+		boolean myTrans = false;// 自己打开的事务
+		try {
+			// 开始保存数据
+			myOpenedDb = this.openDbConnection();
+			myTrans = this.beginTransaction();
+			// 保存主对象
+			this.mySave(bo);
+			// 保存子项
+			if (bo instanceof IManageFields) {
+				IManageFields boFields = (IManageFields) bo;
+				for (IFieldData fieldData : boFields.getFields()) {
+					if (!fieldData.isSavable()) {
+						// 不保存字段，继续下一个
+						continue;
 					}
+					Object fdValue = fieldData.getValue();
+					if (fdValue == null) {
+						// 空值，继续下一个
+						continue;
+					}
+					if (fdValue instanceof IBusinessObjectListBase<?>) {
+						// 对象列表
+						IBusinessObjectListBase<?> childs = (IBusinessObjectListBase<?>) fdValue;
+						// 每个子项保存时，自主获取主键
+						for (IBusinessObjectBase childBO : childs) {
+							this.mySaveEx(childBO);
+						}
+					} else if (fdValue instanceof IBusinessObjectBase) {
+						// 对象属性
+						this.mySaveEx((IBusinessObjectBase) fdValue);// 继续带子项的保存
+					}
+					/*
+					 * 不处理数组了
+					 * 
+					 * else if (fdValue.getClass().isArray()) { // 对象数组 int length =
+					 * Array.getLength(fdValue); for (int i = 0; i < length; i++) { Object child =
+					 * Array.get(fdValue, i); if (child instanceof IBusinessObjectBase) {
+					 * IBusinessObjectBase childBO = (IBusinessObjectBase) child;
+					 * this.mySaveEx(childBO, true, root);// 继续带子项的保存 } } }
+					 */
 				}
-				if (myTrans) {
-					// 自己打开的事务
-					this.commitTransaction();// 关闭事务
-				}
-			} catch (Exception e) {
-				if (myTrans) {
-					// 自己打开的事务
-					this.rollbackTransaction();// 关闭事务
-				}
-				throw e;
-			} finally {
-				if (myOpenedDb) {
-					// 自己开打自己关闭
-					this.closeDbConnection();// 关闭数据库连接
-				}
+			}
+			if (myTrans) {
+				// 自己打开的事务
+				this.commitTransaction();// 关闭事务
+			}
+		} catch (Exception e) {
+			if (myTrans) {
+				// 自己打开的事务
+				this.rollbackTransaction();// 关闭事务
+			}
+			throw e;
+		} finally {
+			if (myOpenedDb) {
+				// 自己开打自己关闭
+				this.closeDbConnection();// 关闭数据库连接
 			}
 		}
 		return bo;

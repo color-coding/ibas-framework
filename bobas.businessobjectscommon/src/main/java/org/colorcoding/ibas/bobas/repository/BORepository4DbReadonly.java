@@ -440,14 +440,14 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 * @throws Exception
 	 */
 	private final void myFetchEx(IBusinessObjectBase[] bos, ICriteria criteria) throws Exception {
+		if (bos == null) {
+			return;
+		}
 		boolean myOpenedDb = false;// 自己打开的数据库
 		IDbDataReader reader = null;
 		IDbCommand command = null;
 		IBOAdapter4Db adapter4Db = this.getBOAdapter();
 		try {
-			if (bos == null) {
-				return;
-			}
 			myOpenedDb = this.openDbConnection();
 			for (int i = 0; i < bos.length; i++) {
 				IBusinessObjectBase bo = bos[i];

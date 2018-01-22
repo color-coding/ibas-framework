@@ -107,7 +107,7 @@ class DbConnectionPool implements IDbConnectionPool {
 		this.availableConnections = new ConnectionWrapping[getPoolSize()];
 		// 设置已回收的连接保持时间
 		this.setHoldingTime(
-				MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_CONNECTION_HOLDING_TIME, 30l));
+				MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_CONNECTION_HOLDING_TIME, 180));
 		if (this.getHoldingTime() > 0) {
 			// 设置了连接持有时间
 			// 开始释放连接任务
@@ -129,7 +129,8 @@ class DbConnectionPool implements IDbConnectionPool {
 										availableConnections[i] = null;
 										continue;
 									}
-									if ((System.currentTimeMillis() - wrapping.getStowedTime()) >= getHoldingTime()) {
+									if ((System.currentTimeMillis() - wrapping.getStowedTime()) >= (getHoldingTime()
+											* 1000)) {
 										// 超出持有时间，关闭连接
 										connection.dispose();
 										availableConnections[i] = null;
