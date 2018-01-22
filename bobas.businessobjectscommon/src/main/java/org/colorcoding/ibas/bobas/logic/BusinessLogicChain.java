@@ -29,8 +29,8 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
 public class BusinessLogicChain implements IBusinessLogicChain {
 
 	protected static final String MSG_LOGICS_EXISTING_CONTRACT = "logics: class [%s] existing contract [%s].";
-	protected static final String MSG_TRIGGER_EXISTING_CONTRACT = "logics: trigger [%s] existing [%s] contracts.";
-	protected static final String MSG_TRIGGER_COPY_EXISTING_CONTRACT = "logics: trigger copy [%s] existing [%s] contracts.";
+	protected static final String MSG_TRIGGER_EXISTING_CONTRACT = "logics: trigger [%s] has [%s] contracts.";
+	protected static final String MSG_TRIGGER_COPY_EXISTING_CONTRACT = "logics: trigger's copy [%s] has [%s] contracts.";
 	/**
 	 * 业务对象代理
 	 */

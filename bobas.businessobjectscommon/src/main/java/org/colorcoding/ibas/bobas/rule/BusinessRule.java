@@ -6,14 +6,14 @@ import org.colorcoding.ibas.bobas.bo.IBODescription;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.core.IManageProperties;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
-import org.colorcoding.ibas.bobas.data.ArrayList;
 
 public abstract class BusinessRule implements IBusinessRule {
 
-	protected static final String MSG_RULES_EXECUTING = "rules: bo %s executing rule [%s - %s].";
+	protected static final String MSG_RULES_EXECUTING = "rules: executing rule [%s - %s].";
 	private ArrayList<IPropertyInfo<?>> inputProperties;
 
 	@Override
@@ -49,7 +49,7 @@ public abstract class BusinessRule implements IBusinessRule {
 				}
 			}
 			// 执行规则
-			Logger.log(MessageLevel.DEBUG, MSG_RULES_EXECUTING, bo, this.getClass().getName(), this.getName());
+			Logger.log(MessageLevel.DEBUG, MSG_RULES_EXECUTING, this.getClass().getName(), this.getName());
 			this.execute(context);
 			// 赋值输出属性
 			if (bo instanceof IManageProperties) {

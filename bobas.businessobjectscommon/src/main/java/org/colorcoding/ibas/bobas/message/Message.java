@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.message.IMessage;
-import org.colorcoding.ibas.bobas.message.Message;
-import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 public class Message implements IMessage {
 
@@ -28,6 +25,8 @@ public class Message implements IMessage {
 
 	public Message() {
 		this.setTime(DateTime.getNow());
+		Thread thread = Thread.currentThread();
+		this.setThread(String.format("%s(%s)", thread.getName(), thread.getId()));
 	}
 
 	public Message(String message) {
@@ -45,7 +44,17 @@ public class Message implements IMessage {
 		this.setTag(tag);
 	}
 
-	DateTime time;
+	private String thread;
+
+	public final String getThread() {
+		return thread;
+	}
+
+	public final void setThread(String thread) {
+		this.thread = thread;
+	}
+
+	private DateTime time;
 
 	@Override
 	public DateTime getTime() {
@@ -56,7 +65,7 @@ public class Message implements IMessage {
 		this.time = time;
 	}
 
-	MessageLevel level;
+	private MessageLevel level;
 
 	@Override
 	public MessageLevel getLevel() {
@@ -69,7 +78,7 @@ public class Message implements IMessage {
 		this.level = level;
 	}
 
-	String content;
+	private String content;
 
 	@Override
 	public String getContent() {
@@ -80,7 +89,7 @@ public class Message implements IMessage {
 		this.content = content;
 	}
 
-	String tag;
+	private String tag;
 
 	@Override
 	public String getTag() {
@@ -103,6 +112,10 @@ public class Message implements IMessage {
 		stringBuilder.append("[");
 		stringBuilder.append(this.getTime().toString("yyyy-MM-dd HH:mm:ss.SSS"));
 		stringBuilder.append("]");
+		stringBuilder.append(" ");
+		stringBuilder.append("[");
+		stringBuilder.append(this.getThread());
+		stringBuilder.append("]");
 		if (this.getTag() != null && !this.getTag().isEmpty()) {
 			stringBuilder.append(" ");
 			stringBuilder.append("[");
@@ -123,6 +136,10 @@ public class Message implements IMessage {
 		writer.append(" ");
 		writer.append("[");
 		writer.append(this.getTime().toString("yyyy-MM-dd HH:mm:ss.SSS"));
+		writer.append("]");
+		writer.append(" ");
+		writer.append("[");
+		writer.append(this.getThread());
 		writer.append("]");
 		if (this.getTag() != null && !this.getTag().isEmpty()) {
 			writer.append(" ");

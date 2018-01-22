@@ -33,8 +33,9 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		implements IBusinessLogic<B> {
 
 	protected static final String MSG_LOGICS_FOUND_DATA_IN_CHAIN = "logics: found affected data in chain.";
-	protected static final String MSG_LOGICS_RUNNING_LOGIC_FORWARD = "logics: forward logic [%s] by data [%s].";
-	protected static final String MSG_LOGICS_RUNNING_LOGIC_REVERSE = "logics: reverse logic [%s] by data [%s].";
+	protected static final String MSG_LOGICS_RUNNING_LOGIC_FORWARD = "logics: forward logic [%s].";
+	protected static final String MSG_LOGICS_RUNNING_LOGIC_REVERSE = "logics: reverse logic [%s].";
+	protected static final String MSG_LOGICS_SKIP_LOGIC_EXECUTION = "logics: skip logic [%s], because [%s = %s].";
 
 	private L contract;
 
@@ -113,6 +114,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			// 标记删除的数据无效
 			ITrackStatus status = (ITrackStatus) data;
 			if (status.isDeleted()) {
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "isDeleted",
+						status.isDeleted());
 				return false;
 			}
 		}
@@ -120,6 +123,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			// 引用数据，已标记删除的，不影响业务逻辑
 			IBOTagDeleted refData = (IBOTagDeleted) data;
 			if (refData.getDeleted() == emYesNo.YES) {
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "Deleted",
+						refData.getDeleted());
 				return false;
 			}
 		}
@@ -127,6 +132,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			// 引用数据，已标记取消的，不影响业务逻辑
 			IBOTagCanceled refData = (IBOTagCanceled) data;
 			if (refData.getCanceled() == emYesNo.YES) {
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "Canceled",
+						refData.getCanceled());
 				return false;
 			}
 		}
@@ -136,7 +143,9 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			if (apData.getApprovalStatus() == emApprovalStatus.CANCELLED
 					|| apData.getApprovalStatus() == emApprovalStatus.PROCESSING
 					|| apData.getApprovalStatus() == emApprovalStatus.REJECTED) {
-				// 计划状态
+				// 审批中，取消，拒绝
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
+						"ApprovalStatus", apData.getApprovalStatus());
 				return false;
 			}
 		}
@@ -145,6 +154,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			IBODocument docData = (IBODocument) data;
 			if (docData.getDocumentStatus() == emDocumentStatus.PLANNED) {
 				// 计划状态
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
+						"DocumentStatus", docData.getDocumentStatus());
 				return false;
 			}
 		}
@@ -153,6 +164,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			IBODocumentLine lineData = (IBODocumentLine) data;
 			if (lineData.getLineStatus() == emDocumentStatus.PLANNED) {
 				// 计划状态
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "LineStatus",
+						lineData.getLineStatus());
 				return false;
 			}
 		}
@@ -175,8 +188,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			return;
 		}
 		// 执行正向逻辑
-		Logger.log(MessageLevel.DEBUG, MSG_LOGICS_RUNNING_LOGIC_FORWARD, this.getClass().getName(),
-				this.getContract().getIdentifiers());
+		Logger.log(MessageLevel.DEBUG, MSG_LOGICS_RUNNING_LOGIC_FORWARD, this.getClass().getName());
 		if (this.beAffected == null) {
 			// 加载被影响的数据
 			this.beAffected = this.fetchBeAffected(this.getContract());
@@ -214,8 +226,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			return;
 		}
 		// 执行撤销逻辑
-		Logger.log(MessageLevel.DEBUG, MSG_LOGICS_RUNNING_LOGIC_REVERSE, this.getClass().getName(),
-				this.getContract().getIdentifiers());
+		Logger.log(MessageLevel.DEBUG, MSG_LOGICS_RUNNING_LOGIC_REVERSE, this.getClass().getName());
 		if (this.beAffected == null) {
 			// 加载被影响的数据
 			this.beAffected = this.fetchBeAffected(this.getContract());

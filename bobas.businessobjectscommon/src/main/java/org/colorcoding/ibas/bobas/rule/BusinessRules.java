@@ -5,6 +5,8 @@ import java.util.List;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 /**
  * 业务规则实现
@@ -13,6 +15,8 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
  *
  */
 public class BusinessRules implements IBusinessRules {
+
+	protected static final String MSG_RULES_STARTING = "rules: start executing %s rules.";
 
 	public BusinessRules(Class<?> type) {
 		this.setBOType(type);
@@ -112,6 +116,7 @@ public class BusinessRules implements IBusinessRules {
 		if (rules == null || rules.isEmpty()) {
 			return;
 		}
+		Logger.log(MessageLevel.DEBUG, MSG_RULES_STARTING, bo);
 		for (IBusinessRule rule : rules) {
 			rule.execute(bo);
 		}
