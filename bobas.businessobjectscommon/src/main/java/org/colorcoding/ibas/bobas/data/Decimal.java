@@ -44,6 +44,11 @@ public class Decimal extends BigDecimal implements Cloneable {
 	public final static Decimal ZERO = new Decimal(String.format(DECIMAL_TEMPLATE, 0));
 
 	/**
+	 * 数值-1
+	 */
+	public final static Decimal MINUS_ONE = new Decimal(String.format(DECIMAL_TEMPLATE, -1));
+
+	/**
 	 * 截取小数
 	 * 
 	 * @param value
