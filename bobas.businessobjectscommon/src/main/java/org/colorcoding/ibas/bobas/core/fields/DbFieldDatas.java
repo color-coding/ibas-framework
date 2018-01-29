@@ -172,7 +172,7 @@ class DbFieldDataDecimal extends FieldDataDbBase<Decimal> {
 	}
 
 	public boolean setValue(Decimal value) {
-		if (this.value != null && this.value.equals(value)) {
+		if (this.value != null && (this.value.equals(value) || this.value.compareTo(value) == 0)) {
 			return false;
 		}
 		this.value = value;
@@ -208,7 +208,7 @@ class DbFieldDataDateTime extends FieldDataDbBase<DateTime> {
 	}
 
 	public boolean setValue(DateTime value) {
-		if (this.value != null && this.value.equals(value)) {
+		if (this.value != null && (this.value.equals(value) || this.value.compareTo(value) == 0)) {
 			return false;
 		}
 		this.value = value;

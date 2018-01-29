@@ -19,9 +19,11 @@ import org.colorcoding.ibas.bobas.logic.IBusinessLogicsHost;
 import org.colorcoding.ibas.bobas.mapping.DbField;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.rule.IBusinessRule;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleDivision;
 import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMaxLength;
 import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMaxValue;
 import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMinValue;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMultiplication;
 import org.colorcoding.ibas.bobas.rule.common.BusinessRuleRequired;
 
 /**
@@ -1123,8 +1125,8 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 				new BusinessRuleMaxLength(20, PROPERTY_ITEMCODE), // 不能超过长度
 				new BusinessRuleMinValue<Decimal>(Decimal.ZERO, PROPERTY_QUANTITY, PROPERTY_PRICE, PROPERTY_LINETOTAL), // 不能低于0
 				new BusinessRuleMaxValue<Integer>(100, PROPERTY_LINEID), // 不能大于100
-				new BusinessRuleCalculateTotals(PROPERTY_PRICE, PROPERTY_QUANTITY, PROPERTY_LINETOTAL), // 计算总计
-				new BusinessRuleCalculatePrice(PROPERTY_LINETOTAL, PROPERTY_QUANTITY, PROPERTY_PRICE),// 计算价格
+				new BusinessRuleMultiplication(PROPERTY_LINETOTAL, PROPERTY_PRICE, PROPERTY_QUANTITY), // 计算总计
+				new BusinessRuleDivision(PROPERTY_PRICE, PROPERTY_LINETOTAL, PROPERTY_QUANTITY),// 计算价格
 		};
 	}
 
