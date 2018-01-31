@@ -9,7 +9,7 @@ import org.colorcoding.ibas.bobas.core.IPropertyInfo;
  * @author Niuren.Zhu
  *
  */
-public interface IBusinessRules {
+public interface IBusinessRules extends Iterable<IBusinessRule> {
 
 	/**
 	 * 是否已初始化
@@ -23,14 +23,21 @@ public interface IBusinessRules {
 	 * 
 	 * @param rules
 	 */
-	void registerRules(IBusinessRule[] rules);
+	void register(IBusinessRule[] rules);
+
+	/**
+	 * 大小
+	 * 
+	 * @return
+	 */
+	int size();
 
 	/**
 	 * 运行业务规则
 	 * 
 	 * @param bo
 	 *            执行规则的业务对象
-	 * @param property
+	 * @param properties
 	 *            变化的属性
 	 */
 	void execute(IBusinessObject bo, IPropertyInfo<?>... properties) throws BusinessRuleException;

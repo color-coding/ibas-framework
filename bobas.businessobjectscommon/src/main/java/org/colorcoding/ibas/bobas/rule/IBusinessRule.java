@@ -20,8 +20,6 @@ public interface IBusinessRule {
 	 * 
 	 * @param bo
 	 *            执行规则的业务对象
-	 * @param property
-	 *            变化的属性
 	 */
 	void execute(IBusinessObject bo) throws BusinessRuleException;
 

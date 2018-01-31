@@ -33,7 +33,7 @@ public class BusinessRulesFactory extends ConfigurableFactory<IBusinessRulesMana
 		return new BusinessRulesManager();
 	}
 
-	public synchronized IBusinessRulesManager createManager() throws BusinessRuleException {
+	public synchronized IBusinessRulesManager createManager() {
 		if (defaultManager == null) {
 			defaultManager = this.create(MyConfiguration.CONFIG_ITEM_BUSINESS_RULES_WAY, "BusinessRulesManager");
 		}

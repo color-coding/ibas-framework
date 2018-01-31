@@ -39,7 +39,7 @@ public abstract class BusinessObjectListBase<E extends IBusinessObjectBase> exte
 	@Override
 	public final void removeListener(PropertyChangeListener listener) {
 		if (this.listeners == null) {
-			this.listeners = new PropertyChangeSupport(this);
+			return;
 		}
 		this.listeners.removePropertyChangeListener(listener);
 	}

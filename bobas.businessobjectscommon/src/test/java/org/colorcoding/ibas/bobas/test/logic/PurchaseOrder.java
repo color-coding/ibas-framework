@@ -26,6 +26,7 @@ import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMaxLength;
 import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMinValue;
 import org.colorcoding.ibas.bobas.rule.common.BusinessRuleRequired;
 import org.colorcoding.ibas.bobas.rule.common.BusinessRuleRequiredElements;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleSumElements;
 
 /**
  * 获取-采购订单
@@ -1391,7 +1392,8 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 				new BusinessRuleRequired(PROPERTY_CUSTOMERCODE), // 要求有值
 				new BusinessRuleRequiredElements(PROPERTY_PURCHASEORDERITEMS), // 要求有元素
 				new BusinessRuleMaxLength(20, PROPERTY_CUSTOMERCODE), // 不能超过长度
-				new BusinessRuleMinValue<Decimal>(Decimal.ZERO, PROPERTY_DOCUMENTTOTAL),// 不能低于0
-		};
+				new BusinessRuleMinValue<Decimal>(Decimal.ZERO, PROPERTY_DOCUMENTTOTAL), // 不能低于0
+				new BusinessRuleSumElements(PROPERTY_DOCUMENTTOTAL, PROPERTY_PURCHASEORDERITEMS,
+						PurchaseOrderItem.PROPERTY_LINETOTAL), };
 	}
 }

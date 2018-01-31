@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.rule;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
@@ -9,28 +11,14 @@ import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 /**
- * 业务规则实现
+ * 业务规则集合
  * 
  * @author Niuren.Zhu
  *
  */
-public class BusinessRules implements IBusinessRules {
+class BusinessRules implements IBusinessRules {
 
-	protected static final String MSG_RULES_STARTING = "rules: start executing %s rules.";
-
-	public BusinessRules(Class<?> type) {
-		this.setBOType(type);
-	}
-
-	private Class<?> boType;
-
-	public final Class<?> getBOType() {
-		return boType;
-	}
-
-	private final void setBOType(Class<?> boType) {
-		this.boType = boType;
-	}
+	protected static final String MSG_RULES_EXECUTING = "rules: start executing %s rules.";
 
 	private volatile boolean initialized;
 
@@ -47,9 +35,9 @@ public class BusinessRules implements IBusinessRules {
 		this.setInitialized(true);
 	}
 
-	private ArrayList<IBusinessRule> rules;
+	private Collection<IBusinessRule> rules;
 
-	protected final ArrayList<IBusinessRule> getRules() {
+	protected final Collection<IBusinessRule> getRules() {
 		if (this.rules == null) {
 			this.rules = new ArrayList<>();
 		}
@@ -57,7 +45,17 @@ public class BusinessRules implements IBusinessRules {
 	}
 
 	@Override
-	public final void registerRules(IBusinessRule[] rules) {
+	public final Iterator<IBusinessRule> iterator() {
+		return this.getRules().iterator();
+	}
+
+	@Override
+	public final int size() {
+		return this.getRules().size();
+	}
+
+	@Override
+	public final void register(IBusinessRule[] rules) {
 		if (rules == null) {
 			return;
 		}
@@ -116,9 +114,10 @@ public class BusinessRules implements IBusinessRules {
 		if (rules == null || rules.isEmpty()) {
 			return;
 		}
-		Logger.log(MessageLevel.DEBUG, MSG_RULES_STARTING, bo);
+		Logger.log(MessageLevel.DEBUG, MSG_RULES_EXECUTING, bo);
 		for (IBusinessRule rule : rules) {
 			rule.execute(bo);
 		}
 	}
+
 }

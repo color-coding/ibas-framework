@@ -5,8 +5,7 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.rule.BusinessRule;
-import org.colorcoding.ibas.bobas.rule.BusinessRuleContext;
+import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
 /**
  * 业务规则-求和运算
@@ -14,7 +13,12 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleContext;
  * @author Niuren.Zhu
  *
  */
-public class BusinessRuleSummation extends BusinessRule {
+public class BusinessRuleSummation extends BusinessRuleCommon {
+
+	public BusinessRuleSummation() {
+		this.setName(I18N.prop("msg_bobas_business_rule_summation"));
+	}
+
 	/**
 	 * 构造方法
 	 * 
@@ -25,6 +29,7 @@ public class BusinessRuleSummation extends BusinessRule {
 	 */
 	@SafeVarargs
 	public BusinessRuleSummation(IPropertyInfo<Decimal> result, IPropertyInfo<Decimal>... addends) {
+		this();
 		this.setResult(result);
 		if (addends.length == 0) {
 			throw new RuntimeException(I18N.prop("msg_bobas_business_rule_lack_summation"));
@@ -68,21 +73,16 @@ public class BusinessRuleSummation extends BusinessRule {
 	}
 
 	@Override
-	protected String getName() {
-		return I18N.prop("msg_bobas_business_rule_summation");
-	}
-
-	@Override
 	protected void execute(BusinessRuleContext context) throws Exception {
 		Decimal result = Decimal.ZERO;
 		for (IPropertyInfo<Decimal> item : this.getAddends()) {
-			Decimal additive = (Decimal) context.getInputPropertyValues().get(item);
+			Decimal additive = (Decimal) context.getInputValues().get(item);
 			if (additive == null) {
 				continue;
 			}
 			result = result.add(additive);
 		}
-		context.getOutputPropertyValues().put(this.getResult(), result);
+		context.getOutputValues().put(this.getResult(), result);
 	}
 
 }

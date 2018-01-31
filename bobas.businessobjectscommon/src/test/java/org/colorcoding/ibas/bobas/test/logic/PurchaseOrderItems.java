@@ -6,7 +6,6 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.bo.BusinessObjects;
-import org.colorcoding.ibas.bobas.data.Decimal;
 
 /**
  * 采购订单-行 集合
@@ -58,28 +57,16 @@ public class PurchaseOrderItems extends BusinessObjects<PurchaseOrderItem, Purch
 	@Override
 	protected void onElementPropertyChanged(PropertyChangeEvent evt) {
 		super.onElementPropertyChanged(evt);
-		if (evt.getPropertyName().equals(PurchaseOrderItem.PROPERTY_LINETOTAL.getName())) {
-			this.calculateDocumentTotal();
-		}
 	}
 
 	@Override
 	protected void afterAddItem(PurchaseOrderItem item) {
 		super.afterAddItem(item);
-		this.calculateDocumentTotal();
 	}
 
 	@Override
 	protected void afterRemoveItem(PurchaseOrderItem item) {
 		super.afterRemoveItem(item);
-		this.calculateDocumentTotal();
 	}
 
-	private void calculateDocumentTotal() {
-		Decimal total = Decimal.ZERO;
-		for (PurchaseOrderItem item : this) {
-			total = total.add(item.getLineTotal());
-		}
-		this.getParent().setDocumentTotal(total);
-	}
 }

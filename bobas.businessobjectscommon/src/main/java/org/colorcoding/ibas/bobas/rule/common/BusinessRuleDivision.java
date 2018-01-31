@@ -3,8 +3,7 @@ package org.colorcoding.ibas.bobas.rule.common;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.rule.BusinessRule;
-import org.colorcoding.ibas.bobas.rule.BusinessRuleContext;
+import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
 /**
  * 业务规则-除法运算
@@ -12,7 +11,12 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleContext;
  * @author Niuren.Zhu
  *
  */
-public class BusinessRuleDivision extends BusinessRule {
+public class BusinessRuleDivision extends BusinessRuleCommon {
+
+	public BusinessRuleDivision() {
+		this.setName(I18N.prop("msg_bobas_business_rule_division"));
+	}
+
 	/**
 	 * 构造方法
 	 * 
@@ -25,6 +29,7 @@ public class BusinessRuleDivision extends BusinessRule {
 	 */
 	public BusinessRuleDivision(IPropertyInfo<Decimal> result, IPropertyInfo<Decimal> dividend,
 			IPropertyInfo<Decimal> divisor) {
+		this();
 		this.setDividend(dividend);
 		this.setDivisor(divisor);
 		this.setResult(result);
@@ -67,24 +72,19 @@ public class BusinessRuleDivision extends BusinessRule {
 	}
 
 	@Override
-	protected String getName() {
-		return I18N.prop("msg_bobas_business_rule_division");
-	}
-
-	@Override
 	protected void execute(BusinessRuleContext context) throws Exception {
-		Decimal dividend = (Decimal) context.getInputPropertyValues().get(this.getDividend());
+		Decimal dividend = (Decimal) context.getInputValues().get(this.getDividend());
 		if (dividend == null) {
 			dividend = Decimal.ZERO;
 		}
-		Decimal divisor = (Decimal) context.getInputPropertyValues().get(this.getDivisor());
+		Decimal divisor = (Decimal) context.getInputValues().get(this.getDivisor());
 		if (divisor == null) {
 			divisor = Decimal.ONE;
 		}
 		Decimal result = dividend.divide(divisor);
 		// 截取精度
 		result = Decimal.round(result, Decimal.RESERVED_DECIMAL_PLACES_RUNNING);
-		Decimal oResult = (Decimal) context.getInputPropertyValues().get(this.getResult());
+		Decimal oResult = (Decimal) context.getInputValues().get(this.getResult());
 		if (oResult != null) {
 			Decimal tOld = Decimal.round(oResult, Decimal.RESERVED_DECIMAL_PLACES_STORAGE);
 			Decimal tNew = Decimal.round(result, Decimal.RESERVED_DECIMAL_PLACES_STORAGE);
@@ -93,7 +93,7 @@ public class BusinessRuleDivision extends BusinessRule {
 				return;
 			}
 		}
-		context.getOutputPropertyValues().put(this.getResult(), result);
+		context.getOutputValues().put(this.getResult(), result);
 	}
 
 }

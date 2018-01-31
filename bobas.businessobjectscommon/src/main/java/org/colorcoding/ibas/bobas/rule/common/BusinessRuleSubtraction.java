@@ -5,8 +5,7 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.rule.BusinessRule;
-import org.colorcoding.ibas.bobas.rule.BusinessRuleContext;
+import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
 /**
  * 业务规则-求和运算
@@ -14,7 +13,12 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleContext;
  * @author Niuren.Zhu
  *
  */
-public class BusinessRuleSubtraction extends BusinessRule {
+public class BusinessRuleSubtraction extends BusinessRuleCommon {
+
+	public BusinessRuleSubtraction() {
+		this.setName(I18N.prop("msg_bobas_business_rule_subtraction"));
+	}
+
 	/**
 	 * 构造方法
 	 * 
@@ -28,6 +32,7 @@ public class BusinessRuleSubtraction extends BusinessRule {
 	@SafeVarargs
 	public BusinessRuleSubtraction(IPropertyInfo<Decimal> result, IPropertyInfo<Decimal> subtrahend,
 			IPropertyInfo<Decimal>... subtractors) {
+		this();
 		this.setResult(result);
 		this.setSubtrahend(subtrahend);
 		if (subtractors.length == 0) {
@@ -82,24 +87,19 @@ public class BusinessRuleSubtraction extends BusinessRule {
 	}
 
 	@Override
-	protected String getName() {
-		return I18N.prop("msg_bobas_business_rule_subtraction");
-	}
-
-	@Override
 	protected void execute(BusinessRuleContext context) throws Exception {
-		Decimal result = (Decimal) context.getInputPropertyValues().get(this.getSubtrahend());
+		Decimal result = (Decimal) context.getInputValues().get(this.getSubtrahend());
 		if (result == null) {
 			result = Decimal.ZERO;
 		}
 		for (IPropertyInfo<Decimal> item : this.getSubtractors()) {
-			Decimal subtractor = (Decimal) context.getInputPropertyValues().get(item);
+			Decimal subtractor = (Decimal) context.getInputValues().get(item);
 			if (subtractor == null) {
 				continue;
 			}
 			result = result.subtract(subtractor);
 		}
-		context.getOutputPropertyValues().put(this.getResult(), result);
+		context.getOutputValues().put(this.getResult(), result);
 	}
 
 }

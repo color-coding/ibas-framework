@@ -5,6 +5,7 @@ import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.data.DateTime;
+import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.repository.BORepository4File;
@@ -356,24 +357,32 @@ public class testLogics extends TestCase {
 		item01.setItemDescription(materials01.getItemDescription());
 		item01.setQuantity(100);// 测试点，数量大于0
 		item01.setPrice("999999.99");
-		System.out.println(String.format("line 1 total %s", item01.getLineTotal()));
-		// assertEquals(item01.getLineTotal().equals(item01.getQuantity().multiply(item01.getPrice())),
-		// true);
+		assertEquals(item01.getLineTotal().compareTo(item01.getQuantity().multiply(item01.getPrice())) == 0, true);
 		PurchaseOrderItem item02 = order.getPurchaseOrderItems().create();// 测试点，要求有元素
 		item02.setItemCode(materials01.getItemCode());// 测试点，子项检查，要求值
 		item02.setItemDescription(materials01.getItemDescription());
 		item02.setQuantity(33.33);// 测试点，数量大于0
 		item02.setLineTotal(10000);
 		System.out.println(String.format("line 2 price %s", item02.getPrice()));
-		// assertEquals(item02.getPrice().equals(item02.getLineTotal().divide(item02.getQuantity(),
-		// RoundingMode.CEILING)),
-		// true);// 注意四舍五入
-		System.out.println(String.format("line 2 total %s", item02.getLineTotal()));
-		System.out.println(String.format("document total %s", order.getDocumentTotal()));
+		assertEquals(Decimal.round(item02.getPrice())
+				.compareTo(Decimal.round(item02.getLineTotal().divide(item02.getQuantity()))) == 0, true);// 注意四舍五入
+		System.out.println(String.format("bo: %s", order));
+		System.out.println(String.format("document total: %s", order.getDocumentTotal()));
+		for (PurchaseOrderItem item : order.getPurchaseOrderItems()) {
+			System.out.println(String.format("line %s: %s * %s = %s", item.getLineId(), item.getPrice(),
+					item.getQuantity(), item.getLineTotal()));
+		}
 		operationResult = boRepository.savePurchaseOrder(order);
 		if (operationResult.getResultCode() != 0) {
 			System.err.println(operationResult.getMessage());
 		}
 		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
+		order = (PurchaseOrder) operationResult.getResultObjects().firstOrDefault();
+		System.out.println(String.format("bo: %s", order));
+		System.out.println(String.format("document total: %s", order.getDocumentTotal()));
+		for (PurchaseOrderItem item : order.getPurchaseOrderItems()) {
+			System.out.println(String.format("line %s: %s * %s = %s", item.getLineId(), item.getPrice(),
+					item.getQuantity(), item.getLineTotal()));
+		}
 	}
 }

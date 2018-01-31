@@ -445,18 +445,18 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	 * 
 	 * @throws RuntimeException
 	 */
-	private void initializeRules() throws RuntimeException {
-		try {
-			IBusinessRulesManager manager = BusinessRulesFactory.create().createManager();
-			IBusinessRules rules = manager.getRules(this.getClass());
-			if (rules != null && !rules.isInitialized()) {
+	private void initializeRules() {
+		IBusinessRulesManager manager = BusinessRulesFactory.create().createManager();
+		IBusinessRules rules = manager.getRules(this.getClass());
+		if (rules != null && !rules.isInitialized()) {
+			synchronized (rules) {
 				// 未初始化，则进行初始化
-				rules.registerRules(this.registerRules());
+				rules.register(this.registerRules());
 			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
 		}
 	}
+
+	private volatile IBusinessRules myRules = null;
 
 	/**
 	 * 设置属性值之后的回掉方法
@@ -467,9 +467,11 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 		if (!this.isLoading()) {
 			// 读取数据时，不执行业务规则
 			try {
-				IBusinessRules rules = BusinessRulesFactory.create().createManager().getRules(this.getClass());
-				if (rules != null) {
-					rules.execute(this, property);
+				if (this.myRules == null) {
+					this.myRules = BusinessRulesFactory.create().createManager().getRules(this.getClass());
+				}
+				if (this.myRules != null) {
+					this.myRules.execute(this, property);
 				}
 			} catch (BusinessRuleException e) {
 				// 运行中，仅记录错误，以被调试。

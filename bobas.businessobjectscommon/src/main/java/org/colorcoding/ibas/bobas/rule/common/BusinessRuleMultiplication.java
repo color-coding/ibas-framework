@@ -3,8 +3,7 @@ package org.colorcoding.ibas.bobas.rule.common;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.rule.BusinessRule;
-import org.colorcoding.ibas.bobas.rule.BusinessRuleContext;
+import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
 /**
  * 业务规则-乘法运算
@@ -12,7 +11,12 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleContext;
  * @author Niuren.Zhu
  *
  */
-public class BusinessRuleMultiplication extends BusinessRule {
+public class BusinessRuleMultiplication extends BusinessRuleCommon {
+
+	public BusinessRuleMultiplication() {
+		this.setName(I18N.prop("msg_bobas_business_rule_multiplication"));
+	}
+
 	/**
 	 * 构造方法
 	 * 
@@ -25,6 +29,7 @@ public class BusinessRuleMultiplication extends BusinessRule {
 	 */
 	public BusinessRuleMultiplication(IPropertyInfo<Decimal> result, IPropertyInfo<Decimal> multiplicand,
 			IPropertyInfo<Decimal> multiplier) {
+		this();
 		this.setMultiplicand(multiplicand);
 		this.setMultiplier(multiplier);
 		this.setResult(result);
@@ -66,24 +71,19 @@ public class BusinessRuleMultiplication extends BusinessRule {
 	}
 
 	@Override
-	protected String getName() {
-		return I18N.prop("msg_bobas_business_rule_multiplication");
-	}
-
-	@Override
 	protected void execute(BusinessRuleContext context) throws Exception {
-		Decimal multiplicand = (Decimal) context.getInputPropertyValues().get(this.getMultiplicand());
+		Decimal multiplicand = (Decimal) context.getInputValues().get(this.getMultiplicand());
 		if (multiplicand == null) {
 			multiplicand = Decimal.ZERO;
 		}
-		Decimal multiplier = (Decimal) context.getInputPropertyValues().get(this.getMultiplier());
+		Decimal multiplier = (Decimal) context.getInputValues().get(this.getMultiplier());
 		if (multiplier == null) {
 			multiplier = Decimal.ZERO;
 		}
 		Decimal result = multiplicand.multiply(multiplier);
 		// 截取精度
 		result = Decimal.round(result, Decimal.RESERVED_DECIMAL_PLACES_RUNNING);
-		context.getOutputPropertyValues().put(this.getResult(), result);
+		context.getOutputValues().put(this.getResult(), result);
 	}
 
 }
