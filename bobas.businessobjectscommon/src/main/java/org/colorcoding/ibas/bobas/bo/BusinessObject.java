@@ -19,7 +19,6 @@ import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.core.BusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
-import org.colorcoding.ibas.bobas.core.ITrackStatusOperator;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.data.DateTime;
@@ -35,6 +34,7 @@ import org.colorcoding.ibas.bobas.rule.BusinessRulesFactory;
 import org.colorcoding.ibas.bobas.rule.IBusinessRule;
 import org.colorcoding.ibas.bobas.rule.IBusinessRules;
 import org.colorcoding.ibas.bobas.rule.IBusinessRulesManager;
+import org.colorcoding.ibas.bobas.rule.ICheckRules;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
 
@@ -327,8 +327,10 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 			return;
 		}
 		for (IUserField userField : value) {
-			Logger.log(MessageLevel.DEBUG, MSG_USER_SET_FIELD_VALUE, userField.getName(), userField.getValue(),
-					userField.getValueType());
+			if (MyConfiguration.isDebugMode()) {
+				Logger.log(MessageLevel.DEBUG, MSG_USER_SET_FIELD_VALUE, userField.getName(), userField.getValue(),
+						userField.getValueType());
+			}
 			IUserField has = this.userFields.get(userField.getName());
 			if (has != null) {
 				has.setValue(((UserFieldProxy) userField).convertValue(has.getValueType()));
@@ -341,7 +343,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	 * 
 	 * @param action
 	 */
-	protected void traverse(Consumer<IBusinessObject> action) {
+	protected void traverse(Consumer<BusinessObject<?>> action) {
 		if (action == null) {
 			return;
 		}
@@ -350,24 +352,24 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 			if (data == null) {
 				continue;
 			}
-			if (data instanceof IBusinessObject) {
+			if (data instanceof BusinessObject<?>) {
 				// 值是业务对象
-				action.accept((IBusinessObject) data);
-			} else if (data instanceof IBusinessObjects<?, ?>) {
+				action.accept((BusinessObject<?>) data);
+			} else if (data instanceof Iterable<?>) {
 				// 值是业务对象列表
-				IBusinessObjects<?, ?> boList = (IBusinessObjects<?, ?>) data;
-				for (IBusinessObject childItem : boList) {
-					if (childItem instanceof IBusinessObject) {
-						action.accept((IBusinessObject) childItem);
+				Iterable<?> datas = (Iterable<?>) data;
+				for (Object itemData : datas) {
+					if (itemData instanceof BusinessObject<?>) {
+						action.accept((BusinessObject<?>) itemData);
 					}
 				}
 			} else if (data.getClass().isArray()) {
 				// 值是数组
 				int length = Array.getLength(data);
 				for (int i = 0; i < length; i++) {
-					Object childItem = Array.get(data, i);
-					if (childItem instanceof IBusinessObject) {
-						action.accept((IBusinessObject) childItem);
+					Object itemData = Array.get(data, i);
+					if (itemData instanceof BusinessObject<?>) {
+						action.accept((BusinessObject<?>) itemData);
 					}
 				}
 			}
@@ -377,17 +379,15 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	/**
 	 * 标记为未修改
 	 * 
-	 * @param forced
+	 * @param recursive
 	 *            包括子项及属性
 	 */
 	@Override
-	public final void markOld(boolean forced) {
+	public final void markOld(boolean recursive) {
 		super.markOld();
-		if (forced) {
+		if (recursive) {
 			this.traverse((data) -> {
-				if (data instanceof ITrackStatusOperator) {
-					((ITrackStatusOperator) data).markOld(true);
-				}
+				data.markOld(recursive);
 			});
 		}
 	}
@@ -402,8 +402,6 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	/**
 	 * 取消删除的数据
 	 * 
-	 * @param forced
-	 *            包括子项及属性
 	 */
 	public final void undelete() {
 		super.clearDeleted();
@@ -416,6 +414,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	 * 删除数据
 	 */
 	public void delete() {
+		boolean done = true;
 		if (!this.isNew()) {
 			// 非新建状态删除可用
 			if (this instanceof IBOTagDeleted) {
@@ -423,9 +422,11 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 				if (tagBO.getReferenced() == emYesNo.YES) {
 					// 被引用的数据，不允许删除
 					tagBO.setDeleted(emYesNo.YES);
-					return;
+					done = false;
 				}
 			}
+		}
+		if (done) {
 			this.markDeleted();
 		}
 		this.traverse((data) -> {
@@ -459,24 +460,44 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	private volatile IBusinessRules myRules = null;
 
 	/**
+	 * 运行业务规则
+	 * 
+	 * @param properties
+	 *            触发的属性
+	 * @throws BusinessRuleException
+	 */
+	public void executeRules(IPropertyInfo<?>... properties) throws BusinessRuleException {
+		if (this.isLoading()) {
+			// 读取数据时，不执行业务规则
+			return;
+		}
+		this.traverse((data) -> {
+			data.executeRules(properties);
+		});
+		if (this.myRules == null) {
+			this.myRules = BusinessRulesFactory.create().createManager().getRules(this.getClass());
+		}
+		if (this.myRules != null) {
+			this.myRules.execute(this, properties);
+		}
+		if (this instanceof ICheckRules) {
+			((ICheckRules) this).check();
+		}
+	}
+
+	/**
 	 * 设置属性值之后的回掉方法
 	 */
 	@Override
 	protected <P> void afterSetProperty(IPropertyInfo<P> property) {
-		// 触发业务逻辑运行
-		if (!this.isLoading()) {
-			// 读取数据时，不执行业务规则
-			try {
-				if (this.myRules == null) {
-					this.myRules = BusinessRulesFactory.create().createManager().getRules(this.getClass());
-				}
-				if (this.myRules != null) {
-					this.myRules.execute(this, property);
-				}
-			} catch (BusinessRuleException e) {
-				// 运行中，仅记录错误，以被调试。
-				Logger.log(MessageLevel.DEBUG, e);
-			}
+		if (!MyConfiguration.isLiveRules()) {
+			return;
+		}
+		try {
+			this.executeRules(property);
+		} catch (BusinessRuleException e) {
+			// 运行中，仅记录错误，以被调试。
+			Logger.log(MessageLevel.DEBUG, e);
 		}
 	}
 }

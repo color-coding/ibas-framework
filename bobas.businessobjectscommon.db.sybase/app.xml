@@ -3,7 +3,8 @@
 <ns2:configuration xmlns:ns2="http://colorcoding.org/ibas/bobas/configuration">
     <appSettings>
         <add key="DebugMode" value="true" />
-        <add key="MsgLevel" value="INFO" />
+        <add key="LiveBizRules" value="true"  />
+        <add key="MessageLevel" value="INFO" />
         <add key="MasterDbType" value="SYBASE" />
         <add key="MasterDbServer" value="ibas-db-sybase" />
         <add key="MasterDbName" value="ibas_demo" />

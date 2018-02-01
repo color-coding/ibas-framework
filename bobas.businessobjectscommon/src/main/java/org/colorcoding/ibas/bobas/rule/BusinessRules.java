@@ -2,7 +2,6 @@ package org.colorcoding.ibas.bobas.rule;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
@@ -110,7 +109,7 @@ class BusinessRules implements IBusinessRules {
 	 * @param rules
 	 *            执行的逻辑
 	 */
-	protected void execute(IBusinessObject bo, List<IBusinessRule> rules) throws BusinessRuleException {
+	protected void execute(IBusinessObject bo, Collection<IBusinessRule> rules) throws BusinessRuleException {
 		if (rules == null || rules.isEmpty()) {
 			return;
 		}

@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.rule;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.core.IManageProperties;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
@@ -31,7 +32,9 @@ public abstract class BusinessRuleCommon extends BusinessRule {
 				}
 			}
 			// 执行规则
-			Logger.log(MessageLevel.DEBUG, MSG_RULES_EXECUTING, this.getClass().getName(), this.getName());
+			if (MyConfiguration.isDebugMode()) {
+				Logger.log(MessageLevel.DEBUG, MSG_RULES_EXECUTING, this.getClass().getName(), this.getName());
+			}
 			this.execute(context);
 			// 赋值输出属性
 			if (bo instanceof IManageProperties) {

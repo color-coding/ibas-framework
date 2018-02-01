@@ -3,6 +3,7 @@
 <ns2:configuration xmlns:ns2="http://colorcoding.org/ibas/bobas/configuration">
     <appSettings>
         <add key="DebugMode" value="true" />
+        <add key="LiveBizRules" value="true"  />
         <add key="MasterDbType" value="HANA" />
         <add key="MasterDbServer" value="ibas-db-hana:30015" />
         <add key="MasterDbName" value="ibas_demo" />

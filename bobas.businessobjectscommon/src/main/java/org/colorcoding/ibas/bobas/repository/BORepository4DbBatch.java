@@ -64,7 +64,7 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 				if (nBO instanceof ITrackStatusOperator) {
 					// 保存成功，标记对象为OLD
 					ITrackStatusOperator operator = (ITrackStatusOperator) nBO;
-					operator.markOld(true);
+					operator.markOld();
 				}
 			}
 			operationResult.addResultObjects(nBOs);

@@ -72,7 +72,9 @@ class DbConnectionPool implements IDbConnectionPool {
 			// 启动了连接池并且有效
 			boolean done = getConnectionPool().recycling(connection);
 			if (done) {
-				Logger.log(MessageLevel.DEBUG, MSG_DB_POOL_RECYCLED_CONNECTION, connection.hashCode());
+				if (MyConfiguration.isDebugMode()) {
+					Logger.log(MessageLevel.DEBUG, MSG_DB_POOL_RECYCLED_CONNECTION, connection.hashCode());
+				}
 			}
 			return done;
 
@@ -96,7 +98,9 @@ class DbConnectionPool implements IDbConnectionPool {
 					DbConnection dbConnection = (DbConnection) connection;
 					dbConnection.setRecycled(false);
 				}
-				Logger.log(MessageLevel.DEBUG, MSG_DB_POOL_USING_CONNECTION, connection.hashCode());
+				if (MyConfiguration.isDebugMode()) {
+					Logger.log(MessageLevel.DEBUG, MSG_DB_POOL_USING_CONNECTION, connection.hashCode());
+				}
 			}
 			return connection;
 		}

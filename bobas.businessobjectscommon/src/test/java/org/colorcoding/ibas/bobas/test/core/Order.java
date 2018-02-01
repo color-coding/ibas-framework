@@ -245,7 +245,7 @@ public class Order extends BusinessObjectBase<Order> {
 	}
 
 	@Override
-	public void markOld(boolean forced) {
+	public void markOld(boolean recursive) {
 		this.markOld();
 	}
 

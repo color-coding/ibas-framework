@@ -7,7 +7,7 @@
         <add key="MasterDbName" value="ibas_demo" />
         <add key="MasterDbUserID" value="sa" />
         <add key="MasterDbUserPassword" value="1q2w3e" />
-        <add key="MsgLevel" value="DEBUG" />
+        <add key="MessageLevel" value="DEBUG" />
         <add key="SerializationWay" value="jersey" />
     </appSettings>
 </ns2:configuration>

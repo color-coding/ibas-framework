@@ -78,8 +78,9 @@ public class BusinessRuleDivision extends BusinessRuleCommon {
 			dividend = Decimal.ZERO;
 		}
 		Decimal divisor = (Decimal) context.getInputValues().get(this.getDivisor());
-		if (divisor == null) {
-			divisor = Decimal.ONE;
+		if (divisor == null || divisor.isZero()) {
+			// 除数为0，直接退出
+			return;
 		}
 		Decimal result = dividend.divide(divisor);
 		// 截取精度

@@ -155,7 +155,13 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		private volatile IBusinessRules myRules = null;
 
 		public synchronized void runRules(String property) {
+			if (!MyConfiguration.isLiveRules()) {
+				return;
+			}
 			if (BusinessObjects.this.getParent() == null) {
+				return;
+			}
+			if (BusinessObjects.this.getParent().isLoading()) {
 				return;
 			}
 			if (BusinessObjects.this.isEmpty()) {

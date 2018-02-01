@@ -160,6 +160,9 @@ public class Decimal extends BigDecimal implements Cloneable {
 		if (this.equals(ZERO)) {
 			return true;
 		}
+		if (this.compareTo(ZERO) == 0) {
+			return true;
+		}
 		return false;
 	}
 

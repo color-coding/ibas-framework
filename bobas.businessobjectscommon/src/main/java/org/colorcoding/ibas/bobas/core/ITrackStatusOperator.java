@@ -27,8 +27,9 @@ public interface ITrackStatusOperator {
 	/**
 	 * 标记为未修改
 	 * 
-	 * @param 包括子项
+	 * @param recursive
+	 *            包括子项及属性
 	 */
-	void markOld(boolean forced);
+	void markOld(boolean recursive);
 
 }

@@ -7,7 +7,7 @@ import org.colorcoding.ibas.bobas.configuration.Configuration;
  */
 public class MyConfiguration extends Configuration {
 
-	private static long DEBUG_MODE = -1;// log类型线程安全
+	private static volatile short DEBUG_MODE = -1;
 
 	/**
 	 * 是否处于debug模式
@@ -29,6 +29,26 @@ public class MyConfiguration extends Configuration {
 			}
 		}
 		return DEBUG_MODE == 1 ? true : false;
+	}
+
+	private static volatile short LIVE_RULES = -1;
+
+	public static boolean isLiveRules() {
+		// 访问频繁，提高下性能
+		if (LIVE_RULES == -1) {
+			synchronized (MyConfiguration.class) {
+				if (LIVE_RULES == -1) {
+					boolean value = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LIVE_BUSINESS_RULES,
+							false);
+					if (value) {
+						LIVE_RULES = 1;
+					} else {
+						LIVE_RULES = 0;
+					}
+				}
+			}
+		}
+		return LIVE_RULES == 1 ? true : false;
 	}
 
 	/**
@@ -220,4 +240,8 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-权限判断员失效时间
 	 */
 	public final static String CONFIG_ITEM_OWNERSHIP_JUDGER_EXPIRY_VALUE = "OwnJudgerExpiry";
+	/**
+	 * 配置项目-实时运行业务规则
+	 */
+	public final static String CONFIG_ITEM_LIVE_BUSINESS_RULES = "LiveBizRules";
 }

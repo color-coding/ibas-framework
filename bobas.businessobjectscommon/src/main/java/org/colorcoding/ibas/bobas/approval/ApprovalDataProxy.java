@@ -19,7 +19,7 @@ public class ApprovalDataProxy extends TrackableBase implements IApprovalData {
 	}
 
 	@Override
-	public void markOld(boolean forced) {
+	public void markOld(boolean recursive) {
 		this.markOld();
 	}
 

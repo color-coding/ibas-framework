@@ -3,14 +3,15 @@ package org.colorcoding.ibas.bobas.expression;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManageFields;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
-import org.colorcoding.ibas.bobas.data.ArrayList;
 
 /**
  * 业务对象的判断链
@@ -106,7 +107,9 @@ public class BOJudgmentLink extends JudgmentLink {
 				if (propertyOperator.getPropertyName() != null && !propertyOperator.getPropertyName().isEmpty()
 						&& propertyOperator.getPropertyName().indexOf(".") > 0) {
 					// 存在子属性的判断
-					Logger.log(MessageLevel.DEBUG, MSG_JUDGMENT_ENTRY_SUB_JUDGMENT, item.toString());
+					if (MyConfiguration.isDebugMode()) {
+						Logger.log(MessageLevel.DEBUG, MSG_JUDGMENT_ENTRY_SUB_JUDGMENT, item.toString());
+					}
 					try {
 						// 比较子判断
 						boolean result = this.judge(bo, item);

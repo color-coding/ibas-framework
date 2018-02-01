@@ -6,9 +6,10 @@ import org.colorcoding.ibas.bobas.approval.ApprovalProcessException;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcess;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcessManager;
-import org.colorcoding.ibas.bobas.bo.IBOTagReferenced;
+import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
 import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
+import org.colorcoding.ibas.bobas.bo.IBOTagReferenced;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.core.SaveActionType;
@@ -19,8 +20,6 @@ import org.colorcoding.ibas.bobas.logic.IBusinessLogicChain;
 import org.colorcoding.ibas.bobas.logic.IBusinessLogicsManager;
 import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleException;
-import org.colorcoding.ibas.bobas.rule.BusinessRulesFactory;
-import org.colorcoding.ibas.bobas.rule.IBusinessRules;
 import org.colorcoding.ibas.bobas.rule.ICheckRules;
 
 /**
@@ -99,7 +98,6 @@ public class BORepositoryLogicService extends BORepositoryService {
 				|| action == SaveActionType.BEFORE_UPDATING) {
 			// 业务规则检查
 			if (this.isCheckRules()) {
-				// 检查规则
 				try {
 					this.checkRules(action, trigger);
 				} catch (BusinessRuleException e) {
@@ -131,17 +129,13 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 * @param bo
 	 *            对象
 	 * @throws BusinessRuleException
-	 * @throws BusinessRuleExecuteException
 	 */
 	private void checkRules(SaveActionType type, IBusinessObject bo) throws BusinessRuleException {
 		// 运行对象业务规则
-		IBusinessRules rules = BusinessRulesFactory.create().createManager().getRules(bo.getClass());
-		if (rules != null)
-			rules.execute(bo);
-		if (bo instanceof ICheckRules) {
-			// 检查业务规则
-			ICheckRules checkRules = (ICheckRules) bo;
-			checkRules.check();
+		if (bo instanceof BusinessObject<?>) {
+			((BusinessObject<?>) bo).executeRules();
+		} else if (bo instanceof ICheckRules) {
+			((ICheckRules) bo).check();
 		}
 	}
 

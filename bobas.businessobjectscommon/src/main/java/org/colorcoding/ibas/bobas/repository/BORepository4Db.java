@@ -127,7 +127,7 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 			if (nBO instanceof ITrackStatusOperator) {
 				// 保存成功，标记对象为OLD
 				ITrackStatusOperator operator = (ITrackStatusOperator) nBO;
-				operator.markOld(true);
+				operator.markOld();
 			}
 			operationResult.addResultObjects(nBO);
 		} catch (Exception e) {

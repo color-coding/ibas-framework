@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.expression;
 
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
@@ -106,7 +107,7 @@ public abstract class JudgmentLink {
 		String line = System.getProperty("line.seperator", "\n");
 		for (JudgmentLinkItem jItem : judgmentItems) {
 			stringBuilder.append(line);
-			stringBuilder.append(" ");
+			stringBuilder.append("    ");
 			stringBuilder.append(jItem.toString());
 		}
 		Logger.log(MessageLevel.DEBUG, stringBuilder.toString());
@@ -165,7 +166,9 @@ public abstract class JudgmentLink {
 	 * @throws JudmentOperationException
 	 */
 	protected boolean judge(int bracket, JudgmentLinkItem[] judgmentItems) throws JudmentOperationException {
-		this.log(judgmentItems);
+		if (MyConfiguration.isDebugMode()) {
+			this.log(judgmentItems);
+		}
 		boolean currentValue = false;// 当前的结果
 		ExpressionFactory factory = ExpressionFactory.create();
 		IJudgmentExpression rootJudExp = null;
@@ -191,7 +194,9 @@ public abstract class JudgmentLink {
 				currentJudExp.setOperation(jItem.getOperation());
 				currentJudExp.setRightValue(jItem.getRightOperter().getValue());
 				currentValue = currentJudExp.result();
-				Logger.log(MessageLevel.DEBUG, MSG_JUDGMENT_EXPRESSION, currentJudExp.toString(), currentValue);
+				if (MyConfiguration.isDebugMode()) {
+					Logger.log(MessageLevel.DEBUG, MSG_JUDGMENT_EXPRESSION, currentJudExp.toString(), currentValue);
+				}
 			}
 			if (rootJudExp == null) {
 				// 第一个表达式
@@ -204,7 +209,9 @@ public abstract class JudgmentLink {
 				rootJudExp.setRightValue(currentValue);
 			}
 			currentValue = rootJudExp.result();
-			Logger.log(MessageLevel.DEBUG, MSG_JUDGMENT_RELATION, rootJudExp.toString(), currentValue);
+			if (MyConfiguration.isDebugMode()) {
+				Logger.log(MessageLevel.DEBUG, MSG_JUDGMENT_RELATION, rootJudExp.toString(), currentValue);
+			}
 			rootJudExp.setLeftValue(currentValue);// 结果左移
 			if (!rootJudExp.result()) {
 				// 表达式不成立

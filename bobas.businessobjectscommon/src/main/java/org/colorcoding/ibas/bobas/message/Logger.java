@@ -4,12 +4,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.message.IMessage;
-import org.colorcoding.ibas.bobas.message.IMessageRecorder;
-import org.colorcoding.ibas.bobas.message.Logger;
-import org.colorcoding.ibas.bobas.message.Message;
-import org.colorcoding.ibas.bobas.message.MessageLevel;
-import org.colorcoding.ibas.bobas.message.RecorderFactory;
 
 /**
  * 运行日志
@@ -19,7 +13,7 @@ import org.colorcoding.ibas.bobas.message.RecorderFactory;
  */
 public class Logger {
 
-	private static int MESSAGE_LEVEL = -1;
+	private static volatile int MESSAGE_LEVEL = -1;
 
 	/**
 	 * 是否处于debug模式

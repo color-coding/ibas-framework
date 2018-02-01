@@ -28,7 +28,6 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
  */
 public class BusinessLogicChain implements IBusinessLogicChain {
 
-	protected static final String MSG_LOGICS_EXISTING_CONTRACT = "logics: class [%s] existing contract [%s].";
 	protected static final String MSG_TRIGGER_EXISTING_CONTRACT = "logics: trigger [%s] has [%s] contracts.";
 	protected static final String MSG_TRIGGER_COPY_EXISTING_CONTRACT = "logics: trigger's copy [%s] has [%s] contracts.";
 	/**
@@ -356,8 +355,6 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 							}
 							if (exists) {
 								// 存在契约，创建契约对应的逻辑实例
-								Logger.log(MessageLevel.DEBUG, MSG_LOGICS_EXISTING_CONTRACT, bo.getClass().getName(),
-										item.getName());
 								IBusinessLogic<?> logic = logicsManager.createLogic(item);
 								if (logic == null) {
 									throw new NotFoundBusinessLogicException(item.getName());

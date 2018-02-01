@@ -7,7 +7,6 @@ import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.core.fields.NotRegisterTypeException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
-import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 /**
  * 属性管理员
@@ -20,10 +19,10 @@ public class PropertyInfoManager {
 	protected static final String MSG_PROPERTIES_GET_TYPE_PROPERTIES = "properties: get type [%s]'s properties.";
 	protected static final String MSG_PROPERTIES_REGISTER_PROPERTIES = "properties: register type [%s]'s property [%s].";
 
-	volatile private static HashMap<Class<?>, PropertyInfoList> propertyInfoCache = new HashMap<Class<?>, PropertyInfoList>();
-
 	public static final String BO_PROPERTY_NAMING_RULES_UPPER = "PROPERTY_%s";
 	public static final String BO_PROPERTY_NAMING_RULES_CAMEL = "%sProperty";
+
+	volatile private static HashMap<Class<?>, PropertyInfoList> propertyInfoCache = new HashMap<Class<?>, PropertyInfoList>();
 
 	/**
 	 * 注册属性
@@ -34,7 +33,8 @@ public class PropertyInfoManager {
 	 *            属性
 	 */
 	public static void registerProperty(Class<?> boType, PropertyInfo<?> property) {
-		Logger.log(MessageLevel.DEBUG, MSG_PROPERTIES_REGISTER_PROPERTIES, boType.getName(), property.getName());
+		// Logger.log(MessageLevel.DEBUG, MSG_PROPERTIES_REGISTER_PROPERTIES,
+		// boType.getName(), property.getName());
 		if (propertyInfoCache.containsKey(boType)) {
 			PropertyInfoList propertys = propertyInfoCache.get(boType);
 			synchronized (propertys) {
