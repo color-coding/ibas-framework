@@ -6,29 +6,29 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
 /**
- * 业务规则-乘法运算
+ * 业务规则-乘法推导（根据被乘数，用乘除法推导乘数或结果）
  * 
  * @author Niuren.Zhu
  *
  */
-public class BusinessRuleMultiplication extends BusinessRuleCommon {
+public class BusinessRuleMultiplicativeDeduction extends BusinessRuleCommon {
 
-	public BusinessRuleMultiplication() {
-		this.setName(I18N.prop("msg_bobas_business_rule_multiplication"));
+	public BusinessRuleMultiplicativeDeduction() {
+		this.setName(I18N.prop("msg_bobas_business_rule_multiplicative_deduction"));
 	}
 
 	/**
 	 * 构造方法
 	 * 
-	 * @param result
-	 *            属性-结果
 	 * @param multiplicand
 	 *            属性-被乘数
 	 * @param multiplier
 	 *            属性-乘数
+	 * @param result
+	 *            属性-结果
 	 */
-	public BusinessRuleMultiplication(IPropertyInfo<Decimal> result, IPropertyInfo<Decimal> multiplicand,
-			IPropertyInfo<Decimal> multiplier) {
+	public BusinessRuleMultiplicativeDeduction(IPropertyInfo<Decimal> multiplicand, IPropertyInfo<Decimal> multiplier,
+			IPropertyInfo<Decimal> result) {
 		this();
 		this.setMultiplicand(multiplicand);
 		this.setMultiplier(multiplier);
@@ -36,8 +36,10 @@ public class BusinessRuleMultiplication extends BusinessRuleCommon {
 		// 要输入的参数
 		this.getInputProperties().add(this.getMultiplicand());
 		this.getInputProperties().add(this.getMultiplier());
+		this.getInputProperties().add(this.getResult());
 		// 结果
 		this.getAffectedProperties().add(this.getResult());
+		this.getAffectedProperties().add(this.getMultiplier());
 	}
 
 	private IPropertyInfo<Decimal> multiplicand;
@@ -80,10 +82,24 @@ public class BusinessRuleMultiplication extends BusinessRuleCommon {
 		if (multiplier == null) {
 			multiplier = Decimal.ZERO;
 		}
-		Decimal result = multiplicand.multiply(multiplier);
-		// 截取精度
-		result = Decimal.round(result, Decimal.RESERVED_DECIMAL_PLACES_RUNNING);
-		context.getOutputValues().put(this.getResult(), result);
+		Decimal result = (Decimal) context.getInputValues().get(this.getResult());
+		if (result == null) {
+			result = Decimal.ZERO;
+		}
+		if (multiplicand.isZero()) {
+			return;
+		}
+		if (!multiplier.isZero() && result.isZero()) {
+			// 结果 = 乘数 * 被乘数
+			result = multiplicand.multiply(multiplier);
+			context.getOutputValues().put(this.getResult(),
+					Decimal.round(result, Decimal.RESERVED_DECIMAL_PLACES_RUNNING));
+		} else if (multiplier.isZero() && !result.isZero()) {
+			// 乘数 = 结果 / 被乘数
+			multiplier = result.divide(multiplicand);
+			context.getOutputValues().put(this.getMultiplier(),
+					Decimal.round(multiplier, Decimal.RESERVED_DECIMAL_PLACES_RUNNING));
+		}
 	}
 
 }

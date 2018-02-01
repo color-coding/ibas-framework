@@ -18,10 +18,14 @@ public class BusinessRuleSumElements extends BusinessRuleCollection {
 	}
 
 	/**
+	 * 构造方法
 	 * 
 	 * @param affectedProperty
+	 *            属性-求和
 	 * @param collectionProperty
+	 *            属性-集合
 	 * @param summingProperty
+	 *            属性-被求和
 	 */
 	public BusinessRuleSumElements(IPropertyInfo<Decimal> affectedProperty, IPropertyInfo<?> collectionProperty,
 			IPropertyInfo<Decimal> summingProperty) {
