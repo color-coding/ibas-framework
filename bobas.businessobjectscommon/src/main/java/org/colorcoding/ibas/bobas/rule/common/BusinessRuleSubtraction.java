@@ -35,9 +35,7 @@ public class BusinessRuleSubtraction extends BusinessRuleCommon {
 		this();
 		this.setResult(result);
 		this.setSubtrahend(subtrahend);
-		if (subtractors.length == 0) {
-			throw new RuntimeException(I18N.prop("msg_bobas_business_rule_lack_subtraction"));
-		}
+		this.setSubtractors(subtractors);
 		// 要输入的参数
 		this.getInputProperties().add(this.getSubtrahend());
 		this.getInputProperties().addAll(this.getSubtractors());

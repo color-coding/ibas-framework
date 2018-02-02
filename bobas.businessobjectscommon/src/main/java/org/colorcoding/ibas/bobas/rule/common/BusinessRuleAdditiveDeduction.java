@@ -87,6 +87,7 @@ public class BusinessRuleAdditiveDeduction extends BusinessRuleCommon {
 			result = Decimal.ZERO;
 		}
 		if (augend.isZero()) {
+			context.getOutputValues().put(this.getResult(), addend);
 			return;
 		}
 		if (!addend.isZero() && result.isZero()) {

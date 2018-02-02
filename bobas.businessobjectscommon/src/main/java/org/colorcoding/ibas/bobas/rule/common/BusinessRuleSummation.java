@@ -31,9 +31,6 @@ public class BusinessRuleSummation extends BusinessRuleCommon {
 	public BusinessRuleSummation(IPropertyInfo<Decimal> result, IPropertyInfo<Decimal>... addends) {
 		this();
 		this.setResult(result);
-		if (addends.length == 0) {
-			throw new RuntimeException(I18N.prop("msg_bobas_business_rule_lack_summation"));
-		}
 		this.setAddends(addends);
 		// 要输入的参数
 		this.getInputProperties().addAll(this.getAddends());

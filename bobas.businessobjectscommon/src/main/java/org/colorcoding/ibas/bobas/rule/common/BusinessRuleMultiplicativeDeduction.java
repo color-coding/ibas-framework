@@ -87,6 +87,7 @@ public class BusinessRuleMultiplicativeDeduction extends BusinessRuleCommon {
 			result = Decimal.ZERO;
 		}
 		if (multiplicand.isZero()) {
+			context.getOutputValues().put(this.getResult(), Decimal.ZERO);
 			return;
 		}
 		if (!multiplier.isZero() && result.isZero()) {
