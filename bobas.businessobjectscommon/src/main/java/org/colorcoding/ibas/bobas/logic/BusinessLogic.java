@@ -28,6 +28,8 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
  *
  * @param <L>
  *            业务逻辑的契约
+ * @param <B>
+ *            被影响的对象
  */
 public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends IBusinessObject>
 		implements IBusinessLogic<B> {
@@ -172,18 +174,23 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		return true;
 	}
 
-	@Override
 	/**
 	 * 运行正向逻辑
 	 */
+	@Override
 	public final void forward() {
 		// 检查父项数据状态
 		if (this.getParent() != null && !this.checkDataStatus(this.getParent())) {
 			// 数据状态不通过，跳过正向逻辑执行
 			return;
 		}
-		// 检查数据状态
+		// 检查宿主数据状态
 		if (!this.checkDataStatus(this.getHost())) {
+			// 数据状态不通过，跳过正向逻辑执行
+			return;
+		}
+		// 检查契约数据状态
+		if (!this.checkDataStatus(this.getContract())) {
 			// 数据状态不通过，跳过正向逻辑执行
 			return;
 		}
@@ -203,10 +210,10 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		this.impact(this.getContract());
 	}
 
-	@Override
 	/**
 	 * 运行方向逻辑
 	 */
+	@Override
 	public final void reverse() {
 		// 检查父项数据状态
 		if (this.getParent() != null && !this.checkDataStatus(this.getParent())) {
@@ -220,9 +227,14 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 				return;
 			}
 		}
-		// 检查数据状态
+		// 检查宿主数据状态
 		if (!this.checkDataStatus(this.getHost())) {
 			// 数据状态不通过，跳过反向逻辑执行
+			return;
+		}
+		// 检查契约数据状态
+		if (!this.checkDataStatus(this.getContract())) {
+			// 数据状态不通过，跳过正向逻辑执行
 			return;
 		}
 		// 执行撤销逻辑
@@ -240,10 +252,10 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		return this.beAffected;
 	}
 
-	@Override
 	/**
 	 * 提交
 	 */
+	@Override
 	public void commit() {
 		if (this.getBeAffected() != null) {
 			BusinessLogicsRepository logicRepository = new BusinessLogicsRepository();
