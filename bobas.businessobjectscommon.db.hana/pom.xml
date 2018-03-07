@@ -3,15 +3,15 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>bobas.businessobjectscommon.db.hana</artifactId>
   <name>bobas.businessobjectscommon.db.hana</name>
-  <url>http://colorcoding.org/ibas/bobas/db/hana</url>
+  <url>https://colorcoding.org/ibas/bobas/db/hana</url>
   <parent>
     <groupId>org.colorcoding.ibas</groupId>
     <artifactId>bobas.businessobjectscommon.parent</artifactId>
     <version>0.1.2</version>
   </parent>
   <organization>
-    <name>Color Coding</name>
-    <url>http://colorcoding.org</url>
+    <name>Color-Coding Studio</name>
+    <url>https://colorcoding.org</url>
   </organization>
   <properties>
   </properties>

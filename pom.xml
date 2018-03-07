@@ -6,17 +6,17 @@
   <version>0.1.2</version>
   <packaging>pom</packaging>
   <name>bobas.businessobjectscommon.parent</name>
-  <url>http://colorcoding.org/bobas</url>
+  <url>https://colorcoding.org/bobas</url>
   <organization>
-    <name>Color Coding</name>
-    <url>http://colorcoding.org</url>
+    <name>Color-Coding Studio</name>
+    <url>https://colorcoding.org</url>
   </organization>
   <developers>
     <developer>
       <name>Niuren Zhu</name>
       <organization>Color-Coding Studio</organization>
-      <organizationUrl>http://colorcoding.org/</organizationUrl>
-      <url>http://colorcoding.org/niurenzhu</url>
+      <organizationUrl>https://colorcoding.org/</organizationUrl>
+      <url>https://colorcoding.org/niurenzhu</url>
     </developer>
   </developers>
   <build>
