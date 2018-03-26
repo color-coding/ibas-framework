@@ -25,7 +25,7 @@ public class BOJudgmentLink extends JudgmentLink {
 	 * 
 	 * @return
 	 */
-	public IPropertyValueOperator createPropertyValueOperator() {
+	protected IPropertyValueOperator createPropertyValueOperator() {
 		return new IPropertyValueOperator() {
 			private IManageFields value;
 			private IFieldData field = null;
