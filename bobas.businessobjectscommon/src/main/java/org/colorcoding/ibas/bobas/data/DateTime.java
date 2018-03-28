@@ -203,4 +203,25 @@ public class DateTime extends Date implements Serializable {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(format);
 		return dateFormat.format(this);
 	}
+
+	public DateTime addDays(int days) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(this);
+		calendar.add(Calendar.DAY_OF_YEAR, days);
+		return new DateTime(calendar.getTimeInMillis());
+	}
+
+	public DateTime addMonths(int months) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(this);
+		calendar.add(Calendar.MONTH, months);
+		return new DateTime(calendar.getTimeInMillis());
+	}
+
+	public DateTime addYears(int years) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(this);
+		calendar.add(Calendar.YEAR, years);
+		return new DateTime(calendar.getTimeInMillis());
+	}
 }
