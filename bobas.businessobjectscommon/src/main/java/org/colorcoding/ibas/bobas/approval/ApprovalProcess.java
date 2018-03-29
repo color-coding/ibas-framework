@@ -128,8 +128,8 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	 */
 	protected final void restore() {
 		this.setApprovalData(null);
-		this.setStartedTime(DateTime.getMaxValue());
-		this.setFinishedTime(DateTime.getMaxValue());
+		this.setStartedTime(DateTime.MAX_VALUE);
+		this.setFinishedTime(DateTime.MAX_VALUE);
 		this.setStatus(emApprovalStatus.UNAFFECTED);
 		for (IApprovalProcessStep item : this.getProcessSteps()) {
 			ApprovalProcessStep stepItem = (ApprovalProcessStep) item;
@@ -249,7 +249,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 					curStep.restore();// 恢复当前步骤
 				apStep.reset();// 操作步骤进行中
 				// 流程状态设置
-				this.setFinishedTime(DateTime.getMaxValue());
+				this.setFinishedTime(DateTime.MAX_VALUE);
 				this.setStatus(emApprovalStatus.PROCESSING);
 				this.onStatusChanged();
 			} else {

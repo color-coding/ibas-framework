@@ -34,84 +34,88 @@ public class DateTime extends Date implements Serializable {
 	/**
 	 * 转换值
 	 * 
-	 * @param date
+	 * @param value
+	 *            日期值
+	 * @return 日期
+	 */
+	public static DateTime valueOf(long value) {
+		return new DateTime(value);
+	}
+
+	/**
+	 * 转换值
+	 * 
+	 * @param value
 	 *            日期
 	 * @return 日期
 	 */
-	public static DateTime valueOf(Date date) {
-		return new DateTime(date.getTime());
+	public static DateTime valueOf(Date value) {
+		return new DateTime(value.getTime());
 	}
 
 	/**
 	 * 转换值
 	 * 
-	 * @param date
+	 * @param value
 	 *            日期的字符串
 	 * @return 日期
 	 */
-	public static DateTime valueOf(String date) {
-		return valueOf(date, FORMAT_DATE);
+	public static DateTime valueOf(String value) {
+		return valueOf(value, FORMAT_DATE);
 	}
 
 	/**
 	 * 转换值
 	 * 
-	 * @param date
+	 * @param value
 	 *            日期字符串
 	 * @param format
 	 *            字符串格式
 	 * @return 日期
 	 */
-	public static DateTime valueOf(String date, String format) {
+	public static DateTime valueOf(String value, String format) {
 		try {
-			if (date == null || format == null) {
-				return DateTime.minValue;
-			}
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-			Date dateValue = simpleDateFormat.parse(date);
-			return new DateTime(dateValue.getTime());
+			Date dateValue = simpleDateFormat.parse(value);
+			return valueOf(dateValue.getTime());
 		} catch (ParseException e) {
-			return DateTime.minValue;
+			return DateTime.MIN_VALUE;
 		}
 	}
 
 	/**
-	 * 转换值
+	 * 转换值（已处理月份）
 	 * 
-	 * @param date
-	 *            日期值
-	 * @return 日期
+	 * @param year
+	 *            年
+	 * @param month
+	 *            月
+	 * @param day
+	 *            日
+	 * @return
 	 */
-	public static DateTime valueOf(long date) {
-		return new DateTime(date);
+	public static DateTime valueOf(int year, int month, int day) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.clear();
+		calendar.set(year, month - 1, day);
+		return valueOf(calendar.getTimeInMillis());
 	}
 
 	/**
 	 * 最小日期
 	 */
-	public static DateTime getMinValue() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.clear();
-		calendar.set(1899, 11, 1);
-		return new DateTime(calendar.getTimeInMillis());
-	}
+	public static final DateTime MIN_VALUE = valueOf(1900, 1, 1);
 
 	/**
 	 * 最大日期
 	 */
-	public static DateTime getMaxValue() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.clear();
-		calendar.set(2099, 11, 31);
-		return new DateTime(calendar.getTimeInMillis());
-	}
+	public static final DateTime MAX_VALUE = valueOf(2099, 12, 31);
 
 	/**
 	 * 当前时间
 	 */
 	public static DateTime getNow() {
-		Calendar calendar = Calendar.getInstance();
-		return new DateTime(calendar.getTimeInMillis());
+		return valueOf(Calendar.getInstance().getTimeInMillis());
 	}
 
 	/**
@@ -124,32 +128,7 @@ public class DateTime extends Date implements Serializable {
 		int day = calendar.get(Calendar.DAY_OF_MONTH);
 		calendar.clear();
 		calendar.set(year, month, day, 0, 0, 0);
-		return new DateTime(calendar.getTimeInMillis());
-	}
-
-	/**
-	 * 最小日期
-	 */
-	public static final DateTime minValue = getMinValue();
-
-	/**
-	 * 最大日期
-	 */
-	public static final DateTime maxValue = getMaxValue();
-
-	/**
-	 * 计算间隔时间
-	 * 
-	 * @param fromTime
-	 *            起始时间
-	 * 
-	 * @param unit
-	 *            间隔的时间单位
-	 * 
-	 * @return 返回日期间的间隔
-	 */
-	public static long interval(DateTime fromTime, emTimeUnit unit) throws ComputeException {
-		return interval(fromTime, DateTime.getNow(), unit);
+		return valueOf(calendar.getTimeInMillis());
 	}
 
 	/**

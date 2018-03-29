@@ -200,7 +200,7 @@ class DbFieldDataDateTime extends FieldDataDbBase<DateTime> {
 		this.setValueType(valueType);
 	}
 
-	private DateTime value = DateTime.minValue;
+	private DateTime value = DateTime.MIN_VALUE;
 
 	@Override
 	public DateTime getValue() {

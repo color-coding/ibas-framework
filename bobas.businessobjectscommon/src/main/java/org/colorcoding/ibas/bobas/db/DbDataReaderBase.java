@@ -310,7 +310,7 @@ public abstract class DbDataReaderBase implements IDbDataReader {
 		try {
 			return new DateTime(this.resultSet.getDate(columnIndex).getTime());
 		} catch (NullPointerException e) {
-			return DateTime.minValue;
+			return DateTime.MIN_VALUE;
 		} catch (Exception e) {
 			throw new DbException(e.getMessage(), e);
 		}
@@ -321,7 +321,7 @@ public abstract class DbDataReaderBase implements IDbDataReader {
 		try {
 			return new DateTime(this.resultSet.getDate(columnLabel).getTime());
 		} catch (NullPointerException e) {
-			return DateTime.minValue;
+			return DateTime.MIN_VALUE;
 		} catch (Exception e) {
 			throw new DbException(e.getMessage(), e);
 		}

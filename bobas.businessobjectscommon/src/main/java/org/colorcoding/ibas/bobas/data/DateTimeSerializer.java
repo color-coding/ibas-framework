@@ -20,7 +20,7 @@ class DateTimeSerializer extends XmlAdapter<String, DateTime> {
 
 	@Override
 	public String marshal(DateTime data) throws Exception {
-		if (DateTime.minValue.equals(data) || data == null) {
+		if (DateTime.MIN_VALUE.equals(data) || data == null) {
 			// 最小日期返回null
 			return null;
 		}

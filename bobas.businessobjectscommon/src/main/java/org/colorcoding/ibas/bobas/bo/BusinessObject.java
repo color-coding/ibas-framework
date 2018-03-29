@@ -202,11 +202,11 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 			tagBO.setLogInst(0);
 			tagBO.setDataSource(null);
 			tagBO.setCreateActionId(null);
-			tagBO.setCreateDate(DateTime.minValue);
+			tagBO.setCreateDate(DateTime.MIN_VALUE);
 			tagBO.setCreateTime((short) 0);
 			tagBO.setCreateUserSign(OrganizationFactory.UNKNOWN_USER.getId());
 			tagBO.setUpdateActionId(null);
-			tagBO.setUpdateDate(DateTime.minValue);
+			tagBO.setUpdateDate(DateTime.MIN_VALUE);
 			tagBO.setUpdateTime((short) 0);
 			tagBO.setUpdateUserSign(OrganizationFactory.UNKNOWN_USER.getId());
 		}
