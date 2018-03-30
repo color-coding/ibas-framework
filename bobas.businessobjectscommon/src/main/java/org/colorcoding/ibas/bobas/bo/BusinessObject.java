@@ -147,17 +147,27 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 		stringBuilder.append(boCode);
 		stringBuilder.append("]");
 		stringBuilder.append(".");
-		for (IFieldData item : this.getFields(c -> c.isPrimaryKey())) {
-			if (stringBuilder.length() > boCode.length() + 4) {
-				stringBuilder.append("&");
-			}
+		if (this instanceof IBOMasterData) {
 			stringBuilder.append("[");
-			stringBuilder.append(item.getName());
+			stringBuilder.append(IBOMasterData.MASTER_PRIMARY_KEY_NAME);
 			stringBuilder.append(" ");
 			stringBuilder.append("=");
 			stringBuilder.append(" ");
-			stringBuilder.append(DataConvert.toString(item.getValue()));
+			stringBuilder.append(((IBOMasterData) this).getCode());
 			stringBuilder.append("]");
+		} else {
+			for (IFieldData item : this.getFields(c -> c.isPrimaryKey())) {
+				if (stringBuilder.length() > boCode.length() + 4) {
+					stringBuilder.append("&");
+				}
+				stringBuilder.append("[");
+				stringBuilder.append(item.getName());
+				stringBuilder.append(" ");
+				stringBuilder.append("=");
+				stringBuilder.append(" ");
+				stringBuilder.append(DataConvert.toString(item.getValue()));
+				stringBuilder.append("]");
+			}
 		}
 		stringBuilder.append("}");
 		return stringBuilder.toString();
