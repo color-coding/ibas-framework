@@ -6,6 +6,7 @@ import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
 import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
 import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
+import org.colorcoding.ibas.bobas.bo.IBOTagReferenced;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.OperationResult;
@@ -205,6 +206,13 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			if (bo.isDeleted()) {
 				// 恢复bo删除状态
 				bo.undelete();
+			}
+		}
+		if (this.beAffected instanceof IBOTagReferenced) {
+			// 被影响数据，自动标记引用
+			IBOTagReferenced referenced = (IBOTagReferenced) this.beAffected;
+			if (referenced.getReferenced() == emYesNo.NO) {
+				referenced.setReferenced(emYesNo.YES);
 			}
 		}
 		this.impact(this.getContract());
