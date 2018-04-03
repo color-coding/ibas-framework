@@ -1,7 +1,6 @@
 package org.colorcoding.ibas.bobas.db;
 
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
@@ -18,12 +17,6 @@ public class DbConnection implements IDbConnection {
 			throw new DbException(I18N.prop("msg_bobas_invaild_database_connection"));
 		}
 		this.dbConnection = connection;
-		try {
-			// 手动提交事务
-			this.dbConnection.setAutoCommit(false);
-		} catch (SQLException e) {
-			throw new DbException(e);
-		}
 	}
 
 	private String connectionSign = null;
@@ -191,8 +184,7 @@ public class DbConnection implements IDbConnection {
 			if (this.isClosed()) {
 				throw new DbException(I18N.prop("msg_bobas_database_connection_is_closed"));
 			}
-			Statement statement = this.dbConnection.createStatement();
-			return new DbCommand(statement);
+			return new DbCommand(this.dbConnection.createStatement());
 		} catch (DbException e) {
 			throw e;
 		} catch (SQLException e) {
@@ -201,7 +193,7 @@ public class DbConnection implements IDbConnection {
 	}
 
 	@Override
-	public boolean beginTransaction() throws DbException {
+	public synchronized boolean beginTransaction() throws DbException {
 		try {
 			// 手动提交事务
 			if (this.isClosed()) {
@@ -210,51 +202,56 @@ public class DbConnection implements IDbConnection {
 			if (this.inTransaction()) {
 				return false;
 			}
-			this.inTransaction = true;
 			if (!this.opened) {
 				this.open();
 			}
+			// 手动提交事务
+			this.dbConnection.setAutoCommit(false);
 			return true;
 		} catch (DbException e) {
 			throw e;
+		} catch (SQLException e) {
+			throw new DbException(e);
 		}
 	}
 
 	@Override
-	public void rollbackTransaction() throws DbException {
+	public synchronized void rollbackTransaction() throws DbException {
 		try {
 			if (this.isClosed()) {
 				throw new DbException(I18N.prop("msg_bobas_database_connection_is_closed"));
 			}
 			this.dbConnection.rollback();
-			this.inTransaction = false;
+			this.dbConnection.setAutoCommit(true);
 		} catch (DbException e) {
 			throw e;
 		} catch (SQLException e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
 	@Override
-	public void commitTransaction() throws DbException {
+	public synchronized void commitTransaction() throws DbException {
 		try {
 			if (this.isClosed()) {
 				throw new DbException(I18N.prop("msg_bobas_database_connection_is_closed"));
 			}
 			this.dbConnection.commit();
-			this.inTransaction = false;
+			this.dbConnection.setAutoCommit(true);
 		} catch (DbException e) {
 			throw e;
 		} catch (SQLException e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
-	private volatile boolean inTransaction = false;
-
 	@Override
-	public boolean inTransaction() {
-		return this.inTransaction;
+	public synchronized boolean inTransaction() throws DbException {
+		try {
+			return !this.dbConnection.getAutoCommit();
+		} catch (SQLException e) {
+			throw new DbException(e);
+		}
 	}
 
 }

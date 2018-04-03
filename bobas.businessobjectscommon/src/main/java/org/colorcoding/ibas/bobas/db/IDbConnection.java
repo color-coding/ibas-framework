@@ -86,8 +86,10 @@ public interface IDbConnection {
 
 	/**
 	 * 是否处于事务中
+	 * 
+	 * @throws DbException
 	 */
-	boolean inTransaction();
+	boolean inTransaction() throws DbException;
 
 	/**
 	 * 释放引用的资源

@@ -65,13 +65,16 @@ class Connection implements java.sql.Connection {
 		throw new UnsupportedOperationException();
 	}
 
+	private boolean autoCommit = true;
+
 	@Override
 	public void setAutoCommit(boolean autoCommit) throws SQLException {
+		this.autoCommit = autoCommit;
 	}
 
 	@Override
 	public boolean getAutoCommit() throws SQLException {
-		return false;
+		return this.autoCommit;
 	}
 
 	@Override
