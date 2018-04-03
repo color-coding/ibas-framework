@@ -271,7 +271,11 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			OperationResult<B> operationResult = logicRepository.saveData(this.getBeAffected());
 			logicRepository.setRepository(null);// 移出监听
 			if (operationResult.getError() != null) {
-				throw new BusinessLogicException(operationResult.getError());
+				if (operationResult.getError() instanceof BusinessLogicException) {
+					throw (BusinessLogicException) operationResult.getError();
+				} else {
+					throw new BusinessLogicException(operationResult.getError());
+				}
 			}
 		}
 	}
