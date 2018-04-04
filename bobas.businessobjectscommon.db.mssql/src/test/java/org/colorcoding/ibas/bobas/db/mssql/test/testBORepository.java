@@ -305,11 +305,11 @@ public class testBORepository extends TestCase {
 				};
 				tf.start();
 			}
-			Thread.sleep(50000);
+			Thread.sleep(180000);
 			FLAG_STOP = true;
 			System.gc();
 			System.out.println("all done.");
-			Thread.sleep(500000);// 继续等待，资源释放
+			Thread.sleep(600000);// 继续等待，资源释放
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

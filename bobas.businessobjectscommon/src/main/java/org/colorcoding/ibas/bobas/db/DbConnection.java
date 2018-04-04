@@ -72,7 +72,7 @@ public class DbConnection implements IDbConnection {
 	}
 
 	@Override
-	public boolean open() throws DbException {
+	public synchronized boolean open() throws DbException {
 		if (this.opened) {
 			// 已打开数据库连接，或打开事务
 			return false;
@@ -88,7 +88,7 @@ public class DbConnection implements IDbConnection {
 	}
 
 	@Override
-	public void close(boolean force) throws DbException {
+	public synchronized void close(boolean force) throws DbException {
 		try {
 			if (this.inTransaction()) {
 				// 处于事务中，不允许关闭数据库连接
@@ -132,7 +132,7 @@ public class DbConnection implements IDbConnection {
 	 * 
 	 * @param recycled
 	 */
-	final void setRecycled(boolean recycled) {
+	final synchronized void setRecycled(boolean recycled) {
 		this.recycled = recycled;
 	}
 
@@ -158,7 +158,7 @@ public class DbConnection implements IDbConnection {
 	}
 
 	@Override
-	public boolean isClosed() throws DbException {
+	public synchronized boolean isClosed() throws DbException {
 		try {
 			if (this.dbConnection == null) {
 				// 没有有效的数据库连接，则认为是关闭的

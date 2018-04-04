@@ -18,14 +18,14 @@ import org.colorcoding.ibas.bobas.mapping.LogicContract;
 public class BusinessLogicsManager implements IBusinessLogicsManager {
 
 	@Override
-	public IBusinessLogicChain createChain() {
+	public synchronized IBusinessLogicChain createChain() {
 		IBusinessLogicChain logicChain = new BusinessLogicChain(this);
 		this.getLogicChains().add(logicChain);
 		return logicChain;
 	}
 
 	@Override
-	public IBusinessLogicChain getChain(IBusinessObject host) {
+	public synchronized IBusinessLogicChain getChain(IBusinessObject host) {
 		if (host == null) {
 			return null;
 		}
@@ -43,10 +43,11 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 	}
 
 	@Override
-	public void closeChains(String transId) {
+	public synchronized void closeChains(String transId) {
 		if (transId == null) {
 			return;
 		}
+
 		for (int i = this.getLogicChains().size() - 1; i >= 0; i--) {
 			IBusinessLogicChain logicChain = this.getLogicChains().get(i);
 			if (logicChain == null) {
