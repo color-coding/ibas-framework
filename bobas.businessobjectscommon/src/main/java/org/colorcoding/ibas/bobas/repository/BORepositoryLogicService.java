@@ -223,10 +223,6 @@ public class BORepositoryLogicService extends BORepositoryService {
 			logicChain.commit();
 		} else if (type == SaveActionType.BEFORE_DELETING) {
 			// 删除数据前，反向逻辑
-			if (this.isRefetchBeforeDelete()) {
-				// 已重装了删除对象，提高性能直接使用
-				logicChain.setTriggerCopy();
-			}
 			logicChain.reverseLogics();
 			logicChain.commit();
 		} else if (type == SaveActionType.BEFORE_UPDATING) {
