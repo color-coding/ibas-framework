@@ -41,15 +41,9 @@ public class BORepositoryService implements IBORepositoryService {
 	protected static final String MSG_TRANSACTION_SP_VALUES = "transaction: sp [%s] [%s] [%s - %s]";
 
 	public BORepositoryService() {
-		// 是否保存后检索新实例
-		this.setRefetchAfterSave(
-				!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_REFETCH, false));
 		// 是否通知事务
 		this.setPostTransaction(
 				!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_POST_TRANSACTION, false));
-		// 是否删除前重新查询
-		this.setRefetchBeforeDelete(
-				MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_REFETCH_BEFORE_DELETE, false));
 	}
 
 	/**
@@ -164,36 +158,6 @@ public class BORepositoryService implements IBORepositoryService {
 			this.repository.dispose();
 			this.repository = null;
 		}
-	}
-
-	private boolean refetchAfterSave;
-
-	/**
-	 * 保存后是否重新查询数据
-	 * 
-	 * @return
-	 */
-	public final boolean isRefetchAfterSave() {
-		return refetchAfterSave;
-	}
-
-	public final void setRefetchAfterSave(boolean value) {
-		this.refetchAfterSave = value;
-	}
-
-	private boolean refetchBeforeDelete;
-
-	/**
-	 * 删除前是否查询数据
-	 * 
-	 * @return
-	 */
-	public final boolean isRefetchBeforeDelete() {
-		return refetchBeforeDelete;
-	}
-
-	public final void setRefetchBeforeDelete(boolean value) {
-		this.refetchBeforeDelete = value;
 	}
 
 	private boolean postTransaction;
@@ -345,7 +309,6 @@ public class BORepositoryService implements IBORepositoryService {
 		try {
 			boolean toDelete = bo.isDeleted();
 			boolean toAdd = bo.isNew();
-			P returnBO = null;// 返回的数据
 			myOpened = this.openRepository();// 打开仓库
 			myDbTrans = this.beginTransaction(); // 打开事务
 			this.getProcessing().add(bo);// 添加待处理数据到列表
@@ -356,7 +319,7 @@ public class BORepositoryService implements IBORepositoryService {
 				throw operationResult.getError();
 			}
 			// 成功保存
-			returnBO = operationResult.getResultObjects().firstOrDefault();
+			bo = operationResult.getResultObjects().firstOrDefault();
 			if (this.isPostTransaction()) {
 				// 通知事务
 				TransactionType type = TransactionType.UPDATE;
@@ -372,28 +335,9 @@ public class BORepositoryService implements IBORepositoryService {
 			}
 			if (toDelete) {
 				// 删除操作，不返回实例
-				returnBO = null;
-			} else if (!bo.isSavable()) {
-				// 此对象没有保存，则直接返回
-			} else {
-				// 非删除操作
-				if (this.isRefetchAfterSave()) {
-					// 要求重新查询
-					try {
-						operationResult = boRepository.fetchCopyEx(returnBO);
-						if (operationResult.getError() != null) {
-							throw operationResult.getError();
-						}
-						if (operationResult.getResultObjects().isEmpty()) {
-							throw new Exception(I18N.prop("msg_bobas_not_found_bo_copy", returnBO));
-						}
-						returnBO = operationResult.getResultObjects().firstOrDefault();
-					} catch (Exception e) {
-						throw new Exception(I18N.prop("msg_bobas_fetch_bo_copy_faild", returnBO), e);
-					}
-				}
+				bo = null;
 			}
-			return returnBO;
+			return bo;
 		} catch (Exception e) {
 			if (myDbTrans) {
 				this.rollbackTransaction();// 自己打开的事务自己关闭
@@ -472,21 +416,6 @@ public class BORepositoryService implements IBORepositoryService {
 		OperationResult<P> operationResult = new OperationResult<P>();
 		try {
 			this.setCurrentUser(token);// 解析并设置当前用户
-			if (bo != null && bo.isDeleted() && this.isRefetchBeforeDelete()) {
-				// 删除前重新查询数据，避免漏或多删子项
-				@SuppressWarnings("unchecked")
-				IOperationResult<P> opRsltFetch = this.fetch(bo.getCriteria(), (Class<P>) bo.getClass());
-				P boCopy = opRsltFetch.getResultObjects().firstOrDefault();
-				if (boCopy != null && boCopy.getClass() == bo.getClass()) {
-					// 使用BO的删除方法，引用对象时不进行删除操作
-					boCopy.delete();
-					bo = boCopy;
-					Logger.log(MessageLevel.DEBUG, MSG_REPOSITORY_REPLACED_BE_DELETED_BO, bo);
-				} else {
-					// 没有找到有效的副本
-					Logger.log(MessageLevel.WARN, MSG_REPOSITORY_NOT_FOUND_BE_DELETED_BO, bo);
-				}
-			}
 			operationResult.addResultObjects(this.save(bo));
 		} catch (Exception e) {
 			operationResult.setError(e);

@@ -23,6 +23,7 @@ public class BORepositorySmartService extends BORepositoryLogicService implement
 	protected static final String MSG_REPOSITORY_FETCHING_IN_MASTER_REPOSITORY = "repository: fetching [%s] in master repository.";
 
 	public BORepositorySmartService() {
+		super();
 		this.setEnabledReadonlyRepository(
 				MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_ENABLED_READONLY_REPOSITORY, false));
 	}

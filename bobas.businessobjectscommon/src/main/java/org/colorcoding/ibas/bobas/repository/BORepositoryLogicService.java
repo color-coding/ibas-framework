@@ -32,6 +32,7 @@ import org.colorcoding.ibas.bobas.rule.ICheckRules;
 public class BORepositoryLogicService extends BORepositoryService {
 
 	public BORepositoryLogicService() {
+		super();
 		this.setCheckRules(
 				!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_BUSINESS_RULES, false));
 		this.setCheckLogics(

@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.repository;
 
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICriteria;
@@ -9,6 +10,7 @@ import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
 import org.colorcoding.ibas.bobas.ownership.IDataOwnership;
 import org.colorcoding.ibas.bobas.ownership.IOwnershipJudger;
@@ -39,6 +41,46 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 	 * 操作信息标签：权限判断
 	 */
 	public final static String OPERATION_INFORMATION_DATA_OWNERSHIP_TAG = "DATA_OWNERSHIP_JUDGE";
+
+	public BORepositoryServiceApplication() {
+		super();
+		// 是否保存后检索新实例
+		this.setRefetchAfterSave(
+				!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_REFETCH, false));
+		// 是否删除前重新查询
+		this.setRefetchBeforeDelete(
+				MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_REFETCH_BEFORE_DELETE, false));
+	}
+
+	private boolean refetchAfterSave;
+
+	/**
+	 * 保存后是否重新查询数据
+	 * 
+	 * @return
+	 */
+	public final boolean isRefetchAfterSave() {
+		return refetchAfterSave;
+	}
+
+	public final void setRefetchAfterSave(boolean value) {
+		this.refetchAfterSave = value;
+	}
+
+	private boolean refetchBeforeDelete;
+
+	/**
+	 * 删除前是否查询数据
+	 * 
+	 * @return
+	 */
+	public final boolean isRefetchBeforeDelete() {
+		return refetchBeforeDelete;
+	}
+
+	public final void setRefetchBeforeDelete(boolean value) {
+		this.refetchBeforeDelete = value;
+	}
 
 	private String userToken = null;
 
@@ -176,14 +218,40 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 	 */
 	@Override
 	<P extends IBusinessObject> P save(IBORepository boRepository, P bo) throws Exception {
+		// 数据权限过滤，系统用户不考虑权限
 		if (this.getOwnershipJudger() != null && bo instanceof IDataOwnership
 				&& this.getCurrentUser() != OrganizationFactory.SYSTEM_USER) {
-			// 数据权限过滤，系统用户不考虑权限
 			if (!this.getOwnershipJudger().canSave((IDataOwnership) bo, this.getCurrentUser(), true)) {
 				throw new UnauthorizedException(I18N.prop("msg_bobas_to_save_bo_unauthorized", bo.toString()));
 			}
 		}
-		return super.save(boRepository, bo);
+		boolean deleted = bo.isDeleted();
+		// 删除前重新查询数据，避免漏或多删子项
+		if (deleted && this.isRefetchBeforeDelete()) {
+			P boCopy = boRepository.fetchCopyEx(bo).getResultObjects().firstOrDefault();
+			if (boCopy != null && boCopy.getClass() == bo.getClass()) {
+				// 使用BO的删除方法，引用对象时不进行删除操作
+				boCopy.delete();
+				bo = boCopy;
+				Logger.log(MessageLevel.DEBUG, MSG_REPOSITORY_REPLACED_BE_DELETED_BO, bo);
+			} else {
+				// 没有找到有效的副本
+				throw new Exception(I18N.prop("msg_bobas_not_found_bo_copy", bo));
+			}
+		}
+		bo = super.save(boRepository, bo);
+		// 要求重新查询
+		if (!deleted && this.isRefetchAfterSave()) {
+			// 要求重新查询
+			P boCopy = boRepository.fetchCopyEx(bo).getResultObjects().firstOrDefault();
+			if (boCopy != null && boCopy.getClass() == bo.getClass()) {
+				bo = boCopy;
+			} else {
+				// 没有找到有效的副本
+				throw new Exception(I18N.prop("msg_bobas_not_found_bo_copy", bo));
+			}
+		}
+		return bo;
 	}
 
 }

@@ -18,8 +18,6 @@ import org.colorcoding.ibas.bobas.repository.BORepositoryLogicService;
 class ApprovalProcessRepository extends BORepositoryLogicService {
 
 	public ApprovalProcessRepository() {
-		this.setRefetchBeforeDelete(false);// 删除前不替换数据
-		this.setRefetchAfterSave(false);// 保存后不查询数据
 		this.setCheckApprovalProcess(false);// 此业务仓库不检查审批流程
 	}
 
@@ -60,7 +58,8 @@ class ApprovalProcessRepository extends BORepositoryLogicService {
 			// 加载命名空间的类
 			Class<?> boClass = BOFactory.create().getClass(criteria.getBusinessObject());
 			if (boClass == null) {
-				throw new ClassNotFoundException(I18N.prop("msg_bobas_not_found_bo_class", criteria.getBusinessObject()));
+				throw new ClassNotFoundException(
+						I18N.prop("msg_bobas_not_found_bo_class", criteria.getBusinessObject()));
 			}
 			@SuppressWarnings("unchecked")
 			Class<P> boType = (Class<P>) boClass;
