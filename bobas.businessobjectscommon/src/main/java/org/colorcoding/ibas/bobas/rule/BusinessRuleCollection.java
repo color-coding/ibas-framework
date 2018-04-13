@@ -8,6 +8,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.core.IManageProperties;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
+import org.colorcoding.ibas.bobas.core.ITrackStatus;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
@@ -57,6 +58,13 @@ public abstract class BusinessRuleCollection extends BusinessRule {
 					for (IPropertyInfo<?> propertyInfo : this.getInputProperties()) {
 						ArrayList<Object> values = new ArrayList<>(collection.size());
 						for (Object item : collection) {
+							if (item instanceof ITrackStatus) {
+								// 删除的对象跳过
+								ITrackStatus trackStatus = (ITrackStatus) item;
+								if (trackStatus.isDeleted()) {
+									continue;
+								}
+							}
 							if (item instanceof IManageProperties) {
 								IManageProperties itemProperties = (IManageProperties) item;
 								values.add(itemProperties.getProperty(propertyInfo));

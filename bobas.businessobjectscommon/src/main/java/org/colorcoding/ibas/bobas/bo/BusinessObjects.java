@@ -137,7 +137,11 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 					BusinessObjects.this.onElementPropertyChanged(evt);
 				}
 				// 集合数量发生变化，运行集合业务规则
-				this.runRules(evt.getPropertyName());
+				if (evt.getPropertyName().equals("isDeleted")) {
+					this.runRules(null);
+				} else {
+					this.runRules(evt.getPropertyName());
+				}
 			} else if (evt.getSource() == BusinessObjects.this && evt.getPropertyName().equals(PROPERTY_NAME_SIZE)) {
 				if (BusinessObjects.this.parent != null && !BusinessObjects.this.parent.isLoading()) {
 					// 集合自身的属性改变事件
@@ -162,9 +166,6 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 				return;
 			}
 			if (BusinessObjects.this.getParent().isLoading()) {
-				return;
-			}
-			if (BusinessObjects.this.isEmpty()) {
 				return;
 			}
 			Class<?> parentClass = BusinessObjects.this.getParent().getClass();
