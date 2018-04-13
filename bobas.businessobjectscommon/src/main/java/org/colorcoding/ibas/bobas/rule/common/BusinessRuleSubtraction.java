@@ -8,7 +8,7 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
 /**
- * 业务规则-求和运算
+ * 业务规则-求差运算
  * 
  * @author Niuren.Zhu
  *

@@ -6,7 +6,7 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
 /**
- * 业务规则-乘法推导（根据被乘数，用乘除法推导乘数或结果）
+ * 业务规则-乘除法推导（根据被乘数，用乘除法推导乘数或结果）
  * 
  * @author Niuren.Zhu
  *
