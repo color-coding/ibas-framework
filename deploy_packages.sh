@@ -12,9 +12,9 @@ echo '              <username>用户名</username>                        '
 echo '              <password>密码</password>                          '
 echo '          </server>                                              '
 echo '*****************************************************************'
-
-# *******设置参数变量*******
-WORK_FOLDER=`pwd`
+# 设置参数变量
+cd `dirname $0`
+WORK_FOLDER=${PWD}
 # 仓库根地址
 ROOT_URL=http://maven.colorcoding.org/repository/
 # 仓库名称

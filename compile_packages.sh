@@ -12,7 +12,8 @@ echo '    5. 此脚本会遍历当前目录的子目录，查找pom.xml并编译
 echo '    6. 可在compile_order.txt文件中调整编译顺序。                            '
 echo '****************************************************************************'
 # 设置参数变量
-WORK_FOLDER=`pwd`
+cd `dirname $0`
+WORK_FOLDER=${PWD}
 OPNAME=`date '+%Y%m%d_%H%M%S'`
 LOGFILE=${WORK_FOLDER}/compile_packages_log_${OPNAME}.txt
 
