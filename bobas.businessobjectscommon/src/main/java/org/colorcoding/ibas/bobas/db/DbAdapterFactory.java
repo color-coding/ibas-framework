@@ -63,8 +63,9 @@ public class DbAdapterFactory extends ConfigurableFactory<IDbAdapter> {
 		if (dbAdapters == null) {
 			dbAdapters = new HashMap<String, IDbAdapter>();
 		}
-		if (dbAdapters.containsKey(dbType)) {
-			return dbAdapters.get(dbType);
+		IDbAdapter dbAdapter = dbAdapters.get(dbType);
+		if (dbAdapter != null) {
+			return dbAdapter;
 		} else {
 			try {
 				IDbAdapter adapter = this.newInstance(dbType, "DbAdapter");// 数据库适配器

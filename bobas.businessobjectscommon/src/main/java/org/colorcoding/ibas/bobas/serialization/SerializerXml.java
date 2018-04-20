@@ -159,14 +159,15 @@ public class SerializerXml extends Serializer<Schema> {
 		Element element = document.createElement("xs:element");
 		element.setAttribute("name", name);
 		// 获取元素类型
-		if (this.getKnownTyps().containsKey(type.getName())) {
+		String typeName = this.getKnownTyps().get(type.getName());
+		if (typeName != null) {
 			// 已知类型
 			// type="xs:string"
 			if (!isRoot) {
 				element.setAttribute("minOccurs", "0");
 				element.setAttribute("nillable", "true");
 			}
-			element.setAttribute("type", this.getKnownTyps().get(type.getName()));
+			element.setAttribute("type", typeName);
 		} else if (type.isEnum()) {
 			// 枚举类型
 			// <xs:simpleType>

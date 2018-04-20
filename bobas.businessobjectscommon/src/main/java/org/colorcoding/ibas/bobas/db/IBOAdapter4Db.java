@@ -2,6 +2,7 @@ package org.colorcoding.ibas.bobas.db;
 
 import org.colorcoding.ibas.bobas.common.IConditions;
 import org.colorcoding.ibas.bobas.common.ICriteria;
+import org.colorcoding.ibas.bobas.common.ISorts;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.ISqlStoredProcedure;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
@@ -32,6 +33,16 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	 * @throws ParsingException
 	 */
 	ISqlQuery parseSqlQuery(IConditions conditions) throws ParsingException;
+
+	/**
+	 * 解析排序
+	 * 
+	 * @param sorts
+	 *            排序
+	 * @return 查询语句
+	 * @throws ParsingException
+	 */
+	ISqlQuery parseSqlQuery(ISorts sorts) throws ParsingException;
 
 	/**
 	 * 解析查询

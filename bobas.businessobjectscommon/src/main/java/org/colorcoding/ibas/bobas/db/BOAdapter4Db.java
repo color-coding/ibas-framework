@@ -265,7 +265,8 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	 * @return
 	 * @throws SqlScriptException
 	 */
-	protected ISqlQuery parseSqlQuery(ISorts sorts) throws ParsingException {
+	@Override
+	public ISqlQuery parseSqlQuery(ISorts sorts) throws ParsingException {
 		try {
 			if (sorts == null) {
 				return null;

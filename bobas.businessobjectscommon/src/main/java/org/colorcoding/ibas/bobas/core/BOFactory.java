@@ -278,11 +278,7 @@ public class BOFactory implements IBOFactory {
 		if (className == null || className.isEmpty()) {
 			return;
 		}
-		if (this.getClassMap().containsKey(boCode)) {
-			this.getClassMap().put(boCode, className);
-		} else {
-			this.getClassMap().put(boCode, className);
-		}
+		this.getClassMap().put(boCode, className);
 		Logger.log(MessageLevel.DEBUG, MSG_BO_FACTORY_REGISTER_BO_CODE, className, boCode);
 	}
 
@@ -306,9 +302,10 @@ public class BOFactory implements IBOFactory {
 
 	@Override
 	public Class<?> getClass(String boCode) throws ClassNotFoundException {
-		if (this.getClassMap().containsKey(boCode)) {
+		String type = this.getClassMap().get(boCode);
+		if (type != null) {
 			// 已缓存，加载类
-			return this.loadClass(this.getClassMap().get(boCode));
+			return this.loadClass(type);
 		}
 		throw new ClassNotFoundException(boCode);
 	}

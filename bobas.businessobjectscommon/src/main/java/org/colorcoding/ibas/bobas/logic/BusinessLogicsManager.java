@@ -91,10 +91,7 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 		if (contract == null) {
 			return null;
 		}
-		Class<?> logicClass = null;
-		if (this.getLogicClasses().containsKey(contract)) {
-			logicClass = this.getLogicClasses().get(contract);
-		}
+		Class<?> logicClass = this.getLogicClasses().get(contract);
 		if (logicClass == null) {
 			// 优先从契约接口所在命名空间查询
 			Class<?>[] packClass = BOFactory.create().loadClasses(contract.getPackage().getName());

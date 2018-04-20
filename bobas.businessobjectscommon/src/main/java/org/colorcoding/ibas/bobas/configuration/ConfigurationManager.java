@@ -97,18 +97,16 @@ public class ConfigurationManager implements IConfigurationManager {
 
 	@Override
 	public String getValue(String key) {
-		if (this.getElementsMap().containsKey(key)) {
-			return this.getElementsMap().get(key).getValue();
+		IConfigurationElement element = this.getElementsMap().get(key);
+		if (element != null) {
+			return element.getValue();
 		}
 		return null;
 	}
 
 	@Override
 	public void addSetting(String key, String value) {
-		IConfigurationElement element = null;
-		if (this.getElementsMap().containsKey(key)) {
-			element = this.getElementsMap().get(key);
-		}
+		IConfigurationElement element = this.getElementsMap().get(key);
 		if (element == null) {
 			element = new ConfigurationElement();
 			element.setKey(key);

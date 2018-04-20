@@ -31,19 +31,15 @@ public class BusinessRulesManager implements IBusinessRulesManager {
 		if (type == null) {
 			return null;
 		}
-		if (this.getRules().containsKey(type)) {
-			return this.getRules().get(type);
-		}
 		synchronized (this.getRules()) {
-			if (!this.getRules().containsKey(type)) {
-				IBusinessRules tmpRules = new BusinessRules();
-				if (tmpRules != null) {
-					this.getRules().put(type, tmpRules);
-					return tmpRules;
-				}
+			IBusinessRules businessRules = this.getRules().get(type);
+			if (businessRules == null) {
+				businessRules = new BusinessRules();
+				this.getRules().put(type, businessRules);
+				return businessRules;
 			}
+			return businessRules;
 		}
-		return null;
 	}
 
 }

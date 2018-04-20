@@ -22,7 +22,7 @@ public class PropertyInfoManager {
 	public static final String BO_PROPERTY_NAMING_RULES_UPPER = "PROPERTY_%s";
 	public static final String BO_PROPERTY_NAMING_RULES_CAMEL = "%sProperty";
 
-	volatile private static HashMap<Class<?>, PropertyInfoList> propertyInfoCache = new HashMap<Class<?>, PropertyInfoList>();
+	volatile private static HashMap<Class<?>, PropertyInfoList> PROPERTY_INFOS = new HashMap<Class<?>, PropertyInfoList>();
 
 	/**
 	 * 注册属性
@@ -35,17 +35,13 @@ public class PropertyInfoManager {
 	public static void registerProperty(Class<?> boType, PropertyInfo<?> property) {
 		// Logger.log(MessageLevel.DEBUG, MSG_PROPERTIES_REGISTER_PROPERTIES,
 		// boType.getName(), property.getName());
-		if (propertyInfoCache.containsKey(boType)) {
-			PropertyInfoList propertys = propertyInfoCache.get(boType);
-			synchronized (propertys) {
-				// 锁
+		synchronized (PROPERTY_INFOS) {
+			PropertyInfoList propertys = PROPERTY_INFOS.get(boType);
+			if (propertys != null) {
 				propertys.add(property);
 				property.setIndex(propertys.size() - 1);// 没排序，坑
-			}
-		} else {
-			synchronized (propertyInfoCache) {
-				// 锁
-				PropertyInfoList propertys = new PropertyInfoList();
+			} else {
+				propertys = new PropertyInfoList();
 				// 获取父类的属性定义
 				for (IPropertyInfo<?> item : recursePropertyInfos(boType.getSuperclass())) {
 					propertys.add(item);
@@ -53,7 +49,7 @@ public class PropertyInfoManager {
 				// 添加当前属性
 				propertys.add(property);
 				property.setIndex(propertys.size() - 1);
-				propertyInfoCache.put(boType, propertys);
+				PROPERTY_INFOS.put(boType, propertys);
 			}
 		}
 		// 获取属性的注释
@@ -158,23 +154,21 @@ public class PropertyInfoManager {
 	public static PropertyInfoList getPropertyInfoList(Class<?> boType) throws NotRegisterTypeException {
 		// Logger.log(MessageLevel.DEBUG, MSG_PROPERTIES_GET_TYPE_PROPERTIES,
 		// boType.getName());
-		synchronized (propertyInfoCache) {
-			if (propertyInfoCache.containsKey(boType)) {
-				// 已注册的类型
-				return propertyInfoCache.get(boType);
+		synchronized (PROPERTY_INFOS) {
+			PropertyInfoList propertyInfoList = PROPERTY_INFOS.get(boType);
+			if (propertyInfoList != null) {
+				return propertyInfoList;
 			} else {
-				// 未注册类型
-				// 尝试加载
 				if (registerClass(boType)) {
-					if (propertyInfoCache.containsKey(boType)) {
-						// 已注册的类型
-						return propertyInfoCache.get(boType);
+					propertyInfoList = PROPERTY_INFOS.get(boType);
+					if (propertyInfoList != null) {
+						return propertyInfoList;
 					} else {
 						// 未注册，检索父项是否注册
 						Class<?> superClass = boType.getSuperclass();
 						while (superClass != null) {
-							if (propertyInfoCache.containsKey(superClass))
-								return propertyInfoCache.get(superClass);
+							if (PROPERTY_INFOS.containsKey(superClass))
+								return PROPERTY_INFOS.get(superClass);
 							superClass = boType.getSuperclass();
 						}
 					}

@@ -66,11 +66,12 @@ public class LanguageItemManager implements ILanguageItemManager {
 
 	@Override
 	public String getContent(String key, Object... args) {
-		if (this.getLanguageItems().containsKey(key)) {
+		ILanguageItem languageItem = this.getLanguageItems().get(key);
+		if (languageItem != null) {
 			if (args.length == 0) {
-				return this.getLanguageItems().get(key).getContent(this.getLanguageCode());
+				return languageItem.getContent(this.getLanguageCode());
 			} else {
-				return String.format(this.getLanguageItems().get(key).getContent(this.getLanguageCode()), args);
+				return String.format(languageItem.getContent(this.getLanguageCode()), args);
 			}
 		}
 		return String.format("[%s]", key);

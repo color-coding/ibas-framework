@@ -284,11 +284,11 @@ public class Configuration {
 		if (done) {
 			Logger.log(MSG_CONFIG_READ_FILE_DATA, configFile);
 		}
-		variableStringCache = new HashMap<>();
+		VARIABLE_VVALULES = new HashMap<>();
 		return done;
 	}
 
-	private static Map<String, String> variableStringCache = new HashMap<>();
+	private static Map<String, String> VARIABLE_VVALULES = new HashMap<>();
 
 	/**
 	 * 变量命名模板，${%s}
@@ -307,10 +307,11 @@ public class Configuration {
 	 * @return 替换过字符
 	 */
 	public static String applyVariables(String variable) {
-		if (variableStringCache.containsKey(variable)) {
-			return variableStringCache.get(variable);
+		String value = VARIABLE_VVALULES.get(variable);
+		if (value != null) {
+			return value;
 		}
-		String value = applyVariables(variable, new Iterator<IKeyText>() {
+		value = applyVariables(variable, new Iterator<IKeyText>() {
 
 			private Iterator<IConfigurationElement> iterator = create().getElements().iterator();
 
@@ -355,7 +356,7 @@ public class Configuration {
 		});
 		if (variable != null && !variable.equals(value)) {
 			// 缓存新字符
-			variableStringCache.put(variable, value);
+			VARIABLE_VVALULES.put(variable, value);
 		}
 		return value;
 	}

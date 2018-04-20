@@ -42,8 +42,8 @@ public abstract class BusinessRuleCommon extends BusinessRule {
 				for (IPropertyInfo<?> propertyInfo : this.getAffectedProperties()) {
 					@SuppressWarnings("unchecked")
 					IPropertyInfo<Object> property = (IPropertyInfo<Object>) propertyInfo;
-					if (context.getOutputValues().containsKey(propertyInfo)) {
-						Object value = context.getOutputValues().get(propertyInfo);
+					Object value = context.getOutputValues().get(propertyInfo);
+					if (value != null) {
 						boProperties.setProperty(property, value);
 					}
 				}

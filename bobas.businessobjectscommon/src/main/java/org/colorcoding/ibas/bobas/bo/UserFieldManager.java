@@ -17,39 +17,32 @@ public class UserFieldManager {
 
 	protected static final String MSG_USER_FIELDS_REGISTER = "user fields: register type [%s]'s user fields, count [%s].";
 
-	private volatile static HashMap<Class<?>, PropertyInfoList> userFieldsCache = new HashMap<Class<?>, PropertyInfoList>();
+	private volatile static HashMap<Class<?>, PropertyInfoList> USER_FIELDS = new HashMap<Class<?>, PropertyInfoList>();
 
-	public static synchronized boolean register(Class<?> boType, PropertyInfoList fields) {
+	public static boolean register(Class<?> boType, PropertyInfoList fields) {
 		if (boType == null || fields == null) {
 			return false;
 		}
 		Logger.log(MessageLevel.DEBUG, MSG_USER_FIELDS_REGISTER, boType.getName(), fields.size());
-		if (userFieldsCache.containsKey(boType)) {
-			PropertyInfoList infoList = userFieldsCache.get(boType);
-			synchronized (infoList) {
-				// 锁
+		synchronized (USER_FIELDS) {
+			PropertyInfoList infoList = USER_FIELDS.get(boType);
+			if (infoList != null) {
 				for (IPropertyInfo<?> item : fields) {
 					infoList.add(item);
 				}
-			}
-		} else {
-			synchronized (userFieldsCache) {
-				// 锁
-				PropertyInfoList infoList = new PropertyInfoList();
+			} else {
+				infoList = new PropertyInfoList();
 				for (IPropertyInfo<?> item : fields) {
 					infoList.add(item);
 				}
-				userFieldsCache.put(boType, infoList);
+				USER_FIELDS.put(boType, infoList);
 			}
 		}
 		return true;
 	}
 
-	public static synchronized PropertyInfoList getUserFieldInfoList(Class<?> boType) {
-		if (userFieldsCache.containsKey(boType)) {
-			return userFieldsCache.get(boType);
-		}
-		return null;
+	public static PropertyInfoList getUserFieldInfoList(Class<?> boType) {
+		return USER_FIELDS.get(boType);
 	}
 
 	public static UserField create(IPropertyInfo<?> propertyInfo) {
@@ -87,15 +80,15 @@ public class UserFieldManager {
 	}
 
 	public static UserField[] create(Class<?> boType) {
-		if (userFieldsCache.containsKey(boType)) {
-			PropertyInfoList infoList = userFieldsCache.get(boType);
+		PropertyInfoList infoList = USER_FIELDS.get(boType);
+		if (infoList != null) {
 			UserField[] userFields = new UserField[infoList.size()];
 			for (int i = 0; i < infoList.size(); i++) {
 				userFields[i] = create(infoList.get(i));
 			}
 			return userFields;
 		}
-		return null;
+		return new UserField[] {};
 	}
 
 }
