@@ -84,11 +84,11 @@ public abstract class Serializer<S> implements ISerializer<S> {
 	 * @param recursion
 	 * @return
 	 */
-	protected SchemaElement[] getSerializedElements(Class<?> type, boolean recursion) {
-		SchemaElements elements = new SchemaElements();
+	protected List<SerializationElement> getSerializedElements(Class<?> type, boolean recursion) {
+		SerializationElements elements = new SerializationElements();
 		if (type.isPrimitive()) {
 			// 基本类型不做处理
-			return elements.toArray();
+			return elements;
 		} else if (type.isInterface()) {
 			// 类型为接口时
 			if (recursion) {
@@ -107,7 +107,7 @@ public abstract class Serializer<S> implements ISerializer<S> {
 				}
 				String elementName = method.getName().replace("set", "");
 				Class<?> elementType = method.getParameterTypes()[0];
-				elements.add(new SchemaElement(elementName, elementType));
+				elements.add(new SerializationElement(elementName, elementType));
 			}
 		} else {
 			// 类型是类
@@ -121,15 +121,15 @@ public abstract class Serializer<S> implements ISerializer<S> {
 			// 取被标记的字段
 			elements.add(this.getSerializedElements(type.getDeclaredFields()));
 			// 取被标记的属性
-			List<SchemaElement> tmps = this.getSerializedElements(type.getDeclaredMethods());
+			List<SerializationElement> tmps = this.getSerializedElements(type.getDeclaredMethods());
 			tmps.sort(null);// 排序
 			elements.add(tmps);
 		}
-		return elements.toArray();
+		return elements;
 	}
 
-	private List<SchemaElement> getSerializedElements(Field[] fields) {
-		List<SchemaElement> elements = new ArrayList<>();
+	private List<SerializationElement> getSerializedElements(Field[] fields) {
+		List<SerializationElement> elements = new ArrayList<>();
 		for (Field field : fields) {
 			Class<?> elementType = field.getType();
 			String elementName = field.getName();
@@ -156,13 +156,13 @@ public abstract class Serializer<S> implements ISerializer<S> {
 			if (elementType == null) {
 				continue;
 			}
-			elements.add(new SchemaElement(elementName, wrapperName, elementType));
+			elements.add(new SerializationElement(elementName, wrapperName, elementType));
 		}
 		return elements;
 	}
 
-	private List<SchemaElement> getSerializedElements(Method[] methods) {
-		List<SchemaElement> elements = new ArrayList<>();
+	private List<SerializationElement> getSerializedElements(Method[] methods) {
+		List<SerializationElement> elements = new ArrayList<>();
 		for (Method method : methods) {
 			Class<?> elementType = method.getReturnType();
 			if (elementType == null && method.getParameterTypes().length == 1) {
@@ -191,7 +191,7 @@ public abstract class Serializer<S> implements ISerializer<S> {
 			if (elementType == null) {
 				continue;
 			}
-			elements.add(new SchemaElement(elementName, wrapperName, elementType));
+			elements.add(new SerializationElement(elementName, wrapperName, elementType));
 		}
 		return elements;
 	}

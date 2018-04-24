@@ -15,7 +15,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.serialization.SchemaElement;
+import org.colorcoding.ibas.bobas.serialization.SerializationElement;
 import org.colorcoding.ibas.bobas.serialization.SerializationException;
 import org.colorcoding.ibas.bobas.serialization.Serializer;
 import org.colorcoding.ibas.bobas.serialization.ValidateException;
@@ -99,7 +99,7 @@ public class SerializerJson extends Serializer<JsonSchema> {
 			jsonGenerator.writeStringField("type", "object");
 			jsonGenerator.writeFieldName("properties");
 			jsonGenerator.writeStartObject();
-			for (SchemaElement item : this.getSerializedElements(type, true)) {
+			for (SerializationElement item : this.getSerializedElements(type, true)) {
 				if (type.equals(item.getType())) {
 					// 子项是自身，不做处理
 					continue;

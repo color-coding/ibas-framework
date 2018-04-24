@@ -1,17 +1,17 @@
 package org.colorcoding.ibas.bobas.serialization;
 
-public class SchemaElement implements Comparable<SchemaElement> {
+public class SerializationElement implements Comparable<SerializationElement> {
 
-	public SchemaElement() {
+	public SerializationElement() {
 
 	}
 
-	public SchemaElement(String name, Class<?> type) {
+	public SerializationElement(String name, Class<?> type) {
 		this.name = name;
 		this.type = type;
 	}
 
-	public SchemaElement(String name, String wrapper, Class<?> type) {
+	public SerializationElement(String name, String wrapper, Class<?> type) {
 		this(name, type);
 		this.wrapper = wrapper;
 	}
@@ -47,7 +47,7 @@ public class SchemaElement implements Comparable<SchemaElement> {
 	}
 
 	@Override
-	public int compareTo(SchemaElement target) {
+	public int compareTo(SerializationElement target) {
 		String sName = this.getWrapper();
 		if (sName == null || sName.isEmpty()) {
 			sName = this.getName();
@@ -66,4 +66,8 @@ public class SchemaElement implements Comparable<SchemaElement> {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return String.format("{element: %s %s}", this.getName(), this.getType().getSimpleName());
+	}
 }
