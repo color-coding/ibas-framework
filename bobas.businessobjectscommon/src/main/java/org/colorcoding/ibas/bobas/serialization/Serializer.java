@@ -5,13 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.xml.sax.InputSource;
@@ -75,125 +68,6 @@ public abstract class Serializer<S> implements ISerializer<S> {
 				}
 			}
 		}
-	}
-
-	/**
-	 * 获取可能被序列化的元素
-	 * 
-	 * @param type
-	 * @param recursion
-	 * @return
-	 */
-	protected List<SerializationElement> getSerializedElements(Class<?> type, boolean recursion) {
-		SerializationElements elements = new SerializationElements();
-		if (type.isPrimitive()) {
-			// 基本类型不做处理
-			return elements;
-		} else if (type.isInterface()) {
-			// 类型为接口时
-			if (recursion) {
-				// 递归，先获取基类
-				for (Class<?> item : type.getInterfaces()) {
-					if (item.getName().startsWith("java.")) {
-						// 基础类型不做处理
-						continue;
-					}
-					elements.add(this.getSerializedElements(item, recursion));
-				}
-			}
-			for (Method method : type.getMethods()) {
-				if (method.getParameterTypes().length != 1 || !method.getName().startsWith("set")) {
-					continue;
-				}
-				String elementName = method.getName().replace("set", "");
-				Class<?> elementType = method.getParameterTypes()[0];
-				elements.add(new SerializationElement(elementName, elementType));
-			}
-		} else {
-			// 类型是类
-			if (recursion) {
-				// 递归，先获取基类
-				Class<?> superClass = type.getSuperclass();
-				if (superClass != null && !superClass.equals(Object.class)) {
-					elements.add(this.getSerializedElements(superClass, recursion));
-				}
-			}
-			// 取被标记的字段
-			elements.add(this.getSerializedElements(type.getDeclaredFields()));
-			// 取被标记的属性
-			List<SerializationElement> tmps = this.getSerializedElements(type.getDeclaredMethods());
-			tmps.sort(null);// 排序
-			elements.add(tmps);
-		}
-		return elements;
-	}
-
-	private List<SerializationElement> getSerializedElements(Field[] fields) {
-		List<SerializationElement> elements = new ArrayList<>();
-		for (Field field : fields) {
-			Class<?> elementType = field.getType();
-			String elementName = field.getName();
-			String wrapperName = null;
-			XmlElementWrapper xmlWrapper = field.getAnnotation(XmlElementWrapper.class);
-			if (xmlWrapper != null) {
-				// 首先判断是否为数组元素
-				wrapperName = xmlWrapper.name();
-			}
-			XmlElement xmlElement = field.getAnnotation(XmlElement.class);
-			if (xmlElement != null) {
-				if (!xmlElement.name().equals("##default")) {
-					elementName = xmlElement.name();
-				}
-				if (xmlElement.type() != null && !xmlElement.type().getName().startsWith(XmlElement.class.getName())) {
-					elementType = xmlElement.type();
-				}
-			} else {
-				continue;
-			}
-			if (elementName == null) {
-				continue;
-			}
-			if (elementType == null) {
-				continue;
-			}
-			elements.add(new SerializationElement(elementName, wrapperName, elementType));
-		}
-		return elements;
-	}
-
-	private List<SerializationElement> getSerializedElements(Method[] methods) {
-		List<SerializationElement> elements = new ArrayList<>();
-		for (Method method : methods) {
-			Class<?> elementType = method.getReturnType();
-			if (elementType == null && method.getParameterTypes().length == 1) {
-				// 没有返回类型时，取一个参数的设置类型
-				elementType = method.getParameterTypes()[0];
-			}
-			String elementName = null;
-			String wrapperName = null;
-			XmlElementWrapper xmlWrapper = method.getAnnotation(XmlElementWrapper.class);
-			if (xmlWrapper != null) {
-				// 首先判断是否为数组元素
-				wrapperName = xmlWrapper.name();
-			}
-			XmlElement xmlElement = method.getAnnotation(XmlElement.class);
-			if (xmlElement != null) {
-				if (elementName == null) {
-					elementName = xmlElement.name();
-				}
-				if (xmlElement.type() != null && !xmlElement.type().getName().startsWith(XmlElement.class.getName())) {
-					elementType = xmlElement.type();
-				}
-			}
-			if (elementName == null) {
-				continue;
-			}
-			if (elementType == null) {
-				continue;
-			}
-			elements.add(new SerializationElement(elementName, wrapperName, elementType));
-		}
-		return elements;
 	}
 
 	@Override

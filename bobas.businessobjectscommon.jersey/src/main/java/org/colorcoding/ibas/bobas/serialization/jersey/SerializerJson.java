@@ -15,10 +15,12 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.serialization.SerializationElement;
 import org.colorcoding.ibas.bobas.serialization.SerializationException;
 import org.colorcoding.ibas.bobas.serialization.Serializer;
 import org.colorcoding.ibas.bobas.serialization.ValidateException;
+import org.colorcoding.ibas.bobas.serialization.structure.Analyzer;
+import org.colorcoding.ibas.bobas.serialization.structure.Element;
+import org.colorcoding.ibas.bobas.serialization.structure.ElementRoot;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.MediaType;
@@ -41,22 +43,18 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory;
  *
  */
 public class SerializerJson extends Serializer<JsonSchema> {
-	public static final String SCHEMA_VERSION = "http://json-schema.org/schema#";
 
 	@Override
 	public void getSchema(Class<?> type, OutputStream outputStream) throws SerializationException {
 		JsonFactory jsonFactory = new JsonFactory();
 		try {
 			JsonGenerator jsonGenerator = jsonFactory.createGenerator(outputStream);
-			jsonGenerator.writeStartObject();
-			jsonGenerator.writeStringField("$schema", SCHEMA_VERSION);
-			jsonGenerator.writeStringField("type", "object");
-			jsonGenerator.writeFieldName("properties");
-			jsonGenerator.writeStartObject();
-			jsonGenerator.writeFieldName(type.getSimpleName());
-			this.createSchemaElement(jsonGenerator, type);
-			jsonGenerator.writeEndObject();
-			jsonGenerator.writeEndObject();
+
+			SchemaWriter schemaWriter = new SchemaWriter();
+			schemaWriter.jsonGenerator = jsonGenerator;
+			schemaWriter.element = new Analyzer().analyse(type);
+			schemaWriter.write();
+
 			jsonGenerator.flush();
 			jsonGenerator.close();
 		} catch (IOException e) {
@@ -69,82 +67,6 @@ public class SerializerJson extends Serializer<JsonSchema> {
 				}
 			}
 		}
-	}
-
-	protected void createSchemaElement(JsonGenerator jsonGenerator, Class<?> type)
-			throws JsonGenerationException, IOException {
-		jsonGenerator.writeStartObject();
-		if (this.getKnownTyps().containsKey(type.getName())) {
-			// 已知类型
-			jsonGenerator.writeStringField("type", this.getKnownTyps().get(type.getName()));
-		} else if (type.isEnum()) {
-			// 枚举类型
-			jsonGenerator.writeStringField("type", "string");
-			jsonGenerator.writeArrayFieldStart("enum");
-			for (Object enumItem : type.getEnumConstants()) {
-				if (enumItem instanceof Enum<?>) {
-					// 枚举值（比对枚举索引）
-					Enum<?> itemValue = (Enum<?>) enumItem;
-					jsonGenerator.writeString(itemValue.name());
-				}
-			}
-			jsonGenerator.writeEndArray();
-		} else if (type.equals(DateTime.class)) {
-			// 日期类型
-			jsonGenerator.writeStringField("type", "string");
-			// 格式：2000-01-01 or 2000-01-01T00:00:00
-			jsonGenerator.writeStringField("pattern",
-					"^|[0-9]{4}-[0-1][0-9]-[0-3][0-9]|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9]$");
-		} else {
-			jsonGenerator.writeStringField("type", "object");
-			jsonGenerator.writeFieldName("properties");
-			jsonGenerator.writeStartObject();
-			for (SerializationElement item : this.getSerializedElements(type, true)) {
-				if (type.equals(item.getType())) {
-					// 子项是自身，不做处理
-					continue;
-				}
-				if (item.getWrapper() != null && !item.getWrapper().isEmpty()) {
-					jsonGenerator.writeFieldName(item.getWrapper());
-					jsonGenerator.writeStartObject();
-					jsonGenerator.writeStringField("type", "array");
-					jsonGenerator.writeFieldName("items");
-					this.createSchemaElement(jsonGenerator, item.getType());
-					jsonGenerator.writeEndObject();
-				} else {
-					jsonGenerator.writeFieldName(item.getName());
-					this.createSchemaElement(jsonGenerator, item.getType());
-				}
-			}
-			jsonGenerator.writeEndObject();
-		}
-		jsonGenerator.writeEndObject();
-	}
-
-	private Map<String, String> knownTypes;
-
-	public Map<String, String> getKnownTyps() {
-		if (this.knownTypes == null) {
-			this.knownTypes = new HashMap<>();
-			this.knownTypes.put("integer", "integer");
-			this.knownTypes.put("short", "integer");
-			this.knownTypes.put("boolean", "boolean");
-			this.knownTypes.put("float", "number");
-			this.knownTypes.put("double", "number");
-			this.knownTypes.put("java.lang.Integer", "integer");
-			this.knownTypes.put("java.lang.String", "string");
-			this.knownTypes.put("java.lang.Short", "integer");
-			this.knownTypes.put("java.lang.Boolean", "boolean");
-			this.knownTypes.put("java.lang.Float", "number");
-			this.knownTypes.put("java.lang.Double", "number");
-			this.knownTypes.put("java.lang.Character", "string");
-			this.knownTypes.put("java.math.BigDecimal", "number");
-			this.knownTypes.put("java.util.Date", "string");
-			this.knownTypes.put("org.colorcoding.ibas.bobas.data.Decimal", "number");
-			// this.knownTypes.put("org.colorcoding.ibas.bobas.data.DateTime",
-			// "string");
-		}
-		return this.knownTypes;
 	}
 
 	@Override
@@ -257,6 +179,110 @@ public class SerializerJson extends Serializer<JsonSchema> {
 			throw e;
 		} catch (ProcessingException e) {
 			throw new ValidateException(e);
+		}
+	}
+
+}
+
+class SchemaWriter {
+
+	public static final String SCHEMA_VERSION = "http://json-schema.org/schema#";
+
+	public SchemaWriter() {
+		this.knownTypes = new HashMap<>();
+		this.knownTypes.put("integer", "integer");
+		this.knownTypes.put("short", "integer");
+		this.knownTypes.put("boolean", "boolean");
+		this.knownTypes.put("float", "number");
+		this.knownTypes.put("double", "number");
+		this.knownTypes.put("java.lang.Integer", "integer");
+		this.knownTypes.put("java.lang.String", "string");
+		this.knownTypes.put("java.lang.Short", "integer");
+		this.knownTypes.put("java.lang.Boolean", "boolean");
+		this.knownTypes.put("java.lang.Float", "number");
+		this.knownTypes.put("java.lang.Double", "number");
+		this.knownTypes.put("java.lang.Character", "string");
+		this.knownTypes.put("java.math.BigDecimal", "number");
+		this.knownTypes.put("java.math.BigInteger", "number");
+		this.knownTypes.put("java.util.Date", "string");
+		this.knownTypes.put("org.colorcoding.ibas.bobas.data.Decimal", "number");
+	}
+
+	public JsonGenerator jsonGenerator;
+	public ElementRoot element;
+	protected Map<String, String> knownTypes;
+
+	public void write() throws JsonGenerationException, IOException {
+		this.jsonGenerator.writeStartObject();
+		this.jsonGenerator.writeStringField("$schema", SCHEMA_VERSION);
+		this.jsonGenerator.writeStringField("type", "object");
+		this.jsonGenerator.writeFieldName("properties");
+		this.jsonGenerator.writeStartObject();
+		this.jsonGenerator.writeFieldName(this.element.getName());
+		this.jsonGenerator.writeStartObject();
+		this.jsonGenerator.writeStringField("type", "object");
+		this.jsonGenerator.writeFieldName("properties");
+		this.jsonGenerator.writeStartObject();
+		for (Element item : this.element.getChilds()) {
+			this.write(this.jsonGenerator, item);
+		}
+		this.jsonGenerator.writeEndObject();
+		this.jsonGenerator.writeEndObject();
+		this.jsonGenerator.writeEndObject();
+		this.jsonGenerator.writeEndObject();
+	}
+
+	protected void write(JsonGenerator jsonGenerator, Element element) throws JsonGenerationException, IOException {
+		if (element.getWrapper() != null && !element.getWrapper().isEmpty()) {
+			jsonGenerator.writeFieldName(element.getWrapper());
+			jsonGenerator.writeStartObject();
+			jsonGenerator.writeStringField("type", "array");
+			jsonGenerator.writeFieldName("items");
+			jsonGenerator.writeStartObject();
+			jsonGenerator.writeStringField("type", "object");
+			jsonGenerator.writeFieldName("properties");
+			jsonGenerator.writeStartObject();
+			for (Element item : element.getChilds()) {
+				this.write(jsonGenerator, item);
+			}
+			jsonGenerator.writeEndObject();
+			jsonGenerator.writeEndObject();
+			jsonGenerator.writeEndObject();
+		} else {
+			jsonGenerator.writeFieldName(element.getName());
+			jsonGenerator.writeStartObject();
+			String typeName = this.knownTypes.get(element.getType().getName());
+			if (typeName != null) {
+				// 已知类型
+				jsonGenerator.writeStringField("type", typeName);
+			} else if (element.getType().isEnum()) {
+				// 枚举类型
+				jsonGenerator.writeStringField("type", "string");
+				jsonGenerator.writeArrayFieldStart("enum");
+				for (Object enumItem : element.getType().getEnumConstants()) {
+					if (enumItem instanceof Enum<?>) {
+						// 枚举值（比对枚举索引）
+						Enum<?> itemValue = (Enum<?>) enumItem;
+						jsonGenerator.writeString(itemValue.name());
+					}
+				}
+				jsonGenerator.writeEndArray();
+			} else if (element.getType().equals(DateTime.class)) {
+				// 日期类型
+				jsonGenerator.writeStringField("type", "string");
+				// 格式：2000-01-01 or 2000-01-01T00:00:00
+				jsonGenerator.writeStringField("pattern",
+						"^|[0-9]{4}-[0-1][0-9]-[0-3][0-9]|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9]$");
+			} else {
+				jsonGenerator.writeStringField("type", "object");
+				jsonGenerator.writeFieldName("properties");
+				jsonGenerator.writeStartObject();
+				for (Element item : element.getChilds()) {
+					this.write(jsonGenerator, item);
+				}
+				jsonGenerator.writeEndObject();
+			}
+			jsonGenerator.writeEndObject();
 		}
 	}
 }

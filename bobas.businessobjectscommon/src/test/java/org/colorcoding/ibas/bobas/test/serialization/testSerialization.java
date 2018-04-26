@@ -64,6 +64,9 @@ public class testSerialization extends TestCase {
 		}
 		FileOutputStream writer = new FileOutputStream(file);
 		serializer.getSchema(SalesOrder.class, writer);
+		writer.flush();
+		writer.close();
+		System.out.println(file.getPath());
 		// schema校验
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n");
