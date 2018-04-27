@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -49,22 +48,6 @@ public class Analyzer {
 
 	public final void setRecursion(boolean recursion) {
 		this.recursion = recursion;
-	}
-
-	/**
-	 * 判断类型是否集合
-	 * 
-	 * @param type
-	 * @return
-	 */
-	protected boolean isCollection(Class<?> type) {
-		if (type.isArray()) {
-			return true;
-		}
-		if (Collection.class.isAssignableFrom(type)) {
-			return true;
-		}
-		return false;
 	}
 
 	/**

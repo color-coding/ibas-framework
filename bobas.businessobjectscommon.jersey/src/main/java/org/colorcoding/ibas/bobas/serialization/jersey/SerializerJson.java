@@ -233,7 +233,7 @@ class SchemaWriter {
 	}
 
 	protected void write(JsonGenerator jsonGenerator, Element element) throws JsonGenerationException, IOException {
-		if (element.getWrapper() != null && !element.getWrapper().isEmpty()) {
+		if (element.isCollection()) {
 			jsonGenerator.writeFieldName(element.getWrapper());
 			jsonGenerator.writeStartObject();
 			jsonGenerator.writeStringField("type", "array");

@@ -19,6 +19,7 @@ public class AnalyzerSetter extends Analyzer {
 	public AnalyzerSetter() {
 		super();
 		this.skipMethods = new ArrayList<>();
+		this.skipMethods.add("set");
 		// this.skipMethods.add("setDeleted");
 		// this.skipMethods.add("setSavable");
 		// this.skipMethods.add("setLoading");
@@ -28,7 +29,7 @@ public class AnalyzerSetter extends Analyzer {
 		// this.skipMethods.add("setValid");
 	}
 
-	private List<String> skipMethods;
+	protected List<String> skipMethods;
 
 	@Override
 	protected Element createElement(Method method) {

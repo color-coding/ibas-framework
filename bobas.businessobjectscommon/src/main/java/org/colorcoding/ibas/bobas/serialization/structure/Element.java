@@ -37,6 +37,16 @@ public abstract class Element extends Serializable implements Comparable<Element
 		this.wrapper = wrapper;
 	}
 
+	public boolean isCollection() {
+		if (this.wrapper == null) {
+			return false;
+		}
+		if (this.wrapper.isEmpty()) {
+			return false;
+		}
+		return true;
+	}
+
 	private Class<?> type;
 
 	public final Class<?> getType() {

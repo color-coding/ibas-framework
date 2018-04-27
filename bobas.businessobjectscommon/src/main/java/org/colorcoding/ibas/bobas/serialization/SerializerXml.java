@@ -244,7 +244,7 @@ class SchemaWriter {
 			domRestriction.appendChild(domEnumeration);
 			domType.appendChild(domRestriction);
 			dom.appendChild(domType);
-		} else if (element.getWrapper() != null && !element.getWrapper().isEmpty()) {
+		} else if (element.isCollection()) {
 			dom.setAttribute("name", element.getWrapper());
 			dom.setAttribute("minOccurs", "0");
 			dom.setAttribute("maxOccurs", "unbounded");

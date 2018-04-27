@@ -19,13 +19,14 @@ public class AnalyzerGetter extends Analyzer {
 	public AnalyzerGetter() {
 		super();
 		this.skipMethods = new ArrayList<>();
+		this.skipMethods.add("get");
 		this.skipMethods.add("getFields");
 		this.skipMethods.add("getProperty");
 		this.skipMethods.add("getCriteria");
 		this.skipMethods.add("getIdentifiers");
 	}
 
-	private List<String> skipMethods;
+	protected List<String> skipMethods;
 
 	@Override
 	protected Element createElement(Method method) {
