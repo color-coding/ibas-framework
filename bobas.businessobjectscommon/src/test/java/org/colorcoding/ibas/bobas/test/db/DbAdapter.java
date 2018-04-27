@@ -38,7 +38,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			private ISqlScripts sqlScripts = null;
 
 			@Override
-			protected ISqlScripts getSqlScripts() {
+			public ISqlScripts getSqlScripts() {
 				if (this.sqlScripts == null) {
 					this.sqlScripts = new SqlScripts();
 				}

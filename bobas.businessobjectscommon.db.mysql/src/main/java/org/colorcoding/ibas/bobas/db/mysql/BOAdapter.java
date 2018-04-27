@@ -9,7 +9,7 @@ public class BOAdapter extends BOAdapter4Db implements IBOAdapter4Db {
 	private ISqlScripts sqlScripts = null;
 
 	@Override
-	protected ISqlScripts getSqlScripts() {
+	public ISqlScripts getSqlScripts() {
 		if (this.sqlScripts == null) {
 			this.sqlScripts = new SqlScripts();
 		}

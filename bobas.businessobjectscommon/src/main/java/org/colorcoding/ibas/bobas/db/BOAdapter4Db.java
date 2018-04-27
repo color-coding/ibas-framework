@@ -114,7 +114,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	 * 
 	 * @return
 	 */
-	protected abstract ISqlScripts getSqlScripts();
+	public abstract ISqlScripts getSqlScripts();
 
 	public Iterable<IFieldDataDb> getDbFields(IManageFields bo) {
 		ArrayList<IFieldDataDb> dbFields = new ArrayList<IFieldDataDb>();
