@@ -16,6 +16,8 @@ import org.colorcoding.ibas.bobas.message.Logger;
  */
 public class AnalyzerSetter extends Analyzer {
 
+	public static final String METHOD_SET_PREFIX = "set";
+
 	public AnalyzerSetter() {
 		super();
 		this.skipMethods = new ArrayList<>();
@@ -33,7 +35,7 @@ public class AnalyzerSetter extends Analyzer {
 
 	@Override
 	protected Element createElement(Method method) {
-		if (!method.getName().startsWith("set")) {
+		if (!method.getName().startsWith(METHOD_SET_PREFIX)) {
 			return null;
 		}
 		int modifiers = method.getModifiers();

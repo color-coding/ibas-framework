@@ -46,26 +46,6 @@ public class ElementRoot extends Element {
 		this.namespace = namespace;
 	}
 
-	private Object source;
-
-	public final Object getSource() {
-		return source;
-	}
-
-	public final void setSource(Object source) {
-		this.source = source;
-	}
-
-	@Override
-	public Object getValue() {
-		return this.getSource();
-	}
-
-	@Override
-	public void setValue(Object value) {
-		this.setSource(value);
-	}
-
 	public Iterable<Element> allElements() {
 		return this.allElements(this);
 	}

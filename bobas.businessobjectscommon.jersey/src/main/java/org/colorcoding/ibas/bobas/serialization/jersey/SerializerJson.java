@@ -190,21 +190,23 @@ class SchemaWriter {
 
 	public SchemaWriter() {
 		this.knownTypes = new HashMap<>();
-		this.knownTypes.put("integer", "integer");
-		this.knownTypes.put("short", "integer");
 		this.knownTypes.put("boolean", "boolean");
+		this.knownTypes.put("integer", "number");
+		this.knownTypes.put("long", "number");
+		this.knownTypes.put("short", "number");
 		this.knownTypes.put("float", "number");
 		this.knownTypes.put("double", "number");
-		this.knownTypes.put("java.lang.Integer", "integer");
 		this.knownTypes.put("java.lang.String", "string");
-		this.knownTypes.put("java.lang.Short", "integer");
+		this.knownTypes.put("java.lang.Character", "string");
+		this.knownTypes.put("java.util.Date", "string");
 		this.knownTypes.put("java.lang.Boolean", "boolean");
+		this.knownTypes.put("java.lang.Integer", "number");
+		this.knownTypes.put("java.lang.Long", "number");
+		this.knownTypes.put("java.lang.Short", "number");
 		this.knownTypes.put("java.lang.Float", "number");
 		this.knownTypes.put("java.lang.Double", "number");
-		this.knownTypes.put("java.lang.Character", "string");
 		this.knownTypes.put("java.math.BigDecimal", "number");
 		this.knownTypes.put("java.math.BigInteger", "number");
-		this.knownTypes.put("java.util.Date", "string");
 		this.knownTypes.put("org.colorcoding.ibas.bobas.data.Decimal", "number");
 	}
 

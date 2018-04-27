@@ -16,6 +16,9 @@ import org.colorcoding.ibas.bobas.message.Logger;
  */
 public class AnalyzerGetter extends Analyzer {
 
+	public static final String METHOD_GET_PREFIX = "get";
+	public static final String METHOD_IS_PREFIX = "is";
+
 	public AnalyzerGetter() {
 		super();
 		this.skipMethods = new ArrayList<>();
@@ -30,7 +33,7 @@ public class AnalyzerGetter extends Analyzer {
 
 	@Override
 	protected Element createElement(Method method) {
-		if (!method.getName().startsWith("get") && !method.getName().startsWith("is")) {
+		if (!method.getName().startsWith(METHOD_GET_PREFIX) && !method.getName().startsWith(METHOD_IS_PREFIX)) {
 			return null;
 		}
 		if (method.getParameterCount() != 0) {

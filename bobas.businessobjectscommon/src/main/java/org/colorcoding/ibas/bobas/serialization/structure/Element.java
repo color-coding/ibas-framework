@@ -127,8 +127,4 @@ public abstract class Element extends Serializable implements Comparable<Element
 		}
 		return String.format("{element: %s}", this.getWrapper() != null ? this.getWrapper() : this.getName());
 	}
-
-	public abstract Object getValue();
-
-	public abstract void setValue(Object value);
 }
