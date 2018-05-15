@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.repository;
 
 import java.io.File;
+import java.util.List;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.Conditions;
@@ -78,7 +79,7 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
 		}
 	}
 
-	private FileData[] searchFiles(ICriteria criteria) throws Exception {
+	private List<FileData> searchFiles(ICriteria criteria) throws Exception {
 		if (criteria == null || criteria.getConditions().isEmpty()) {
 			throw new Exception(I18N.prop("msg_bobas_invaild_criteria"));
 		}
@@ -114,7 +115,7 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
 					I18N.prop("msg_bobas_not_found_folder", workFolder.replace(this.getRepositoryFolder(), ".")));
 		}
 		// 查询符合条件的文件
-		File[] files = this.searchFiles(folder, include, conditions);
+		List<File> files = this.searchFiles(folder, include, conditions);
 		// 输出文件数据
 		ArrayList<FileData> nFileDatas = new ArrayList<>();
 		for (File file : files) {
@@ -122,8 +123,11 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
 			fileData.setFileName(file.getName());
 			fileData.setLocation(file.getPath());
 			nFileDatas.add(fileData);
+			if (criteria.getResultCount() > 0 && nFileDatas.size() >= criteria.getResultCount()) {
+				break;
+			}
 		}
-		return nFileDatas.toArray(new FileData[] {});
+		return nFileDatas;
 	}
 
 	/**
@@ -137,7 +141,7 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
 	 *            条件
 	 * @return 符合条件的文件数组
 	 */
-	private File[] searchFiles(File folder, boolean include, IConditions conditions) {
+	private List<File> searchFiles(File folder, boolean include, IConditions conditions) {
 		ArrayList<File> files = new ArrayList<>();
 		FileJudgmentLink judgmentLinks = null;
 		File[] folderFiles = folder.listFiles();
@@ -162,7 +166,7 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
 			}
 
 		}
-		return files.toArray(new File[] {});
+		return files;
 	}
 
 }
