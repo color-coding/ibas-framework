@@ -95,7 +95,7 @@ public class BusinessRuleMultiplicativeDeduction extends BusinessRuleCommon {
 			result = multiplicand.multiply(multiplier);
 			context.getOutputValues().put(this.getResult(),
 					Decimal.round(result, Decimal.RESERVED_DECIMAL_PLACES_RUNNING));
-		} else if (multiplier.isZero() && !result.isZero()) {
+		} else if (!multiplicand.isZero() && !result.isZero()) {
 			// 乘数 = 结果 / 被乘数
 			multiplier = result.divide(multiplicand);
 			context.getOutputValues().put(this.getMultiplier(),
