@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -372,14 +373,19 @@ public class Configuration {
 	 */
 	public static String applyVariables(String value, Iterator<IKeyText> variables) {
 		if (value != null && variables != null) {
+			ArrayList<String> names = new ArrayList<>();
 			Matcher matcher = Pattern.compile(VARIABLE_PATTERN).matcher(value);
 			while (matcher.find()) {
-				String vName = matcher.group(0);// 带格式名称${}
-				String name = vName.substring(2, vName.length() - 1);// 不带格式名称
-				while (variables.hasNext()) {
-					IKeyText item = variables.next();
-					if (name.equalsIgnoreCase(item.getKey()) || vName.equalsIgnoreCase(item.getKey())) {
-						value = value.replace(vName, item.getText() == null ? new String() : item.getText());
+				// 带格式名称${}
+				names.add(matcher.group(0));
+			}
+			while (variables.hasNext()) {
+				IKeyText item = variables.next();
+				for (String name : names) {
+					// 不带格式名称
+					String tName = name.substring(2, name.length() - 1);
+					if (name.equalsIgnoreCase(item.getKey()) || tName.equalsIgnoreCase(item.getKey())) {
+						value = value.replace(name, item.getText() == null ? new String() : item.getText());
 						break;
 					}
 				}
