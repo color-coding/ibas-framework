@@ -1,7 +1,6 @@
 package org.colorcoding.ibas.demo.repository.jersey;
 
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -22,8 +21,7 @@ import org.colorcoding.ibas.bobas.repository.jersey.FileRepositoryService;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.ISerializerManager;
 import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 
 @Path("files")
 public class ServiceFile extends FileRepositoryService {
@@ -32,9 +30,8 @@ public class ServiceFile extends FileRepositoryService {
 	@Path("upload")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
-	public OperationResult<FileData> upload(@FormDataParam("file") InputStream fileStream,
-			@FormDataParam("file") FormDataContentDisposition fileDisposition, @QueryParam("token") String token) {
-		return super.save(fileStream, fileDisposition, token);
+	public OperationResult<FileData> upload(FormDataMultiPart formData, @QueryParam("token") String token) {
+		return super.save(formData.getField("file"), token);
 	}
 
 	@GET
