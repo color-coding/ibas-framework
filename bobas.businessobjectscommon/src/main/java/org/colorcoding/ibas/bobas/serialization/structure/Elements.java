@@ -53,8 +53,14 @@ public class Elements extends ArrayList<Element> {
 	public boolean add(Element e) {
 		for (int i = this.size() - 1; i >= 0; i--) {
 			Element item = this.get(i);
-			if (item.getName().equals(e.getName())) {
-				this.remove(i);
+			if (item.getWrapper() != null && !item.getWrapper().isEmpty()) {
+				if (item.getWrapper().equals(e.getWrapper())) {
+					this.remove(i);
+				}
+			} else {
+				if (item.getName().equals(e.getName())) {
+					this.remove(i);
+				}
 			}
 		}
 		e.setParent(this.getParent());
