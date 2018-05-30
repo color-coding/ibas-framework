@@ -204,7 +204,8 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	/**
 	 * 重置对象状态
 	 */
-	protected void resetStatus() {
+	public void resetStatus() {
+		this.setLoading(true);
 		this.markNew();
 		// 重置对象存储标记
 		if (this instanceof IBOStorageTag) {
@@ -270,6 +271,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 				}
 			}
 		}
+		this.setLoading(false);
 	}
 
 	@Override
