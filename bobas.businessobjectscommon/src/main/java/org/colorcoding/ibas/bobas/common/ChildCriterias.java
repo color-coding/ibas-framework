@@ -33,7 +33,7 @@ public final class ChildCriterias extends ArrayList<IChildCriteria> implements I
 			if (item.getPropertyPath() == null) {
 				continue;
 			}
-			if (item.getPropertyPath().equals(propertyPath)) {
+			if (item.getPropertyPath().equalsIgnoreCase(propertyPath)) {
 				return item;
 			}
 		}

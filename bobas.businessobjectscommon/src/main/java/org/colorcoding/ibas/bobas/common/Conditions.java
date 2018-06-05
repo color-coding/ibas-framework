@@ -31,9 +31,4 @@ public class Conditions extends ArrayList<ICondition> implements IConditions {
 		return condition;
 	}
 
-	@Override
-	public String getSqlString() {
-		return null;
-	}
-
 }

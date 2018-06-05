@@ -17,13 +17,6 @@ public interface IConditions extends List<ICondition> {
 	ICondition create();
 
 	/**
-	 * 获取sql字符串（仅示意）
-	 *
-	 * @return sql字符串
-	 */
-	String getSqlString();
-
-	/**
 	 * 获取条件
 	 * 
 	 * @param index
