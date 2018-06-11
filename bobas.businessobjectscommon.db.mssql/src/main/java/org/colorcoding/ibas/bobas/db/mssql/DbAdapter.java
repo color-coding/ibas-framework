@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 
 import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
-import org.colorcoding.ibas.bobas.i18n.I18N;
 
 public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 
@@ -21,7 +20,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			return connection;
 		} catch (Exception e) {
 			// 接数据库失败
-			throw new DbException(I18N.prop("msg_bobas_connect_database_faild"), e);
+			throw new DbException(e);
 		}
 	}
 

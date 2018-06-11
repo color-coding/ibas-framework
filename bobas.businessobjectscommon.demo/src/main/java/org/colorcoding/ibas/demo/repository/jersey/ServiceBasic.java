@@ -176,11 +176,9 @@ public class ServiceBasic {
 		OperationResult<DataTable> operationResult = new OperationResult<DataTable>();
 		try {
 			System.out.println(String.format("query by %s.", token));
-			IBORepository4DbReadonly boRepository = new BORepository4DbReadonly();
-			// boRepository.connectDb("mssql", "localhost", "ibas_demo", "sa",
-			// "1q2w3e");
+			IBORepository4DbReadonly boRepository = new BORepository4DbReadonly("Master");
 			ISqlQuery sqlQuery = new SqlQuery();
-			sqlQuery.setQueryString("select * from cc_tt_ordr");
+			sqlQuery.setQueryString("select * FROM CC_TT_ORDR");
 			operationResult.copy(boRepository.query(sqlQuery));
 		} catch (Exception e) {
 			operationResult.setError(e);
