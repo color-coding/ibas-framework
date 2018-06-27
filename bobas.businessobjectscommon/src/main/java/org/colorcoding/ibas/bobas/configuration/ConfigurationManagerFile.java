@@ -2,11 +2,9 @@ package org.colorcoding.ibas.bobas.configuration;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -27,21 +25,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 @XmlType(name = "configuration", namespace = MyConfiguration.NAMESPACE_BOBAS_CONFIGURATION)
 @XmlRootElement(name = "configuration", namespace = MyConfiguration.NAMESPACE_BOBAS_CONFIGURATION)
 public class ConfigurationManagerFile extends ConfigurationManager {
-
-	public static IConfigurationManager create(String filePath) throws FileNotFoundException, JAXBException {
-		if (filePath == null || filePath.isEmpty())
-			return null;
-		File file = new File(filePath);
-		if (!file.exists())
-			return null;
-		InputStream stream = new FileInputStream(file);
-		JAXBContext context = JAXBContext.newInstance(ConfigurationManagerFile.class);
-		Unmarshaller unmarshaller = context.createUnmarshaller();
-		return (IConfigurationManager) unmarshaller.unmarshal(stream);
-	}
-
 	public ConfigurationManagerFile() {
-
 	}
 
 	public ConfigurationManagerFile(String configFile) {
@@ -49,17 +33,15 @@ public class ConfigurationManagerFile extends ConfigurationManager {
 		this.setConfigFile(configFile);
 	}
 
-	private String configFile;
-
 	public final String getConfigFile() {
-		if (this.configFile == null || this.configFile.isEmpty()) {
-			this.configFile = "app.xml";
+		if (this.getConfigSign() == null || this.getConfigSign().isEmpty()) {
+			this.setConfigSign("app.xml");
 		}
-		return configFile;
+		return this.getConfigSign();
 	}
 
 	public final void setConfigFile(String configFile) {
-		this.configFile = configFile;
+		this.setConfigSign(configFile);
 	}
 
 	@XmlElementWrapper(name = "appSettings")
@@ -79,34 +61,42 @@ public class ConfigurationManagerFile extends ConfigurationManager {
 	}
 
 	@Override
-	public synchronized void save() throws Exception {
-		if (this.getConfigFile() == null || this.getConfigFile().isEmpty())
-			return;
-		File file = new File(this.getConfigFile());
-		if (file.exists()) {
-			file.delete();
+	public synchronized void save() {
+		try {
+			if (this.getConfigFile() == null || this.getConfigFile().isEmpty())
+				return;
+			File file = new File(this.getConfigFile());
+			if (file.exists()) {
+				file.delete();
+			}
+			file.createNewFile();
+			JAXBContext context = JAXBContext.newInstance(ConfigurationManagerFile.class);
+			Marshaller marshaller = context.createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			marshaller.marshal(this, file);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
-		file.createNewFile();
-		JAXBContext context = JAXBContext.newInstance(ConfigurationManagerFile.class);
-		Marshaller marshaller = context.createMarshaller();
-		marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-		marshaller.marshal(this, file);
 	}
 
 	@Override
-	public synchronized void update() throws Exception {
-		if (this.getConfigFile() == null || this.getConfigFile().isEmpty())
-			return;
-		File file = new File(this.getConfigFile());
-		if (!file.exists())
-			return;
-		InputStream stream = new FileInputStream(file);
-		JAXBContext context = JAXBContext.newInstance(ConfigurationManagerFile.class);
-		Unmarshaller unmarshaller = context.createUnmarshaller();
-		ConfigurationManagerFile tmpManager = (ConfigurationManagerFile) unmarshaller.unmarshal(stream);
-		for (IConfigurationElement item : tmpManager.getElements()) {
-			this.addConfigValue(item.getKey(), item.getValue());
+	public synchronized void update() {
+		try {
+			if (this.getConfigFile() == null || this.getConfigFile().isEmpty())
+				return;
+			File file = new File(this.getConfigFile());
+			if (!file.exists())
+				return;
+			InputStream stream = new FileInputStream(file);
+			JAXBContext context = JAXBContext.newInstance(ConfigurationManagerFile.class);
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			ConfigurationManagerFile tmpManager = (ConfigurationManagerFile) unmarshaller.unmarshal(stream);
+			for (IConfigurationElement item : tmpManager.getElements()) {
+				this.addConfigValue(item.getKey(), item.getValue());
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 

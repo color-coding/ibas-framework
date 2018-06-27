@@ -6,13 +6,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.data.IKeyText;
 import org.colorcoding.ibas.bobas.message.Logger;
 
@@ -83,12 +80,10 @@ public class Configuration {
 	/**
 	 * 重新加载配置文件
 	 * 
-	 * @return 是否成功
 	 * @throws Exception
 	 */
 	public static void update() throws Exception {
 		create().update();
-		VARIABLE_VVALULES = new HashMap<>();
 	}
 
 	/**
@@ -102,23 +97,8 @@ public class Configuration {
 	 * 
 	 * @return 配置的值（P类型）
 	 */
-	@SuppressWarnings("unchecked")
 	public static <P> P getConfigValue(String key, P defaultValue) {
-		String valueString = getConfigValue(key);
-		if (valueString == null || valueString.isEmpty()) {
-			return defaultValue;
-		} else {
-			try {
-				// 强行转换配置值为P类型
-				if (defaultValue != null) {
-					return (P) DataConvert.convert(defaultValue.getClass(), valueString);
-				}
-				return (P) valueString;
-			} catch (Exception e) {
-				Logger.log(e);
-				return defaultValue;
-			}
-		}
+		return create().getConfigValue(key, defaultValue);
 	}
 
 	/**
@@ -210,7 +190,55 @@ public class Configuration {
 		return url.toURI();
 	}
 
-	private static Map<String, String> VARIABLE_VVALULES = new HashMap<>();
+	/**
+	 * 配置项目-工作目录
+	 */
+	public final static String CONFIG_ITEM_WORK_FOLDER = "WorkFolder";
+	private volatile static String workFolder = null;
+
+	/**
+	 * 获取工作目录
+	 * 
+	 * @return
+	 */
+	public static String getWorkFolder() {
+		if (workFolder == null) {
+			String path = getConfigValue(CONFIG_ITEM_WORK_FOLDER);
+			if (path == null || path.isEmpty()) {
+				// 没有配置工作目录
+				path = getStartupFolder();
+			}
+			workFolder = (new File(path)).getPath();
+		}
+		return workFolder;
+	}
+
+	/**
+	 * 获取临时目录
+	 * 
+	 * @return
+	 */
+	public static String getTempFolder() {
+		return System.getProperty("java.io.tmpdir");
+	}
+
+	/**
+	 * 获取数据目录
+	 * 
+	 * @return
+	 */
+	public static String getDataFolder() {
+		return getWorkFolder() + File.separator + "data";
+	}
+
+	/**
+	 * 获取日志目录
+	 * 
+	 * @return
+	 */
+	public static String getLogFolder() {
+		return getWorkFolder() + File.separator + "logs";
+	}
 
 	/**
 	 * 变量命名模板，${%s}
@@ -229,11 +257,7 @@ public class Configuration {
 	 * @return 替换过字符
 	 */
 	public static String applyVariables(String variable) {
-		String value = VARIABLE_VVALULES.get(variable);
-		if (value != null) {
-			return value;
-		}
-		value = applyVariables(variable, new Iterator<IKeyText>() {
+		String value = applyVariables(variable, new Iterator<IKeyText>() {
 
 			private Iterator<IConfigurationElement> iterator = create().getElements().iterator();
 
@@ -276,10 +300,6 @@ public class Configuration {
 			}
 
 		});
-		if (variable != null && !variable.equals(value)) {
-			// 缓存新字符
-			VARIABLE_VVALULES.put(variable, value);
-		}
 		return value;
 	}
 
@@ -313,7 +333,6 @@ public class Configuration {
 			}
 		}
 		return value;
-
 	}
 
 	/**
@@ -331,4 +350,5 @@ public class Configuration {
 		}
 		return applyVariables(value, variables.iterator());
 	}
+
 }

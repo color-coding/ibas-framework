@@ -23,6 +23,15 @@ public interface IConfigurationManager {
 	String getConfigValue(String key);
 
 	/**
+	 * 获取值(不存在使用默认值)
+	 * 
+	 * @param key
+	 * @param defaultValue
+	 * @return
+	 */
+	<P> P getConfigValue(String key, P defaultValue);
+
+	/**
 	 * 添加或更新值
 	 * 
 	 * @param key
@@ -31,12 +40,26 @@ public interface IConfigurationManager {
 	void addConfigValue(String key, String value);
 
 	/**
+	 * 获取-配置标记
+	 * 
+	 * @return
+	 */
+	String getConfigSign();
+
+	/**
+	 * 设置-配置标记
+	 * 
+	 * @param configSign
+	 */
+	void setConfigSign(String configSign);
+
+	/**
 	 * 保存配置项目
 	 */
-	void save() throws Exception;
+	void save();
 
 	/**
 	 * 更新配置项目
 	 */
-	void update() throws Exception;
+	void update();
 }

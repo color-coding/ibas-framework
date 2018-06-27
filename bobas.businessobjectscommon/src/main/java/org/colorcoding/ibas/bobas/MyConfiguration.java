@@ -1,18 +1,20 @@
 package org.colorcoding.ibas.bobas;
 
-import java.io.File;
-
 import org.colorcoding.ibas.bobas.configuration.Configuration;
 
 /**
- * 配置
+ * 我的配置
  */
 public class MyConfiguration extends Configuration {
 
+	/**
+	 * 配置项目-调试模式
+	 */
+	public final static String CONFIG_ITEM_DEBUG_MODE = "DebugMode";
 	private static volatile short DEBUG_MODE = -1;
 
 	/**
-	 * 是否处于debug模式
+	 * 处于debug模式
 	 * 
 	 * @return
 	 */
@@ -21,7 +23,7 @@ public class MyConfiguration extends Configuration {
 		if (DEBUG_MODE == -1) {
 			synchronized (MyConfiguration.class) {
 				if (DEBUG_MODE == -1) {
-					boolean value = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DEBUG_MODE, false);
+					boolean value = MyConfiguration.getConfigValue(CONFIG_ITEM_DEBUG_MODE, false);
 					if (value) {
 						DEBUG_MODE = 1;
 					} else {
@@ -33,6 +35,10 @@ public class MyConfiguration extends Configuration {
 		return DEBUG_MODE == 1 ? true : false;
 	}
 
+	/**
+	 * 配置项目-实时运行业务规则
+	 */
+	public final static String CONFIG_ITEM_LIVE_BUSINESS_RULES = "LiveBizRules";
 	private static volatile short LIVE_RULES = -1;
 
 	public static boolean isLiveRules() {
@@ -40,8 +46,7 @@ public class MyConfiguration extends Configuration {
 		if (LIVE_RULES == -1) {
 			synchronized (MyConfiguration.class) {
 				if (LIVE_RULES == -1) {
-					boolean value = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LIVE_BUSINESS_RULES,
-							false);
+					boolean value = MyConfiguration.getConfigValue(CONFIG_ITEM_LIVE_BUSINESS_RULES, false);
 					if (value) {
 						LIVE_RULES = 1;
 					} else {
@@ -51,56 +56,6 @@ public class MyConfiguration extends Configuration {
 			}
 		}
 		return LIVE_RULES == 1 ? true : false;
-	}
-
-	private volatile static String workFolder = null;
-
-	/**
-	 * 获取工作目录
-	 * 
-	 * @return
-	 */
-	public static String getWorkFolder() {
-		if (workFolder == null) {
-			synchronized (MyConfiguration.class) {
-				if (workFolder == null) {
-					String path = getConfigValue(CONFIG_ITEM_WORK_FOLDER);
-					if (path == null || path.isEmpty()) {
-						// 没有配置工作目录
-						path = getStartupFolder();
-					}
-					workFolder = (new File(path)).getPath();
-				}
-			}
-		}
-		return workFolder;
-	}
-
-	/**
-	 * 获取临时目录
-	 * 
-	 * @return
-	 */
-	public static String getTempFolder() {
-		return System.getProperty("java.io.tmpdir");
-	}
-
-	/**
-	 * 获取数据目录
-	 * 
-	 * @return
-	 */
-	public static String getDataFolder() {
-		return getWorkFolder() + File.separator + "data";
-	}
-
-	/**
-	 * 获取日志目录
-	 * 
-	 * @return
-	 */
-	public static String getLogFolder() {
-		return getWorkFolder() + File.separator + "logs";
 	}
 
 	/**
@@ -138,9 +93,9 @@ public class MyConfiguration extends Configuration {
 	public static final String NAMESPACE_BOBAS_SERIALIZATION = NAMESPACE_BOBAS + "/serialization";
 
 	/**
-	 * 配置项目-工作目录
+	 * 配置项目-公司标记
 	 */
-	public final static String CONFIG_ITEM_WORK_FOLDER = "WorkFolder";
+	public final static String CONFIG_ITEM_COMPANY = "Company";
 	/**
 	 * 配置项目-本模块名称
 	 */
@@ -149,14 +104,6 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-任务线程池大小
 	 */
 	public final static String CONFIG_ITEM_TASK_THREAD_POOL_SIZE = "TaskThreadPoolSize";
-	/**
-	 * 配置项目-公司标记
-	 */
-	public final static String CONFIG_ITEM_COMPANY = "Company";
-	/**
-	 * 配置项目-调试模式
-	 */
-	public final static String CONFIG_ITEM_DEBUG_MODE = "DebugMode";
 	/**
 	 * 配置项目-开启自定义字段
 	 */
@@ -266,6 +213,10 @@ public class MyConfiguration extends Configuration {
 	 */
 	public final static String CONFIG_ITEM_ORGANIZATION_WAY = "OrganizationWay";
 	/**
+	 * 配置项目-配置方式
+	 */
+	public final static String CONFIG_ITEM_CONFIGURATION_WAY = "ConfigurationWay";
+	/**
 	 * 配置项目-业务逻辑方式
 	 */
 	public final static String CONFIG_ITEM_BUSINESS_LOGICS_WAY = "BizLogicsWay";
@@ -298,7 +249,7 @@ public class MyConfiguration extends Configuration {
 	 */
 	public final static String CONFIG_ITEM_OWNERSHIP_JUDGER_EXPIRY_VALUE = "OwnJudgerExpiry";
 	/**
-	 * 配置项目-实时运行业务规则
+	 * 配置项目-文档文件夹
 	 */
-	public final static String CONFIG_ITEM_LIVE_BUSINESS_RULES = "LiveBizRules";
+	public final static String CONFIG_ITEM_DOCUMENT_FOLDER = "DocumentFolder";
 }
