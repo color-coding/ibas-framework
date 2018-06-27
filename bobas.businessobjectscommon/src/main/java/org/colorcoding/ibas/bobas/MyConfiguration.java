@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas;
 
+import java.io.File;
+
 import org.colorcoding.ibas.bobas.configuration.Configuration;
 
 /**
@@ -51,6 +53,56 @@ public class MyConfiguration extends Configuration {
 		return LIVE_RULES == 1 ? true : false;
 	}
 
+	private volatile static String workFolder = null;
+
+	/**
+	 * 获取工作目录
+	 * 
+	 * @return
+	 */
+	public static String getWorkFolder() {
+		if (workFolder == null) {
+			synchronized (MyConfiguration.class) {
+				if (workFolder == null) {
+					String path = getConfigValue(CONFIG_ITEM_WORK_FOLDER);
+					if (path == null || path.isEmpty()) {
+						// 没有配置工作目录
+						path = getStartupFolder();
+					}
+					workFolder = (new File(path)).getPath();
+				}
+			}
+		}
+		return workFolder;
+	}
+
+	/**
+	 * 获取临时目录
+	 * 
+	 * @return
+	 */
+	public static String getTempFolder() {
+		return System.getProperty("java.io.tmpdir");
+	}
+
+	/**
+	 * 获取数据目录
+	 * 
+	 * @return
+	 */
+	public static String getDataFolder() {
+		return getWorkFolder() + File.separator + "data";
+	}
+
+	/**
+	 * 获取日志目录
+	 * 
+	 * @return
+	 */
+	public static String getLogFolder() {
+		return getWorkFolder() + File.separator + "logs";
+	}
+
 	/**
 	 * 框架核心命名空间
 	 */
@@ -84,6 +136,11 @@ public class MyConfiguration extends Configuration {
 	 * 序列化命名空间
 	 */
 	public static final String NAMESPACE_BOBAS_SERIALIZATION = NAMESPACE_BOBAS + "/serialization";
+
+	/**
+	 * 配置项目-工作目录
+	 */
+	public final static String CONFIG_ITEM_WORK_FOLDER = "WorkFolder";
 	/**
 	 * 配置项目-本模块名称
 	 */

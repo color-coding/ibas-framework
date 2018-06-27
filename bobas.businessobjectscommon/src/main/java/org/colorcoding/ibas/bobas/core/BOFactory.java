@@ -18,7 +18,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.configuration.Configuration;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.mapping.BOCode;
 import org.colorcoding.ibas.bobas.message.Logger;
@@ -63,7 +62,7 @@ public class BOFactory implements IBOFactory {
 		String fullPath = path;
 		if (fullPath != null && (fullPath.indexOf(File.separator) < 0)) {
 			// 不是完整路径(目录 分隔符 文件名称)
-			fullPath = String.format("%s%s%s", Configuration.getWorkFolder(), File.separator, fullPath);
+			fullPath = String.format("%s%s%s", MyConfiguration.getWorkFolder(), File.separator, fullPath);
 		}
 		url = new File(path).toURI().toURL();
 		this.loadPackage(url);

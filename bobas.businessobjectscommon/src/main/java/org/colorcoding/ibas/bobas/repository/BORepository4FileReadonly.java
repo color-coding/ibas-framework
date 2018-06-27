@@ -10,7 +10,6 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
-import org.colorcoding.ibas.bobas.configuration.Configuration;
 import org.colorcoding.ibas.bobas.core.BOFactory;
 import org.colorcoding.ibas.bobas.core.BORepositoryBase;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
@@ -33,7 +32,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 	@Override
 	public String getRepositoryFolder() {
 		if (this.repositoryFolder == null || this.repositoryFolder.isEmpty()) {
-			String workFolder = Configuration.getDataFolder() + File.separator + "borepository";
+			String workFolder = MyConfiguration.getDataFolder() + File.separator + "borepository";
 			workFolder = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_REPOSITORY_4_FILE_FOLDER,
 					workFolder);
 			File file = new File(workFolder);

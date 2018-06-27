@@ -1,7 +1,6 @@
 package org.colorcoding.ibas.bobas.configuration;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,8 +11,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.xml.bind.JAXBException;
 
 import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.data.IKeyText;
@@ -29,6 +26,7 @@ public class Configuration {
 
 	protected static final String MSG_CONFIG_READ_FILE_DATA = "config: read file's data [%s].";
 	protected static final String MSG_CONFIG_READ_FILE_DATA_FAILD = "config: read file's data [%s] faild.";
+
 	private volatile static IConfigurationManager instance;
 
 	/**
@@ -48,13 +46,13 @@ public class Configuration {
 					String configFile = String.format("%s%sapp.xml", folder, File.separator);
 					try {
 						instance = create(configFile);
-					} catch (FileNotFoundException | JAXBException e) {
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 					if (instance == null) {
 						// 读取配置文件失败
 						System.err.println(String.format(MSG_CONFIG_READ_FILE_DATA_FAILD, configFile));
-						instance = new ConfigurationManager();
+						instance = new ConfigurationManagerFile(configFile);
 					} else {
 						// 读取配置文件成功
 						Logger.log(MSG_CONFIG_READ_FILE_DATA, configFile);
@@ -71,18 +69,80 @@ public class Configuration {
 	 * @param configFile
 	 *            配置文件路径
 	 * @return
-	 * @throws JAXBException
-	 * @throws FileNotFoundException
 	 */
-	public static IConfigurationManager create(String configFile) throws FileNotFoundException, JAXBException {
-		if (instance == null) {
-			synchronized (Configuration.class) {
-				if (instance == null) {
-					instance = ConfigurationManager.create(configFile);
-				}
-			}
+	public static IConfigurationManager create(String configFile) throws Exception {
+		synchronized (Configuration.class) {
+			ConfigurationManagerFile manager = new ConfigurationManagerFile();
+			manager.setConfigFile(configFile);
+			manager.update();
+			instance = manager;
 		}
 		return instance;
+	}
+
+	/**
+	 * 重新加载配置文件
+	 * 
+	 * @return 是否成功
+	 * @throws Exception
+	 */
+	public static void update() throws Exception {
+		create().update();
+		VARIABLE_VVALULES = new HashMap<>();
+	}
+
+	/**
+	 * 获取配置的值
+	 * 
+	 * @param key
+	 *            配置项
+	 * 
+	 * @param defaultValue
+	 *            默认值
+	 * 
+	 * @return 配置的值（P类型）
+	 */
+	@SuppressWarnings("unchecked")
+	public static <P> P getConfigValue(String key, P defaultValue) {
+		String valueString = getConfigValue(key);
+		if (valueString == null || valueString.isEmpty()) {
+			return defaultValue;
+		} else {
+			try {
+				// 强行转换配置值为P类型
+				if (defaultValue != null) {
+					return (P) DataConvert.convert(defaultValue.getClass(), valueString);
+				}
+				return (P) valueString;
+			} catch (Exception e) {
+				Logger.log(e);
+				return defaultValue;
+			}
+		}
+	}
+
+	/**
+	 * 获取配置项的值
+	 * 
+	 * @param key
+	 *            配置项
+	 * @return
+	 */
+	public static String getConfigValue(String key) {
+		return create().getConfigValue(key);
+	}
+
+	/**
+	 * 添加配置项，存在则替换
+	 * 
+	 * @param key
+	 *            项
+	 * @param value
+	 *            值
+	 */
+	public static void addConfigValue(String key, Object value) {
+		String tmpValue = String.valueOf(value);
+		create().addConfigValue(key, tmpValue);
 	}
 
 	/**
@@ -135,115 +195,6 @@ public class Configuration {
 	}
 
 	/**
-	 * 获取配置的值
-	 * 
-	 * @param key
-	 *            配置项
-	 * 
-	 * @param defaultValue
-	 *            默认值
-	 * 
-	 * @return 配置的值（P类型）
-	 */
-	@SuppressWarnings("unchecked")
-	public static <P> P getConfigValue(String key, P defaultValue) {
-		String valueString = getConfigValue(key);
-		if (valueString == null || valueString.isEmpty()) {
-			return defaultValue;
-		} else {
-			try {
-				// 强行转换配置值为P类型
-				if (defaultValue != null) {
-					return (P) DataConvert.convert(defaultValue.getClass(), valueString);
-				}
-				return (P) valueString;
-			} catch (Exception e) {
-				Logger.log(e);
-				return defaultValue;
-			}
-		}
-	}
-
-	/**
-	 * 获取配置项的值
-	 * 
-	 * @param key
-	 *            配置项
-	 * @return
-	 */
-	public static String getConfigValue(String key) {
-		return create().getValue(key);
-	}
-
-	/**
-	 * 添加配置项，存在则替换
-	 * 
-	 * @param key
-	 *            项
-	 * @param value
-	 *            值
-	 */
-	public static void addConfigValue(String key, Object value) {
-		String tmpValue = String.valueOf(value);
-		create().addSetting(key, tmpValue);
-	}
-
-	/**
-	 * 配置项目-工作目录
-	 */
-	public final static String CONFIG_ITEM_WORK_FOLDER = "WorkFolder";
-
-	private volatile static String workFolder = null;
-
-	/**
-	 * 获取工作目录
-	 * 
-	 * @return
-	 */
-	public static String getWorkFolder() {
-		if (workFolder == null) {
-			synchronized (Configuration.class) {
-				if (workFolder == null) {
-					String path = getConfigValue(CONFIG_ITEM_WORK_FOLDER);
-					if (path == null || path.isEmpty()) {
-						// 没有配置工作目录
-						path = getStartupFolder();
-					}
-					workFolder = (new File(path)).getPath();
-				}
-			}
-		}
-		return workFolder;
-	}
-
-	/**
-	 * 获取临时目录
-	 * 
-	 * @return
-	 */
-	public static String getTempFolder() {
-		return System.getProperty("java.io.tmpdir");
-	}
-
-	/**
-	 * 获取数据目录
-	 * 
-	 * @return
-	 */
-	public static String getDataFolder() {
-		return getWorkFolder() + File.separator + "data";
-	}
-
-	/**
-	 * 获取日志目录
-	 * 
-	 * @return
-	 */
-	public static String getLogFolder() {
-		return getWorkFolder() + File.separator + "logs";
-	}
-
-	/**
 	 * 获取资源地址
 	 * 
 	 * @param type
@@ -257,36 +208,6 @@ public class Configuration {
 			return null;
 		}
 		return url.toURI();
-	}
-
-	/**
-	 * 重新加载配置文件
-	 * 
-	 * @return 是否成功
-	 */
-	public static boolean update() {
-		String folder = getStartupFolder();
-		if (folder.endsWith("target" + File.separator + "test-classes")) {
-			// 测试脚本 target\test-classes
-			folder = (new File(folder)).getParentFile().getParentFile().getPath();
-		}
-		return update(String.format("%s%sapp.xml", folder, File.separator));
-	}
-
-	/**
-	 * 重新加载配置文件
-	 * 
-	 * @param configFile
-	 *            文件
-	 * @return 是否成功
-	 */
-	public static boolean update(String configFile) {
-		boolean done = create().update(configFile);
-		if (done) {
-			Logger.log(MSG_CONFIG_READ_FILE_DATA, configFile);
-		}
-		VARIABLE_VVALULES = new HashMap<>();
-		return done;
 	}
 
 	private static Map<String, String> VARIABLE_VVALULES = new HashMap<>();

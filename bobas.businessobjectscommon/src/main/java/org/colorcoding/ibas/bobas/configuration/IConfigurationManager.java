@@ -1,9 +1,6 @@
 package org.colorcoding.ibas.bobas.configuration;
 
-import java.io.IOException;
 import java.util.Collection;
-
-import javax.xml.bind.JAXBException;
 
 /**
  * 配置项操作接口
@@ -18,22 +15,12 @@ public interface IConfigurationManager {
 	Collection<IConfigurationElement> getElements();
 
 	/**
-	 * 保存配置项到指定路径
-	 * 
-	 * @param filePath
-	 *            指定路径
-	 * @throws JAXBException
-	 * @throws IOException
-	 */
-	void saveSettings(String filePath) throws JAXBException, IOException;
-
-	/**
 	 * 获取值
 	 * 
 	 * @param key
 	 * @return
 	 */
-	String getValue(String key);
+	String getConfigValue(String key);
 
 	/**
 	 * 添加或更新值
@@ -41,14 +28,15 @@ public interface IConfigurationManager {
 	 * @param key
 	 * @param value
 	 */
-	void addSetting(String key, String value);
+	void addConfigValue(String key, String value);
+
+	/**
+	 * 保存配置项目
+	 */
+	void save() throws Exception;
 
 	/**
 	 * 更新配置项目
-	 * 
-	 * @param filePath
-	 *            配置文件路径
-	 * @return 是否成功
 	 */
-	boolean update(String filePath);
+	void update() throws Exception;
 }

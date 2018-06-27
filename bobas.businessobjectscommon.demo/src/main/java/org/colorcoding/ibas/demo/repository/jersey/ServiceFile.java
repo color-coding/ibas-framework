@@ -1,6 +1,8 @@
 package org.colorcoding.ibas.demo.repository.jersey;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
@@ -15,7 +17,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.configuration.Configuration;
-import org.colorcoding.ibas.bobas.configuration.IConfigurationManager;
 import org.colorcoding.ibas.bobas.data.FileData;
 import org.colorcoding.ibas.bobas.repository.jersey.FileRepositoryService;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
@@ -46,15 +47,22 @@ public class ServiceFile extends FileRepositoryService {
 		if (serializer == null) {
 			throw new WebApplicationException(502);
 		}
-		IConfigurationManager configuration = Configuration.create();
-		if (configuration == null) {
+		try {
+			FileInputStream fileStream = new FileInputStream(
+					Configuration.getStartupFolder() + File.separator + "app.xml");
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			byte[] b = new byte[1024];
+			int n;
+			while ((n = fileStream.read(b)) != -1) {
+				outputStream.write(b, 0, n);
+			}
+			fileStream.close();
+			// ResponseBuilder response = Response.ok();
+			response.setHeader("content-disposition", "attachment;filename=app.xml");// 为文件命名
+			response.addHeader("content-type", "application/xml");
+			return outputStream.toByteArray();
+		} catch (Exception e) {
 			throw new WebApplicationException(502);
 		}
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		serializer.serialize(configuration, outputStream, true);
-		// ResponseBuilder response = Response.ok();
-		response.setHeader("content-disposition", "attachment;filename=app.xml");// 为文件命名
-		response.addHeader("content-type", "application/xml");
-		return outputStream.toByteArray();
 	}
 }

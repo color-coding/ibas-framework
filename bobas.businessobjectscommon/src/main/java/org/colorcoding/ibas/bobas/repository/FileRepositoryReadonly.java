@@ -10,7 +10,6 @@ import org.colorcoding.ibas.bobas.common.IConditions;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
-import org.colorcoding.ibas.bobas.configuration.Configuration;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.FileData;
 import org.colorcoding.ibas.bobas.data.emYesNo;
@@ -52,7 +51,7 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
 	@Override
 	public String getRepositoryFolder() {
 		if (this.repositoryFolder == null || this.repositoryFolder.isEmpty()) {
-			String workFolder = Configuration.getDataFolder() + File.separator + "filerepository";
+			String workFolder = MyConfiguration.getDataFolder() + File.separator + "filerepository";
 			workFolder = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_FILE_REPOSITORY_FOLDER, workFolder);
 			File file = new File(workFolder);
 			if (!file.exists() && !file.isDirectory()) {
