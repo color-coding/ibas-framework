@@ -31,17 +31,17 @@ public class testBOUtilities extends TestCase {
 		order.getUserFields().register("U_OrderDate", DbFieldType.DATE);
 		order.getUserFields().register("U_OrderTotal", DbFieldType.DECIMAL);
 
-		order.getUserFields().setValue("U_OrderType", "S0000");
-		order.getUserFields().setValue("U_OrderId", 5768);
-		order.getUserFields().setValue("U_OrderDate", DateTime.getToday());
-		order.getUserFields().setValue("U_OrderTotal", new Decimal("999.888"));
+		order.getUserFields().get("U_OrderType").setValue("S0000");
+		order.getUserFields().get("U_OrderId").setValue(5768);
+		order.getUserFields().get("U_OrderDate").setValue(DateTime.getToday());
+		order.getUserFields().get("U_OrderTotal").setValue(new Decimal("999.888"));
 
 		ISalesOrderItem orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00001");
 		orderItem.setQuantity(new Decimal(10));
 		orderItem.setPrice(new Decimal(99.99));
 		((SalesOrderItem) orderItem).getUserFields().register("U_LineType", DbFieldType.ALPHANUMERIC);
-		((SalesOrderItem) orderItem).getUserFields().setValue("U_LineType", "L0000");
+		((SalesOrderItem) orderItem).getUserFields().get("U_LineType").setValue("L0000");
 
 		orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00002");
@@ -57,7 +57,8 @@ public class testBOUtilities extends TestCase {
 		assertEquals(String.format("%s not equals.", path1), value1, order.getCustomerCode());
 
 		Object value3 = BOUtilities.getPropertyValue(order, path3);
-		assertEquals(String.format("%s not equals.", path3), value3, order.getUserFields().getValue("U_OrderType"));
+		assertEquals(String.format("%s not equals.", path3), value3,
+				order.getUserFields().get("U_LineType").getValue());
 
 		orderItem = order.getSalesOrderItems().get(0);
 
@@ -66,8 +67,8 @@ public class testBOUtilities extends TestCase {
 
 		Object value4 = BOUtilities.getPropertyValue(order, path4, 0);
 		assertEquals(String.format("%s not equals.", path4), value4,
-				((SalesOrderItem) orderItem).getUserFields().getValue("U_LineType"));
-		
+				((SalesOrderItem) orderItem).getUserFields().get("U_LineType").getValue());
+
 		orderItem = order.getSalesOrderItems().get(1);
 
 		value2 = BOUtilities.getPropertyValue(order, path2, 1);

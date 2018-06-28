@@ -92,10 +92,10 @@ public class testBOAdapter extends TestCase {
 		order.getUserFields().register("U_OrderDate", DbFieldType.DATE);
 		order.getUserFields().register("U_OrderTotal", DbFieldType.DECIMAL);
 
-		order.getUserFields().setValue("U_OrderType", "S0000");
-		order.getUserFields().setValue("U_OrderId", 5768);
-		order.getUserFields().setValue("U_OrderDate", DateTime.getToday());
-		order.getUserFields().setValue("U_OrderTotal", new Decimal("999.888"));
+		order.getUserFields().get("U_OrderType").setValue("S0000");
+		order.getUserFields().get("U_OrderId").setValue(5768);
+		order.getUserFields().get("U_OrderDate").setValue(DateTime.getToday());
+		order.getUserFields().get("U_OrderTotal").setValue(new Decimal("999.888"));
 
 		ISalesOrderItem orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00001");

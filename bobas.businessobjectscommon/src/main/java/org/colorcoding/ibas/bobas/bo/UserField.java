@@ -3,26 +3,24 @@ package org.colorcoding.ibas.bobas.bo;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.core.BindableBase;
 import org.colorcoding.ibas.bobas.core.fields.IFieldDataDb;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 /**
- * 自定义字段元素
+ * 用户字段元素
  * 
  * @author Niuren.Zhu
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "UserField", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
-public class UserField implements IUserField {
+public class UserField extends BindableBase implements IUserField {
 
 	private static final long serialVersionUID = -4092373163622194831L;
 
 	/**
-	 * 用户自定义字段前缀标记
+	 * 用户字段前缀标记
 	 */
 	public static final String USER_FIELD_PREFIX_SIGN = "U_";
 
@@ -32,11 +30,11 @@ public class UserField implements IUserField {
 
 	private IFieldDataDb fieldData = null;
 
-	IFieldDataDb getFieldData() {
+	protected IFieldDataDb getFieldData() {
 		return fieldData;
 	}
 
-	void setFieldData(IFieldDataDb value) {
+	protected void setFieldData(IFieldDataDb value) {
 		this.fieldData = value;
 	}
 
@@ -59,12 +57,14 @@ public class UserField implements IUserField {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
-		return this.fieldData.setValue(value);
+	public void setValue(Object value) {
+		Object oldValue = this.fieldData.getValue();
+		this.fieldData.setValue(value);
+		this.firePropertyChange(this.getName(), oldValue, value);
 	}
 
 	@Override
 	public String toString() {
-		return String.format("{user field: %s %s %s}", this.getName(), this.getValue(), this.getValueType());
+		return String.format("{user field: %s %s}", this.getName(), this.getValue());
 	}
 }

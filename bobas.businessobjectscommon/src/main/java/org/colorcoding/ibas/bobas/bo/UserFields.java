@@ -1,7 +1,9 @@
 package org.colorcoding.ibas.bobas.bo;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.Comparator;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -9,90 +11,134 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.core.BindableBase;
+import org.colorcoding.ibas.bobas.core.IBindableBase;
+import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.core.PropertyInfo;
 import org.colorcoding.ibas.bobas.core.PropertyInfoList;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 /**
- * 自定义字段集合
+ * 用户字段集合
  * 
  * @author Niuren.Zhu
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "UserFields", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
 @XmlSeeAlso({ UserField.class, UserFieldProxy.class })
-public class UserFields extends BindableBase implements Iterable<IUserField> {
+@XmlType(name = "UserFields", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
+class UserFields extends ArrayList<IUserField> implements IUserFields, IBindableBase {
 
-	public UserFields() {
-	}
+	protected static final String MSG_REGISTER_USER_FIELD = "user fields: new user field [%s|%s].";
 
-	public UserFields(Class<?> boType) {
-		this.setUserFields(UserFieldManager.create(boType));
-		this.boType = boType;
-	}
+	private static final long serialVersionUID = -5629253015034083867L;
 
-	private Class<?> boType = null;
-	private UserField[] userFields = null;
-
-	final UserField[] getUserFields() {
-		return this.userFields;
-	}
-
-	final void setUserFields(UserField[] userFields) {
-		this.userFields = userFields;
-	}
-
-	final UserFieldProxy[] toProxyArray() {
-		if (this.getUserFields() == null || this.getUserFields().length == 0) {
-			return null;
-		}
-		UserFieldProxy[] userFields = new UserFieldProxy[this.size()];
-		int i = 0;
-		for (IUserField userField : this.getUserFields()) {
-			UserFieldProxy tmp = new UserFieldProxy();
-			tmp.setName(userField.getName());
-			tmp.setValueType(userField.getValueType());
-			tmp.setValue(userField.getValue());
-			userFields[i] = tmp;
-			i++;
-		}
-		return userFields;
-	}
-
-	final IFieldData[] getFieldDatas() {
-		IFieldData[] userFieldDatas = new IFieldData[this.size()];
-		if (this.getUserFields() != null) {
-			int i = 0;
-			for (IUserField userField : this.getUserFields()) {
-				if (userField instanceof UserField) {
-					userFieldDatas[i] = ((UserField) userField).getFieldData();
-				}
-				i++;
+	public UserFields(BusinessObject<?> parent) {
+		this.parent = parent;
+		if (this.parent != null) {
+			for (UserField item : UserFieldManager.create(this.parent.getClass())) {
+				this.add(item);
 			}
 		}
-		return userFieldDatas;
+	}
+
+	private BusinessObject<?> parent;
+
+	transient private PropertyChangeSupport listeners;
+
+	@Override
+	public final void registerListener(PropertyChangeListener listener) {
+		if (this.listeners == null) {
+			this.listeners = new PropertyChangeSupport(this);
+		}
+		this.listeners.addPropertyChangeListener(listener);
+	}
+
+	@Override
+	public final void removeListener(PropertyChangeListener listener) {
+		if (this.listeners == null) {
+			this.listeners = new PropertyChangeSupport(this);
+		}
+		this.listeners.removePropertyChangeListener(listener);
+	}
+
+	protected void firePropertyChange(String name, Object oldValue, Object newValue) {
+		if (this.listeners == null) {
+			return;
+		}
+		this.listeners.firePropertyChange(name, oldValue, newValue);
+	}
+
+	@Override
+	public boolean add(IUserField e) {
+		boolean done = super.add(e);
+		if (done && (e instanceof IBindableBase)) {
+			IBindableBase bindable = (IBindableBase) e;
+			bindable.registerListener(new PropertyChangeListener() {
+
+				@Override
+				public void propertyChange(PropertyChangeEvent evt) {
+					UserFields.this.firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+				}
+			});
+		}
+		return done;
+	}
+
+	@Override
+	public IUserField get(String name) {
+		for (IUserField item : this) {
+			if (item.getName().equals(name)) {
+				return item;
+			}
+		}
+		throw new IndexOutOfBoundsException(I18N.prop("msg_bobas_user_field_not_exist", name));
+	}
+
+	public IFieldData[] getFields() {
+		IFieldData[] fields = new IFieldData[this.size()];
+		for (int i = 0; i < this.size(); i++) {
+			UserField userField = (UserField) this.get(i);
+			fields[i] = userField.getFieldData();
+		}
+		return fields;
+	}
+
+	public UserFieldProxy[] toProxies() {
+		ArrayList<UserFieldProxy> proxyFields = new ArrayList<>(this.size());
+		for (IUserField userField : this) {
+			UserFieldProxy proxyField = new UserFieldProxy();
+			proxyField.setName(userField.getName());
+			proxyField.setValueType(userField.getValueType());
+			proxyField.setValue(userField.getValue());
+			proxyFields.add(proxyField);
+		}
+		proxyFields.sort(new Comparator<UserFieldProxy>() {
+			@Override
+			public int compare(UserFieldProxy o1, UserFieldProxy o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+		return proxyFields.toArray(new UserFieldProxy[] {});
 	}
 
 	/**
-	 * 添加用户定义字段
+	 * 注册用户字段
 	 * 
 	 * @param name
 	 *            名称
-	 * @param type
-	 *            类型
+	 * @param valueType
+	 *            值类型
 	 */
-	public IUserField register(String name, DbFieldType type) {
-		UserField userField = UserFieldManager.create(name, type);
+	public IUserField register(String name, DbFieldType valueType) {
+		UserField userField = UserFieldManager.create(name, valueType);
 		if (userField != null) {
-			ArrayList<UserField> tmpUserFields = new ArrayList<>();
-			tmpUserFields.addAll(this.getUserFields());
-			tmpUserFields.add(userField);
-			this.setUserFields(tmpUserFields.toArray(new UserField[] {}));
+			Logger.log(MessageLevel.DEBUG, MSG_REGISTER_USER_FIELD, this.parent, name, valueType);
+			this.add(userField);
 		}
 		return userField;
 	}
@@ -101,102 +147,23 @@ public class UserFields extends BindableBase implements Iterable<IUserField> {
 	 * 注册到全局，新实例自动带出
 	 */
 	public void register() {
-		if (this.getUserFields() != null) {
-			PropertyInfoList propertyInfoList = new PropertyInfoList(this.size());
-			for (UserField item : this.getUserFields()) {
-				propertyInfoList.add(new PropertyInfo<>(item.getName(), item.getFieldData().getValueType()));
-			}
-			UserFieldManager.register(this.boType, propertyInfoList);
+		if (this.size() == 0 || this.parent == null) {
+			return;
 		}
-	}
-
-	public final int size() {
-		return this.getUserFields() == null ? 0 : this.getUserFields().length;
-	}
-
-	@Override
-	public final Iterator<IUserField> iterator() {
-		return new Iterator<IUserField>() {
-			private int nextSlot = 0;
-
+		PropertyInfoList propertyInfoList = new PropertyInfoList(this.size());
+		for (IUserField item : this) {
+			if (item instanceof UserField) {
+				UserField userField = (UserField) item;
+				propertyInfoList.add(new PropertyInfo<>(item.getName(), userField.getFieldData().getValueType()));
+			}
+		}
+		propertyInfoList.sort(new Comparator<IPropertyInfo<?>>() {
 			@Override
-			public boolean hasNext() {
-				if (getUserFields() == null || nextSlot >= getUserFields().length)
-					return false;
-				return true;
+			public int compare(IPropertyInfo<?> o1, IPropertyInfo<?> o2) {
+				return o1.getName().compareTo(o2.getName());
 			}
-
-			@Override
-			public IUserField next() {
-				if (!hasNext()) {
-					throw new NoSuchElementException();
-				}
-				return getUserFields()[nextSlot++];
-			}
-		};
+		});
+		UserFieldManager.register(this.parent.getClass(), propertyInfoList);
 	}
 
-	public IUserField get(String name) {
-		if (this.getUserFields() != null) {
-			for (UserField userField : this.userFields) {
-				if (userField.getName().equals(name)) {
-					return userField;
-				}
-			}
-		}
-		return null;
-	}
-
-	public IUserField get(int index) {
-		if (this.getUserFields() != null) {
-			if (index >= 0 && index < this.getUserFields().length) {
-				return this.getUserFields()[index];
-			}
-		}
-		return null;
-	}
-
-	public Object getValue(String name) {
-		IUserField userField = this.get(name);
-		if (userField != null) {
-			return userField.getValue();
-		} else {
-			throw new RuntimeException(I18N.prop("msg_bobas_user_field_not_exist", name));
-		}
-	}
-
-	public Object getValue(int index) {
-		IUserField userField = this.get(index);
-		if (userField != null) {
-			return userField.getValue();
-		} else {
-			throw new RuntimeException(I18N.prop("msg_bobas_user_field_not_exist", index));
-		}
-	}
-
-	public void setValue(String name, Object value) {
-		IUserField userField = this.get(name);
-		if (userField != null) {
-			Object oldValue = userField.getValue();
-			boolean changed = userField.setValue(value);
-			if (changed) {
-				this.firePropertyChange(userField.getName(), oldValue, userField.getValue());
-			}
-		} else {
-			throw new RuntimeException(I18N.prop("msg_bobas_user_field_not_exist", name));
-		}
-	}
-
-	public void setValue(int index, Object value) {
-		IUserField userField = this.get(index);
-		if (userField != null) {
-			Object oldValue = userField.getValue();
-			boolean changed = userField.setValue(value);
-			if (changed) {
-				this.firePropertyChange(userField.getName(), oldValue, userField.getValue());
-			}
-		} else {
-			throw new RuntimeException(I18N.prop("msg_bobas_user_field_not_exist", index));
-		}
-	}
 }

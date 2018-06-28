@@ -42,13 +42,13 @@ public class testBusinessObject extends TestCase {
 		order.getUserFields().register("U_OrderId", DbFieldType.NUMERIC);
 		order.getUserFields().register("U_OrderDate", DbFieldType.DATE);
 		order.getUserFields().register("U_OrderTotal", DbFieldType.DECIMAL);
-		// 注册自定义字段
+		// 注册用户字段
 		order.getUserFields().register();
 
-		order.getUserFields().setValue("U_OrderType", "S0000");
-		order.getUserFields().setValue("U_OrderId", 5768);
-		order.getUserFields().setValue("U_OrderDate", DateTime.getToday());
-		order.getUserFields().setValue("U_OrderTotal", new Decimal("999.888"));
+		order.getUserFields().get("U_OrderType").setValue("S0000");
+		order.getUserFields().get("U_OrderId").setValue(5768);
+		order.getUserFields().get("U_OrderDate").setValue(DateTime.getToday());
+		order.getUserFields().get("U_OrderTotal").setValue(new Decimal("999.888"));
 
 		ISalesOrderItem orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00001");
@@ -65,7 +65,7 @@ public class testBusinessObject extends TestCase {
 		order = (SalesOrder) serializer.deserialize(json, order.getClass());
 		String jsonNew = order.toString("json");
 		System.out.println(jsonNew);
-		// 此处会报错，因为自定义字段
+		// 此处会报错，因为用户字段
 		assertEquals(json, jsonNew);
 	}
 
@@ -118,13 +118,13 @@ public class testBusinessObject extends TestCase {
 		order.getUserFields().register("U_OrderId", DbFieldType.NUMERIC);
 		order.getUserFields().register("U_OrderDate", DbFieldType.DATE);
 		order.getUserFields().register("U_OrderTotal", DbFieldType.DECIMAL);
-		// 注册自定义字段
+		// 注册用户字段
 		order.getUserFields().register();
 
-		order.getUserFields().setValue("U_OrderType", "S0000");
-		order.getUserFields().setValue("U_OrderId", 5768);
-		order.getUserFields().setValue("U_OrderDate", DateTime.getToday());
-		order.getUserFields().setValue("U_OrderTotal", new Decimal("999.888"));
+		order.getUserFields().get("U_OrderType").setValue("S0000");
+		order.getUserFields().get("U_OrderId").setValue(5768);
+		order.getUserFields().get("U_OrderDate").setValue(DateTime.getToday());
+		order.getUserFields().get("U_OrderTotal").setValue(new Decimal("999.888"));
 
 		ISalesOrderItem orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00001");

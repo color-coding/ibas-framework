@@ -46,8 +46,6 @@ import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
 public abstract class BusinessObject<T extends IBusinessObject> extends BusinessObjectBase<T>
 		implements IBusinessObject {
 
-	protected static final String MSG_USER_SET_FIELD_VALUE = "user fields: set field [%s]'s value [%s].";
-
 	private static final long serialVersionUID = -8485128824221654376L;
 
 	public BusinessObject() {
@@ -63,15 +61,18 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	 */
 	protected void initialize() {
 		if (this instanceof IBOUserFields) {
-			// 继承了自定义字段，初始化列表
+			// 继承了用户字段，初始化列表
 			if (this.userFields == null) {
-				this.userFields = new UserFields(this.getClass());
+				this.userFields = new UserFields(this);
 				this.userFields.registerListener(new PropertyChangeListener() {
 					@Override
 					public void propertyChange(PropertyChangeEvent evt) {
+						if (BusinessObject.this.isLoading()) {
+							return;
+						}
 						// 触发属性改变事件
 						markDirty();
-						firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getOldValue());
+						firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
 					}
 				});
 			}
@@ -280,14 +281,14 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 		if (!(this instanceof IBOUserFields) || this.userFields == null) {
 			return boFieldDatas;
 		}
-		// 处理自定义字段
+		// 处理用户字段
 		IFieldData[] allFieldDatas = new IFieldData[boFieldDatas.length + this.userFields.size()];
 		int i = 0;
 		for (IFieldData iFieldData : boFieldDatas) {
 			allFieldDatas[i] = iFieldData;
 			i++;
 		}
-		for (IFieldData iFieldData : this.userFields.getFieldDatas()) {
+		for (IFieldData iFieldData : this.userFields.getFields()) {
 			allFieldDatas[i] = iFieldData;
 			i++;
 		}
@@ -296,7 +297,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 
 	@Override
 	public final IFieldData getField(String name) {
-		// 重写方法加入自定义字段处理
+		// 重写方法加入用户字段处理
 		if (name == null) {
 			return null;
 		}
@@ -316,37 +317,37 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	private transient UserFields userFields = null;
 
 	/**
-	 * 用户自定义字段
+	 * 用户字段
 	 * 
-	 * @return 自定义字段集合
+	 * @return 用户字段集合
 	 */
-	public final UserFields getUserFields() {
+	public final IUserFields getUserFields() {
 		return this.userFields;
 	}
 
 	@XmlElementWrapper(name = "UserFields")
 	@XmlElement(name = "UserField", type = UserFieldProxy.class, required = false)
-	private UserFieldProxy[] getUserFieldProxys() {
+	private UserFieldProxy[] getUserFieldProxies() {
 		if (this.userFields == null) {
 			return null;
 		}
-		return this.userFields.toProxyArray();
+		return this.userFields.toProxies();
 	}
 
 	@SuppressWarnings("unused")
-	private void setUserFieldProxys(UserFieldProxy[] value) {
-		if (this.userFields == null || value == null) {
+	private void setUserFieldProxies(UserFieldProxy[] values) {
+		if (this.userFields == null || values == null) {
 			return;
 		}
-		for (IUserField userField : value) {
-			if (MyConfiguration.isDebugMode()) {
-				Logger.log(MessageLevel.DEBUG, MSG_USER_SET_FIELD_VALUE, userField.getName(), userField.getValue(),
-						userField.getValueType());
+		for (UserFieldProxy proxyField : values) {
+			IUserField userField = this.userFields.firstOrDefault(c -> c.getName().equals(proxyField.getName()));
+			if (userField == null) {
+				userField = this.userFields.register(proxyField.getName(), proxyField.getValueType());
 			}
-			IUserField has = this.userFields.get(userField.getName());
-			if (has != null) {
-				has.setValue(((UserFieldProxy) userField).convertValue(has.getValueType()));
+			if (userField == null) {
+				continue;
 			}
+			userField.setValue(proxyField.convertValue());
 		}
 	}
 

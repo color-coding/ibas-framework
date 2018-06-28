@@ -105,7 +105,7 @@ public class MyConfiguration extends Configuration {
 	 */
 	public final static String CONFIG_ITEM_TASK_THREAD_POOL_SIZE = "TaskThreadPoolSize";
 	/**
-	 * 配置项目-开启自定义字段
+	 * 配置项目-开启用户字段
 	 */
 	public final static String CONFIG_ITEM_BO_ENABLED_USER_FIELDS = "EnabledUserFields";
 	/**

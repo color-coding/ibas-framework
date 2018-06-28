@@ -6,7 +6,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
@@ -17,10 +16,10 @@ public class UserFieldProxy implements IUserField {
 
 	private static final long serialVersionUID = -7522271348157162894L;
 
+	@XmlElement(name = "Name")
 	private String name;
 
 	@Override
-	@XmlElement(name = "Name")
 	public final String getName() {
 		return name;
 	}
@@ -29,10 +28,10 @@ public class UserFieldProxy implements IUserField {
 		this.name = name;
 	}
 
+	@XmlElement(name = "ValueType")
 	private DbFieldType valueType;
 
 	@Override
-	@XmlElement(name = "ValueType")
 	public final DbFieldType getValueType() {
 		return valueType;
 	}
@@ -41,6 +40,7 @@ public class UserFieldProxy implements IUserField {
 		this.valueType = valueType;
 	}
 
+	@XmlElement(name = "Value")
 	private String value;
 
 	@Override
@@ -49,43 +49,38 @@ public class UserFieldProxy implements IUserField {
 	}
 
 	@Override
-	public final boolean setValue(Object value) {
-		this.value = DataConvert.toString(value);
-		return true;
-	}
-
-	@XmlElement(name = "Value")
-	public final String getValueString() {
-		return this.value;
-	}
-
-	public final void setValueString(String value) {
-		this.value = value;
-	}
-
-	final Object convertValue(DbFieldType type) {
-		if (type == DbFieldType.NUMERIC) {
-			if (this.getValueString() == null || this.getValueString().isEmpty()) {
-				return 0;
-			}
-			return Integer.valueOf(this.getValueString());
-		} else if (type == DbFieldType.DATE) {
-			if (this.getValueString() == null || this.getValueString().isEmpty()) {
-				return DateTime.MIN_VALUE;
-			}
-			return DateTime.valueOf(this.getValueString());
-		} else if (type == DbFieldType.DECIMAL) {
-			if (this.getValueString() == null || this.getValueString().isEmpty()) {
-				return Decimal.ZERO;
-			}
-			return new Decimal(this.getValueString());
+	public final void setValue(Object value) {
+		if (value == null) {
+			this.value = null;
+		} else if (value == DateTime.MIN_VALUE) {
+			this.value = null;
+		} else {
+			this.value = value.toString();
 		}
-		return this.getValue();
 	}
 
 	@Override
 	public String toString() {
-		return String.format("{user field proxy: %s %s %s}", this.getName(), this.getValue(), this.getValueType());
+		return String.format("{proxy field: %s %s}", this.getName(), this.getValue());
 	}
 
+	public Object convertValue() {
+		if (this.getValueType() == DbFieldType.NUMERIC) {
+			if (this.value == null || this.value.isEmpty()) {
+				return 0;
+			}
+			return Integer.valueOf(this.value);
+		} else if (this.getValueType() == DbFieldType.DATE) {
+			if (this.value == null || this.value.isEmpty()) {
+				return DateTime.MIN_VALUE;
+			}
+			return DateTime.valueOf(this.value);
+		} else if (this.getValueType() == DbFieldType.DECIMAL) {
+			if (this.value == null || this.value.isEmpty()) {
+				return Decimal.ZERO;
+			}
+			return Decimal.valueOf(this.value);
+		}
+		return this.value;
+	}
 }

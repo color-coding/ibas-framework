@@ -61,7 +61,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	private boolean enabledUserFields;
 
 	/**
-	 * 是否启用自定义字段
+	 * 是否启用用户字段
 	 * 
 	 * @return
 	 */
@@ -417,7 +417,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			table = MyConfiguration.applyVariables(String.format(sqlScripts.getDbObjectSign(), table));
 			// 修正属性
 			this.fixCriteria(criteria, PropertyInfoManager.getPropertyInfoList(boType));
-			// 修正自定义字段
+			// 修正用户字段
 			this.fixCriteria(criteria, UserFieldManager.getUserFieldInfoList(boType));
 			// 拼接语句
 			String order = this.parseSqlQuery(criteria.getSorts()).getQueryString();
@@ -599,7 +599,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	}
 
 	/**
-	 * 获取匹配的索引（提升性能），此处包括对自定义字段的处理
+	 * 获取匹配的索引（提升性能），此处包括对用户字段的处理
 	 * 
 	 * @param reader
 	 *            查询
@@ -618,7 +618,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 		int[] dfIndex = null;// 数据字段索引数组
 		ResultSetMetaData metaData = reader.getMetaData();
 		dfIndex = new int[metaData.getColumnCount()];
-		boolean hasUserFields = false;// 存在未被添加的自定义字段
+		boolean hasUserFields = false;// 存在未被添加的用户字段
 		for (int i = 0; i < dfIndex.length; i++) {
 			// 初始化索引
 			dfIndex[i] = -1;
@@ -653,7 +653,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				hasUserFields = true;
 			}
 		}
-		// 处理自定义字段
+		// 处理用户字段
 		if (hasUserFields && this.isEnabledUserFields()) {
 			if (bo instanceof IBOUserFields) {
 				ISqlScripts sqlScripts = this.getSqlScripts();
@@ -661,7 +661,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 					throw new SqlScriptException(I18N.prop("msg_bobas_invaild_sql_scripts"));
 				}
 				IBOUserFields uBO = (IBOUserFields) bo;
-				// 开启了自定义字段功能
+				// 开启了用户字段功能
 				for (int i = 0; i < dfIndex.length; i++) {
 					int index = dfIndex[i];
 					int rCol = i + 1;
@@ -671,7 +671,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 							if (name != null && name.startsWith(UserField.USER_FIELD_PREFIX_SIGN)) {
 								uBO.getUserFields().register(name,
 										sqlScripts.toDbFieldType(metaData.getColumnTypeName(rCol)));
-								dfIndex[i] = bo.getFields().length - 1;// 记录自定义字段编号
+								dfIndex[i] = bo.getFields().length - 1;// 记录用户字段编号
 							}
 						}
 					}
