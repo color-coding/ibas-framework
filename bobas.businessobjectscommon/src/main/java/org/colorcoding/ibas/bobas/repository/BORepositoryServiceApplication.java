@@ -228,7 +228,11 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 		boolean deleted = bo.isDeleted();
 		// 删除前重新查询数据，避免漏或多删子项
 		if (deleted && this.isRefetchBeforeDelete()) {
-			P boCopy = boRepository.fetchCopyEx(bo).getResultObjects().firstOrDefault();
+			IOperationResult<P> opRsltCopy = boRepository.fetchCopyEx(bo);
+			if (opRsltCopy.getError() != null) {
+				throw opRsltCopy.getError();
+			}
+			P boCopy = opRsltCopy.getResultObjects().firstOrDefault();
 			if (boCopy != null && boCopy.getClass() == bo.getClass()) {
 				// 使用BO的删除方法，引用对象时不进行删除操作
 				boCopy.delete();
@@ -243,7 +247,11 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 		// 要求重新查询
 		if (!deleted && this.isRefetchAfterSave()) {
 			// 要求重新查询
-			P boCopy = boRepository.fetchCopyEx(bo).getResultObjects().firstOrDefault();
+			IOperationResult<P> opRsltCopy = boRepository.fetchCopyEx(bo);
+			if (opRsltCopy.getError() != null) {
+				throw opRsltCopy.getError();
+			}
+			P boCopy = opRsltCopy.getResultObjects().firstOrDefault();
 			if (boCopy != null && boCopy.getClass() == bo.getClass()) {
 				bo = boCopy;
 			} else {
