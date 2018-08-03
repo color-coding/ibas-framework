@@ -205,8 +205,8 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 					String toVarchar = sqlScripts.getCastTypeString(DbFieldType.ALPHANUMERIC);
 					stringBuilder.append(String.format(toVarchar, String.format(dbObject, condition.getAlias())));
 				} else if (condition.getComparedAlias() != null && !condition.getComparedAlias().isEmpty()) {
-					// 字段之间比较，都按字符串比较
-					String toVarchar = sqlScripts.getCastTypeString(DbFieldType.ALPHANUMERIC);
+					// 字段之间比较，以主条件为比较类型
+					String toVarchar = sqlScripts.getCastTypeString(condition.getAliasDataType());
 					stringBuilder.append(String.format(toVarchar, String.format(dbObject, condition.getAlias())));
 					stringBuilder.append(" ");
 					stringBuilder.append(sqlScripts.getSqlString(condition.getOperation()));
