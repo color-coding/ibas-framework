@@ -9,21 +9,10 @@ import org.colorcoding.ibas.bobas.db.pgsql.DbAdapter;
 
 import junit.framework.TestCase;
 
-/**
- * Unit test for simple Amp.
- */
 public class testDbConnect extends TestCase {
-	/**
-	 * Create the test case
-	 *
-	 * @param testName
-	 *            name of the test case
-	 */
-	public testDbConnect() {
-	}
 
 	public void testforDbAdapter() {
-		String server = "192.168.3.53:5432";
+		String server = "ibas-db-pgsql";
 		String dbName = "ibas_demo";
 		String userName = "postgres";
 		String userPwd = "1q2w3e";

@@ -11,12 +11,8 @@ import junit.framework.TestCase;
 
 public class testDbAdapter extends TestCase {
 
-	public testDbAdapter() {
-
-	}
-
 	public void testforDbAdapter() {
-		String server = "192.168.3.53:3306";
+		String server = "ibas-db-mysql";
 		String dbName = "ibas_demo";
 		String userName = "root";
 		String userPwd = "1q2w3e";

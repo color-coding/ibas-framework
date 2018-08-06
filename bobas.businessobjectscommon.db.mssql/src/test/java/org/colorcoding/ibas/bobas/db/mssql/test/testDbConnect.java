@@ -18,10 +18,6 @@ import junit.framework.TestCase;
 
 public class testDbConnect extends TestCase {
 
-	public testDbConnect() {
-
-	}
-
 	public void testMsqlConnect() {
 		String driverName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 		String dbURL = "jdbc:sqlserver://localhost:1433;DatabaseName=ibas_demo;ApplicationName=ibasTest";
