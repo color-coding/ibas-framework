@@ -220,7 +220,7 @@ public class Daemon implements IDaemon {
 					wrapping.setRunning(true);// 设置状态为运行中
 					long start = System.currentTimeMillis();
 					long times = wrapping.getRunTimes() + 1;
-					if (wrapping.isLog()) {
+					if (wrapping.isLog() && MyConfiguration.isDebugMode()) {
 						Logger.log(MessageLevel.DEBUG, MSG_DAEMON_TASK_START, wrapping.getId(), wrapping.getName(),
 								times);
 					}
@@ -231,7 +231,7 @@ public class Daemon implements IDaemon {
 						public void run() {
 							wrapping.run();
 							long end = System.currentTimeMillis();
-							if (wrapping.isLog()) {
+							if (wrapping.isLog() && MyConfiguration.isDebugMode()) {
 								Logger.log(MessageLevel.DEBUG, MSG_DAEMON_TASK_COMPLETED, wrapping.getId(),
 										wrapping.getName(), times, (end - start));
 							}

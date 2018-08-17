@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.logic;
 
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
@@ -301,7 +302,9 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		if (this.getLogicChain() != null) {
 			D data = this.getLogicChain().fetchBeAffected(criteria, type);
 			if (data != null) {
-				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_FOUND_DATA_IN_CHAIN);
+				if (MyConfiguration.isDebugMode()) {
+					Logger.log(MessageLevel.DEBUG, MSG_LOGICS_FOUND_DATA_IN_CHAIN);
+				}
 				return data;
 			}
 		}

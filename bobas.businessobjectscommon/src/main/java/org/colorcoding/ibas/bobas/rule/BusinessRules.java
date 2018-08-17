@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.rule;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
@@ -113,7 +114,9 @@ class BusinessRules implements IBusinessRules {
 		if (rules == null || rules.isEmpty()) {
 			return;
 		}
-		Logger.log(MessageLevel.DEBUG, MSG_RULES_EXECUTING, bo);
+		if (MyConfiguration.isDebugMode()) {
+			Logger.log(MessageLevel.DEBUG, MSG_RULES_EXECUTING, bo);
+		}
 		for (IBusinessRule rule : rules) {
 			rule.execute(bo);
 		}

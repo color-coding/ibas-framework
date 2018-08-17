@@ -159,7 +159,7 @@ public class BOJudgmentLink extends JudgmentLink {
 			IFieldData fieldData = ((IManageFields) bo).getField(property);
 			if (fieldData == null) {
 				// 未找到属性
-				Logger.log(MessageLevel.DEBUG, MSG_JUDGMENT_NOT_FOUND_PROPERTY, bo, property);
+				Logger.log(MessageLevel.WARN, MSG_JUDGMENT_NOT_FOUND_PROPERTY, bo, property);
 			} else {
 				values.add(bo);
 			}
@@ -172,7 +172,7 @@ public class BOJudgmentLink extends JudgmentLink {
 			IFieldData fieldData = ((IManageFields) bo).getField(property);
 			if (fieldData == null) {
 				// 未找到属性
-				Logger.log(MessageLevel.DEBUG, MSG_JUDGMENT_NOT_FOUND_PROPERTY, bo, property);
+				Logger.log(MessageLevel.WARN, MSG_JUDGMENT_NOT_FOUND_PROPERTY, bo, property);
 				break;
 			}
 			String[] lasts = new String[propertys.length - i - 1];
