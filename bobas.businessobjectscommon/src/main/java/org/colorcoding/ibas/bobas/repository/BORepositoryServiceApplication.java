@@ -245,7 +245,7 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 		}
 		bo = super.save(boRepository, bo);
 		// 要求重新查询
-		if (!deleted && this.isRefetchAfterSave()) {
+		if (!deleted && bo.isSavable() && this.isRefetchAfterSave()) {
 			// 要求重新查询
 			IOperationResult<P> opRsltCopy = boRepository.fetchCopyEx(bo);
 			if (opRsltCopy.getError() != null) {
