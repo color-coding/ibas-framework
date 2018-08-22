@@ -22,8 +22,8 @@ class DbConnectionPool implements IDbConnectionPool {
 		if (POOLSIZE == -1) {
 			synchronized (DbConnectionPool.class) {
 				if (POOLSIZE == -1) {
-					// 未被初始化，默认连接池数量10
-					POOLSIZE = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_CONNECTION_POOL_SIZE, 15);
+					// 未被初始化，默认连接池关闭
+					POOLSIZE = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_CONNECTION_POOL_SIZE, 0);
 				}
 			}
 		}
@@ -77,7 +77,6 @@ class DbConnectionPool implements IDbConnectionPool {
 				}
 			}
 			return done;
-
 		}
 		return false;
 	}

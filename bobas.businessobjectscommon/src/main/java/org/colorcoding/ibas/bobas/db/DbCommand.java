@@ -48,6 +48,7 @@ public class DbCommand implements IDbCommand {
 	public void close() throws DbException {
 		try {
 			this.statement.close();
+			this.statement = null;
 		} catch (Exception e) {
 			throw new DbException(e.getMessage(), e);
 		}

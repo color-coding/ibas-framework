@@ -30,6 +30,7 @@ public abstract class DbDataReaderBase implements IDbDataReader {
 	public void close() throws DbException {
 		try {
 			this.resultSet.close();
+			this.resultSet = null;
 		} catch (Exception e) {
 			throw new DbException(e.getMessage(), e);
 		}

@@ -65,6 +65,7 @@ public class DbConnection implements IDbConnection {
 		if (this.dbConnection != null) {
 			try {
 				this.dbConnection.close();
+				this.dbConnection = null;
 			} catch (SQLException e) {
 				Logger.log(e);
 			}
@@ -97,6 +98,7 @@ public class DbConnection implements IDbConnection {
 			if (force || !DbConnectionPool.isEnabled()) {
 				// 没有开启缓存或强制关闭
 				this.dbConnection.close();
+				this.dbConnection = null;
 			} else {
 				boolean done = DbConnectionPool.giveBack(this);
 				if (done) {
@@ -104,6 +106,7 @@ public class DbConnection implements IDbConnection {
 				} else {
 					// 回收不成功，关闭连接
 					this.dbConnection.close();
+					this.dbConnection = null;
 					this.recycled = false;
 				}
 			}

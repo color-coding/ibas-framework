@@ -228,10 +228,12 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 				this.rollbackTransaction();// 自己打开的事务，关闭事务
 			throw e;
 		} finally {
-			if (reader != null)
+			if (reader != null) {
 				reader.close();
-			if (command != null)
+			}
+			if (command != null) {
 				command.close();
+			}
 			reader = null;
 			command = null;
 			if (myOpenedDb)

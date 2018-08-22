@@ -1005,8 +1005,10 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				if (reader.next()) {
 					keys.add(new KeyValue(IBODocument.MASTER_PRIMARY_KEY_NAME, reader.getInt(1)));
 					reader.close();
+					reader = null;
 				} else {
 					reader.close();
+					reader = null;
 					throw new SqlScriptException(
 							I18N.prop("msg_bobas_not_found_bo_primary_key", bo.getClass().getSimpleName()));
 				}
@@ -1026,8 +1028,10 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 					keys.add(new KeyValue(IBODocumentLine.MASTER_PRIMARY_KEY_NAME, item.getDocEntry()));
 					keys.add(new KeyValue(IBODocumentLine.SECONDARY_PRIMARY_KEY_NAME, reader.getInt(1) + 1));
 					reader.close();
+					reader = null;
 				} else {
 					reader.close();
+					reader = null;
 					throw new SqlScriptException(
 							I18N.prop("msg_bobas_not_found_bo_primary_key", bo.getClass().getSimpleName()));
 				}
@@ -1039,8 +1043,10 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 					keys.add(new KeyValue(IBOMasterData.MASTER_PRIMARY_KEY_NAME, item.getCode()));
 					keys.add(new KeyValue(IBOMasterData.SERIAL_NUMBER_KEY_NAME, reader.getInt(1)));
 					reader.close();
+					reader = null;
 				} else {
 					reader.close();
+					reader = null;
 					throw new SqlScriptException(
 							I18N.prop("msg_bobas_not_found_bo_primary_key", bo.getClass().getSimpleName()));
 				}
@@ -1060,8 +1066,10 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 					keys.add(new KeyValue(IBOMasterDataLine.MASTER_PRIMARY_KEY_NAME, item.getCode()));
 					keys.add(new KeyValue(IBOMasterDataLine.SECONDARY_PRIMARY_KEY_NAME, reader.getInt(1) + 1));
 					reader.close();
+					reader = null;
 				} else {
 					reader.close();
+					reader = null;
 					throw new SqlScriptException(
 							I18N.prop("msg_bobas_not_found_bo_primary_key", bo.getClass().getSimpleName()));
 				}
@@ -1072,8 +1080,10 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				if (reader.next()) {
 					keys.add(new KeyValue(IBOSimple.MASTER_PRIMARY_KEY_NAME, reader.getInt(1)));
 					reader.close();
+					reader = null;
 				} else {
 					reader.close();
+					reader = null;
 					throw new SqlScriptException(
 							I18N.prop("msg_bobas_not_found_bo_primary_key", bo.getClass().getSimpleName()));
 				}
@@ -1093,8 +1103,10 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 					keys.add(new KeyValue(IBOSimpleLine.MASTER_PRIMARY_KEY_NAME, item.getObjectKey()));
 					keys.add(new KeyValue(IBOSimpleLine.SECONDARY_PRIMARY_KEY_NAME, reader.getInt(1) + 1));
 					reader.close();
+					reader = null;
 				} else {
 					reader.close();
+					reader = null;
 					throw new SqlScriptException(
 							I18N.prop("msg_bobas_not_found_bo_primary_key", bo.getClass().getSimpleName()));
 				}
@@ -1129,8 +1141,10 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 					if (reader.next()) {
 						keys.add(new KeyValue(dbField.getName(), reader.getInt(1) + 1));
 						reader.close();
+						reader = null;
 					} else {
 						reader.close();
+						reader = null;
 						throw new SqlScriptException(
 								I18N.prop("msg_bobas_not_found_bo_primary_key", bo.getClass().getSimpleName()));
 					}
@@ -1277,8 +1291,10 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				if (reader.next()) {
 					key = new KeyValue(reader.getString(2), reader.getInt(1));
 					reader.close();
+					reader = null;
 				} else {
 					reader.close();
+					reader = null;
 					throw new SqlScriptException(
 							I18N.prop("msg_bobas_not_found_bo_series_key", bo.getClass().getSimpleName()));
 				}

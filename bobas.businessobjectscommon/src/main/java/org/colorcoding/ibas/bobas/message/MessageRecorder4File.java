@@ -217,8 +217,10 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 			}
 		} finally {
 			try {
-				if (fileWriter != null)
+				if (fileWriter != null) {
 					fileWriter.close();
+				}
+				fileWriter = null;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
