@@ -38,15 +38,6 @@ public interface IDbConnection {
 	void close() throws DbException;
 
 	/**
-	 * 关闭数据库连接
-	 * 
-	 * @param force
-	 *            强制关闭
-	 * @throws DbException
-	 */
-	void close(boolean force) throws DbException;
-
-	/**
 	 * 是否关闭数据库连接
 	 * 
 	 * @return
@@ -90,9 +81,4 @@ public interface IDbConnection {
 	 * @throws DbException
 	 */
 	boolean inTransaction() throws DbException;
-
-	/**
-	 * 释放引用的资源
-	 */
-	void dispose();
 }

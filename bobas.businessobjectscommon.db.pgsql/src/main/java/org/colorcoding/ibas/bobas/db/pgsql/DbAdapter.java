@@ -12,11 +12,9 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 	public Connection createConnection(String server, String dbName, String userName, String userPwd,
 			String applicationName) throws DbException {
 		try {
+			Class.forName("org.postgresql.Driver");
 			String dbURL = String.format("jdbc:postgresql://%s/%s", server, dbName);
-			String driverName = "org.postgresql.Driver";
-			Class.forName(driverName);
-			Connection connection = DriverManager.getConnection(dbURL, userName, userPwd);
-			return connection;
+			return DriverManager.getConnection(dbURL, userName, userPwd);
 		} catch (Exception e) {
 			// 连接数据库失败
 			throw new DbException(e);

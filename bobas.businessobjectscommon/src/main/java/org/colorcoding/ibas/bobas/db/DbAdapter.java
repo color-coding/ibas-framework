@@ -1,12 +1,10 @@
 package org.colorcoding.ibas.bobas.db;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
-import org.colorcoding.ibas.bobas.util.EncryptMD5;
 
 /**
  * 数据库适配器
@@ -17,13 +15,7 @@ import org.colorcoding.ibas.bobas.util.EncryptMD5;
  *
  */
 public abstract class DbAdapter implements IDbAdapter {
-
-	protected static final String MSG_CONNECTION_USING_SERVER = "connection: using {%s}, user [%s] & server [%s] & db [%s].";
 	protected static final String MSG_CONNECTION_USER_CONNECTED = "connection: user [%s] connected [%s|%s].";
-
-	public DbAdapter() {
-
-	}
 
 	@Override
 	public IDbConnection createDbConnection() throws DbException {
@@ -40,60 +32,20 @@ public abstract class DbAdapter implements IDbAdapter {
 				.getConfigValue(String.format("%s%s", sign, MyConfiguration.CONFIG_ITEM_DB_USER_ID), "sa");
 		String userPassword = MyConfiguration
 				.getConfigValue(String.format("%s%s", sign, MyConfiguration.CONFIG_ITEM_DB_USER_PASSWORD), "1q2w3e");
-		Logger.log(MSG_CONNECTION_USING_SERVER, sign, userID, dbServer, dbName);
 		return this.createDbConnection(dbServer, dbName, userID, userPassword);
 	}
 
 	@Override
 	public IDbConnection createDbConnection(String dbServer, String dbName, String dbUser, String dbPassword)
 			throws DbException {
-		String appName = String.format("ibas_%s", this.hashCode());
-		String connectionSign = this.encrypt(appName, dbServer, dbName, dbUser, dbPassword);
-		// 尝试从连接池中获取可用连接
-		if (connectionSign != null && DbConnectionPool.isEnabled()) {
-			// 获取到有效标记
-			IDbConnection dbConnection = DbConnectionPool.getValid(connectionSign);
-			if (dbConnection != null) {
-				return dbConnection;
-			}
-		}
 		// 创建新的数据库连接
-		Connection connection = this.createConnection(dbServer, dbName, dbUser, dbPassword, appName);
+		Connection connection = this.createConnection(dbServer, dbName, dbUser, dbPassword,
+				String.format("ibas_%s", this.hashCode()));
 		if (connection == null)
 			// 没有有效的数据库连接
 			throw new DbException(I18N.prop("msg_bobas_no_valid_database_connection"));
 		Logger.log(MSG_CONNECTION_USER_CONNECTED, dbUser, dbServer, dbName);
-		// 检查返回的数据库连接与要求是否一致
-		String cURL = null, cUserName = null;
-		try {
-			// hana连接字符串特有
-			if (connection instanceof ConnectionUrl) {
-				cURL = ((ConnectionUrl) connection).getUrl();
-			} else {
-				cURL = connection.getMetaData().getURL();
-			}
-			cUserName = connection.getMetaData().getUserName();
-		} catch (SQLException e) {
-			throw new DbException(I18N.prop("msg_bobas_no_valid_database_connection"));
-		}
-		if (cURL == null || cUserName == null) {
-			throw new DbException(I18N.prop("msg_bobas_no_valid_database_connection"));
-		}
-		if (cURL.indexOf(dbServer) < 0 || cURL.indexOf(dbName) < 0 || cUserName.indexOf(dbUser) < 0) {
-			// 返回的连接与要求不匹配
-			throw new DbException(I18N.prop("msg_bobas_no_valid_database_connection"));
-		}
-		DbConnection dbConnection = new DbConnection(connection);
-		dbConnection.setConnectionSign(connectionSign);
-		return dbConnection;
-	}
-
-	private String encrypt(String... args) {
-		try {
-			return EncryptMD5.md5(args);
-		} catch (Exception e) {
-			return null;
-		}
+		return new DbConnection(connection);
 	}
 
 	protected abstract Connection createConnection(String server, String dbName, String userName, String userPwd,

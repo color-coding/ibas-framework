@@ -12,11 +12,10 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 	public Connection createConnection(String server, String dbName, String userName, String userPwd,
 			String applicationName) throws DbException {
 		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
 			String dbURL = String.format(
 					"jdbc:mysql://%s/%s?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=UTC",
 					server, dbName);
-			String driverName = "com.mysql.cj.jdbc.Driver";
-			Class.forName(driverName);
 			Connection connection = DriverManager.getConnection(dbURL, userName, userPwd);
 			connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 			return connection;
