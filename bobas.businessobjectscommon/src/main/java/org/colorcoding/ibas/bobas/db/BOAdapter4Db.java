@@ -81,10 +81,8 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	/**
 	 * 组合复合字段索引
 	 * 
-	 * @param index
-	 *            字段索引
-	 * @param subIndex
-	 *            子项字段索引
+	 * @param index    字段索引
+	 * @param subIndex 子项字段索引
 	 * @return
 	 */
 	protected int groupComplexFieldIndex(int index, int subIndex) {
@@ -94,8 +92,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	/**
 	 * 解析复合字段索引
 	 * 
-	 * @param groupIndex
-	 *            组合的索引
+	 * @param groupIndex 组合的索引
 	 * @return 拆解的数组，[2]{F,S} F为字段索引，S为子项索引
 	 */
 	protected int[] parseComplexFieldIndex(int groupIndex) {
@@ -168,8 +165,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	/**
 	 * 获取查询条件语句
 	 * 
-	 * @param conditions
-	 *            查询条件
+	 * @param conditions 查询条件
 	 * @return
 	 * @throws SqlScriptException
 	 */
@@ -260,8 +256,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	/**
 	 * 获取排序语句
 	 * 
-	 * @param sorts
-	 *            排序
+	 * @param sorts 排序
 	 * @return
 	 * @throws SqlScriptException
 	 */
@@ -311,10 +306,8 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	/**
 	 * 修正查询条件
 	 * 
-	 * @param conditions
-	 *            查询条件
-	 * @param pInfoList
-	 *            属性列表
+	 * @param conditions 查询条件
+	 * @param pInfoList  属性列表
 	 * @return
 	 */
 	protected void fixConditions(IConditions conditions, PropertyInfoList pInfoList) {
@@ -364,10 +357,8 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	/**
 	 * 修正排序条件
 	 * 
-	 * @param sorts
-	 *            排序
-	 * @param pInfoList
-	 *            属性列表
+	 * @param sorts     排序
+	 * @param pInfoList 属性列表
 	 * @return
 	 */
 	protected void fixSorts(ISorts sorts, PropertyInfoList pInfoList) {
@@ -484,8 +475,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	/**
 	 * 获取字段及值语句
 	 * 
-	 * @param fields
-	 *            字段列表
+	 * @param fields 字段列表
 	 * @return 语句（"ItemCode" = 'A00001' ，"ItemName" = 'CPU I9'）
 	 * @throws SqlScriptException
 	 */
@@ -515,8 +505,7 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	/**
 	 * 获取字段的主表
 	 * 
-	 * @param boFields
-	 *            字段列表
+	 * @param boFields 字段列表
 	 * @return 表名称（“OITM”）
 	 */
 	protected String getMasterTable(IManageFields boFields) {
@@ -601,10 +590,8 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	/**
 	 * 获取匹配的索引（提升性能），此处包括对用户字段的处理
 	 * 
-	 * @param reader
-	 *            查询
-	 * @param bo
-	 *            对象
+	 * @param reader 查询
+	 * @param bo     对象
 	 * @return
 	 * @throws ParsingException
 	 * @throws DbException
@@ -625,7 +612,10 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 			// reader列索引
 			int rCol = i + 1;
 			// 当前列名称
-			String name = metaData.getColumnName(rCol);// reader索引从1开始
+			String name = metaData.getColumnLabel(rCol);// reader索引从1开始
+			if (name == null || name.isEmpty()) {
+				name = metaData.getColumnName(rCol);
+			}
 			// 获取当前列对应的索引
 			for (int j = 0; j < boFields.length; j++) {
 				// 遍历BO字段
@@ -686,12 +676,9 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	/**
 	 * 填充业务对象数据
 	 * 
-	 * @param reader
-	 *            查询
-	 * @param bo
-	 *            业务对象
-	 * @param dfIndex
-	 *            匹配的索引
+	 * @param reader  查询
+	 * @param bo      业务对象
+	 * @param dfIndex 匹配的索引
 	 * @return
 	 * @throws DbException
 	 * @throws ParsingException
@@ -731,12 +718,9 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	/**
 	 * 填充数据
 	 * 
-	 * @param reader
-	 *            查询结果
-	 * @param rCol
-	 *            查询列名
-	 * @param fieldData
-	 *            复制的字段
+	 * @param reader    查询结果
+	 * @param rCol      查询列名
+	 * @param fieldData 复制的字段
 	 * @throws DbException
 	 * @throws ParsingException
 	 */
@@ -847,10 +831,8 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 	/**
 	 * 非预定义类型的转换方法
 	 * 
-	 * @param toType
-	 *            转换到的类型
-	 * @param value
-	 *            值
+	 * @param toType 转换到的类型
+	 * @param value  值
 	 * @return
 	 * @throws ParsingException
 	 */

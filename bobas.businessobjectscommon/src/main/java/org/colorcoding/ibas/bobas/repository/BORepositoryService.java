@@ -19,6 +19,7 @@ import org.colorcoding.ibas.bobas.core.SaveActionType;
 import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
 import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.logic.BusinessLogicException;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.organization.IOrganizationManager;
@@ -211,8 +212,7 @@ public class BORepositoryService implements IBORepositoryService {
 	/**
 	 * 设置当前用户
 	 * 
-	 * @param token
-	 *            用户口令
+	 * @param token 用户口令
 	 * @throws InvalidTokenException
 	 */
 	protected final void setCurrentUser(String token) throws InvalidTokenException {
@@ -240,14 +240,11 @@ public class BORepositoryService implements IBORepositoryService {
 	/**
 	 * 查询业务对象
 	 * 
-	 * @param boRepository
-	 *            使用的仓库
+	 * @param boRepository 使用的仓库
 	 * 
-	 * @param criteria
-	 *            查询条件
+	 * @param criteria     查询条件
 	 * 
-	 * @param token
-	 *            口令
+	 * @param token        口令
 	 * 
 	 * @return 查询的结果
 	 */
@@ -268,11 +265,9 @@ public class BORepositoryService implements IBORepositoryService {
 	/**
 	 * 查询业务对象 根据配置是否启用缓存
 	 * 
-	 * @param criteria
-	 *            查询条件
+	 * @param criteria 查询条件
 	 * 
-	 * @param token
-	 *            口令
+	 * @param token    口令
 	 * 
 	 * @return 查询的结果
 	 */
@@ -295,11 +290,9 @@ public class BORepositoryService implements IBORepositoryService {
 	/**
 	 * 保存业务对象
 	 * 
-	 * @param boRepository
-	 *            业务对象仓库
+	 * @param boRepository 业务对象仓库
 	 * 
-	 * @param bo
-	 *            业务对象
+	 * @param bo           业务对象
 	 * @return 注意删除时返回null
 	 * @throws Exception
 	 */
@@ -371,10 +364,8 @@ public class BORepositoryService implements IBORepositoryService {
 	/**
 	 * 通知业务对象的事务
 	 * 
-	 * @param type
-	 *            事务类型
-	 * @param bo
-	 *            对象
+	 * @param type 事务类型
+	 * @param bo   对象
 	 * @throws Exception
 	 * @throws BOTransactionException
 	 */
@@ -396,7 +387,7 @@ public class BORepositoryService implements IBORepositoryService {
 			if (message.getCode() != 0) {
 				Logger.log(MessageLevel.DEBUG, MSG_TRANSACTION_SP_VALUES, type.toString(), bo.toString(),
 						message.getCode(), message.getMessage());
-				throw new Exception(message.getMessage());
+				throw new BusinessLogicException(message.getMessage());
 			}
 		}
 	}
@@ -404,11 +395,9 @@ public class BORepositoryService implements IBORepositoryService {
 	/**
 	 * 保存业务对象
 	 * 
-	 * @param bo
-	 *            业务对象
+	 * @param bo    业务对象
 	 * 
-	 * @param token
-	 *            口令
+	 * @param token 口令
 	 * 
 	 * @return 查询的结果
 	 */
@@ -427,10 +416,8 @@ public class BORepositoryService implements IBORepositoryService {
 	/**
 	 * 保存事件
 	 * 
-	 * @param action
-	 *            事件类型
-	 * @param trigger
-	 *            发生对象
+	 * @param action  事件类型
+	 * @param trigger 发生对象
 	 * @return
 	 */
 	protected void onSaveActionEvent(SaveActionType action, IBusinessObject trigger) throws RepositoryException {

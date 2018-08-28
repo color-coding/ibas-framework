@@ -49,7 +49,7 @@
                     --ADD YOUR CODE HERE
                     --------------------------------------------------------------------------------------------------------------------------------
                     --返回结果
-                    SELECT TO_INTEGER(error) "code", error_message "message" FROM dummy;
+                    SELECT TO_INTEGER(error) "Code", error_message "Message" FROM dummy;
                 END;
             </Script>
         </Step>

@@ -5,14 +5,14 @@
     <Name>sql_mysql_ibas_initialization</Name>
     <Description>基于MYSQL的结构映射说明</Description>
     <Integrated>true</Integrated>
-    <DriverName>com.mysql.jdbc.Driver</DriverName>
-    <DbUrl>jdbc:mysql://${DbServer}:${DbPort}/mysql?useUnicode=true&amp;characterEncoding=utf8</DbUrl>
+    <DriverName>com.mysql.cj.jdbc.Driver</DriverName>
+    <DbUrl>jdbc:mysql://${DbServer}:${DbPort}/mysql?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=UTC</DbUrl>
     <DbUser>${DbUser}</DbUser>
     <DbPassword>${DbPassword}</DbPassword>
     <Action Name="create db" Isolated="true">
         <Step Name="check and create db">
             <Script>
-                create database if not exists `${DbName}` character set utf8;
+                create database if not exists `${DbName}` character set utf8mb4;
             </Script>
         </Step>
     </Action>
@@ -40,7 +40,7 @@
                     -- ADD YOUR CODE HERE
                     /* ----------------------------------------------------------------------------------------------------------------------------*/
                     -- return
-                    select error, error_message;
+                    select error 'Code', error_message 'Message';
                 END;
             </Script>
         </Step>

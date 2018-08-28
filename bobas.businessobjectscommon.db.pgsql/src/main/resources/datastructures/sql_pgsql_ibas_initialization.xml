@@ -34,7 +34,7 @@
         </Step>
         <Step Name="create return type">
             <Script>
-                CREATE TYPE "RESULT_TYPE_${Company}_SP_TRANSACTION_NOTIFICATION" AS("Error" integer,"Message" varchar(200));
+                CREATE TYPE "RESULT_TYPE_${Company}_SP_TRANSACTION_NOTIFICATION" AS("Code" integer,"Message" varchar(200));
             </Script>
         </Step>
         <Step Name="create stored procedures">
@@ -58,7 +58,7 @@
                     /*ADD YOUR CODE HERE*/
                     /*--------------------------------------------------------------------------------------------------------------------------------*/
                     /*return*/
-                    for result in select error "error",error_message "message" loop 
+                    for result in select error "Code",error_message "Message" loop 
                       return next result; 
                     end loop;
                 END;

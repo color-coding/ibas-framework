@@ -201,7 +201,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("SELECT");
 		stringBuilder.append(" ");
-		stringBuilder.append("\"Error\"");
+		stringBuilder.append("\"Code\"");
 		stringBuilder.append(",");
 		stringBuilder.append(" ");
 		stringBuilder.append("\"Message\"");
