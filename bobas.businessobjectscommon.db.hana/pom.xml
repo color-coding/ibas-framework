@@ -24,7 +24,7 @@
     <dependency>
       <groupId>com.sap.hana</groupId>
       <artifactId>ngdbc</artifactId>
-      <version>1.0</version>
+      <version>2.3</version>
     </dependency>
   </dependencies>
 </project>
