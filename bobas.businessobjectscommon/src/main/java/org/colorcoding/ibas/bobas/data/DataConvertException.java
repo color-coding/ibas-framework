@@ -5,6 +5,7 @@ public class DataConvertException extends RuntimeException {
 	private static final long serialVersionUID = -6363663547488861425L;
 
 	public DataConvertException() {
+		super();
 	}
 
 	public DataConvertException(String message) {

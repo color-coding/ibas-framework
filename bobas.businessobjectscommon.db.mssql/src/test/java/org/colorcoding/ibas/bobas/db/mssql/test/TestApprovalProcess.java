@@ -2,10 +2,10 @@ package org.colorcoding.ibas.bobas.db.mssql.test;
 
 import java.util.ArrayList;
 
+import org.colorcoding.ibas.bobas.approval.ApprovalProcessException;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcessStep;
 import org.colorcoding.ibas.bobas.approval.IApprovalProcessStepCondition;
-import org.colorcoding.ibas.bobas.approval.UnauthorizedException;
 import org.colorcoding.ibas.bobas.approval.ValueMode;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
@@ -274,7 +274,7 @@ class ApprovalProcess extends org.colorcoding.ibas.bobas.approval.ApprovalProces
 	}
 
 	@Override
-	public void checkToSave(IUser user) throws UnauthorizedException {
+	public void checkToSave(IUser user) throws ApprovalProcessException {
 
 	}
 

@@ -5,6 +5,7 @@ public class SqlScriptException extends Exception {
 	private static final long serialVersionUID = -92016001204817675L;
 
 	public SqlScriptException() {
+		super();
 	}
 
 	public SqlScriptException(String message) {

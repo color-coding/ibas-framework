@@ -5,6 +5,7 @@ public class JudgmentLinkException extends RuntimeException {
 	private static final long serialVersionUID = -3098369422805629747L;
 
 	public JudgmentLinkException() {
+		super();
 	}
 
 	public JudgmentLinkException(String message) {

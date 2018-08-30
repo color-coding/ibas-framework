@@ -5,6 +5,7 @@ public class ComputeException extends Exception {
 	private static final long serialVersionUID = -3222542562501337569L;
 
 	public ComputeException() {
+		super();
 	}
 
 	public ComputeException(String message) {

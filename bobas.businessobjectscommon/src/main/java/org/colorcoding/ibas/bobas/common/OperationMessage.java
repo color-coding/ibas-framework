@@ -107,7 +107,12 @@ public class OperationMessage extends Result implements IOperationMessage {
 				this.setResultCode(-1);
 			}
 			if (this.getMessage() == null || this.getMessage().isEmpty()) {
-				this.setMessage(String.format("%s: %s", this.error.getClass().getName(), this.error.getMessage()));
+				String message = this.error.getMessage();
+				if (message == null) {
+					this.setMessage(this.error.getClass().getName());
+				} else {
+					this.setMessage(String.format("%s: %s", this.error.getClass().getName(), this.error.getMessage()));
+				}
 			}
 		}
 	}

@@ -5,6 +5,7 @@ public class NotFoundBusinessLogicException extends BusinessLogicException {
 	private static final long serialVersionUID = -3828583628302548133L;
 
 	public NotFoundBusinessLogicException() {
+		super();
 	}
 
 	public NotFoundBusinessLogicException(String message) {

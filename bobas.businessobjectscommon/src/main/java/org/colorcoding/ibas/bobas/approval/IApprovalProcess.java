@@ -1,12 +1,10 @@
 package org.colorcoding.ibas.bobas.approval;
 
 import org.colorcoding.ibas.bobas.core.IBORepository;
-import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalResult;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.organization.IUser;
-import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
 
 /**
  * 审批流程
@@ -89,8 +87,7 @@ public interface IApprovalProcess {
 	/**
 	 * 开始流程
 	 * 
-	 * @param data
-	 *            数据
+	 * @param data 数据
 	 * @return 是否成功开始流程
 	 */
 	boolean start(IApprovalData data);
@@ -98,34 +95,24 @@ public interface IApprovalProcess {
 	/**
 	 * 批准流程
 	 * 
-	 * @param stepId
-	 *            步骤ID
-	 * @param apResult
-	 *            结果
-	 * @param authorizationCode
-	 *            授权码
-	 * @param judgment
-	 *            意见
-	 * @throws InvalidAuthorizationException
+	 * @param stepId            步骤ID
+	 * @param apResult          结果
+	 * @param authorizationCode 授权码
+	 * @param judgment          意见
 	 * @throws ApprovalException
-	 * @throws RepositoryException
 	 */
 	void approval(int stepId, emApprovalResult apResult, String authorizationCode, String judgment)
-			throws InvalidAuthorizationException, ApprovalProcessException, RepositoryException;
+			throws ApprovalProcessException;
 
 	/**
 	 * 取消流程
 	 * 
-	 * @param authorizationCode
-	 *            授权码
-	 * @param remarks
-	 *            备注
+	 * @param authorizationCode 授权码
+	 * @param remarks           备注
 	 * @return true，执行取消；false，没有执行取消
 	 * @throws ApprovalProcessException
-	 * @throws InvalidAuthorizationException
 	 */
-	boolean cancel(String authorizationCode, String remarks)
-			throws ApprovalProcessException, InvalidAuthorizationException;
+	boolean cancel(String authorizationCode, String remarks) throws ApprovalProcessException;
 
 	/**
 	 * 设置业务仓库
@@ -138,8 +125,7 @@ public interface IApprovalProcess {
 	/**
 	 * 保存审批流程
 	 * 
-	 * @param boRepository
-	 *            保存到的业务仓库
+	 * @param boRepository 保存到的业务仓库
 	 * @throws ApprovalProcessException
 	 */
 	void save() throws ApprovalProcessException;
@@ -147,8 +133,7 @@ public interface IApprovalProcess {
 	/**
 	 * 检查保存权限
 	 * 
-	 * @param user
-	 *            操作用户
+	 * @param user 操作用户
 	 * @throws ApprovalProcessException
 	 */
 	void checkToSave(IUser user) throws ApprovalProcessException;

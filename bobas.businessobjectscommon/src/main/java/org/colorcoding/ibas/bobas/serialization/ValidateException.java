@@ -5,6 +5,7 @@ public class ValidateException extends Exception {
 	private static final long serialVersionUID = 639883472487495216L;
 
 	public ValidateException() {
+		super();
 	}
 
 	public ValidateException(String message) {

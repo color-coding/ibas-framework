@@ -5,6 +5,7 @@ public class UnauthorizedException extends OwnershipException {
 	private static final long serialVersionUID = -6197956381582100910L;
 
 	public UnauthorizedException() {
+		super();
 	}
 
 	public UnauthorizedException(String message, Throwable exception) {

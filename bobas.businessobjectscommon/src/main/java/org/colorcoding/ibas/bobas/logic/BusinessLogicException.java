@@ -5,6 +5,7 @@ public class BusinessLogicException extends RuntimeException {
 	private static final long serialVersionUID = 6654310086635040829L;
 
 	public BusinessLogicException() {
+		super();
 	}
 
 	public BusinessLogicException(String message) {

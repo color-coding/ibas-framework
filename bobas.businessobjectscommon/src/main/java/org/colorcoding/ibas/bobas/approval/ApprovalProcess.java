@@ -44,8 +44,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	/**
 	 * 保存审批流程数据
 	 * 
-	 * @throws Exception
-	 *             异常
+	 * @throws Exception 异常
 	 */
 	protected abstract void saveProcess() throws Exception;
 
@@ -69,8 +68,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	/**
 	 * 获取步骤
 	 * 
-	 * @param id
-	 *            步骤编号
+	 * @param id 步骤编号
 	 * @return
 	 */
 	private ApprovalProcessStep getProcessStep(int id) {
@@ -88,8 +86,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	/**
 	 * 获取前一个步骤
 	 * 
-	 * @param step
-	 *            基准步骤
+	 * @param step 基准步骤
 	 * @return
 	 */
 	private IApprovalProcessStep getPreviousProcessStep() {
@@ -197,8 +194,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	 * @throws ApprovalProcessException
 	 * @throws RepositoryException
 	 */
-	private ApprovalProcessStep nextStep()
-			throws JudmentOperationException, ApprovalProcessException, RepositoryException {
+	private ApprovalProcessStep nextStep() throws JudmentOperationException, ApprovalProcessException {
 		for (IApprovalProcessStep item : this.getProcessSteps()) {
 			if (item.getStatus() != emApprovalStepStatus.PENDING) {
 				// 只考虑挂起的步骤
@@ -233,12 +229,16 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	}
 
 	public final void approval(int stepId, emApprovalResult apResult, String authorizationCode, String judgment)
-			throws InvalidAuthorizationException, ApprovalProcessException, RepositoryException {
+			throws ApprovalProcessException {
 		ApprovalProcessStep apStep = this.getProcessStep(stepId);
 		if (apStep == null) {
 			throw new ApprovalProcessException(I18N.prop("msg_bobas_not_found_approval_process_step", stepId));
 		}
-		apStep.getOwner().checkAuthorization(authorizationCode);
+		try {
+			apStep.getOwner().checkAuthorization(authorizationCode);
+		} catch (InvalidAuthorizationException e) {
+			throw new ApprovalProcessException(I18N.prop("msg_bobas_invaild_user_authorization"), e);
+		}
 		if (apResult == emApprovalResult.PROCESSING) {
 			// 重置步骤，上一个步骤操作
 			ApprovalProcessStep curStep = (ApprovalProcessStep) this.currentStep();
@@ -292,11 +292,14 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 		}
 	}
 
-	public final boolean cancel(String authorizationCode, String remarks)
-			throws ApprovalProcessException, InvalidAuthorizationException {
+	public final boolean cancel(String authorizationCode, String remarks) throws ApprovalProcessException {
 		if (this.getStatus() == emApprovalStatus.PROCESSING) {
 			// 仅审批中的可以取消
-			this.getOwner().checkAuthorization(authorizationCode);
+			try {
+				this.getOwner().checkAuthorization(authorizationCode);
+			} catch (InvalidAuthorizationException e) {
+				throw new ApprovalProcessException(I18N.prop("msg_bobas_invaild_user_authorization"), e);
+			}
 			this.setFinishedTime(DateTime.getNow());
 			this.setStatus(emApprovalStatus.CANCELLED);
 			this.onStatusChanged();
@@ -319,7 +322,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	 * 默认流程未开始可以修改； 数据所有者，可以取消，删除数据，其他人不可。
 	 */
 	@Override
-	public void checkToSave(IUser user) throws UnauthorizedException {
+	public void checkToSave(IUser user) throws ApprovalProcessException {
 		// 流程未开始，所有者可以修改数据
 		if (this.getProcessSteps() == null || this.getProcessSteps().length == 0) {
 			return;
@@ -364,15 +367,14 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 			}
 		}
 		// 不允许修改数据
-		throw new UnauthorizedException(I18N.prop("msg_bobas_data_in_approval_process_not_allow_to_update",
+		throw new ApprovalProcessException(I18N.prop("msg_bobas_data_in_approval_process_not_allow_to_update",
 				this.getApprovalData().toString(), this.getName(), user.toString()));
 	}
 
 	/**
 	 * 状态发生变化时调用
 	 * 
-	 * @param value
-	 *            当前状态
+	 * @param value 当前状态
 	 */
 	protected void changeApprovalDataStatus(emApprovalStatus status) {
 		if (this.getApprovalData().getApprovalStatus() != status) {
@@ -401,7 +403,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	 * @throws ApprovalProcessException
 	 * @throws RepositoryException
 	 */
-	protected IApprovalData getApprovalData(boolean real) throws ApprovalProcessException, RepositoryException {
+	protected IApprovalData getApprovalData(boolean real) throws ApprovalProcessException {
 		if (!real) {
 			return this.getApprovalData();
 		}
@@ -415,25 +417,29 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 			if (this.getRepository() == null) {
 				throw new ApprovalProcessException(I18N.prop("msg_bobas_invaild_bo_repository"));
 			}
-			ApprovalProcessRepository apRepository = new ApprovalProcessRepository();
-			apRepository.setRepository(this.getRepository());
-			boolean myOpend = apRepository.openRepository();
-			IOperationResult<IBusinessObject> opRsltFetch = apRepository.fetch(criteria);
-			if (myOpend) {
-				apRepository.closeRepository();
+			try {
+				ApprovalProcessRepository apRepository = new ApprovalProcessRepository();
+				apRepository.setRepository(this.getRepository());
+				boolean myOpend = apRepository.openRepository();
+				IOperationResult<IBusinessObject> opRsltFetch = apRepository.fetch(criteria);
+				if (myOpend) {
+					apRepository.closeRepository();
+				}
+				if (opRsltFetch.getError() != null) {
+					opRsltFetch.getError();
+				}
+				Object tmpBO = opRsltFetch.getResultObjects().firstOrDefault();
+				if (!(tmpBO instanceof IApprovalData)) {
+					throw new Exception(
+							I18N.prop("msg_bobas_approval_data_not_exist", this.getApprovalData().getIdentifiers()));
+				}
+				IApprovalData data = (IApprovalData) tmpBO;
+				data.setApprovalStatus(this.getApprovalData().getApprovalStatus());
+				this.setApprovalData(data);
+				this.freshData = true;
+			} catch (Exception e) {
+				throw new ApprovalProcessException(e);
 			}
-			if (opRsltFetch.getError() != null) {
-				throw new ApprovalProcessException(opRsltFetch.getError());
-			}
-			Object tmpBO = opRsltFetch.getResultObjects().firstOrDefault();
-			if (!(tmpBO instanceof IApprovalData)) {
-				throw new ApprovalProcessException(
-						I18N.prop("msg_bobas_approval_data_not_exist", this.getApprovalData().getIdentifiers()));
-			}
-			IApprovalData data = (IApprovalData) tmpBO;
-			data.setApprovalStatus(this.getApprovalData().getApprovalStatus());
-			this.setApprovalData(data);
-			this.freshData = true;
 		}
 		return this.getApprovalData();
 	}

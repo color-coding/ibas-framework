@@ -5,6 +5,7 @@ public class OwnershipException extends Exception {
 	private static final long serialVersionUID = -1052466059828817472L;
 
 	public OwnershipException() {
+		super();
 	}
 
 	public OwnershipException(String message) {
