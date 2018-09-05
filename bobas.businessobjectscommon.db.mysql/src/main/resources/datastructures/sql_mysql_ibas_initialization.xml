@@ -32,15 +32,15 @@
                     list_of_cols_val_tab_del varchar(255)     /*主键值*/
                 )
                 BEGIN
-                    declare error int;                             /*返回值(0 无错误)*/
+                    declare error_code int;                        /*返回值(0 无错误)*/
                     declare error_message varchar(200);            /*返回的消息*/
-                    set error = 0;
+                    set error_code = 0;
                     set error_message = N'OK';
                     /*----------------------------------------------------------------------------------------------------------------------------*/
                     -- ADD YOUR CODE HERE
                     /* ----------------------------------------------------------------------------------------------------------------------------*/
-                    -- return
-                    select error 'Code', error_message 'Message';
+                    /*返回结果*/
+                    select error_code 'Code', error_message 'Message';
                 END;
             </Script>
         </Step>

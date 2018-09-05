@@ -192,7 +192,8 @@ public abstract class BOAdapter4Db implements IBOAdapter4Db {
 				}
 				// 字段名
 				if ((condition.getAliasDataType() == DbFieldType.NUMERIC
-						|| condition.getAliasDataType() == DbFieldType.DECIMAL)
+						|| condition.getAliasDataType() == DbFieldType.DECIMAL
+						|| condition.getAliasDataType() == DbFieldType.DATE)
 						&& (condition.getOperation() == ConditionOperation.START
 								|| condition.getOperation() == ConditionOperation.END
 								|| condition.getOperation() == ConditionOperation.CONTAIN

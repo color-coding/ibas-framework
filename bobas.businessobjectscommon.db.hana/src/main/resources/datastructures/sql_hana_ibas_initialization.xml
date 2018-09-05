@@ -38,18 +38,15 @@
                 )
                 LANGUAGE SQLSCRIPT AS
                 BEGIN
-                    --返回值
-                    DECLARE error integer;
-                    --返回值(0 无错误)
-                    DECLARE error_message nvarchar(200);
-                    --返回的消息
-                    SELECT 0 INTO error FROM  dummy;
+                    DECLARE error_code integer;                    --返回值(0 无错误)
+                    DECLARE error_message nvarchar(200);           --返回的消息
+                    SELECT 0 INTO error_code FROM  dummy;
                     SELECT 'OK' INTO error_message FROM dummy;
                     --------------------------------------------------------------------------------------------------------------------------------
                     --ADD YOUR CODE HERE
                     --------------------------------------------------------------------------------------------------------------------------------
                     --返回结果
-                    SELECT TO_INTEGER(error) "Code", error_message "Message" FROM dummy;
+                    SELECT TO_INTEGER(error_code) "Code", error_message "Message" FROM dummy;
                 END;
             </Script>
         </Step>

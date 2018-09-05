@@ -47,18 +47,17 @@
                     list_of_cols_val_tab_del character varying                 /*主键值*/
                 ) RETURNS SETOF "RESULT_TYPE_${Company}_SP_TRANSACTION_NOTIFICATION" AS $_$
                 DECLARE
-                    error  integer;                                            /*返回值(0 无错误)*/
+                    error_code  integer;                                       /*返回值(0 无错误)*/
                     error_message varchar (200);                               /*返回的消息*/
                     result record;
                 BEGIN
-                    /* 返回值 */
-                    error = 0;
+                    error_code = 0;
                     error_message = N'OK';
                     /*--------------------------------------------------------------------------------------------------------------------------------*/
                     /*ADD YOUR CODE HERE*/
                     /*--------------------------------------------------------------------------------------------------------------------------------*/
-                    /*return*/
-                    for result in select error "Code",error_message "Message" loop 
+                    /*返回结果*/
+                    for result in select error_code "Code",error_message "Message" loop 
                       return next result; 
                     end loop;
                 END;

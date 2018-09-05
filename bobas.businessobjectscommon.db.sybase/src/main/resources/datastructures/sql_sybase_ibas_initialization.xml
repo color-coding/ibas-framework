@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE DataStructureOrchestration>
+<ns2:DataStructureOrchestration
+    xmlns:ns2="http://colorcoding.org/btulz/transformers">
+    <Name>sql_sybase_ibas_initialization</Name>
+    <Description>基于SYBASE的结构映射说明</Description>
+    <Integrated>true</Integrated>
+    <DriverName>com.sybase.jdbc4.jdbc.SybDriver</DriverName>
+    <DbUrl>jdbc:sybase:Tds:${DbServer}:${DbPort}?ServiceName=${DbName}</DbUrl>
+    <DbUser>${DbUser}</DbUser>
+    <DbPassword>${DbPassword}</DbPassword>
+    <Action Name="create db" Isolated="true" DbUrl="jdbc:sybase:Tds:${DbServer}:${DbPort}?ServiceName=${DbName}">
+        <Step Name="check db ${DbName} exists">
+            <Script>
+                select count(0) from sa_db_list() where "Number" = db_id('${DbName}')
+            </Script>
+        </Step>
+        <Step Name="create db ${DbName}" RunOnValue="0">
+            <Script>
+                 create database '${DbName}.db'
+                 dba user '${DbUser}'
+                 dba password '${DbPassword}'
+                 log on '${DbName}.log'
+            </Script>
+        </Step>
+    </Action>
+    <Action Name="create stored procedures ${Company}_SP_TRANSACTION_NOTIFICATION" Isolated="true" DbUrl="jdbc:sybase:Tds:${DbServer}:${DbPort}?ServiceName=${DbName}">
+        <Step Name="create stored procedures">
+            <Script>
+                CREATE OR REPLACE PROCEDURE ${Company}_SP_TRANSACTION_NOTIFICATION (
+                    IN object_type nvarchar(30),                 --对象类型（BOCode）
+                    IN transaction_type nchar(1),                --业务类型（Add:A-添加, Update:U-更新, Delete:D-删除）
+                    IN num_of_cols_in_key int,                   --主键个数
+                    IN list_of_key_cols_tab_del nvarchar(255),   --主键名称
+                    IN list_of_cols_val_tab_del nvarchar(255)    --主键值
+                )
+                RESULT ("Code" int, "Message" nvarchar(200))
+                BEGIN
+                    declare error_code int;                        --返回值(0 无错误)
+                    declare error_message nvarchar(200);           --返回的消息
+                    set error_code = 0;
+                    set error_message = N'OK';
+                    --------------------------------------------------------------------------------------------------------------------------------
+                    --ADD YOUR CODE HERE
+                    --------------------------------------------------------------------------------------------------------------------------------
+                    --返回结果
+                    select error_code "Code", error_message "Message";
+                END;
+            </Script>
+        </Step>
+    </Action>
+</ns2:DataStructureOrchestration>

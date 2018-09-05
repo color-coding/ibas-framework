@@ -13,7 +13,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 
 	@Override
 	public ISqlQuery getServerTimeQuery() {
-		return new SqlQuery("SELECT  NOW() \"now\" FROM DUMMY;");
+		return new SqlQuery("SELECT NOW() \"now\" FROM DUMMY;");
 	}
 
 	@Override
