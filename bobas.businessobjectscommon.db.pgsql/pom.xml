@@ -13,8 +13,6 @@
     <name>Color-Coding Studio</name>
     <url>https://colorcoding.org</url>
   </organization>
-  <properties>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.colorcoding.ibas</groupId>
