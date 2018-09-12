@@ -14,7 +14,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			String dbURL = String.format(
-					"jdbc:mysql://%s/%s?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=UTC",
+					"jdbc:mysql://%s/%s?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
 					server, dbName);
 			Connection connection = DriverManager.getConnection(dbURL, userName, userPwd);
 			connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
