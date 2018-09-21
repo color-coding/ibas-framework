@@ -18,8 +18,15 @@ public interface IBusinessRule {
 	/**
 	 * 运行业务规则
 	 * 
-	 * @param bo
-	 *            执行规则的业务对象
+	 * @param bo      执行规则的业务对象
+	 * @param trigger 触发者
+	 */
+	void execute(IBusinessObject bo, String trigger) throws BusinessRuleException;
+
+	/**
+	 * 运行业务规则
+	 * 
+	 * @param bo 执行规则的业务对象
 	 */
 	void execute(IBusinessObject bo) throws BusinessRuleException;
 

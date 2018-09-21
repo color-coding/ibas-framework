@@ -99,26 +99,21 @@ class BusinessRules implements IBusinessRules {
 				}
 			}
 		}
-		this.execute(bo, doRules);
-	}
-
-	/**
-	 * 执行业务逻辑
-	 * 
-	 * @param bo
-	 *            执行逻辑的对象
-	 * @param rules
-	 *            执行的逻辑
-	 */
-	protected void execute(IBusinessObject bo, Collection<IBusinessRule> rules) throws BusinessRuleException {
-		if (rules == null || rules.isEmpty()) {
-			return;
-		}
-		if (MyConfiguration.isDebugMode()) {
-			Logger.log(MessageLevel.DEBUG, MSG_RULES_EXECUTING, bo);
-		}
-		for (IBusinessRule rule : rules) {
-			rule.execute(bo);
+		if (!doRules.isEmpty()) {
+			if (MyConfiguration.isDebugMode()) {
+				Logger.log(MessageLevel.DEBUG, MSG_RULES_EXECUTING, bo);
+			}
+			StringBuilder builder = new StringBuilder();
+			for (IPropertyInfo<?> propertyInfo : properties) {
+				if (builder.length() > 0) {
+					builder.append(", ");
+				}
+				builder.append(propertyInfo.getName());
+			}
+			String trigger = builder.toString();
+			for (IBusinessRule rule : doRules) {
+				rule.execute(bo, trigger);
+			}
 		}
 	}
 

@@ -49,4 +49,4 @@ for /f %%m in (%WORK_FOLDER%compile_order.txt) do (
     )
   )
 )
-echo --编译完成，更多信息请查看[compile_packages_log_%OPNAME%.txt]
+echo --编译完成

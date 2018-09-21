@@ -357,6 +357,8 @@ public class TestLogics extends TestCase {
 		item01.setItemDescription(materials01.getItemDescription());
 		item01.setQuantity(100);// 测试点，数量大于0
 		item01.setPrice("999999.99");
+		System.out
+				.println(String.format("%s * %s = %s", item01.getPrice(), item01.getQuantity(), item01.getLineTotal()));
 		assertEquals(item01.getLineTotal().compareTo(item01.getQuantity().multiply(item01.getPrice())) == 0, true);
 		PurchaseOrderItem item02 = order.getPurchaseOrderItems().create();// 测试点，要求有元素
 		item02.setItemCode(materials01.getItemCode());// 测试点，子项检查，要求值

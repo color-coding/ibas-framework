@@ -19,11 +19,10 @@ import org.colorcoding.ibas.bobas.logic.IBusinessLogicsHost;
 import org.colorcoding.ibas.bobas.mapping.DbField;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.rule.IBusinessRule;
-import org.colorcoding.ibas.bobas.rule.common.BusinessRuleDivision;
 import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMaxLength;
 import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMaxValue;
 import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMinValue;
-import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMultiplication;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMultiplicativeDeductionEx;
 import org.colorcoding.ibas.bobas.rule.common.BusinessRuleRequired;
 
 /**
@@ -85,8 +84,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-编码
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDocEntry(Integer value) {
 		this.setProperty(PROPERTY_DOCENTRY, value);
@@ -117,8 +115,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-行号
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setLineId(Integer value) {
 		this.setProperty(PROPERTY_LINEID, value);
@@ -149,8 +146,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-显示顺序
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setVisOrder(Integer value) {
 		this.setProperty(PROPERTY_VISORDER, value);
@@ -181,8 +177,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-类型
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setObjectCode(String value) {
 		this.setProperty(PROPERTY_OBJECTCODE, value);
@@ -213,8 +208,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-数据源
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDataSource(String value) {
 		this.setProperty(PROPERTY_DATASOURCE, value);
@@ -245,8 +239,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-实例号（版本）
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setLogInst(Integer value) {
 		this.setProperty(PROPERTY_LOGINST, value);
@@ -277,8 +270,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-已引用
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setReferenced(emYesNo value) {
 		this.setProperty(PROPERTY_REFERENCED, value);
@@ -309,8 +301,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-取消
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCanceled(emYesNo value) {
 		this.setProperty(PROPERTY_CANCELED, value);
@@ -341,8 +332,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-状态
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setStatus(emBOStatus value) {
 		this.setProperty(PROPERTY_STATUS, value);
@@ -373,8 +363,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-单据状态
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setLineStatus(emDocumentStatus value) {
 		this.setProperty(PROPERTY_LINESTATUS, value);
@@ -405,8 +394,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-创建日期
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCreateDate(DateTime value) {
 		this.setProperty(PROPERTY_CREATEDATE, value);
@@ -437,8 +425,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-创建时间
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCreateTime(Short value) {
 		this.setProperty(PROPERTY_CREATETIME, value);
@@ -469,8 +456,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-修改日期
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setUpdateDate(DateTime value) {
 		this.setProperty(PROPERTY_UPDATEDATE, value);
@@ -501,8 +487,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-修改时间
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setUpdateTime(Short value) {
 		this.setProperty(PROPERTY_UPDATETIME, value);
@@ -533,8 +518,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-创建用户
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCreateUserSign(Integer value) {
 		this.setProperty(PROPERTY_CREATEUSERSIGN, value);
@@ -565,8 +549,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-修改用户
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setUpdateUserSign(Integer value) {
 		this.setProperty(PROPERTY_UPDATEUSERSIGN, value);
@@ -597,8 +580,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-创建动作标识
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCreateActionId(String value) {
 		this.setProperty(PROPERTY_CREATEACTIONID, value);
@@ -629,8 +611,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-更新动作标识
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setUpdateActionId(String value) {
 		this.setProperty(PROPERTY_UPDATEACTIONID, value);
@@ -661,8 +642,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-参考1
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setReference1(String value) {
 		this.setProperty(PROPERTY_REFERENCE1, value);
@@ -693,8 +673,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-参考2
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setReference2(String value) {
 		this.setProperty(PROPERTY_REFERENCE2, value);
@@ -725,8 +704,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-物料编号
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setItemCode(String value) {
 		this.setProperty(PROPERTY_ITEMCODE, value);
@@ -757,8 +735,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-物料/服务描述
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setItemDescription(String value) {
 		this.setProperty(PROPERTY_ITEMDESCRIPTION, value);
@@ -789,8 +766,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-数量
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setQuantity(Decimal value) {
 		this.setProperty(PROPERTY_QUANTITY, value);
@@ -799,8 +775,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-数量
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setQuantity(String value) {
 		this.setQuantity(new Decimal(value));
@@ -809,8 +784,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-数量
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setQuantity(int value) {
 		this.setQuantity(new Decimal(value));
@@ -819,8 +793,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-数量
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setQuantity(double value) {
 		this.setQuantity(new Decimal(value));
@@ -851,8 +824,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-行交货日期
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDeliveryDate(DateTime value) {
 		this.setProperty(PROPERTY_DELIVERYDATE, value);
@@ -883,8 +855,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-剩余未清数量
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setOpenQuantity(Decimal value) {
 		this.setProperty(PROPERTY_OPENQUANTITY, value);
@@ -893,8 +864,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-剩余未清数量
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setOpenQuantity(String value) {
 		this.setOpenQuantity(new Decimal(value));
@@ -903,8 +873,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-剩余未清数量
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setOpenQuantity(int value) {
 		this.setOpenQuantity(new Decimal(value));
@@ -913,8 +882,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-剩余未清数量
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setOpenQuantity(double value) {
 		this.setOpenQuantity(new Decimal(value));
@@ -945,8 +913,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-单价
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setPrice(Decimal value) {
 		this.setProperty(PROPERTY_PRICE, value);
@@ -955,8 +922,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-单价
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setPrice(String value) {
 		this.setPrice(new Decimal(value));
@@ -965,8 +931,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-单价
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setPrice(int value) {
 		this.setPrice(new Decimal(value));
@@ -975,8 +940,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-单价
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setPrice(double value) {
 		this.setPrice(new Decimal(value));
@@ -1007,8 +971,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-价格货币
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setPriceCurrency(String value) {
 		this.setProperty(PROPERTY_PRICECURRENCY, value);
@@ -1039,8 +1002,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-行总计
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setLineTotal(Decimal value) {
 		this.setProperty(PROPERTY_LINETOTAL, value);
@@ -1049,8 +1011,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-行总计
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setLineTotal(String value) {
 		this.setLineTotal(new Decimal(value));
@@ -1059,8 +1020,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-行总计
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setLineTotal(int value) {
 		this.setLineTotal(new Decimal(value));
@@ -1069,8 +1029,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-行总计
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setLineTotal(double value) {
 		this.setLineTotal(new Decimal(value));
@@ -1101,8 +1060,7 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 	/**
 	 * 设置-仓库代码
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setWarehouse(String value) {
 		this.setProperty(PROPERTY_WAREHOUSE, value);
@@ -1125,8 +1083,9 @@ public class PurchaseOrderItem extends BusinessObject<PurchaseOrderItem>
 				new BusinessRuleMaxLength(20, PROPERTY_ITEMCODE), // 不能超过长度
 				new BusinessRuleMinValue<Decimal>(Decimal.ZERO, PROPERTY_QUANTITY, PROPERTY_PRICE, PROPERTY_LINETOTAL), // 不能低于0
 				new BusinessRuleMaxValue<Integer>(100, PROPERTY_LINEID), // 不能大于100
-				new BusinessRuleMultiplication(PROPERTY_LINETOTAL, PROPERTY_PRICE, PROPERTY_QUANTITY), // 计算总计
-				new BusinessRuleDivision(PROPERTY_PRICE, PROPERTY_LINETOTAL, PROPERTY_QUANTITY),// 计算价格
+				// 推导 总计 = 数量 * 价格
+				new BusinessRuleMultiplicativeDeductionEx(PROPERTY_PRICE, PROPERTY_QUANTITY, PROPERTY_LINETOTAL)
+
 		};
 	}
 

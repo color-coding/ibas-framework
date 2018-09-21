@@ -51,6 +51,11 @@ public abstract class BusinessRule implements IBusinessRule {
 	}
 
 	@Override
+	public final void execute(IBusinessObject bo) throws BusinessRuleException {
+		this.execute(bo, null);
+	}
+
+	@Override
 	public String toString() {
 		return String.format("{business rule: %s}", this.getName());
 	}

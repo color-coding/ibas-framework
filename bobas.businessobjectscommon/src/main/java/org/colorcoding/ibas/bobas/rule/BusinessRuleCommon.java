@@ -20,9 +20,11 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
 public abstract class BusinessRuleCommon extends BusinessRule {
 
 	@Override
-	public final void execute(IBusinessObject bo) throws BusinessRuleException {
+	public final void execute(IBusinessObject bo, String trigger) throws BusinessRuleException {
 		try {
-			BusinessRuleContext context = new BusinessRuleContext(bo);
+			BusinessRuleContext context = new BusinessRuleContext();
+			context.setSource(bo);
+			context.setTrigger(trigger);
 			// 赋值输入属性
 			if (bo instanceof IManageProperties) {
 				IManageProperties boProperties = (IManageProperties) bo;
@@ -57,8 +59,7 @@ public abstract class BusinessRuleCommon extends BusinessRule {
 	/**
 	 * 执行业务逻辑
 	 * 
-	 * @param context
-	 *            内容
+	 * @param context 内容
 	 */
 	protected abstract void execute(BusinessRuleContext context) throws Exception;
 
@@ -79,13 +80,18 @@ public abstract class BusinessRuleCommon extends BusinessRule {
 			this.setSource(source);
 		}
 
+		private String trigger;
+
+		public final String getTrigger() {
+			return trigger;
+		}
+
+		public final void setTrigger(String trigger) {
+			this.trigger = trigger;
+		}
+
 		private IBusinessObject source;
 
-		/**
-		 * 运行规则的对象
-		 * 
-		 * @return
-		 */
 		public final IBusinessObject getSource() {
 			return source;
 		}

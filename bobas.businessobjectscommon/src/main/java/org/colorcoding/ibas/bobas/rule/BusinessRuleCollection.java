@@ -28,8 +28,7 @@ public abstract class BusinessRuleCollection extends BusinessRule {
 	/**
 	 * 构造
 	 * 
-	 * @param property
-	 *            集合属性
+	 * @param property 集合属性
 	 */
 	public BusinessRuleCollection(IPropertyInfo<?> collection) {
 		this.setCollection(collection);
@@ -46,7 +45,7 @@ public abstract class BusinessRuleCollection extends BusinessRule {
 	}
 
 	@Override
-	public final void execute(IBusinessObject bo) throws BusinessRuleException {
+	public final void execute(IBusinessObject bo, String trigger) throws BusinessRuleException {
 		try {
 			BusinessRuleContext context = new BusinessRuleContext(bo);
 			// 赋值输入属性
@@ -100,8 +99,7 @@ public abstract class BusinessRuleCollection extends BusinessRule {
 	/**
 	 * 执行业务逻辑
 	 * 
-	 * @param context
-	 *            内容
+	 * @param context 内容
 	 */
 	protected abstract void execute(BusinessRuleContext context) throws Exception;
 
