@@ -1,13 +1,18 @@
 package org.colorcoding.ibas.bobas.repository;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
+import org.colorcoding.ibas.bobas.common.ConditionOperation;
+import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.Criteria;
+import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
+import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
@@ -26,9 +31,8 @@ import org.colorcoding.ibas.bobas.ownership.UnauthorizedException;
  *
  */
 public class BORepositoryServiceApplication extends BORepositorySmartService implements IBORepositoryApplication {
-
+	static final String CRITERIA_CONDITION_ALIAS_TAG_DELETED = "Deleted";
 	protected static final String MSG_REPOSITORY_FETCH_AND_FILTERING = "repository: fetch [%s] [%s] times, result [%s] filtering [%s].";
-
 	/**
 	 * 操作信息：数据检索数量
 	 */
@@ -50,6 +54,9 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 		// 是否删除前重新查询
 		this.setRefetchBeforeDelete(
 				MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_REFETCH_BEFORE_DELETE, false));
+		// 是否过滤标记删除数据
+		this.setFilterTagDeleted(
+				MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_FILTER_TAG_DELETED, true));
 	}
 
 	private boolean refetchAfterSave;
@@ -80,6 +87,16 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 
 	public final void setRefetchBeforeDelete(boolean value) {
 		this.refetchBeforeDelete = value;
+	}
+
+	private boolean filterTagDeleted;
+
+	public final boolean isFilterTagDeleted() {
+		return filterTagDeleted;
+	}
+
+	public final void setFilterTagDeleted(boolean filterTagDeleted) {
+		this.filterTagDeleted = filterTagDeleted;
 	}
 
 	private String userToken = null;
@@ -117,14 +134,11 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 	/**
 	 * 查询业务对象
 	 * 
-	 * @param boRepository
-	 *            使用的仓库
+	 * @param boRepository 使用的仓库
 	 * 
-	 * @param criteria
-	 *            查询条件
+	 * @param criteria     查询条件
 	 * 
-	 * @param token
-	 *            口令
+	 * @param token        口令
 	 * 
 	 * @return 查询的结果
 	 */
@@ -135,6 +149,30 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 		try {
 			if (criteria == null) {
 				criteria = new Criteria();
+			}
+			if (IBOTagDeleted.class.isAssignableFrom(boType)) {
+				// 标记删除类型
+				if (criteria.getConditions().firstOrDefault(
+						c -> c.getAlias().equalsIgnoreCase(CRITERIA_CONDITION_ALIAS_TAG_DELETED)) == null) {
+					// 不存在删除条件，添加过滤
+					if (criteria.getConditions().size() > 1) {
+						criteria.getConditions().firstOrDefault()
+								.setBracketOpen(criteria.getConditions().firstOrDefault().getBracketOpen() + 1);
+						criteria.getConditions().lastOrDefault()
+								.setBracketClose(criteria.getConditions().lastOrDefault().getBracketClose() + 1);
+					}
+					ICondition condition = criteria.getConditions().create();
+					condition.setBracketOpen(1);
+					condition.setRelationship(ConditionRelationship.AND);
+					condition.setAlias(CRITERIA_CONDITION_ALIAS_TAG_DELETED);
+					condition.setOperation(ConditionOperation.NOT_EQUAL);
+					condition.setValue(emYesNo.YES);
+					condition = criteria.getConditions().create();
+					condition.setRelationship(ConditionRelationship.OR);
+					condition.setAlias(CRITERIA_CONDITION_ALIAS_TAG_DELETED);
+					condition.setOperation(ConditionOperation.IS_NULL);
+					condition.setBracketClose(1);
+				}
 			}
 			Integer filterCount = 0;// 过滤的数量
 			Integer fetchTime = 0;// 查询的次数
@@ -204,14 +242,11 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 	/**
 	 * 保存业务对象
 	 * 
-	 * @param boRepository
-	 *            业务对象仓库
+	 * @param boRepository 业务对象仓库
 	 * 
-	 * @param bo
-	 *            业务对象
+	 * @param bo           业务对象
 	 * 
-	 * @param token
-	 *            口令
+	 * @param token        口令
 	 * 
 	 * @return 查询的结果
 	 * @throws Exception

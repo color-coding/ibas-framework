@@ -11,17 +11,17 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
  */
 public interface IBOTagDeleted extends IBOTagReferenced {
 
-    /**
-     * 是否标记删除
-     * 
-     * @return
-     */
-    emYesNo getDeleted();
+	/**
+	 * 是否标记删除
+	 * 
+	 * @return
+	 */
+	emYesNo getDeleted();
 
-    /**
-     * 设置-删除状态
-     * 
-     * @param value
-     */
-    void setDeleted(emYesNo value);
+	/**
+	 * 设置-删除状态
+	 * 
+	 * @param value
+	 */
+	void setDeleted(emYesNo value);
 }

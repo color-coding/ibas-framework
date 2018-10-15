@@ -133,6 +133,10 @@ public class MyConfiguration extends Configuration {
 	 */
 	public final static String CONFIG_ITEM_BO_REFETCH_BEFORE_DELETE = "RefetchBeforeDelete";
 	/**
+	 * 配置项目-业务对象过滤标记删除
+	 */
+	public final static String CONFIG_ITEM_BO_FILTER_TAG_DELETED = "FilterTagDeleted";
+	/**
 	 * 配置项目-开启只读业务仓库
 	 */
 	public final static String CONFIG_ITEM_ENABLED_READONLY_REPOSITORY = "EnabledReadonlyRepository";
