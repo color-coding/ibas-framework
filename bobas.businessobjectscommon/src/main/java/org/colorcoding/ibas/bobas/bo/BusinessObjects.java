@@ -36,10 +36,8 @@ import org.colorcoding.ibas.bobas.rule.IBusinessRules;
  * 
  * @author Niuren.Zhu
  *
- * @param <E>
- *            元素类型
- * @param <P>
- *            父项类型
+ * @param <E> 元素类型
+ * @param <P> 父项类型
  */
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "BusinessObjects", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
@@ -210,25 +208,6 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		return super.add(item);
 	}
 
-	/**
-	 * 获取LineId编号
-	 * 
-	 * @return
-	 */
-	private int nextLineId() {
-		int lineId = 0;
-		for (E item : this) {
-			if (item instanceof IBOLine) {
-				IBOLine line = (IBOLine) item;
-				if (line.getLineId() > lineId) {
-					lineId = line.getLineId();
-				}
-			}
-		}
-		lineId = lineId + 1;
-		return lineId;
-	}
-
 	@Override
 	protected void afterAddItem(E item) {
 		// 调用基类方法
@@ -241,10 +220,20 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		}
 		// 修正子项编号
 		if (item instanceof IBOLine) {
-			IBOLine line = (IBOLine) item;
-			if (line.getLineId() <= 0) {
-				line.setLineId(this.nextLineId());
+			int max = 0;
+			for (E tmp : this) {
+				if (tmp == item) {
+					// 自身编号跳过
+					continue;
+				}
+				if (tmp instanceof IBOLine) {
+					IBOLine line = (IBOLine) item;
+					if (line.getLineId() > max) {
+						max = line.getLineId();
+					}
+				}
 			}
+			((IBOLine) item).setLineId(max + 1);
 		}
 		// 没父项，退出
 		if (this.getParent() == null) {

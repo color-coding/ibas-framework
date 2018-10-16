@@ -129,6 +129,10 @@ public class MyConfiguration extends Configuration {
 	 */
 	public final static String CONFIG_ITEM_BO_DISABLED_BUSINESS_APPROVAL = "DisabledBusinessApproval";
 	/**
+	 * 配置项目-关闭业务对象期间
+	 */
+	public final static String CONFIG_ITEM_BO_DISABLED_BUSINESS_PERIOD = "DisabledBusinessPeriod";
+	/**
 	 * 配置项目-业务对象删除前查询
 	 */
 	public final static String CONFIG_ITEM_BO_REFETCH_BEFORE_DELETE = "RefetchBeforeDelete";
@@ -225,6 +229,10 @@ public class MyConfiguration extends Configuration {
 	 */
 	public final static String CONFIG_ITEM_BUSINESS_RULES_WAY = "BizRulesWay";
 	/**
+	 * 配置项目-期间管理方式
+	 */
+	public final static String CONFIG_ITEM_PERIODS_WAY = "PeriodsWay";
+	/**
 	 * 配置项目-序列化管理方式
 	 */
 	public final static String CONFIG_ITEM_SERIALIZATION_WAY = "SerializationWay";
@@ -244,6 +252,10 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-权限判断员失效时间
 	 */
 	public final static String CONFIG_ITEM_OWNERSHIP_JUDGER_EXPIRY_VALUE = "OwnJudgerExpiry";
+	/**
+	 * 配置项目-期间管理员失效时间
+	 */
+	public final static String CONFIG_ITEM_PERIOD_MANAGER_EXPIRY_VALUE = "PrdManagerExpiry";
 	/**
 	 * 配置项目-文档文件夹
 	 */

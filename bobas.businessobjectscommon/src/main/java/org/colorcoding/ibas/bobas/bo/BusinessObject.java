@@ -29,6 +29,7 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
+import org.colorcoding.ibas.bobas.period.IPeriodData;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleException;
 import org.colorcoding.ibas.bobas.rule.BusinessRulesFactory;
 import org.colorcoding.ibas.bobas.rule.IBusinessRule;
@@ -243,7 +244,6 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 			docBO.setStatus(emBOStatus.OPEN);
 			docBO.setDocumentStatus(emDocumentStatus.PLANNED);
 			docBO.setDocNum(0);
-			docBO.setPeriod(0);
 		}
 		if (this instanceof IBODocumentLine) {
 			IBODocumentLine docLineBO = (IBODocumentLine) this;
@@ -254,6 +254,11 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 		if (this instanceof IApprovalData) {
 			IApprovalData apData = (IApprovalData) this;
 			apData.setApprovalStatus(emApprovalStatus.UNAFFECTED);
+		}
+		// 重置期间
+		if (this instanceof IPeriodData) {
+			IPeriodData pdData = (IPeriodData) this;
+			pdData.setPeriod(0);
 		}
 		// 重置子项状态
 		for (IFieldData fieldData : this.getFields()) {
@@ -392,8 +397,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	/**
 	 * 标记为未修改
 	 * 
-	 * @param recursive
-	 *            包括子项及属性
+	 * @param recursive 包括子项及属性
 	 */
 	@Override
 	public final void markOld(boolean recursive) {
@@ -475,8 +479,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	/**
 	 * 运行业务规则
 	 * 
-	 * @param properties
-	 *            触发的属性
+	 * @param properties 触发的属性
 	 * @throws BusinessRuleException
 	 */
 	public void executeRules(IPropertyInfo<?>... properties) throws BusinessRuleException {

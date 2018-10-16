@@ -49,7 +49,7 @@ public class OwnershipFactory extends ConfigurableFactory<IOwnershipJudger> {
 
 						private long interval = MyConfiguration.getConfigValue(
 								MyConfiguration.CONFIG_ITEM_OWNERSHIP_JUDGER_EXPIRY_VALUE,
-								MyConfiguration.isDebugMode() ? 30 : 120);
+								MyConfiguration.isDebugMode() ? 60 : 300);
 
 						@Override
 						public long getInterval() {

@@ -45,20 +45,6 @@ public interface IBODocument extends IBusinessObject, IBOStorageTag {
 	void setDocNum(Integer value);
 
 	/**
-	 * 获取-期间
-	 * 
-	 * @return
-	 */
-	Integer getPeriod();
-
-	/**
-	 * 设置-期间
-	 * 
-	 * @param value
-	 */
-	void setPeriod(Integer value);
-
-	/**
 	 * 获取-状态
 	 * 
 	 * @return

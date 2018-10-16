@@ -19,6 +19,10 @@ import org.colorcoding.ibas.bobas.logic.BusinessLogicsFactory;
 import org.colorcoding.ibas.bobas.logic.IBusinessLogicChain;
 import org.colorcoding.ibas.bobas.logic.IBusinessLogicsManager;
 import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
+import org.colorcoding.ibas.bobas.period.IPeriodData;
+import org.colorcoding.ibas.bobas.period.IPeriodsManager;
+import org.colorcoding.ibas.bobas.period.PeriodException;
+import org.colorcoding.ibas.bobas.period.PeriodsFactory;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleException;
 import org.colorcoding.ibas.bobas.rule.ICheckRules;
 
@@ -39,6 +43,8 @@ public class BORepositoryLogicService extends BORepositoryService {
 				!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_BUSINESS_LOGICS, false));
 		this.setCheckApprovalProcess(
 				!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_BUSINESS_APPROVAL, false));
+		this.setCheckPeriods(
+				!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_BUSINESS_PERIOD, false));
 	}
 
 	private boolean checkRules;
@@ -71,15 +77,22 @@ public class BORepositoryLogicService extends BORepositoryService {
 		this.checkApprovalProcess = value;
 	}
 
+	private boolean checkPeriods;
+
+	protected final boolean isCheckPeriods() {
+		return checkPeriods;
+	}
+
+	protected final void setCheckPeriods(boolean value) {
+		this.checkPeriods = value;
+	}
+
 	/**
 	 * 对象的子项保存事件
 	 * 
-	 * @param action
-	 *            事件
-	 * @param trigger
-	 *            发生事件对象
-	 * @param parent
-	 *            所属的父项
+	 * @param action  事件
+	 * @param trigger 发生事件对象
+	 * @param parent  所属的父项
 	 * @throws SaveActionException
 	 */
 	@Override
@@ -97,10 +110,18 @@ public class BORepositoryLogicService extends BORepositoryService {
 		}
 		if (action == SaveActionType.BEFORE_ADDING || action == SaveActionType.BEFORE_DELETING
 				|| action == SaveActionType.BEFORE_UPDATING) {
+			// 期间检查
+			if (this.isCheckPeriods()) {
+				try {
+					this.checkPeriods(trigger);
+				} catch (PeriodException e) {
+					throw new RepositoryException(e);
+				}
+			}
 			// 业务规则检查
 			if (this.isCheckRules()) {
 				try {
-					this.checkRules(action, trigger);
+					this.checkRules(trigger);
 				} catch (BusinessRuleException e) {
 					throw new RepositoryException(e);
 				}
@@ -109,7 +130,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 			if (this.isCheckApprovalProcess()) {
 				// 触发审批流程
 				try {
-					this.triggerApprovals(trigger);
+					this.checkApprovals(trigger);
 				} catch (InvalidAuthorizationException | ApprovalProcessException e) {
 					throw new RepositoryException(e);
 				}
@@ -125,13 +146,29 @@ public class BORepositoryLogicService extends BORepositoryService {
 	}
 
 	/**
-	 * 业务规则检查
+	 * 检查期间
 	 * 
 	 * @param bo
-	 *            对象
+	 * @throws PeriodException
+	 */
+	private void checkPeriods(IBusinessObject bo) throws PeriodException {
+		if (!(bo instanceof IPeriodData)) {
+			// 退出处理
+			return;
+		}
+		IPeriodsManager manager = PeriodsFactory.create().createManager();
+		IPeriodData data = (IPeriodData) bo;
+		manager.applyPeriod(data);
+		manager.checkPeriod(data);
+	}
+
+	/**
+	 * 业务规则检查
+	 * 
+	 * @param bo 对象
 	 * @throws BusinessRuleException
 	 */
-	private void checkRules(SaveActionType type, IBusinessObject bo) throws BusinessRuleException {
+	private void checkRules(IBusinessObject bo) throws BusinessRuleException {
 		// 运行对象业务规则
 		if (bo instanceof BusinessObject<?>) {
 			((BusinessObject<?>) bo).executeRules();
@@ -143,14 +180,12 @@ public class BORepositoryLogicService extends BORepositoryService {
 	/**
 	 * 触发审批流程
 	 * 
-	 * @param type
-	 *            操作类型
-	 * @param bo
-	 *            业务数据
+	 * @param type 操作类型
+	 * @param bo   业务数据
 	 * @throws ApprovalException
 	 * @throws InvalidAuthorizationException
 	 */
-	private void triggerApprovals(IBusinessObject bo) throws ApprovalProcessException, InvalidAuthorizationException {
+	private void checkApprovals(IBusinessObject bo) throws ApprovalProcessException, InvalidAuthorizationException {
 		if (!(bo instanceof IApprovalData)) {
 			// 业务对象不是需要审批的数据，退出处理
 			return;
@@ -195,10 +230,8 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 * 
 	 * 根BO进入，
 	 * 
-	 * @param type
-	 *            操作类型
-	 * @param bo
-	 *            业务数据
+	 * @param type 操作类型
+	 * @param bo   业务数据
 	 */
 	private void runLogics(SaveActionType type, IBusinessObject bo) {
 		String transId = this.getRepository().getTransactionId();// 事务链标记，结束事务时关闭
