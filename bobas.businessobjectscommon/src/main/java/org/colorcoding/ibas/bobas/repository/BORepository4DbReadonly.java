@@ -147,8 +147,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	 * 打开数据库连接
 	 * 
 	 * @return true，此次成功打开；false，已经打开
-	 * @throws DbException
-	 *             不能打开
+	 * @throws DbException 不能打开
 	 */
 	@Override
 	public boolean openDbConnection() throws DbException {
@@ -283,8 +282,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	/**
 	 * 单值查询，仅返回第一行第一列的值
 	 * 
-	 * @param sqlQuery
-	 *            查询语句
+	 * @param sqlQuery 查询语句
 	 * @return 操作结果
 	 */
 	@Override
@@ -324,10 +322,8 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	/**
 	 * 查询，不填充子项
 	 * 
-	 * @param sqlQuery
-	 *            语句
-	 * @param bo
-	 *            对象实例，可基于类型构造新实例
+	 * @param sqlQuery 语句
+	 * @param bo       对象实例，可基于类型构造新实例
 	 * @return 操作结果
 	 * @throws Exception
 	 */
@@ -366,10 +362,8 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	/**
 	 * 查询，并填充子项
 	 * 
-	 * @param criteria
-	 *            查询
-	 * @param boType
-	 *            填充对象
+	 * @param criteria 查询
+	 * @param boType   填充对象
 	 * @return 操作结果
 	 * @throws Exception
 	 */
@@ -407,10 +401,8 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	/**
 	 * 查询，并填充子项
 	 * 
-	 * @param sqlQuery
-	 *            语句
-	 * @param boType
-	 *            填充对象
+	 * @param sqlQuery 语句
+	 * @param boType   填充对象
 	 * @return 操作结果
 	 * @throws Exception
 	 */
@@ -435,10 +427,8 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	/**
 	 * 查询已知对象的子项
 	 * 
-	 * @param bos
-	 *            已知对象
-	 * @param criteria
-	 *            可能存在的子项查询
+	 * @param bos      已知对象
+	 * @param criteria 可能存在的子项查询
 	 * @throws Exception
 	 */
 	private final void myFetchEx(IBusinessObjectBase[] bos, ICriteria criteria) throws Exception {
@@ -479,6 +469,9 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 								if (tmpCriteria != null) {
 									// 设置了此属性的查询
 									childCriteria = childCriteria.copyFrom(tmpCriteria);
+									if (tmpCriteria.getResultCount() > 0) {
+										childCriteria.setResultCount(tmpCriteria.getResultCount());
+									}
 								}
 							}
 							ISqlQuery childSqlQuery = adapter4Db.parseSqlQuery(childCriteria, childBoType);
