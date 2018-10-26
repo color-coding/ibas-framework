@@ -19,6 +19,7 @@ class ApprovalProcessRepository extends BORepositoryLogicService {
 
 	public ApprovalProcessRepository() {
 		this.setCheckApprovalProcess(false);// 此业务仓库不检查审批流程
+		this.setCheckPeriods(false);// 不检查期间
 	}
 
 	public ApprovalProcessRepository(IBORepository repository) {
@@ -49,8 +50,7 @@ class ApprovalProcessRepository extends BORepositoryLogicService {
 	/**
 	 * 查询对象（涉及BOCode解析需要提前加载class）
 	 * 
-	 * @param criteria
-	 *            条件，需要指定BOCode
+	 * @param criteria 条件，需要指定BOCode
 	 * @return
 	 */
 	public <P extends IBusinessObject> OperationResult<P> fetch(ICriteria criteria) {
@@ -73,8 +73,7 @@ class ApprovalProcessRepository extends BORepositoryLogicService {
 	/**
 	 * 保存对象
 	 * 
-	 * @param bo
-	 *            业务对象
+	 * @param bo 业务对象
 	 * @return
 	 */
 	public <P extends IBusinessObject> OperationResult<P> saveData(P bo) {

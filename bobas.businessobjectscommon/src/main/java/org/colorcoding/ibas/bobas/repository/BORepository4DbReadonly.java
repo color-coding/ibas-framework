@@ -21,14 +21,14 @@ import org.colorcoding.ibas.bobas.core.TrackableBase;
 import org.colorcoding.ibas.bobas.core.fields.AssociatedFieldDataBase;
 import org.colorcoding.ibas.bobas.core.fields.FieldRelation;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
-import org.colorcoding.ibas.bobas.core.fields.IManageFields;
+import org.colorcoding.ibas.bobas.core.fields.IManagedFields;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.SingleValue;
 import org.colorcoding.ibas.bobas.db.DbAdapterFactory;
 import org.colorcoding.ibas.bobas.db.DbException;
-import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
+import org.colorcoding.ibas.bobas.db.IBOAdapter;
 import org.colorcoding.ibas.bobas.db.IDbAdapter;
 import org.colorcoding.ibas.bobas.db.IDbCommand;
 import org.colorcoding.ibas.bobas.db.IDbConnection;
@@ -128,10 +128,10 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 		this.connectDb(null, dbServer, dbName, dbUser, dbPassword);
 	}
 
-	private IBOAdapter4Db boAdapter;
+	private IBOAdapter boAdapter;
 
 	@Override
-	public IBOAdapter4Db getBOAdapter() {
+	public IBOAdapter getBOAdapter() {
 		if (this.boAdapter == null) {
 			this.boAdapter = this.createDbAdapter().createBOAdapter();
 		}
@@ -139,7 +139,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	}
 
 	@Override
-	public void setBOAdapter(IBOAdapter4Db boAdapter) {
+	public void setBOAdapter(IBOAdapter boAdapter) {
 		this.boAdapter = boAdapter;
 	}
 
@@ -185,8 +185,8 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	@Override
 	public DateTime getServerTime() {
 		try {
-			IBOAdapter4Db adapter4Db = this.getBOAdapter();
-			IOperationResult<SingleValue> operationResult = this.fetch(adapter4Db.getServerTimeQuery());
+			IBOAdapter adapter = this.getBOAdapter();
+			IOperationResult<SingleValue> operationResult = this.fetch(adapter.getServerTimeQuery());
 			SingleValue data = operationResult.getResultObjects().firstOrDefault();
 			if (data != null) {
 				if (data.getValue() instanceof Timestamp) {
@@ -226,8 +226,8 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	@Override
 	public <T extends IBusinessObjectBase> IOperationResult<T> fetch(ICriteria criteria, Class<T> boType) {
 		try {
-			IBOAdapter4Db adapter4Db = this.getBOAdapter();
-			ISqlQuery sqlQuery = adapter4Db.parseSqlQuery(criteria, boType);
+			IBOAdapter adapter = this.getBOAdapter();
+			ISqlQuery sqlQuery = adapter.parseSqlQuery(criteria, boType);
 			return this.fetch(sqlQuery, boType);
 		} catch (Exception e) {
 			return new OperationResult<>(e);
@@ -334,7 +334,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 		if (sqlQuery == null) {
 			throw new Exception(I18N.prop("msg_bobas_invalid_sql_query"));
 		}
-		IBOAdapter4Db adapter4Db = this.getBOAdapter();
+		IBOAdapter adapter = this.getBOAdapter();
 		IDbDataReader reader = null;
 		IDbCommand command = null;
 		boolean myOpenedDb = false;// 自己打开的数据库
@@ -342,7 +342,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 			myOpenedDb = this.openDbConnection();
 			command = this.getDbConnection().createCommand();
 			reader = command.executeReader(sqlQuery);
-			return adapter4Db.parseBOs(reader, boType);
+			return adapter.parseBOs(reader, boType);
 		} finally {
 			if (reader != null) {
 				reader.close();
@@ -374,8 +374,8 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 		boolean myOpenedDb = false;// 自己打开的数据库
 		try {
 			myOpenedDb = this.openDbConnection();
-			IBOAdapter4Db adapter4Db = this.getBOAdapter();
-			ISqlQuery sqlQuery = adapter4Db.parseSqlQuery(criteria, boType);
+			IBOAdapter adapter = this.getBOAdapter();
+			ISqlQuery sqlQuery = adapter.parseSqlQuery(criteria, boType);
 			IBusinessObjectBase[] mainBOs = this.myFetch(sqlQuery, boType);
 			this.myFetchEx(mainBOs, criteria);// 加载子项
 			if (criteria.getChildCriterias().size() > 0) {
@@ -438,17 +438,17 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 		boolean myOpenedDb = false;// 自己打开的数据库
 		IDbDataReader reader = null;
 		IDbCommand command = null;
-		IBOAdapter4Db adapter4Db = this.getBOAdapter();
+		IBOAdapter adapter = this.getBOAdapter();
 		try {
 			myOpenedDb = this.openDbConnection();
 			for (int i = 0; i < bos.length; i++) {
 				IBusinessObjectBase bo = bos[i];
 				// 遍历BO
-				if (!(bo instanceof IManageFields)) {
+				if (!(bo instanceof IManagedFields)) {
 					// 不能解析的对象
 					continue;
 				}
-				IManageFields boFields = ((IManageFields) bo);
+				IManagedFields boFields = ((IManagedFields) bo);
 				if (bo instanceof TrackableBase) {
 					// 赋值阶段，不跟踪状态变化
 					((TrackableBase) bo).setLoading(true);
@@ -474,10 +474,10 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 									}
 								}
 							}
-							ISqlQuery childSqlQuery = adapter4Db.parseSqlQuery(childCriteria, childBoType);
+							ISqlQuery childSqlQuery = adapter.parseSqlQuery(childCriteria, childBoType);
 							command = this.getDbConnection().createCommand();
 							reader = command.executeReader(childSqlQuery);
-							IBusinessObjectBase[] childs = adapter4Db.parseBOs(reader, listField);
+							IBusinessObjectBase[] childs = adapter.parseBOs(reader, listField);
 							if (tmpCriteria != null && (childs == null || childs.length == 0)) {
 								// 没有匹配的子项数据
 								if (tmpCriteria.isOnlyHasChilds()) {
@@ -515,11 +515,11 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 							// 终止关联，处理下一个字段
 							continue;
 						}
-						ISqlQuery childSqlQuery = adapter4Db.parseSqlQuery(childCriteria, childBoType);
+						ISqlQuery childSqlQuery = adapter.parseSqlQuery(childCriteria, childBoType);
 						command = this.getDbConnection().createCommand();
 						reader = command.executeReader(childSqlQuery);
 						// 填充数据
-						IBusinessObjectBase[] cBOs = adapter4Db.parseBOs(reader, childBoType);
+						IBusinessObjectBase[] cBOs = adapter.parseBOs(reader, childBoType);
 						if (cBOs != null & cBOs.length > 0) {
 							// 有子项结果
 							if (assoFieldData.getAssociationMode() == AssociationMode.ONE_TO_MANY) {
@@ -601,8 +601,8 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	@Override
 	public <T extends IBusinessObjectBase> IOperationResult<T> fetch(ISqlStoredProcedure sp, Class<T> boType) {
 		try {
-			IBOAdapter4Db adapter4Db = this.getBOAdapter();
-			ISqlQuery sqlQuery = adapter4Db.parseSqlQuery(sp);
+			IBOAdapter adapter = this.getBOAdapter();
+			ISqlQuery sqlQuery = adapter.parseSqlQuery(sp);
 			return this.fetch(sqlQuery, boType);
 		} catch (Exception e) {
 			return new OperationResult<>(e);
@@ -612,8 +612,8 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	@Override
 	public <T extends IBusinessObjectBase> IOperationResult<T> fetchEx(ISqlStoredProcedure sp, Class<T> boType) {
 		try {
-			IBOAdapter4Db adapter4Db = this.getBOAdapter();
-			ISqlQuery sqlQuery = adapter4Db.parseSqlQuery(sp);
+			IBOAdapter adapter = this.getBOAdapter();
+			ISqlQuery sqlQuery = adapter.parseSqlQuery(sp);
 			return this.fetchEx(sqlQuery, boType);
 		} catch (Exception e) {
 			return new OperationResult<>(e);
@@ -623,8 +623,8 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 	@Override
 	public IOperationResult<SingleValue> fetch(ISqlStoredProcedure sp) {
 		try {
-			IBOAdapter4Db adapter4Db = this.getBOAdapter();
-			ISqlQuery sqlQuery = adapter4Db.parseSqlQuery(sp);
+			IBOAdapter adapter = this.getBOAdapter();
+			ISqlQuery sqlQuery = adapter.parseSqlQuery(sp);
 			return this.fetch(sqlQuery);
 		} catch (Exception e) {
 			return new OperationResult<SingleValue>(e);

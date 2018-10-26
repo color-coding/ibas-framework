@@ -15,7 +15,7 @@ import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.measurement.Time;
 import org.colorcoding.ibas.bobas.data.measurement.emTimeUnit;
-import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
+import org.colorcoding.ibas.bobas.db.IBOAdapter;
 import org.colorcoding.ibas.bobas.db.ParsingException;
 import org.colorcoding.ibas.bobas.db.hana.BOAdapter;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
@@ -66,7 +66,7 @@ public class TestBOAdapter extends TestCase {
 		sort.setAlias(SalesOrder.PROPERTY_CUSTOMERCODE.getName());
 		sort.setSortType(SortType.ASCENDING);
 
-		IBOAdapter4Db boAdapter = new BOAdapter();
+		IBOAdapter boAdapter = new BOAdapter();
 		ISqlQuery sqlQuery = boAdapter.parseSqlQuery(criteria, SalesOrder.class);
 		// System.out.println(sqlString);
 		System.out.println(sqlQuery.getQueryString());
@@ -97,7 +97,7 @@ public class TestBOAdapter extends TestCase {
 		orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00002");
 
-		IBOAdapter4Db boAdapter = new BOAdapter();
+		IBOAdapter boAdapter = new BOAdapter();
 		ISqlQuery sqlQuery = boAdapter.parseInsertScript(order);
 		System.out.println(sqlQuery.getQueryString());
 
@@ -121,7 +121,7 @@ public class TestBOAdapter extends TestCase {
 		sqlStoredProcedure.addParameters("", 9);
 		sqlStoredProcedure.addParameters("", "C");
 		sqlStoredProcedure.addParameters("", "D");
-		IBOAdapter4Db boAdapter = new BOAdapter();
+		IBOAdapter boAdapter = new BOAdapter();
 		ISqlQuery sqlQuery = boAdapter.parseSqlQuery(sqlStoredProcedure);
 		System.out.println(sqlQuery.getQueryString());
 	}

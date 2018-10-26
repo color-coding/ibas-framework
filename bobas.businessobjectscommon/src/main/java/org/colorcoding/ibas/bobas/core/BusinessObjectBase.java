@@ -13,7 +13,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.core.fields.FieldManager;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
-import org.colorcoding.ibas.bobas.core.fields.IManageFields;
+import org.colorcoding.ibas.bobas.core.fields.IManagedFields;
 import org.colorcoding.ibas.bobas.core.fields.NotRegisterTypeException;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.message.Logger;
@@ -24,23 +24,20 @@ import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "BusinessObjectBase", namespace = MyConfiguration.NAMESPACE_BOBAS_CORE)
 public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends TrackableBase
-		implements IBusinessObjectBase, IManageProperties, IManageFields {
+		implements IBusinessObjectBase, IManagedProperties, IManagedFields {
 
-	protected static final String MSG_PROPERTIES_NOT_FOUND_PROPERTIES = "properties: not found type [%s]'s property [%s].";
+	static final String MSG_PROPERTIES_NOT_FOUND_PROPERTIES = "properties: not found type [%s]'s property [%s].";
 
 	private static final long serialVersionUID = -9005802565228088068L;
 
 	/**
 	 * 注册属性
 	 * 
-	 * @param name
-	 *            属性名称
+	 * @param name     属性名称
 	 * 
-	 * @param dataType
-	 *            属性的值类型
+	 * @param dataType 属性的值类型
 	 * 
-	 * @param boType
-	 *            业务对象类型
+	 * @param boType   业务对象类型
 	 * 
 	 * @return 依赖属性
 	 */
@@ -51,17 +48,13 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 	/**
 	 * 注册属性
 	 * 
-	 * @param name
-	 *            属性名称
+	 * @param name         属性名称
 	 * 
-	 * @param dataType
-	 *            属性的值类型
+	 * @param dataType     属性的值类型
 	 * 
-	 * @param boType
-	 *            业务对象类型
+	 * @param boType       业务对象类型
 	 * 
-	 * @param defaultValue
-	 *            默认值
+	 * @param defaultValue 默认值
 	 * 
 	 * @return 依赖属性
 	 */
@@ -100,8 +93,7 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 	/**
 	 * 获取主键字段
 	 * 
-	 * @param name
-	 *            属性名称（Property;BO.Property）
+	 * @param name 属性名称（Property;BO.Property）
 	 * @return 主键字段
 	 */
 	@Override
@@ -110,8 +102,8 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 			// 包括属性路径的，BO.Property
 			String cName = name.split("\\.")[0];
 			IFieldData cFieldData = this.getField(cName);
-			if (cFieldData.getValue() instanceof IManageFields) {
-				IManageFields sBO = (IManageFields) cFieldData.getValue();
+			if (cFieldData.getValue() instanceof IManagedFields) {
+				IManagedFields sBO = (IManagedFields) cFieldData.getValue();
 				return sBO.getField(name.substring(cName.length() + 1, name.length()));
 			}
 		} else {
@@ -146,8 +138,7 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 	/**
 	 * 属性是否存在
 	 * 
-	 * @param property
-	 *            属性
+	 * @param property 属性
 	 * @return true;false
 	 */
 	@Override
@@ -189,8 +180,7 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 	/**
 	 * 获取属性的值
 	 * 
-	 * @param property
-	 *            依赖属性
+	 * @param property 依赖属性
 	 * 
 	 * @return 属性的值
 	 */
@@ -216,11 +206,9 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 	/**
 	 * 设置属性的值
 	 * 
-	 * @param property
-	 *            依赖属性
+	 * @param property 依赖属性
 	 * 
-	 * @param value
-	 *            新的值
+	 * @param value    新的值
 	 */
 	@Override
 	public final <P> void setProperty(IPropertyInfo<P> property, P value) {
@@ -250,8 +238,7 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 	/**
 	 * 设置值之后
 	 * 
-	 * @param property
-	 *            被赋值的属性
+	 * @param property 被赋值的属性
 	 */
 	protected <P> void afterSetProperty(IPropertyInfo<P> property) {
 
@@ -282,8 +269,7 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 	/**
 	 * 反序列化之前调用
 	 * 
-	 * @param parent
-	 *            所属父项
+	 * @param parent 所属父项
 	 */
 	protected void beforeUnmarshal(Object parent) {
 		this.setLoading(true);
@@ -292,8 +278,7 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 	/**
 	 * 反序列化之后调用
 	 * 
-	 * @param parent
-	 *            所属父项
+	 * @param parent 所属父项
 	 */
 	protected void afterUnmarshal(Object parent) {
 		this.setLoading(false);

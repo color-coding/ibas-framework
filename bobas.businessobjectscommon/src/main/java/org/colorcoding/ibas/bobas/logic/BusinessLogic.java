@@ -2,7 +2,6 @@ package org.colorcoding.ibas.bobas.logic;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
-import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
 import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
@@ -28,10 +27,8 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
  * 
  * @author Niuren.Zhu
  *
- * @param <L>
- *            业务逻辑的契约
- * @param <B>
- *            被影响的对象
+ * @param <L> 业务逻辑的契约
+ * @param <B> 被影响的对象
  */
 public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends IBusinessObject>
 		implements IBusinessLogic<B> {
@@ -109,8 +106,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 	 * 
 	 * 第一次执行，检查契约数据父项状态；第二次执行，检查契约数据状态。
 	 * 
-	 * @param data
-	 *            检查的数据
+	 * @param data 检查的数据
 	 * @return 有效，true；无效，false
 	 */
 	protected boolean checkDataStatus(Object data) {
@@ -202,18 +198,25 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			// 加载被影响的数据
 			this.beAffected = this.fetchBeAffected(this.getContract());
 		}
-		if (this.beAffected instanceof BusinessObject<?>) {
-			BusinessObject<?> bo = (BusinessObject<?>) this.beAffected;
+		if (this.beAffected instanceof IBusinessObject) {
+			IBusinessObject bo = (IBusinessObject) this.beAffected;
 			if (bo.isDeleted()) {
 				// 恢复bo删除状态
 				bo.undelete();
 			}
 		}
+		if (this.beAffected instanceof IBOTagDeleted) {
+			IBOTagDeleted bo = (IBOTagDeleted) this.beAffected;
+			if (bo.getDeleted() == emYesNo.YES) {
+				// 恢复bo删除状态
+				bo.setDeleted(emYesNo.NO);
+			}
+		}
 		if (this.beAffected instanceof IBOTagReferenced) {
 			// 被影响数据，自动标记引用
-			IBOTagReferenced referenced = (IBOTagReferenced) this.beAffected;
-			if (referenced.getReferenced() == emYesNo.NO) {
-				referenced.setReferenced(emYesNo.YES);
+			IBOTagReferenced bo = (IBOTagReferenced) this.beAffected;
+			if (bo.getReferenced() == emYesNo.NO) {
+				bo.setReferenced(emYesNo.YES);
 			}
 		}
 		this.impact(this.getContract());

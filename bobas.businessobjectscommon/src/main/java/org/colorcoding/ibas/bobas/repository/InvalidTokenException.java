@@ -20,4 +20,7 @@ public class InvalidTokenException extends RepositoryException {
 
 	}
 
+	public InvalidTokenException(Throwable exception) {
+		super(exception);
+	}
 }

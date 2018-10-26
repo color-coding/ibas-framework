@@ -1,8 +1,5 @@
 package org.colorcoding.ibas.bobas.repository;
 
-import java.util.List;
-import java.util.Vector;
-
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.Criteria;
@@ -13,11 +10,8 @@ import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
-import org.colorcoding.ibas.bobas.core.SaveActionEvent;
-import org.colorcoding.ibas.bobas.core.SaveActionListener;
-import org.colorcoding.ibas.bobas.core.SaveActionType;
 import org.colorcoding.ibas.bobas.db.DbException;
-import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
+import org.colorcoding.ibas.bobas.db.IBOAdapter;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logic.BusinessLogicException;
 import org.colorcoding.ibas.bobas.message.Logger;
@@ -61,24 +55,8 @@ public class BORepositoryService implements IBORepositoryService {
 		return this.repository;
 	}
 
-	private SaveActionListener saveListener = new SaveActionListener() {
-		@Override
-		public void onActionEvent(SaveActionEvent event) throws RepositoryException {
-			if (BORepositoryService.this.getProcessing().contains(event.getTrigger())) {
-				if (event.getTrigger() instanceof IBusinessObject) {
-					BORepositoryService.this.onSaveActionEvent(event.getType(), (IBusinessObject) event.getTrigger());
-
-				}
-			}
-		}
-	};
-
 	@Override
 	public final void setRepository(IBORepository repository) {
-		if (this.repository != null) {
-			// 移出事件监听
-			this.repository.removeListener(this.saveListener);
-		}
 		this.repository = repository;
 		if (this.repository != null) {
 			// 同步用户信息
@@ -90,8 +68,6 @@ public class BORepositoryService implements IBORepositoryService {
 					this.setCurrentUser(this.repository.getCurrentUser());
 				}
 			}
-			// 监听对象保存动作
-			this.repository.registerListener(this.saveListener);
 		}
 	}
 
@@ -300,33 +276,38 @@ public class BORepositoryService implements IBORepositoryService {
 		boolean myDbTrans = false;
 		boolean myOpened = false;
 		try {
-			boolean toDelete = bo.isDeleted();
-			boolean toAdd = bo.isNew();
+			TransactionType type = null;
+			if (bo.isSavable() && bo.isDirty()) {
+				if (bo.isNew() && !bo.isDeleted()) {
+					type = TransactionType.BEFORE_ADD;
+				} else if (bo.isDeleted()) {
+					type = TransactionType.BEFORE_DELETE;
+				} else {
+					type = TransactionType.BEFORE_UPDATE;
+				}
+			}
 			myOpened = this.openRepository();// 打开仓库
 			myDbTrans = this.beginTransaction(); // 打开事务
-			this.getProcessing().add(bo);// 添加待处理数据到列表
+			this.fireTransaction(type, bo);
 			IOperationResult<P> operationResult = boRepository.saveEx(bo); // 保存BO
-			this.getProcessing().remove(bo);// 移出带处理数据
 			// 其他
 			if (operationResult.getError() != null) {
 				throw operationResult.getError();
 			}
 			// 成功保存
 			bo = operationResult.getResultObjects().firstOrDefault();
-			if (this.isPostTransaction()) {
-				// 通知事务
-				TransactionType type = TransactionType.UPDATE;
-				if (toDelete) {
-					type = TransactionType.DELETE;
-				} else if (toAdd) {
-					type = TransactionType.ADD;
-				}
-				this.postTransaction(type, bo);
+			if (type == TransactionType.BEFORE_ADD) {
+				type = TransactionType.ADD;
+			} else if (type == TransactionType.BEFORE_UPDATE) {
+				type = TransactionType.UPDATE;
+			} else if (type == TransactionType.BEFORE_DELETE) {
+				type = TransactionType.DELETE;
 			}
+			this.fireTransaction(type, bo);
 			if (myDbTrans) {
 				this.commitTransaction();// 结束事务
 			}
-			if (toDelete) {
+			if (type == TransactionType.DELETE) {
 				// 删除操作，不返回实例
 				bo = null;
 			}
@@ -347,47 +328,38 @@ public class BORepositoryService implements IBORepositoryService {
 		return this.save(this.getRepository(), bo);
 	}
 
-	private List<IBusinessObject> processing;
-
 	/**
-	 * 处理中的数据
+	 * 触发事务
 	 * 
-	 * @return
+	 * @param type    类型
+	 * @param trigger 触发对象
+	 * @throws TransactionException
 	 */
-	private List<IBusinessObject> getProcessing() {
-		if (processing == null) {
-			processing = new Vector<>();
-		}
-		return processing;
-	}
-
-	/**
-	 * 通知业务对象的事务
-	 * 
-	 * @param type 事务类型
-	 * @param bo   对象
-	 * @throws Exception
-	 * @throws BOTransactionException
-	 */
-	private void postTransaction(TransactionType type, IBusinessObject bo) throws Exception {
-		// 通知事务
-		if (this.getRepository() instanceof IBORepository4Db) {
-			// 数据库仓库
-			IBORepository4Db dbRepository = (IBORepository4Db) this.getRepository();
-			IBOAdapter4Db adapter4Db = dbRepository.getBOAdapter();
-			ISqlQuery sqlQuery = adapter4Db.parseTransactionNotification(type, bo);
-			IOperationResult<TransactionMessage> spOpRslt = dbRepository.fetch(sqlQuery, TransactionMessage.class);
-			if (spOpRslt.getError() != null) {
-				throw spOpRslt.getError();
-			}
-			TransactionMessage message = spOpRslt.getResultObjects().firstOrDefault();
-			if (message == null) {
-				throw new Exception(I18N.prop("msg_bobas_invaild_bo_transaction_message"));
-			}
-			if (message.getCode() != 0) {
-				Logger.log(MessageLevel.DEBUG, MSG_TRANSACTION_SP_VALUES, type.toString(), bo.toString(),
-						message.getCode(), message.getMessage());
-				throw new BusinessLogicException(message.getMessage());
+	protected void fireTransaction(TransactionType type, IBusinessObject trigger) throws TransactionException {
+		if (this.isPostTransaction() && type != null && type != TransactionType.BEFORE_ADD
+				&& this.getRepository() instanceof IBORepository4Db) {
+			try {
+				// 数据库仓库
+				IBORepository4Db dbRepository = (IBORepository4Db) this.getRepository();
+				IBOAdapter adapter = dbRepository.getBOAdapter();
+				ISqlQuery sqlQuery = adapter.parseTransactionNotification(type, trigger);
+				IOperationResult<TransactionMessage> spOpRslt = dbRepository.fetch(sqlQuery, TransactionMessage.class);
+				if (spOpRslt.getError() != null) {
+					throw spOpRslt.getError();
+				}
+				TransactionMessage message = spOpRslt.getResultObjects().firstOrDefault();
+				if (message == null) {
+					throw new TransactionException(I18N.prop("msg_bobas_invaild_bo_transaction_message"));
+				}
+				if (message.getCode() != 0) {
+					Logger.log(MessageLevel.DEBUG, MSG_TRANSACTION_SP_VALUES, type.toString(), trigger.toString(),
+							message.getCode(), message.getMessage());
+					throw new BusinessLogicException(message.getMessage());
+				}
+			} catch (TransactionException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new TransactionException(e);
 			}
 		}
 	}
@@ -411,16 +383,6 @@ public class BORepositoryService implements IBORepositoryService {
 			Logger.log(e);
 		}
 		return operationResult;
-	}
-
-	/**
-	 * 保存事件
-	 * 
-	 * @param action  事件类型
-	 * @param trigger 发生对象
-	 * @return
-	 */
-	protected void onSaveActionEvent(SaveActionType action, IBusinessObject trigger) throws RepositoryException {
 	}
 
 }

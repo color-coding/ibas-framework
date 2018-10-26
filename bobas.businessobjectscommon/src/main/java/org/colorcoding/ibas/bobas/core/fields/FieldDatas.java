@@ -1,7 +1,7 @@
 package org.colorcoding.ibas.bobas.core.fields;
 
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
-import org.colorcoding.ibas.bobas.core.IBusinessObjectListBase;
+import org.colorcoding.ibas.bobas.core.IBusinessObjectsBase;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
 
@@ -363,21 +363,21 @@ class FieldDataBO extends FieldDataBase<IBusinessObjectBase> {
 /**
  * 字段，业务对象集合
  */
-class FieldDataBOs extends FieldDataBase<IBusinessObjectListBase<?>> {
+class FieldDataBOs extends FieldDataBase<IBusinessObjectsBase<?>> {
 
 	public FieldDataBOs(Class<?> valueType) {
 		this.setValueType(valueType);
 		this.setSavable(true);
 	}
 
-	private IBusinessObjectListBase<?> value = null;
+	private IBusinessObjectsBase<?> value = null;
 
 	@Override
-	public IBusinessObjectListBase<?> getValue() {
+	public IBusinessObjectsBase<?> getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(IBusinessObjectListBase<?> value) {
+	public boolean setValue(IBusinessObjectsBase<?> value) {
 		if (this.value != null && this.value.equals(value)) {
 			return false;
 		}
@@ -387,6 +387,6 @@ class FieldDataBOs extends FieldDataBase<IBusinessObjectListBase<?>> {
 
 	@Override
 	public boolean setValue(Object value) {
-		return this.setValue((IBusinessObjectListBase<?>) value);
+		return this.setValue((IBusinessObjectsBase<?>) value);
 	}
 }

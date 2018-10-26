@@ -1,7 +1,7 @@
 package org.colorcoding.ibas.bobas.core.fields;
 
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
-import org.colorcoding.ibas.bobas.core.IBusinessObjectListBase;
+import org.colorcoding.ibas.bobas.core.IBusinessObjectsBase;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.core.PropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
@@ -54,7 +54,7 @@ public class FieldsFactory {
 			return new FieldDataEnum(type);
 		} else if (IBusinessObjectBase.class.isAssignableFrom(type)) {
 			return new FieldDataBO(type);
-		} else if (IBusinessObjectListBase.class.isAssignableFrom(type)) {
+		} else if (IBusinessObjectsBase.class.isAssignableFrom(type)) {
 			return new FieldDataBOs(type);
 		} else {
 			throw new NotSupportTypeException(I18N.prop("msg_bobas_data_type_not_support", type));

@@ -8,7 +8,7 @@ import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.SqlQuery;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IFieldDataDb;
-import org.colorcoding.ibas.bobas.core.fields.IManageFields;
+import org.colorcoding.ibas.bobas.core.fields.IManagedFields;
 import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.IKeyText;
 import org.colorcoding.ibas.bobas.i18n.I18N;
@@ -55,8 +55,8 @@ public class SQLScriptValueOperator implements IPropertyValueOperator {
 			}
 			String query = this.propertyName;
 			// 替换查询中的变量
-			if (this.bo instanceof IManageFields) {
-				IManageFields boFields = (IManageFields) this.bo;
+			if (this.bo instanceof IManagedFields) {
+				IManagedFields boFields = (IManagedFields) this.bo;
 				query = MyConfiguration.applyVariables(query, new Iterator<IKeyText>() {
 					IFieldData[] fieldDatas = boFields.getFields(c -> c instanceof IFieldDataDb);
 					int index;

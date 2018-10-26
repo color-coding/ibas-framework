@@ -19,10 +19,8 @@ public interface ISorts extends List<ISort> {
 	/**
 	 * 获取查询排序
 	 * 
-	 * @param index
-	 *            索引
+	 * @param index 索引
 	 * @return
 	 */
 	ISort get(int index);
-
 }

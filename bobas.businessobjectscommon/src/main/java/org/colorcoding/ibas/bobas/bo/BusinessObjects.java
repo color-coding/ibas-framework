@@ -14,12 +14,12 @@ import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.SortType;
-import org.colorcoding.ibas.bobas.core.BusinessObjectListBase;
+import org.colorcoding.ibas.bobas.core.BusinessObjectsBase;
 import org.colorcoding.ibas.bobas.core.IBindableBase;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.core.ITrackStatusOperator;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
-import org.colorcoding.ibas.bobas.core.fields.IManageFields;
+import org.colorcoding.ibas.bobas.core.fields.IManagedFields;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
@@ -42,7 +42,7 @@ import org.colorcoding.ibas.bobas.rule.IBusinessRules;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "BusinessObjects", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
 public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusinessObject>
-		extends BusinessObjectListBase<E> implements IBusinessObjects<E, P> {
+		extends BusinessObjectsBase<E> implements IBusinessObjects<E, P> {
 
 	private static final long serialVersionUID = 7360645136974073845L;
 
@@ -220,20 +220,23 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		}
 		// 修正子项编号
 		if (item instanceof IBOLine) {
-			int max = 0;
-			for (E tmp : this) {
-				if (tmp == item) {
-					// 自身编号跳过
-					continue;
-				}
-				if (tmp instanceof IBOLine) {
-					IBOLine line = (IBOLine) item;
-					if (line.getLineId() > max) {
-						max = line.getLineId();
+			IBOLine line = (IBOLine) item;
+			if (line.getLineId() <= 0) {
+				int max = 0;
+				for (E tmp : this) {
+					if (tmp == item) {
+						// 自身编号跳过
+						continue;
+					}
+					if (tmp instanceof IBOLine) {
+						IBOLine tmpLine = (IBOLine) tmp;
+						if (tmpLine.getLineId() > max) {
+							max = tmpLine.getLineId();
+						}
 					}
 				}
+				line.setLineId(max + 1);
 			}
-			((IBOLine) item).setLineId(max + 1);
 		}
 		// 没父项，退出
 		if (this.getParent() == null) {
@@ -495,8 +498,8 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		// 被引用，子项被引用，父项被引用
 		if (evt.getPropertyName().equals("Referenced")) {
 			if (evt.getSource() instanceof IBOTagReferenced) {
-				if (this.getParent() instanceof IBOTagReferenced && this.getParent() instanceof IManageFields) {
-					parentField = ((IManageFields) this.getParent()).getField(evt.getPropertyName());
+				if (this.getParent() instanceof IBOTagReferenced && this.getParent() instanceof IManagedFields) {
+					parentField = ((IManagedFields) this.getParent()).getField(evt.getPropertyName());
 					if (parentField == null) {
 						return;
 					}
@@ -518,8 +521,8 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		// 可取消
 		else if (evt.getPropertyName().equals("Canceled")) {
 			if (evt.getSource() instanceof IBOTagCanceled) {
-				if (this.getParent() instanceof IBOTagCanceled && this.getParent() instanceof IManageFields) {
-					parentField = ((IManageFields) this.getParent()).getField(evt.getPropertyName());
+				if (this.getParent() instanceof IBOTagCanceled && this.getParent() instanceof IManagedFields) {
+					parentField = ((IManagedFields) this.getParent()).getField(evt.getPropertyName());
 					if (parentField == null) {
 						return;
 					}
@@ -544,8 +547,8 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		// 可删除
 		else if (evt.getPropertyName().equals("Deleted")) {
 			if (evt.getSource() instanceof IBOTagDeleted) {
-				if (this.getParent() instanceof IBOTagDeleted && this.getParent() instanceof IManageFields) {
-					parentField = ((IManageFields) this.getParent()).getField(evt.getPropertyName());
+				if (this.getParent() instanceof IBOTagDeleted && this.getParent() instanceof IManagedFields) {
+					parentField = ((IManagedFields) this.getParent()).getField(evt.getPropertyName());
 					if (parentField == null) {
 						return;
 					}
@@ -569,14 +572,14 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		}
 		// 单据对象
 		else if (evt.getPropertyName().equals("LineStatus") || evt.getPropertyName().equals("Status")) {
-			if (evt.getSource() instanceof IBODocumentLine && this.getParent() instanceof IManageFields) {
+			if (evt.getSource() instanceof IBODocumentLine && this.getParent() instanceof IManagedFields) {
 				IBODocumentLine lineItem = (IBODocumentLine) evt.getSource();
 				if (this.getParent() instanceof IBODocument) {
 					// 父项是单据
 					IBODocument parent = (IBODocument) this.getParent();
 					if (evt.getPropertyName().equals("LineStatus")) {
 						// 使用字段赋值避免触发事件
-						parentField = ((IManageFields) parent).getField("DocumentStatus");
+						parentField = ((IManagedFields) parent).getField("DocumentStatus");
 						if (parentField == null) {
 							return;
 						}
@@ -613,7 +616,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 						parentField.setValue(boLineStatus);
 					} else if (evt.getPropertyName().equals("Status")) {
 						// 使用字段赋值避免触发事件
-						parentField = ((IManageFields) parent).getField(evt.getPropertyName());
+						parentField = ((IManagedFields) parent).getField(evt.getPropertyName());
 						if (parentField == null) {
 							return;
 						}
@@ -637,7 +640,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 					IBODocumentLine parent = (IBODocumentLine) this.getParent();
 					if (evt.getPropertyName().equals("LineStatus")) {
 						// 使用字段赋值避免触发事件
-						parentField = ((IManageFields) parent).getField(evt.getPropertyName());
+						parentField = ((IManagedFields) parent).getField(evt.getPropertyName());
 						if (parentField == null) {
 							return;
 						}
@@ -673,7 +676,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 						parentField.setValue(boLineStatus);
 					} else if (evt.getPropertyName().equals("Status")) {
 						// 使用字段赋值避免触发事件
-						parentField = ((IManageFields) parent).getField(evt.getPropertyName());
+						parentField = ((IManagedFields) parent).getField(evt.getPropertyName());
 						if (parentField == null) {
 							return;
 						}

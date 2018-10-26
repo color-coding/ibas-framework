@@ -3,10 +3,10 @@ package org.colorcoding.ibas.bobas.bo;
 import java.lang.reflect.Array;
 
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
-import org.colorcoding.ibas.bobas.core.IBusinessObjectListBase;
+import org.colorcoding.ibas.bobas.core.IBusinessObjectsBase;
 import org.colorcoding.ibas.bobas.core.ITrackStatus;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
-import org.colorcoding.ibas.bobas.core.fields.IManageFields;
+import org.colorcoding.ibas.bobas.core.fields.IManagedFields;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 
@@ -35,8 +35,8 @@ public class BOUtilities {
 				difs.add(I18N.prop("msg_bobas_utilities_different_class", b1Type.getName(), b2Type.getName()));
 				return difs.toArray(new String[] {});
 			}
-			IFieldData[] fields01 = ((IManageFields) bo01).getFields();
-			IFieldData[] fields02 = ((IManageFields) bo02).getFields();
+			IFieldData[] fields01 = ((IManagedFields) bo01).getFields();
+			IFieldData[] fields02 = ((IManagedFields) bo02).getFields();
 			if (fields01.length != fields02.length) {
 				difs.add(I18N.prop("msg_bobas_utilities_different_fields_count", b1Type.getName(), b2Type.getName()));
 				return difs.toArray(new String[] {});
@@ -99,8 +99,8 @@ public class BOUtilities {
 	 */
 	public static Object getPropertyValue(IBusinessObject bo, String path, int... indexs) throws BOException {
 		try {
-			if (bo instanceof IManageFields) {
-				IManageFields boFields = (IManageFields) bo;
+			if (bo instanceof IManagedFields) {
+				IManagedFields boFields = (IManagedFields) bo;
 				String property = path;
 				if (path.indexOf(".") > 1) {
 					property = path.split("\\.")[0];
@@ -140,8 +140,8 @@ public class BOUtilities {
 	 * @param bo
 	 */
 	public static void removeDeleted(IBusinessObjectBase bo) {
-		if (bo instanceof IManageFields) {
-			IManageFields boFields = (IManageFields) bo;
+		if (bo instanceof IManagedFields) {
+			IManagedFields boFields = (IManagedFields) bo;
 			for (IFieldData item : boFields.getFields()) {
 				Object data = item.getValue();
 				if (data == null) {
@@ -152,9 +152,9 @@ public class BOUtilities {
 					if (((ITrackStatus) data).isDeleted()) {
 						item.setValue(null);
 					}
-				} else if (data instanceof IBusinessObjectListBase<?>) {
+				} else if (data instanceof IBusinessObjectsBase<?>) {
 					// 值是业务对象列表
-					IBusinessObjectListBase<?> boList = (IBusinessObjectListBase<?>) data;
+					IBusinessObjectsBase<?> boList = (IBusinessObjectsBase<?>) data;
 					for (int i = boList.size() - 1; i >= 0; i--) {
 						IBusinessObjectBase childItem = boList.get(i);
 						if (childItem.isDeleted()) {

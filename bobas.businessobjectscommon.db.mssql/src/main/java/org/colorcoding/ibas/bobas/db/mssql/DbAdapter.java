@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 import org.colorcoding.ibas.bobas.db.DbException;
-import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
+import org.colorcoding.ibas.bobas.db.IBOAdapter;
 
 public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 
@@ -23,7 +23,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 	}
 
 	@Override
-	public IBOAdapter4Db createBOAdapter() {
+	public IBOAdapter createBOAdapter() {
 		return new BOAdapter();
 	}
 

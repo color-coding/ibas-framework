@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.common;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Collection;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -16,7 +17,13 @@ import org.colorcoding.ibas.bobas.bo.IBOMasterData;
 import org.colorcoding.ibas.bobas.bo.IBOMasterDataLine;
 import org.colorcoding.ibas.bobas.bo.IBOSimple;
 import org.colorcoding.ibas.bobas.bo.IBOSimpleLine;
+import org.colorcoding.ibas.bobas.bo.UserFieldManager;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
+import org.colorcoding.ibas.bobas.core.IPropertyInfo;
+import org.colorcoding.ibas.bobas.core.PropertyInfo;
+import org.colorcoding.ibas.bobas.core.PropertyInfoManager;
+import org.colorcoding.ibas.bobas.db.DataConvert;
+import org.colorcoding.ibas.bobas.mapping.DbField;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.ISerializerManager;
 import org.colorcoding.ibas.bobas.serialization.Serializable;
@@ -44,8 +51,7 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 	/**
 	 * 创建实例
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 * @return
 	 */
 	public static ICriteria create(String value) {
@@ -212,6 +218,20 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.serialize(this, writer);
 		return writer.toString();
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("{criteria: ");
+		if (this.getBusinessObject() != null && !this.getBusinessObject().isEmpty()) {
+			stringBuilder.append(this.getBusinessObject());
+			stringBuilder.append(", ");
+		}
+		stringBuilder.append("result|");
+		stringBuilder.append(this.getResultCount());
+		stringBuilder.append("}");
+		return stringBuilder.toString();
 	}
 
 	protected ICriteria boCriteria(IBusinessObjectBase bo, ConditionOperation operation) {
@@ -415,16 +435,73 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 	}
 
 	@Override
-	public String toString() {
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("{criteria: ");
-		if (this.getBusinessObject() != null && !this.getBusinessObject().isEmpty()) {
-			stringBuilder.append(this.getBusinessObject());
-			stringBuilder.append(", ");
+	public void check(Class<?> type) {
+		if (type == null) {
+			return;
 		}
-		stringBuilder.append("result|");
-		stringBuilder.append(this.getResultCount());
-		stringBuilder.append("}");
-		return stringBuilder.toString();
+		// 检查属性
+		this.check(PropertyInfoManager.getPropertyInfoList(type));
+		// 检查用户字段
+		this.check(UserFieldManager.getUserFieldInfoList(type));
+	}
+
+	/**
+	 * 检查排序查询条件
+	 * 
+	 * @param propertyInfos
+	 */
+	protected void check(Collection<IPropertyInfo<?>> propertyInfos) {
+		if (propertyInfos == null || propertyInfos.isEmpty()) {
+			return;
+		}
+		for (IPropertyInfo<?> item : propertyInfos) {
+			if (item.getName() == null || item.getName().isEmpty()) {
+				continue;
+			}
+			if (!(item instanceof PropertyInfo<?>)) {
+				continue;
+			}
+			PropertyInfo<?> propertyInfo = (PropertyInfo<?>) item;
+			Object annotation = propertyInfo.getAnnotation(DbField.class);
+			if (!(annotation instanceof DbField)) {
+				continue;
+			}
+			// 绑定数据库的字段
+			DbField dbField = (DbField) annotation;
+			if (dbField.name() == null || dbField.name().isEmpty()) {
+				continue;
+			}
+			// 修正查询字段名称
+			for (ICondition condition : this.getConditions()) {
+				if (!propertyInfo.getName().equalsIgnoreCase(condition.getAlias())) {
+					continue;
+				}
+				// 修正字段名称
+				condition.setAlias(dbField.name());
+				// 修正类型
+				condition.setAliasDataType(dbField.type());
+				// 修正枚举值
+				if (propertyInfo.getValueType().isEnum()) {
+					Object value = null;
+					if (DataConvert.isNumeric(condition.getValue())) {
+						// 数字转枚举
+						value = DataConvert.toEnumValue(propertyInfo.getValueType(),
+								Integer.valueOf(condition.getValue()));
+					} else {
+						value = DataConvert.toEnumValue(propertyInfo.getValueType(), condition.getValue());
+					}
+					if (value != null) {
+						condition.setValue(value);
+					}
+				}
+			}
+			// 修正排序的字段名称
+			for (ISort sort : this.getSorts()) {
+				if (!propertyInfo.getName().equalsIgnoreCase(sort.getAlias())) {
+					continue;
+				}
+				sort.setAlias(dbField.name());
+			}
+		}
 	}
 }

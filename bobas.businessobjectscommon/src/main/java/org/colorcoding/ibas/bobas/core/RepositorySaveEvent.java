@@ -3,34 +3,33 @@ package org.colorcoding.ibas.bobas.core;
 import java.util.EventObject;
 
 /**
- * 保存动作事件
+ * 仓库保存事件
  * 
  * @author Niuren.Zhu
  *
  */
-public class SaveActionEvent extends EventObject {
+public class RepositorySaveEvent extends EventObject {
 
 	private static final long serialVersionUID = 985060795180206279L;
 
-	public SaveActionEvent(Object source) {
+	public RepositorySaveEvent(Object source) {
 		super(source);
-
 	}
 
-	public SaveActionEvent(Object source, SaveActionType type, IBusinessObjectBase bo) {
+	public RepositorySaveEvent(Object source, RepositorySaveEventType type, IBusinessObjectBase bo) {
 		this(source);
 		this.setType(type);
 		this.setTrigger(bo);
 	}
 
-	private SaveActionType type;
+	private RepositorySaveEventType type;
 
 	/**
 	 * 获取-事件类型
 	 * 
 	 * @return
 	 */
-	public final SaveActionType getType() {
+	public final RepositorySaveEventType getType() {
 		return type;
 	}
 
@@ -39,7 +38,7 @@ public class SaveActionEvent extends EventObject {
 	 * 
 	 * @return
 	 */
-	private final void setType(SaveActionType type) {
+	private final void setType(RepositorySaveEventType type) {
 		this.type = type;
 	}
 

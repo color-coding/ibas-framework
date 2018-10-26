@@ -15,6 +15,7 @@ class BusinessLogicsRepository extends BORepositoryLogicService {
 
 	public BusinessLogicsRepository() {
 		this.setCheckApprovalProcess(false);// 不检查审批逻辑
+		this.setCheckPeriods(false);// 不检查期间
 	}
 
 	public <P extends IBusinessObject> OperationResult<P> saveData(P bo) {

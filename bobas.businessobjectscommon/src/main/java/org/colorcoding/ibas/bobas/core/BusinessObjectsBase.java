@@ -20,9 +20,9 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
  * @param <E>
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "BusinessObjectListBase", namespace = MyConfiguration.NAMESPACE_BOBAS_CORE)
-public abstract class BusinessObjectListBase<E extends IBusinessObjectBase> extends ArrayList<E>
-		implements IBusinessObjectListBase<E>, IBindableBase {
+@XmlType(name = "BusinessObjectsBase", namespace = MyConfiguration.NAMESPACE_BOBAS_CORE)
+public abstract class BusinessObjectsBase<E extends IBusinessObjectBase> extends ArrayList<E>
+		implements IBusinessObjectsBase<E>, IBindableBase {
 
 	private static final long serialVersionUID = -5212226199781937273L;
 

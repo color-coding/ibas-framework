@@ -6,7 +6,7 @@ package org.colorcoding.ibas.bobas.core;
  * @author Niuren.Zhu
  *
  */
-public interface IManageProperties {
+public interface IManagedProperties {
 	/**
 	 * 存在管理的属性
 	 * 

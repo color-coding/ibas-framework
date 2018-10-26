@@ -11,7 +11,7 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
-import org.colorcoding.ibas.bobas.core.fields.IManageFields;
+import org.colorcoding.ibas.bobas.core.fields.IManagedFields;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.expression.ExpressionFactory;
 import org.colorcoding.ibas.bobas.expression.JudgmentLink;
@@ -195,7 +195,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 		if (trigger instanceof IBOStorageTag && copy instanceof IBOStorageTag) {
 			IBOStorageTag hostTag = (IBOStorageTag) trigger;
 			IBOStorageTag copyTag = (IBOStorageTag) copy;
-			if (copyTag.getLogInst() >= hostTag.getLogInst()) {
+			if (copyTag.getLogInst() > hostTag.getLogInst()) {
 				// 副本版本更高，不能被覆盖逻辑
 				throw new BusinessLogicException(I18N.prop("msg_bobas_bo_copy_is_more_newer"));
 			}
@@ -293,8 +293,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 	/**
 	 * 分析数据，获取契约
 	 * 
-	 * @param bo
-	 *            数据
+	 * @param bo 数据
 	 * @return 具有的契约
 	 */
 	protected IBusinessLogic<?>[] analyzeContracts(Object bo) {
@@ -304,8 +303,8 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 		ArrayList<IBusinessLogic<?>> contracts = new ArrayList<>();
 		// 先子项，再自身
 		// 注意：避免嵌套后无限循环寻找契约
-		if (bo instanceof IManageFields) {
-			IManageFields boFields = (IManageFields) bo;
+		if (bo instanceof IManagedFields) {
+			IManagedFields boFields = (IManagedFields) bo;
 			for (IFieldData item : boFields.getFields()) {
 				if (item == null || item.getValue() == null) {
 					continue;

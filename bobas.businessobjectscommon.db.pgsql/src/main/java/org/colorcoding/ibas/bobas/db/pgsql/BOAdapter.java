@@ -1,10 +1,9 @@
 package org.colorcoding.ibas.bobas.db.pgsql;
 
-import org.colorcoding.ibas.bobas.db.BOAdapter4Db;
-import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
+import org.colorcoding.ibas.bobas.db.IBOAdapter;
 import org.colorcoding.ibas.bobas.db.ISqlScripts;
 
-public class BOAdapter extends BOAdapter4Db implements IBOAdapter4Db {
+public class BOAdapter extends org.colorcoding.ibas.bobas.db.BOAdapter implements IBOAdapter {
 
 	private ISqlScripts sqlScripts = null;
 

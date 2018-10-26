@@ -9,10 +9,8 @@ import org.colorcoding.ibas.bobas.approval.IApprovalProcessManager;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
 import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
-import org.colorcoding.ibas.bobas.bo.IBOTagReferenced;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
-import org.colorcoding.ibas.bobas.core.SaveActionType;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logic.BusinessLogicsFactory;
@@ -88,34 +86,22 @@ public class BORepositoryLogicService extends BORepositoryService {
 	}
 
 	/**
-	 * 对象的子项保存事件
+	 * 触发事务
 	 * 
-	 * @param action  事件
-	 * @param trigger 发生事件对象
-	 * @param parent  所属的父项
-	 * @throws SaveActionException
+	 * @param type    类型
+	 * @param trigger 触发对象
+	 * @throws TransactionException
 	 */
 	@Override
-	protected void onSaveActionEvent(SaveActionType action, IBusinessObject trigger) throws RepositoryException {
-		if (action == SaveActionType.BEFORE_DELETING) {
-			// 删除前检查
-			if (trigger instanceof IBOTagReferenced) {
-				IBOTagReferenced refBO = (IBOTagReferenced) trigger;
-				if (refBO.getReferenced() == emYesNo.YES) {
-					// 被引用的数据，不允许删除，可以标记删除
-					throw new RepositoryException(
-							I18N.prop("msg_bobas_not_allow_delete_referenced_bo", trigger.toString()));
-				}
-			}
-		}
-		if (action == SaveActionType.BEFORE_ADDING || action == SaveActionType.BEFORE_DELETING
-				|| action == SaveActionType.BEFORE_UPDATING) {
+	protected void fireTransaction(TransactionType type, IBusinessObject trigger) throws TransactionException {
+		if (type == TransactionType.BEFORE_ADD || type == TransactionType.BEFORE_UPDATE
+				|| type == TransactionType.BEFORE_DELETE) {
 			// 期间检查
 			if (this.isCheckPeriods()) {
 				try {
 					this.checkPeriods(trigger);
 				} catch (PeriodException e) {
-					throw new RepositoryException(e);
+					throw new TransactionException(e);
 				}
 			}
 			// 业务规则检查
@@ -123,7 +109,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 				try {
 					this.checkRules(trigger);
 				} catch (BusinessRuleException e) {
-					throw new RepositoryException(e);
+					throw new TransactionException(e);
 				}
 			}
 			// 审批流程相关，先执行审批逻辑，可能对bo的状态有影响
@@ -132,17 +118,17 @@ public class BORepositoryLogicService extends BORepositoryService {
 				try {
 					this.checkApprovals(trigger);
 				} catch (InvalidAuthorizationException | ApprovalProcessException e) {
-					throw new RepositoryException(e);
+					throw new TransactionException(e);
 				}
 			}
 		}
 		// 业务逻辑相关，最后执行业务逻辑，因为要求状态可用
 		if (this.isCheckLogics()) {
 			// 执行业务逻辑
-			this.runLogics(action, trigger);
+			this.runLogics(type, trigger);
 		}
 		// 运行基类方法
-		super.onSaveActionEvent(action, trigger);
+		super.fireTransaction(type, trigger);
 	}
 
 	/**
@@ -233,7 +219,7 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 * @param type 操作类型
 	 * @param bo   业务数据
 	 */
-	private void runLogics(SaveActionType type, IBusinessObject bo) {
+	private void runLogics(TransactionType type, IBusinessObject bo) {
 		String transId = this.getRepository().getTransactionId();// 事务链标记，结束事务时关闭
 		if (this.logicsManager == null) {
 			this.logicsManager = BusinessLogicsFactory.create().createManager();
@@ -251,19 +237,19 @@ public class BORepositoryLogicService extends BORepositoryService {
 			logicChain.setTrigger(bo);
 		}
 		// 执行逻辑
-		if (type == SaveActionType.ADDED) {
+		if (type == TransactionType.ADD) {
 			// 新建数据，正向逻辑
 			logicChain.forwardLogics();
 			logicChain.commit();
-		} else if (type == SaveActionType.BEFORE_DELETING) {
+		} else if (type == TransactionType.BEFORE_DELETE) {
 			// 删除数据前，反向逻辑
 			logicChain.reverseLogics();
 			logicChain.commit();
-		} else if (type == SaveActionType.BEFORE_UPDATING) {
+		} else if (type == TransactionType.BEFORE_UPDATE) {
 			// 更新数据前，反向逻辑
 			logicChain.reverseLogics();
 			// 等待更新完成提交
-		} else if (type == SaveActionType.UPDATED) {
+		} else if (type == TransactionType.UPDATE) {
 			// 更新数据后，正向逻辑
 			logicChain.forwardLogics();
 			logicChain.commit();

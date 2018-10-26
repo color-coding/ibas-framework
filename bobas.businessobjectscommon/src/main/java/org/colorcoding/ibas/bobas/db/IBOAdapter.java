@@ -6,19 +6,18 @@ import org.colorcoding.ibas.bobas.common.ISorts;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.ISqlStoredProcedure;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
-import org.colorcoding.ibas.bobas.core.IBusinessObjectListBase;
+import org.colorcoding.ibas.bobas.core.IBusinessObjectsBase;
 import org.colorcoding.ibas.bobas.repository.TransactionType;
 
 /**
  * 业务对象的数据库适配器
  */
-public interface IBOAdapter4Db extends IBOKeysManager4Db {
+public interface IBOAdapter {
 
 	/**
 	 * 解析查询
 	 * 
-	 * @param criteria
-	 *            查询
+	 * @param criteria 查询
 	 * @return 查询语句
 	 * @throws ParsingException
 	 */
@@ -27,8 +26,7 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	/**
 	 * 解析查询条件
 	 * 
-	 * @param conditions
-	 *            查询条件
+	 * @param conditions 查询条件
 	 * @return 查询语句
 	 * @throws ParsingException
 	 */
@@ -37,8 +35,7 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	/**
 	 * 解析排序
 	 * 
-	 * @param sorts
-	 *            排序
+	 * @param sorts 排序
 	 * @return 查询语句
 	 * @throws ParsingException
 	 */
@@ -47,10 +44,8 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	/**
 	 * 解析查询
 	 * 
-	 * @param criteria
-	 *            查询
-	 * @param boType
-	 *            对象类型
+	 * @param criteria 查询
+	 * @param boType   对象类型
 	 * @return 查询脚本
 	 */
 	ISqlQuery parseSqlQuery(ICriteria criteria, Class<?> boType) throws ParsingException;
@@ -58,8 +53,7 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	/**
 	 * 解析查询
 	 * 
-	 * @param sp
-	 *            调用的存储过程信息
+	 * @param sp 调用的存储过程信息
 	 * @return 查询对象
 	 * @throws SqlScriptException
 	 */
@@ -76,8 +70,7 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	/**
 	 * 获取插入语句
 	 * 
-	 * @param bo
-	 *            业务对象
+	 * @param bo 业务对象
 	 * @return 插入语句
 	 * @throws ParsingException
 	 */
@@ -86,8 +79,7 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	/**
 	 * 获取删除语句
 	 * 
-	 * @param bo
-	 *            业务对象
+	 * @param bo 业务对象
 	 * @return 删除语句
 	 * @throws ParsingException
 	 */
@@ -96,10 +88,8 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	/**
 	 * 解析业务对象
 	 * 
-	 * @param reader
-	 *            数据
-	 * @param boType
-	 *            业务对象
+	 * @param reader 数据
+	 * @param boType 业务对象
 	 * 
 	 * @return 解析的对象数组
 	 * @throws ParsingException
@@ -109,21 +99,18 @@ public interface IBOAdapter4Db extends IBOKeysManager4Db {
 	/**
 	 * 解析业务对象
 	 * 
-	 * @param reader
-	 *            数据
-	 * @param bo
-	 *            业务对象实例
+	 * @param reader 数据
+	 * @param bo     业务对象实例
 	 * 
 	 * @return 解析的对象
 	 * @throws ParsingException
 	 */
-	IBusinessObjectBase[] parseBOs(IDbDataReader reader, IBusinessObjectListBase<?> bos) throws ParsingException;
+	IBusinessObjectBase[] parseBOs(IDbDataReader reader, IBusinessObjectsBase<?> bos) throws ParsingException;
 
 	/**
 	 * 获取事务通知语句
 	 * 
-	 * @param bo
-	 *            业务对象
+	 * @param bo 业务对象
 	 * @return 通知语句
 	 * @throws ParsingException
 	 */

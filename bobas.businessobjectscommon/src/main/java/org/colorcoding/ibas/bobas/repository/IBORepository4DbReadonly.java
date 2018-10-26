@@ -8,7 +8,7 @@ import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.SingleValue;
 import org.colorcoding.ibas.bobas.db.DbException;
-import org.colorcoding.ibas.bobas.db.IBOAdapter4Db;
+import org.colorcoding.ibas.bobas.db.IBOAdapter;
 import org.colorcoding.ibas.bobas.db.IDbConnection;
 
 /**
@@ -31,12 +31,12 @@ public interface IBORepository4DbReadonly extends IBORepositoryReadonly {
 	/**
 	 * 获取业务对象适配器
 	 */
-	IBOAdapter4Db getBOAdapter() throws DbException;
+	IBOAdapter getBOAdapter() throws DbException;
 
 	/**
 	 * 设置业务对象适配器
 	 */
-	void setBOAdapter(IBOAdapter4Db boAdapter);
+	void setBOAdapter(IBOAdapter boAdapter);
 
 	/**
 	 * 连接数据库

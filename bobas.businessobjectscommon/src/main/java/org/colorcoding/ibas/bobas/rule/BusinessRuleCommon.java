@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
-import org.colorcoding.ibas.bobas.core.IManageProperties;
+import org.colorcoding.ibas.bobas.core.IManagedProperties;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
@@ -26,8 +26,8 @@ public abstract class BusinessRuleCommon extends BusinessRule {
 			context.setSource(bo);
 			context.setTrigger(trigger);
 			// 赋值输入属性
-			if (bo instanceof IManageProperties) {
-				IManageProperties boProperties = (IManageProperties) bo;
+			if (bo instanceof IManagedProperties) {
+				IManagedProperties boProperties = (IManagedProperties) bo;
 				for (IPropertyInfo<?> propertyInfo : this.getInputProperties()) {
 					Object value = boProperties.getProperty(propertyInfo);
 					context.getInputValues().put(propertyInfo, value);
@@ -39,8 +39,8 @@ public abstract class BusinessRuleCommon extends BusinessRule {
 			}
 			this.execute(context);
 			// 赋值输出属性
-			if (bo instanceof IManageProperties) {
-				IManageProperties boProperties = (IManageProperties) bo;
+			if (bo instanceof IManagedProperties) {
+				IManagedProperties boProperties = (IManagedProperties) bo;
 				for (IPropertyInfo<?> propertyInfo : this.getAffectedProperties()) {
 					@SuppressWarnings("unchecked")
 					IPropertyInfo<Object> property = (IPropertyInfo<Object>) propertyInfo;

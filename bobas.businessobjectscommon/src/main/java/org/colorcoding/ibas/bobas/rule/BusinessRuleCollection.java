@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
-import org.colorcoding.ibas.bobas.core.IManageProperties;
+import org.colorcoding.ibas.bobas.core.IManagedProperties;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.core.ITrackStatus;
 import org.colorcoding.ibas.bobas.data.ArrayList;
@@ -49,8 +49,8 @@ public abstract class BusinessRuleCollection extends BusinessRule {
 		try {
 			BusinessRuleContext context = new BusinessRuleContext(bo);
 			// 赋值输入属性
-			if (bo instanceof IManageProperties) {
-				IManageProperties boProperties = (IManageProperties) bo;
+			if (bo instanceof IManagedProperties) {
+				IManagedProperties boProperties = (IManagedProperties) bo;
 				Object tmp = boProperties.getProperty(this.getCollection());
 				if (tmp instanceof Collection) {
 					Collection<?> collection = (Collection<?>) tmp;
@@ -64,8 +64,8 @@ public abstract class BusinessRuleCollection extends BusinessRule {
 									continue;
 								}
 							}
-							if (item instanceof IManageProperties) {
-								IManageProperties itemProperties = (IManageProperties) item;
+							if (item instanceof IManagedProperties) {
+								IManagedProperties itemProperties = (IManagedProperties) item;
 								values.add(itemProperties.getProperty(propertyInfo));
 							}
 						}
@@ -79,8 +79,8 @@ public abstract class BusinessRuleCollection extends BusinessRule {
 			}
 			this.execute(context);
 			// 赋值输出属性
-			if (bo instanceof IManageProperties) {
-				IManageProperties boProperties = (IManageProperties) bo;
+			if (bo instanceof IManagedProperties) {
+				IManagedProperties boProperties = (IManagedProperties) bo;
 				for (IPropertyInfo<?> propertyInfo : this.getAffectedProperties()) {
 					@SuppressWarnings("unchecked")
 					IPropertyInfo<Object> property = (IPropertyInfo<Object>) propertyInfo;

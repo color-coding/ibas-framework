@@ -24,21 +24,19 @@ public enum TransactionType {
 	 */
 	@Value("D")
 	DELETE,
-	// /**
-	// * 关闭前
-	// */
-	// BEFORE_CLOSING,
-	// /**
-	// * 关闭后
-	// */
-	// CLOSED,
-	// /**
-	// * 取消前
-	// */
-	// BEFORE_CANCELING,
-	// /**
-	// * 取消后
-	// */
-	// CANCELD
-	;
+	/**
+	 * 添加前
+	 */
+	@Value("T")
+	BEFORE_ADD,
+	/**
+	 * 更新前
+	 */
+	@Value("G")
+	BEFORE_UPDATE,
+	/**
+	 * 删除前
+	 */
+	@Value("S")
+	BEFORE_DELETE,
 }

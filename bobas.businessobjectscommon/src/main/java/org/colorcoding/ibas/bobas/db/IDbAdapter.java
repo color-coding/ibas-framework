@@ -45,7 +45,7 @@ public interface IDbAdapter {
 	/**
 	 * 创建业务对象适配器
 	 */
-	IBOAdapter4Db createBOAdapter();
+	IBOAdapter createBOAdapter();
 
 	/**
 	 * 创建SQL检查器

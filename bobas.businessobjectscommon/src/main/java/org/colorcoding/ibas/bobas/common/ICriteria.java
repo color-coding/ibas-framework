@@ -21,8 +21,7 @@ public interface ICriteria {
 	/**
 	 * 设置业务对象编码
 	 * 
-	 * @param value
-	 *            业务对象编码
+	 * @param value 业务对象编码
 	 */
 	void setBusinessObject(String value);
 
@@ -36,8 +35,7 @@ public interface ICriteria {
 	/**
 	 * 设置查询结果数量
 	 * 
-	 * @param value
-	 *            数量
+	 * @param value 数量
 	 */
 	void setResultCount(int value);
 
@@ -51,8 +49,7 @@ public interface ICriteria {
 	/**
 	 * 设置是否查询子项
 	 * 
-	 * @param value
-	 *            是否
+	 * @param value 是否
 	 */
 	void setNoChilds(boolean value);
 
@@ -66,8 +63,7 @@ public interface ICriteria {
 	/**
 	 * 设置备注
 	 * 
-	 * @param value
-	 *            备注
+	 * @param value 备注
 	 */
 	void setRemarks(String value);
 
@@ -112,8 +108,7 @@ public interface ICriteria {
 	 * 
 	 * 注意BO多主键情况下，请自行修正。
 	 * 
-	 * @param lastBO
-	 *            起始业务对象
+	 * @param lastBO 起始业务对象
 	 * @return 查询
 	 */
 	ICriteria next(IBusinessObjectBase lastBO);
@@ -123,8 +118,7 @@ public interface ICriteria {
 	 * 
 	 * 注意BO多主键情况下，请自行修正。
 	 * 
-	 * @param firstBO
-	 *            起始业务对象
+	 * @param firstBO 起始业务对象
 	 * @return 查询
 	 */
 	ICriteria previous(IBusinessObjectBase firstBO);
@@ -132,10 +126,15 @@ public interface ICriteria {
 	/**
 	 * 复制查询条件
 	 * 
-	 * @param criteria
-	 *            基于的查询
+	 * @param criteria 基于的查询
 	 * @return 查询
 	 */
 	ICriteria copyFrom(ICriteria criteria);
 
+	/**
+	 * 检查查询
+	 * 
+	 * @param type
+	 */
+	void check(Class<?> type);
 }

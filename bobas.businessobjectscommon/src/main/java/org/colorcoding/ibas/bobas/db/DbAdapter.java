@@ -52,7 +52,7 @@ public abstract class DbAdapter implements IDbAdapter {
 			String applicationName) throws DbException;
 
 	@Override
-	public abstract IBOAdapter4Db createBOAdapter();
+	public abstract IBOAdapter createBOAdapter();
 
 	@Override
 	public ISqlScriptInspector createSqlInspector() {

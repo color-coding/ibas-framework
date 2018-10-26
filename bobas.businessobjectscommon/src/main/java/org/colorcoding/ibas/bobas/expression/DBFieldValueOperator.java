@@ -2,7 +2,7 @@ package org.colorcoding.ibas.bobas.expression;
 
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IFieldDataDb;
-import org.colorcoding.ibas.bobas.core.fields.IManageFields;
+import org.colorcoding.ibas.bobas.core.fields.IManagedFields;
 import org.colorcoding.ibas.bobas.expression.IPropertyValueOperator;
 import org.colorcoding.ibas.bobas.expression.JudgmentLinkException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
@@ -14,7 +14,7 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
  *
  */
 public class DBFieldValueOperator implements IPropertyValueOperator {
-	private IManageFields value;
+	private IManagedFields value;
 	private IFieldData field = null;
 
 	private IFieldData getField() {
@@ -37,10 +37,10 @@ public class DBFieldValueOperator implements IPropertyValueOperator {
 
 	@Override
 	public void setValue(Object value) {
-		if (value != null && !(value instanceof IManageFields)) {
+		if (value != null && !(value instanceof IManagedFields)) {
 			throw new JudgmentLinkException(I18N.prop("msg_bobas_invaild_bo_type"));
 		}
-		this.value = (IManageFields) value;
+		this.value = (IManagedFields) value;
 		this.field = null;
 	}
 

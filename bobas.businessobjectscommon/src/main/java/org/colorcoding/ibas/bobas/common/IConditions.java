@@ -19,10 +19,8 @@ public interface IConditions extends List<ICondition> {
 	/**
 	 * 获取条件
 	 * 
-	 * @param index
-	 *            索引
+	 * @param index 索引
 	 * @return
 	 */
 	ICondition get(int index);
-
 }

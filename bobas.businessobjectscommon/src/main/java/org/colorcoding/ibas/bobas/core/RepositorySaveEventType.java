@@ -1,12 +1,12 @@
 package org.colorcoding.ibas.bobas.core;
 
 /**
- * 事务类型
+ * 仓库保存事件类型
  * 
  * @author Niuren.Zhu
  *
  */
-public enum SaveActionType {
+public enum RepositorySaveEventType {
 	/**
 	 * 添加前
 	 */

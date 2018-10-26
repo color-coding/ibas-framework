@@ -1,10 +1,10 @@
 package org.colorcoding.ibas.bobas.bo;
 
 import org.colorcoding.ibas.bobas.common.ICriteria;
-import org.colorcoding.ibas.bobas.core.IBusinessObjectListBase;
+import org.colorcoding.ibas.bobas.core.IBusinessObjectsBase;
 
 public interface IBusinessObjects<E extends IBusinessObject, P extends IBusinessObject>
-		extends IBusinessObjectListBase<E> {
+		extends IBusinessObjectsBase<E> {
 	/**
 	 * 子项查询
 	 * 

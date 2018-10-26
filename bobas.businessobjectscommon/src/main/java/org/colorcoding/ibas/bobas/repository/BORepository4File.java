@@ -1,128 +1,29 @@
 package org.colorcoding.ibas.bobas.repository;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Properties;
 import java.util.UUID;
 
-import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.bo.BOException;
 import org.colorcoding.ibas.bobas.bo.BOUtilities;
-import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBOKeysManager;
-import org.colorcoding.ibas.bobas.bo.IBOMasterData;
-import org.colorcoding.ibas.bobas.bo.IBOSimple;
 import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
+import org.colorcoding.ibas.bobas.bo.IBOTagReferenced;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.ITrackStatusOperator;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
-import org.colorcoding.ibas.bobas.core.SaveActionListener;
-import org.colorcoding.ibas.bobas.core.SaveActionSupport;
-import org.colorcoding.ibas.bobas.core.SaveActionType;
-import org.colorcoding.ibas.bobas.data.KeyValue;
+import org.colorcoding.ibas.bobas.core.RepositorySaveEventType;
+import org.colorcoding.ibas.bobas.core.RepositorySaveListener;
+import org.colorcoding.ibas.bobas.core.RepositorySaveSupport;
+import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
 
 public class BORepository4File extends BORepository4FileReadonly implements IBORepository4File {
 	protected static final String MSG_REPOSITORY_DELETED_DATA_FILE = "repository: deleted data file [%s].";
 	protected static final String MSG_REPOSITORY_WRITED_DATA_FILE = "repository: writed data in file [%s].";
-
-	private IBOKeysManager keysManager;
-
-	public final IBOKeysManager getKeysManager() {
-		if (this.keysManager == null) {
-			this.keysManager = new IBOKeysManager() {
-				public KeyValue[] usePrimaryKeys(IBusinessObjectBase bo, String workFolder, String transId)
-						throws IOException {
-					KeyValue[] keys = null;
-					if (bo instanceof IBOStorageTag) {
-						IBOStorageTag tagBO = (IBOStorageTag) bo;
-						String companyId = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_COMPANY, "CC")
-								.toLowerCase();
-						File file = new File(workFolder + File.separator + companyId + "_sys" + File.separator
-								+ "bo_keys.properties");
-						if (!file.exists()) {
-							file.getParentFile().mkdirs();
-							file.createNewFile();
-						}
-						Properties props = new Properties();
-						props.load(new FileInputStream(file));
-						String value = props.getProperty(tagBO.getObjectCode());
-						if (value == null || value.isEmpty()) {
-							value = "1";
-						}
-						int key = 1, nextKey = 1;
-						key = Integer.parseInt(value);
-						nextKey = key + 1;
-						if (bo instanceof IBODocument) {
-							IBODocument item = (IBODocument) bo;
-							item.setDocEntry(key);
-							keys = new KeyValue[] { new KeyValue("DocEntry", key) };
-						} else if (bo instanceof IBOMasterData) {
-							IBOMasterData item = (IBOMasterData) bo;
-							item.setDocEntry(key);
-							keys = new KeyValue[] { new KeyValue("DocEntry", key) };
-						} else if (bo instanceof IBOSimple) {
-							IBOSimple item = (IBOSimple) bo;
-							item.setObjectKey(key);
-							keys = new KeyValue[] { new KeyValue("ObjectKey", key) };
-						}
-						OutputStream fos = new FileOutputStream(file);
-						props.setProperty(tagBO.getObjectCode(), String.valueOf(nextKey));
-						props.store(fos, String.format("fixed by transaction [%s].", transId));
-					}
-					return keys;
-				}
-
-				@Override
-				public KeyValue[] usePrimaryKeys(IBusinessObjectBase bo, Object... others) throws BOException {
-					String workFolder = (String) others[0];
-					String transId = (String) others[1];
-					try {
-						return this.usePrimaryKeys(bo, workFolder, transId);
-					} catch (IOException e) {
-						throw new BOException(e);
-					}
-				}
-
-				@Override
-				public void applyPrimaryKeys(IBusinessObjectBase bo, KeyValue[] keys) {
-					throw new UnsupportedOperationException();
-				}
-
-				@Override
-				public KeyValue[] usePrimaryKeys(IBusinessObjectBase[] bos, Object... others) throws BOException {
-					throw new UnsupportedOperationException();
-				}
-
-				@Override
-				public KeyValue useSeriesKey(IBusinessObjectBase bo, Object... others) throws BOException {
-					throw new UnsupportedOperationException();
-				}
-
-				@Override
-				public KeyValue useSeriesKey(IBusinessObjectBase[] bos, Object... others) throws BOException {
-					throw new UnsupportedOperationException();
-				}
-
-				@Override
-				public void applySeriesKey(IBusinessObjectBase bo, KeyValue key) {
-					throw new UnsupportedOperationException();
-				}
-
-			};
-		}
-		return keysManager;
-	}
-
-	public final void setKeysManager(IBOKeysManager value) {
-		this.keysManager = value;
-	}
 
 	@Override
 	public boolean beginTransaction() throws RepositoryException {
@@ -153,23 +54,43 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 		return this.inTransaction;
 	}
 
-	private volatile SaveActionSupport saveActionsSupport;
+	private volatile RepositorySaveSupport repositorySaveSupport;
 
 	/**
-	 * 通知事务
+	 * 通知仓库保存事件
 	 * 
-	 * @param type
-	 *            事务类型
-	 * @param bo
-	 *            发生业务对象
-	 * @throws SaveActionException
-	 *             运行时错误
+	 * @param type 事务类型
+	 * @param bo   发生业务对象
+	 * @throws Exception 运行时错误
 	 */
-	private void fireAction(SaveActionType type, IBusinessObjectBase bo) throws Exception {
-		if (this.saveActionsSupport == null) {
+	private void fireRepositorySave(RepositorySaveEventType type, IBusinessObjectBase bo) throws Exception {
+		if (type == RepositorySaveEventType.BEFORE_ADDING) {
+			// 添加前
+			// 存储标记
+			this.tagStorage(bo);
+			// 获取并更新主键
+			IBOKeysManager keysManager = this.createKeysManager();
+			keysManager.usePrimaryKeys(bo);
+		} else if (type == RepositorySaveEventType.BEFORE_UPDATING) {
+			// 更新前
+			// 存储标记
+			this.tagStorage(bo);
+		} else if (type == RepositorySaveEventType.BEFORE_DELETING) {
+			// 删除前
+			// 存储标记
+			this.tagStorage(bo);
+			if (bo instanceof IBOTagReferenced) {
+				IBOTagReferenced refed = (IBOTagReferenced) bo;
+				if (refed.getReferenced() == emYesNo.YES) {
+					// 被引用的数据，不允许删除，可以标记删除
+					throw new RepositoryException(I18N.prop("msg_bobas_not_allow_delete_referenced_bo", bo.toString()));
+				}
+			}
+		}
+		if (this.repositorySaveSupport == null) {
 			return;
 		}
-		this.saveActionsSupport.fireAction(type, bo);
+		this.repositorySaveSupport.fireRepositorySave(type, bo);
 	}
 
 	/**
@@ -178,11 +99,11 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 	 * @param listener
 	 */
 	@Override
-	public final void registerListener(SaveActionListener listener) {
-		if (this.saveActionsSupport == null) {
-			this.saveActionsSupport = new SaveActionSupport(this);
+	public final void registerListener(RepositorySaveListener listener) {
+		if (this.repositorySaveSupport == null) {
+			this.repositorySaveSupport = new RepositorySaveSupport(this);
 		}
-		this.saveActionsSupport.registerListener(listener);
+		this.repositorySaveSupport.registerListener(listener);
 	}
 
 	/**
@@ -191,11 +112,11 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 	 * @param listener
 	 */
 	@Override
-	public final void removeListener(SaveActionListener listener) {
-		if (this.saveActionsSupport == null) {
+	public final void removeListener(RepositorySaveListener listener) {
+		if (this.repositorySaveSupport == null) {
 			return;
 		}
-		this.saveActionsSupport.removeListener(listener);
+		this.repositorySaveSupport.removeListener(listener);
 	}
 
 	@Override
@@ -220,6 +141,13 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 		return operationResult;
 	}
 
+	protected IBOKeysManager createKeysManager() {
+		FileKeysManager keysManager = new FileKeysManager();
+		keysManager.setWorkFolder(this.getRepositoryFolder());
+		keysManager.setTransactionId(this.getTransactionId());
+		return keysManager;
+	}
+
 	private IBusinessObjectBase mySave(IBusinessObjectBase bo) throws Exception {
 		if (bo == null) {
 			throw new Exception(I18N.prop("msg_bobas_invalid_bo"));
@@ -228,37 +156,24 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 			// 仅修过的数据进行处理
 			boolean myTrans = false;// 自己打开的事务
 			try {
-				// 获取对象工作目录
-				String boCode = "not_classified";
-				if (bo instanceof IBOStorageTag) {
-					IBOStorageTag boTag = (IBOStorageTag) bo;
-					if (boTag.getObjectCode() != null && !boTag.getObjectCode().isEmpty()) {
-						boCode = boTag.getObjectCode().toLowerCase();
-					}
-				}
-				String boFolder = this.getRepositoryFolder() + File.separator + boCode;
 				// 开始保存数据
 				myTrans = this.beginTransaction();
-				this.tagStorage(bo);// 存储标记
 				if (bo.isNew()) {
 					// 新建的对象
-					this.getKeysManager().usePrimaryKeys(bo, this.getRepositoryFolder(), this.getTransactionId());
-					this.fireAction(SaveActionType.BEFORE_ADDING, bo);
-					String fileName = String.format("%s%s%s.bo", boFolder, File.separator, this.getFileName(bo));
-					this.writeBOFile(bo, fileName);
-					this.fireAction(SaveActionType.ADDED, bo);
+					this.fireRepositorySave(RepositorySaveEventType.BEFORE_ADDING, bo);
+					this.writeBOFile(bo, this.getFileName(bo));
+					this.fireRepositorySave(RepositorySaveEventType.ADDED, bo);
 				} else if (bo.isDeleted()) {
 					// 删除对象
-					this.fireAction(SaveActionType.BEFORE_DELETING, bo);
+					this.fireRepositorySave(RepositorySaveEventType.BEFORE_DELETING, bo);
 					this.deleteBOFile(bo);
-					this.fireAction(SaveActionType.DELETED, bo);
+					this.fireRepositorySave(RepositorySaveEventType.DELETED, bo);
 				} else {
 					// 修改对象，先删除数据，再添加新的实例
-					this.fireAction(SaveActionType.BEFORE_UPDATING, bo);
+					this.fireRepositorySave(RepositorySaveEventType.BEFORE_UPDATING, bo);
 					this.deleteBOFile(bo);
-					String fileName = String.format("%s%s%s.bo", boFolder, File.separator, this.getFileName(bo));
-					this.writeBOFile(bo, fileName);
-					this.fireAction(SaveActionType.UPDATED, bo);
+					this.writeBOFile(bo, this.getFileName(bo));
+					this.fireRepositorySave(RepositorySaveEventType.UPDATED, bo);
 				}
 				if (myTrans) {
 					// 自己打开的事务
@@ -276,7 +191,23 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 	}
 
 	private String getFileName(IBusinessObjectBase bo) {
-		return UUID.randomUUID().toString();// bo.toString();
+		// 获取对象工作目录
+		StringBuilder builder = new StringBuilder();
+		builder.append(this.getRepositoryFolder());
+		builder.append(File.separator);
+		if (bo instanceof IBOStorageTag) {
+			IBOStorageTag boTag = (IBOStorageTag) bo;
+			if (boTag.getObjectCode() != null && !boTag.getObjectCode().isEmpty()) {
+				builder.append(boTag.getObjectCode());
+			}
+		}
+		if (builder.length() <= 2) {
+			builder.append("not_classified");
+		}
+		builder.append(File.separator);
+		builder.append(UUID.randomUUID().toString());
+		builder.append(BO_DATA_FILE_EXTENSION);
+		return builder.toString().toLowerCase();
 	}
 
 	private BOFile getBOFile(IBusinessObjectBase bo) throws Exception {
@@ -313,12 +244,16 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 		}
 		out.write(bo.toString("xml").getBytes("utf-8"));
 		out.close();
-		String type = String.format("%s%s%s.type", file.getParentFile().getPath(), File.separator,
-				bo.getClass().getName());
-		file = new File(type);
+		StringBuilder builder = new StringBuilder();
+		builder.append(file.getParentFile().getPath());
+		builder.append(File.separator);
+		builder.append(bo.getClass().getName());
+		builder.append(BO_TYPE_FILE_EXTENSION);
+		file = new File(builder.toString());
 		if (!file.exists()) {
 			file.createNewFile();
 		}
 		Logger.log(MSG_REPOSITORY_WRITED_DATA_FILE, path);
 	}
+
 }

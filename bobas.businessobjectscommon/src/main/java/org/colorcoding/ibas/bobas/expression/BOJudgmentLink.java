@@ -7,7 +7,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
-import org.colorcoding.ibas.bobas.core.fields.IManageFields;
+import org.colorcoding.ibas.bobas.core.fields.IManagedFields;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
@@ -27,7 +27,7 @@ public class BOJudgmentLink extends JudgmentLink {
 	 */
 	protected IPropertyValueOperator createPropertyValueOperator() {
 		return new IPropertyValueOperator() {
-			private IManageFields value;
+			private IManagedFields value;
 			private IFieldData field = null;
 
 			private IFieldData getField() {
@@ -42,10 +42,10 @@ public class BOJudgmentLink extends JudgmentLink {
 
 			@Override
 			public void setValue(Object value) {
-				if (value != null && !(value instanceof IManageFields)) {
+				if (value != null && !(value instanceof IManagedFields)) {
 					throw new JudgmentLinkException(I18N.prop("msg_bobas_invaild_bo_type"));
 				}
-				this.value = (IManageFields) value;
+				this.value = (IManagedFields) value;
 				this.field = null;
 			}
 
@@ -149,14 +149,14 @@ public class BOJudgmentLink extends JudgmentLink {
 
 	private List<IBusinessObject> getValues(IBusinessObject bo, String[] propertys) {
 		ArrayList<IBusinessObject> values = new ArrayList<>();
-		if (!(bo instanceof IManageFields)) {
+		if (!(bo instanceof IManagedFields)) {
 			// 不能识别的对象
 			return values;
 		}
 		if (propertys.length == 1) {
 			// 最后一个属性
 			String property = propertys[0];
-			IFieldData fieldData = ((IManageFields) bo).getField(property);
+			IFieldData fieldData = ((IManagedFields) bo).getField(property);
 			if (fieldData == null) {
 				// 未找到属性
 				Logger.log(MessageLevel.WARN, MSG_JUDGMENT_NOT_FOUND_PROPERTY, bo, property);
@@ -169,7 +169,7 @@ public class BOJudgmentLink extends JudgmentLink {
 		String property = null;
 		for (int i = 0; i < propertys.length - 1; i++) {
 			property = propertys[i];
-			IFieldData fieldData = ((IManageFields) bo).getField(property);
+			IFieldData fieldData = ((IManagedFields) bo).getField(property);
 			if (fieldData == null) {
 				// 未找到属性
 				Logger.log(MessageLevel.WARN, MSG_JUDGMENT_NOT_FOUND_PROPERTY, bo, property);

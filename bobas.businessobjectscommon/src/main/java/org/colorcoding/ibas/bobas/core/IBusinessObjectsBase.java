@@ -2,7 +2,7 @@ package org.colorcoding.ibas.bobas.core;
 
 import org.colorcoding.ibas.bobas.data.List;
 
-public interface IBusinessObjectListBase<E extends IBusinessObjectBase> extends List<E> {
+public interface IBusinessObjectsBase<E extends IBusinessObjectBase> extends List<E> {
 	/**
 	 * 创建新的元素实例
 	 * 

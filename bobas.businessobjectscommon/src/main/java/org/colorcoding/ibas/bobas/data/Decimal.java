@@ -28,7 +28,7 @@ public class Decimal extends BigDecimal implements Cloneable {
 	/**
 	 * 运行时，截取小数方式
 	 */
-	public static RoundingMode ROUNDING_MODE_RUNNING = RoundingMode.CEILING;
+	public static RoundingMode ROUNDING_MODE_RUNNING = RoundingMode.HALF_UP;
 
 	private final static String DECIMAL_TEMPLATE = "%s."
 			+ String.format("%0" + RESERVED_DECIMAL_PLACES_STORAGE + "d", 0);
@@ -51,12 +51,9 @@ public class Decimal extends BigDecimal implements Cloneable {
 	/**
 	 * 截取小数
 	 * 
-	 * @param value
-	 *            值
-	 * @param scale
-	 *            保留小数位
-	 * @param mode
-	 *            截取方式
+	 * @param value 值
+	 * @param scale 保留小数位
+	 * @param mode  截取方式
 	 * @return
 	 */
 	public static Decimal round(BigDecimal value, int scale, RoundingMode mode) {
@@ -66,25 +63,22 @@ public class Decimal extends BigDecimal implements Cloneable {
 	/**
 	 * 四舍五入小数位
 	 * 
-	 * @param value
-	 *            值
-	 * @param scale
-	 *            保留小数位数
+	 * @param value 值
+	 * @param scale 保留小数位数
 	 * @return
 	 */
 	public static Decimal round(BigDecimal value, int scale) {
-		return new Decimal(value.divide(ONE, scale, RoundingMode.CEILING));
+		return new Decimal(value.divide(ONE, scale, ROUNDING_MODE_RUNNING));
 	}
 
 	/**
 	 * 四舍五入小数位
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 * @return
 	 */
 	public static Decimal round(BigDecimal value) {
-		return new Decimal(value.divide(ONE, RESERVED_DECIMAL_PLACES_STORAGE, RoundingMode.CEILING));
+		return new Decimal(value.divide(ONE, RESERVED_DECIMAL_PLACES_STORAGE, ROUNDING_MODE_RUNNING));
 	}
 
 	public static Decimal valueOf(double val) {
@@ -140,7 +134,6 @@ public class Decimal extends BigDecimal implements Cloneable {
 
 	public Decimal(double val) {
 		super(val);
-		// super(String.format("%."+RESERVED_DECIMAL_PLACES_STORAGE+"f",val));
 	}
 
 	public Decimal(int val) {

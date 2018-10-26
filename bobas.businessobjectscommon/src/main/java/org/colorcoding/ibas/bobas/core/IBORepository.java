@@ -60,12 +60,12 @@ public interface IBORepository extends IBORepositoryReadonly {
 	 * 
 	 * @param listener
 	 */
-	void registerListener(SaveActionListener listener);
+	void registerListener(RepositorySaveListener listener);
 
 	/**
 	 * 移出事务监听
 	 * 
 	 * @param listener
 	 */
-	void removeListener(SaveActionListener listener);
+	void removeListener(RepositorySaveListener listener);
 }

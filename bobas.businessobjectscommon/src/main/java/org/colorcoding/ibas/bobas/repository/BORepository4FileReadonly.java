@@ -12,11 +12,12 @@ import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.BOFactory;
 import org.colorcoding.ibas.bobas.core.BORepositoryBase;
+import org.colorcoding.ibas.bobas.core.IBOFactory;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
-import org.colorcoding.ibas.bobas.core.IBusinessObjectListBase;
+import org.colorcoding.ibas.bobas.core.IBusinessObjectsBase;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
-import org.colorcoding.ibas.bobas.core.fields.IManageFields;
+import org.colorcoding.ibas.bobas.core.fields.IManagedFields;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.expression.ExpressionFactory;
@@ -26,6 +27,22 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
 
 public class BORepository4FileReadonly extends BORepositoryBase implements IBORepository4FileReadonly {
+
+	public final static String BO_DATA_FILE_EXTENSION = ".bo";
+	public final static String BO_TYPE_FILE_EXTENSION = ".type";
+
+	private IBOFactory boFactory = null;
+
+	public final IBOFactory getBOFactory() {
+		if (this.boFactory == null) {
+			this.boFactory = BOFactory.create();
+		}
+		return this.boFactory;
+	}
+
+	public final void setBOFactory(IBOFactory factory) {
+		this.boFactory = factory;
+	}
 
 	private String repositoryFolder;
 
@@ -129,7 +146,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 				if (!file.isFile()) {
 					continue;
 				}
-				if (!file.getName().endsWith(".bo")) {
+				if (!file.getName().endsWith(BO_DATA_FILE_EXTENSION)) {
 					continue;
 				}
 				if (boFiles.size() >= criteria.getResultCount() && criteria.getResultCount() >= 0) {
@@ -160,8 +177,8 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 
 	private IBusinessObjectBase[] match(IBusinessObjectBase bo, JudgmentLink judgmentLinks, Class<?> type) {
 		ArrayList<IBusinessObjectBase> bos = new ArrayList<>();
-		if (bo instanceof IManageFields) {
-			IManageFields boFields = (IManageFields) bo;
+		if (bo instanceof IManagedFields) {
+			IManagedFields boFields = (IManagedFields) bo;
 			for (IFieldData field : boFields.getFields()) {
 				if (field.getValue() == null) {
 					continue;
@@ -176,8 +193,8 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 					}
 				} else if (IBusinessObjectBase.class.isInstance(field.getValue())) {
 					bos.addAll((match(bo, judgmentLinks, type)));
-				} else if (IBusinessObjectListBase.class.isInstance(field.getValue())) {
-					for (IBusinessObjectBase item : ((IBusinessObjectListBase<?>) field.getValue())) {
+				} else if (IBusinessObjectsBase.class.isInstance(field.getValue())) {
+					for (IBusinessObjectBase item : ((IBusinessObjectsBase<?>) field.getValue())) {
 						if (type.isInstance(item)) {
 							try {
 								if (judgmentLinks == null || judgmentLinks.judge(item)) {
@@ -208,7 +225,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 		if (files != null) {
 			for (File item : files) {
 				if (item.isFile()) {
-					if (item.getName().endsWith(".type")) {
+					if (item.getName().endsWith(BO_TYPE_FILE_EXTENSION)) {
 						try {
 							types.add(BOFactory.create()
 									.loadClass(item.getName().substring(0, item.getName().lastIndexOf("."))));

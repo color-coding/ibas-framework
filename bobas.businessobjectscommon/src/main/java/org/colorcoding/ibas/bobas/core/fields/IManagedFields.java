@@ -8,7 +8,7 @@ import java.util.function.Predicate;
  * @author Niuren.Zhu
  *
  */
-public interface IManageFields {
+public interface IManagedFields {
 	/**
 	 * 获取字段
 	 * 

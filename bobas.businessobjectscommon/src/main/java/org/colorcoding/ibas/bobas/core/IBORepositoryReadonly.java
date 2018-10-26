@@ -7,15 +7,6 @@ import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.organization.IUser;
 
 public interface IBORepositoryReadonly {
-	/**
-	 * 获取业务对象工厂
-	 */
-	IBOFactory getBOFactory();
-
-	/**
-	 * 设置业务对象工厂
-	 */
-	void setBOFactory(IBOFactory factory);
 
 	/**
 	 * 获取当前用户
@@ -27,8 +18,7 @@ public interface IBORepositoryReadonly {
 	/**
 	 * 设置当前用户
 	 * 
-	 * @param user
-	 *            用户
+	 * @param user 用户
 	 */
 	void setCurrentUser(IUser user);
 
@@ -57,11 +47,9 @@ public interface IBORepositoryReadonly {
 	/**
 	 * 查询对象
 	 * 
-	 * @param criteria
-	 *            查询条件
+	 * @param criteria 查询条件
 	 * 
-	 * @param boType
-	 *            查询的对象类型
+	 * @param boType   查询的对象类型
 	 * 
 	 * @return 操作结果及新对象实例
 	 */
@@ -70,11 +58,9 @@ public interface IBORepositoryReadonly {
 	/**
 	 * 查询对象包括子项
 	 * 
-	 * @param criteria
-	 *            查询条件
+	 * @param criteria 查询条件
 	 * 
-	 * @param boType
-	 *            查询的对象类型
+	 * @param boType   查询的对象类型
 	 * 
 	 * @return 操作结果及新对象实例
 	 */
@@ -83,8 +69,7 @@ public interface IBORepositoryReadonly {
 	/**
 	 * 查询对象副本
 	 * 
-	 * @param bo
-	 *            对象
+	 * @param bo 对象
 	 * 
 	 * @return
 	 */
@@ -93,8 +78,7 @@ public interface IBORepositoryReadonly {
 	/**
 	 * 查询对象副本包括子项
 	 * 
-	 * @param bo
-	 *            对象
+	 * @param bo 对象
 	 * 
 	 * @return 操作结果及新对象实例
 	 */
