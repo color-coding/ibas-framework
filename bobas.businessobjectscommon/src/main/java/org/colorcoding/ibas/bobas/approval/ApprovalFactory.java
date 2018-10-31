@@ -29,8 +29,6 @@ public class ApprovalFactory extends ConfigurableFactory<IApprovalProcessManager
 		return instance;
 	}
 
-	private IApprovalProcessManager manager = null;
-
 	/**
 	 * 创建流程管理员实例
 	 * 
@@ -38,17 +36,18 @@ public class ApprovalFactory extends ConfigurableFactory<IApprovalProcessManager
 	 * @throws ApprovalException
 	 */
 	public synchronized IApprovalProcessManager createManager() {
-		if (manager == null) {
-			manager = this.create(MyConfiguration.CONFIG_ITEM_APPROVAL_WAY, "ApprovalProcessManager");
-		}
-		return manager;
+		return this.create(MyConfiguration.CONFIG_ITEM_APPROVAL_WAY, "ApprovalProcessManager");
 	}
 
 	@Override
 	protected IApprovalProcessManager createDefault(String typeName) {
 		return new IApprovalProcessManager() {
 			@Override
-			public IApprovalProcess checkProcess(IApprovalData data, IBORepository repository) {
+			public void useRepository(IBORepository boRepository) {
+			}
+
+			@Override
+			public IApprovalProcess checkProcess(IApprovalData data) {
 				if (data.getApprovalStatus() != emApprovalStatus.UNAFFECTED) {
 					// 重置数据状态
 					data.setApprovalStatus(emApprovalStatus.UNAFFECTED);

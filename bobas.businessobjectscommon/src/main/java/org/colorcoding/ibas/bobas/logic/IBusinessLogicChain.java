@@ -46,11 +46,9 @@ public interface IBusinessLogicChain {
 	void setTriggerCopy();
 
 	/**
-	 * 改变业务对象仓库
+	 * 使用业务对象仓库
 	 * 
-	 * @param boRepository
-	 *            仓库
-	 * @return 成功，true；失败，false
+	 * @param boRepository 仓库
 	 */
 	void useRepository(IBORepository boRepository);
 

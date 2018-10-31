@@ -31,6 +31,7 @@ import org.colorcoding.ibas.bobas.repository.IBORepository4DbReadonly;
  *
  */
 public abstract class ApprovalProcess implements IApprovalProcess {
+
 	protected static final String MSG_APPROVAL_PROCESS_STATUS_CHANGED = "approval process: [%s]'s status change to [%s].";
 
 	public abstract void setApprovalData(IApprovalData value);
@@ -426,7 +427,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 					apRepository.closeRepository();
 				}
 				if (opRsltFetch.getError() != null) {
-					opRsltFetch.getError();
+					throw opRsltFetch.getError();
 				}
 				Object tmpBO = opRsltFetch.getResultObjects().firstOrDefault();
 				if (!(tmpBO instanceof IApprovalData)) {

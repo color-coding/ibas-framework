@@ -1,6 +1,8 @@
 package org.colorcoding.ibas.bobas.approval;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
@@ -10,6 +12,7 @@ import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
 
 /**
@@ -19,40 +22,74 @@ import org.colorcoding.ibas.bobas.message.Logger;
  *
  */
 public abstract class ApprovalProcessManager implements IApprovalProcessManager {
+
 	protected static final String MSG_APPROVAL_PROCESS_STARTED = "approval process: data [%s]'s approval process was started, name [%s].";
 
+	private IBORepository repository;
+
+	private final IBORepository getRepository() {
+		return this.repository;
+	}
+
+	private final void setRepository(IBORepository boRepository) {
+		this.repository = boRepository;
+	}
+
 	@Override
-	public IApprovalProcess checkProcess(IApprovalData data, IBORepository repository) {
+	public final void useRepository(IBORepository boRepository) {
+		if (this.repository != null) {
+			throw new RuntimeException(I18N.prop("msg_bobas_not_supported"));
+		}
+		this.setRepository(boRepository);
+		this.myProcesses = new ArrayList<>();
+	}
+
+	private List<IApprovalProcess> myProcesses;
+
+	@Override
+	public IApprovalProcess checkProcess(IApprovalData data) {
 		if (data == null) {
 			return null;
 		}
+		for (IApprovalProcess item : myProcesses) {
+			if (item.getApprovalData() == data) {
+				return item;
+			}
+		}
+		IApprovalProcess process = null;
 		if (!data.isNew()) {
 			// 不是新建查看是否存在审批
-			IApprovalProcess aProcess = this.loadApprovalProcess(data.getIdentifiers());
-			if (aProcess != null) {
-				aProcess.setRepository(repository);
-				aProcess.setApprovalData(data);
-				return aProcess;
+			process = this.loadApprovalProcess(data.getIdentifiers());
+			if (process != null) {
+				process.setRepository(this.getRepository());
+				process.setApprovalData(data);
 			}
 		}
 		// 创建审批流程并尝试开始
-		if (this.checkDataStatus(data)) {
-			Iterator<IApprovalProcess> process = this.createApprovalProcess(data.getObjectCode());
-			while (process != null && process.hasNext()) {
-				IApprovalProcess aProcess = process.next();
-				aProcess.setRepository(repository);
-				if (aProcess.start(data)) {
-					Logger.log(MSG_APPROVAL_PROCESS_STARTED, data, aProcess.getName());
-					return aProcess;// 审批流程开始
+		if (process == null && this.checkDataStatus(data)) {
+			Iterator<IApprovalProcess> processes = this.createApprovalProcess(data.getObjectCode());
+			while (processes != null && processes.hasNext()) {
+				process = processes.next();
+				process.setRepository(this.getRepository());
+				if (process.start(data)) {
+					Logger.log(MSG_APPROVAL_PROCESS_STARTED, data, process.getName());
+					// 审批流程开始
+					break;
+				} else {
+					process = null;
 				}
 			}
 		}
-		// 没有符合的审批流程
-		if (data.getApprovalStatus() != emApprovalStatus.UNAFFECTED && data.isNew()) {
-			// 重置数据状态
-			data.setApprovalStatus(emApprovalStatus.UNAFFECTED);
+		if (process == null) {
+			// 没有符合的审批流程
+			if (data.getApprovalStatus() != emApprovalStatus.UNAFFECTED && data.isNew()) {
+				// 重置数据状态
+				data.setApprovalStatus(emApprovalStatus.UNAFFECTED);
+			}
+		} else {
+			this.myProcesses.add(process);
 		}
-		return null;
+		return process;
 	}
 
 	/**
@@ -83,15 +120,15 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
 		}
 		if (data instanceof IBOTagDeleted) {
 			// 引用数据，已标记删除的，不影响业务逻辑
-			IBOTagDeleted refData = (IBOTagDeleted) data;
-			if (refData.getDeleted() == emYesNo.YES) {
+			IBOTagDeleted tagDeleted = (IBOTagDeleted) data;
+			if (tagDeleted.getDeleted() == emYesNo.YES) {
 				return false;
 			}
 		}
 		if (data instanceof IBOTagCanceled) {
 			// 引用数据，已标记取消的，不影响业务逻辑
-			IBOTagCanceled refData = (IBOTagCanceled) data;
-			if (refData.getCanceled() == emYesNo.YES) {
+			IBOTagCanceled tagCanceled = (IBOTagCanceled) data;
+			if (tagCanceled.getCanceled() == emYesNo.YES) {
 				return false;
 			}
 		}
@@ -101,8 +138,7 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
 	/**
 	 * 创建审批流程
 	 * 
-	 * @param boCode
-	 *            业务对象编码
+	 * @param boCode 业务对象编码
 	 * @return
 	 */
 	protected abstract Iterator<IApprovalProcess> createApprovalProcess(String boCode);
@@ -110,8 +146,7 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
 	/**
 	 * 加载审批流程
 	 * 
-	 * @param boKey
-	 *            业务对象标记
+	 * @param boKey 业务对象标记
 	 * @return
 	 */
 	protected abstract IApprovalProcess loadApprovalProcess(String boKey);

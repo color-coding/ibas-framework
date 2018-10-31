@@ -90,12 +90,8 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 			// 添加前
 			// 存储标记
 			this.tagStorage(bo);
-			// 编号
-			IBOKeysManager keysManager = this.createKeysManager();
 			// 获取并更新主键
-			keysManager.usePrimaryKeys(bo);
-			// 获取并更新系列号
-			keysManager.useSeriesKey(bo);
+			this.createKeysManager().usePrimaryKeys(bo);
 		} else if (type == RepositorySaveEventType.BEFORE_UPDATING) {
 			// 存储标记
 			this.tagStorage(bo);

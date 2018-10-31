@@ -336,25 +336,33 @@ public class BORepositoryService implements IBORepositoryService {
 	 * @throws TransactionException
 	 */
 	protected void fireTransaction(TransactionType type, IBusinessObject trigger) throws TransactionException {
-		if (this.isPostTransaction() && type != null && type != TransactionType.BEFORE_ADD
-				&& this.getRepository() instanceof IBORepository4Db) {
+		if (type != null && this.getRepository() instanceof IBORepository4Db) {
+			// 数据库仓库
+			IBORepository4Db dbRepository = (IBORepository4Db) this.getRepository();
 			try {
-				// 数据库仓库
-				IBORepository4Db dbRepository = (IBORepository4Db) this.getRepository();
-				IBOAdapter adapter = dbRepository.getBOAdapter();
-				ISqlQuery sqlQuery = adapter.parseTransactionNotification(type, trigger);
-				IOperationResult<TransactionMessage> spOpRslt = dbRepository.fetch(sqlQuery, TransactionMessage.class);
-				if (spOpRslt.getError() != null) {
-					throw spOpRslt.getError();
-				}
-				TransactionMessage message = spOpRslt.getResultObjects().firstOrDefault();
-				if (message == null) {
-					throw new TransactionException(I18N.prop("msg_bobas_invaild_bo_transaction_message"));
-				}
-				if (message.getCode() != 0) {
-					Logger.log(MessageLevel.DEBUG, MSG_TRANSACTION_SP_VALUES, type.toString(), trigger.toString(),
-							message.getCode(), message.getMessage());
-					throw new BusinessLogicException(message.getMessage());
+				if (type == TransactionType.BEFORE_ADD) {
+					DbKeysManager keysManager = new DbKeysManager();
+					keysManager.setDbConnection(dbRepository.getDbConnection());
+					keysManager.setAdapter(dbRepository.getBOAdapter());
+					// 获取并更新系列号
+					keysManager.useSeriesKey(trigger);
+				} else {
+					IBOAdapter adapter = dbRepository.getBOAdapter();
+					ISqlQuery sqlQuery = adapter.parseTransactionNotification(type, trigger);
+					IOperationResult<TransactionMessage> spOpRslt = dbRepository.fetch(sqlQuery,
+							TransactionMessage.class);
+					if (spOpRslt.getError() != null) {
+						throw spOpRslt.getError();
+					}
+					TransactionMessage message = spOpRslt.getResultObjects().firstOrDefault();
+					if (message == null) {
+						throw new TransactionException(I18N.prop("msg_bobas_invaild_bo_transaction_message"));
+					}
+					if (message.getCode() != 0) {
+						Logger.log(MessageLevel.DEBUG, MSG_TRANSACTION_SP_VALUES, type.toString(), trigger.toString(),
+								message.getCode(), message.getMessage());
+						throw new BusinessLogicException(message.getMessage());
+					}
 				}
 			} catch (TransactionException e) {
 				throw e;
@@ -362,6 +370,7 @@ public class BORepositoryService implements IBORepositoryService {
 				throw new TransactionException(e);
 			}
 		}
+
 	}
 
 	/**

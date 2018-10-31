@@ -1,7 +1,6 @@
 package org.colorcoding.ibas.bobas.repository;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.bo.IBOKeysManager;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.OperationResult;
@@ -173,10 +172,9 @@ public class BORepository4DbBatch extends BORepository4Db implements IBOReposito
 		try {
 			myOpenedDb = this.openDbConnection();
 			myTrans = this.beginTransaction();
+			// 获取并更新主键
+			this.createKeysManager().usePrimaryKeys(bos);
 			IBOAdapter adapter = this.getBOAdapter();
-			IBOKeysManager keysManager = this.createKeysManager();
-			keysManager.usePrimaryKeys(bos);// 获取并更新主键
-			keysManager.useSeriesKey(bos);// 获取并更新系列号
 			command = this.getDbConnection().createCommand();
 			for (int i = 0; i < bos.length; i++) {
 				IBusinessObjectBase bo = bos[i];

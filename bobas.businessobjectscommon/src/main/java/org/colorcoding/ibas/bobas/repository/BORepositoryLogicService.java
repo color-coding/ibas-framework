@@ -94,6 +94,11 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 */
 	@Override
 	protected void fireTransaction(TransactionType type, IBusinessObject trigger) throws TransactionException {
+		if (type == TransactionType.BEFORE_ADD) {
+			// 运行基类方法
+			super.fireTransaction(type, trigger);
+		}
+		// 新增逻辑
 		if (type == TransactionType.BEFORE_ADD || type == TransactionType.BEFORE_UPDATE
 				|| type == TransactionType.BEFORE_DELETE) {
 			// 期间检查
@@ -112,14 +117,14 @@ public class BORepositoryLogicService extends BORepositoryService {
 					throw new TransactionException(e);
 				}
 			}
-			// 审批流程相关，先执行审批逻辑，可能对bo的状态有影响
-			if (this.isCheckApprovalProcess()) {
-				// 触发审批流程
-				try {
-					this.checkApprovals(trigger);
-				} catch (InvalidAuthorizationException | ApprovalProcessException e) {
-					throw new TransactionException(e);
-				}
+		}
+		// 审批流程相关，先执行审批逻辑，可能对bo的状态有影响
+		if (this.isCheckApprovalProcess()) {
+			// 触发审批流程
+			try {
+				this.checkApprovals(type, trigger);
+			} catch (ApprovalProcessException e) {
+				throw new TransactionException(e);
 			}
 		}
 		// 业务逻辑相关，最后执行业务逻辑，因为要求状态可用
@@ -127,8 +132,10 @@ public class BORepositoryLogicService extends BORepositoryService {
 			// 执行业务逻辑
 			this.runLogics(type, trigger);
 		}
-		// 运行基类方法
-		super.fireTransaction(type, trigger);
+		if (type != TransactionType.BEFORE_ADD) {
+			// 运行基类方法
+			super.fireTransaction(type, trigger);
+		}
 	}
 
 	/**
@@ -163,6 +170,8 @@ public class BORepositoryLogicService extends BORepositoryService {
 		}
 	}
 
+	private IApprovalProcessManager approvalManager;
+
 	/**
 	 * 触发审批流程
 	 * 
@@ -171,40 +180,45 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 * @throws ApprovalException
 	 * @throws InvalidAuthorizationException
 	 */
-	private void checkApprovals(IBusinessObject bo) throws ApprovalProcessException, InvalidAuthorizationException {
+	private void checkApprovals(TransactionType type, IBusinessObject bo) throws ApprovalProcessException {
 		if (!(bo instanceof IApprovalData)) {
 			// 业务对象不是需要审批的数据，退出处理
 			return;
 		}
-		IApprovalProcessManager apManager = ApprovalFactory.create().createManager();
-		IApprovalProcess approvalProcess = apManager.checkProcess((IApprovalData) bo, this.getRepository());
-		if (approvalProcess != null) {
-			// 创建了流程实例
-			// 保存流程实例，使用当前仓库以保证事务完整
-			if (!bo.isNew() && !approvalProcess.isNew()) {
-				// 非新建时，检查用户是否有权限保存修改
-				approvalProcess.checkToSave(this.getCurrentUser());
-				if (bo.isDeleted()) {
-					// 删除数据，取消流程
+		if (this.approvalManager == null) {
+			this.approvalManager = ApprovalFactory.create().createManager();
+			this.approvalManager.useRepository(this.getRepository());
+		}
+		IApprovalProcess approvalProcess = this.approvalManager.checkProcess((IApprovalData) bo);
+		if (approvalProcess == null) {
+			return;
+		}
+		// 存在流程实例
+		if (type == TransactionType.BEFORE_UPDATE || type == TransactionType.BEFORE_DELETE) {
+			// 检查是否有权限修改数据
+			approvalProcess.checkToSave(this.getCurrentUser());
+			// 数据无效时，清理流程
+			if (bo.isDeleted()) {
+				// 删除数据，取消流程
+				approvalProcess.cancel(this.getCurrentUser().getToken(),
+						I18N.prop("msg_bobas_user_deleted_approval_data"));
+			} else if (bo instanceof IBOTagDeleted) {
+				// 删除，取消流程
+				IBOTagDeleted tagDeleted = (IBOTagDeleted) bo;
+				if (tagDeleted.getDeleted() == emYesNo.YES) {
 					approvalProcess.cancel(this.getCurrentUser().getToken(),
 							I18N.prop("msg_bobas_user_deleted_approval_data"));
-				} else if (bo instanceof IBOTagDeleted) {
-					// 删除，取消流程
-					IBOTagDeleted referenced = (IBOTagDeleted) bo;
-					if (referenced.getDeleted() == emYesNo.YES) {
-						approvalProcess.cancel(this.getCurrentUser().getToken(),
-								I18N.prop("msg_bobas_user_deleted_approval_data"));
-					}
-				} else if (bo instanceof IBOTagCanceled) {
-					// 取消，取消流程
-					IBOTagCanceled referenced = (IBOTagCanceled) bo;
-					if (referenced.getCanceled() == emYesNo.YES) {
-						approvalProcess.cancel(this.getCurrentUser().getToken(),
-								I18N.prop("msg_bobas_user_deleted_approval_data"));
-					}
+				}
+			} else if (bo instanceof IBOTagCanceled) {
+				// 取消，取消流程
+				IBOTagCanceled tagCanceled = (IBOTagCanceled) bo;
+				if (tagCanceled.getCanceled() == emYesNo.YES) {
+					approvalProcess.cancel(this.getCurrentUser().getToken(),
+							I18N.prop("msg_bobas_user_deleted_approval_data"));
 				}
 			}
-			approvalProcess.setRepository(this.getRepository());
+		} else if (type == TransactionType.ADD || type == TransactionType.UPDATE || type == TransactionType.DELETE) {
+			// 保存完成（添加，更新，删除），审批流程保存
 			approvalProcess.save();
 		}
 	}
@@ -220,17 +234,16 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 * @param bo   业务数据
 	 */
 	private void runLogics(TransactionType type, IBusinessObject bo) {
-		String transId = this.getRepository().getTransactionId();// 事务链标记，结束事务时关闭
+		// 事务链标记，结束事务时关闭
 		if (this.logicsManager == null) {
 			this.logicsManager = BusinessLogicsFactory.create().createManager();
 		}
-		IBusinessLogicsManager logicsManager = this.logicsManager;
-		IBusinessLogicChain logicChain = logicsManager.getChain(bo);
+		IBusinessLogicChain logicChain = this.logicsManager.getChain(bo);
 		if (logicChain == null) {
 			// 没有已存在的，创建并注册
-			logicChain = logicsManager.createChain();
+			logicChain = this.logicsManager.createChain();
 			// 设置事务标记
-			logicChain.setGroup(transId);
+			logicChain.setGroup(this.getRepository().getTransactionId());
 			// 设置使用仓库
 			logicChain.useRepository(this.getRepository());
 			// 设置触发者
@@ -262,6 +275,10 @@ public class BORepositoryLogicService extends BORepositoryService {
 		if (this.logicsManager != null) {
 			this.logicsManager.closeChains(this.getRepository().getTransactionId());
 		}
+		// 清理审批
+		if (this.approvalManager != null) {
+			this.approvalManager = null;
+		}
 		super.rollbackTransaction();
 	}
 
@@ -270,6 +287,10 @@ public class BORepositoryLogicService extends BORepositoryService {
 		// 关闭业务链
 		if (this.logicsManager != null) {
 			this.logicsManager.closeChains(this.getRepository().getTransactionId());
+		}
+		// 清理审批
+		if (this.approvalManager != null) {
+			this.approvalManager = null;
 		}
 		super.commitTransaction();
 	}
