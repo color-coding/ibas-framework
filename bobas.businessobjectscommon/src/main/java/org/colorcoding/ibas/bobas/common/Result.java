@@ -61,4 +61,8 @@ public class Result extends Serializable implements IResult {
 		this.message = value;
 	}
 
+	@Override
+	public String toString() {
+		return String.format("{result: %s - %s}", this.getResultCode(), this.getMessage());
+	}
 }

@@ -18,6 +18,7 @@ import org.colorcoding.ibas.bobas.serialization.Serializer;
 import org.colorcoding.ibas.bobas.serialization.ValidateException;
 import org.colorcoding.ibas.bobas.serialization.structure.Analyzer;
 import org.colorcoding.ibas.bobas.serialization.structure.Element;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.MediaType;
@@ -87,30 +88,15 @@ public class SerializerJsonNoRoot extends Serializer<JsonSchema> {
 	/**
 	 * 创建json序列化类
 	 * 
-	 * @param types
-	 *            已知类型
+	 * @param types 已知类型
 	 * @return
 	 * @throws JAXBException
 	 */
 	protected JAXBContext createJAXBContextJson(Class<?>... types) throws JAXBException {
-		if (context != null) {
-			return context;
+		if (context == null) {
+			context = JAXBContextFactory.createContext(types, null);
 		}
-		String factoryKey = "javax.xml.bind.context.factory";
-		String factoryValue = System.getProperty(factoryKey);
-		try {
-			// 重置序列化工厂
-			System.setProperty(factoryKey, "org.eclipse.persistence.jaxb.JAXBContextFactory");
-			context = JAXBContext.newInstance(types);
-			return context;
-		} finally {
-			// 还原工厂参数
-			if (factoryValue == null) {
-				System.clearProperty(factoryKey);
-			} else {
-				System.setProperty(factoryKey, factoryValue);
-			}
-		}
+		return context;
 	}
 
 	@Override

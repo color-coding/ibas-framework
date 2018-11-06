@@ -19,18 +19,18 @@ public class DataTableColumns extends ArrayList<IDataTableColumn> implements IDa
 
 	private static final long serialVersionUID = -592228599611799067L;
 
+	public DataTableColumns(IDataTable table) {
+		this.setTable(table);
+	}
+
 	private IDataTable table;
 
-	public IDataTable getTable() {
+	protected IDataTable getTable() {
 		return table;
 	}
 
-	public void setTable(IDataTable table) {
+	private void setTable(IDataTable table) {
 		this.table = table;
-	}
-
-	protected DataTableColumns(IDataTable table) {
-		this.setTable(table);
 	}
 
 	private void check() {
@@ -111,18 +111,15 @@ public class DataTableColumns extends ArrayList<IDataTableColumn> implements IDa
 		return super.set(index, element);
 	}
 
-	/**
-	 * 创建一列
-	 * 
-	 * @return
-	 */
+	@Override
 	public IDataTableColumn create() {
 		this.check();
 		DataTableColumn column = new DataTableColumn();
 		if (super.add(column)) {
 			column.setName(String.format("col_%s", this.size()));
+			return column;
 		}
-		return column;
+		return null;
 	}
 
 	@Override
@@ -133,13 +130,6 @@ public class DataTableColumns extends ArrayList<IDataTableColumn> implements IDa
 		return column;
 	}
 
-	/**
-	 * 通过 列名查找列
-	 * 
-	 * @param name
-	 *            列名
-	 * @return 返回查找的列
-	 */
 	public IDataTableColumn get(String name) {
 		for (int i = 0; i < super.size(); i++) {
 			if (super.get(i).getName().equals(name)) {

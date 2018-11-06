@@ -15,8 +15,7 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
  * 
  * @author Niuren.Zhu
  *
- * @param <P>
- *            结果类型
+ * @param <P> 结果类型
  */
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "OperationResult", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
@@ -135,4 +134,8 @@ public class OperationResult<P> extends OperationMessage implements IOperationRe
 		this.addInformations(opRslt.getInformations());
 	}
 
+	@Override
+	public String toString() {
+		return String.format("{operation result: %s - %s}", this.getResultCode(), this.getMessage());
+	}
 }

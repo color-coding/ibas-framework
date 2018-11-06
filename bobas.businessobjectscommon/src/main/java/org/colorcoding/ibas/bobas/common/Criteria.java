@@ -483,11 +483,13 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 				// 修正枚举值
 				if (propertyInfo.getValueType().isEnum()) {
 					Object value = null;
-					if (DataConvert.isNumeric(condition.getValue())) {
+					try {
 						// 数字转枚举
 						value = DataConvert.toEnumValue(propertyInfo.getValueType(),
 								Integer.valueOf(condition.getValue()));
-					} else {
+					} catch (Exception e) {
+					}
+					if (value == null) {
 						value = DataConvert.toEnumValue(propertyInfo.getValueType(), condition.getValue());
 					}
 					if (value != null) {

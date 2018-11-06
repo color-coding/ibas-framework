@@ -21,9 +21,14 @@ public class DataTable extends Serializable implements IDataTable {
 
 	private static final long serialVersionUID = -5646933951739886585L;
 
-	private String name;
+	public DataTable() {
+		this.columns = new DataTableColumns(this);
+		this.rows = new DataTableRows(this);
+	}
 
 	@XmlElement(name = "Name")
+	private String name;
+
 	@Override
 	public String getName() {
 		return this.name;
@@ -34,9 +39,9 @@ public class DataTable extends Serializable implements IDataTable {
 		this.name = name;
 	}
 
+	@XmlElement(name = "Description")
 	private String description;
 
-	@XmlElement(name = "Description")
 	@Override
 	public String getDescription() {
 		return this.description;
@@ -47,10 +52,10 @@ public class DataTable extends Serializable implements IDataTable {
 		this.description = description;
 	}
 
-	private IDataTableColumns columns;
-
 	@XmlElementWrapper(name = "Columns")
 	@XmlElement(name = "Column", type = DataTableColumn.class, required = true)
+	private IDataTableColumns columns;
+
 	@Override
 	public IDataTableColumns getColumns() {
 		if (this.columns == null) {
@@ -59,15 +64,10 @@ public class DataTable extends Serializable implements IDataTable {
 		return this.columns;
 	}
 
-	@Override
-	public void setColumns(IDataTableColumns columns) {
-		this.columns = columns;
-	}
-
-	private IDataTableRows rows;
-
 	@XmlElementWrapper(name = "Rows")
 	@XmlElement(name = "Row", type = DataTableRow.class, required = true)
+	private IDataTableRows rows;
+
 	@Override
 	public IDataTableRows getRows() {
 		if (this.rows == null) {
@@ -77,8 +77,8 @@ public class DataTable extends Serializable implements IDataTable {
 	}
 
 	@Override
-	public void setRows(IDataTableRows rows) {
-		this.rows = rows;
+	public String toString() {
+		return String.format("{table: %s}", this.getName() == null ? "unknown" : this.getName());
 	}
 
 	@Override

@@ -18,18 +18,23 @@ import org.colorcoding.ibas.bobas.common.IChildCriteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.ISort;
+import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.common.SortType;
+import org.colorcoding.ibas.bobas.data.DataTable;
+import org.colorcoding.ibas.bobas.data.IDataTableColumn;
+import org.colorcoding.ibas.bobas.data.IDataTableRow;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
 import org.colorcoding.ibas.bobas.serialization.ValidateException;
+import org.colorcoding.ibas.bobas.serialization.jersey.SerializerJsonNoRoot;
 import org.colorcoding.ibas.bobas.serialization.jersey.SerializerManager;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrderItem;
 
 import junit.framework.TestCase;
 
-public class TestCriteria extends TestCase {
+public class TestCommon extends TestCase {
 	private ICriteria createCriteria() {
 		ICriteria criteria = new Criteria();
 		criteria.setResultCount(100);
@@ -154,5 +159,24 @@ public class TestCriteria extends TestCase {
 				oldJSON.replace(System.getProperty("line.separator"), "").replace(" ", ""),
 				criteria.toString("json").replace(System.getProperty("line.separator"), "").replace(" ", ""));
 
+	}
+
+	public void testOperationRuslut() {
+		OperationResult<DataTable> operationResult = new OperationResult<>();
+		DataTable dataTable = new DataTable();
+		IDataTableColumn column = dataTable.getColumns().create();
+		column.setName("Test");
+		column.setDataType(String.class);
+		IDataTableRow row = dataTable.getRows().create();
+		row.setValue(column, "你好，世界！");
+		operationResult.getResultObjects().add(dataTable);
+
+		ByteArrayOutputStream writer = new ByteArrayOutputStream();
+		ISerializer<?> serializer = new SerializerJsonNoRoot();
+		serializer.serialize(operationResult, writer, OperationResult.class, DataTable.class);
+		System.out.println(writer.toString());
+		serializer = new SerializerJsonNoRoot();
+		Object data = serializer.deserialize(writer.toString(), OperationResult.class, DataTable.class);
+		System.out.println(data);
 	}
 }

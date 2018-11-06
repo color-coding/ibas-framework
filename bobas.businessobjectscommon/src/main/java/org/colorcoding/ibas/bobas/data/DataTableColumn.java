@@ -17,9 +17,9 @@ public class DataTableColumn extends Serializable implements IDataTableColumn {
 	public DataTableColumn() {
 	}
 
+	@XmlElement(name = "Name")
 	private String name;
 
-	@XmlElement(name = "Name")
 	@Override
 	public String getName() {
 		return this.name;
@@ -30,9 +30,24 @@ public class DataTableColumn extends Serializable implements IDataTableColumn {
 		this.name = name;
 	}
 
+	@XmlElement(name = "DataType")
+	private String getDataTypeProxy() {
+		if (this.getDataType() == null) {
+			return Object.class.getName();
+		}
+		return this.getDataType().getName();
+	}
+
+	@SuppressWarnings("unused")
+	private void setDataTypeProxy(String dataType) {
+		try {
+			this.setDataType(Class.forName(dataType));
+		} catch (Exception e) {
+		}
+	}
+
 	private Class<?> dataType;
 
-	@XmlElement(name = "DataType")
 	@Override
 	public Class<?> getDataType() {
 		return this.dataType;
@@ -43,9 +58,9 @@ public class DataTableColumn extends Serializable implements IDataTableColumn {
 		this.dataType = type;
 	}
 
+	@XmlElement(name = "Description")
 	private String description;
 
-	@XmlElement(name = "Description")
 	@Override
 	public String getDescription() {
 		return this.description;
@@ -54,5 +69,10 @@ public class DataTableColumn extends Serializable implements IDataTableColumn {
 	@Override
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("{column: %s}", this.getName() == null ? "unknown" : this.getName());
 	}
 }

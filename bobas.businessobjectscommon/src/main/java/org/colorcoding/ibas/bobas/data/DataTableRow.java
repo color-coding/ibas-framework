@@ -18,19 +18,17 @@ public class DataTableRow extends Serializable implements IDataTableRow {
 	public DataTableRow() {
 	}
 
-	public DataTableRow(IDataTableColumns columns) {
-		this.setColumns(columns);
-		this.values = new Object[this.getColumns().size()];
-	}
-
 	private IDataTableColumns columns;
 
-	public IDataTableColumns getColumns() {
+	protected IDataTableColumns getColumns() {
 		return this.columns;
 	}
 
-	public void setColumns(IDataTableColumns columns) {
+	void setColumns(IDataTableColumns columns) {
 		this.columns = columns;
+		if (this.values == null && this.columns != null) {
+			this.values = new Object[this.getColumns().size()];
+		}
 	}
 
 	@XmlElement(name = "Cells", type = String.class, required = true)
@@ -39,7 +37,7 @@ public class DataTableRow extends Serializable implements IDataTableRow {
 		for (int i = 0; i < this.values.length; i++) {
 			Object value = this.values[i];
 			if (value != null) {
-				values[i] = value.toString();
+				values[i] = DataConvert.toString(value);
 			} else {
 				values[i] = new String();
 			}
@@ -48,10 +46,11 @@ public class DataTableRow extends Serializable implements IDataTableRow {
 	}
 
 	@SuppressWarnings("unused")
-	private void getValueProxys(String[] values) {
+	private void setValueProxys(String[] values) {
 		if (values != null) {
-			for (int i = 0; i < values.length; i++) {
-				this.setValue(i, values[i]);
+			this.values = new Object[values.length];
+			for (int i = 0; i < this.values.length; i++) {
+				this.values[i] = values[i];
 			}
 		}
 	}
@@ -118,4 +117,8 @@ public class DataTableRow extends Serializable implements IDataTableRow {
 		this.setValue(this.getColumnIndex(col), value);
 	}
 
+	@Override
+	public String toString() {
+		return String.format("{row: %s}", this.getColumns().size());
+	}
 }

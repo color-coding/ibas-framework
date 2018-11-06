@@ -18,34 +18,41 @@ public class DataTableRows extends ArrayList<IDataTableRow> implements IDataTabl
 
 	private static final long serialVersionUID = -6899298407933961527L;
 
-	private IDataTable table;
-
-	public IDataTable getTable() {
-		return table;
-	}
-
-	public void setTable(IDataTable table) {
-		this.table = table;
-	}
-
-	protected DataTableRows(IDataTable table) {
+	public DataTableRows(IDataTable table) {
 		this.setTable(table);
 	}
 
-	/**
-	 * 创建行
-	 * 
-	 * @return
-	 */
+	private IDataTable table;
+
+	protected IDataTable getTable() {
+		return table;
+	}
+
+	private void setTable(IDataTable table) {
+		this.table = table;
+	}
+
+	@Override
 	public IDataTableRow create() {
 		if (this.getTable().getColumns().isEmpty()) {
 			throw new RuntimeException(I18N.prop("msg_bobas_data_table_no_columns_defined"));
 		}
-		DataTableRow row = new DataTableRow(this.getTable().getColumns());
-		if (super.add(row)) {
-
+		DataTableRow row = new DataTableRow();
+		if (this.add(row)) {
+			return row;
 		}
-		return row;
+		return null;
 	}
 
+	@Override
+	public boolean add(IDataTableRow item) {
+		boolean done = super.add(item);
+		if (done) {
+			if (item instanceof DataTableRow) {
+				DataTableRow row = (DataTableRow) item;
+				row.setColumns(this.getTable().getColumns());
+			}
+		}
+		return done;
+	}
 }
