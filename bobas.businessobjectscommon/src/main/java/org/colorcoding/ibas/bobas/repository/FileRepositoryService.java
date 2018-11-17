@@ -1,5 +1,10 @@
 package org.colorcoding.ibas.bobas.repository;
 
+import java.io.File;
+
+import org.colorcoding.ibas.bobas.common.ConditionOperation;
+import org.colorcoding.ibas.bobas.common.ConditionRelationship;
+import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
@@ -58,8 +63,7 @@ public class FileRepositoryService implements IFileRepositoryService {
 	/**
 	 * 设置当前用户
 	 * 
-	 * @param token
-	 *            用户口令
+	 * @param token 用户口令
 	 * @throws InvalidTokenException
 	 */
 	protected void setCurrentUser(String token) throws InvalidTokenException {
@@ -85,15 +89,54 @@ public class FileRepositoryService implements IFileRepositoryService {
 	/**
 	 * 查询文件数据
 	 * 
-	 * @param criteria
-	 *            查询
-	 * @param token
-	 *            用户口令
+	 * @param criteria 查询
+	 * @param token    用户口令
 	 * @return
 	 */
 	protected IOperationResult<FileData> fetch(ICriteria criteria, String token) {
 		try {
 			this.setCurrentUser(token);
+			// 如果只是按文件名查询，则快速处理
+			if (criteria != null && !criteria.getConditions().isEmpty()) {
+				if (criteria.getConditions().size() == 1) {
+					// 仅一个条件，条件是文件名
+					ICondition condition = criteria.getConditions().firstOrDefault();
+					if (FileRepositoryReadonly.CRITERIA_CONDITION_ALIAS_FILE_NAME.equals(condition.getAlias())
+							&& condition.getOperation() == ConditionOperation.EQUAL) {
+						FileData fileData = this.fetchFileData(condition.getValue());
+						OperationResult<FileData> opRslt = new OperationResult<>();
+						if (fileData != null) {
+							opRslt.addResultObjects(fileData);
+						}
+						return opRslt;
+					}
+				} else {
+					// 多个条件，全部条件为文件名且是或关系
+					OperationResult<FileData> opRslt = new OperationResult<>();
+					for (int i = 0; i < criteria.getConditions().size(); i++) {
+						ICondition condition = criteria.getConditions().get(i);
+						if (!FileRepositoryReadonly.CRITERIA_CONDITION_ALIAS_FILE_NAME.equals(condition.getAlias())) {
+							opRslt = null;
+						}
+						if (condition.getOperation() != ConditionOperation.EQUAL) {
+							opRslt = null;
+						}
+						if (i > 0 && condition.getRelationship() == ConditionRelationship.AND) {
+							opRslt = null;
+						}
+						if (opRslt == null) {
+							break;
+						}
+						FileData fileData = this.fetchFileData(condition.getValue());
+						if (fileData != null) {
+							opRslt.addResultObjects(fileData);
+						}
+					}
+					if (opRslt != null) {
+						return opRslt;
+					}
+				}
+			}
 			return this.getRepository().fetch(criteria);
 		} catch (Exception e) {
 			Logger.log(e);
@@ -101,13 +144,26 @@ public class FileRepositoryService implements IFileRepositoryService {
 		}
 	}
 
+	protected FileData fetchFileData(String fileName) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(this.getRepository().getRepositoryFolder());
+		stringBuilder.append(File.separator);
+		stringBuilder.append(fileName);
+		File file = new File(stringBuilder.toString());
+		if (file.exists() && file.isFile()) {
+			FileData fileData = new FileData();
+			fileData.setFileName(file.getName());
+			fileData.setLocation(file.getPath());
+			return fileData;
+		}
+		return null;
+	}
+
 	/**
 	 * 保存文件数据
 	 * 
-	 * @param fileData
-	 *            文件数据
-	 * @param token
-	 *            用户口令
+	 * @param fileData 文件数据
+	 * @param token    用户口令
 	 * @return
 	 */
 	protected IOperationResult<FileData> save(FileData fileData, String token) {
@@ -123,10 +179,8 @@ public class FileRepositoryService implements IFileRepositoryService {
 	/**
 	 * 删除文件数据
 	 * 
-	 * @param criteria
-	 *            查询
-	 * @param token
-	 *            用户口令
+	 * @param criteria 查询
+	 * @param token    用户口令
 	 * @return
 	 */
 	protected IOperationResult<FileData> delete(ICriteria criteria, String token) {

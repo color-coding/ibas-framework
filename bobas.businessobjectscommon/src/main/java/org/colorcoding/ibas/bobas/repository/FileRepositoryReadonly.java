@@ -86,7 +86,6 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
 		boolean include = false;
 		IConditions conditions = new Conditions();
 		for (ICondition condition : criteria.clone().getConditions()) {
-
 			if (CRITERIA_CONDITION_ALIAS_FOLDER.equals(condition.getAlias())) {
 				// 文件夹条件
 				if (condition.getAlias() == null || condition.getAlias().isEmpty())
@@ -132,12 +131,9 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
 	/**
 	 * 查询文件
 	 * 
-	 * @param folder
-	 *            目录
-	 * @param include
-	 *            是否包含子目录
-	 * @param conditions
-	 *            条件
+	 * @param folder     目录
+	 * @param include    是否包含子目录
+	 * @param conditions 条件
 	 * @return 符合条件的文件数组
 	 */
 	private List<File> searchFiles(File folder, boolean include, IConditions conditions) {
