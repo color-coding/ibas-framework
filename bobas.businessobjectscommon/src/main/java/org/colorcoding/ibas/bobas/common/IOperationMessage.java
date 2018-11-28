@@ -4,6 +4,7 @@ import org.colorcoding.ibas.bobas.data.DateTime;
 
 /**
  * 操作消息
+ * 
  * @author Niuren.Zhu
  *
  */
@@ -39,7 +40,10 @@ public interface IOperationMessage {
 	Exception getError();
 
 	/**
-	 * 复制消息
+	 * 复制数据
+	 * 
+	 * @param content 复制内容
+	 * @return 当前实例
 	 */
-	void copy(IOperationMessage opMsg);
+	IOperationMessage copy(IOperationMessage content);
 }

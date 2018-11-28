@@ -7,9 +7,7 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
  * 
  * @author Niuren.Zhu
  *
- * @param
- * 			<P>
- *            返回的对象类型
+ * @param <P> 返回的对象类型
  */
 public interface IOperationResult<P> extends IOperationMessage {
 	/**
@@ -25,7 +23,10 @@ public interface IOperationResult<P> extends IOperationMessage {
 	ArrayList<IOperationInformation> getInformations();
 
 	/**
-	 * 复制消息
+	 * 复制数据
+	 * 
+	 * @param content 复制内容
+	 * @return 当前实例
 	 */
-	void copy(IOperationResult<?> opRslt);
+	IOperationResult<P> copy(IOperationResult<?> content);
 }

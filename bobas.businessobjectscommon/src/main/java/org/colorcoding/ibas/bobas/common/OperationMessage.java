@@ -117,14 +117,21 @@ public class OperationMessage extends Result implements IOperationMessage {
 		}
 	}
 
+	/**
+	 * 复制数据
+	 * 
+	 * @param content 复制内容
+	 * @return 当前实例
+	 */
 	@Override
-	public void copy(IOperationMessage opMsg) {
-		this.setSignID(opMsg.getSignID());
-		this.setUserSign(opMsg.getUserSign());
-		this.setTime(opMsg.getTime());
-		this.setResultCode(opMsg.getResultCode());
-		this.setMessage(opMsg.getMessage());
-		this.setError(opMsg.getError());
+	public IOperationMessage copy(IOperationMessage content) {
+		this.setSignID(content.getSignID());
+		this.setUserSign(content.getUserSign());
+		this.setTime(content.getTime());
+		this.setResultCode(content.getResultCode());
+		this.setMessage(content.getMessage());
+		this.setError(content.getError());
+		return this;
 	}
 
 	@Override

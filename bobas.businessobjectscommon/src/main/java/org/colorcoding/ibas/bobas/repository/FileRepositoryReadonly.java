@@ -69,10 +69,8 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
 
 	@Override
 	public IOperationResult<FileData> fetch(ICriteria criteria) {
-		OperationResult<FileData> operationResult = new OperationResult<>();
 		try {
-			operationResult.addResultObjects(this.searchFiles(criteria));
-			return operationResult;
+			return new OperationResult<FileData>().addResultObjects(this.searchFiles(criteria));
 		} catch (Exception e) {
 			return new OperationResult<>(e);
 		}

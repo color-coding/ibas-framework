@@ -27,9 +27,7 @@ public class FileRepository extends FileRepositoryReadonly implements IFileRepos
 	@Override
 	public IOperationResult<FileData> save(FileData fileData) {
 		try {
-			OperationResult<FileData> operationResult = new OperationResult<>();
-			operationResult.addResultObjects(this.writeFile(fileData));
-			return operationResult;
+			return new OperationResult<FileData>().addResultObjects(this.writeFile(fileData));
 		} catch (Exception e) {
 			return new OperationResult<>(e);
 		}
@@ -38,8 +36,7 @@ public class FileRepository extends FileRepositoryReadonly implements IFileRepos
 	/**
 	 * 写文件
 	 * 
-	 * @param fileData
-	 *            被写入的文件数据
+	 * @param fileData 被写入的文件数据
 	 * @return 新的文件数据
 	 * @throws Exception
 	 */

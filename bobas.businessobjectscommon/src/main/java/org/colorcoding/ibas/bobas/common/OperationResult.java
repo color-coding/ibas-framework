@@ -53,30 +53,30 @@ public class OperationResult<P> extends OperationMessage implements IOperationRe
 		return this.resultObjects;
 	}
 
-	public final void addResultObjects(Iterable<?> values) {
-		if (values == null) {
-			return;
+	public final IOperationResult<P> addResultObjects(Iterable<?> values) {
+		if (values != null) {
+			for (Object value : values) {
+				this.addResultObjects(value);
+			}
 		}
-		for (Object value : values) {
-			this.addResultObjects(value);
-		}
+		return this;
 	}
 
-	public final void addResultObjects(Object[] values) {
-		if (values == null) {
-			return;
+	public final IOperationResult<P> addResultObjects(Object[] values) {
+		if (values != null) {
+			for (Object value : values) {
+				this.addResultObjects(value);
+			}
 		}
-		for (Object value : values) {
-			this.addResultObjects(value);
-		}
+		return this;
 	}
 
 	@SuppressWarnings("unchecked")
-	public final void addResultObjects(Object value) {
-		if (value == null) {
-			return;
+	public final IOperationResult<P> addResultObjects(Object value) {
+		if (value != null) {
+			this.getResultObjects().add((P) value);
 		}
-		this.getResultObjects().add((P) value);
+		return this;
 	}
 
 	private ArrayList<IOperationInformation> informations = null;
@@ -91,47 +91,55 @@ public class OperationResult<P> extends OperationMessage implements IOperationRe
 		return this.informations;
 	}
 
-	public final void addInformations(String name, String content, String tag) {
+	public final IOperationResult<P> addInformations(String name, String content, String tag) {
 		this.getInformations().add(new OperationInformation(name, content, tag));
+		return this;
 	}
 
-	public final void addInformations(String name, String content) {
+	public final IOperationResult<P> addInformations(String name, String content) {
 		this.getInformations().add(new OperationInformation(name, content));
+		return this;
 	}
 
-	public final void addInformations(IOperationInformation value) {
-		if (value == null) {
-			return;
+	public final IOperationResult<P> addInformations(IOperationInformation value) {
+		if (value != null) {
+			this.getInformations().add(value);
 		}
-		this.getInformations().add(value);
+		return this;
 	}
 
-	public final void addInformations(Iterable<IOperationInformation> values) {
-		if (values == null) {
-			return;
+	public final IOperationResult<P> addInformations(Iterable<IOperationInformation> values) {
+		if (values != null) {
+			for (IOperationInformation value : values) {
+				this.addInformations(value);
+			}
 		}
-		for (IOperationInformation value : values) {
-			this.addInformations(value);
-		}
+		return this;
 	}
 
-	public final void addInformations(IOperationInformation[] values) {
-		if (values == null) {
-			return;
+	public final IOperationResult<P> addInformations(IOperationInformation[] values) {
+		if (values != null) {
+			for (IOperationInformation value : values) {
+				this.addInformations(value);
+			}
 		}
-		for (IOperationInformation value : values) {
-			this.addInformations(value);
-		}
+		return this;
 	}
 
+	/**
+	 * 复制数据
+	 * 
+	 * @param content 复制内容
+	 * @return 当前实例
+	 */
 	@Override
-	public void copy(IOperationResult<?> opRslt) {
-		if (opRslt == null) {
-			return;
+	public IOperationResult<P> copy(IOperationResult<?> content) {
+		if (content != null) {
+			super.copy(content);
+			this.addResultObjects(content.getResultObjects());
+			this.addInformations(content.getInformations());
 		}
-		super.copy(opRslt);
-		this.addResultObjects(opRslt.getResultObjects());
-		this.addInformations(opRslt.getInformations());
+		return this;
 	}
 
 	@Override
