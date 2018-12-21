@@ -22,6 +22,7 @@ import org.colorcoding.ibas.bobas.mapping.BOCode;
 import org.colorcoding.ibas.bobas.mapping.DbField;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.rule.IBusinessRule;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleDocumentStatus;
 import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMaxLength;
 import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMinValue;
 import org.colorcoding.ibas.bobas.rule.common.BusinessRuleRequired;
@@ -88,8 +89,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-凭证编号
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDocEntry(Integer value) {
 		this.setProperty(PROPERTY_DOCENTRY, value);
@@ -120,8 +120,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-期间编号
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDocNum(Integer value) {
 		this.setProperty(PROPERTY_DOCNUM, value);
@@ -152,8 +151,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-期间
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setPeriod(Integer value) {
 		this.setProperty(PROPERTY_PERIOD, value);
@@ -184,8 +182,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-Instance
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setInstance(Integer value) {
 		this.setProperty(PROPERTY_INSTANCE, value);
@@ -216,8 +213,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-服务系列
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setSeries(Integer value) {
 		this.setProperty(PROPERTY_SERIES, value);
@@ -248,8 +244,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-手写
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setHandwritten(emYesNo value) {
 		this.setProperty(PROPERTY_HANDWRITTEN, value);
@@ -280,8 +275,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-已引用
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setReferenced(emYesNo value) {
 		this.setProperty(PROPERTY_REFERENCED, value);
@@ -312,8 +306,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-取消
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCanceled(emYesNo value) {
 		this.setProperty(PROPERTY_CANCELED, value);
@@ -344,8 +337,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-类型
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setObjectCode(String value) {
 		this.setProperty(PROPERTY_OBJECTCODE, value);
@@ -376,8 +368,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-数据源
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDataSource(String value) {
 		this.setProperty(PROPERTY_DATASOURCE, value);
@@ -408,8 +399,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-实例号（版本）
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setLogInst(Integer value) {
 		this.setProperty(PROPERTY_LOGINST, value);
@@ -440,8 +430,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-用户
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setUserSign(Integer value) {
 		this.setProperty(PROPERTY_USERSIGN, value);
@@ -472,8 +461,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-是否结转
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setTransfered(emYesNo value) {
 		this.setProperty(PROPERTY_TRANSFERED, value);
@@ -504,8 +492,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-状态
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setStatus(emBOStatus value) {
 		this.setProperty(PROPERTY_STATUS, value);
@@ -536,8 +523,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-创建日期
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCreateDate(DateTime value) {
 		this.setProperty(PROPERTY_CREATEDATE, value);
@@ -568,8 +554,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-创建时间
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCreateTime(Short value) {
 		this.setProperty(PROPERTY_CREATETIME, value);
@@ -600,8 +585,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-修改日期
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setUpdateDate(DateTime value) {
 		this.setProperty(PROPERTY_UPDATEDATE, value);
@@ -632,8 +616,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-修改时间
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setUpdateTime(Short value) {
 		this.setProperty(PROPERTY_UPDATETIME, value);
@@ -664,8 +647,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-创建用户
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCreateUserSign(Integer value) {
 		this.setProperty(PROPERTY_CREATEUSERSIGN, value);
@@ -696,8 +678,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-修改用户
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setUpdateUserSign(Integer value) {
 		this.setProperty(PROPERTY_UPDATEUSERSIGN, value);
@@ -728,8 +709,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-创建动作标识
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCreateActionId(String value) {
 		this.setProperty(PROPERTY_CREATEACTIONID, value);
@@ -760,8 +740,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-更新动作标识
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setUpdateActionId(String value) {
 		this.setProperty(PROPERTY_UPDATEACTIONID, value);
@@ -792,8 +771,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-数据所有者
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDataOwner(Integer value) {
 		this.setProperty(PROPERTY_DATAOWNER, value);
@@ -824,8 +802,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-团队成员
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setTeamMembers(String value) {
 		this.setProperty(PROPERTY_TEAMMEMBERS, value);
@@ -856,8 +833,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-数据所属组织
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setOrganization(String value) {
 		this.setProperty(PROPERTY_ORGANIZATION, value);
@@ -888,8 +864,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-审批状态
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setApprovalStatus(emApprovalStatus value) {
 		this.setProperty(PROPERTY_APPROVALSTATUS, value);
@@ -920,8 +895,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-单据状态
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDocumentStatus(emDocumentStatus value) {
 		this.setProperty(PROPERTY_DOCUMENTSTATUS, value);
@@ -952,8 +926,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-过账日期
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setPostingDate(DateTime value) {
 		this.setProperty(PROPERTY_POSTINGDATE, value);
@@ -984,8 +957,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-到期日
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDeliveryDate(DateTime value) {
 		this.setProperty(PROPERTY_DELIVERYDATE, value);
@@ -1016,8 +988,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-凭证日期
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDocumentDate(DateTime value) {
 		this.setProperty(PROPERTY_DOCUMENTDATE, value);
@@ -1048,8 +1019,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-参考1
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setReference1(String value) {
 		this.setProperty(PROPERTY_REFERENCE1, value);
@@ -1080,8 +1050,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-参考2
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setReference2(String value) {
 		this.setProperty(PROPERTY_REFERENCE2, value);
@@ -1112,8 +1081,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-备注
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setRemarks(String value) {
 		this.setProperty(PROPERTY_REMARKS, value);
@@ -1144,8 +1112,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-客户代码
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCustomerCode(String value) {
 		this.setProperty(PROPERTY_CUSTOMERCODE, value);
@@ -1176,8 +1143,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-客户名称
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCustomerName(String value) {
 		this.setProperty(PROPERTY_CUSTOMERNAME, value);
@@ -1208,8 +1174,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-单据货币
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDocumentCurrency(String value) {
 		this.setProperty(PROPERTY_DOCUMENTCURRENCY, value);
@@ -1240,8 +1205,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-单据交换率
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDocumentRate(Decimal value) {
 		this.setProperty(PROPERTY_DOCUMENTRATE, value);
@@ -1250,8 +1214,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-单据交换率
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDocumentRate(String value) {
 		this.setDocumentRate(new Decimal(value));
@@ -1260,8 +1223,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-单据交换率
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDocumentRate(int value) {
 		this.setDocumentRate(new Decimal(value));
@@ -1270,8 +1232,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-单据交换率
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDocumentRate(double value) {
 		this.setDocumentRate(new Decimal(value));
@@ -1302,8 +1263,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-单据总计
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDocumentTotal(Decimal value) {
 		this.setProperty(PROPERTY_DOCUMENTTOTAL, value);
@@ -1312,8 +1272,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-单据总计
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDocumentTotal(String value) {
 		this.setDocumentTotal(new Decimal(value));
@@ -1322,8 +1281,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-单据总计
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDocumentTotal(int value) {
 		this.setDocumentTotal(new Decimal(value));
@@ -1332,8 +1290,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-单据总计
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDocumentTotal(double value) {
 		this.setDocumentTotal(new Decimal(value));
@@ -1364,8 +1321,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	/**
 	 * 设置-采购订单-行集合
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setPurchaseOrderItems(PurchaseOrderItems value) {
 		this.setProperty(PROPERTY_PURCHASEORDERITEMS, value);
@@ -1393,7 +1349,9 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 				new BusinessRuleRequiredElements(PROPERTY_PURCHASEORDERITEMS), // 要求有元素
 				new BusinessRuleMaxLength(20, PROPERTY_CUSTOMERCODE), // 不能超过长度
 				new BusinessRuleMinValue<Decimal>(Decimal.ZERO, PROPERTY_DOCUMENTTOTAL), // 不能低于0
+				new BusinessRuleDocumentStatus(PROPERTY_DOCUMENTSTATUS, PROPERTY_PURCHASEORDERITEMS,
+						PurchaseOrderItem.PROPERTY_LINESTATUS), // 使用集合元素状态
 				new BusinessRuleSumElements(PROPERTY_DOCUMENTTOTAL, PROPERTY_PURCHASEORDERITEMS,
-						PurchaseOrderItem.PROPERTY_LINETOTAL), };
+						PurchaseOrderItem.PROPERTY_LINETOTAL) };// 计算集合元素总计
 	}
 }

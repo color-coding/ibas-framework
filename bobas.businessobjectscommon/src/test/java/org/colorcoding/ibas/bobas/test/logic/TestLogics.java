@@ -357,6 +357,7 @@ public class TestLogics extends TestCase {
 		item01.setItemDescription(materials01.getItemDescription());
 		item01.setQuantity(100);// 测试点，数量大于0
 		item01.setPrice("999999.99");
+		item01.setLineStatus(emDocumentStatus.FINISHED);
 		System.out
 				.println(String.format("%s * %s = %s", item01.getPrice(), item01.getQuantity(), item01.getLineTotal()));
 		assertEquals(item01.getLineTotal().compareTo(item01.getQuantity().multiply(item01.getPrice())) == 0, true);
@@ -365,11 +366,13 @@ public class TestLogics extends TestCase {
 		item02.setItemDescription(materials01.getItemDescription());
 		item02.setQuantity(33.33);// 测试点，数量大于0
 		item02.setLineTotal(10000);
+		item02.setLineStatus(emDocumentStatus.FINISHED);
 		System.out.println(String.format("line 2 price %s", item02.getPrice()));
 		assertEquals(Decimal.round(item02.getPrice())
 				.compareTo(Decimal.round(item02.getLineTotal().divide(item02.getQuantity()))) == 0, true);// 注意四舍五入
 		System.out.println(String.format("bo: %s", order));
-		System.out.println(String.format("document total: %s", order.getDocumentTotal()));
+		System.out.println(
+				String.format("document total: %s, status: %s", order.getDocumentTotal(), order.getDocumentStatus()));
 		for (PurchaseOrderItem item : order.getPurchaseOrderItems()) {
 			System.out.println(String.format("line %s: %s * %s = %s", item.getLineId(), item.getPrice(),
 					item.getQuantity(), item.getLineTotal()));

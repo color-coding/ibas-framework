@@ -48,7 +48,7 @@ while read line
 do
   if [ -e ${WORK_FOLDER}/${line}/pom.xml ]
   then
-    for PACKAGE in `find release -name "${line}*.jar"`
+    for PACKAGE in `find release -name "${line}-*.jar"`
     do
       mvn deploy:deploy-file \
         -Dfile=${PACKAGE} \
