@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.db;
 
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
@@ -51,6 +52,14 @@ public interface IDbDataReader {
 	 * @throws DbException
 	 */
 	boolean isClosed() throws DbException;
+
+	/**
+	 * 是否第一行前
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
+	boolean isBeforeFirst() throws DbException;
 
 	/**
 	 * 是否第一行
@@ -111,8 +120,7 @@ public interface IDbDataReader {
 	/**
 	 * 定位到某行
 	 * 
-	 * @param row
-	 *            行数
+	 * @param row 行数
 	 * @return
 	 * @throws DbException
 	 */
@@ -121,8 +129,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取列索引
 	 * 
-	 * @param columnLabel
-	 *            列名称
+	 * @param columnLabel 列名称
 	 * @return
 	 * @throws DbException
 	 */
@@ -139,8 +146,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnIndex
-	 *            列索引
+	 * @param columnIndex 列索引
 	 * @return
 	 * @throws DbException
 	 */
@@ -149,8 +155,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnLabel
-	 *            列名称
+	 * @param columnLabel 列名称
 	 * @return
 	 * @throws DbException
 	 */
@@ -159,8 +164,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnIndex
-	 *            列索引
+	 * @param columnIndex 列索引
 	 * @return
 	 * @throws DbException
 	 */
@@ -169,8 +173,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnLabel
-	 *            列名称
+	 * @param columnLabel 列名称
 	 * @return
 	 * @throws DbException
 	 */
@@ -179,8 +182,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnIndex
-	 *            列索引
+	 * @param columnIndex 列索引
 	 * @return
 	 * @throws DbException
 	 */
@@ -189,8 +191,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnLabel
-	 *            列名称
+	 * @param columnLabel 列名称
 	 * @return
 	 * @throws DbException
 	 */
@@ -199,8 +200,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnIndex
-	 *            列索引
+	 * @param columnIndex 列索引
 	 * @return
 	 * @throws DbException
 	 */
@@ -209,8 +209,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnLabel
-	 *            列名称
+	 * @param columnLabel 列名称
 	 * @return
 	 * @throws DbException
 	 */
@@ -219,8 +218,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnIndex
-	 *            列索引
+	 * @param columnIndex 列索引
 	 * @return
 	 * @throws DbException
 	 */
@@ -229,8 +227,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnLabel
-	 *            列名称
+	 * @param columnLabel 列名称
 	 * @return
 	 * @throws DbException
 	 */
@@ -239,8 +236,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnIndex
-	 *            列索引
+	 * @param columnIndex 列索引
 	 * @return
 	 * @throws DbException
 	 */
@@ -249,8 +245,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnLabel
-	 *            列名称
+	 * @param columnLabel 列名称
 	 * @return
 	 * @throws DbException
 	 */
@@ -259,8 +254,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnIndex
-	 *            列索引
+	 * @param columnIndex 列索引
 	 * @return
 	 * @throws DbException
 	 */
@@ -269,8 +263,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnLabel
-	 *            列名称
+	 * @param columnLabel 列名称
 	 * @return
 	 * @throws DbException
 	 */
@@ -279,8 +272,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnIndex
-	 *            列索引
+	 * @param columnIndex 列索引
 	 * @return
 	 * @throws DbException
 	 */
@@ -289,8 +281,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnLabel
-	 *            列名称
+	 * @param columnLabel 列名称
 	 * @return
 	 * @throws DbException
 	 */
@@ -299,8 +290,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnIndex
-	 *            列索引
+	 * @param columnIndex 列索引
 	 * @return
 	 * @throws DbException
 	 */
@@ -309,8 +299,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnLabel
-	 *            列名称
+	 * @param columnLabel 列名称
 	 * @return
 	 * @throws DbException
 	 */
@@ -319,8 +308,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnIndex
-	 *            列索引
+	 * @param columnIndex 列索引
 	 * @return
 	 * @throws DbException
 	 */
@@ -329,8 +317,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnLabel
-	 *            列名称
+	 * @param columnLabel 列名称
 	 * @return
 	 * @throws DbException
 	 */
@@ -339,8 +326,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnIndex
-	 *            列索引
+	 * @param columnIndex 列索引
 	 * @return
 	 * @throws DbException
 	 */
@@ -349,8 +335,7 @@ public interface IDbDataReader {
 	/**
 	 * 获取值
 	 * 
-	 * @param columnLabel
-	 *            列名称
+	 * @param columnLabel 列名称
 	 * @return
 	 * @throws DbException
 	 */

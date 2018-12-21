@@ -43,4 +43,16 @@ public class ChildCriteria extends Criteria implements IChildCriteria {
 		this.onlyHasChilds = value;
 	}
 
+	private boolean includingOtherChilds = false;
+
+	@Override
+	@XmlElement(name = "IncludingOtherChilds")
+	public final boolean isIncludingOtherChilds() {
+		return includingOtherChilds;
+	}
+
+	@Override
+	public final void setIncludingOtherChilds(boolean value) {
+		this.includingOtherChilds = value;
+	}
 }

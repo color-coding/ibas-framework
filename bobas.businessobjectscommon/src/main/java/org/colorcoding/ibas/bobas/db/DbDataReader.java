@@ -75,6 +75,15 @@ public class DbDataReader implements IDbDataReader {
 	}
 
 	@Override
+	public boolean isBeforeFirst() throws DbException {
+		try {
+			return this.resultSet.isBeforeFirst();
+		} catch (Exception e) {
+			throw new DbException(e.getMessage(), e);
+		}
+	}
+
+	@Override
 	public boolean isFirst() throws DbException {
 		try {
 			return this.resultSet.isFirst();

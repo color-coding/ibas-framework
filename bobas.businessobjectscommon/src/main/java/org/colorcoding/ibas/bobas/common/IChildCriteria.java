@@ -35,4 +35,18 @@ public interface IChildCriteria extends ICriteria {
 	 * @param value
 	 */
 	void setOnlyHasChilds(boolean value);
+
+	/**
+	 * 获取-是否包含不符合条件子项（仅查到结果时有效）
+	 * 
+	 * @return
+	 */
+	boolean isIncludingOtherChilds();
+
+	/**
+	 * 设置-是否包含不符合条件子项（仅查到结果时有效）
+	 * 
+	 * @param value
+	 */
+	void setIncludingOtherChilds(boolean value);
 }

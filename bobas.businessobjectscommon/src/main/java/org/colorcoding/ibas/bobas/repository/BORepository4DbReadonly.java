@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
+import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.IChildCriteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
@@ -468,6 +469,13 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 								tmpCriteria = criteria.getChildCriterias().getCriteria(fieldData.getName());
 								if (tmpCriteria != null) {
 									// 设置了此属性的查询
+									ICondition tmpCondition = tmpCriteria.getConditions().firstOrDefault();
+									if (tmpCondition != null) {
+										// 强制使用“与”关系
+										if (tmpCondition.getRelationship() != ConditionRelationship.AND) {
+											tmpCondition.setRelationship(ConditionRelationship.AND);
+										}
+									}
 									childCriteria = childCriteria.copyFrom(tmpCriteria);
 									if (tmpCriteria.getResultCount() > 0) {
 										childCriteria.setResultCount(tmpCriteria.getResultCount());
@@ -477,16 +485,19 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 							ISqlQuery childSqlQuery = adapter.parseSqlQuery(childCriteria, childBoType);
 							command = this.getDbConnection().createCommand();
 							reader = command.executeReader(childSqlQuery);
-							IBusinessObjectBase[] childs = adapter.parseBOs(reader, listField);
-							if (tmpCriteria != null && (childs == null || childs.length == 0)) {
-								// 没有匹配的子项数据
-								if (tmpCriteria.isOnlyHasChilds()) {
-									// 要求父项必须有结果，但此时没有结果，则设置返回数组为空
-									bos[i] = null;
-									break;// 退出当前数据处理
-								}
+							if (tmpCriteria != null && tmpCriteria.getConditions().size() > 0
+									&& tmpCriteria.isIncludingOtherChilds() && reader.isBeforeFirst()) {
+								// 有结果，返回全部数据
+								childCriteria = listField.getElementCriteria();
+								childSqlQuery = adapter.parseSqlQuery(childCriteria, childBoType);
+								reader = command.executeReader(childSqlQuery);
 							}
-							this.myFetchEx(childs, tmpCriteria);
+							if (tmpCriteria != null && tmpCriteria.isOnlyHasChilds() && !reader.isBeforeFirst()) {
+								// 要求带子项返回，但无子项结果
+								bos[i] = null;
+								break;// 退出当前数据处理
+							}
+							this.myFetchEx(adapter.parseBOs(reader, listField), tmpCriteria);
 						}
 					} else if (fieldData instanceof AssociatedFieldDataBase<?>) {
 						// 关联对象类型
