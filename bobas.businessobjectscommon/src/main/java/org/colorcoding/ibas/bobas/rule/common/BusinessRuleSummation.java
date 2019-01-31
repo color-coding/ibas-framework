@@ -15,17 +15,15 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
  */
 public class BusinessRuleSummation extends BusinessRuleCommon {
 
-	public BusinessRuleSummation() {
+	protected BusinessRuleSummation() {
 		this.setName(I18N.prop("msg_bobas_business_rule_summation"));
 	}
 
 	/**
 	 * 构造方法
 	 * 
-	 * @param result
-	 *            属性-结果
-	 * @param addends
-	 *            属性-加数（数组）
+	 * @param result  属性-结果
+	 * @param addends 属性-加数（数组）
 	 */
 	@SafeVarargs
 	public BusinessRuleSummation(IPropertyInfo<Decimal> result, IPropertyInfo<Decimal>... addends) {

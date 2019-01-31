@@ -13,19 +13,16 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
  */
 public class BusinessRuleDivision extends BusinessRuleCommon {
 
-	public BusinessRuleDivision() {
+	protected BusinessRuleDivision() {
 		this.setName(I18N.prop("msg_bobas_business_rule_division"));
 	}
 
 	/**
 	 * 构造方法
 	 * 
-	 * @param result
-	 *            属性-结果
-	 * @param dividend
-	 *            属性-被除数
-	 * @param divisor
-	 *            属性-除数
+	 * @param result   属性-结果
+	 * @param dividend 属性-被除数
+	 * @param divisor  属性-除数
 	 */
 	public BusinessRuleDivision(IPropertyInfo<Decimal> result, IPropertyInfo<Decimal> dividend,
 			IPropertyInfo<Decimal> divisor) {

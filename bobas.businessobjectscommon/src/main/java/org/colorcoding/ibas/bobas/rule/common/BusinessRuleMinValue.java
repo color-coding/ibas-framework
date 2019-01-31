@@ -11,22 +11,19 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
  * 
  * @author Niuren.Zhu
  *
- * @param <T>
- *            值类型，需要实现Comparable
+ * @param <T> 值类型，需要实现Comparable
  */
 public class BusinessRuleMinValue<T extends Comparable<?>> extends BusinessRuleCommon {
 
-	public BusinessRuleMinValue() {
+	protected BusinessRuleMinValue() {
 		this.setName(I18N.prop("msg_bobas_business_rule_min_value"));
 	}
 
 	/**
 	 * 构造
 	 * 
-	 * @param minValue
-	 *            最小值
-	 * @param propertyInfos
-	 *            要求值的属性数组
+	 * @param minValue      最小值
+	 * @param propertyInfos 要求值的属性数组
 	 */
 	@SafeVarargs
 	public BusinessRuleMinValue(T minValue, IPropertyInfo<T>... propertyInfos) {

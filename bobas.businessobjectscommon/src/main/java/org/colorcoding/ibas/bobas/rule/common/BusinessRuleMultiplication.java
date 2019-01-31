@@ -13,19 +13,16 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
  */
 public class BusinessRuleMultiplication extends BusinessRuleCommon {
 
-	public BusinessRuleMultiplication() {
+	protected BusinessRuleMultiplication() {
 		this.setName(I18N.prop("msg_bobas_business_rule_multiplication"));
 	}
 
 	/**
 	 * 构造方法
 	 * 
-	 * @param result
-	 *            属性-结果
-	 * @param multiplicand
-	 *            属性-被乘数
-	 * @param multiplier
-	 *            属性-乘数
+	 * @param result       属性-结果
+	 * @param multiplicand 属性-被乘数
+	 * @param multiplier   属性-乘数
 	 */
 	public BusinessRuleMultiplication(IPropertyInfo<Decimal> result, IPropertyInfo<Decimal> multiplicand,
 			IPropertyInfo<Decimal> multiplier) {

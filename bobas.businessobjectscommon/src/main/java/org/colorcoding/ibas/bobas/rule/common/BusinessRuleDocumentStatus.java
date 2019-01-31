@@ -15,7 +15,7 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCollection;
  */
 public class BusinessRuleDocumentStatus extends BusinessRuleCollection {
 
-	public BusinessRuleDocumentStatus() {
+	protected BusinessRuleDocumentStatus() {
 		this.setName(I18N.prop("msg_bobas_business_rule_element_status"));
 	}
 

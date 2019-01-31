@@ -16,17 +16,15 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
  */
 public class BusinessRuleRequiredElements extends BusinessRuleCommon {
 
-	public BusinessRuleRequiredElements() {
+	protected BusinessRuleRequiredElements() {
 		this.setName(I18N.prop("msg_bobas_business_rule_required_elements"));
 	}
 
 	/**
 	 * 构造
 	 * 
-	 * @param propertyInfo
-	 *            要求元素的属性
-	 * @param propertyInfos
-	 *            要求元素的属性数组
+	 * @param propertyInfo  要求元素的属性
+	 * @param propertyInfos 要求元素的属性数组
 	 */
 	public BusinessRuleRequiredElements(IPropertyInfo<?> propertyInfo, IPropertyInfo<?>... propertyInfos) {
 		this();

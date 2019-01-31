@@ -11,22 +11,19 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
  * 
  * @author Niuren.Zhu
  *
- * @param <T>
- *            值类型，需要实现Comparable
+ * @param <T> 值类型，需要实现Comparable
  */
 public class BusinessRuleMaxValue<T extends Comparable<?>> extends BusinessRuleCommon {
 
-	public BusinessRuleMaxValue() {
+	protected BusinessRuleMaxValue() {
 		this.setName(I18N.prop("msg_bobas_business_rule_max_value"));
 	}
 
 	/**
 	 * 构造
 	 * 
-	 * @param maxValue
-	 *            最小值
-	 * @param propertyInfos
-	 *            要求值的属性数组
+	 * @param maxValue      最小值
+	 * @param propertyInfos 要求值的属性数组
 	 */
 	@SafeVarargs
 	public BusinessRuleMaxValue(T maxValue, IPropertyInfo<T>... propertyInfos) {

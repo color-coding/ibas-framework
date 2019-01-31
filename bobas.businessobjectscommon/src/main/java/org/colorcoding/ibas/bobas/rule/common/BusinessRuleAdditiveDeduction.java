@@ -13,19 +13,16 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
  */
 public class BusinessRuleAdditiveDeduction extends BusinessRuleCommon {
 
-	public BusinessRuleAdditiveDeduction() {
+	protected BusinessRuleAdditiveDeduction() {
 		this.setName(I18N.prop("msg_bobas_business_rule_additive_deduction"));
 	}
 
 	/**
 	 * 构造方法
 	 * 
-	 * @param augend
-	 *            属性-被加数
-	 * @param addend
-	 *            属性-加数
-	 * @param result
-	 *            属性-结果
+	 * @param augend 属性-被加数
+	 * @param addend 属性-加数
+	 * @param result 属性-结果
 	 */
 	public BusinessRuleAdditiveDeduction(IPropertyInfo<Decimal> augend, IPropertyInfo<Decimal> addend,
 			IPropertyInfo<Decimal> result) {

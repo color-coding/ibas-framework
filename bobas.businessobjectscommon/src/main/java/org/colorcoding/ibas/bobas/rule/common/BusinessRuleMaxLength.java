@@ -14,17 +14,15 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
  */
 public class BusinessRuleMaxLength extends BusinessRuleCommon {
 
-	public BusinessRuleMaxLength() {
+	protected BusinessRuleMaxLength() {
 		this.setName(I18N.prop("msg_bobas_business_rule_max_length"));
 	}
 
 	/**
 	 * 构造
 	 * 
-	 * @param maxLength
-	 *            最大长度
-	 * @param propertyInfos
-	 *            要求值的属性数组
+	 * @param maxLength     最大长度
+	 * @param propertyInfos 要求值的属性数组
 	 */
 	public BusinessRuleMaxLength(int maxLength, IPropertyInfo<?>... propertyInfos) {
 		this();

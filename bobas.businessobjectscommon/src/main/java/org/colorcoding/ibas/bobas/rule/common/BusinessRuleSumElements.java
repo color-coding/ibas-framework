@@ -13,19 +13,16 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCollection;
  */
 public class BusinessRuleSumElements extends BusinessRuleCollection {
 
-	public BusinessRuleSumElements() {
+	protected BusinessRuleSumElements() {
 		this.setName(I18N.prop("msg_bobas_business_rule_sum_elements"));
 	}
 
 	/**
 	 * 构造方法
 	 * 
-	 * @param affectedProperty
-	 *            属性-求和
-	 * @param collectionProperty
-	 *            属性-集合
-	 * @param summingProperty
-	 *            属性-被求和
+	 * @param affectedProperty   属性-求和
+	 * @param collectionProperty 属性-集合
+	 * @param summingProperty    属性-被求和
 	 */
 	public BusinessRuleSumElements(IPropertyInfo<Decimal> affectedProperty, IPropertyInfo<?> collectionProperty,
 			IPropertyInfo<Decimal> summingProperty) {

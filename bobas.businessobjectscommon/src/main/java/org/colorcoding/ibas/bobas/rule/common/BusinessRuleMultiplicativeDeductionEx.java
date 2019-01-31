@@ -13,7 +13,7 @@ public class BusinessRuleMultiplicativeDeductionEx extends BusinessRuleMultiplic
 
 	public static final Decimal PRECISION_VALUE = new Decimal("0.00001");
 
-	public BusinessRuleMultiplicativeDeductionEx() {
+	protected BusinessRuleMultiplicativeDeductionEx() {
 		super();
 	}
 

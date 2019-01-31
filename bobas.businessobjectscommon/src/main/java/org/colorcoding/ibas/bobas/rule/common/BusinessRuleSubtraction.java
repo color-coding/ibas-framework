@@ -15,19 +15,16 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
  */
 public class BusinessRuleSubtraction extends BusinessRuleCommon {
 
-	public BusinessRuleSubtraction() {
+	protected BusinessRuleSubtraction() {
 		this.setName(I18N.prop("msg_bobas_business_rule_subtraction"));
 	}
 
 	/**
 	 * 构造方法
 	 * 
-	 * @param result
-	 *            属性-结果
-	 * @param subtrahend
-	 *            属性-被减数
-	 * @param subtractors
-	 *            属性-减数（数组）
+	 * @param result      属性-结果
+	 * @param subtrahend  属性-被减数
+	 * @param subtractors 属性-减数（数组）
 	 */
 	@SafeVarargs
 	public BusinessRuleSubtraction(IPropertyInfo<Decimal> result, IPropertyInfo<Decimal> subtrahend,
