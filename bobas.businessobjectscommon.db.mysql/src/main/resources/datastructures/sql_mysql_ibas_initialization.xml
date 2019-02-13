@@ -6,7 +6,7 @@
     <Description>基于MYSQL的结构映射说明</Description>
     <Integrated>true</Integrated>
     <DriverName>com.mysql.cj.jdbc.Driver</DriverName>
-    <DbUrl>jdbc:mysql://${DbServer}:${DbPort}/mysql?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC</DbUrl>
+    <DbUrl>jdbc:mysql://${DbServer}:${DbPort}/mysql?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=${Timezone}</DbUrl>
     <DbUser>${DbUser}</DbUser>
     <DbPassword>${DbPassword}</DbPassword>
     <Action Name="create db" Isolated="true">

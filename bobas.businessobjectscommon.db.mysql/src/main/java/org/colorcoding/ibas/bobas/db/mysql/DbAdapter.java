@@ -2,6 +2,7 @@ package org.colorcoding.ibas.bobas.db.mysql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.TimeZone;
 
 import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter;
@@ -13,9 +14,13 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			String applicationName) throws DbException {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
+			String timeZone = TimeZone.getDefault().getID();
+			if (timeZone == null || timeZone.isEmpty()) {
+				timeZone = "UTC";
+			}
 			String dbURL = String.format(
-					"jdbc:mysql://%s/%s?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC",
-					server, dbName);
+					"jdbc:mysql://%s/%s?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=%s",
+					server, dbName, timeZone);
 			Connection connection = DriverManager.getConnection(dbURL, userName, userPwd);
 			connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 			return connection;
