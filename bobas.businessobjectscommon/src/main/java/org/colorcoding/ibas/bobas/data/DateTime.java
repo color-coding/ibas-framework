@@ -16,8 +16,8 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 /**
  * 日期类型
  */
-@XmlType(name = "DateTime", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 @XmlJavaTypeAdapter(DateTimeSerializer.class)
+@XmlType(name = "DateTime", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class DateTime extends Date implements Serializable {
 
 	private static final long serialVersionUID = 9197442988053540497L;
@@ -34,8 +34,7 @@ public class DateTime extends Date implements Serializable {
 	/**
 	 * 转换值
 	 * 
-	 * @param value
-	 *            日期值
+	 * @param value 日期值
 	 * @return 日期
 	 */
 	public static DateTime valueOf(long value) {
@@ -45,8 +44,7 @@ public class DateTime extends Date implements Serializable {
 	/**
 	 * 转换值
 	 * 
-	 * @param value
-	 *            日期
+	 * @param value 日期
 	 * @return 日期
 	 */
 	public static DateTime valueOf(Date value) {
@@ -56,8 +54,7 @@ public class DateTime extends Date implements Serializable {
 	/**
 	 * 转换值
 	 * 
-	 * @param value
-	 *            日期的字符串
+	 * @param value 日期的字符串
 	 * @return 日期
 	 */
 	public static DateTime valueOf(String value) {
@@ -67,10 +64,8 @@ public class DateTime extends Date implements Serializable {
 	/**
 	 * 转换值
 	 * 
-	 * @param value
-	 *            日期字符串
-	 * @param format
-	 *            字符串格式
+	 * @param value  日期字符串
+	 * @param format 字符串格式
 	 * @return 日期
 	 */
 	public static DateTime valueOf(String value, String format) {
@@ -86,12 +81,9 @@ public class DateTime extends Date implements Serializable {
 	/**
 	 * 转换值（已处理月份）
 	 * 
-	 * @param year
-	 *            年
-	 * @param month
-	 *            月
-	 * @param day
-	 *            日
+	 * @param year  年
+	 * @param month 月
+	 * @param day   日
 	 * @return
 	 */
 	public static DateTime valueOf(int year, int month, int day) {
@@ -134,12 +126,9 @@ public class DateTime extends Date implements Serializable {
 	/**
 	 * 计算间隔时间
 	 * 
-	 * @param fromTime
-	 *            起始时间
-	 * @param toTime
-	 *            截止时间
-	 * @param unit
-	 *            间隔的时间单位
+	 * @param fromTime 起始时间
+	 * @param toTime   截止时间
+	 * @param unit     间隔的时间单位
 	 * 
 	 * @return 返回日期间的间隔
 	 */
@@ -174,8 +163,7 @@ public class DateTime extends Date implements Serializable {
 	/**
 	 * 输出字符串
 	 * 
-	 * @param format
-	 *            字符串格式（yyyy-MM-dd'T'HH:mm:ss）
+	 * @param format 字符串格式（yyyy-MM-dd'T'HH:mm:ss）
 	 * @return
 	 */
 	public String toString(String format) {

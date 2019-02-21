@@ -22,7 +22,6 @@ import org.colorcoding.ibas.bobas.mapping.BOCode;
 import org.colorcoding.ibas.bobas.mapping.DbField;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.rule.IBusinessRule;
-import org.colorcoding.ibas.bobas.rule.common.BusinessRuleDocumentStatus;
 import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMaxLength;
 import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMinValue;
 import org.colorcoding.ibas.bobas.rule.common.BusinessRuleRequired;
@@ -1349,8 +1348,9 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 				new BusinessRuleRequiredElements(PROPERTY_PURCHASEORDERITEMS), // 要求有元素
 				new BusinessRuleMaxLength(20, PROPERTY_CUSTOMERCODE), // 不能超过长度
 				new BusinessRuleMinValue<Decimal>(Decimal.ZERO, PROPERTY_DOCUMENTTOTAL), // 不能低于0
-				new BusinessRuleDocumentStatus(PROPERTY_DOCUMENTSTATUS, PROPERTY_PURCHASEORDERITEMS,
-						PurchaseOrderItem.PROPERTY_LINESTATUS), // 使用集合元素状态
+				// new BusinessRuleDocumentStatus(PROPERTY_DOCUMENTSTATUS,
+				// PROPERTY_PURCHASEORDERITEMS,
+				// PurchaseOrderItem.PROPERTY_LINESTATUS), // 使用集合元素状态
 				new BusinessRuleSumElements(PROPERTY_DOCUMENTTOTAL, PROPERTY_PURCHASEORDERITEMS,
 						PurchaseOrderItem.PROPERTY_LINETOTAL) };// 计算集合元素总计
 	}

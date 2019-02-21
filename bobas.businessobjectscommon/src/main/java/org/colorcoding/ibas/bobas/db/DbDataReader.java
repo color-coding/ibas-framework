@@ -342,7 +342,7 @@ public class DbDataReader implements IDbDataReader {
 	@Override
 	public Decimal getDecimal(int columnIndex) throws DbException {
 		try {
-			return new Decimal(this.resultSet.getBigDecimal(columnIndex));
+			return Decimal.valueOf(this.resultSet.getBigDecimal(columnIndex));
 		} catch (NullPointerException e) {
 			return Decimal.ZERO;
 		} catch (Exception e) {
@@ -353,7 +353,7 @@ public class DbDataReader implements IDbDataReader {
 	@Override
 	public Decimal getDecimal(String columnLabel) throws DbException {
 		try {
-			return new Decimal(this.resultSet.getBigDecimal(columnLabel));
+			return Decimal.valueOf(this.resultSet.getBigDecimal(columnLabel));
 		} catch (NullPointerException e) {
 			return Decimal.ZERO;
 		} catch (Exception e) {

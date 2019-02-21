@@ -40,7 +40,7 @@ public class TestLogics extends TestCase {
 
 		// 创建采购订单
 		PurchaseOrder order = new PurchaseOrder();
-		order.setApprovalStatus(emApprovalStatus.PROCESSING);// 父项审批中，子项逻辑不执行
+		order.setApprovalStatus(emApprovalStatus.PROCESSING);// 父项审批中，子项逻辑不执行，保存时被重置
 		order.setDocumentStatus(emDocumentStatus.PLANNED);// 父项计划状态，子项逻辑不执行
 		order.setCustomerCode("C00001");
 		order.setCustomerName("宇宙无敌影业");
@@ -49,8 +49,8 @@ public class TestLogics extends TestCase {
 		item01.setItemDescription(materials01.getItemDescription());
 		item01.setQuantity(1);
 		item01.setPrice(999999.99);
-		// item01.setLineStatus(emDocumentStatus.Planned);// 计划状态，逻辑不执行
-		// item01.setCanceled(emYesNo.Yes);// 取消的，逻辑不执行
+		// item01.setLineStatus(emDocumentStatus.PLANNED);// 计划状态，逻辑不执行
+		// item01.setCanceled(emYesNo.YES);// 取消的，逻辑不执行
 		PurchaseOrderItem item02 = order.getPurchaseOrderItems().create();
 		item02.setItemCode(materials02.getItemCode());
 		item02.setItemDescription(materials02.getItemDescription());

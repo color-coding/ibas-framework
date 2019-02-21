@@ -73,22 +73,22 @@ public abstract class MeasurementDecimal<U> extends Measurement<Decimal, U> {
 
 	@Override
 	public void setValue(String value) {
-		this.setValue(new Decimal(value));
+		this.setValue(Decimal.valueOf(value));
 	}
 
 	@Override
 	public void setValue(int value) {
-		this.setValue(new Decimal(value));
+		this.setValue(Decimal.valueOf(value));
 	}
 
 	@Override
 	public void setValue(double value) {
-		this.setValue(new Decimal(value));
+		this.setValue(Decimal.valueOf(value));
 	}
 
 	@Override
 	public void setValue(long value) {
-		this.setValue(new Decimal(value));
+		this.setValue(Decimal.valueOf(value));
 	}
 
 }

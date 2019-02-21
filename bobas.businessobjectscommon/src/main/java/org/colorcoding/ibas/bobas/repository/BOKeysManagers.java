@@ -71,7 +71,7 @@ class FileKeysManager implements IBOKeysManager {
 				StringBuilder builder = new StringBuilder();
 				builder.append(this.getWorkFolder());
 				builder.append(File.separator);
-				builder.append(MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_COMPANY, "CC"));
+				builder.append(MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_COMPANY, "CC").toLowerCase());
 				builder.append("_sys");
 				builder.append(File.separator);
 				builder.append("bo_keys.properties");

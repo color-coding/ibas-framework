@@ -43,9 +43,10 @@ public class TestSerialization extends TestCase {
 		ISerializerManager manager = SerializerFactory.create().createManager();
 		ISerializer<?> serializer = manager.create("xml");
 		Materials materials = new Materials();
+		materials.setOnHand("99.1234567890987654321");
 		materials.setCreateDate(DateTime.getToday());
 		System.out.println(materials.toString("xml"));
-		String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Materials><ItemCode>A0003</ItemCode><ItemDescription>A0003</ItemDescription><CreateDate>2099-11-11</CreateDate><OnHand>999.99</OnHand></Materials>";
+		String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Materials><ItemCode>A0003</ItemCode><ItemDescription>A0003</ItemDescription><CreateDate>2099-11-11T10:20:55</CreateDate><OnHand>999.1234567890987654321</OnHand></Materials>";
 
 		IBusinessObject bo = (IBusinessObject) serializer.deserialize(xml, Materials.class);
 		System.out.println(bo.toString("xml"));

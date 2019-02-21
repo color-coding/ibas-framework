@@ -13,10 +13,8 @@ public class DataConvert {
 	/**
 	 * 转换类型
 	 * 
-	 * @param type
-	 *            目标类型
-	 * @param value
-	 *            值
+	 * @param type  目标类型
+	 * @param value 值
 	 * @return 目标类型值
 	 */
 	public static Object convert(Class<?> type, Object value) {
@@ -41,7 +39,7 @@ public class DataConvert {
 		} else if (type == Float.class) {
 			return Float.valueOf(toString(value));
 		} else if (type == Decimal.class) {
-			return new Decimal(toString(value));
+			return Decimal.valueOf(toString(value));
 		} else if (type == BigDecimal.class) {
 			return new BigDecimal(toString(value));
 		} else if (type == Boolean.class) {
@@ -253,8 +251,7 @@ public class DataConvert {
 	/**
 	 * 转换类型为KeyValue
 	 * 
-	 * @param type
-	 *            目前可识别的类型：枚举类型
+	 * @param type 目前可识别的类型：枚举类型
 	 * @return
 	 */
 	public static KeyValue[] toKeyValues(Class<?> type) {

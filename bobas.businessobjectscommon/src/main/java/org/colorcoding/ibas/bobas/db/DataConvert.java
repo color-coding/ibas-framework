@@ -37,8 +37,7 @@ public class DataConvert extends org.colorcoding.ibas.bobas.data.DataConvert {
 				return null;
 			}
 		} else if (valueType == Decimal.class) {
-			Decimal decimal = (Decimal) value;
-			return Decimal.round(decimal, Decimal.RESERVED_DECIMAL_PLACES_STORAGE).toString();
+			return Decimal.round((Decimal) value, Decimal.RESERVED_DECIMAL_PLACES_STORAGE).toString();
 		}
 		return value.toString();
 	}
@@ -46,10 +45,8 @@ public class DataConvert extends org.colorcoding.ibas.bobas.data.DataConvert {
 	/**
 	 * 获取枚举值
 	 * 
-	 * @param type
-	 *            枚举类型
-	 * @param value
-	 *            字符串（包括dbValue）
+	 * @param type  枚举类型
+	 * @param value 字符串（包括dbValue）
 	 * @return 字符串对应的枚举值
 	 */
 	public static Object toEnumValue(Class<?> type, String value) {
@@ -78,10 +75,8 @@ public class DataConvert extends org.colorcoding.ibas.bobas.data.DataConvert {
 	/**
 	 * 获取枚举值
 	 * 
-	 * @param type
-	 *            枚举类型
-	 * @param value
-	 *            枚举的数值（枚举值或索引）
+	 * @param type  枚举类型
+	 * @param value 枚举的数值（枚举值或索引）
 	 * @return 数值对应的枚举值
 	 */
 	public static Object toEnumValue(Class<?> type, int value) {

@@ -61,7 +61,7 @@ public class JudgmentExpressionDecimal extends JudgmentExpressionComparable<BigD
 	}
 
 	public final void setLeftValue(BigDecimal value) {
-		this.setLeftValue(new Decimal(value));
+		this.setLeftValue(Decimal.valueOf(value));
 	}
 
 	public final void setLeftValue(Decimal value) {
@@ -109,7 +109,7 @@ public class JudgmentExpressionDecimal extends JudgmentExpressionComparable<BigD
 	}
 
 	public final void setRightValue(BigDecimal value) {
-		this.setRightValue(new Decimal(value));
+		this.setRightValue(Decimal.valueOf(value));
 	}
 
 	public final void setRightValue(Decimal value) {

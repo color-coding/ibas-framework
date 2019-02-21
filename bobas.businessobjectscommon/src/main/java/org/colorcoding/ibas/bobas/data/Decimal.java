@@ -9,8 +9,14 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 
-@XmlType(name = "Decimal", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+/**
+ * 十进制数
+ * 
+ * @author Niuren.Zhu
+ *
+ */
 @XmlJavaTypeAdapter(DecimalSerializer.class)
+@XmlType(name = "Decimal", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class Decimal extends BigDecimal implements Cloneable {
 
 	private static final long serialVersionUID = -3383909107151269118L;
@@ -114,7 +120,31 @@ public class Decimal extends BigDecimal implements Cloneable {
 		}
 		if (val.equals("0") || val.equals("0.0")) {
 			return ZERO;
-		} else if (val.equals("1")) {
+		} else if (val.equals("1") || val.equals("1.0")) {
+			return ONE;
+		}
+		return new Decimal(val);
+	}
+
+	public static Decimal valueOf(BigDecimal val) {
+		if (val == null) {
+			return ZERO;
+		}
+		if (val == BigDecimal.ZERO) {
+			return ZERO;
+		} else if (val == BigDecimal.ONE) {
+			return ONE;
+		}
+		return new Decimal(val);
+	}
+
+	public static Decimal valueOf(BigInteger val) {
+		if (val == null) {
+			return ZERO;
+		}
+		if (val == BigInteger.ZERO) {
+			return ZERO;
+		} else if (val == BigInteger.ONE) {
 			return ONE;
 		}
 		return new Decimal(val);
@@ -164,23 +194,23 @@ public class Decimal extends BigDecimal implements Cloneable {
 	}
 
 	public Decimal divide(String divisor) {
-		return this.divide(new Decimal(divisor));
+		return this.divide(Decimal.valueOf(divisor));
 	}
 
 	public Decimal divide(BigInteger divisor) {
-		return this.divide(new Decimal(divisor));
+		return this.divide(Decimal.valueOf(divisor));
 	}
 
 	public Decimal divide(double divisor) {
-		return this.divide(new Decimal(divisor));
+		return this.divide(Decimal.valueOf(divisor));
 	}
 
 	public Decimal divide(int divisor) {
-		return this.divide(new Decimal(divisor));
+		return this.divide(Decimal.valueOf(divisor));
 	}
 
 	public Decimal divide(long divisor) {
-		return this.divide(new Decimal(divisor));
+		return this.divide(Decimal.valueOf(divisor));
 	}
 
 	public Decimal multiply(Decimal multiplicand) {
@@ -188,23 +218,23 @@ public class Decimal extends BigDecimal implements Cloneable {
 	}
 
 	public Decimal multiply(String multiplicand) {
-		return this.multiply(new Decimal(multiplicand));
+		return this.multiply(Decimal.valueOf(multiplicand));
 	}
 
 	public Decimal multiply(BigInteger multiplicand) {
-		return this.multiply(new Decimal(multiplicand));
+		return this.multiply(Decimal.valueOf(multiplicand));
 	}
 
 	public Decimal multiply(double multiplicand) {
-		return this.multiply(new Decimal(multiplicand));
+		return this.multiply(Decimal.valueOf(multiplicand));
 	}
 
 	public Decimal multiply(int multiplicand) {
-		return this.multiply(new Decimal(multiplicand));
+		return this.multiply(Decimal.valueOf(multiplicand));
 	}
 
 	public Decimal multiply(long multiplicand) {
-		return this.multiply(new Decimal(multiplicand));
+		return this.multiply(Decimal.valueOf(multiplicand));
 	}
 
 	public Decimal add(Decimal augend) {
@@ -316,7 +346,7 @@ public class Decimal extends BigDecimal implements Cloneable {
 	}
 
 	@Override
-	public BigDecimal ulp() {
+	public Decimal ulp() {
 		return new Decimal(super.ulp());
 	}
 
