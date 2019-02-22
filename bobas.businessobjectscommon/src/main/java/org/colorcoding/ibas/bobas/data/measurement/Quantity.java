@@ -1,12 +1,13 @@
 package org.colorcoding.ibas.bobas.data.measurement;
 
+import java.math.BigDecimal;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 
 /**
@@ -22,7 +23,7 @@ public class Quantity extends MeasurementDecimal<String> {
 
 	}
 
-	public Quantity(Decimal value, String unit) {
+	public Quantity(BigDecimal value, String unit) {
 		super(value);
 		this.setUnit(unit);
 	}
@@ -55,7 +56,7 @@ public class Quantity extends MeasurementDecimal<String> {
 	}
 
 	@Override
-	public int compareTo(IMeasurement<Decimal, String> o) {
+	public int compareTo(IMeasurement<BigDecimal, String> o) {
 		if (!this.getUnit().equals(o.getUnit())) {
 			throw new ClassCastException(I18N.prop("msg_bobas_measurement_unit_not_match"));
 		}

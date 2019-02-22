@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.test.logic;
 
+import java.math.BigDecimal;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -1188,8 +1190,8 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	 * 单据交换率 属性
 	 */
 	@DbField(name = "DocRate", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
-	public static final IPropertyInfo<Decimal> PROPERTY_DOCUMENTRATE = registerProperty(PROPERTY_DOCUMENTRATE_NAME,
-			Decimal.class, MY_CLASS);
+	public static final IPropertyInfo<BigDecimal> PROPERTY_DOCUMENTRATE = registerProperty(PROPERTY_DOCUMENTRATE_NAME,
+			BigDecimal.class, MY_CLASS);
 
 	/**
 	 * 获取-单据交换率
@@ -1197,7 +1199,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	 * @return 值
 	 */
 	@XmlElement(name = PROPERTY_DOCUMENTRATE_NAME)
-	public final Decimal getDocumentRate() {
+	public final BigDecimal getDocumentRate() {
 		return this.getProperty(PROPERTY_DOCUMENTRATE);
 	}
 
@@ -1206,7 +1208,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	 * 
 	 * @param value 值
 	 */
-	public final void setDocumentRate(Decimal value) {
+	public final void setDocumentRate(BigDecimal value) {
 		this.setProperty(PROPERTY_DOCUMENTRATE, value);
 	}
 
@@ -1216,7 +1218,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	 * @param value 值
 	 */
 	public final void setDocumentRate(String value) {
-		this.setDocumentRate(new Decimal(value));
+		this.setDocumentRate(Decimal.valueOf(value));
 	}
 
 	/**
@@ -1225,7 +1227,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	 * @param value 值
 	 */
 	public final void setDocumentRate(int value) {
-		this.setDocumentRate(new Decimal(value));
+		this.setDocumentRate(Decimal.valueOf(value));
 	}
 
 	/**
@@ -1234,7 +1236,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	 * @param value 值
 	 */
 	public final void setDocumentRate(double value) {
-		this.setDocumentRate(new Decimal(value));
+		this.setDocumentRate(Decimal.valueOf(value));
 	}
 
 	/**
@@ -1246,8 +1248,8 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	 * 单据总计 属性
 	 */
 	@DbField(name = "DocTotal", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
-	public static final IPropertyInfo<Decimal> PROPERTY_DOCUMENTTOTAL = registerProperty(PROPERTY_DOCUMENTTOTAL_NAME,
-			Decimal.class, MY_CLASS);
+	public static final IPropertyInfo<BigDecimal> PROPERTY_DOCUMENTTOTAL = registerProperty(PROPERTY_DOCUMENTTOTAL_NAME,
+			BigDecimal.class, MY_CLASS);
 
 	/**
 	 * 获取-单据总计
@@ -1255,7 +1257,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	 * @return 值
 	 */
 	@XmlElement(name = PROPERTY_DOCUMENTTOTAL_NAME)
-	public final Decimal getDocumentTotal() {
+	public final BigDecimal getDocumentTotal() {
 		return this.getProperty(PROPERTY_DOCUMENTTOTAL);
 	}
 
@@ -1264,7 +1266,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	 * 
 	 * @param value 值
 	 */
-	public final void setDocumentTotal(Decimal value) {
+	public final void setDocumentTotal(BigDecimal value) {
 		this.setProperty(PROPERTY_DOCUMENTTOTAL, value);
 	}
 
@@ -1274,7 +1276,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	 * @param value 值
 	 */
 	public final void setDocumentTotal(String value) {
-		this.setDocumentTotal(new Decimal(value));
+		this.setDocumentTotal(Decimal.valueOf(value));
 	}
 
 	/**
@@ -1283,7 +1285,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	 * @param value 值
 	 */
 	public final void setDocumentTotal(int value) {
-		this.setDocumentTotal(new Decimal(value));
+		this.setDocumentTotal(Decimal.valueOf(value));
 	}
 
 	/**
@@ -1292,7 +1294,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 	 * @param value 值
 	 */
 	public final void setDocumentTotal(double value) {
-		this.setDocumentTotal(new Decimal(value));
+		this.setDocumentTotal(Decimal.valueOf(value));
 	}
 
 	/**
@@ -1347,7 +1349,7 @@ public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBOD
 				new BusinessRuleRequired(PROPERTY_CUSTOMERCODE), // 要求有值
 				new BusinessRuleRequiredElements(PROPERTY_PURCHASEORDERITEMS), // 要求有元素
 				new BusinessRuleMaxLength(20, PROPERTY_CUSTOMERCODE), // 不能超过长度
-				new BusinessRuleMinValue<Decimal>(Decimal.ZERO, PROPERTY_DOCUMENTTOTAL), // 不能低于0
+				new BusinessRuleMinValue<BigDecimal>(Decimal.ZERO, PROPERTY_DOCUMENTTOTAL), // 不能低于0
 				// new BusinessRuleDocumentStatus(PROPERTY_DOCUMENTSTATUS,
 				// PROPERTY_PURCHASEORDERITEMS,
 				// PurchaseOrderItem.PROPERTY_LINESTATUS), // 使用集合元素状态

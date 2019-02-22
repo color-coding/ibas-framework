@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.bo;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
@@ -7,7 +8,6 @@ import org.colorcoding.ibas.bobas.core.PropertyInfoList;
 import org.colorcoding.ibas.bobas.core.fields.FieldDataDbBase;
 import org.colorcoding.ibas.bobas.core.fields.FieldsFactory;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.message.Logger;
@@ -72,7 +72,7 @@ public class UserFieldManager {
 		} else if (type == DbFieldType.DATE) {
 			return DateTime.class;
 		} else if (type == DbFieldType.DECIMAL) {
-			return Decimal.class;
+			return BigDecimal.class;
 		} else if (type == DbFieldType.NUMERIC) {
 			return Integer.class;
 		}

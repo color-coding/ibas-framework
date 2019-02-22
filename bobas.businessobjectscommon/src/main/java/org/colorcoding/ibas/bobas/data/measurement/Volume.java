@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.data.measurement;
 
+import java.math.BigDecimal;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -24,7 +26,7 @@ public class Volume extends MeasurementDecimal<emVolumeUnit> {
 
 	}
 
-	public Volume(Decimal value, emVolumeUnit unit) {
+	public Volume(BigDecimal value, emVolumeUnit unit) {
 		super(value);
 		this.setUnit(unit);
 	}
@@ -64,42 +66,42 @@ public class Volume extends MeasurementDecimal<emVolumeUnit> {
 		this.firePropertyChange("Unit", oldValue, this.unit);
 	}
 
-	private Decimal _long = Decimal.ZERO;
+	private BigDecimal _long = Decimal.ZERO;
 
-	public Decimal getLong() {
+	public BigDecimal getLong() {
 		return this._long;
 	}
 
-	public void setLong(Decimal value) {
+	public void setLong(BigDecimal value) {
 		this._long = value;
-		this.setValue(this.getLong().multiply(this.getWidth().multiply(this.getHight())));
+		this.setValue(Decimal.multiply(this.getLong(), this.getWidth(), this.getHight()));
 	}
 
-	private Decimal _width = Decimal.ZERO;
+	private BigDecimal _width = Decimal.ZERO;
 
-	public Decimal getWidth() {
+	public BigDecimal getWidth() {
 		return this._width;
 	}
 
-	public void setWidth(Decimal value) {
+	public void setWidth(BigDecimal value) {
 		this._width = value;
-		this.setValue(this.getLong().multiply(this.getWidth().multiply(this.getHight())));
+		this.setValue(Decimal.multiply(this.getLong(), this.getWidth(), this.getHight()));
 	}
 
-	private Decimal _hight = Decimal.ZERO;
+	private BigDecimal _hight = Decimal.ZERO;
 
-	public Decimal getHight() {
+	public BigDecimal getHight() {
 		return this._hight;
 	}
 
-	public void setHight(Decimal value) {
+	public void setHight(BigDecimal value) {
 		this._hight = value;
-		this.setValue(this.getLong().multiply(this.getWidth().multiply(this.getHight())));
+		this.setValue(Decimal.multiply(this.getLong(), this.getWidth(), this.getHight()));
 	}
 
 	@Override
-	public int compareTo(IMeasurement<Decimal, emVolumeUnit> o) {
-		Decimal convertValue = emVolumeUnit.convert(this.getUnit(), o.getValue(), o.getUnit());
+	public int compareTo(IMeasurement<BigDecimal, emVolumeUnit> o) {
+		BigDecimal convertValue = emVolumeUnit.convert(this.getUnit(), o.getValue(), o.getUnit());
 		return this.getValue().compareTo(convertValue);
 	}
 

@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.data.measurement;
 
+import java.math.BigDecimal;
+
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
@@ -65,12 +67,9 @@ public enum emWeightUnit {
 	/**
 	 * 换算
 	 * 
-	 * @param toUnit
-	 *            换算到单位
-	 * @param value
-	 *            值
-	 * @param fromUnit
-	 *            原始单位
+	 * @param toUnit   换算到单位
+	 * @param value    值
+	 * @param fromUnit 原始单位
 	 * @return 目标单位的值
 	 */
 	public static double convert(emWeightUnit toUnit, double value, emWeightUnit fromUnit) {
@@ -89,22 +88,19 @@ public enum emWeightUnit {
 	/**
 	 * 换算
 	 * 
-	 * @param toUnit
-	 *            换算到单位
-	 * @param value
-	 *            值
-	 * @param fromUnit
-	 *            原始单位
+	 * @param toUnit   换算到单位
+	 * @param value    值
+	 * @param fromUnit 原始单位
 	 * @return 目标单位的值
 	 */
-	public static Decimal convert(emWeightUnit toUnit, Decimal value, emWeightUnit fromUnit) {
+	public static BigDecimal convert(emWeightUnit toUnit, BigDecimal value, emWeightUnit fromUnit) {
 		int level = toUnit.getValue() - fromUnit.getValue();
 		if (level > 0) {
 			// 目标单位大
-			return value.divide(level);
+			return Decimal.divide(value, Decimal.valueOf(level));
 		} else if (level < 0) {
 			// 目标单位小
-			return value.multiply(getRate(level));
+			return Decimal.multiply(value, Decimal.valueOf(getRate(level)));
 		}
 		// 单位相同
 		return value;

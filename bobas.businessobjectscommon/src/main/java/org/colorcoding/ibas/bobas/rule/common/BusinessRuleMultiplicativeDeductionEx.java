@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.rule.common;
 
+import java.math.BigDecimal;
+
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.Decimal;
 
@@ -11,7 +13,7 @@ import org.colorcoding.ibas.bobas.data.Decimal;
  */
 public class BusinessRuleMultiplicativeDeductionEx extends BusinessRuleMultiplicativeDeduction {
 
-	public static final Decimal PRECISION_VALUE = new Decimal("0.00001");
+	public static final BigDecimal PRECISION_VALUE = new BigDecimal("0.00001");
 
 	protected BusinessRuleMultiplicativeDeductionEx() {
 		super();
@@ -24,8 +26,8 @@ public class BusinessRuleMultiplicativeDeductionEx extends BusinessRuleMultiplic
 	 * @param multiplier   属性-乘数
 	 * @param result       属性-结果
 	 */
-	public BusinessRuleMultiplicativeDeductionEx(IPropertyInfo<Decimal> multiplicand, IPropertyInfo<Decimal> multiplier,
-			IPropertyInfo<Decimal> result) {
+	public BusinessRuleMultiplicativeDeductionEx(IPropertyInfo<BigDecimal> multiplicand,
+			IPropertyInfo<BigDecimal> multiplier, IPropertyInfo<BigDecimal> result) {
 		super(multiplicand, multiplier, result);
 		this.getAffectedProperties().add(this.getMultiplicand());
 	}
@@ -35,40 +37,40 @@ public class BusinessRuleMultiplicativeDeductionEx extends BusinessRuleMultiplic
 		if (context.getTrigger() == null || context.getTrigger().isEmpty()) {
 			super.execute(context);
 		} else {
-			Decimal multiplicand = (Decimal) context.getInputValues().get(this.getMultiplicand());
+			BigDecimal multiplicand = (BigDecimal) context.getInputValues().get(this.getMultiplicand());
 			if (multiplicand == null) {
 				multiplicand = Decimal.ZERO;
 			}
-			Decimal multiplier = (Decimal) context.getInputValues().get(this.getMultiplier());
+			BigDecimal multiplier = (BigDecimal) context.getInputValues().get(this.getMultiplier());
 			if (multiplier == null) {
 				multiplier = Decimal.ZERO;
 			}
-			Decimal result = (Decimal) context.getInputValues().get(this.getResult());
+			BigDecimal result = (BigDecimal) context.getInputValues().get(this.getResult());
 			if (result == null) {
 				result = Decimal.ZERO;
 			}
 			if (context.getTrigger().equalsIgnoreCase(this.getResult().getName())) {
 				// 结果触发
-				if (!multiplicand.isZero() && multiplier.isZero()) {
+				if (!Decimal.isZero(multiplicand) && Decimal.isZero(multiplier)) {
 					// 乘数 = 结果 / 被乘数
-					multiplier = result.divide(multiplicand);
+					multiplier = Decimal.divide(result, multiplicand);
 					context.getOutputValues().put(this.getMultiplier(),
-							Decimal.round(multiplier, Decimal.RESERVED_DECIMAL_PLACES_RUNNING));
-				} else if (!multiplier.isZero()) {
+							Decimal.round(multiplier, Decimal.DECIMAL_PLACES_RUNNING));
+				} else if (!Decimal.isZero(multiplier)) {
 					// 被乘数 = 结果 / 乘数
-					Decimal newMultiplicand = result.divide(multiplier);
-					if (newMultiplicand.subtract(multiplicand).abs().compareTo(PRECISION_VALUE) > 0) {
+					BigDecimal newMultiplicand = Decimal.divide(result, multiplier);
+					if (Decimal.subtract(newMultiplicand, multiplicand).abs().compareTo(PRECISION_VALUE) > 0) {
 						context.getOutputValues().put(this.getMultiplicand(),
-								Decimal.round(newMultiplicand, Decimal.RESERVED_DECIMAL_PLACES_RUNNING));
+								Decimal.round(newMultiplicand, Decimal.DECIMAL_PLACES_RUNNING));
 					}
 				}
 			} else if (context.getTrigger().equalsIgnoreCase(this.getMultiplicand().getName())
 					|| context.getTrigger().equalsIgnoreCase(this.getMultiplier().getName())) {
 				// 结果 = 乘数 * 被乘数
-				Decimal newResult = multiplicand.multiply(multiplier);
-				if (newResult.subtract(result).abs().compareTo(PRECISION_VALUE) > 0) {
+				BigDecimal newResult = Decimal.multiply(multiplicand, multiplier);
+				if (Decimal.subtract(newResult, result).abs().compareTo(PRECISION_VALUE) > 0) {
 					context.getOutputValues().put(this.getResult(),
-							Decimal.round(newResult, Decimal.RESERVED_DECIMAL_PLACES_RUNNING));
+							Decimal.round(newResult, Decimal.DECIMAL_PLACES_RUNNING));
 				}
 			} else {
 				super.execute(context);

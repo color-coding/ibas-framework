@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.rule.common;
 
+import java.math.BigDecimal;
+
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.Decimal;
@@ -27,8 +29,8 @@ public class BusinessRuleSubtraction extends BusinessRuleCommon {
 	 * @param subtractors 属性-减数（数组）
 	 */
 	@SafeVarargs
-	public BusinessRuleSubtraction(IPropertyInfo<Decimal> result, IPropertyInfo<Decimal> subtrahend,
-			IPropertyInfo<Decimal>... subtractors) {
+	public BusinessRuleSubtraction(IPropertyInfo<BigDecimal> result, IPropertyInfo<BigDecimal> subtrahend,
+			IPropertyInfo<BigDecimal>... subtractors) {
 		this();
 		this.setResult(result);
 		this.setSubtrahend(subtrahend);
@@ -40,59 +42,59 @@ public class BusinessRuleSubtraction extends BusinessRuleCommon {
 		this.getAffectedProperties().add(this.getResult());
 	}
 
-	private IPropertyInfo<Decimal> subtrahend;
+	private IPropertyInfo<BigDecimal> subtrahend;
 
-	public final IPropertyInfo<Decimal> getSubtrahend() {
+	public final IPropertyInfo<BigDecimal> getSubtrahend() {
 		return subtrahend;
 	}
 
-	public final void setSubtrahend(IPropertyInfo<Decimal> subtrahend) {
+	public final void setSubtrahend(IPropertyInfo<BigDecimal> subtrahend) {
 		this.subtrahend = subtrahend;
 	}
 
-	private List<IPropertyInfo<Decimal>> subtractors;
+	private List<IPropertyInfo<BigDecimal>> subtractors;
 
-	public final List<IPropertyInfo<Decimal>> getSubtractors() {
+	public final List<IPropertyInfo<BigDecimal>> getSubtractors() {
 		if (this.subtractors == null) {
 			this.subtractors = new ArrayList<>();
 		}
 		return subtractors;
 	}
 
-	public final void setSubtractors(IPropertyInfo<Decimal>[] subtractors) {
-		for (IPropertyInfo<Decimal> item : subtractors) {
+	public final void setSubtractors(IPropertyInfo<BigDecimal>[] subtractors) {
+		for (IPropertyInfo<BigDecimal> item : subtractors) {
 			this.getSubtractors().add(item);
 		}
 	}
 
-	public final void setSubtractors(Iterable<IPropertyInfo<Decimal>> subtractors) {
-		for (IPropertyInfo<Decimal> item : subtractors) {
+	public final void setSubtractors(Iterable<IPropertyInfo<BigDecimal>> subtractors) {
+		for (IPropertyInfo<BigDecimal> item : subtractors) {
 			this.getSubtractors().add(item);
 		}
 	}
 
-	private IPropertyInfo<Decimal> result;
+	private IPropertyInfo<BigDecimal> result;
 
-	public final IPropertyInfo<Decimal> getResult() {
+	public final IPropertyInfo<BigDecimal> getResult() {
 		return result;
 	}
 
-	public final void setResult(IPropertyInfo<Decimal> result) {
+	public final void setResult(IPropertyInfo<BigDecimal> result) {
 		this.result = result;
 	}
 
 	@Override
 	protected void execute(BusinessRuleContext context) throws Exception {
-		Decimal result = (Decimal) context.getInputValues().get(this.getSubtrahend());
+		BigDecimal result = (BigDecimal) context.getInputValues().get(this.getSubtrahend());
 		if (result == null) {
 			result = Decimal.ZERO;
 		}
-		for (IPropertyInfo<Decimal> item : this.getSubtractors()) {
-			Decimal subtractor = (Decimal) context.getInputValues().get(item);
+		for (IPropertyInfo<BigDecimal> item : this.getSubtractors()) {
+			BigDecimal subtractor = (BigDecimal) context.getInputValues().get(item);
 			if (subtractor == null) {
 				continue;
 			}
-			result = result.subtract(subtractor);
+			result = Decimal.subtract(result, subtractor);
 		}
 		context.getOutputValues().put(this.getResult(), result);
 	}

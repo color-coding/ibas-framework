@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.test.data;
 
+import java.math.BigDecimal;
+
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.measurement.Currency;
@@ -36,24 +38,33 @@ public class TestDataType extends TestCase {
 	}
 
 	public void testDecimal() {
+		System.out.println(Decimal.valueOf());
 		System.out.println(String.format("%09d", 0));
-		Decimal zero = Decimal.ZERO;
-		Decimal zero2 = new Decimal("777777777777777770.00099999999999999999999999999");
+		BigDecimal zero = Decimal.ZERO;
+		BigDecimal zero2 = new BigDecimal("777777777777777770.00099999999999999999999999999");
 		System.err.println(zero.equals(zero2));
 		System.out.println(zero.toString());
-		System.out.println(zero2.round());
+		System.out.println(Decimal.round(zero2));
 
-		Decimal value = new Decimal("1.000000001");
+		BigDecimal value = new BigDecimal("1.000000001");
 		System.out.println(value.toString());
 		value = Decimal.round(value);
 		System.out.println(value.toString());
-		value = new Decimal("1.000001401");
+		value = new BigDecimal("1.000001401");
 		System.out.println(value.toString());
 		value = Decimal.round(value);
 		System.out.println(value.toString());
-		value = new Decimal("1.0000019001");
+		value = new BigDecimal("1.0000019001");
 		System.out.println(value.toString());
 		value = Decimal.round(value);
 		System.out.println(value.toString());
+
+		System.out.println("************");
+		System.out.println(Decimal.valueOf(".000000000"));
+		System.out.println(Decimal.valueOf("1.000000000"));
+		System.out.println(Decimal.valueOf("-1.000000000"));
+		System.out.println(Decimal.valueOf("0.000000000"));
+		System.out.println(Decimal.valueOf("1"));
+		System.out.println(Decimal.valueOf("-1"));
 	}
 }

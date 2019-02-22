@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.db.hana.test;
 
+import java.math.BigDecimal;
+
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.Criteria;
@@ -11,7 +13,6 @@ import org.colorcoding.ibas.bobas.common.ISqlStoredProcedure;
 import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.common.SqlStoredProcedure;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.measurement.Time;
 import org.colorcoding.ibas.bobas.data.measurement.emTimeUnit;
@@ -79,7 +80,7 @@ public class TestBOAdapter extends TestCase {
 		order.setCustomerCode("C00001");
 		order.setDeliveryDate(DateTime.getToday());
 		order.setDocumentStatus(emDocumentStatus.RELEASED);
-		order.setDocumentTotal(new Decimal("99.99"));
+		order.setDocumentTotal(new BigDecimal("99.99"));
 		order.setCycle(new Time(1.05, emTimeUnit.HOUR));
 
 		order.getUserFields().register("U_OrderType", DbFieldType.ALPHANUMERIC);
@@ -90,7 +91,7 @@ public class TestBOAdapter extends TestCase {
 		order.getUserFields().get("U_OrderType").setValue("S0000");
 		order.getUserFields().get("U_OrderId").setValue(5768);
 		order.getUserFields().get("U_OrderDate").setValue(DateTime.getToday());
-		order.getUserFields().get("U_OrderTotal").setValue(new Decimal("999.888"));
+		order.getUserFields().get("U_OrderTotal").setValue(new BigDecimal("999.888"));
 
 		ISalesOrderItem orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00001");

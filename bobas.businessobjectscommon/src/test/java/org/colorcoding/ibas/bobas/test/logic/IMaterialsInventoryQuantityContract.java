@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.test.logic;
 
-import org.colorcoding.ibas.bobas.data.Decimal;
+import java.math.BigDecimal;
+
 import org.colorcoding.ibas.bobas.logic.IBusinessLogicContract;
 
 /**
@@ -22,5 +23,5 @@ public interface IMaterialsInventoryQuantityContract extends IBusinessLogicContr
 	 * 
 	 * @return
 	 */
-	Decimal getQuantity();
+	BigDecimal getQuantity();
 }

@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.db;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 
@@ -340,9 +341,9 @@ public class DbDataReader implements IDbDataReader {
 	}
 
 	@Override
-	public Decimal getDecimal(int columnIndex) throws DbException {
+	public BigDecimal getDecimal(int columnIndex) throws DbException {
 		try {
-			return Decimal.valueOf(this.resultSet.getBigDecimal(columnIndex));
+			return this.resultSet.getBigDecimal(columnIndex);
 		} catch (NullPointerException e) {
 			return Decimal.ZERO;
 		} catch (Exception e) {
@@ -351,9 +352,9 @@ public class DbDataReader implements IDbDataReader {
 	}
 
 	@Override
-	public Decimal getDecimal(String columnLabel) throws DbException {
+	public BigDecimal getDecimal(String columnLabel) throws DbException {
 		try {
-			return Decimal.valueOf(this.resultSet.getBigDecimal(columnLabel));
+			return this.resultSet.getBigDecimal(columnLabel);
 		} catch (NullPointerException e) {
 			return Decimal.ZERO;
 		} catch (Exception e) {

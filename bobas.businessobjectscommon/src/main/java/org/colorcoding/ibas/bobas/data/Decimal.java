@@ -4,66 +4,213 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.colorcoding.ibas.bobas.MyConfiguration;
-
 /**
- * 十进制数
+ * 数学计算
  * 
  * @author Niuren.Zhu
  *
  */
-@XmlJavaTypeAdapter(DecimalSerializer.class)
-@XmlType(name = "Decimal", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
-public class Decimal extends BigDecimal implements Cloneable {
+public final class Decimal {
 
-	private static final long serialVersionUID = -3383909107151269118L;
-
-	/**
-	 * 存储时，保留小数位数
-	 */
-	public static int RESERVED_DECIMAL_PLACES_STORAGE = 6;
+	private Decimal() {
+	}
 
 	/**
-	 * 运行时，保留小数位数
+	 * 小数位数-存储时
 	 */
-	public static int RESERVED_DECIMAL_PLACES_RUNNING = 9;
+	public static int DECIMAL_PLACES_STORAGE = 6;
 
 	/**
-	 * 运行时，截取小数方式
+	 * 小数位数-运行时
 	 */
-	public static RoundingMode ROUNDING_MODE_RUNNING = RoundingMode.HALF_UP;
-
-	private final static String DECIMAL_TEMPLATE = "%s."
-			+ String.format("%0" + RESERVED_DECIMAL_PLACES_STORAGE + "d", 0);
+	public static int DECIMAL_PLACES_RUNNING = 9;
 
 	/**
-	 * 数值1
+	 * 截取小数方式-运行时
 	 */
-	public final static Decimal ONE = new Decimal(String.format(DECIMAL_TEMPLATE, 1));
-
-	/**
-	 * 数值0
-	 */
-	public final static Decimal ZERO = new Decimal(String.format(DECIMAL_TEMPLATE, 0));
+	public static RoundingMode ROUNDING_MODE_DEFAULT = RoundingMode.HALF_UP;
 
 	/**
 	 * 数值-1
 	 */
-	public final static Decimal MINUS_ONE = new Decimal(String.format(DECIMAL_TEMPLATE, -1));
+	public final static BigDecimal ONE = BigDecimal.ONE;
 
 	/**
-	 * 截取小数
+	 * 数值-0
+	 */
+	public final static BigDecimal ZERO = BigDecimal.ZERO;
+
+	/**
+	 * 数值--1
+	 */
+	public final static BigDecimal MINUS_ONE = ONE.negate();
+
+	/**
+	 * 转换值
+	 * 
+	 * @return
+	 */
+	public static BigDecimal valueOf() {
+		return valueOf((String) null);
+	}
+
+	/**
+	 * 转换值
 	 * 
 	 * @param value 值
-	 * @param scale 保留小数位
+	 * @return
+	 */
+	public static BigDecimal valueOf(double value) {
+		if (Double.compare(value, 0d) == 0) {
+			return ZERO;
+		} else if (Double.compare(value, 1d) == 0) {
+			return ONE;
+		} else if (Double.compare(value, -1d) == 0) {
+			return MINUS_ONE;
+		}
+		return new BigDecimal(value);
+	}
+
+	/**
+	 * 转换值
+	 * 
+	 * @param value 值
+	 * @return
+	 */
+	public static BigDecimal valueOf(long value) {
+		if (Long.compare(value, 0l) == 0) {
+			return ZERO;
+		} else if (Long.compare(value, 1l) == 0) {
+			return ONE;
+		} else if (Long.compare(value, -1l) == 0) {
+			return MINUS_ONE;
+		}
+		return new BigDecimal(value);
+	}
+
+	/**
+	 * 转换值
+	 * 
+	 * @param value 值
+	 * @return
+	 */
+	public static BigDecimal valueOf(int value) {
+		if (Integer.compare(value, 0) == 0) {
+			return ZERO;
+		} else if (Integer.compare(value, 1) == 0) {
+			return ONE;
+		} else if (Integer.compare(value, -1) == 0) {
+			return MINUS_ONE;
+		}
+		return new BigDecimal(value);
+	}
+
+	/**
+	 * 转换值
+	 * 
+	 * @param value 值
+	 * @return
+	 */
+	public static BigDecimal valueOf(short value) {
+		return valueOf((int) value);
+	}
+
+	/**
+	 * 转换值
+	 * 
+	 * @param value 值
+	 * @return
+	 */
+	public static BigDecimal valueOf(String value) {
+		if (value == null || value.isEmpty()) {
+			return ZERO;
+		}
+		// 分拆小数位
+		int index = value.indexOf(".");
+		if (index >= 0) {
+			boolean zero = true;
+			for (char item : value.substring(index + 1).toCharArray()) {
+				if (item != '0') {
+					zero = false;
+					break;
+				}
+			}
+			if (zero) {
+				value = value.substring(0, index);
+				// 小数点后都为零
+				if (value.equals("0") || value.isEmpty()) {
+					return ZERO;
+				} else if (value.equals("1")) {
+					return ONE;
+				} else if (value.equals("-1")) {
+					return MINUS_ONE;
+				}
+			}
+		}
+		return new BigDecimal(value);
+	}
+
+	private static BigInteger INTEGER_ONE = BigInteger.ONE;
+	private static BigInteger INTEGER_ZERO = BigInteger.ZERO;
+	private static BigInteger INTEGER_MINUS_ONE = BigInteger.ONE.negate();
+
+	/**
+	 * 转换值
+	 * 
+	 * @param value 值
+	 * @return
+	 */
+	public static BigDecimal valueOf(BigInteger value) {
+		if (INTEGER_ZERO.equals(value) || INTEGER_ZERO.compareTo(value) == 0) {
+			return ZERO;
+		} else if (INTEGER_ONE.equals(value) || INTEGER_ONE.compareTo(value) == 0) {
+			return ONE;
+		} else if (INTEGER_MINUS_ONE.equals(value) || INTEGER_MINUS_ONE.compareTo(value) == 0) {
+			return MINUS_ONE;
+		}
+		return Decimal.valueOf(value);
+	}
+
+	/**
+	 * 是否为零
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static boolean isZero(BigDecimal value) {
+		if (ZERO.equals(value)) {
+			return true;
+		} else if (ZERO.compareTo(value) == 0) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 是否为零
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static boolean isZero(BigInteger value) {
+		if (INTEGER_ZERO.equals(value)) {
+			return true;
+		} else if (INTEGER_ZERO.compareTo(value) == 0) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 截取小数位
+	 * 
+	 * @param value 值
+	 * @param scale 保留位数
 	 * @param mode  截取方式
 	 * @return
 	 */
-	public static Decimal round(BigDecimal value, int scale, RoundingMode mode) {
-		return new Decimal(value.divide(ONE, scale, mode));
+	public static BigDecimal round(BigDecimal value, int scale, RoundingMode mode) {
+		return value.divide(ONE, scale, mode);
 	}
 
 	/**
@@ -73,281 +220,123 @@ public class Decimal extends BigDecimal implements Cloneable {
 	 * @param scale 保留小数位数
 	 * @return
 	 */
-	public static Decimal round(BigDecimal value, int scale) {
-		return new Decimal(value.divide(ONE, scale, ROUNDING_MODE_RUNNING));
+	public static BigDecimal round(BigDecimal value, int scale) {
+		return round(value, scale, ROUNDING_MODE_DEFAULT);
 	}
 
 	/**
 	 * 四舍五入小数位
 	 * 
+	 * 保留运行时位数（默认9位）
+	 * 
 	 * @param value 值
 	 * @return
 	 */
-	public static Decimal round(BigDecimal value) {
-		return new Decimal(value.divide(ONE, RESERVED_DECIMAL_PLACES_STORAGE, ROUNDING_MODE_RUNNING));
+	public static BigDecimal round(BigDecimal value) {
+		return round(value, DECIMAL_PLACES_RUNNING, ROUNDING_MODE_DEFAULT);
 	}
 
-	public static Decimal valueOf(double val) {
-		if (val == 0d) {
-			return ZERO;
-		} else if (val == 1d) {
-			return ONE;
+	/**
+	 * 除法
+	 * 
+	 * @param dividend 被除数
+	 * @param divisor  除数
+	 * @return
+	 */
+	public static BigDecimal divide(BigDecimal dividend, BigDecimal divisor) {
+		return divide(dividend, divisor, DECIMAL_PLACES_RUNNING, ROUNDING_MODE_DEFAULT);
+	}
+
+	/**
+	 * 除法
+	 * 
+	 * @param dividend 被除数
+	 * @param divisor  除数
+	 * @param scale    保留小数位
+	 * @return
+	 */
+	public static BigDecimal divide(BigDecimal dividend, BigDecimal divisor, int scale) {
+		return divide(dividend, divisor, scale, ROUNDING_MODE_DEFAULT);
+	}
+
+	/**
+	 * 除法
+	 * 
+	 * @param dividend 被除数
+	 * @param divisor  除数
+	 * @param scale    保留小数位
+	 * @param rounding 进位方式
+	 * @return
+	 */
+	public static BigDecimal divide(BigDecimal dividend, BigDecimal divisor, int scale, RoundingMode roundingMode) {
+		return dividend.divide(divisor, scale, roundingMode);
+	}
+
+	/**
+	 * 除法
+	 * 
+	 * @param dividend 被除数
+	 * @param divisors 乘除数组（0个，返回被除数）
+	 * @return
+	 */
+	public static BigDecimal divide(BigDecimal dividend, BigDecimal... divisors) {
+		if (divisors == null || divisors.length == 0) {
+			return dividend;
 		}
-		return new Decimal(val);
-	}
-
-	public static Decimal valueOf(long val) {
-		if (val == 0l) {
-			return ZERO;
-		} else if (val == 1l) {
-			return ONE;
+		for (BigDecimal divisor : divisors) {
+			dividend = divide(dividend, divisor);
 		}
-		return new Decimal(val);
+		return dividend;
 	}
 
-	public static Decimal valueOf(int val) {
-		if (val == 0) {
-			return ZERO;
-		} else if (val == 1) {
-			return ONE;
+	/**
+	 * 乘法
+	 * 
+	 * @param multiplicand 被乘数
+	 * @param multipliers  乘数数组（0个，返回被乘数）
+	 * @return
+	 */
+	public static BigDecimal multiply(BigDecimal multiplicand, BigDecimal... multipliers) {
+		if (multipliers == null || multipliers.length == 0) {
+			return multiplicand;
 		}
-		return new Decimal(val);
-	}
-
-	public static Decimal valueOf(String val) {
-		if (val == null || val.isEmpty()) {
-			return ZERO;
+		for (BigDecimal multiplier : multipliers) {
+			multiplicand = multiplicand.multiply(multiplier);
 		}
-		if (val.equals("0") || val.equals("0.0")) {
-			return ZERO;
-		} else if (val.equals("1") || val.equals("1.0")) {
-			return ONE;
+		return multiplicand;
+	}
+
+	/**
+	 * 加法
+	 * 
+	 * @param augend  被加数
+	 * @param addends 加数组（0个，返回被加数）
+	 * @return
+	 */
+	public static BigDecimal add(BigDecimal augend, BigDecimal... addends) {
+		if (addends == null || addends.length == 0) {
+			return augend;
 		}
-		return new Decimal(val);
-	}
-
-	public static Decimal valueOf(BigDecimal val) {
-		if (val == null) {
-			return ZERO;
+		for (BigDecimal addend : addends) {
+			augend = augend.add(addend);
 		}
-		if (val == BigDecimal.ZERO) {
-			return ZERO;
-		} else if (val == BigDecimal.ONE) {
-			return ONE;
+		return augend;
+	}
+
+	/**
+	 * 减法
+	 * 
+	 * @param subtrahend 被减数
+	 * @param addends    减数组（0个，返回被减数）
+	 * @return
+	 */
+	public static BigDecimal subtract(BigDecimal subtrahend, BigDecimal... subtractors) {
+		if (subtractors == null || subtractors.length == 0) {
+			return subtrahend;
 		}
-		return new Decimal(val);
-	}
-
-	public static Decimal valueOf(BigInteger val) {
-		if (val == null) {
-			return ZERO;
+		for (BigDecimal subtractor : subtractors) {
+			subtrahend = subtrahend.subtract(subtractor);
 		}
-		if (val == BigInteger.ZERO) {
-			return ZERO;
-		} else if (val == BigInteger.ONE) {
-			return ONE;
-		}
-		return new Decimal(val);
+		return subtrahend;
 	}
-
-	public Decimal(BigDecimal val) {
-		super(val.toString());
-	}
-
-	public Decimal(String val) {
-		super(val);
-	}
-
-	public Decimal(BigInteger val) {
-		super(val);
-	}
-
-	public Decimal(double val) {
-		super(val);
-	}
-
-	public Decimal(int val) {
-		super(val);
-	}
-
-	public Decimal(long val) {
-		super(val);
-	}
-
-	@Override
-	public Decimal clone() {
-		return new Decimal(this);
-	}
-
-	public boolean isZero() {
-		if (this.equals(ZERO)) {
-			return true;
-		}
-		if (this.compareTo(ZERO) == 0) {
-			return true;
-		}
-		return false;
-	}
-
-	public Decimal divide(Decimal divisor) {
-		return new Decimal(super.divide(divisor, RESERVED_DECIMAL_PLACES_RUNNING, ROUNDING_MODE_RUNNING));
-	}
-
-	public Decimal divide(String divisor) {
-		return this.divide(Decimal.valueOf(divisor));
-	}
-
-	public Decimal divide(BigInteger divisor) {
-		return this.divide(Decimal.valueOf(divisor));
-	}
-
-	public Decimal divide(double divisor) {
-		return this.divide(Decimal.valueOf(divisor));
-	}
-
-	public Decimal divide(int divisor) {
-		return this.divide(Decimal.valueOf(divisor));
-	}
-
-	public Decimal divide(long divisor) {
-		return this.divide(Decimal.valueOf(divisor));
-	}
-
-	public Decimal multiply(Decimal multiplicand) {
-		return new Decimal(super.multiply(multiplicand));
-	}
-
-	public Decimal multiply(String multiplicand) {
-		return this.multiply(Decimal.valueOf(multiplicand));
-	}
-
-	public Decimal multiply(BigInteger multiplicand) {
-		return this.multiply(Decimal.valueOf(multiplicand));
-	}
-
-	public Decimal multiply(double multiplicand) {
-		return this.multiply(Decimal.valueOf(multiplicand));
-	}
-
-	public Decimal multiply(int multiplicand) {
-		return this.multiply(Decimal.valueOf(multiplicand));
-	}
-
-	public Decimal multiply(long multiplicand) {
-		return this.multiply(Decimal.valueOf(multiplicand));
-	}
-
-	public Decimal add(Decimal augend) {
-		return new Decimal(super.add(augend));
-	}
-
-	public Decimal subtract(Decimal subtrahend) {
-		return new Decimal(super.subtract(subtrahend));
-	}
-
-	public Decimal divide(Decimal divisor, int scale, int roundingMode) {
-		return new Decimal(super.divide(divisor, scale, roundingMode));
-	}
-
-	public Decimal divide(Decimal divisor, int scale, RoundingMode roundingMode) {
-		return this.divide(divisor, scale, roundingMode.ordinal());
-	}
-
-	public Decimal divide(Decimal divisor, int roundingMode) {
-		return this.divide(divisor, RESERVED_DECIMAL_PLACES_RUNNING, roundingMode);
-	}
-
-	public Decimal divide(Decimal divisor, RoundingMode roundingMode) {
-		return this.divide(divisor, RESERVED_DECIMAL_PLACES_RUNNING, roundingMode);
-	}
-
-	public Decimal divideToIntegralValue(Decimal divisor) {
-		return new Decimal(super.divideToIntegralValue(divisor));
-	}
-
-	public Decimal remainder(Decimal divisor) {
-		return new Decimal(super.remainder(divisor));
-	}
-
-	public Decimal[] divideAndRemainder(Decimal divisor) {
-		BigDecimal[] bValues = super.divideAndRemainder(divisor);
-		Decimal[] values = new Decimal[bValues.length];
-		for (int i = 0; i < values.length; i++) {
-			values[i] = new Decimal(bValues[i]);
-		}
-		return values;
-	}
-
-	@Override
-	public Decimal pow(int n) {
-		return new Decimal(super.pow(n));
-	}
-
-	@Override
-	public Decimal abs() {
-		return new Decimal(super.abs());
-	}
-
-	@Override
-	public Decimal negate() {
-		return new Decimal(super.negate());
-	}
-
-	@Override
-	public Decimal plus() {
-		return new Decimal(super.plus());
-	}
-
-	public Decimal round() {
-		return round(this, RESERVED_DECIMAL_PLACES_STORAGE);
-	}
-
-	@Override
-	public Decimal setScale(int newScale, int roundingMode) {
-		return new Decimal(super.setScale(newScale, roundingMode));
-	}
-
-	@Override
-	public Decimal setScale(int newScale, RoundingMode roundingMode) {
-		return this.setScale(newScale, roundingMode.ordinal());
-	}
-
-	@Override
-	public Decimal setScale(int newScale) {
-		return this.setScale(newScale, ROUNDING_MODE_RUNNING);
-	}
-
-	@Override
-	public Decimal movePointLeft(int n) {
-		return new Decimal(super.movePointLeft(n));
-	}
-
-	@Override
-	public Decimal movePointRight(int n) {
-		return new Decimal(super.movePointRight(n));
-	}
-
-	@Override
-	public Decimal scaleByPowerOfTen(int n) {
-		return new Decimal(super.scaleByPowerOfTen(n));
-	}
-
-	@Override
-	public Decimal stripTrailingZeros() {
-		return new Decimal(super.stripTrailingZeros());
-	}
-
-	public Decimal min(Decimal val) {
-		return new Decimal(super.min(val));
-	}
-
-	public Decimal max(Decimal val) {
-		return new Decimal(super.max(val));
-	}
-
-	@Override
-	public Decimal ulp() {
-		return new Decimal(super.ulp());
-	}
-
 }

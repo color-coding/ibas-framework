@@ -14,7 +14,6 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.data.Decimal;
 
 /**
  * 结构分析者
@@ -28,7 +27,7 @@ public class Analyzer {
 
 	public Analyzer() {
 		this.setRecursion(true);
-		this.getPrimitiveTypes().add(Decimal.class);
+		this.getPrimitiveTypes().add(BigDecimal.class);
 		this.getPrimitiveTypes().add(BigDecimal.class);
 		this.getPrimitiveTypes().add(BigInteger.class);
 		this.getPrimitiveTypes().add(Date.class);

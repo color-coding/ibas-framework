@@ -51,8 +51,8 @@ public abstract class BusinessRuleCommon extends BusinessRule {
 				}
 			}
 		} catch (Exception e) {
-			throw new BusinessRuleException(I18N.prop("msg_bobas_bo_executing_business_rule_faild", this.describe(bo),
-					this.getName(), e.getMessage()));
+			throw new BusinessRuleException(
+					I18N.prop("msg_bobas_bo_executing_business_rule_faild", this.describe(bo), this.getName()), e);
 		}
 	}
 

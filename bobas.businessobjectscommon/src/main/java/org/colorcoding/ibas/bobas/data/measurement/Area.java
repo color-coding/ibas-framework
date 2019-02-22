@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.data.measurement;
 
+import java.math.BigDecimal;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -24,7 +26,7 @@ public class Area extends MeasurementDecimal<emAreaUnit> {
 
 	}
 
-	public Area(Decimal value, emAreaUnit unit) {
+	public Area(BigDecimal value, emAreaUnit unit) {
 		super(value);
 		this.setUnit(unit);
 	}
@@ -64,31 +66,31 @@ public class Area extends MeasurementDecimal<emAreaUnit> {
 		this.firePropertyChange("Unit", oldValue, this.unit);
 	}
 
-	private Decimal _long = Decimal.ZERO;
+	private BigDecimal _long = Decimal.ZERO;
 
-	public Decimal getLong() {
+	public BigDecimal getLong() {
 		return this._long;
 	}
 
-	public void setLong(Decimal value) {
+	public void setLong(BigDecimal value) {
 		this._long = value;
-		this.setValue(this.getLong().multiply(this.getWidth()));
+		this.setValue(Decimal.multiply(this.getLong(), this.getWidth()));
 	}
 
-	private Decimal _width = Decimal.ZERO;
+	private BigDecimal _width = Decimal.ZERO;
 
-	public Decimal getWidth() {
+	public BigDecimal getWidth() {
 		return this._width;
 	}
 
-	public void setWidth(Decimal value) {
+	public void setWidth(BigDecimal value) {
 		this._width = value;
-		this.setValue(this.getLong().multiply(this.getWidth()));
+		this.setValue(Decimal.multiply(this.getLong(), this.getWidth()));
 	}
 
 	@Override
-	public int compareTo(IMeasurement<Decimal, emAreaUnit> o) {
-		Decimal convertValue = emAreaUnit.convert(this.getUnit(), o.getValue(), o.getUnit());
+	public int compareTo(IMeasurement<BigDecimal, emAreaUnit> o) {
+		BigDecimal convertValue = emAreaUnit.convert(this.getUnit(), o.getValue(), o.getUnit());
 		return this.getValue().compareTo(convertValue);
 	}
 

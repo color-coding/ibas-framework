@@ -1,8 +1,9 @@
 package org.colorcoding.ibas.bobas.test.bo;
 
+import java.math.BigDecimal;
+
 import org.colorcoding.ibas.bobas.bo.IBOSimple;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 
@@ -22,8 +23,7 @@ public interface IMaterials extends IBOSimple {
 	/**
 	 * 设置-物料编号
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setItemCode(String value);
 
@@ -37,8 +37,7 @@ public interface IMaterials extends IBOSimple {
 	/**
 	 * 设置-物料描述
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setItemDescription(String value);
 
@@ -47,37 +46,33 @@ public interface IMaterials extends IBOSimple {
 	 * 
 	 * @return 值
 	 */
-	Decimal getOnOrder();
+	BigDecimal getOnOrder();
 
 	/**
 	 * 设置-订单数量
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
-	void setOnOrder(Decimal value);
+	void setOnOrder(BigDecimal value);
 
 	/**
 	 * 设置-订单数量
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setOnOrder(String value);
 
 	/**
 	 * 设置-订单数量
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setOnOrder(int value);
 
 	/**
 	 * 设置-订单数量
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setOnOrder(double value);
 
@@ -86,37 +81,33 @@ public interface IMaterials extends IBOSimple {
 	 * 
 	 * @return 值
 	 */
-	Decimal getOnHand();
+	BigDecimal getOnHand();
 
 	/**
 	 * 设置-库存
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
-	void setOnHand(Decimal value);
+	void setOnHand(BigDecimal value);
 
 	/**
 	 * 设置-库存
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setOnHand(String value);
 
 	/**
 	 * 设置-库存
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setOnHand(int value);
 
 	/**
 	 * 设置-库存
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setOnHand(double value);
 
@@ -130,8 +121,7 @@ public interface IMaterials extends IBOSimple {
 	/**
 	 * 设置-对象编号
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setObjectKey(Integer value);
 
@@ -146,8 +136,7 @@ public interface IMaterials extends IBOSimple {
 	/**
 	 * 设置-类型
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setObjectCode(String value);
 
@@ -161,8 +150,7 @@ public interface IMaterials extends IBOSimple {
 	/**
 	 * 设置-创建日期
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setCreateDate(DateTime value);
 
@@ -176,8 +164,7 @@ public interface IMaterials extends IBOSimple {
 	/**
 	 * 设置-创建时间
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setCreateTime(Short value);
 
@@ -191,8 +178,7 @@ public interface IMaterials extends IBOSimple {
 	/**
 	 * 设置-修改日期
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setUpdateDate(DateTime value);
 
@@ -206,8 +192,7 @@ public interface IMaterials extends IBOSimple {
 	/**
 	 * 设置-修改时间
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setUpdateTime(Short value);
 
@@ -221,8 +206,7 @@ public interface IMaterials extends IBOSimple {
 	/**
 	 * 设置-实例号（版本）
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setLogInst(Integer value);
 
@@ -236,8 +220,7 @@ public interface IMaterials extends IBOSimple {
 	/**
 	 * 设置-数据源
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setDataSource(String value);
 
@@ -251,8 +234,7 @@ public interface IMaterials extends IBOSimple {
 	/**
 	 * 设置-服务系列
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setSeries(Integer value);
 
@@ -266,8 +248,7 @@ public interface IMaterials extends IBOSimple {
 	/**
 	 * 设置-创建用户
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setCreateUserSign(Integer value);
 
@@ -281,8 +262,7 @@ public interface IMaterials extends IBOSimple {
 	/**
 	 * 设置-修改用户
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setUpdateUserSign(Integer value);
 
@@ -296,8 +276,7 @@ public interface IMaterials extends IBOSimple {
 	/**
 	 * 设置-创建动作标识
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setCreateActionId(String value);
 
@@ -311,8 +290,7 @@ public interface IMaterials extends IBOSimple {
 	/**
 	 * 设置-更新动作标识
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setUpdateActionId(String value);
 
@@ -326,8 +304,7 @@ public interface IMaterials extends IBOSimple {
 	/**
 	 * 设置-审批状态
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setApprovalStatus(emApprovalStatus value);
 
@@ -341,8 +318,7 @@ public interface IMaterials extends IBOSimple {
 	/**
 	 * 设置-数据所有者
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setDataOwner(Integer value);
 
@@ -356,8 +332,7 @@ public interface IMaterials extends IBOSimple {
 	/**
 	 * 设置-团队成员
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setTeamMembers(String value);
 
@@ -371,8 +346,7 @@ public interface IMaterials extends IBOSimple {
 	/**
 	 * 设置-数据所属组织
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setOrganization(String value);
 
@@ -386,8 +360,7 @@ public interface IMaterials extends IBOSimple {
 	/**
 	 * 设置-已引用
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setReferenced(emYesNo value);
 
@@ -401,8 +374,7 @@ public interface IMaterials extends IBOSimple {
 	/**
 	 * 设置-已删除
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setDeleted(emYesNo value);
 

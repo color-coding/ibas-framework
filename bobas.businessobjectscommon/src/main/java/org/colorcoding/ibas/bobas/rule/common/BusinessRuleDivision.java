@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.rule.common;
 
+import java.math.BigDecimal;
+
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.i18n.I18N;
@@ -24,8 +26,8 @@ public class BusinessRuleDivision extends BusinessRuleCommon {
 	 * @param dividend 属性-被除数
 	 * @param divisor  属性-除数
 	 */
-	public BusinessRuleDivision(IPropertyInfo<Decimal> result, IPropertyInfo<Decimal> dividend,
-			IPropertyInfo<Decimal> divisor) {
+	public BusinessRuleDivision(IPropertyInfo<BigDecimal> result, IPropertyInfo<BigDecimal> dividend,
+			IPropertyInfo<BigDecimal> divisor) {
 		this();
 		this.setDividend(dividend);
 		this.setDivisor(divisor);
@@ -38,54 +40,54 @@ public class BusinessRuleDivision extends BusinessRuleCommon {
 		this.getAffectedProperties().add(this.getResult());
 	}
 
-	private IPropertyInfo<Decimal> dividend;
+	private IPropertyInfo<BigDecimal> dividend;
 
-	public final IPropertyInfo<Decimal> getDividend() {
+	public final IPropertyInfo<BigDecimal> getDividend() {
 		return dividend;
 	}
 
-	public final void setDividend(IPropertyInfo<Decimal> dividend) {
+	public final void setDividend(IPropertyInfo<BigDecimal> dividend) {
 		this.dividend = dividend;
 	}
 
-	private IPropertyInfo<Decimal> divisor;
+	private IPropertyInfo<BigDecimal> divisor;
 
-	public final IPropertyInfo<Decimal> getDivisor() {
+	public final IPropertyInfo<BigDecimal> getDivisor() {
 		return divisor;
 	}
 
-	public final void setDivisor(IPropertyInfo<Decimal> divisor) {
+	public final void setDivisor(IPropertyInfo<BigDecimal> divisor) {
 		this.divisor = divisor;
 	}
 
-	private IPropertyInfo<Decimal> result;
+	private IPropertyInfo<BigDecimal> result;
 
-	public final IPropertyInfo<Decimal> getResult() {
+	public final IPropertyInfo<BigDecimal> getResult() {
 		return result;
 	}
 
-	public final void setResult(IPropertyInfo<Decimal> result) {
+	public final void setResult(IPropertyInfo<BigDecimal> result) {
 		this.result = result;
 	}
 
 	@Override
 	protected void execute(BusinessRuleContext context) throws Exception {
-		Decimal dividend = (Decimal) context.getInputValues().get(this.getDividend());
+		BigDecimal dividend = (BigDecimal) context.getInputValues().get(this.getDividend());
 		if (dividend == null) {
 			dividend = Decimal.ZERO;
 		}
-		Decimal divisor = (Decimal) context.getInputValues().get(this.getDivisor());
-		if (divisor == null || divisor.isZero()) {
+		BigDecimal divisor = (BigDecimal) context.getInputValues().get(this.getDivisor());
+		if (divisor == null || Decimal.isZero(divisor)) {
 			// 除数为0，直接退出
 			return;
 		}
-		Decimal result = dividend.divide(divisor);
+		BigDecimal result = Decimal.divide(dividend, divisor);
 		// 截取精度
-		result = Decimal.round(result, Decimal.RESERVED_DECIMAL_PLACES_RUNNING);
-		Decimal oResult = (Decimal) context.getInputValues().get(this.getResult());
+		result = Decimal.round(result, Decimal.DECIMAL_PLACES_RUNNING);
+		BigDecimal oResult = (BigDecimal) context.getInputValues().get(this.getResult());
 		if (oResult != null) {
-			Decimal tOld = Decimal.round(oResult, Decimal.RESERVED_DECIMAL_PLACES_STORAGE);
-			Decimal tNew = Decimal.round(result, Decimal.RESERVED_DECIMAL_PLACES_STORAGE);
+			BigDecimal tOld = Decimal.round(oResult, Decimal.DECIMAL_PLACES_STORAGE);
+			BigDecimal tNew = Decimal.round(result, Decimal.DECIMAL_PLACES_STORAGE);
 			if (tOld.compareTo(tNew) == 0) {
 				// 存储精度内保持一致，则退出
 				return;

@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.test.bo;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.xml.bind.JAXBContext;
@@ -13,7 +14,6 @@ import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
@@ -35,7 +35,7 @@ public class TestBusinessObjects extends TestCase {
 		order.setCustomerCode("C00001");
 		order.setDeliveryDate(DateTime.getToday());
 		order.setDocumentStatus(emDocumentStatus.RELEASED);
-		order.setDocumentTotal(new Decimal("99.99"));
+		order.setDocumentTotal(new BigDecimal("99.99"));
 		order.setDocumentUser(new User());
 		order.setTeamUsers(new User[] { new User(), new User() });
 		order.setCycle(new Time(1.05, emTimeUnit.HOUR));
@@ -49,12 +49,12 @@ public class TestBusinessObjects extends TestCase {
 		order.getUserFields().get("U_OrderType").setValue("S0000");
 		order.getUserFields().get("U_OrderId").setValue(5768);
 		order.getUserFields().get("U_OrderDate").setValue(DateTime.getToday());
-		order.getUserFields().get("U_OrderTotal").setValue(new Decimal("999.888"));
+		order.getUserFields().get("U_OrderTotal").setValue(new BigDecimal("999.888"));
 
 		ISalesOrderItem orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00001");
-		orderItem.setQuantity(new Decimal(10));
-		orderItem.setPrice(new Decimal(99.99));
+		orderItem.setQuantity(new BigDecimal(10));
+		orderItem.setPrice(BigDecimal.valueOf(99.99));
 		orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00002");
 		orderItem.setQuantity(10);
@@ -176,7 +176,7 @@ public class TestBusinessObjects extends TestCase {
 		order.setCustomerCode("C00001");
 		order.setDeliveryDate(DateTime.getToday());
 		order.setDocumentStatus(emDocumentStatus.RELEASED);
-		order.setDocumentTotal(new Decimal("99.99"));
+		order.setDocumentTotal(new BigDecimal("99.99"));
 		order.setDocumentUser(new User());
 		order.setTeamUsers(new User[] { new User(), new User() });
 		order.setCycle(new Time(1.05, emTimeUnit.HOUR));
@@ -190,12 +190,12 @@ public class TestBusinessObjects extends TestCase {
 		order.getUserFields().get("U_OrderType").setValue("S0000");
 		order.getUserFields().get("U_OrderId").setValue(5768);
 		order.getUserFields().get("U_OrderDate").setValue(DateTime.getToday());
-		order.getUserFields().get("U_OrderTotal").setValue(new Decimal("999.888"));
+		order.getUserFields().get("U_OrderTotal").setValue(new BigDecimal("999.888"));
 
 		ISalesOrderItem orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00001");
-		orderItem.setQuantity(new Decimal(10));
-		orderItem.setPrice(new Decimal(99.99));
+		orderItem.setQuantity(new BigDecimal(10));
+		orderItem.setPrice(BigDecimal.valueOf(99.99));
 		orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00002");
 		orderItem.setQuantity(10);
@@ -398,7 +398,7 @@ public class TestBusinessObjects extends TestCase {
 			order.setCustomerCode("C00001");
 			order.setDeliveryDate(DateTime.getToday());
 			order.setDocumentStatus(emDocumentStatus.RELEASED);
-			order.setDocumentTotal(new Decimal("99.99"));
+			order.setDocumentTotal(new BigDecimal("99.99"));
 			order.setDocumentUser(new User());
 			order.setTeamUsers(new User[] { new User(), new User() });
 			order.setCycle(new Time(1.05, emTimeUnit.HOUR));
@@ -412,12 +412,12 @@ public class TestBusinessObjects extends TestCase {
 			order.getUserFields().get("U_OrderType").setValue("S0000");
 			order.getUserFields().get("U_OrderId").setValue(5768);
 			order.getUserFields().get("U_OrderDate").setValue(DateTime.getToday());
-			order.getUserFields().get("U_OrderTotal").setValue(new Decimal("999.888"));
+			order.getUserFields().get("U_OrderTotal").setValue(new BigDecimal("999.888"));
 
 			ISalesOrderItem orderItem = order.getSalesOrderItems().create();
 			orderItem.setItemCode("A00001");
-			orderItem.setQuantity(new Decimal(10));
-			orderItem.setPrice(new Decimal(99.99));
+			orderItem.setQuantity(new BigDecimal(10));
+			orderItem.setPrice(BigDecimal.valueOf(99.99));
 			orderItem = order.getSalesOrderItems().create();
 			orderItem.setItemCode("A00002");
 			orderItem.setQuantity(10);

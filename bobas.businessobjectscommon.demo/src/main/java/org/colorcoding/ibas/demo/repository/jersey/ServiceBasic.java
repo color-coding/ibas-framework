@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.demo.repository.jersey;
 
+import java.math.BigDecimal;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -20,7 +22,6 @@ import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.common.SqlQuery;
 import org.colorcoding.ibas.bobas.data.DataTable;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
@@ -124,7 +125,7 @@ public class ServiceBasic {
 		order.setCustomerCode("C00001");
 		order.setDeliveryDate(DateTime.getToday());
 		order.setDocumentStatus(emDocumentStatus.RELEASED);
-		order.setDocumentTotal(new Decimal("99.99"));
+		order.setDocumentTotal(new BigDecimal("99.99"));
 		order.setCycle(new Time(1.05, emTimeUnit.HOUR));
 
 		order.getUserFields().register("U_OrderType", DbFieldType.ALPHANUMERIC);
@@ -134,14 +135,14 @@ public class ServiceBasic {
 		order.getUserFields().get("U_OrderType").setValue("S0000");
 		order.getUserFields().get("U_OrderId").setValue(5768);
 		order.getUserFields().get("U_OrderDate").setValue(DateTime.getToday());
-		order.getUserFields().get("U_OrderTotal").setValue(new Decimal("999.888"));
+		order.getUserFields().get("U_OrderTotal").setValue(new BigDecimal("999.888"));
 		order.setCanceled(emYesNo.YES);
 		order.setDocumentStatus(emDocumentStatus.CLOSED);
 		order.setStatus(emBOStatus.CLOSED);
 		ISalesOrderItem orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00001");
-		orderItem.setQuantity(new Decimal(10));
-		orderItem.setPrice(new Decimal(99.99));
+		orderItem.setQuantity(new BigDecimal(10));
+		orderItem.setPrice(BigDecimal.valueOf(99.99));
 		orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00002");
 		orderItem.setQuantity(10);

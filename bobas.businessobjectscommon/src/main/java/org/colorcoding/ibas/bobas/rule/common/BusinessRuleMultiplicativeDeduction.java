@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.rule.common;
 
+import java.math.BigDecimal;
+
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.i18n.I18N;
@@ -24,8 +26,8 @@ public class BusinessRuleMultiplicativeDeduction extends BusinessRuleCommon {
 	 * @param multiplier   属性-乘数
 	 * @param result       属性-结果
 	 */
-	public BusinessRuleMultiplicativeDeduction(IPropertyInfo<Decimal> multiplicand, IPropertyInfo<Decimal> multiplier,
-			IPropertyInfo<Decimal> result) {
+	public BusinessRuleMultiplicativeDeduction(IPropertyInfo<BigDecimal> multiplicand,
+			IPropertyInfo<BigDecimal> multiplier, IPropertyInfo<BigDecimal> result) {
 		this();
 		this.setMultiplicand(multiplicand);
 		this.setMultiplier(multiplier);
@@ -39,64 +41,63 @@ public class BusinessRuleMultiplicativeDeduction extends BusinessRuleCommon {
 		this.getAffectedProperties().add(this.getMultiplier());
 	}
 
-	private IPropertyInfo<Decimal> multiplicand;
+	private IPropertyInfo<BigDecimal> multiplicand;
 
-	public final IPropertyInfo<Decimal> getMultiplicand() {
+	public final IPropertyInfo<BigDecimal> getMultiplicand() {
 		return multiplicand;
 	}
 
-	public final void setMultiplicand(IPropertyInfo<Decimal> multiplicand) {
+	public final void setMultiplicand(IPropertyInfo<BigDecimal> multiplicand) {
 		this.multiplicand = multiplicand;
 	}
 
-	private IPropertyInfo<Decimal> multiplier;
+	private IPropertyInfo<BigDecimal> multiplier;
 
-	public final IPropertyInfo<Decimal> getMultiplier() {
+	public final IPropertyInfo<BigDecimal> getMultiplier() {
 		return multiplier;
 	}
 
-	public final void setMultiplier(IPropertyInfo<Decimal> multiplier) {
+	public final void setMultiplier(IPropertyInfo<BigDecimal> multiplier) {
 		this.multiplier = multiplier;
 	}
 
-	private IPropertyInfo<Decimal> result;
+	private IPropertyInfo<BigDecimal> result;
 
-	public final IPropertyInfo<Decimal> getResult() {
+	public final IPropertyInfo<BigDecimal> getResult() {
 		return result;
 	}
 
-	public final void setResult(IPropertyInfo<Decimal> result) {
+	public final void setResult(IPropertyInfo<BigDecimal> result) {
 		this.result = result;
 	}
 
 	@Override
 	protected void execute(BusinessRuleContext context) throws Exception {
-		Decimal multiplicand = (Decimal) context.getInputValues().get(this.getMultiplicand());
+		BigDecimal multiplicand = (BigDecimal) context.getInputValues().get(this.getMultiplicand());
 		if (multiplicand == null) {
 			multiplicand = Decimal.ZERO;
 		}
-		Decimal multiplier = (Decimal) context.getInputValues().get(this.getMultiplier());
+		BigDecimal multiplier = (BigDecimal) context.getInputValues().get(this.getMultiplier());
 		if (multiplier == null) {
 			multiplier = Decimal.ZERO;
 		}
-		Decimal result = (Decimal) context.getInputValues().get(this.getResult());
+		BigDecimal result = (BigDecimal) context.getInputValues().get(this.getResult());
 		if (result == null) {
 			result = Decimal.ZERO;
 		}
-		if (multiplicand.isZero()) {
-			context.getOutputValues().put(this.getResult(), Decimal.ZERO);
+		if (Decimal.isZero(multiplicand)) {
+			context.getOutputValues().put(this.getResult(), BigDecimal.ZERO);
 			return;
 		}
-		if (!multiplier.isZero() && result.isZero()) {
+		if (!Decimal.isZero(multiplier) && Decimal.isZero(result)) {
 			// 结果 = 乘数 * 被乘数
-			result = multiplicand.multiply(multiplier);
-			context.getOutputValues().put(this.getResult(),
-					Decimal.round(result, Decimal.RESERVED_DECIMAL_PLACES_RUNNING));
-		} else if (!multiplicand.isZero() && !result.isZero()) {
+			result = Decimal.multiply(multiplicand, multiplier);
+			context.getOutputValues().put(this.getResult(), Decimal.round(result, Decimal.DECIMAL_PLACES_RUNNING));
+		} else if (!Decimal.isZero(multiplicand) && !Decimal.isZero(result)) {
 			// 乘数 = 结果 / 被乘数
-			multiplier = result.divide(multiplicand);
+			multiplier = Decimal.divide(result, multiplicand);
 			context.getOutputValues().put(this.getMultiplier(),
-					Decimal.round(multiplier, Decimal.RESERVED_DECIMAL_PLACES_RUNNING));
+					Decimal.round(multiplier, Decimal.DECIMAL_PLACES_RUNNING));
 		}
 	}
 

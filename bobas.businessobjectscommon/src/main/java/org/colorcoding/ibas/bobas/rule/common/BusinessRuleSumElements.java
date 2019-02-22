@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.rule.common;
 
+import java.math.BigDecimal;
+
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.i18n.I18N;
@@ -24,8 +26,8 @@ public class BusinessRuleSumElements extends BusinessRuleCollection {
 	 * @param collectionProperty 属性-集合
 	 * @param summingProperty    属性-被求和
 	 */
-	public BusinessRuleSumElements(IPropertyInfo<Decimal> affectedProperty, IPropertyInfo<?> collectionProperty,
-			IPropertyInfo<Decimal> summingProperty) {
+	public BusinessRuleSumElements(IPropertyInfo<BigDecimal> affectedProperty, IPropertyInfo<?> collectionProperty,
+			IPropertyInfo<BigDecimal> summingProperty) {
 		this();
 		this.setCollection(collectionProperty);
 		this.setResult(affectedProperty);
@@ -36,35 +38,35 @@ public class BusinessRuleSumElements extends BusinessRuleCollection {
 		this.getAffectedProperties().add(this.getResult());
 	}
 
-	private IPropertyInfo<Decimal> result;
+	private IPropertyInfo<BigDecimal> result;
 
-	public final IPropertyInfo<Decimal> getResult() {
+	public final IPropertyInfo<BigDecimal> getResult() {
 		return result;
 	}
 
-	public final void setResult(IPropertyInfo<Decimal> result) {
+	public final void setResult(IPropertyInfo<BigDecimal> result) {
 		this.result = result;
 	}
 
-	private IPropertyInfo<Decimal> summing;
+	private IPropertyInfo<BigDecimal> summing;
 
-	public final IPropertyInfo<Decimal> getSumming() {
+	public final IPropertyInfo<BigDecimal> getSumming() {
 		return summing;
 	}
 
-	public final void setSumming(IPropertyInfo<Decimal> summing) {
+	public final void setSumming(IPropertyInfo<BigDecimal> summing) {
 		this.summing = summing;
 	}
 
 	@Override
 	protected void execute(BusinessRuleContext context) throws Exception {
-		Decimal result = Decimal.ZERO;
+		BigDecimal result = Decimal.ZERO;
 		Object[] values = context.getInputValues().get(this.getSumming());
 		if (values != null) {
 			for (int i = 0; i < values.length; i++) {
 				Object value = values[i];
-				if (value instanceof Decimal) {
-					result = result.add((Decimal) value);
+				if (value instanceof BigDecimal) {
+					result = Decimal.add(result, (BigDecimal) value);
 				}
 			}
 		}

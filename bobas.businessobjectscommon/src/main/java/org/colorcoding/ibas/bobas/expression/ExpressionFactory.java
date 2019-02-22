@@ -1,8 +1,9 @@
 package org.colorcoding.ibas.bobas.expression;
 
+import java.math.BigDecimal;
+
 import org.colorcoding.ibas.bobas.common.IConditions;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 
 public class ExpressionFactory {
@@ -39,7 +40,7 @@ public class ExpressionFactory {
 			return new JudgmentExpressionFloat();
 		} else if (type == Short.class) {
 			return new JudgmentExpressionShort();
-		} else if (type == Decimal.class) {
+		} else if (type == BigDecimal.class) {
 			return new JudgmentExpressionDecimal();
 		} else if (type == DateTime.class) {
 			return new JudgmentExpressionDateTime();
@@ -54,8 +55,7 @@ public class ExpressionFactory {
 	/**
 	 * 创建业务对象判断链
 	 * 
-	 * @param conditions
-	 *            条件
+	 * @param conditions 条件
 	 * @return
 	 */
 	public JudgmentLink createBOJudgmentLink(IConditions conditions) {
@@ -67,8 +67,7 @@ public class ExpressionFactory {
 	/**
 	 * 创建文件判断链
 	 * 
-	 * @param conditions
-	 *            条件
+	 * @param conditions 条件
 	 * @return
 	 */
 	public JudgmentLink createFileJudgmentLink(IConditions conditions) {

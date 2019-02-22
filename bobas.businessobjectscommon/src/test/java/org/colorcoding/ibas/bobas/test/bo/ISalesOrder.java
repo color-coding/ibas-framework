@@ -1,10 +1,11 @@
 package org.colorcoding.ibas.bobas.test.bo;
 
+import java.math.BigDecimal;
+
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
 import org.colorcoding.ibas.bobas.bo.IBOUserFields;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
@@ -28,8 +29,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-凭证编号
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setDocEntry(Integer value);
 
@@ -43,8 +43,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-期间编号
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setDocNum(Integer value);
 
@@ -58,8 +57,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-期间
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setPeriod(Integer value);
 
@@ -73,8 +71,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-Instance
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setInstance(Integer value);
 
@@ -88,8 +85,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-服务系列
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setSeries(Integer value);
 
@@ -103,8 +99,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-手写
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setHandwritten(emYesNo value);
 
@@ -119,8 +114,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-取消
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setCanceled(emYesNo value);
 
@@ -135,8 +129,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-类型
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setObjectCode(String value);
 
@@ -150,8 +143,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-数据源
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 
 	void setDataSource(String value);
@@ -166,8 +158,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-实例号（版本）
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 
 	void setLogInst(Integer value);
@@ -182,8 +173,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-用户
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setUserSign(Integer value);
 
@@ -197,8 +187,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-是否结转
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setTransfered(emYesNo value);
 
@@ -212,8 +201,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-状态
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setStatus(emBOStatus value);
 
@@ -227,8 +215,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-创建日期
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setCreateDate(DateTime value);
 
@@ -242,8 +229,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-创建时间
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setCreateTime(Short value);
 
@@ -257,8 +243,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-修改日期
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setUpdateDate(DateTime value);
 
@@ -272,8 +257,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-修改时间
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setUpdateTime(Short value);
 
@@ -287,8 +271,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-创建用户
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setCreateUserSign(Integer value);
 
@@ -302,8 +285,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-修改用户
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setUpdateUserSign(Integer value);
 
@@ -317,8 +299,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-创建动作标识
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setCreateActionId(String value);
 
@@ -332,8 +313,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-更新动作标识
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setUpdateActionId(String value);
 
@@ -347,8 +327,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-数据所有者
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setDataOwner(Integer value);
 
@@ -362,8 +341,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-团队成员
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setTeamMembers(String value);
 
@@ -377,8 +355,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-数据所属组织
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setOrganization(String value);
 
@@ -392,8 +369,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-审批状态
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setApprovalStatus(emApprovalStatus value);
 
@@ -407,8 +383,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-单据状态
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setDocumentStatus(emDocumentStatus value);
 
@@ -423,8 +398,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-过账日期
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setPostingDate(DateTime value);
 
@@ -438,8 +412,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-到期日
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setDeliveryDate(DateTime value);
 
@@ -453,8 +426,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-凭证日期
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setDocumentDate(DateTime value);
 
@@ -468,8 +440,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-参考1
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setReference1(String value);
 
@@ -483,8 +454,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-参考2
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setReference2(String value);
 
@@ -498,8 +468,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-备注
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setRemarks(String value);
 
@@ -513,8 +482,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-客户代码
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setCustomerCode(String value);
 
@@ -528,8 +496,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-客户名称
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setCustomerName(String value);
 
@@ -543,8 +510,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-单据货币
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setDocumentCurrency(String value);
 
@@ -553,37 +519,33 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	 * 
 	 * @return 值
 	 */
-	Decimal getDocumentRate();
+	BigDecimal getDocumentRate();
 
 	/**
 	 * 设置-单据交换率
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
-	void setDocumentRate(Decimal value);
+	void setDocumentRate(BigDecimal value);
 
 	/**
 	 * 设置-单据交换率
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setDocumentRate(String value);
 
 	/**
 	 * 设置-单据交换率
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setDocumentRate(int value);
 
 	/**
 	 * 设置-单据交换率
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setDocumentRate(double value);
 
@@ -592,37 +554,33 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	 * 
 	 * @return 值
 	 */
-	Decimal getDocumentTotal();
+	BigDecimal getDocumentTotal();
 
 	/**
 	 * 设置-单据总计
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
-	void setDocumentTotal(Decimal value);
+	void setDocumentTotal(BigDecimal value);
 
 	/**
 	 * 设置-单据总计
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setDocumentTotal(String value);
 
 	/**
 	 * 设置-单据总计
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setDocumentTotal(int value);
 
 	/**
 	 * 设置-单据总计
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setDocumentTotal(double value);
 
@@ -636,8 +594,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-销售订单-行集合
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setSalesOrderItems(ISalesOrderItems value);
 
@@ -651,8 +608,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-单据用户
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setDocumentUser(IUser value);
 
@@ -666,8 +622,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-团队用户
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setTeamUsers(IUser[] value);
 
@@ -681,8 +636,7 @@ public interface ISalesOrder extends IBODocument, IBOTagCanceled, IBOUserFields 
 	/**
 	 * 设置-周期
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setCycle(Time value);
 }

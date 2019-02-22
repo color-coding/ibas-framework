@@ -4,7 +4,6 @@ import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.logic.BusinessLogic;
 import org.colorcoding.ibas.bobas.logic.BusinessLogicException;
 import org.colorcoding.ibas.bobas.mapping.LogicContract;
@@ -57,7 +56,7 @@ public class MaterialsJournalContractLogic extends BusinessLogic<IMaterialsJourn
 		this.getBeAffected().setBaseDocumentType(contract.getDocumentType());
 		this.getBeAffected().setBaseDocumentEntry(contract.getDocumentEntry());
 		this.getBeAffected().setBaseDocumentLineId(contract.getDocumentLineId());
-		this.getBeAffected().setQuantity(new Decimal(contract.getQuantity()));
+		this.getBeAffected().setQuantity(contract.getQuantity());
 		Logger.log("logic: create journal type:%s entry:%s line:%s.", this.getBeAffected().getBaseDocumentType(),
 				this.getBeAffected().getBaseDocumentEntry(), this.getBeAffected().getBaseDocumentLineId());
 	}

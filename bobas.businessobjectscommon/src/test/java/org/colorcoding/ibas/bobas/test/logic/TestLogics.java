@@ -369,7 +369,7 @@ public class TestLogics extends TestCase {
 		item02.setLineStatus(emDocumentStatus.FINISHED);
 		System.out.println(String.format("line 2 price %s", item02.getPrice()));
 		assertEquals(Decimal.round(item02.getPrice())
-				.compareTo(Decimal.round(item02.getLineTotal().divide(item02.getQuantity()))) == 0, true);// 注意四舍五入
+				.compareTo(Decimal.divide(item02.getLineTotal(), item02.getQuantity())) == 0, true);// 注意四舍五入
 		System.out.println(String.format("bo: %s", order));
 		System.out.println(
 				String.format("document total: %s, status: %s", order.getDocumentTotal(), order.getDocumentStatus()));

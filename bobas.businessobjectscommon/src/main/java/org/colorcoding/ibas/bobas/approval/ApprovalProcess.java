@@ -422,7 +422,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 				ApprovalProcessRepository apRepository = new ApprovalProcessRepository();
 				apRepository.setRepository(this.getRepository());
 				boolean myOpend = apRepository.openRepository();
-				IOperationResult<IBusinessObject> opRsltFetch = apRepository.fetch(criteria);
+				IOperationResult<IBusinessObject> opRsltFetch = apRepository.fetchData(criteria);
 				if (myOpend) {
 					apRepository.closeRepository();
 				}

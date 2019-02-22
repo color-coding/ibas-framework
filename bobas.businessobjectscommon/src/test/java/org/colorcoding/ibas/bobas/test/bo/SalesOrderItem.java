@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.test.bo;
 
+import java.math.BigDecimal;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -74,8 +76,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-编码
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDocEntry(Integer value) {
 		this.setProperty(PROPERTY_DOCENTRY, value);
@@ -106,8 +107,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-行号
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setLineId(Integer value) {
 		this.setProperty(PROPERTY_LINEID, value);
@@ -138,8 +138,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-显示顺序
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setVisOrder(Integer value) {
 		this.setProperty(PROPERTY_VISORDER, value);
@@ -170,8 +169,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-类型
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setObjectCode(String value) {
 		this.setProperty(PROPERTY_OBJECTCODE, value);
@@ -202,8 +200,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-数据源
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDataSource(String value) {
 		this.setProperty(PROPERTY_DATASOURCE, value);
@@ -234,8 +231,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-实例号（版本）
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setLogInst(Integer value) {
 		this.setProperty(PROPERTY_LOGINST, value);
@@ -266,8 +262,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-已引用
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setReferenced(emYesNo value) {
 		this.setProperty(PROPERTY_REFERENCED, value);
@@ -298,8 +293,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-取消
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCanceled(emYesNo value) {
 		this.setProperty(PROPERTY_CANCELED, value);
@@ -330,8 +324,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-状态
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setStatus(emBOStatus value) {
 		this.setProperty(PROPERTY_STATUS, value);
@@ -362,8 +355,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-单据状态
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setLineStatus(emDocumentStatus value) {
 		this.setProperty(PROPERTY_LINESTATUS, value);
@@ -394,8 +386,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-创建日期
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCreateDate(DateTime value) {
 		this.setProperty(PROPERTY_CREATEDATE, value);
@@ -426,8 +417,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-创建时间
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCreateTime(Short value) {
 		this.setProperty(PROPERTY_CREATETIME, value);
@@ -458,8 +448,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-修改日期
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setUpdateDate(DateTime value) {
 		this.setProperty(PROPERTY_UPDATEDATE, value);
@@ -490,8 +479,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-修改时间
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setUpdateTime(Short value) {
 		this.setProperty(PROPERTY_UPDATETIME, value);
@@ -522,8 +510,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-创建用户
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCreateUserSign(Integer value) {
 		this.setProperty(PROPERTY_CREATEUSERSIGN, value);
@@ -554,8 +541,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-修改用户
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setUpdateUserSign(Integer value) {
 		this.setProperty(PROPERTY_UPDATEUSERSIGN, value);
@@ -586,8 +572,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-创建动作标识
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCreateActionId(String value) {
 		this.setProperty(PROPERTY_CREATEACTIONID, value);
@@ -618,8 +603,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-更新动作标识
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setUpdateActionId(String value) {
 		this.setProperty(PROPERTY_UPDATEACTIONID, value);
@@ -650,8 +634,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-参考1
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setReference1(String value) {
 		this.setProperty(PROPERTY_REFERENCE1, value);
@@ -682,8 +665,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-参考2
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setReference2(String value) {
 		this.setProperty(PROPERTY_REFERENCE2, value);
@@ -714,8 +696,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-物料编号
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setItemCode(String value) {
 		this.setProperty(PROPERTY_ITEMCODE, value);
@@ -746,8 +727,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-物料/服务描述
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setItemDescription(String value) {
 		this.setProperty(PROPERTY_ITEMDESCRIPTION, value);
@@ -762,8 +742,8 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	 * 数量 属性
 	 */
 	@DbField(name = "Quantity", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
-	public static final IPropertyInfo<Decimal> PROPERTY_QUANTITY = registerProperty(PROPERTY_QUANTITY_NAME,
-			Decimal.class, MY_CLASS);
+	public static final IPropertyInfo<BigDecimal> PROPERTY_QUANTITY = registerProperty(PROPERTY_QUANTITY_NAME,
+			BigDecimal.class, MY_CLASS);
 
 	/**
 	 * 获取-数量
@@ -771,48 +751,44 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	 * @return 值
 	 */
 	@XmlElement(name = PROPERTY_QUANTITY_NAME)
-	public final Decimal getQuantity() {
+	public final BigDecimal getQuantity() {
 		return this.getProperty(PROPERTY_QUANTITY);
 	}
 
 	/**
 	 * 设置-数量
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
-	public final void setQuantity(Decimal value) {
+	public final void setQuantity(BigDecimal value) {
 		this.setProperty(PROPERTY_QUANTITY, value);
 	}
 
 	/**
 	 * 设置-数量
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setQuantity(String value) {
-		this.setQuantity(new Decimal(value));
+		this.setQuantity(Decimal.valueOf(value));
 	}
 
 	/**
 	 * 设置-数量
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setQuantity(int value) {
-		this.setQuantity(new Decimal(value));
+		this.setQuantity(Decimal.valueOf(value));
 	}
 
 	/**
 	 * 设置-数量
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setQuantity(double value) {
-		this.setQuantity(new Decimal(value));
+		this.setQuantity(Decimal.valueOf(value));
 	}
 
 	/**
@@ -840,8 +816,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-行交货日期
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDeliveryDate(DateTime value) {
 		this.setProperty(PROPERTY_DELIVERYDATE, value);
@@ -856,8 +831,8 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	 * 剩余未清数量 属性
 	 */
 	@DbField(name = "OpenQty", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
-	public static final IPropertyInfo<Decimal> PROPERTY_OPENQUANTITY = registerProperty(PROPERTY_OPENQUANTITY_NAME,
-			Decimal.class, MY_CLASS);
+	public static final IPropertyInfo<BigDecimal> PROPERTY_OPENQUANTITY = registerProperty(PROPERTY_OPENQUANTITY_NAME,
+			BigDecimal.class, MY_CLASS);
 
 	/**
 	 * 获取-剩余未清数量
@@ -865,48 +840,44 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	 * @return 值
 	 */
 	@XmlElement(name = PROPERTY_OPENQUANTITY_NAME)
-	public final Decimal getOpenQuantity() {
+	public final BigDecimal getOpenQuantity() {
 		return this.getProperty(PROPERTY_OPENQUANTITY);
 	}
 
 	/**
 	 * 设置-剩余未清数量
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
-	public final void setOpenQuantity(Decimal value) {
+	public final void setOpenQuantity(BigDecimal value) {
 		this.setProperty(PROPERTY_OPENQUANTITY, value);
 	}
 
 	/**
 	 * 设置-剩余未清数量
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setOpenQuantity(String value) {
-		this.setOpenQuantity(new Decimal(value));
+		this.setOpenQuantity(Decimal.valueOf(value));
 	}
 
 	/**
 	 * 设置-剩余未清数量
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setOpenQuantity(int value) {
-		this.setOpenQuantity(new Decimal(value));
+		this.setOpenQuantity(Decimal.valueOf(value));
 	}
 
 	/**
 	 * 设置-剩余未清数量
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setOpenQuantity(double value) {
-		this.setOpenQuantity(new Decimal(value));
+		this.setOpenQuantity(Decimal.valueOf(value));
 	}
 
 	/**
@@ -918,8 +889,8 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	 * 单价 属性
 	 */
 	@DbField(name = "Price", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
-	public static final IPropertyInfo<Decimal> PROPERTY_PRICE = registerProperty(PROPERTY_PRICE_NAME, Decimal.class,
-			MY_CLASS);
+	public static final IPropertyInfo<BigDecimal> PROPERTY_PRICE = registerProperty(PROPERTY_PRICE_NAME,
+			BigDecimal.class, MY_CLASS);
 
 	/**
 	 * 获取-单价
@@ -927,48 +898,44 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	 * @return 值
 	 */
 	@XmlElement(name = PROPERTY_PRICE_NAME)
-	public final Decimal getPrice() {
+	public final BigDecimal getPrice() {
 		return this.getProperty(PROPERTY_PRICE);
 	}
 
 	/**
 	 * 设置-单价
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
-	public final void setPrice(Decimal value) {
+	public final void setPrice(BigDecimal value) {
 		this.setProperty(PROPERTY_PRICE, value);
 	}
 
 	/**
 	 * 设置-单价
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setPrice(String value) {
-		this.setPrice(new Decimal(value));
+		this.setPrice(Decimal.valueOf(value));
 	}
 
 	/**
 	 * 设置-单价
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setPrice(int value) {
-		this.setPrice(new Decimal(value));
+		this.setPrice(Decimal.valueOf(value));
 	}
 
 	/**
 	 * 设置-单价
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setPrice(double value) {
-		this.setPrice(new Decimal(value));
+		this.setPrice(Decimal.valueOf(value));
 	}
 
 	/**
@@ -996,8 +963,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-价格货币
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setPriceCurrency(String value) {
 		this.setProperty(PROPERTY_PRICECURRENCY, value);
@@ -1012,8 +978,8 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	 * 行总计 属性
 	 */
 	@DbField(name = "LineTotal", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
-	public static final IPropertyInfo<Decimal> PROPERTY_LINETOTAL = registerProperty(PROPERTY_LINETOTAL_NAME,
-			Decimal.class, MY_CLASS);
+	public static final IPropertyInfo<BigDecimal> PROPERTY_LINETOTAL = registerProperty(PROPERTY_LINETOTAL_NAME,
+			BigDecimal.class, MY_CLASS);
 
 	/**
 	 * 获取-行总计
@@ -1021,48 +987,44 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	 * @return 值
 	 */
 	@XmlElement(name = PROPERTY_LINETOTAL_NAME)
-	public final Decimal getLineTotal() {
+	public final BigDecimal getLineTotal() {
 		return this.getProperty(PROPERTY_LINETOTAL);
 	}
 
 	/**
 	 * 设置-行总计
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
-	public final void setLineTotal(Decimal value) {
+	public final void setLineTotal(BigDecimal value) {
 		this.setProperty(PROPERTY_LINETOTAL, value);
 	}
 
 	/**
 	 * 设置-行总计
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setLineTotal(String value) {
-		this.setLineTotal(new Decimal(value));
+		this.setLineTotal(Decimal.valueOf(value));
 	}
 
 	/**
 	 * 设置-行总计
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setLineTotal(int value) {
-		this.setLineTotal(new Decimal(value));
+		this.setLineTotal(Decimal.valueOf(value));
 	}
 
 	/**
 	 * 设置-行总计
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setLineTotal(double value) {
-		this.setLineTotal(new Decimal(value));
+		this.setLineTotal(Decimal.valueOf(value));
 	}
 
 	/**
@@ -1090,8 +1052,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	/**
 	 * 设置-仓库代码
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setWarehouse(String value) {
 		this.setProperty(PROPERTY_WAREHOUSE, value);

@@ -2,6 +2,7 @@
 package org.colorcoding.ibas.bobas.test.data;
 
 import java.io.StringWriter;
+import java.math.BigDecimal;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -27,7 +28,7 @@ public class TestDataTable extends TestCase {
 		column_1.setDataType(String.class);
 		IDataTableColumn column_2 = table.getColumns().create("col_1", Integer.class);
 		IDataTableColumn column_3 = table.getColumns().create("col_2", DateTime.class);
-		IDataTableColumn column_4 = table.getColumns().create("col_3", Decimal.class);
+		IDataTableColumn column_4 = table.getColumns().create("col_3", BigDecimal.class);
 
 		IDataTableRow row = table.getRows().create();
 		row.setValue(0, "第一行");
@@ -56,16 +57,13 @@ public class TestDataTable extends TestCase {
 		String oldXML = writer.toString();
 		System.out.println("序列化输出：");
 		System.out.println(oldXML);
-		
 
 		System.out.println("toString xml：");
 		System.out.println(table.toString("xml"));
-		
 
 		System.out.println("toString json：");
 		System.out.println(table.toString("json"));
-		
-		
+
 	}
 
 }

@@ -38,10 +38,8 @@ public class DataConvert {
 			return Double.valueOf(toString(value));
 		} else if (type == Float.class) {
 			return Float.valueOf(toString(value));
-		} else if (type == Decimal.class) {
-			return Decimal.valueOf(toString(value));
 		} else if (type == BigDecimal.class) {
-			return new BigDecimal(toString(value));
+			return Decimal.valueOf(toString(value));
 		} else if (type == Boolean.class) {
 			return Boolean.valueOf(toString(value));
 		} else if (type == DateTime.class) {

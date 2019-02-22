@@ -1,12 +1,13 @@
 package org.colorcoding.ibas.bobas.test.core;
 
+import java.math.BigDecimal;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.colorcoding.ibas.bobas.core.BusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.mapping.DbField;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
@@ -55,8 +56,7 @@ public class Order extends BusinessObjectBase<Order> {
 	/**
 	 * 设置-凭证编号
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDocEntry(Integer value) {
 		this.setProperty(PROPERTY_DOCENTRY, value);
@@ -87,8 +87,7 @@ public class Order extends BusinessObjectBase<Order> {
 	/**
 	 * 设置-客户代码
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCustomerCode(String value) {
 		this.setProperty(PROPERTY_CUSTOMERCODE, value);
@@ -119,8 +118,7 @@ public class Order extends BusinessObjectBase<Order> {
 	/**
 	 * 设置-凭证日期
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDocumentDate(DateTime value) {
 		this.setProperty(PROPERTY_DOCUMENTDATE, value);
@@ -151,8 +149,7 @@ public class Order extends BusinessObjectBase<Order> {
 	/**
 	 * 设置-单据状态
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDocumentStatus(emDocumentStatus value) {
 		this.setProperty(PROPERTY_DOCUMENTSTATUS, value);
@@ -183,8 +180,7 @@ public class Order extends BusinessObjectBase<Order> {
 	/**
 	 * 设置-已激活的
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setActivated(Boolean value) {
 		this.setProperty(PROPERTY_ACTIVATED, value);
@@ -199,8 +195,8 @@ public class Order extends BusinessObjectBase<Order> {
 	 * 单据总计 属性
 	 */
 	@DbField(name = "DocTotal", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
-	public static final IPropertyInfo<Decimal> PROPERTY_DOCUMENTTOTAL = registerProperty(PROPERTY_DOCUMENTTOTAL_NAME,
-			Decimal.class, MY_CLASS);
+	public static final IPropertyInfo<BigDecimal> PROPERTY_DOCUMENTTOTAL = registerProperty(PROPERTY_DOCUMENTTOTAL_NAME,
+			BigDecimal.class, MY_CLASS);
 
 	/**
 	 * 获取-单据总计
@@ -208,17 +204,16 @@ public class Order extends BusinessObjectBase<Order> {
 	 * @return 值
 	 */
 	@XmlElement(name = PROPERTY_DOCUMENTTOTAL_NAME)
-	public final Decimal getDocumentTotal() {
+	public final BigDecimal getDocumentTotal() {
 		return this.getProperty(PROPERTY_DOCUMENTTOTAL);
 	}
 
 	/**
 	 * 设置-单据总计
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
-	public final void setDocumentTotal(Decimal value) {
+	public final void setDocumentTotal(BigDecimal value) {
 		this.setProperty(PROPERTY_DOCUMENTTOTAL, value);
 	}
 

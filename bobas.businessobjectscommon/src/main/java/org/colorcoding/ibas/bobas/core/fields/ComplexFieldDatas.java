@@ -1,7 +1,8 @@
 package org.colorcoding.ibas.bobas.core.fields;
 
+import java.math.BigDecimal;
+
 import org.colorcoding.ibas.bobas.core.BOFactory;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.measurement.IMeasurement;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
@@ -56,7 +57,7 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 		fdValue.setOriginal(true);
 		fdValue.setDbField(fieldName);
 		fdValue.setDbTable(table);
-		fdValue.setValueType(Decimal.class);
+		fdValue.setValueType(BigDecimal.class);
 		fieldDataDbs[0] = fdValue;
 		FieldData4Unit fdUnit = new FieldData4Unit(this.getValue());
 		fieldName = String.format("%sUnit", name);
@@ -79,7 +80,7 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 	 * @author Niuren.Zhu
 	 *
 	 */
-	private class FieldData4Value extends FieldDataDb4Complex<Decimal> {
+	private class FieldData4Value extends FieldDataDb4Complex<BigDecimal> {
 
 		public FieldData4Value(IMeasurement<?, ?> value) {
 			this.setMeasurement(value);
@@ -115,11 +116,11 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 		}
 
 		@Override
-		public Decimal getValue() {
+		public BigDecimal getValue() {
 			if (this.getMeasurement() == null) {
 				return null;
 			}
-			return (Decimal) this.getMeasurement().getValue();
+			return (BigDecimal) this.getMeasurement().getValue();
 		}
 
 		@Override

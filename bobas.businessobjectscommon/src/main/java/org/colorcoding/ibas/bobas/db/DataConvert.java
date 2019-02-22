@@ -2,6 +2,7 @@ package org.colorcoding.ibas.bobas.db;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
@@ -36,8 +37,8 @@ public class DataConvert extends org.colorcoding.ibas.bobas.data.DataConvert {
 			if (dateTime.equals(DateTime.MIN_VALUE)) {
 				return null;
 			}
-		} else if (valueType == Decimal.class) {
-			return Decimal.round((Decimal) value, Decimal.RESERVED_DECIMAL_PLACES_STORAGE).toString();
+		} else if (valueType == BigDecimal.class) {
+			return Decimal.round((BigDecimal) value, Decimal.DECIMAL_PLACES_STORAGE).toString();
 		}
 		return value.toString();
 	}

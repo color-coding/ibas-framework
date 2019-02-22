@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.test.approval;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import org.colorcoding.ibas.bobas.approval.ApprovalProcessException;
@@ -8,7 +9,6 @@ import org.colorcoding.ibas.bobas.approval.IApprovalProcessStepCondition;
 import org.colorcoding.ibas.bobas.approval.ValueMode;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emApprovalResult;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emApprovalStepStatus;
@@ -31,11 +31,11 @@ public class TestApprovalProcess extends TestCase {
 		order.setCustomerCode("C00001");
 		order.setDeliveryDate(DateTime.getToday());
 		order.setDocumentStatus(emDocumentStatus.RELEASED);
-		order.setDocumentTotal(new Decimal("99.99"));
+		order.setDocumentTotal(new BigDecimal("99.99"));
 		ISalesOrderItem orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00001");
-		orderItem.setQuantity(new Decimal(10));
-		orderItem.setPrice(new Decimal(99.99));
+		orderItem.setQuantity(new BigDecimal(10));
+		orderItem.setPrice(BigDecimal.valueOf(99.99));
 		orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00002");
 		orderItem.setQuantity(10);
@@ -210,11 +210,11 @@ public class TestApprovalProcess extends TestCase {
 		order.setCustomerCode("C00001");
 		order.setDeliveryDate(DateTime.getToday());
 		order.setDocumentStatus(emDocumentStatus.RELEASED);
-		order.setDocumentTotal(new Decimal("99.99"));
+		order.setDocumentTotal(new BigDecimal("99.99"));
 		ISalesOrderItem orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00001");
-		orderItem.setQuantity(new Decimal(10));
-		orderItem.setPrice(new Decimal(99.99));
+		orderItem.setQuantity(new BigDecimal(10));
+		orderItem.setPrice(BigDecimal.valueOf(99.99));
 		orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00002");
 		orderItem.setQuantity(10);

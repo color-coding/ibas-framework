@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.data.measurement;
 
+import java.math.BigDecimal;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -11,7 +13,7 @@ import org.colorcoding.ibas.bobas.data.Decimal;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "MeasurementDecimal", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
-public abstract class MeasurementDecimal<U> extends Measurement<Decimal, U> {
+public abstract class MeasurementDecimal<U> extends Measurement<BigDecimal, U> {
 
 	private static final long serialVersionUID = 6473479770614930990L;
 
@@ -19,7 +21,7 @@ public abstract class MeasurementDecimal<U> extends Measurement<Decimal, U> {
 
 	}
 
-	public MeasurementDecimal(Decimal value) {
+	public MeasurementDecimal(BigDecimal value) {
 		this();
 		this.setValue(value);
 	}
@@ -49,11 +51,11 @@ public abstract class MeasurementDecimal<U> extends Measurement<Decimal, U> {
 		return DataConvert.toLong(this.getValue());
 	}
 
-	private Decimal _value;
+	private BigDecimal _value;
 
 	@Override
 	@XmlElement(name = "Value")
-	public Decimal getValue() {
+	public BigDecimal getValue() {
 		if (this._value == null) {
 			this._value = Decimal.ZERO;
 		}
@@ -62,11 +64,11 @@ public abstract class MeasurementDecimal<U> extends Measurement<Decimal, U> {
 
 	@Override
 	public void setValue(Object value) {
-		this.setValue((Decimal) value);
+		this.setValue((BigDecimal) value);
 	}
 
-	public void setValue(Decimal value) {
-		Decimal oldValue = this._value;
+	public void setValue(BigDecimal value) {
+		BigDecimal oldValue = this._value;
 		this._value = value;
 		this.firePropertyChange("Value", oldValue, this._value);
 	}

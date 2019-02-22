@@ -13,25 +13,22 @@ import org.colorcoding.ibas.bobas.data.Decimal;
 public class JudgmentExpressionDecimal extends JudgmentExpressionComparable<BigDecimal> {
 
 	public JudgmentExpressionDecimal() {
-
 	}
 
-	public JudgmentExpressionDecimal(Decimal leftValue, JudmentOperation operation, Decimal rightValue) {
+	public JudgmentExpressionDecimal(BigDecimal leftValue, JudmentOperation operation, BigDecimal rightValue) {
 		super(leftValue, operation, rightValue);
 	}
 
-	private Decimal leftValue;
+	private BigDecimal leftValue;
 
 	@Override
-	public final Decimal getLeftValue() {
+	public final BigDecimal getLeftValue() {
 		return this.leftValue;
 	}
 
 	@Override
 	public final void setLeftValue(Object value) {
-		if (value instanceof Decimal) {
-			this.setLeftValue((Decimal) value);
-		} else if (value instanceof BigDecimal) {
+		if (value instanceof BigDecimal) {
 			this.setLeftValue((BigDecimal) value);
 		} else if (value instanceof String) {
 			this.setLeftValue((String) value);
@@ -61,24 +58,20 @@ public class JudgmentExpressionDecimal extends JudgmentExpressionComparable<BigD
 	}
 
 	public final void setLeftValue(BigDecimal value) {
-		this.setLeftValue(Decimal.valueOf(value));
-	}
-
-	public final void setLeftValue(Decimal value) {
 		this.leftValue = value;
 	}
 
-	private Decimal rightValue;
+	private BigDecimal rightValue;
 
 	@Override
-	public final Decimal getRightValue() {
+	public final BigDecimal getRightValue() {
 		return this.rightValue;
 	}
 
 	@Override
 	public final void setRightValue(Object value) {
-		if (value instanceof Decimal) {
-			this.setRightValue((Decimal) value);
+		if (value instanceof BigDecimal) {
+			this.setRightValue((BigDecimal) value);
 		} else if (value instanceof BigDecimal) {
 			this.setRightValue((BigDecimal) value);
 		} else if (value instanceof String) {
@@ -109,10 +102,6 @@ public class JudgmentExpressionDecimal extends JudgmentExpressionComparable<BigD
 	}
 
 	public final void setRightValue(BigDecimal value) {
-		this.setRightValue(Decimal.valueOf(value));
-	}
-
-	public final void setRightValue(Decimal value) {
 		this.rightValue = value;
 	}
 }

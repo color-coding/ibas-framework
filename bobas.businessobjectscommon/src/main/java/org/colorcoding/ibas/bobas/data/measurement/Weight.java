@@ -1,12 +1,13 @@
 package org.colorcoding.ibas.bobas.data.measurement;
 
+import java.math.BigDecimal;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.KeyText;
 
 /**
@@ -24,7 +25,7 @@ public class Weight extends MeasurementDecimal<emWeightUnit> {
 
 	}
 
-	public Weight(Decimal value, emWeightUnit unit) {
+	public Weight(BigDecimal value, emWeightUnit unit) {
 		super(value);
 		this.setUnit(unit);
 	}
@@ -65,8 +66,8 @@ public class Weight extends MeasurementDecimal<emWeightUnit> {
 	}
 
 	@Override
-	public int compareTo(IMeasurement<Decimal, emWeightUnit> o) {
-		Decimal convertValue = emWeightUnit.convert(this.getUnit(), o.getValue(), o.getUnit());
+	public int compareTo(IMeasurement<BigDecimal, emWeightUnit> o) {
+		BigDecimal convertValue = emWeightUnit.convert(this.getUnit(), o.getValue(), o.getUnit());
 		return this.getValue().compareTo(convertValue);
 	}
 }

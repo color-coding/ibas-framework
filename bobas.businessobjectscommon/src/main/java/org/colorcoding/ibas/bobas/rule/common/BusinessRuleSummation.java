@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.rule.common;
 
+import java.math.BigDecimal;
+
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.Decimal;
@@ -26,7 +28,7 @@ public class BusinessRuleSummation extends BusinessRuleCommon {
 	 * @param addends 属性-加数（数组）
 	 */
 	@SafeVarargs
-	public BusinessRuleSummation(IPropertyInfo<Decimal> result, IPropertyInfo<Decimal>... addends) {
+	public BusinessRuleSummation(IPropertyInfo<BigDecimal> result, IPropertyInfo<BigDecimal>... addends) {
 		this();
 		this.setResult(result);
 		this.setAddends(addends);
@@ -36,46 +38,45 @@ public class BusinessRuleSummation extends BusinessRuleCommon {
 		this.getAffectedProperties().add(this.getResult());
 	}
 
-	private List<IPropertyInfo<Decimal>> addends;
+	private List<IPropertyInfo<BigDecimal>> addends;
 
-	public final List<IPropertyInfo<Decimal>> getAddends() {
+	public final List<IPropertyInfo<BigDecimal>> getAddends() {
 		if (this.addends == null) {
 			this.addends = new ArrayList<>();
 		}
 		return addends;
 	}
 
-	public final void setAddends(IPropertyInfo<Decimal>[] addends) {
-		for (IPropertyInfo<Decimal> item : addends) {
+	public final void setAddends(IPropertyInfo<BigDecimal>[] addends) {
+		for (IPropertyInfo<BigDecimal> item : addends) {
 			this.getAddends().add(item);
 		}
 	}
 
-	public final void setAddends(Iterable<IPropertyInfo<Decimal>> addends) {
-		for (IPropertyInfo<Decimal> item : addends) {
+	public final void setAddends(Iterable<IPropertyInfo<BigDecimal>> addends) {
+		for (IPropertyInfo<BigDecimal> item : addends) {
 			this.getAddends().add(item);
 		}
 	}
 
-	private IPropertyInfo<Decimal> result;
+	private IPropertyInfo<BigDecimal> result;
 
-	public final IPropertyInfo<Decimal> getResult() {
+	public final IPropertyInfo<BigDecimal> getResult() {
 		return result;
 	}
 
-	public final void setResult(IPropertyInfo<Decimal> result) {
+	public final void setResult(IPropertyInfo<BigDecimal> result) {
 		this.result = result;
 	}
 
 	@Override
 	protected void execute(BusinessRuleContext context) throws Exception {
-		Decimal result = Decimal.ZERO;
-		for (IPropertyInfo<Decimal> item : this.getAddends()) {
-			Decimal additive = (Decimal) context.getInputValues().get(item);
-			if (additive == null) {
-				continue;
+		BigDecimal result = Decimal.ZERO;
+		for (IPropertyInfo<BigDecimal> item : this.getAddends()) {
+			Object additive = context.getInputValues().get(item);
+			if (additive instanceof BigDecimal) {
+				result = Decimal.add(result, (BigDecimal) additive);
 			}
-			result = result.add(additive);
 		}
 		context.getOutputValues().put(this.getResult(), result);
 	}

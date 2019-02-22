@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.db;
 
+import java.math.BigDecimal;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
@@ -31,7 +32,6 @@ import org.colorcoding.ibas.bobas.core.fields.IFieldDataDbs;
 import org.colorcoding.ibas.bobas.core.fields.IManagedFields;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.mapping.DbField;
@@ -613,7 +613,7 @@ public abstract class BOAdapter implements IBOAdapter {
 			fieldData.setValue(reader.getInt(rCol));
 		} else if (fieldData.getValueType() == String.class) {
 			fieldData.setValue(reader.getString(rCol));
-		} else if (fieldData.getValueType() == Decimal.class) {
+		} else if (fieldData.getValueType() == BigDecimal.class) {
 			fieldData.setValue(reader.getDecimal(rCol));
 		} else if (fieldData.getValueType() == Double.class) {
 			fieldData.setValue(reader.getDouble(rCol));
@@ -635,8 +635,7 @@ public abstract class BOAdapter implements IBOAdapter {
 	}
 
 	@Override
-	public IBusinessObjectBase[] parseBOs(IDbDataReader reader, IBusinessObjectsBase<?> bos)
-			throws ParsingException {
+	public IBusinessObjectBase[] parseBOs(IDbDataReader reader, IBusinessObjectsBase<?> bos) throws ParsingException {
 		if (reader == null) {
 			throw new ParsingException(I18N.prop("msg_bobas_invaild_data_reader"));
 		}

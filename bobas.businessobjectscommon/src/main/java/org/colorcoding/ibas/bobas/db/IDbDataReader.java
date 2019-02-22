@@ -1,16 +1,17 @@
 package org.colorcoding.ibas.bobas.db;
 
+import java.math.BigDecimal;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.IDataTable;
 
 /**
  * 数据库数据读取
  */
 public interface IDbDataReader {
+
 	/**
 	 * 转换为数据表
 	 */
@@ -168,7 +169,7 @@ public interface IDbDataReader {
 	 * @return
 	 * @throws DbException
 	 */
-	Decimal getDecimal(int columnIndex) throws DbException;
+	BigDecimal getDecimal(int columnIndex) throws DbException;
 
 	/**
 	 * 获取值
@@ -177,7 +178,7 @@ public interface IDbDataReader {
 	 * @return
 	 * @throws DbException
 	 */
-	Decimal getDecimal(String columnLabel) throws DbException;
+	BigDecimal getDecimal(String columnLabel) throws DbException;
 
 	/**
 	 * 获取值

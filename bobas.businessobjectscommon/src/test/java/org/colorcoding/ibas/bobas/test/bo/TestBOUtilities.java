@@ -1,9 +1,10 @@
 package org.colorcoding.ibas.bobas.test.bo;
 
+import java.math.BigDecimal;
+
 import org.colorcoding.ibas.bobas.bo.BOException;
 import org.colorcoding.ibas.bobas.bo.BOUtilities;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.measurement.Time;
 import org.colorcoding.ibas.bobas.data.measurement.emTimeUnit;
@@ -20,7 +21,7 @@ public class TestBOUtilities extends TestCase {
 		order.setCustomerCode("C00001");
 		order.setDeliveryDate(DateTime.getToday());
 		order.setDocumentStatus(emDocumentStatus.RELEASED);
-		order.setDocumentTotal(new Decimal("99.99"));
+		order.setDocumentTotal(new BigDecimal("99.99"));
 		order.setDocumentUser(new User());
 		order.setTeamUsers(new User[] { new User(), new User() });
 		order.setCycle(new Time(1.05, emTimeUnit.HOUR));
@@ -34,12 +35,12 @@ public class TestBOUtilities extends TestCase {
 		order.getUserFields().get("U_OrderType").setValue("S0000");
 		order.getUserFields().get("U_OrderId").setValue(5768);
 		order.getUserFields().get("U_OrderDate").setValue(DateTime.getToday());
-		order.getUserFields().get("U_OrderTotal").setValue(new Decimal("999.888"));
+		order.getUserFields().get("U_OrderTotal").setValue(new BigDecimal("999.888"));
 
 		ISalesOrderItem orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00001");
-		orderItem.setQuantity(new Decimal(10));
-		orderItem.setPrice(new Decimal(99.99));
+		orderItem.setQuantity(new BigDecimal(10));
+		orderItem.setPrice(BigDecimal.valueOf(99.99));
 		((SalesOrderItem) orderItem).getUserFields().register("U_LineType", DbFieldType.ALPHANUMERIC);
 		((SalesOrderItem) orderItem).getUserFields().get("U_LineType").setValue("L0000");
 

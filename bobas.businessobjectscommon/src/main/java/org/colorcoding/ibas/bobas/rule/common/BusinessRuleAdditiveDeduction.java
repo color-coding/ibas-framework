@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.rule.common;
 
+import java.math.BigDecimal;
+
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.i18n.I18N;
@@ -24,8 +26,8 @@ public class BusinessRuleAdditiveDeduction extends BusinessRuleCommon {
 	 * @param addend 属性-加数
 	 * @param result 属性-结果
 	 */
-	public BusinessRuleAdditiveDeduction(IPropertyInfo<Decimal> augend, IPropertyInfo<Decimal> addend,
-			IPropertyInfo<Decimal> result) {
+	public BusinessRuleAdditiveDeduction(IPropertyInfo<BigDecimal> augend, IPropertyInfo<BigDecimal> addend,
+			IPropertyInfo<BigDecimal> result) {
 		this();
 		this.setAugend(augend);
 		this.setAddend(addend);
@@ -39,61 +41,61 @@ public class BusinessRuleAdditiveDeduction extends BusinessRuleCommon {
 		this.getAffectedProperties().add(this.getAddend());
 	}
 
-	private IPropertyInfo<Decimal> augend;
+	private IPropertyInfo<BigDecimal> augend;
 
-	public final IPropertyInfo<Decimal> getAugend() {
+	public final IPropertyInfo<BigDecimal> getAugend() {
 		return augend;
 	}
 
-	public final void setAugend(IPropertyInfo<Decimal> augend) {
+	public final void setAugend(IPropertyInfo<BigDecimal> augend) {
 		this.augend = augend;
 	}
 
-	private IPropertyInfo<Decimal> addend;
+	private IPropertyInfo<BigDecimal> addend;
 
-	public final IPropertyInfo<Decimal> getAddend() {
+	public final IPropertyInfo<BigDecimal> getAddend() {
 		return addend;
 	}
 
-	public final void setAddend(IPropertyInfo<Decimal> addend) {
+	public final void setAddend(IPropertyInfo<BigDecimal> addend) {
 		this.addend = addend;
 	}
 
-	private IPropertyInfo<Decimal> result;
+	private IPropertyInfo<BigDecimal> result;
 
-	public final IPropertyInfo<Decimal> getResult() {
+	public final IPropertyInfo<BigDecimal> getResult() {
 		return result;
 	}
 
-	public final void setResult(IPropertyInfo<Decimal> result) {
+	public final void setResult(IPropertyInfo<BigDecimal> result) {
 		this.result = result;
 	}
 
 	@Override
 	protected void execute(BusinessRuleContext context) throws Exception {
-		Decimal augend = (Decimal) context.getInputValues().get(this.getAugend());
+		BigDecimal augend = (BigDecimal) context.getInputValues().get(this.getAugend());
 		if (augend == null) {
 			augend = Decimal.ZERO;
 		}
-		Decimal addend = (Decimal) context.getInputValues().get(this.getAddend());
+		BigDecimal addend = (BigDecimal) context.getInputValues().get(this.getAddend());
 		if (addend == null) {
 			addend = Decimal.ZERO;
 		}
-		Decimal result = (Decimal) context.getInputValues().get(this.getResult());
+		BigDecimal result = (BigDecimal) context.getInputValues().get(this.getResult());
 		if (result == null) {
 			result = Decimal.ZERO;
 		}
-		if (augend.isZero()) {
+		if (Decimal.isZero(augend)) {
 			context.getOutputValues().put(this.getResult(), addend);
 			return;
 		}
-		if (!addend.isZero() && result.isZero()) {
+		if (!Decimal.isZero(addend) && Decimal.isZero(result)) {
 			// 结果 = 加数 + 被加数
-			result = addend.add(augend);
+			result = Decimal.add(addend, augend);
 			context.getOutputValues().put(this.getResult(), result);
-		} else if (addend.isZero() && !result.isZero()) {
+		} else if (Decimal.isZero(addend) && !Decimal.isZero(result)) {
 			// 加数 = 结果 - 被加数
-			addend = result.subtract(augend);
+			addend = Decimal.subtract(result, augend);
 			context.getOutputValues().put(this.getAddend(), addend);
 		}
 	}

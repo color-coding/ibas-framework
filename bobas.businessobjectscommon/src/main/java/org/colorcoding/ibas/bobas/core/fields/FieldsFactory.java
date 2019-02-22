@@ -1,11 +1,12 @@
 package org.colorcoding.ibas.bobas.core.fields;
 
+import java.math.BigDecimal;
+
 import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
 import org.colorcoding.ibas.bobas.core.IBusinessObjectsBase;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.core.PropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.mapping.AssociationMode;
 import org.colorcoding.ibas.bobas.mapping.Associations;
@@ -36,7 +37,7 @@ public class FieldsFactory {
 			return new FieldDataInteger(type);
 		} else if (type == String.class) {
 			return new FieldDataString(type);
-		} else if (type == Decimal.class || type == java.math.BigDecimal.class) {
+		} else if (type == BigDecimal.class) {
 			return new FieldDataDecimal(type);
 		} else if (type == Double.class) {
 			return new FieldDataDouble(type);
@@ -85,7 +86,7 @@ public class FieldsFactory {
 			return new DbFieldDataInteger(type);
 		} else if (type == String.class) {
 			return new DbFieldDataString(type);
-		} else if (type == Decimal.class || type == java.math.BigDecimal.class) {
+		} else if (type == BigDecimal.class) {
 			return new DbFieldDataDecimal(type);
 		} else if (type == Double.class) {
 			return new DbFieldDataDouble(type);

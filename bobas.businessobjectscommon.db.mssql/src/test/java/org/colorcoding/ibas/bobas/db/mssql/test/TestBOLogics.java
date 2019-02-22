@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.db.mssql.test;
 
+import java.math.BigDecimal;
+
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
@@ -22,7 +24,6 @@ import junit.framework.TestCase;
 public class TestBOLogics extends TestCase {
 
 	public void testSalesOrderLogics() {
-
 		BORepositoryTest boRepository = new BORepositoryTest();
 
 		String sign = String.valueOf(DateTime.getNow().getTime());
@@ -50,8 +51,8 @@ public class TestBOLogics extends TestCase {
 		ISalesOrderItem orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode(material_1.getItemCode());
 		orderItem.setItemDescription(material_1.getItemDescription());
-		orderItem.setQuantity(new Decimal(2));
-		orderItem.setPrice(new Decimal(99.99));
+		orderItem.setQuantity(new BigDecimal(2));
+		orderItem.setPrice(BigDecimal.valueOf(99.99));
 		orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode(material_2.getItemCode());
 		orderItem.setItemDescription(material_2.getItemDescription());
@@ -306,7 +307,7 @@ public class TestBOLogics extends TestCase {
 		item01.setLineTotal(666.77);
 		System.out.println(String.format("line price %s", item01.getPrice()));
 		assertEquals(Decimal.round(item01.getPrice())
-				.compareTo(Decimal.round(item01.getLineTotal().divide(item01.getQuantity()))) == 0, true);// 注意四舍五入
+				.compareTo(Decimal.divide(item01.getLineTotal(), item01.getQuantity())) == 0, true);// 注意四舍五入
 		operationResult = boRepository.savePurchaseOrder(order);
 		if (operationResult.getResultCode() != 0) {
 			System.err.println(operationResult.getMessage());

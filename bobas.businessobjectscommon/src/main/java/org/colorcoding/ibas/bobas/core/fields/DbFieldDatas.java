@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.core.fields;
 
+import java.math.BigDecimal;
+
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
@@ -158,20 +160,20 @@ class DbFieldDataString extends FieldDataDbBase<String> {
 /**
  * 字段，十进制数值
  */
-class DbFieldDataDecimal extends FieldDataDbBase<Decimal> {
+class DbFieldDataDecimal extends FieldDataDbBase<BigDecimal> {
 
 	public DbFieldDataDecimal(Class<?> valueType) {
 		this.setValueType(valueType);
 	}
 
-	private Decimal value = Decimal.ZERO;
+	private BigDecimal value = Decimal.ZERO;
 
 	@Override
-	public Decimal getValue() {
+	public BigDecimal getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(Decimal value) {
+	public boolean setValue(BigDecimal value) {
 		if (this.value != null && (this.value.equals(value) || this.value.compareTo(value) == 0)) {
 			return false;
 		}
@@ -181,7 +183,7 @@ class DbFieldDataDecimal extends FieldDataDbBase<Decimal> {
 
 	@Override
 	public boolean setValue(Object value) {
-		return this.setValue((Decimal) value);
+		return this.setValue((BigDecimal) value);
 	}
 
 	@Override

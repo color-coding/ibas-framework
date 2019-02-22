@@ -17,7 +17,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 				// 没有添加端口
 				server = String.format("%s:2638", server);
 			}
-			String dbURL = String.format("jdbc:sybase:Tds:%s?ServiceName=%s", server, dbName, applicationName);
+			String dbURL = String.format("jdbc:sybase:Tds:%s?ServiceName=%s", server, dbName);
 			return DriverManager.getConnection(dbURL, userName, userPwd);
 		} catch (Exception e) {
 			// 接数据库失败

@@ -1,12 +1,13 @@
 package org.colorcoding.ibas.bobas.data.measurement;
 
+import java.math.BigDecimal;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.KeyText;
 
 /**
@@ -24,7 +25,7 @@ public class Length extends MeasurementDecimal<emLengthUnit> {
 
 	}
 
-	public Length(Decimal value, emLengthUnit unit) {
+	public Length(BigDecimal value, emLengthUnit unit) {
 		super(value);
 		this.setUnit(unit);
 	}
@@ -65,8 +66,8 @@ public class Length extends MeasurementDecimal<emLengthUnit> {
 	}
 
 	@Override
-	public int compareTo(IMeasurement<Decimal, emLengthUnit> o) {
-		Decimal convertValue = emLengthUnit.convert(this.getUnit(), o.getValue(), o.getUnit());
+	public int compareTo(IMeasurement<BigDecimal, emLengthUnit> o) {
+		BigDecimal convertValue = emLengthUnit.convert(this.getUnit(), o.getValue(), o.getUnit());
 		return this.getValue().compareTo(convertValue);
 	}
 

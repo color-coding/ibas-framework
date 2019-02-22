@@ -53,7 +53,7 @@ class ApprovalProcessRepository extends BORepositoryLogicService {
 	 * @param criteria 条件，需要指定BOCode
 	 * @return
 	 */
-	public <P extends IBusinessObject> OperationResult<P> fetch(ICriteria criteria) {
+	public <P extends IBusinessObject> OperationResult<P> fetchData(ICriteria criteria) {
 		try {
 			// 加载命名空间的类
 			Class<?> boClass = BOFactory.create().getClass(criteria.getBusinessObject());

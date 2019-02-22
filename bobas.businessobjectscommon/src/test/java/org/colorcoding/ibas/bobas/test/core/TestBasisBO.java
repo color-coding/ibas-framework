@@ -1,7 +1,8 @@
 package org.colorcoding.ibas.bobas.test.core;
 
+import java.math.BigDecimal;
+
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 
 import junit.framework.TestCase;
@@ -14,7 +15,7 @@ public class TestBasisBO extends TestCase {
 		order.setCustomerCode("C00001");
 		order.setDocumentDate(DateTime.getToday());
 		order.setDocumentStatus(emDocumentStatus.RELEASED);
-		order.setDocumentTotal(new Decimal("99.99"));
+		order.setDocumentTotal(new BigDecimal("99.99"));
 		order.setActivated(true);
 		order.setSuppler("S00001");
 
