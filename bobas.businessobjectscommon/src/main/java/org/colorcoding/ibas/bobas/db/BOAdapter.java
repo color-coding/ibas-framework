@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.bo.IBOUserFields;
+import org.colorcoding.ibas.bobas.bo.IUserField;
 import org.colorcoding.ibas.bobas.bo.UserField;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.Criteria;
@@ -533,6 +534,7 @@ public abstract class BOAdapter implements IBOAdapter {
 				if (sqlScripts == null) {
 					throw new SqlScriptException(I18N.prop("msg_bobas_invaild_sql_scripts"));
 				}
+				int fieldCount = boFields.length;
 				IBOUserFields uBO = (IBOUserFields) bo;
 				// 开启了用户字段功能
 				for (int i = 0; i < dfIndex.length; i++) {
@@ -542,9 +544,9 @@ public abstract class BOAdapter implements IBOAdapter {
 						if (uBO.getUserFields() != null) {
 							String name = metaData.getColumnName(rCol);
 							if (name != null && name.startsWith(UserField.USER_FIELD_PREFIX_SIGN)) {
-								uBO.getUserFields().register(name,
+								IUserField userField = uBO.getUserFields().register(name,
 										sqlScripts.toDbFieldType(metaData.getColumnTypeName(rCol)));
-								dfIndex[i] = bo.getFields().length - 1;// 记录用户字段编号
+								dfIndex[i] = fieldCount + uBO.getUserFields().indexOf(userField);// 记录用户字段编号
 							}
 						}
 					}

@@ -2,7 +2,6 @@ package org.colorcoding.ibas.bobas.rule;
 
 import java.util.List;
 
-import org.colorcoding.ibas.bobas.bo.IBODescription;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
@@ -58,19 +57,5 @@ public abstract class BusinessRule implements IBusinessRule {
 	@Override
 	public String toString() {
 		return String.format("{business rule: %s}", this.getName());
-	}
-
-	protected String describe(IBusinessObject bo) {
-		String value = null;
-		// 获取业务对象实例的描述
-		if (bo instanceof IBODescription) {
-			IBODescription description = (IBODescription) bo;
-			value = description.getDescription(this);
-		}
-		// 没有描述取默认
-		if (value == null || value.isEmpty()) {
-			value = bo.toString();
-		}
-		return value;
 	}
 }

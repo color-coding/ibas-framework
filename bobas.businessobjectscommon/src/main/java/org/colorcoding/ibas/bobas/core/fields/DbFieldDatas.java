@@ -174,6 +174,9 @@ class DbFieldDataDecimal extends FieldDataDbBase<BigDecimal> {
 	}
 
 	public boolean setValue(BigDecimal value) {
+		if (value == null) {
+			value = Decimal.ZERO;
+		}
 		if (this.value != null && (this.value.equals(value) || this.value.compareTo(value) == 0)) {
 			return false;
 		}
@@ -210,6 +213,9 @@ class DbFieldDataDateTime extends FieldDataDbBase<DateTime> {
 	}
 
 	public boolean setValue(DateTime value) {
+		if (value == null) {
+			value = DateTime.MIN_VALUE;
+		}
 		if (this.value != null && (this.value.equals(value) || this.value.compareTo(value) == 0)) {
 			return false;
 		}

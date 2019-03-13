@@ -33,7 +33,7 @@ public class DbCommand implements IDbCommand {
 			ResultSet resultSet = this.statement.executeQuery(sql);
 			return new DbDataReader(resultSet);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -50,7 +50,7 @@ public class DbCommand implements IDbCommand {
 			this.statement.close();
 			this.statement = null;
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 

@@ -12,7 +12,6 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.core.IBindableBase;
-import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.core.PropertyInfo;
 import org.colorcoding.ibas.bobas.core.PropertyInfoList;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
@@ -90,6 +89,11 @@ class UserFields extends ArrayList<IUserField> implements IUserFields, IBindable
 	}
 
 	@Override
+	public int indexOf(IUserField item) {
+		return super.indexOf(item);
+	}
+
+	@Override
 	public IUserField get(String name) {
 		for (IUserField item : this) {
 			if (item.getName().equals(name)) {
@@ -129,10 +133,8 @@ class UserFields extends ArrayList<IUserField> implements IUserFields, IBindable
 	/**
 	 * 注册用户字段
 	 * 
-	 * @param name
-	 *            名称
-	 * @param valueType
-	 *            值类型
+	 * @param name      名称
+	 * @param valueType 值类型
 	 */
 	public IUserField register(String name, DbFieldType valueType) {
 		UserField userField = UserFieldManager.create(name, valueType);
@@ -157,12 +159,6 @@ class UserFields extends ArrayList<IUserField> implements IUserFields, IBindable
 				propertyInfoList.add(new PropertyInfo<>(item.getName(), userField.getFieldData().getValueType()));
 			}
 		}
-		propertyInfoList.sort(new Comparator<IPropertyInfo<?>>() {
-			@Override
-			public int compare(IPropertyInfo<?> o1, IPropertyInfo<?> o2) {
-				return o1.getName().compareTo(o2.getName());
-			}
-		});
 		UserFieldManager.register(this.parent.getClass(), propertyInfoList);
 	}
 

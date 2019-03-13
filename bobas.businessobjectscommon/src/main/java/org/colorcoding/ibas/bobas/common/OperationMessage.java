@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.common;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -23,6 +24,7 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 @XmlRootElement(name = "OperationMessage", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public class OperationMessage extends Result implements IOperationMessage {
 
+	private static final int ERROR_DEEP = 5;
 	private static final long serialVersionUID = -4506576628874995959L;
 
 	public OperationMessage() {
@@ -107,11 +109,31 @@ public class OperationMessage extends Result implements IOperationMessage {
 				this.setResultCode(-1);
 			}
 			if (this.getMessage() == null || this.getMessage().isEmpty()) {
-				String message = this.error.getMessage();
-				if (message == null) {
-					this.setMessage(this.error.getClass().getName());
+				Throwable error = this.error;
+				ArrayList<String> errMessages = new ArrayList<>(ERROR_DEEP);
+				while (error != null && errMessages.size() <= ERROR_DEEP) {
+					errMessages.add(error.getMessage());
+					error = error.getCause();
+				}
+				StringBuilder stringBuilder = new StringBuilder();
+				for (int i = 0; i < errMessages.size(); i++) {
+					String message = errMessages.get(i);
+					if (message == null) {
+						continue;
+					}
+					int next = i + 1;
+					if (next < errMessages.size()) {
+						String nMessage = errMessages.get(next);
+						if (nMessage != null && !nMessage.isEmpty() && message.endsWith(nMessage)) {
+							continue;
+						}
+					}
+					stringBuilder.append(message);
+				}
+				if (stringBuilder.length() > 0) {
+					this.setMessage(stringBuilder.toString());
 				} else {
-					this.setMessage(String.format("%s: %s", this.error.getClass().getName(), this.error.getMessage()));
+					this.setMessage(this.error.getClass().getName());
 				}
 			}
 		}

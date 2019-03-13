@@ -288,15 +288,9 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 		}
 		// 处理用户字段
 		IFieldData[] allFieldDatas = new IFieldData[boFieldDatas.length + this.userFields.size()];
-		int i = 0;
-		for (IFieldData iFieldData : boFieldDatas) {
-			allFieldDatas[i] = iFieldData;
-			i++;
-		}
-		for (IFieldData iFieldData : this.userFields.getFields()) {
-			allFieldDatas[i] = iFieldData;
-			i++;
-		}
+		System.arraycopy(boFieldDatas, 0, allFieldDatas, 0, boFieldDatas.length);
+		System.arraycopy(this.userFields.getFields(), 0, allFieldDatas, boFieldDatas.length,
+				this.userFields.getFields().length);
 		return allFieldDatas;
 	}
 

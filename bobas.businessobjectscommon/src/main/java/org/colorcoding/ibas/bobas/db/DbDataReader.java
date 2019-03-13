@@ -35,7 +35,7 @@ public class DbDataReader implements IDbDataReader {
 			this.resultSet.close();
 			this.resultSet = null;
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -44,7 +44,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getRow();
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -53,7 +53,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getMetaData().getColumnCount();
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -62,7 +62,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getMetaData();
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -71,7 +71,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.isClosed();
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -80,7 +80,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.isBeforeFirst();
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -89,7 +89,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.isFirst();
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -98,7 +98,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.isLast();
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -107,7 +107,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.last();
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -116,7 +116,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.next();
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -125,7 +125,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.previous();
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -134,7 +134,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			this.resultSet.setFetchSize(rows);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -143,7 +143,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getFetchSize();
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -152,7 +152,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.absolute(row);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -161,7 +161,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.findColumn(columnLabel);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -170,7 +170,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.first();
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -179,7 +179,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getBoolean(columnIndex);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -188,7 +188,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getBoolean(columnLabel);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -197,7 +197,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getBytes(columnIndex);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -206,7 +206,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getBytes(columnLabel);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -215,7 +215,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getDouble(columnIndex);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -224,7 +224,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getDouble(columnLabel);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -233,7 +233,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getFloat(columnIndex);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -242,7 +242,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getFloat(columnLabel);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -251,7 +251,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getInt(columnIndex);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -260,7 +260,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getInt(columnLabel);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -269,7 +269,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getLong(columnIndex);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -278,7 +278,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getLong(columnLabel);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -287,7 +287,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getShort(columnIndex);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -296,7 +296,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getShort(columnLabel);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -305,7 +305,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getString(columnIndex);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -314,7 +314,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getString(columnLabel);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -325,7 +325,7 @@ public class DbDataReader implements IDbDataReader {
 		} catch (NullPointerException e) {
 			return DateTime.MIN_VALUE;
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -336,7 +336,7 @@ public class DbDataReader implements IDbDataReader {
 		} catch (NullPointerException e) {
 			return DateTime.MIN_VALUE;
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -347,7 +347,7 @@ public class DbDataReader implements IDbDataReader {
 		} catch (NullPointerException e) {
 			return Decimal.ZERO;
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -358,7 +358,7 @@ public class DbDataReader implements IDbDataReader {
 		} catch (NullPointerException e) {
 			return Decimal.ZERO;
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -367,7 +367,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getObject(columnIndex);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -376,7 +376,7 @@ public class DbDataReader implements IDbDataReader {
 		try {
 			return this.resultSet.getObject(columnLabel);
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 
@@ -411,7 +411,7 @@ public class DbDataReader implements IDbDataReader {
 			}
 			return dataTable;
 		} catch (Exception e) {
-			throw new DbException(e.getMessage(), e);
+			throw new DbException(e);
 		}
 	}
 

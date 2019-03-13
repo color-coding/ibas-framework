@@ -13,8 +13,7 @@ public interface IUserFields extends Iterable<IUserField> {
 	/**
 	 * 获取用户字段
 	 * 
-	 * @param name
-	 *            名称
+	 * @param name 名称
 	 * @return
 	 */
 	IUserField get(String name);
@@ -22,8 +21,7 @@ public interface IUserFields extends Iterable<IUserField> {
 	/**
 	 * 获取用户字段
 	 * 
-	 * @param index
-	 *            索引
+	 * @param index 索引
 	 * @return
 	 */
 	IUserField get(int index);
@@ -31,10 +29,8 @@ public interface IUserFields extends Iterable<IUserField> {
 	/**
 	 * 注册用户字段
 	 * 
-	 * @param name
-	 *            名称
-	 * @param type
-	 *            值类型
+	 * @param name 名称
+	 * @param type 值类型
 	 * @return
 	 */
 	IUserField register(String name, DbFieldType valueType);
@@ -50,4 +46,12 @@ public interface IUserFields extends Iterable<IUserField> {
 	 * @return
 	 */
 	int size();
+
+	/**
+	 * 获取索引
+	 * 
+	 * @param item 对象
+	 * @return
+	 */
+	int indexOf(IUserField item);
 }

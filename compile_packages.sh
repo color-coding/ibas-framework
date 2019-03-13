@@ -38,7 +38,7 @@ while read line
 do
   if [ -e ${WORK_FOLDER}/${line}/pom.xml ]
   then
-    isService=`echo ${line}|grep '.service'|wc -l`
+    isService=`echo ${line}|grep '.service$'|wc -l`
     if [ ${isService} != 0 ]
     then
       # 网站，编译war包

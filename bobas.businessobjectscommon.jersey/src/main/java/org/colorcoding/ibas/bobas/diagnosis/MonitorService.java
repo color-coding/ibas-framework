@@ -42,7 +42,7 @@ public class MonitorService {
 				throw new InvalidTokenException(I18N.prop("msg_bobas_no_user_match_the_token"));
 			}
 		} catch (Exception e) {
-			throw new InvalidTokenException(e.getMessage(), e);
+			throw new InvalidTokenException(e);
 		}
 	}
 
