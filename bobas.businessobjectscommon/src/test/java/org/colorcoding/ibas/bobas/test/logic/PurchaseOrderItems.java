@@ -55,8 +55,8 @@ public class PurchaseOrderItems extends BusinessObjects<PurchaseOrderItem, Purch
 	}
 
 	@Override
-	protected void onElementPropertyChanged(PropertyChangeEvent evt) {
-		super.onElementPropertyChanged(evt);
+	protected void onItemPropertyChanged(PropertyChangeEvent evt) {
+		super.onItemPropertyChanged(evt);
 	}
 
 	@Override

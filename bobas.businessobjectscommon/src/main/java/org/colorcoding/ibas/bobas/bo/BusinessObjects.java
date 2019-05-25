@@ -43,7 +43,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 	private PropertyChangeListener propertyListener = new _PropertyChangeListener<>(this);
 
 	public BusinessObjects() {
-		this.setChangeElementStatus(true);
+		this.setChangeItemStatus(true);
 		// 监听自身改变事件
 		this.registerListener(this.propertyListener);
 	}
@@ -53,19 +53,19 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		this.setParent(parent);
 	}
 
-	private boolean changeElementStatus;
+	private boolean changeItemStatus;
 
 	/**
 	 * 是否自动改变子项状态，父项变化
 	 * 
 	 * @return
 	 */
-	protected final boolean isChangeElementStatus() {
-		return changeElementStatus;
+	protected final boolean isChangeItemStatus() {
+		return changeItemStatus;
 	}
 
-	protected final void setChangeElementStatus(boolean value) {
-		this.changeElementStatus = value;
+	protected final void setChangeItemStatus(boolean value) {
+		this.changeItemStatus = value;
 	}
 
 	private P parent = null;
@@ -271,8 +271,8 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 			return;
 		}
 		// 状态变化
-		if (this.isChangeElementStatus()) {
-			this.changeElementStatus(evt);
+		if (this.isChangeItemStatus()) {
+			this.changeItemStatus(evt);
 		}
 	}
 
@@ -281,7 +281,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 	 * 
 	 * @param evt
 	 */
-	protected void onElementPropertyChanged(PropertyChangeEvent evt) {
+	protected void onItemPropertyChanged(PropertyChangeEvent evt) {
 	}
 
 	/**
@@ -289,7 +289,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 	 * 
 	 * @param evt
 	 */
-	private void changeElementStatus(PropertyChangeEvent evt) {
+	private void changeItemStatus(PropertyChangeEvent evt) {
 		// 父项的属性改变
 		// 可取消对象
 		if (evt.getPropertyName().equals("Canceled")) {
@@ -474,7 +474,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 					}
 				} else {
 					if (this.source.getParent() != null && !this.source.getParent().isLoading()) {
-						this.source.onElementPropertyChanged(evt);
+						this.source.onItemPropertyChanged(evt);
 					}
 				}
 				// 集合数量发生变化，运行集合业务规则
