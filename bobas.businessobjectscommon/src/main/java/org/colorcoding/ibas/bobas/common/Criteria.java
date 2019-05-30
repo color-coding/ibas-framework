@@ -462,12 +462,11 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 				continue;
 			}
 			PropertyInfo<?> propertyInfo = (PropertyInfo<?>) item;
-			Object annotation = propertyInfo.getAnnotation(DbField.class);
-			if (!(annotation instanceof DbField)) {
+			DbField dbField = propertyInfo.getAnnotation(DbField.class);
+			if (dbField == null) {
 				continue;
 			}
 			// 绑定数据库的字段
-			DbField dbField = (DbField) annotation;
 			if (dbField.name() == null || dbField.name().isEmpty()) {
 				continue;
 			}

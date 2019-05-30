@@ -9,7 +9,7 @@ import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
-import org.colorcoding.ibas.bobas.mapping.BOCode;
+import org.colorcoding.ibas.bobas.mapping.BusinessObjectUnit;
 import org.colorcoding.ibas.bobas.mapping.DbField;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
@@ -19,7 +19,7 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
  */
 @XmlType(name = User.BUSINESS_OBJECT_NAME)
 @XmlRootElement(name = User.BUSINESS_OBJECT_NAME)
-@BOCode(User.BUSINESS_OBJECT_CODE)
+@BusinessObjectUnit(code = User.BUSINESS_OBJECT_CODE)
 public class User extends BusinessObject<User> implements IUser {
 
 	/**
@@ -72,8 +72,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-编码
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setUserCode(String value) {
 		this.setProperty(PROPERTY_USERCODE, value);
@@ -104,8 +103,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-名称
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setUserName(String value) {
 		this.setProperty(PROPERTY_USERNAME, value);
@@ -136,8 +134,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-用户密码
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setUserPassword(String value) {
 		this.setProperty(PROPERTY_USERPASSWORD, value);
@@ -168,8 +165,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-激活
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setActivated(emYesNo value) {
 		this.setProperty(PROPERTY_ACTIVATED, value);
@@ -200,8 +196,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-超级用户
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setSupperUser(emYesNo value) {
 		this.setProperty(PROPERTY_SUPPERUSER, value);
@@ -232,8 +227,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-电子邮件地址
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void seteMail(String value) {
 		this.setProperty(PROPERTY_EMAIL, value);
@@ -264,8 +258,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-对象编号
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setObjectKey(Integer value) {
 		this.setProperty(PROPERTY_OBJECTKEY, value);
@@ -296,8 +289,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-对象类型
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setObjectCode(String value) {
 		this.setProperty(PROPERTY_OBJECTCODE, value);
@@ -328,8 +320,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-创建日期
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCreateDate(DateTime value) {
 		this.setProperty(PROPERTY_CREATEDATE, value);
@@ -360,8 +351,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-创建时间
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCreateTime(Short value) {
 		this.setProperty(PROPERTY_CREATETIME, value);
@@ -392,8 +382,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-修改日期
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setUpdateDate(DateTime value) {
 		this.setProperty(PROPERTY_UPDATEDATE, value);
@@ -424,8 +413,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-修改时间
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setUpdateTime(Short value) {
 		this.setProperty(PROPERTY_UPDATETIME, value);
@@ -456,8 +444,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-数据源
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDataSource(String value) {
 		this.setProperty(PROPERTY_DATASOURCE, value);
@@ -488,8 +475,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-实例号（版本）
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setLogInst(Integer value) {
 		this.setProperty(PROPERTY_LOGINST, value);
@@ -520,8 +506,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-服务系列
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setSeries(Integer value) {
 		this.setProperty(PROPERTY_SERIES, value);
@@ -552,8 +537,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-创建用户
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCreateUserSign(Integer value) {
 		this.setProperty(PROPERTY_CREATEUSERSIGN, value);
@@ -584,8 +568,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-修改用户
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setUpdateUserSign(Integer value) {
 		this.setProperty(PROPERTY_UPDATEUSERSIGN, value);
@@ -616,8 +599,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-创建动作标识
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setCreateActionId(String value) {
 		this.setProperty(PROPERTY_CREATEACTIONID, value);
@@ -648,8 +630,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-更新动作标识
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setUpdateActionId(String value) {
 		this.setProperty(PROPERTY_UPDATEACTIONID, value);
@@ -680,8 +661,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-审批状态
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setApprovalStatus(emApprovalStatus value) {
 		this.setProperty(PROPERTY_APPROVALSTATUS, value);
@@ -712,8 +692,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-数据所有者
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setDataOwner(Integer value) {
 		this.setProperty(PROPERTY_DATAOWNER, value);
@@ -744,8 +723,7 @@ public class User extends BusinessObject<User> implements IUser {
 	/**
 	 * 设置-数据所属组织
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	public final void setOrganization(String value) {
 		this.setProperty(PROPERTY_ORGANIZATION, value);

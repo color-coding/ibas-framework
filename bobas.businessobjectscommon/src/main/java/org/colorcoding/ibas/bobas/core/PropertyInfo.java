@@ -56,13 +56,14 @@ public class PropertyInfo<P> implements IPropertyInfo<P> {
 
 	private List<Annotation> annotations = null;
 
-	public Annotation getAnnotation(Class<?> type) {
+	@SuppressWarnings("unchecked")
+	public <A extends Annotation> A getAnnotation(Class<A> type) {
 		if (this.annotations == null) {
 			return null;
 		}
 		for (Annotation annotation : this.annotations) {
-			if (annotation.annotationType() == type) {
-				return annotation;
+			if (annotation.annotationType().equals(type)) {
+				return (A) annotation;
 			}
 		}
 		return null;
@@ -79,11 +80,14 @@ public class PropertyInfo<P> implements IPropertyInfo<P> {
 	}
 
 	public void addAnnotation(Annotation[] items) {
-		if (items == null) {
+		if (items == null || items.length == 0) {
 			return;
 		}
+		if (this.annotations == null) {
+			this.annotations = new ArrayList<Annotation>(items.length);
+		}
 		for (Annotation item : items) {
-			this.addAnnotation(item);
+			this.annotations.add(item);
 		}
 	}
 

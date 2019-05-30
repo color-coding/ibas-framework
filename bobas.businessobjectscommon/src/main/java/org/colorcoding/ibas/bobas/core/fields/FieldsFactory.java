@@ -108,39 +108,35 @@ public class FieldsFactory {
 	}
 
 	public IFieldData create(IPropertyInfo<?> property) throws NotSupportTypeException {
-		IFieldData fieldData = null;
 		PropertyInfo<?> cProperty = (PropertyInfo<?>) property;
-		Object dbAnnotation = cProperty.getAnnotation(DbField.class);
-		Object assoAnnotation = cProperty.getAnnotation(Associations.class);
-		Object cmplAnnotation = cProperty.getAnnotation(ComplexField.class);
-		if (dbAnnotation != null) {
+		DbField dbField = cProperty.getAnnotation(DbField.class);
+		if (dbField != null) {
 			// 数据库字段
-			DbField dbField = (DbField) dbAnnotation;
-			FieldDataDbBase<?> tmpFieldData = this.createDbField(property.getValueType());
-			tmpFieldData.mapping(cProperty);
-			tmpFieldData.mapping(dbField);
-			fieldData = tmpFieldData;
-		} else if (assoAnnotation != null) {
-			// 关联字段
-			Associations associations = (Associations) assoAnnotation;
-			AssociatedFieldDataBase<?> tmpFieldData = this.createAssociatedField(associations.mode(),
-					associations.value().length);
-			tmpFieldData.mapping(cProperty);
-			tmpFieldData.mapping(associations);
-			fieldData = tmpFieldData;
-		} else if (cmplAnnotation != null) {
-			// 复合字段
-			ComplexField complexField = (ComplexField) cmplAnnotation;
-			ComplexFieldDataBase<?> tmpFieldData = this.createComplexField(complexField.type());
-			tmpFieldData.mapping(cProperty);
-			tmpFieldData.mapping(complexField);
-			fieldData = tmpFieldData;
-		} else {
-			// 普通字段
-			FieldDataBase<?> tmpFieldData = this.createField(cProperty.getValueType());
-			tmpFieldData.mapping(cProperty);
-			fieldData = tmpFieldData;
+			FieldDataDbBase<?> fieldData = this.createDbField(property.getValueType());
+			fieldData.mapping(cProperty);
+			fieldData.mapping(dbField);
+			return fieldData;
 		}
+		Associations associations = cProperty.getAnnotation(Associations.class);
+		if (associations != null) {
+			// 关联字段
+			AssociatedFieldDataBase<?> fieldData = this.createAssociatedField(associations.mode(),
+					associations.value().length);
+			fieldData.mapping(cProperty);
+			fieldData.mapping(associations);
+			return fieldData;
+		}
+		ComplexField complexField = cProperty.getAnnotation(ComplexField.class);
+		if (complexField != null) {
+			// 复合字段
+			ComplexFieldDataBase<?> fieldData = this.createComplexField(complexField.type());
+			fieldData.mapping(cProperty);
+			fieldData.mapping(complexField);
+			return fieldData;
+		}
+		// 普通字段
+		FieldDataBase<?> fieldData = this.createField(cProperty.getValueType());
+		fieldData.mapping(cProperty);
 		return fieldData;
 	}
 }

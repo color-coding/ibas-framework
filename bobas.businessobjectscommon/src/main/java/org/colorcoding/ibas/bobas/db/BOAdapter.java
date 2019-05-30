@@ -415,12 +415,10 @@ public abstract class BOAdapter implements IBOAdapter {
 			if (cProperty.getName() == null || cProperty.getName().isEmpty()) {
 				continue;
 			}
-			Object annotation = cProperty.getAnnotation(DbField.class);
-			if (annotation == null) {
+			DbField dbField = cProperty.getAnnotation(DbField.class);
+			if (dbField == null) {
 				continue;
 			}
-			// 绑定数据库的字段
-			DbField dbField = (DbField) annotation;
 			if (dbField.name() == null || dbField.name().isEmpty()) {
 				continue;
 			}

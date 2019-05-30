@@ -182,6 +182,11 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 				// 有结果数量约束
 				dataFull = false;
 			}
+			IOwnershipJudger ownershipJudger = this.getOwnershipJudger();
+			// 系统用户不受权限控制
+			if (this.getCurrentUser() == OrganizationFactory.SYSTEM_USER) {
+				ownershipJudger = null;
+			}
 			do {
 				// 循环查询数据，直至填满或没有新的数据
 				IOperationResult<P> opRslt = super.fetch(boRepository, criteria, boType);
@@ -190,10 +195,10 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 					throw opRslt.getError();
 				}
 				fetchCount += opRslt.getResultObjects().size();
-				if (this.getOwnershipJudger() != null && this.getCurrentUser() != OrganizationFactory.SYSTEM_USER) {
+				if (ownershipJudger != null) {
 					// 数据权限过滤，系统用户不考虑权限
 					for (Object item : opRslt.getResultObjects()) {
-						if ((item instanceof IDataOwnership)) {
+						if (item instanceof IDataOwnership) {
 							// 有继承数据权限
 							if (!this.getOwnershipJudger().canRead((IDataOwnership) item, this.getCurrentUser())) {
 								// 没读取权限，过滤数量加1

@@ -1,6 +1,5 @@
 package org.colorcoding.ibas.bobas.logic;
 
-import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
@@ -97,15 +96,15 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 			Class<?>[] packClass = BOFactory.create().loadClasses(contract.getPackage().getName());
 			for (Class<?> item : packClass) {
 				// 检查是否标记契约
-				Annotation annotation = item.getAnnotation(LogicContract.class);
+				LogicContract annotation = item.getAnnotation(LogicContract.class);
 				if (annotation != null) {
 					// 检查是否有效（派生自BusinessLogic）
 					Class<?> tmpClass = item;
 					while (tmpClass != null) {
 						if (tmpClass.equals(BusinessLogic.class)) {
 							// 有效的业务逻辑类
-							this.getLogicClasses().put(((LogicContract) annotation).value(), item);
-							if (logicClass == null && contract.equals(((LogicContract) annotation).value())) {
+							this.getLogicClasses().put(annotation.value(), item);
+							if (logicClass == null && contract.equals(annotation.value())) {
 								logicClass = item;
 							}
 							break;

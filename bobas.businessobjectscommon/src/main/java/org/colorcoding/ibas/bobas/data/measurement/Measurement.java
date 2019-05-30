@@ -2,7 +2,6 @@ package org.colorcoding.ibas.bobas.data.measurement;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -79,10 +78,9 @@ public abstract class Measurement<V, U> extends Number implements IMeasurement<V
 		}
 		ArrayList<KeyText> keyTexts = new ArrayList<KeyText>();
 		for (Field field : type.getDeclaredFields()) {
-			Annotation annotation = field.getAnnotation(Value.class);
+			Value annotation = field.getAnnotation(Value.class);
 			if (annotation != null) {
-				Value aValue = (Value) annotation;
-				keyTexts.add(new KeyText(field.getName(), aValue.value()));
+				keyTexts.add(new KeyText(field.getName(), annotation.value()));
 			}
 		}
 		return keyTexts.toArray(new KeyText[] {});

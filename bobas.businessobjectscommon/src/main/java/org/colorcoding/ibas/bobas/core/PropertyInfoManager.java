@@ -27,10 +27,8 @@ public class PropertyInfoManager {
 	/**
 	 * 注册属性
 	 * 
-	 * @param boType
-	 *            所属类型
-	 * @param property
-	 *            属性
+	 * @param boType   所属类型
+	 * @param property 属性
 	 */
 	public static void registerProperty(Class<?> boType, PropertyInfo<?> property) {
 		// Logger.log(MessageLevel.DEBUG, MSG_PROPERTIES_REGISTER_PROPERTIES,
@@ -66,7 +64,7 @@ public class PropertyInfoManager {
 					property.addAnnotation(pField.getAnnotations());
 				}
 			} catch (Exception e2) {
-				Logger.log(e);
+				Logger.log(e2);
 			}
 		} catch (Exception e) {
 			Logger.log(e);
@@ -76,12 +74,9 @@ public class PropertyInfoManager {
 	/**
 	 * 注册属性
 	 * 
-	 * @param boType
-	 *            所属类型
-	 * @param name
-	 *            属性名称
-	 * @param type
-	 *            属性类型
+	 * @param boType 所属类型
+	 * @param name   属性名称
+	 * @param type   属性类型
 	 * @return
 	 */
 	public static <P> IPropertyInfo<P> registerProperty(Class<?> boType, String name, Class<P> type) {
@@ -93,14 +88,10 @@ public class PropertyInfoManager {
 	/**
 	 * 注册属性
 	 * 
-	 * @param boType
-	 *            所属类型
-	 * @param name
-	 *            属性名称
-	 * @param type
-	 *            属性类型
-	 * @param defaultValue
-	 *            属性默认值
+	 * @param boType       所属类型
+	 * @param name         属性名称
+	 * @param type         属性类型
+	 * @param defaultValue 属性默认值
 	 * @return
 	 */
 	public static <P> IPropertyInfo<P> registerProperty(Class<?> boType, String name, Class<P> type, P defaultValue) {
@@ -113,8 +104,7 @@ public class PropertyInfoManager {
 	/**
 	 * 获取属性列表（包含父项类型）
 	 * 
-	 * @param boType
-	 *            获取的对象类型
+	 * @param boType 获取的对象类型
 	 * @return
 	 */
 	public static IPropertyInfo<?>[] recursePropertyInfos(Class<?> boType) {
@@ -146,8 +136,7 @@ public class PropertyInfoManager {
 	/**
 	 * 获取属性列表
 	 * 
-	 * @param boType
-	 *            类型
+	 * @param boType 类型
 	 * @return 类型的属性列表
 	 * @throws NotRegisterTypeException
 	 */
@@ -181,8 +170,7 @@ public class PropertyInfoManager {
 	/**
 	 * 注册类型的属性
 	 * 
-	 * @param boType
-	 *            类型
+	 * @param boType 类型
 	 * @return 是否注册成功
 	 */
 	public static boolean registerClass(Class<?> boType) {
@@ -192,8 +180,7 @@ public class PropertyInfoManager {
 	/**
 	 * 注册类型的属性
 	 * 
-	 * @param className
-	 *            类型名称
+	 * @param className 类型名称
 	 * @return 是否注册成功
 	 */
 	public static boolean registerClass(String className) {

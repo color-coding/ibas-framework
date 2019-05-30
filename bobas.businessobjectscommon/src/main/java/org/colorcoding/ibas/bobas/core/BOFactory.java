@@ -3,7 +3,6 @@ package org.colorcoding.ibas.bobas.core;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.JarURLConnection;
 import java.net.URL;
@@ -20,6 +19,7 @@ import java.util.jar.JarFile;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.mapping.BOCode;
+import org.colorcoding.ibas.bobas.mapping.BusinessObjectUnit;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
 
@@ -242,9 +242,13 @@ public class BOFactory implements IBOFactory {
 		if (type == null) {
 			return null;
 		}
-		Annotation annotation = type.getAnnotation(BOCode.class);
-		if (annotation != null) {
-			return MyConfiguration.applyVariables(((BOCode) annotation).value());
+		BusinessObjectUnit businessObjectUnit = type.getAnnotation(BusinessObjectUnit.class);
+		if (businessObjectUnit != null) {
+			return MyConfiguration.applyVariables(businessObjectUnit.code());
+		}
+		BOCode boCode = type.getAnnotation(BOCode.class);
+		if (boCode != null) {
+			return MyConfiguration.applyVariables(boCode.value());
 		}
 		return null;
 	}

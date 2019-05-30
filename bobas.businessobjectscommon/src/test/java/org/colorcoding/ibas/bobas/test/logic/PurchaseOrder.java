@@ -20,7 +20,7 @@ import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
-import org.colorcoding.ibas.bobas.mapping.BOCode;
+import org.colorcoding.ibas.bobas.mapping.BusinessObjectUnit;
 import org.colorcoding.ibas.bobas.mapping.DbField;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.rule.IBusinessRule;
@@ -37,7 +37,7 @@ import org.colorcoding.ibas.bobas.rule.common.BusinessRuleSumElements;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = PurchaseOrder.BUSINESS_OBJECT_NAME)
 @XmlRootElement(name = PurchaseOrder.BUSINESS_OBJECT_NAME)
-@BOCode(PurchaseOrder.BUSINESS_OBJECT_CODE)
+@BusinessObjectUnit(code = PurchaseOrder.BUSINESS_OBJECT_CODE)
 public class PurchaseOrder extends BusinessObject<PurchaseOrder> implements IBODocument, IApprovalData, IBOTagCanceled {
 
 	/**

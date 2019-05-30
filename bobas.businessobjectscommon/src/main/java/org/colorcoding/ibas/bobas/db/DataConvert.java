@@ -1,6 +1,5 @@
 package org.colorcoding.ibas.bobas.db;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 
@@ -23,11 +22,10 @@ public class DataConvert extends org.colorcoding.ibas.bobas.data.DataConvert {
 		Class<?> valueType = value.getClass();
 		if (valueType.isEnum()) {
 			for (Field field : valueType.getDeclaredFields()) {
-				Annotation annotation = field.getAnnotation(Value.class);
+				Value annotation = field.getAnnotation(Value.class);
 				if (annotation != null) {
-					Value aValue = (Value) annotation;
 					if (field.getName().equals(value.toString())) {
-						return aValue.value();
+						return annotation.value();
 					}
 				}
 			}

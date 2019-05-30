@@ -17,7 +17,7 @@ import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.logic.IBusinessLogicContract;
 import org.colorcoding.ibas.bobas.logic.IBusinessLogicsHost;
-import org.colorcoding.ibas.bobas.mapping.BOCode;
+import org.colorcoding.ibas.bobas.mapping.BusinessObjectUnit;
 import org.colorcoding.ibas.bobas.mapping.DbField;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
@@ -28,7 +28,7 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = MaterialsQuantityJournal.BUSINESS_OBJECT_NAME)
 @XmlRootElement(name = MaterialsQuantityJournal.BUSINESS_OBJECT_NAME)
-@BOCode(MaterialsQuantityJournal.BUSINESS_OBJECT_CODE)
+@BusinessObjectUnit(code = MaterialsQuantityJournal.BUSINESS_OBJECT_CODE)
 public class MaterialsQuantityJournal extends BusinessObject<MaterialsQuantityJournal>
 		implements IBOSimple, IBusinessLogicsHost {
 

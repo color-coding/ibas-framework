@@ -6,21 +6,25 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 业务对象编码
- * 
- * 即将移出，请使用BusinessObjectUnit
+ * 业务对象单元
  * 
  * @author Niuren.Zhu
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Deprecated
-public @interface BOCode {
+public @interface BusinessObjectUnit {
 	/**
 	 * 编码
 	 * 
 	 * @return
 	 */
-	public String value();
+	public String code();
+
+	/**
+	 * 名称
+	 * 
+	 * @return
+	 */
+	public String name() default "";
 }

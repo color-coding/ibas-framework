@@ -24,7 +24,7 @@ import org.colorcoding.ibas.bobas.data.measurement.Time;
 import org.colorcoding.ibas.bobas.mapping.AssociatedField;
 import org.colorcoding.ibas.bobas.mapping.AssociationMode;
 import org.colorcoding.ibas.bobas.mapping.Associations;
-import org.colorcoding.ibas.bobas.mapping.BOCode;
+import org.colorcoding.ibas.bobas.mapping.BusinessObjectUnit;
 import org.colorcoding.ibas.bobas.mapping.ComplexField;
 import org.colorcoding.ibas.bobas.mapping.ComplexFieldType;
 import org.colorcoding.ibas.bobas.mapping.DbField;
@@ -37,7 +37,7 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = SalesOrder.BUSINESS_OBJECT_NAME, namespace = "http://colorcoding.org/ibas/bobas/test")
 @XmlRootElement(name = SalesOrder.BUSINESS_OBJECT_NAME, namespace = "http://colorcoding.org/ibas/bobas/test")
-@BOCode(SalesOrder.BUSINESS_OBJECT_CODE)
+@BusinessObjectUnit(code = SalesOrder.BUSINESS_OBJECT_CODE)
 public class SalesOrder extends BusinessObject<SalesOrder> implements ISalesOrder, IApprovalData, IBOSeriesKey {
 	// ,IFieldMaxValueKey
 
