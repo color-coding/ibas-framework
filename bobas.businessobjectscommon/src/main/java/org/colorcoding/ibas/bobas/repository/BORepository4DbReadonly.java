@@ -379,7 +379,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 			ISqlQuery sqlQuery = adapter.parseSqlQuery(criteria, boType);
 			IBusinessObjectBase[] mainBOs = this.myFetch(sqlQuery, boType);
 			this.myFetchEx(mainBOs, criteria);// 加载子项
-			if (criteria.getChildCriterias().size() > 0) {
+			if (!criteria.getChildCriterias().isEmpty()) {
 				// 存在子项过滤状况，移出可能为空的返回值
 				ArrayList<IBusinessObjectBase> tmpList = new ArrayList<>();
 				for (IBusinessObjectBase bo : mainBOs) {
@@ -485,7 +485,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 							ISqlQuery childSqlQuery = adapter.parseSqlQuery(childCriteria, childBoType);
 							command = this.getDbConnection().createCommand();
 							reader = command.executeReader(childSqlQuery);
-							if (tmpCriteria != null && tmpCriteria.getConditions().size() > 0
+							if (tmpCriteria != null && !tmpCriteria.getConditions().isEmpty()
 									&& tmpCriteria.isIncludingOtherChilds() && reader.isBeforeFirst()) {
 								// 有结果，返回全部数据
 								childCriteria = listField.getElementCriteria();

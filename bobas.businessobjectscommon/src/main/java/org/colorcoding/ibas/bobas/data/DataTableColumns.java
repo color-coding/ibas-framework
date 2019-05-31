@@ -34,7 +34,7 @@ public class DataTableColumns extends ArrayList<IDataTableColumn> implements IDa
 	}
 
 	private void check() {
-		if (this.getTable().getRows().size() > 0) {
+		if (!this.getTable().getRows().isEmpty()) {
 			throw new RuntimeException(I18N.prop("msg_bobas_data_table_data_already_exists"));
 		}
 	}

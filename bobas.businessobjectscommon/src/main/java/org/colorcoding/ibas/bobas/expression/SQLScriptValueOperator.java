@@ -106,7 +106,7 @@ public class SQLScriptValueOperator implements IPropertyValueOperator {
 				throw new RuntimeException(opRslt.getError());
 			}
 			IDataTable table = opRslt.getResultObjects().firstOrDefault();
-			if (table != null && table.getColumns().size() > 0 && table.getRows().size() > 0) {
+			if (table != null && !table.getColumns().isEmpty() && !table.getRows().isEmpty()) {
 				this.value = table.getRows().get(0).getValue(0);
 			}
 		}

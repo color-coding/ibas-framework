@@ -407,7 +407,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 			JudgmentLink judgmentLink = ExpressionFactory.create().createBOJudgmentLink(criteria.getConditions());
 			if (judgmentLink.judge(data)) {
 				boolean pass = true;
-				if (criteria.getChildCriterias().size() > 0) {
+				if (!criteria.getChildCriterias().isEmpty()) {
 					// 存在子项查询
 					for (IChildCriteria child : criteria.getChildCriterias()) {
 						try {

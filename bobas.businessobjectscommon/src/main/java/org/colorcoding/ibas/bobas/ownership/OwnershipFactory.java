@@ -1,8 +1,10 @@
 package org.colorcoding.ibas.bobas.ownership;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
 import org.colorcoding.ibas.bobas.core.IDaemonTask;
+import org.colorcoding.ibas.bobas.mapping.BusinessObjectUnit;
 import org.colorcoding.ibas.bobas.organization.IUser;
 
 /**
@@ -93,6 +95,11 @@ public class OwnershipFactory extends ConfigurableFactory<IOwnershipJudger> {
 			@Override
 			public boolean canSave(IDataOwnership bo, IUser user, boolean throwError) throws UnauthorizedException {
 				return this.canSave(bo, user);
+			}
+
+			@Override
+			public ICriteria filterCriteria(BusinessObjectUnit boUnit, IUser user) {
+				return null;
 			}
 
 		};

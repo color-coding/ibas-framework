@@ -18,7 +18,6 @@ import java.util.jar.JarFile;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.ArrayList;
-import org.colorcoding.ibas.bobas.mapping.BOCode;
 import org.colorcoding.ibas.bobas.mapping.BusinessObjectUnit;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
@@ -245,10 +244,6 @@ public class BOFactory implements IBOFactory {
 		BusinessObjectUnit businessObjectUnit = type.getAnnotation(BusinessObjectUnit.class);
 		if (businessObjectUnit != null) {
 			return MyConfiguration.applyVariables(businessObjectUnit.code());
-		}
-		BOCode boCode = type.getAnnotation(BOCode.class);
-		if (boCode != null) {
-			return MyConfiguration.applyVariables(boCode.value());
 		}
 		return null;
 	}

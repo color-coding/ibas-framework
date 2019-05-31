@@ -126,7 +126,7 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 	public final boolean hasProperty() {
 		try {
 			PropertyInfoList propertyInfoList = PropertyInfoManager.getPropertyInfoList(this.getClass());
-			if (propertyInfoList != null && propertyInfoList.size() > 0) {
+			if (propertyInfoList != null && !propertyInfoList.isEmpty()) {
 				return true;
 			}
 		} catch (NotRegisterTypeException e) {
@@ -145,7 +145,7 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 	public final boolean hasProperty(IPropertyInfo<?> property) {
 		try {
 			PropertyInfoList propertyInfoList = PropertyInfoManager.getPropertyInfoList(this.getClass());
-			if (propertyInfoList != null && propertyInfoList.size() > 0) {
+			if (propertyInfoList != null && !propertyInfoList.isEmpty()) {
 				for (IPropertyInfo<?> iPropertyInfo : propertyInfoList) {
 					if (iPropertyInfo == property) {
 						return true;
@@ -168,7 +168,7 @@ public abstract class BusinessObjectBase<T extends IBusinessObjectBase> extends 
 		IPropertyInfo<?>[] properties = new IPropertyInfo<?>[] {};
 		try {
 			PropertyInfoList propertyInfoList = PropertyInfoManager.getPropertyInfoList(this.getClass());
-			if (propertyInfoList != null && propertyInfoList.size() > 0) {
+			if (propertyInfoList != null && !propertyInfoList.isEmpty()) {
 				propertyInfoList.toArray(properties);
 			}
 		} catch (NotRegisterTypeException e) {

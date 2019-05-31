@@ -34,21 +34,21 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 	}
 
 	@Override
-	public E firstOrDefault() {
-		if (this.size() > 0)
+	public final E firstOrDefault() {
+		if (!this.isEmpty())
 			return this.get(0);
 		return null;
 	}
 
 	@Override
-	public E lastOrDefault() {
-		if (this.size() > 0)
+	public final E lastOrDefault() {
+		if (!this.isEmpty())
 			return this.get(this.size() - 1);
 		return null;
 	}
 
 	@Override
-	public E firstOrDefault(Predicate<? super E> filter) {
+	public final E firstOrDefault(Predicate<? super E> filter) {
 		Objects.requireNonNull(filter);
 		for (int i = 0; i < this.size(); i++) {
 			E item = this.get(i);
@@ -61,7 +61,7 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 	}
 
 	@Override
-	public E lastOrDefault(Predicate<? super E> filter) {
+	public final E lastOrDefault(Predicate<? super E> filter) {
 		Objects.requireNonNull(filter);
 		for (int i = this.size() - 1; i >= 0; i--) {
 			E item = this.get(i);

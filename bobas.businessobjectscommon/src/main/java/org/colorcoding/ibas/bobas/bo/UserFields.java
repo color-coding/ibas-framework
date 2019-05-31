@@ -149,7 +149,7 @@ class UserFields extends ArrayList<IUserField> implements IUserFields, IBindable
 	 * 注册到全局，新实例自动带出
 	 */
 	public void register() {
-		if (this.size() == 0 || this.parent == null) {
+		if (this.isEmpty() || this.parent == null) {
 			return;
 		}
 		PropertyInfoList propertyInfoList = new PropertyInfoList(this.size());

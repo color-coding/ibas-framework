@@ -134,7 +134,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 		JAXBContext context = JAXBContext.newInstance(types.toArray(new Class<?>[] {}));
 		Unmarshaller unmarshaller = context.createUnmarshaller();
 		JudgmentLink judgmentLinks = null;
-		if (criteria.getConditions().size() > 0) {
+		if (!criteria.getConditions().isEmpty()) {
 			// 要求有条件
 			judgmentLinks = ExpressionFactory.create().createBOJudgmentLink(criteria.getConditions());
 		}

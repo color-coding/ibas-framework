@@ -1,5 +1,8 @@
 package org.colorcoding.ibas.bobas.common;
 
+import java.lang.reflect.Array;
+import java.util.Collection;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -53,19 +56,16 @@ public class OperationResult<P> extends OperationMessage implements IOperationRe
 		return this.resultObjects;
 	}
 
-	public final IOperationResult<P> addResultObjects(Iterable<?> values) {
+	public final IOperationResult<P> addResultObjects(Iterable<P> values) {
 		if (values != null) {
-			for (Object value : values) {
-				this.addResultObjects(value);
-			}
-		}
-		return this;
-	}
-
-	public final IOperationResult<P> addResultObjects(Object[] values) {
-		if (values != null) {
-			for (Object value : values) {
-				this.addResultObjects(value);
+			if (values instanceof Collection) {
+				if (this.resultObjects == null) {
+					this.resultObjects = new ArrayList<>((Collection<P>) values);
+				} else {
+					this.getResultObjects().addAll((Collection<P>) values);
+				}
+			} else {
+				this.getResultObjects().addAll(values);
 			}
 		}
 		return this;
@@ -74,7 +74,19 @@ public class OperationResult<P> extends OperationMessage implements IOperationRe
 	@SuppressWarnings("unchecked")
 	public final IOperationResult<P> addResultObjects(Object value) {
 		if (value != null) {
-			this.getResultObjects().add((P) value);
+			if (value.getClass().isArray()) {
+				int length = Array.getLength(value);
+				if (this.resultObjects == null) {
+					this.resultObjects = new ArrayList<P>(length);
+				}
+				for (int i = 0; i < length; i++) {
+					this.getResultObjects().add((P) Array.get(value, i));
+				}
+			} else if (value instanceof Iterable) {
+				this.addResultObjects((Iterable<P>) value);
+			} else {
+				this.getResultObjects().add((P) value);
+			}
 		}
 		return this;
 	}
@@ -110,28 +122,11 @@ public class OperationResult<P> extends OperationMessage implements IOperationRe
 
 	public final IOperationResult<P> addInformations(Iterable<IOperationInformation> values) {
 		if (values != null) {
-			for (IOperationInformation value : values) {
-				this.addInformations(value);
-			}
+			this.getInformations().addAll(values);
 		}
 		return this;
 	}
 
-	public final IOperationResult<P> addInformations(IOperationInformation[] values) {
-		if (values != null) {
-			for (IOperationInformation value : values) {
-				this.addInformations(value);
-			}
-		}
-		return this;
-	}
-
-	/**
-	 * 复制数据
-	 * 
-	 * @param content 复制内容
-	 * @return 当前实例
-	 */
 	@Override
 	public IOperationResult<P> copy(IOperationResult<?> content) {
 		if (content != null) {

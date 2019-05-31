@@ -336,7 +336,7 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 		if (lastBO != null) {
 			SortType sortType = SortType.ASCENDING;
 			ConditionOperation operation = ConditionOperation.GRATER_THAN;
-			if (this.getSorts().size() > 0) {
+			if (!this.getSorts().isEmpty()) {
 				sortType = this.getSorts().firstOrDefault().getSortType();
 			}
 			if (sortType == SortType.DESCENDING) {
@@ -356,7 +356,7 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 		if (firstBO != null) {
 			SortType sortType = SortType.ASCENDING;
 			ConditionOperation operation = ConditionOperation.LESS_THAN;
-			if (this.getSorts().size() > 0) {
+			if (!this.getSorts().isEmpty()) {
 				sortType = this.getSorts().firstOrDefault().getSortType();
 			}
 			if (sortType == SortType.DESCENDING) {
@@ -396,18 +396,18 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 				}
 			}
 			// 复制查询条件
-			if (nCriteria.getConditions().size() > 0) {
+			if (nCriteria.getConditions().size() > 1) {
 				// 原始条件括号括起
-				ICondition condition = nCriteria.getConditions().get(0);
+				ICondition condition = nCriteria.getConditions().firstOrDefault();
 				condition.setBracketOpen(condition.getBracketOpen() + 1);
-				condition = nCriteria.getConditions().get(nCriteria.getConditions().size() - 1);
+				condition = nCriteria.getConditions().lastOrDefault();
 				condition.setBracketClose(condition.getBracketClose() + 1);
 			}
-			if (tmpCriteria.getConditions().size() > 0) {
+			if (tmpCriteria.getConditions().size() > 1) {
 				// 拷贝条件括号括起
-				ICondition condition = tmpCriteria.getConditions().get(0);
+				ICondition condition = tmpCriteria.getConditions().firstOrDefault();
 				condition.setBracketOpen(condition.getBracketOpen() + 1);
-				condition = tmpCriteria.getConditions().get(tmpCriteria.getConditions().size() - 1);
+				condition = tmpCriteria.getConditions().lastOrDefault();
 				condition.setBracketClose(condition.getBracketClose() + 1);
 			}
 			nCriteria.getConditions().addAll(tmpCriteria.getConditions());
