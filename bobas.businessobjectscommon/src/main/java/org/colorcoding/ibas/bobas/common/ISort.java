@@ -30,4 +30,11 @@ public interface ISort {
 	 * @param value
 	 */
 	void setSortType(SortType value);
+
+	/**
+	 * 克隆
+	 * 
+	 * @return
+	 */
+	ISort clone();
 }

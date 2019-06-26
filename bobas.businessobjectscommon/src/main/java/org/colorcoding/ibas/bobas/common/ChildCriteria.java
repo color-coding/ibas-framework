@@ -55,4 +55,9 @@ public class ChildCriteria extends Criteria implements IChildCriteria {
 	public final void setIncludingOtherChilds(boolean value) {
 		this.includingOtherChilds = value;
 	}
+
+	@Override
+	public IChildCriteria clone() {
+		return (IChildCriteria) super.clone();
+	}
 }

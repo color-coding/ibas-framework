@@ -207,9 +207,26 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 	}
 
 	@Override
-	public final ICriteria clone() {
-		ISerializer<?> serializer = SerializerFactory.create().createManager().create();
-		return (ICriteria) serializer.clone(this);
+	public ICriteria clone() {
+		try {
+			Criteria criteria = (Criteria) super.clone();
+			// 重置数组内容
+			criteria.childCriterias = new ChildCriterias();
+			for (IChildCriteria item : this.getChildCriterias()) {
+				criteria.getChildCriterias().add(item.clone());
+			}
+			criteria.conditions = new Conditions();
+			for (ICondition item : this.getConditions()) {
+				criteria.getConditions().add(item.clone());
+			}
+			criteria.sorts = new Sorts();
+			for (ISort item : this.getSorts()) {
+				criteria.getSorts().add(item.clone());
+			}
+			return criteria;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override

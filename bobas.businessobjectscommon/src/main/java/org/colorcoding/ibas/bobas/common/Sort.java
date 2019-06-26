@@ -15,7 +15,7 @@ import org.colorcoding.ibas.bobas.serialization.Serializable;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "Sort", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 @XmlRootElement(name = "Sort", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
-public class Sort extends Serializable implements ISort {
+public class Sort extends Serializable implements ISort, Cloneable {
 
 	private static final long serialVersionUID = 2186775431210517706L;
 
@@ -59,6 +59,15 @@ public class Sort extends Serializable implements ISort {
 	@Override
 	public final void setSortType(SortType value) {
 		this.sortType = value;
+	}
+
+	@Override
+	public ISort clone() {
+		try {
+			return (Sort) super.clone();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override

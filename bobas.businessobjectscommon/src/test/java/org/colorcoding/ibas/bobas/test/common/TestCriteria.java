@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.UUID;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -179,6 +180,13 @@ public class TestCriteria extends TestCase {
 
 		criteria = criteria.copyFrom(criteria.clone());
 		System.out.println(criteria.toString("xml"));
+
+		ICriteria nCriteria = criteria.clone();
+		nCriteria.setResultCount(999);
+		nCriteria.getChildCriterias().firstOrDefault().setBusinessObject(UUID.randomUUID().toString());
+		nCriteria.getConditions().firstOrDefault().setValue(UUID.randomUUID().toString());
+		nCriteria.getSorts().firstOrDefault().setAlias(UUID.randomUUID().toString());
+		System.out.println(nCriteria.toString("xml"));
 	}
 
 	public void testResultCriteria() {

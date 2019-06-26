@@ -49,4 +49,11 @@ public interface IChildCriteria extends ICriteria {
 	 * @param value
 	 */
 	void setIncludingOtherChilds(boolean value);
+
+	/**
+	 * 克隆
+	 * 
+	 * @return
+	 */
+	IChildCriteria clone();
 }

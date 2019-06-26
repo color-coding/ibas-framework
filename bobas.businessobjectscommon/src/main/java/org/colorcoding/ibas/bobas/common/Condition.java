@@ -18,7 +18,7 @@ import org.colorcoding.ibas.bobas.serialization.Serializable;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "Condition", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 @XmlRootElement(name = "Condition", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
-public class Condition extends Serializable implements ICondition {
+public class Condition extends Serializable implements ICondition, Cloneable {
 
 	private static final long serialVersionUID = 3151721602767228504L;
 
@@ -204,6 +204,15 @@ public class Condition extends Serializable implements ICondition {
 	@Override
 	public final void setRemarks(String value) {
 		this.remarks = value;
+	}
+
+	@Override
+	public ICondition clone() {
+		try {
+			return (Condition) super.clone();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override

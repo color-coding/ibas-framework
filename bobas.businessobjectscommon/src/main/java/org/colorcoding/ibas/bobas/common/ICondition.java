@@ -19,8 +19,7 @@ public interface ICondition {
 	/**
 	 * 设置-条件字段（属性）名
 	 * 
-	 * @param value
-	 *            名
+	 * @param value 名
 	 */
 	void setAlias(String value);
 
@@ -34,8 +33,7 @@ public interface ICondition {
 	/**
 	 * 设置-几个闭括号"）"
 	 * 
-	 * @param value
-	 *            个数
+	 * @param value 个数
 	 */
 	void setBracketClose(int value);
 
@@ -49,8 +47,7 @@ public interface ICondition {
 	/**
 	 * 设置-几个开括号"（"
 	 * 
-	 * @param value
-	 *            个数
+	 * @param value 个数
 	 */
 	void setBracketOpen(int value);
 
@@ -64,8 +61,7 @@ public interface ICondition {
 	/**
 	 * 设置-比较的字段（属性）名
 	 * 
-	 * @param value
-	 *            名
+	 * @param value 名
 	 */
 	void setComparedAlias(String value);
 
@@ -79,16 +75,14 @@ public interface ICondition {
 	/**
 	 * 设置-比较的值
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setValue(String value);
 
 	/**
 	 * 设置-比较的值
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setValue(Object value);
 
@@ -102,8 +96,7 @@ public interface ICondition {
 	/**
 	 * 设置-比较方法
 	 * 
-	 * @param value
-	 *            方法
+	 * @param value 方法
 	 */
 	void setOperation(ConditionOperation value);
 
@@ -117,8 +110,7 @@ public interface ICondition {
 	/**
 	 * 设置-和后续条件关系
 	 * 
-	 * @param value
-	 *            关系
+	 * @param value 关系
 	 */
 	void setRelationship(ConditionRelationship value);
 
@@ -149,4 +141,11 @@ public interface ICondition {
 	 * @param value
 	 */
 	void setRemarks(String value);
+
+	/**
+	 * 克隆
+	 * 
+	 * @return
+	 */
+	ICondition clone();
 }
