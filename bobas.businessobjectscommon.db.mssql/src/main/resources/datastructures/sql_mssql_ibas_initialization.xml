@@ -12,19 +12,19 @@
     <Action Name="create db" Isolated="true">
         <Step Name="check db exists">
             <Script>
-                select count(0) from sys.databases where name = '${DbName}';
+                SELECT COUNT(0) FROM sys.databases WHERE name = '${DbName}';
             </Script>
         </Step>
         <Step Name="create db" RunOnValue="0">
             <Script>
-                 create database "${DbName}";
+                 CREATE DATABASE "${DbName}";
             </Script>
         </Step>
     </Action>
     <Action Name="create stored procedures ${Company}_SP_TRANSACTION_NOTIFICATION" Isolated="true" DbUrl="jdbc:sqlserver://${DbServer}:${DbPort};DatabaseName=${DbName}">
         <Step Name="check stored procedures exists">
             <Script>
-                select count(0) from sys.sysobjects where name = '${Company}_SP_TRANSACTION_NOTIFICATION' AND type = 'P';
+                SELECT COUNT(0) FROM sys.sysobjects WHERE name = '${Company}_SP_TRANSACTION_NOTIFICATION' AND type = 'P';
             </Script>
         </Step>
         <Step Name="create stored procedures" RunOnValue="0">

@@ -12,19 +12,19 @@
     <Action Name="create db" Isolated="true">
         <Step Name="check db exists">
             <Script>
-                select count(0) from "SCHEMAS" where "SCHEMA_NAME" = '${DbName}';
+                SELECT COUNT(0) FROM "SCHEMAS" WHERE "SCHEMA_NAME" = '${DbName}';
             </Script>
         </Step>
         <Step Name="create db" RunOnValue="0">
             <Script>
-                 create schema "${DbName}";
+                 CREATE SCHEMA "${DbName}";
             </Script>
         </Step>
     </Action>
     <Action Name="create stored procedures ${Company}_SP_TRANSACTION_NOTIFICATION" Isolated="true" DbUrl="jdbc:sap://${DbServer}:${DbPort}/?currentschema=&quot;${DbName}&quot;">
         <Step Name="check stored procedures exists">
             <Script>
-                select count(0) from "PROCEDURES" where "SCHEMA_NAME" = '${DbName}' and "PROCEDURE_NAME" = '${Company}_SP_TRANSACTION_NOTIFICATION';
+                SELECT COUNT(0) FROM "PROCEDURES" WHERE "SCHEMA_NAME" = '${DbName}' AND "PROCEDURE_NAME" = '${Company}_SP_TRANSACTION_NOTIFICATION';
             </Script>
         </Step>
         <Step Name="create stored procedures" RunOnValue="0">

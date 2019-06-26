@@ -12,15 +12,15 @@
     <Action Name="create db" Isolated="true" DbUrl="jdbc:sybase:Tds:${DbServer}:${DbPort}?ServiceName=${DbName}">
         <Step Name="check db ${DbName} exists">
             <Script>
-                select count(0) from sa_db_list() where "Number" = db_id('${DbName}')
+                SELECT COUNT(0) FROM sa_db_list() WHERE "Number" = db_id('${DbName}')
             </Script>
         </Step>
         <Step Name="create db ${DbName}" RunOnValue="0">
             <Script>
-                 create database '${DbName}.db'
-                 dba user '${DbUser}'
-                 dba password '${DbPassword}'
-                 log on '${DbName}.log'
+                 CREATE DATABASE '${DbName}.db'
+                 DBA USER '${DbUser}'
+                 DBA PASSWORD '${DbPassword}'
+                 LOG ON '${DbName}.log'
             </Script>
         </Step>
     </Action>

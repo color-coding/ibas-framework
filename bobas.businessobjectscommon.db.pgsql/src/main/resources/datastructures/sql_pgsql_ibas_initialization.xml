@@ -12,12 +12,12 @@
     <Action Name="create db" Isolated="true" DbUrl="jdbc:postgresql://${DbServer}:${DbPort}/postgres">
         <Step Name="check db exists">
             <Script>
-                select count(0) from pg_database where datname = '${DbName}';
+                SELECT COUNT(0) FROM pg_database WHERE datname = '${DbName}';
             </Script>
         </Step>
         <Step Name="create db" RunOnValue="0">
             <Script>
-                 create database "${DbName}";
+                 CREATE DATABASE "${DbName}";
             </Script>
         </Step>
     </Action>

@@ -1,8 +1,10 @@
 package org.colorcoding.ibas.bobas.db.mysql;
 
+import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.SqlQuery;
 import org.colorcoding.ibas.bobas.data.KeyValue;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
@@ -96,6 +98,116 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 			return DbFieldType.DECIMAL;
 		}
 		return DbFieldType.UNKNOWN;
+	}
+
+	@Override
+	public String getSqlString(ConditionOperation value, String opValue) {
+		opValue = this.checkSecurity(opValue);
+		if (value == ConditionOperation.CONTAIN) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(this.getSqlString(value));
+			stringBuilder.append(" ");
+			stringBuilder.append("'");
+			stringBuilder.append("%");
+			stringBuilder.append(opValue);
+			stringBuilder.append("%");
+			stringBuilder.append("'");
+			return stringBuilder.toString();
+		} else if (value == ConditionOperation.NOT_CONTAIN) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(this.getSqlString(value));
+			stringBuilder.append(" ");
+			stringBuilder.append("'");
+			stringBuilder.append("%");
+			stringBuilder.append(opValue);
+			stringBuilder.append("%");
+			stringBuilder.append("'");
+			return stringBuilder.toString();
+		} else if (value == ConditionOperation.END) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(this.getSqlString(value));
+			stringBuilder.append(" ");
+			stringBuilder.append("'");
+			stringBuilder.append("%");
+			stringBuilder.append(opValue);
+			stringBuilder.append("'");
+			return stringBuilder.toString();
+		} else if (value == ConditionOperation.START) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(this.getSqlString(value));
+			stringBuilder.append(" ");
+			stringBuilder.append("'");
+			stringBuilder.append(opValue);
+			stringBuilder.append("%");
+			stringBuilder.append("'");
+			return stringBuilder.toString();
+		} else if (value == ConditionOperation.EQUAL) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(this.getSqlString(value));
+			stringBuilder.append(" ");
+			stringBuilder.append("%s");
+			return stringBuilder.toString();
+		} else if (value == ConditionOperation.NOT_EQUAL) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(this.getSqlString(value));
+			stringBuilder.append(" ");
+			stringBuilder.append("%s");
+			return stringBuilder.toString();
+		} else if (value == ConditionOperation.GRATER_EQUAL) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(this.getSqlString(value));
+			stringBuilder.append(" ");
+			stringBuilder.append("%s");
+			return stringBuilder.toString();
+		} else if (value == ConditionOperation.GRATER_THAN) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(this.getSqlString(value));
+			stringBuilder.append(" ");
+			stringBuilder.append("%s");
+			return stringBuilder.toString();
+		} else if (value == ConditionOperation.IS_NULL) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(this.getSqlString(value));
+			return stringBuilder.toString();
+		} else if (value == ConditionOperation.NOT_NULL) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(this.getSqlString(value));
+			return stringBuilder.toString();
+		} else if (value == ConditionOperation.LESS_EQUAL) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(this.getSqlString(value));
+			stringBuilder.append(" ");
+			stringBuilder.append("%s");
+			return stringBuilder.toString();
+		} else if (value == ConditionOperation.LESS_THAN) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(this.getSqlString(value));
+			stringBuilder.append(" ");
+			stringBuilder.append("%s");
+			return stringBuilder.toString();
+		}
+		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
+	}
+
+	@Override
+	public String getSqlString(DbFieldType type, String value) {
+		if (value == null) {
+			return this.getNullSign();
+		}
+		value = this.checkSecurity(value);
+		StringBuilder stringBuilder = new StringBuilder();
+		if (type == DbFieldType.NUMERIC || type == DbFieldType.DECIMAL) {
+			stringBuilder.append(value);
+		} else if (type == DbFieldType.DATE) {
+			stringBuilder.append("'");
+			stringBuilder.append(value);
+			stringBuilder.append("'");
+		} else {
+			stringBuilder.append("'");
+			stringBuilder.append(value);
+			stringBuilder.append("'");
+		}
+		return stringBuilder.toString();
 	}
 
 	/**
@@ -231,12 +343,12 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 		stringBuilder.append(String.format("`%s_SP_TRANSACTION_NOTIFICATION`", this.getCompanyId()));
 		stringBuilder.append("(");
 		stringBuilder.append(" ");
-		stringBuilder.append("N'");
+		stringBuilder.append("'");
 		stringBuilder.append(this.checkSecurity(boCode));
 		stringBuilder.append("'");
 		stringBuilder.append(",");
 		stringBuilder.append(" ");
-		stringBuilder.append("N'");
+		stringBuilder.append("'");
 		stringBuilder.append(this.checkSecurity(type));
 		stringBuilder.append("'");
 		stringBuilder.append(",");
@@ -244,12 +356,12 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 		stringBuilder.append(keyCount);
 		stringBuilder.append(",");
 		stringBuilder.append(" ");
-		stringBuilder.append("N'");
+		stringBuilder.append("'");
 		stringBuilder.append(this.checkSecurity(keyNames));
 		stringBuilder.append("'");
 		stringBuilder.append(",");
 		stringBuilder.append(" ");
-		stringBuilder.append("N'");
+		stringBuilder.append("'");
 		stringBuilder.append(this.checkSecurity(keyValues));
 		stringBuilder.append("'");
 		stringBuilder.append(")");
@@ -276,7 +388,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 			} else if (keyValue.getValue().getClass().equals(Double.class)) {
 				stringBuilder.append(String.valueOf(keyValue.getValue()));
 			} else {
-				stringBuilder.append("N'");
+				stringBuilder.append("'");
 				stringBuilder.append(this.checkSecurity(String.valueOf(keyValue.getValue())));
 				stringBuilder.append("'");
 			}

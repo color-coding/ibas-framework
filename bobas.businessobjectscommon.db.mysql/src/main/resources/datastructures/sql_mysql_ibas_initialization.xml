@@ -12,7 +12,7 @@
     <Action Name="create db" Isolated="true">
         <Step Name="check and create db">
             <Script>
-                create database if not exists `${DbName}` character set utf8mb4;
+                CREATE DATABASE IF NOT EXISTS `${DbName}` CHARACTER SET utf8mb4;
             </Script>
         </Step>
     </Action>
