@@ -8,7 +8,7 @@ import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
 import org.colorcoding.ibas.bobas.ownership.IDataOwnership;
 
-public abstract class BORepositoryBase implements IBORepositoryReadonly {
+public abstract class BORepositoryBase implements IBORepositoryReadonly, Cloneable {
 
 	private IUser currentUser = null;
 
@@ -88,4 +88,8 @@ public abstract class BORepositoryBase implements IBORepositoryReadonly {
 		}
 	}
 
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 }

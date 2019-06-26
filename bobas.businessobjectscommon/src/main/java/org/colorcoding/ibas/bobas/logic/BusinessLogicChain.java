@@ -9,6 +9,7 @@ import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
 import org.colorcoding.ibas.bobas.common.IChildCriteria;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
+import org.colorcoding.ibas.bobas.core.BORepositoryBase;
 import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManagedFields;
@@ -19,6 +20,7 @@ import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
+import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
 
 /**
  * 业务逻辑链
@@ -156,6 +158,15 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 	public final void useRepository(IBORepository boRepository) {
 		if (this.repository != null) {
 			throw new RuntimeException(I18N.prop("msg_bobas_not_supported"));
+		}
+		// 使用仓库副本并使用系统用户
+		if (boRepository instanceof BORepositoryBase) {
+			try {
+				boRepository = (IBORepository) ((BORepositoryBase) boRepository).clone();
+				boRepository.setCurrentUser(OrganizationFactory.SYSTEM_USER);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 		}
 		this.setRepository(boRepository);
 	}
