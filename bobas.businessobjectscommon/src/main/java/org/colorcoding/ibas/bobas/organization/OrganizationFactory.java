@@ -114,6 +114,8 @@ public class OrganizationFactory extends ConfigurableFactory<IOrganizationManage
 				this.users = new ArrayList<>();
 			}
 
+			private final String[] NO_ROLES = new String[] {};
+
 			@Override
 			public String[] getRoles(IUser user) {
 				for (IUser item : this.getUsers()) {
@@ -121,7 +123,7 @@ public class OrganizationFactory extends ConfigurableFactory<IOrganizationManage
 						return new String[] { item.getBelong() };
 					}
 				}
-				return new String[] {};
+				return NO_ROLES;
 			}
 
 			private volatile ArrayList<IUser> users;

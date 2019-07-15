@@ -79,6 +79,8 @@ public class UserFieldManager {
 		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", type.toString()));
 	}
 
+	private static final UserField[] NO_USER_FIELDS = new UserField[] {};
+
 	public static UserField[] create(Class<?> boType) {
 		PropertyInfoList infoList = USER_FIELDS.get(boType);
 		if (infoList != null) {
@@ -88,7 +90,7 @@ public class UserFieldManager {
 			}
 			return userFields;
 		}
-		return new UserField[] {};
+		return NO_USER_FIELDS;
 	}
 
 }

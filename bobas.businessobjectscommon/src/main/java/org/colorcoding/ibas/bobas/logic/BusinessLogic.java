@@ -269,17 +269,22 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 	 */
 	@Override
 	public void commit() {
-		if (this.getBeAffected() != null) {
-			BusinessLogicsRepository logicRepository = new BusinessLogicsRepository();
-			logicRepository.setRepository(this.getRepository());
-			OperationResult<B> operationResult = logicRepository.saveData(this.getBeAffected());
-			logicRepository.setRepository(null);// 移出监听
-			if (operationResult.getError() != null) {
-				if (operationResult.getError() instanceof BusinessLogicException) {
-					throw (BusinessLogicException) operationResult.getError();
-				} else {
-					throw new BusinessLogicException(operationResult.getError());
-				}
+		// 无效被影响对象，退出
+		if (this.getBeAffected() == null) {
+			return;
+		}
+		if (this.getBeAffected() instanceof IBusinessObjectProxy) {
+			return;
+		}
+		BusinessLogicsRepository logicRepository = new BusinessLogicsRepository();
+		logicRepository.setRepository(this.getRepository());
+		OperationResult<B> operationResult = logicRepository.saveData(this.getBeAffected());
+		logicRepository.setRepository(null);// 移出监听
+		if (operationResult.getError() != null) {
+			if (operationResult.getError() instanceof BusinessLogicException) {
+				throw (BusinessLogicException) operationResult.getError();
+			} else {
+				throw new BusinessLogicException(operationResult.getError());
 			}
 		}
 	}

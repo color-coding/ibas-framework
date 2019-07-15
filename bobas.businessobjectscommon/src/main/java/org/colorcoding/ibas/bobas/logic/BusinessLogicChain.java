@@ -35,7 +35,8 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 	/**
 	 * 业务对象代理
 	 */
-	protected static final IBusinessObject BO_PROXY_EMPTY = new IBusinessObject() {
+	protected static final IBusinessObject BO_PROXY_EMPTY = new IBusinessObjectProxy() {
+
 		private static final long serialVersionUID = -1L;
 
 		@Override
@@ -301,6 +302,8 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 		};
 	}
 
+	private static final IBusinessLogic<?>[] NO_BUSINESS_LOGICS = new IBusinessLogic[] {};
+
 	/**
 	 * 分析数据，获取契约
 	 * 
@@ -308,8 +311,8 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 	 * @return 具有的契约
 	 */
 	protected IBusinessLogic<?>[] analyzeContracts(Object bo) {
-		if (bo == null || bo == BO_PROXY_EMPTY) {
-			return new IBusinessLogic[] {};
+		if (bo == null || bo instanceof IBusinessObjectProxy) {
+			return NO_BUSINESS_LOGICS;
 		}
 		ArrayList<IBusinessLogic<?>> contracts = new ArrayList<>();
 		// 先子项，再自身
