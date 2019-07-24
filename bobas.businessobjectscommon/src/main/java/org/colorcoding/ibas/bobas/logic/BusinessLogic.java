@@ -9,7 +9,6 @@ import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
 import org.colorcoding.ibas.bobas.bo.IBOTagReferenced;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ICriteria;
-import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.ITrackStatus;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
@@ -262,31 +261,6 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 
 	public final B getBeAffected() {
 		return this.beAffected;
-	}
-
-	/**
-	 * 提交
-	 */
-	@Override
-	public void commit() {
-		// 无效被影响对象，退出
-		if (this.getBeAffected() == null) {
-			return;
-		}
-		if (this.getBeAffected() instanceof IBusinessObjectProxy) {
-			return;
-		}
-		BusinessLogicsRepository logicRepository = new BusinessLogicsRepository();
-		logicRepository.setRepository(this.getRepository());
-		OperationResult<B> operationResult = logicRepository.saveData(this.getBeAffected());
-		logicRepository.setRepository(null);// 移出监听
-		if (operationResult.getError() != null) {
-			if (operationResult.getError() instanceof BusinessLogicException) {
-				throw (BusinessLogicException) operationResult.getError();
-			} else {
-				throw new BusinessLogicException(operationResult.getError());
-			}
-		}
 	}
 
 	private BusinessLogicChain logicChain;

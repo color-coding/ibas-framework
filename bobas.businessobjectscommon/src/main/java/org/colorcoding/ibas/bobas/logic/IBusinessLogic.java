@@ -27,9 +27,4 @@ public interface IBusinessLogic<B extends IBusinessObject> {
 	 * 
 	 */
 	void reverse();
-
-	/**
-	 * 提交逻辑
-	 */
-	void commit();
 }

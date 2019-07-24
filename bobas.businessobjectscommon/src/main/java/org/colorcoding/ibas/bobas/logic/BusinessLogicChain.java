@@ -32,6 +32,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 
 	protected static final String MSG_TRIGGER_EXISTING_CONTRACT = "logics: trigger [%s] has [%s] contracts.";
 	protected static final String MSG_TRIGGER_COPY_EXISTING_CONTRACT = "logics: trigger's copy [%s] has [%s] contracts.";
+	protected static final String MSG_LOGICS_RUNNING_LOGIC_COMMIT = "logics: commit logic [%s].";
 	/**
 	 * 业务对象代理
 	 */
@@ -203,7 +204,14 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 	 */
 	protected IBusinessObject fetchTriggerCopy() {
 		IBusinessObject trigger = this.getTrigger();
-		IBusinessObject copy = this.fetchBusinessObject(trigger.getCriteria(), trigger.getClass());
+		BusinessLogicsRepository repository = new BusinessLogicsRepository();
+		repository.setRepository(this.getRepository());
+		IOperationResult<? extends IBusinessObject> operationResult = repository.fetchData(trigger.getCriteria(),
+				trigger.getClass());
+		if (operationResult.getError() != null) {
+			throw new BusinessLogicException(operationResult.getError());
+		}
+		IBusinessObject copy = operationResult.getResultObjects().firstOrDefault();
 		if (trigger instanceof IBOStorageTag && copy instanceof IBOStorageTag) {
 			IBOStorageTag hostTag = (IBOStorageTag) trigger;
 			IBOStorageTag copyTag = (IBOStorageTag) copy;
@@ -213,16 +221,6 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 			}
 		}
 		return copy;
-	}
-
-	protected IBusinessObject fetchBusinessObject(ICriteria criteria, Class<? extends IBusinessObject> type) {
-		BusinessLogicsRepository repository = new BusinessLogicsRepository();
-		repository.setRepository(this.getRepository());
-		IOperationResult<?> operationResult = repository.fetchData(criteria, type);
-		if (operationResult.getError() != null) {
-			throw new BusinessLogicException(operationResult.getError());
-		}
-		return (IBusinessObject) operationResult.getResultObjects().firstOrDefault();
 	}
 
 	private IBusinessLogic<?>[] triggerLogics;
@@ -262,19 +260,21 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 	 * @return
 	 */
 	protected final Iterator<IBusinessLogic<?>> getAllLogics() {
+		int count = 0;
+		if (BusinessLogicChain.this.getTriggerLogics() != null) {
+			count += BusinessLogicChain.this.getTriggerLogics().length;
+		}
+		if (BusinessLogicChain.this.getTriggerCopyLogics() != null) {
+			count += BusinessLogicChain.this.getTriggerCopyLogics().length;
+		}
+		int tCount = count;
 		return new Iterator<IBusinessLogic<?>>() {
 
 			int index = 0;
+			int count = tCount;
 
 			@Override
 			public boolean hasNext() {
-				int count = 0;
-				if (BusinessLogicChain.this.getTriggerLogics() != null) {
-					count += BusinessLogicChain.this.getTriggerLogics().length;
-				}
-				if (BusinessLogicChain.this.getTriggerCopyLogics() != null) {
-					count += BusinessLogicChain.this.getTriggerCopyLogics().length;
-				}
 				if (index < 0) {
 					return false;
 				}
@@ -286,13 +286,16 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 
 			@Override
 			public IBusinessLogic<?> next() {
+				int cIndex = index;
 				IBusinessLogic<?> logic = null;
-				if (index >= 0 && index < BusinessLogicChain.this.getTriggerLogics().length) {
-					logic = BusinessLogicChain.this.getTriggerLogics()[index];
+				IBusinessLogic<?>[] logics = BusinessLogicChain.this.getTriggerLogics();
+				if (cIndex >= 0 && cIndex < logics.length) {
+					logic = logics[cIndex];
 				} else {
-					int cIndex = index - BusinessLogicChain.this.getTriggerLogics().length;
-					if (cIndex >= 0 && cIndex < BusinessLogicChain.this.getTriggerCopyLogics().length) {
-						logic = BusinessLogicChain.this.getTriggerCopyLogics()[cIndex];
+					cIndex = cIndex - logics.length;
+					logics = BusinessLogicChain.this.getTriggerCopyLogics();
+					if (cIndex >= 0 && cIndex < logics.length) {
+						logic = logics[cIndex];
 					}
 				}
 				index++;
@@ -404,6 +407,10 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 				// 无效值
 				continue;
 			}
+			if (logic.getBeAffected() instanceof IBusinessObjectProxy) {
+				// 无效值
+				continue;
+			}
 			if (!type.isInstance(logic.getBeAffected())) {
 				// 类型不符
 				continue;
@@ -492,6 +499,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 	@Override
 	public void commit() {
 		// 提交所有逻辑
+		ArrayList<IBusinessObject> beAffecteds = new ArrayList<>();
 		Iterator<IBusinessLogic<?>> logics = this.getAllLogics();
 		while (logics.hasNext()) {
 			IBusinessLogic<?> logic = logics.next();
@@ -499,8 +507,36 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 				// 无效值
 				continue;
 			}
-			logic.commit();
+			if (logic.getBeAffected() == null) {
+				// 空对象
+				continue;
+			}
+			if (logic.getBeAffected() instanceof IBusinessObjectProxy) {
+				// 代理对象
+				continue;
+			}
+			if (beAffecteds.contains(logic.getBeAffected())) {
+				// 重复的被影响对象
+				continue;
+			}
+			Logger.log(MessageLevel.DEBUG, MSG_LOGICS_RUNNING_LOGIC_COMMIT, logic.getClass().getName());
+			beAffecteds.add(logic.getBeAffected());
 		}
+		IOperationResult<?> operationResult;
+		BusinessLogicsRepository logicRepository = new BusinessLogicsRepository();
+		logicRepository.setRepository(this.getRepository());
+		for (IBusinessObject item : beAffecteds) {
+			operationResult = logicRepository.saveData(item);
+			if (operationResult.getError() != null) {
+				if (operationResult.getError() instanceof BusinessLogicException) {
+					throw (BusinessLogicException) operationResult.getError();
+				} else {
+					throw new BusinessLogicException(operationResult.getError());
+				}
+			}
+		}
+		logicRepository.setRepository(null);// 移出监听
+		logicRepository = null;
 	}
 
 }

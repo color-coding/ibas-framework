@@ -189,16 +189,14 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	}
 
 	/*
-	 * 创建副本 可重载
-	 * 
-	 * @see club.ibas.bobas.businessobjectscommon.core.BusinessObjectBase#clone()
+	 * 创建副本 可重载 注意重置对象
 	 */
 	@Override
 	public T clone() {
 		T nBO = (T) super.clone();
 		if (nBO instanceof BusinessObject<?>) {
 			BusinessObject<?> bo = (BusinessObject<?>) nBO;
-			bo.resetStatus();
+			bo.reset();
 		}
 		return nBO;
 	}
@@ -206,7 +204,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 	/**
 	 * 重置对象状态
 	 */
-	public void resetStatus() {
+	public void reset() {
 		this.setLoading(true);
 		this.markNew();
 		// 重置对象存储标记
@@ -265,14 +263,14 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 			if (fieldData.getValue() instanceof BusinessObject<?>) {
 				// 业务对象
 				BusinessObject<?> bo = (BusinessObject<?>) fieldData.getValue();
-				bo.resetStatus();
+				bo.reset();
 			} else if (fieldData.getValue() instanceof BusinessObjects<?, ?>) {
 				// 业务对象集合
 				BusinessObjects<?, ?> bos = (BusinessObjects<?, ?>) fieldData.getValue();
 				for (IBusinessObject item : bos) {
 					if (item instanceof BusinessObject<?>) {
 						BusinessObject<?> bo = (BusinessObject<?>) item;
-						bo.resetStatus();
+						bo.reset();
 					}
 				}
 			}
