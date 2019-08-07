@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -47,8 +48,8 @@ public class SerializerJsonNoRoot extends Serializer<JsonSchema> {
 
 	@Override
 	public void getSchema(Class<?> type, OutputStream outputStream) throws SerializationException {
-		JsonFactory jsonFactory = new JsonFactory();
 		try {
+			JsonFactory jsonFactory = new JsonFactory();
 			JsonGenerator jsonGenerator = jsonFactory.createGenerator(outputStream);
 
 			SchemaWriter schemaWriter = new SchemaWriterNoRoot();
@@ -60,24 +61,19 @@ public class SerializerJsonNoRoot extends Serializer<JsonSchema> {
 			jsonGenerator.close();
 		} catch (IOException e) {
 			throw new SerializationException(e);
-		} finally {
-			if (outputStream != null) {
-				try {
-					outputStream.close();
-				} catch (IOException e) {
-				}
-			}
 		}
 	}
 
 	@Override
 	public JsonSchema getSchema(Class<?> type) throws SerializationException {
-		try {
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 			this.getSchema(type, outputStream);
-			JsonNode jsonSchema = JsonLoader
-					.fromReader(new InputStreamReader(new ByteArrayInputStream(outputStream.toByteArray())));
-			return JsonSchemaFactory.byDefault().getJsonSchema(jsonSchema);
+			try (InputStream stream = new ByteArrayInputStream(outputStream.toByteArray())) {
+				try (Reader reader = new InputStreamReader(stream)) {
+					JsonNode jsonSchema = JsonLoader.fromReader(reader);
+					return JsonSchemaFactory.byDefault().getJsonSchema(jsonSchema);
+				}
+			}
 		} catch (IOException | ProcessingException e) {
 			throw new SerializationException(e);
 		}
@@ -117,13 +113,6 @@ public class SerializerJsonNoRoot extends Serializer<JsonSchema> {
 			marshaller.marshal(object, outputStream);
 		} catch (JAXBException e) {
 			throw new SerializationException(e);
-		} finally {
-			if (outputStream != null) {
-				try {
-					outputStream.close();
-				} catch (IOException e) {
-				}
-			}
 		}
 	}
 
@@ -150,18 +139,11 @@ public class SerializerJsonNoRoot extends Serializer<JsonSchema> {
 
 	@Override
 	public void validate(JsonSchema schema, InputStream data) throws ValidateException {
-		try {
-			JsonNode jsonData = JsonLoader.fromReader(new InputStreamReader(data));
+		try (Reader reader = new InputStreamReader(data)) {
+			JsonNode jsonData = JsonLoader.fromReader(reader);
 			this.validate(schema, jsonData);
 		} catch (IOException e) {
 			throw new ValidateException(e);
-		} finally {
-			if (data != null) {
-				try {
-					data.close();
-				} catch (IOException e) {
-				}
-			}
 		}
 	}
 

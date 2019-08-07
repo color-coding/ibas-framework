@@ -19,15 +19,19 @@ public abstract class Serializer<S> implements ISerializer<S> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T clone(T object, Class<?>... types) throws SerializationException {
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		this.serialize(object, outputStream, false, types);
-		ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
-		Class<?>[] knownTypes = new Class[types.length + 1];
-		knownTypes[0] = object.getClass();
-		for (int i = 0; i < types.length; i++) {
-			knownTypes[i + 1] = types[i];
+		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+			this.serialize(object, outputStream, false, types);
+			try (ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray())) {
+				Class<?>[] knownTypes = new Class[types.length + 1];
+				knownTypes[0] = object.getClass();
+				for (int i = 0; i < types.length; i++) {
+					knownTypes[i + 1] = types[i];
+				}
+				return (T) this.deserialize(inputStream, knownTypes);
+			}
+		} catch (IOException e) {
+			throw new SerializationException(e);
 		}
-		return (T) this.deserialize(inputStream, knownTypes);
 	}
 
 	@Override
@@ -37,12 +41,20 @@ public abstract class Serializer<S> implements ISerializer<S> {
 
 	@Override
 	public void validate(S schema, String data) throws ValidateException {
-		this.validate(schema, new ByteArrayInputStream(data.getBytes()));
+		try (InputStream stream = new ByteArrayInputStream(data.getBytes())) {
+			this.validate(schema, stream);
+		} catch (IOException e) {
+			throw new ValidateException(e);
+		}
 	}
 
 	@Override
 	public void validate(Class<?> type, String data) throws ValidateException {
-		this.validate(type, new ByteArrayInputStream(data.getBytes()));
+		try (InputStream stream = new ByteArrayInputStream(data.getBytes())) {
+			this.validate(type, stream);
+		} catch (IOException e) {
+			throw new ValidateException(e);
+		}
 	}
 
 	@Override
@@ -53,21 +65,16 @@ public abstract class Serializer<S> implements ISerializer<S> {
 
 	@Override
 	public Object deserialize(String data, Class<?>... types) throws SerializationException {
-		return this.deserialize(new ByteArrayInputStream(data.getBytes()), types);
+		try (InputStream stream = new ByteArrayInputStream(data.getBytes())) {
+			return this.deserialize(stream, types);
+		} catch (IOException e) {
+			throw new SerializationException(e);
+		}
 	}
 
 	@Override
 	public Object deserialize(InputStream inputStream, Class<?>... types) throws SerializationException {
-		try {
-			return this.deserialize(new InputSource(inputStream), types);
-		} finally {
-			if (inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-				}
-			}
-		}
+		return this.deserialize(new InputSource(inputStream), types);
 	}
 
 	@Override

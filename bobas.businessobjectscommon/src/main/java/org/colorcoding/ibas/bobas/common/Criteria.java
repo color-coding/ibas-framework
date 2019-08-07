@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.common;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Collection;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -231,10 +232,13 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 
 	@Override
 	public String toString(String type) {
-		ISerializer<?> serializer = SerializerFactory.create().createManager().create(type);
-		ByteArrayOutputStream writer = new ByteArrayOutputStream();
-		serializer.serialize(this, writer);
-		return writer.toString();
+		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
+			ISerializer<?> serializer = SerializerFactory.create().createManager().create(type);
+			serializer.serialize(this, writer);
+			return writer.toString();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.data;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -83,10 +84,13 @@ public class DataTable extends Serializable implements IDataTable {
 
 	@Override
 	public String toString(String type) {
-		ISerializer<?> serializer = SerializerFactory.create().createManager().create(type);
-		ByteArrayOutputStream writer = new ByteArrayOutputStream();
-		serializer.serialize(this, writer);
-		return writer.toString();
+		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
+			ISerializer<?> serializer = SerializerFactory.create().createManager().create(type);
+			serializer.serialize(this, writer);
+			return writer.toString();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

@@ -234,16 +234,16 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 			file.getParentFile().mkdirs();
 			file.createNewFile();
 		}
-		FileOutputStream out = new FileOutputStream(file, false);
-		if (bo instanceof ITrackStatusOperator) {
-			ITrackStatusOperator operator = (ITrackStatusOperator) bo;
-			// 清理标记删除的数据
-			BOUtilities.removeDeleted(bo);
-			// 重置状态
-			operator.markOld(true);
+		try (FileOutputStream out = new FileOutputStream(file, false)) {
+			if (bo instanceof ITrackStatusOperator) {
+				ITrackStatusOperator operator = (ITrackStatusOperator) bo;
+				// 清理标记删除的数据
+				BOUtilities.removeDeleted(bo);
+				// 重置状态
+				operator.markOld(true);
+			}
+			out.write(bo.toString("xml").getBytes("utf-8"));
 		}
-		out.write(bo.toString("xml").getBytes("utf-8"));
-		out.close();
 		StringBuilder builder = new StringBuilder();
 		builder.append(file.getParentFile().getPath());
 		builder.append(File.separator);

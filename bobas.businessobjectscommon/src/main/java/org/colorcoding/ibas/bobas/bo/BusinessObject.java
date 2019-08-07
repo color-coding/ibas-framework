@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.bo;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.function.Consumer;
 
@@ -182,10 +183,13 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 
 	@Override
 	public String toString(String type) {
-		ISerializer<?> serializer = SerializerFactory.create().createManager().create(type);
-		ByteArrayOutputStream writer = new ByteArrayOutputStream();
-		serializer.serialize(this, writer);
-		return writer.toString();
+		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
+			ISerializer<?> serializer = SerializerFactory.create().createManager().create(type);
+			serializer.serialize(this, writer);
+			return writer.toString();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/*

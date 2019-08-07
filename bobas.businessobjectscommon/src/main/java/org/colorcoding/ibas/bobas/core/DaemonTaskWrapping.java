@@ -172,8 +172,7 @@ class DaemonTaskWrapping {
 	/**
 	 * 尝试运行
 	 * 
-	 * @param time
-	 *            当前系统时间
+	 * @param time 当前系统时间
 	 * @return true，可以运行；false，不能运行。
 	 */
 	public boolean tryRun(long time) {
@@ -207,10 +206,10 @@ class DaemonTaskWrapping {
 					// 超过锁时间，删除此文件
 					lockFile.delete();
 				}
-				FileWriter fw = new FileWriter(lockFile);
-				fw.write(String.format("ibas lock file, create by %s.", singleTask.hashCode()));
-				fw.flush();
-				fw.close();
+				try (FileWriter fw = new FileWriter(lockFile)) {
+					fw.write(String.format("ibas lock file, create by %s.", singleTask.hashCode()));
+					fw.flush();
+				}
 			} catch (Exception e) {
 				// 创建锁文件失败，任务不运行
 				Logger.log(e);

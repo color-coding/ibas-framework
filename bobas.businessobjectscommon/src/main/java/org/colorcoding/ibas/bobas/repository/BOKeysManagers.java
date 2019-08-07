@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.repository;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
@@ -80,32 +81,34 @@ class FileKeysManager implements IBOKeysManager {
 					file.getParentFile().mkdirs();
 					file.createNewFile();
 				}
-				Properties props = new Properties();
-				props.load(new FileInputStream(file));
-				String value = props.getProperty(tagBO.getObjectCode());
-				if (value == null || value.isEmpty()) {
-					value = "1";
+				try (InputStream stream = new FileInputStream(file)) {
+					Properties props = new Properties();
+					props.load(stream);
+					String value = props.getProperty(tagBO.getObjectCode());
+					if (value == null || value.isEmpty()) {
+						value = "1";
+					}
+					int key = 1, nextKey = 1;
+					key = Integer.parseInt(value);
+					nextKey = key + 1;
+					if (bo instanceof IBODocument) {
+						IBODocument item = (IBODocument) bo;
+						item.setDocEntry(key);
+						keys = new KeyValue[] { new KeyValue("DocEntry", key) };
+					} else if (bo instanceof IBOMasterData) {
+						IBOMasterData item = (IBOMasterData) bo;
+						item.setDocEntry(key);
+						keys = new KeyValue[] { new KeyValue("DocEntry", key) };
+					} else if (bo instanceof IBOSimple) {
+						IBOSimple item = (IBOSimple) bo;
+						item.setObjectKey(key);
+						keys = new KeyValue[] { new KeyValue("ObjectKey", key) };
+					}
+					try (OutputStream fos = new FileOutputStream(file)) {
+						props.setProperty(tagBO.getObjectCode(), String.valueOf(nextKey));
+						props.store(fos, String.format("fixed by transaction [%s].", this.getTransactionId()));
+					}
 				}
-				int key = 1, nextKey = 1;
-				key = Integer.parseInt(value);
-				nextKey = key + 1;
-				if (bo instanceof IBODocument) {
-					IBODocument item = (IBODocument) bo;
-					item.setDocEntry(key);
-					keys = new KeyValue[] { new KeyValue("DocEntry", key) };
-				} else if (bo instanceof IBOMasterData) {
-					IBOMasterData item = (IBOMasterData) bo;
-					item.setDocEntry(key);
-					keys = new KeyValue[] { new KeyValue("DocEntry", key) };
-				} else if (bo instanceof IBOSimple) {
-					IBOSimple item = (IBOSimple) bo;
-					item.setObjectKey(key);
-					keys = new KeyValue[] { new KeyValue("ObjectKey", key) };
-				}
-				OutputStream fos = new FileOutputStream(file);
-				props.setProperty(tagBO.getObjectCode(), String.valueOf(nextKey));
-				props.store(fos, String.format("fixed by transaction [%s].", this.getTransactionId()));
-				fos.close();
 			}
 			return keys;
 		} catch (Exception e) {

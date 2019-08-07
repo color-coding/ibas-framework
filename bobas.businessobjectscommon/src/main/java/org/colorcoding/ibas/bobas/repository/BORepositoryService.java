@@ -13,7 +13,6 @@ import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.logic.BusinessLogicException;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.organization.IOrganizationManager;
@@ -361,7 +360,7 @@ public class BORepositoryService implements IBORepositoryService {
 					if (message.getCode() != 0) {
 						Logger.log(MessageLevel.DEBUG, MSG_TRANSACTION_SP_VALUES, type.toString(), trigger.toString(),
 								message.getCode(), message.getMessage());
-						throw new BusinessLogicException(message.getMessage());
+						throw new TransactionException(message.getMessage());
 					}
 				}
 			} catch (TransactionException e) {

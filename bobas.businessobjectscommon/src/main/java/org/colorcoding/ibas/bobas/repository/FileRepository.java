@@ -65,16 +65,12 @@ public class FileRepository extends FileRepositoryReadonly implements IFileRepos
 		if (!ouFile.exists()) {
 			ouFile.getParentFile().mkdirs();
 		}
-		OutputStream outputStream = new FileOutputStream(ouFile);
-		try {
+		try (OutputStream outputStream = new FileOutputStream(ouFile)) {
 			int bytesRead = 0;
 			byte[] buffer = new byte[512];
 			while ((bytesRead = fileData.getStream().read(buffer, 0, buffer.length)) != -1) {
 				outputStream.write(buffer, 0, bytesRead);
 			}
-		} finally {
-			outputStream.close();
-			fileData.getStream().close();
 		}
 		Logger.log(MSG_REPOSITORY_WRITE_FILE, nFileData.getOriginalName() == null ? nFileData.getLocation()
 				: String.format("%s|%s", nFileData.getOriginalName(), nFileData.getLocation()));

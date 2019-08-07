@@ -57,13 +57,6 @@ public class SerializerXml extends Serializer<Schema> {
 			marshaller.marshal(object, outputStream);
 		} catch (JAXBException e) {
 			throw new SerializationException(e);
-		} finally {
-			if (outputStream != null) {
-				try {
-					outputStream.close();
-				} catch (IOException e) {
-				}
-			}
 		}
 	}
 
@@ -86,25 +79,19 @@ public class SerializerXml extends Serializer<Schema> {
 			validator.validate(xmlSource);
 		} catch (SAXException | IOException e) {
 			throw new ValidateException(e);
-		} finally {
-			if (data != null) {
-				try {
-					data.close();
-				} catch (IOException e) {
-				}
-			}
 		}
 	}
 
 	@Override
 	public Schema getSchema(Class<?> type) throws SerializationException {
-		try {
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 			this.getSchema(type, outputStream);
-			SchemaFactory factory = SchemaFactory.newInstance(XML_FILE_NAMESPACE);
-			Source xsdSource = new StreamSource(new ByteArrayInputStream(outputStream.toByteArray()));
-			return factory.newSchema(xsdSource);
-		} catch (SAXException e) {
+			try (InputStream stream = new ByteArrayInputStream(outputStream.toByteArray())) {
+				SchemaFactory factory = SchemaFactory.newInstance(XML_FILE_NAMESPACE);
+				Source xsdSource = new StreamSource(stream);
+				return factory.newSchema(xsdSource);
+			}
+		} catch (SAXException | IOException e) {
 			throw new SerializationException(e);
 		}
 	}
@@ -138,13 +125,6 @@ public class SerializerXml extends Serializer<Schema> {
 			transformer.transform(new DOMSource(document), new StreamResult(outputStream));
 		} catch (ParserConfigurationException | TransformerException e) {
 			throw new SerializationException(e);
-		} finally {
-			if (outputStream != null) {
-				try {
-					outputStream.close();
-				} catch (IOException e) {
-				}
-			}
 		}
 	}
 

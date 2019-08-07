@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.message;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -58,8 +59,7 @@ public class Logger {
 	/**
 	 * 日记记录主要方法
 	 * 
-	 * @param message
-	 *            传递过来的消息
+	 * @param message 传递过来的消息
 	 */
 	public static void log(IMessage message) {
 		if (message == null) {
@@ -73,8 +73,7 @@ public class Logger {
 	/**
 	 * 记录消息
 	 * 
-	 * @param message
-	 *            消息内容
+	 * @param message 消息内容
 	 */
 	public static void log(String message) {
 		log(MessageLevel.INFO, message, "");
@@ -83,10 +82,8 @@ public class Logger {
 	/**
 	 * 记录消息
 	 * 
-	 * @param level
-	 *            消息级别
-	 * @param message
-	 *            消息内容
+	 * @param level   消息级别
+	 * @param message 消息内容
 	 */
 	public static void log(MessageLevel level, String message) {
 		log(Message.create(level, message));
@@ -95,10 +92,8 @@ public class Logger {
 	/**
 	 * 记录消息，带格式参数（message %s.）
 	 * 
-	 * @param message
-	 *            消息内容及格式
-	 * @param args
-	 *            格式中的参数
+	 * @param message 消息内容及格式
+	 * @param args    格式中的参数
 	 */
 	public static void log(String message, Object... args) {
 		log(MessageLevel.INFO, message, args);
@@ -107,12 +102,9 @@ public class Logger {
 	/**
 	 * 记录消息，带格式参数（message %s.）
 	 * 
-	 * @param level
-	 *            消息级别
-	 * @param message
-	 *            消息内容及格式
-	 * @param args
-	 *            格式中的参数
+	 * @param level   消息级别
+	 * @param message 消息内容及格式
+	 * @param args    格式中的参数
 	 */
 	public static void log(MessageLevel level, String message, Object... args) {
 		log(level, String.format(message, args));
@@ -121,8 +113,7 @@ public class Logger {
 	/**
 	 * 记录消息
 	 * 
-	 * @param exception
-	 *            异常
+	 * @param exception 异常
 	 */
 	public static void log(Exception e) {
 		if (e == null) {
@@ -134,19 +125,20 @@ public class Logger {
 	/**
 	 * 记录消息
 	 * 
-	 * @param level
-	 *            消息级别
-	 * @param exception
-	 *            异常
+	 * @param level     消息级别
+	 * @param exception 异常
 	 */
 	public static void log(MessageLevel level, Exception e) {
 		if (e == null) {
 			return;
 		}
-		StringWriter stringWriter = new StringWriter();
-		PrintWriter printWriter = new PrintWriter(stringWriter);
-		e.printStackTrace(printWriter);
-		log(level, stringWriter.toString());
+		try (StringWriter stringWriter = new StringWriter()) {
+			try (PrintWriter printWriter = new PrintWriter(stringWriter)) {
+				e.printStackTrace(printWriter);
+				log(level, stringWriter.toString());
+			}
+		} catch (IOException e1) {
+		}
 	}
 
 }

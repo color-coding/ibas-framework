@@ -100,14 +100,12 @@ public class FileData extends Serializable {
 	 * @throws IOException
 	 */
 	public byte[] getFileBytes() throws IOException {
-		FileInputStream inputStream = null;
-		try {
-			File file = new File(this.getLocation());
-			long fileSize = file.length();
-			if (fileSize > Integer.MAX_VALUE) {
-				throw new IOException(I18N.prop("msg_bobas_invalid_data"));
-			}
-			inputStream = new FileInputStream(file);
+		File file = new File(this.getLocation());
+		long fileSize = file.length();
+		if (fileSize > Integer.MAX_VALUE) {
+			throw new IOException(I18N.prop("msg_bobas_invalid_data"));
+		}
+		try (FileInputStream inputStream = new FileInputStream(file)) {
 			byte[] buffer = new byte[(int) fileSize];
 			int offset = 0;
 			int numRead = 0;
@@ -116,10 +114,13 @@ public class FileData extends Serializable {
 				offset += numRead;
 			}
 			return buffer;
-		} finally {
-			if (inputStream != null) {
-				inputStream.close();
-			}
+		}
+	}
+
+	@Override
+	public void finalize() {
+		if (this.stream != null) {
+			this.stream = null;
 		}
 	}
 

@@ -82,13 +82,14 @@ public class ConfigurationManagerFile extends ConfigurationManager {
 
 	@Override
 	public synchronized void update() {
-		try {
-			if (this.getConfigFile() == null || this.getConfigFile().isEmpty())
-				return;
-			File file = new File(this.getConfigFile());
-			if (!file.exists())
-				return;
-			InputStream stream = new FileInputStream(file);
+		if (this.getConfigFile() == null || this.getConfigFile().isEmpty()) {
+			return;
+		}
+		File file = new File(this.getConfigFile());
+		if (!file.exists()) {
+			return;
+		}
+		try (InputStream stream = new FileInputStream(file)) {
 			JAXBContext context = JAXBContext.newInstance(ConfigurationManagerFile.class);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			ConfigurationManagerFile tmpManager = (ConfigurationManagerFile) unmarshaller.unmarshal(stream);

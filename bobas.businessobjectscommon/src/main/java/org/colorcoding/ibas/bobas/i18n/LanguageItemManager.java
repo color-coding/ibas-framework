@@ -2,7 +2,6 @@ package org.colorcoding.ibas.bobas.i18n;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -126,9 +125,8 @@ public class LanguageItemManager implements ILanguageItemManager {
 		if (file == null || !file.getProtocol().equals("jar")) {
 			return;
 		}
-		JarFile jarFile = ((JarURLConnection) file.openConnection()).getJarFile();
-		Enumeration<JarEntry> jarEntries = jarFile.entries();
-		if (jarEntries != null) {
+		try (JarFile jarFile = ((JarURLConnection) file.openConnection()).getJarFile()) {
+			Enumeration<JarEntry> jarEntries = jarFile.entries();
 			while (jarEntries.hasMoreElements()) {
 				JarEntry jarEntry = (JarEntry) jarEntries.nextElement();
 				if (jarEntry.isDirectory()) {
@@ -149,11 +147,9 @@ public class LanguageItemManager implements ILanguageItemManager {
 						continue;
 					}
 				}
-				InputStream inputStream = jarFile.getInputStream(jarEntry);
-				if (inputStream != null) {
-					List<ILanguageItem> languageItems;
-					try {
-						languageItems = this.loadFileContent(new InputStreamReader(inputStream, "UTF-8"));
+				try (InputStream inputStream = jarFile.getInputStream(jarEntry)) {
+					try (Reader reader = new InputStreamReader(inputStream, "UTF-8")) {
+						List<ILanguageItem> languageItems = this.loadFileContent(reader);
 						for (ILanguageItem item : languageItems) {
 							this.getLanguageItems().put(item.getKey(), item);
 						}
@@ -163,11 +159,9 @@ public class LanguageItemManager implements ILanguageItemManager {
 					} catch (UnsupportedEncodingException e) {
 						Logger.log(MessageLevel.DEBUG, e);
 					}
-					inputStream.close();
 				}
 			}
 		}
-		jarFile.close();
 	}
 
 	/**
@@ -229,12 +223,15 @@ public class LanguageItemManager implements ILanguageItemManager {
 	}
 
 	protected List<ILanguageItem> loadFileContent(String file) {
-		try {
-			InputStreamReader reader = new InputStreamReader(new FileInputStream(file), "UTF-8");
-			List<ILanguageItem> languageItems = this.loadFileContent(reader);
-			Logger.log(MSG_I18N_READ_FILE_DATA, file);
-			return languageItems;
-		} catch (UnsupportedEncodingException | FileNotFoundException e) {
+		try (InputStream stream = new FileInputStream(file)) {
+			try (Reader reader = new InputStreamReader(stream, "UTF-8")) {
+				List<ILanguageItem> languageItems = this.loadFileContent(reader);
+				Logger.log(MSG_I18N_READ_FILE_DATA, file);
+				return languageItems;
+			} catch (IOException e) {
+				Logger.log(e);
+			}
+		} catch (IOException e) {
 			Logger.log(e);
 		}
 		return new ArrayList<>();
@@ -243,25 +240,23 @@ public class LanguageItemManager implements ILanguageItemManager {
 	protected List<ILanguageItem> loadFileContent(Reader reader) {
 		ArrayList<ILanguageItem> languageItems = new ArrayList<>();
 		try {
-			if (reader != null) {
-				Properties props = new Properties();
-				props.load(reader);
-				Enumeration<?> enumeration = props.propertyNames();
-				while (enumeration.hasMoreElements()) {
-					String key = (String) enumeration.nextElement();
-					// 去掉注释
-					if (key == null || key.isEmpty())
-						continue;
-					key = key.trim();// 去掉两端的空格
-					String property = props.getProperty(key);
-					if (property == null || property.isEmpty())
-						continue;
-					// 判断是否存在含有key 的 item
-					ILanguageItem item = new LanguageItem();
-					item.setKey(key);
-					item.addContent(this.getLanguageCode(), property);
-					languageItems.add(item);
-				}
+			Properties props = new Properties();
+			props.load(reader);
+			Enumeration<?> enumeration = props.propertyNames();
+			while (enumeration.hasMoreElements()) {
+				String key = (String) enumeration.nextElement();
+				// 去掉注释
+				if (key == null || key.isEmpty())
+					continue;
+				key = key.trim();// 去掉两端的空格
+				String property = props.getProperty(key);
+				if (property == null || property.isEmpty())
+					continue;
+				// 判断是否存在含有key 的 item
+				ILanguageItem item = new LanguageItem();
+				item.setKey(key);
+				item.addContent(this.getLanguageCode(), property);
+				languageItems.add(item);
 			}
 		} catch (Exception e) {
 			Logger.log(e);

@@ -153,8 +153,7 @@ public class BORepository4FileReadonly extends BORepositoryBase implements IBORe
 					// 数据已够
 					break;
 				}
-				try {
-					FileInputStream fileStream = new FileInputStream(file);
+				try (FileInputStream fileStream = new FileInputStream(file)) {
 					IBusinessObjectBase nBO = (IBusinessObjectBase) unmarshaller.unmarshal(fileStream);
 					if (nBO.getClass().equals(boType)) {
 						if (judgmentLinks == null || judgmentLinks.judge(nBO)) {
