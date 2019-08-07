@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.ArrayList;
+import org.colorcoding.ibas.bobas.data.List;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "LanguageItem", namespace = MyConfiguration.NAMESPACE_BOBAS_I18N)
@@ -30,11 +31,11 @@ public class LanguageItem implements ILanguageItem {
 		this.key = key;
 	}
 
-	private ArrayList<ILanguageItemContent> languageItemContents;
+	private List<ILanguageItemContent> languageItemContents;
 
 	@XmlElementWrapper(name = "LanguageItemContents")
 	@XmlElement(name = "LanguageItemContent", type = LanguageItemContent.class)
-	protected ArrayList<ILanguageItemContent> getLanguageItemContents() {
+	protected List<ILanguageItemContent> getLanguageItemContents() {
 		if (languageItemContents == null) {
 			languageItemContents = new ArrayList<ILanguageItemContent>();
 		}

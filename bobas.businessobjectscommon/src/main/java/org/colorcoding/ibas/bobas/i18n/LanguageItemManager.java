@@ -15,7 +15,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -52,12 +54,12 @@ public class LanguageItemManager implements ILanguageItemManager {
 		this.languageCode = languageCode;
 	}
 
-	private HashMap<String, ILanguageItem> languageItems;
+	private Map<String, ILanguageItem> languageItems;
 
 	/**
 	 * 存储多语言资源
 	 */
-	protected HashMap<String, ILanguageItem> getLanguageItems() {
+	protected Map<String, ILanguageItem> getLanguageItems() {
 		if (languageItems == null) {
 			languageItems = new HashMap<String, ILanguageItem>();
 		}
@@ -116,10 +118,8 @@ public class LanguageItemManager implements ILanguageItemManager {
 	/**
 	 * 加载jar包语言资源
 	 * 
-	 * @param file
-	 *            jar包
-	 * @param langCode
-	 *            语言编码
+	 * @param file     jar包
+	 * @param langCode 语言编码
 	 * @throws IOException
 	 */
 	public void loadResources(URL file, String langCode) throws IOException {
@@ -151,13 +151,13 @@ public class LanguageItemManager implements ILanguageItemManager {
 				}
 				InputStream inputStream = jarFile.getInputStream(jarEntry);
 				if (inputStream != null) {
-					ILanguageItem[] languageItems;
+					List<ILanguageItem> languageItems;
 					try {
 						languageItems = this.loadFileContent(new InputStreamReader(inputStream, "UTF-8"));
 						for (ILanguageItem item : languageItems) {
 							this.getLanguageItems().put(item.getKey(), item);
 						}
-						if (languageItems.length > 0) {
+						if (languageItems.size() > 0) {
 							Logger.log(MessageLevel.DEBUG, MSG_I18N_READ_FILE_DATA, file.toString());
 						}
 					} catch (UnsupportedEncodingException e) {
@@ -173,10 +173,8 @@ public class LanguageItemManager implements ILanguageItemManager {
 	/**
 	 * 加载语言，带语言编码
 	 * 
-	 * @param fileFolder
-	 *            工作目录
-	 * @param langCode
-	 *            语言编码
+	 * @param fileFolder 工作目录
+	 * @param langCode   语言编码
 	 */
 	public void readResources(String fileFolder, String langCode) {
 		if (fileFolder == null || fileFolder.isEmpty())
@@ -184,9 +182,8 @@ public class LanguageItemManager implements ILanguageItemManager {
 		File file = new File(fileFolder);
 		if (file.exists()) {
 			if (file.isFile()) {
-				ILanguageItem[] languageItems = this.loadFileContent(file.getPath());
 				// 添加新的语言内容
-				for (ILanguageItem item : languageItems) {
+				for (ILanguageItem item : this.loadFileContent(file.getPath())) {
 					this.getLanguageItems().put(item.getKey(), item);
 				}
 			} else {
@@ -231,20 +228,20 @@ public class LanguageItemManager implements ILanguageItemManager {
 		this.readResources(this.getWorkFolder(), this.getLanguageCode());// 使用语言
 	}
 
-	protected ILanguageItem[] loadFileContent(String file) {
+	protected List<ILanguageItem> loadFileContent(String file) {
 		try {
 			InputStreamReader reader = new InputStreamReader(new FileInputStream(file), "UTF-8");
-			ILanguageItem[] languageItems = this.loadFileContent(reader);
+			List<ILanguageItem> languageItems = this.loadFileContent(reader);
 			Logger.log(MSG_I18N_READ_FILE_DATA, file);
 			return languageItems;
 		} catch (UnsupportedEncodingException | FileNotFoundException e) {
 			Logger.log(e);
 		}
-		return new ILanguageItem[] {};
+		return new ArrayList<>();
 	}
 
-	protected ILanguageItem[] loadFileContent(Reader reader) {
-		ArrayList<ILanguageItem> languageItems = new ArrayList<ILanguageItem>();
+	protected List<ILanguageItem> loadFileContent(Reader reader) {
+		ArrayList<ILanguageItem> languageItems = new ArrayList<>();
 		try {
 			if (reader != null) {
 				Properties props = new Properties();
@@ -269,7 +266,7 @@ public class LanguageItemManager implements ILanguageItemManager {
 		} catch (Exception e) {
 			Logger.log(e);
 		}
-		return languageItems.toArray(new ILanguageItem[] {});
+		return languageItems;
 	}
 
 }

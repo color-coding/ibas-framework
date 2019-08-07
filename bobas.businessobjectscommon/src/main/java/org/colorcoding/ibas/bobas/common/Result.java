@@ -33,10 +33,10 @@ public class Result extends Serializable implements IResult {
 		this.setMessage(message);
 	}
 
+	@XmlElement(name = "ResultCode")
 	private int resultCode;
 
 	@Override
-	@XmlElement(name = "ResultCode")
 	public final int getResultCode() {
 		return this.resultCode;
 	}
@@ -49,10 +49,10 @@ public class Result extends Serializable implements IResult {
 		}
 	}
 
+	@XmlElement(name = "Message")
 	private String message;
 
 	@Override
-	@XmlElement(name = "Message")
 	public final String getMessage() {
 		return this.message;
 	}
