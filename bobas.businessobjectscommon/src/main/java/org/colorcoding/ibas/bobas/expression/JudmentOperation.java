@@ -133,6 +133,10 @@ public enum JudmentOperation {
 			return JudmentOperation.BEGIN_WITH;
 		} else if (value == emConditionOperation.END_WITH) {
 			return JudmentOperation.END_WITH;
+		} else if (value == emConditionOperation.NOT_BEGIN_WITH) {
+			return JudmentOperation.NOT_BEGIN_WITH;
+		} else if (value == emConditionOperation.NOT_END_WITH) {
+			return JudmentOperation.NOT_END_WITH;
 		}
 		return null;
 	}

@@ -76,7 +76,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
 			}
-			if (!this.getLeftValue().endsWith(this.getRightValue())) {
+			if (!this.getLeftValue().startsWith(this.getRightValue())) {
 				return true;
 			}
 			return false;
