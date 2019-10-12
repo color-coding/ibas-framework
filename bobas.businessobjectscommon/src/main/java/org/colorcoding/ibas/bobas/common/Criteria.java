@@ -417,14 +417,14 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 				}
 			}
 			// 复制查询条件
-			if (nCriteria.getConditions().size() > 1 && tmpCriteria.getConditions().size() > 1) {
+			if (nCriteria.getConditions().size() > 1) {
 				// 原始条件括号括起
 				ICondition condition = nCriteria.getConditions().firstOrDefault();
 				condition.setBracketOpen(condition.getBracketOpen() + 1);
 				condition = nCriteria.getConditions().lastOrDefault();
 				condition.setBracketClose(condition.getBracketClose() + 1);
 			}
-			if (tmpCriteria.getConditions().size() > 1 && nCriteria.getConditions().size() > 1) {
+			if (tmpCriteria.getConditions().size() > 1) {
 				// 拷贝条件括号括起
 				ICondition condition = tmpCriteria.getConditions().firstOrDefault();
 				condition.setBracketOpen(condition.getBracketOpen() + 1);
