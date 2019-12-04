@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.rule.common;
 
 import java.math.BigDecimal;
+import java.util.function.Predicate;
 
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.Decimal;
@@ -36,6 +37,20 @@ public class BusinessRuleSumElements extends BusinessRuleCollection {
 		this.getInputProperties().add(this.getSumming());
 		// 结果
 		this.getAffectedProperties().add(this.getResult());
+	}
+
+	/**
+	 * 构造方法
+	 * 
+	 * @param affectedProperty   属性-求和
+	 * @param collectionProperty 属性-集合
+	 * @param summingProperty    属性-被求和
+	 * @param filter             集合元素过滤器，true保留；false过滤
+	 */
+	public <T> BusinessRuleSumElements(IPropertyInfo<BigDecimal> affectedProperty, IPropertyInfo<?> collectionProperty,
+			IPropertyInfo<BigDecimal> summingProperty, Predicate<T> filter) {
+		this(affectedProperty, collectionProperty, summingProperty);
+		this.setCollectionFilter(filter);
 	}
 
 	private IPropertyInfo<BigDecimal> result;

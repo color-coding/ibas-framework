@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.rule.common;
 
+import java.util.function.Predicate;
+
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.i18n.I18N;
@@ -36,6 +38,20 @@ public class BusinessRuleDocumentStatus extends BusinessRuleCollection {
 		this.getInputProperties().add(this.getStatus());
 		// 结果
 		this.getAffectedProperties().add(this.getResult());
+	}
+
+	/**
+	 * 构造方法
+	 * 
+	 * @param affectedProperty   属性-被影响
+	 * @param collectionProperty 属性-集合
+	 * @param statusProperty     属性-取值
+	 * @param filter             集合元素过滤，true保留；false过滤。
+	 */
+	public <T> BusinessRuleDocumentStatus(IPropertyInfo<emDocumentStatus> affectedProperty,
+			IPropertyInfo<?> collectionProperty, IPropertyInfo<emDocumentStatus> statusProperty, Predicate<T> filter) {
+		this(affectedProperty, collectionProperty, statusProperty);
+		this.setCollectionFilter(filter);
 	}
 
 	private IPropertyInfo<emDocumentStatus> result;

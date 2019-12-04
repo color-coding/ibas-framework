@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.rule;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
@@ -31,7 +32,19 @@ public abstract class BusinessRuleCollection extends BusinessRule {
 	 * @param property 集合属性
 	 */
 	public BusinessRuleCollection(IPropertyInfo<?> collection) {
+		this();
 		this.setCollection(collection);
+	}
+
+	/**
+	 * 构造
+	 * 
+	 * @param property 集合属性
+	 * @param filter   集合元素过滤器，true保留；false过滤
+	 */
+	public <T> BusinessRuleCollection(IPropertyInfo<?> collection, Predicate<T> filter) {
+		this(collection);
+		this.setCollectionFilter(filter);
 	}
 
 	private IPropertyInfo<?> collection;
@@ -44,6 +57,16 @@ public abstract class BusinessRuleCollection extends BusinessRule {
 		this.collection = collection;
 	}
 
+	private Predicate<?> collectionFilter;
+
+	public final Predicate<?> getCollectionFilter() {
+		return collectionFilter;
+	}
+
+	protected final void setCollectionFilter(Predicate<?> collectionFilter) {
+		this.collectionFilter = collectionFilter;
+	}
+
 	@Override
 	public final void execute(IBusinessObject bo, String trigger) throws BusinessRuleException {
 		try {
@@ -53,6 +76,8 @@ public abstract class BusinessRuleCollection extends BusinessRule {
 				IManagedProperties boProperties = (IManagedProperties) bo;
 				Object tmp = boProperties.getProperty(this.getCollection());
 				if (tmp instanceof Collection) {
+					@SuppressWarnings("unchecked")
+					Predicate<Object> filter = (Predicate<Object>) this.getCollectionFilter();
 					Collection<?> collection = (Collection<?>) tmp;
 					for (IPropertyInfo<?> propertyInfo : this.getInputProperties()) {
 						ArrayList<Object> values = new ArrayList<>(collection.size());
@@ -63,6 +88,10 @@ public abstract class BusinessRuleCollection extends BusinessRule {
 								if (trackStatus.isDeleted()) {
 									continue;
 								}
+							}
+							if (filter != null && !filter.test(item)) {
+								// 过滤不符合条件的对象
+								continue;
 							}
 							if (item instanceof IManagedProperties) {
 								IManagedProperties itemProperties = (IManagedProperties) item;
