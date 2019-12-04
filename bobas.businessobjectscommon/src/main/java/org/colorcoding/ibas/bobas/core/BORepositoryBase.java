@@ -68,7 +68,9 @@ public abstract class BORepositoryBase implements IBORepositoryReadonly, Cloneab
 			bo.setCreateDate(DateTime.getToday());
 			bo.setCreateTime(Short.valueOf(DateTime.getNow().toString("HHmm")));
 			bo.setCreateUserSign(this.getCurrentUser().getId());
-			bo.setCreateActionId(this.getTransactionId());
+			if (bo.getCreateActionId() == null || bo.getCreateActionId().isEmpty()) {
+				bo.setCreateActionId(this.getTransactionId());
+			}
 			bo.setLogInst(1);
 			if (bo instanceof IDataOwnership) {
 				// 数据所有者标记

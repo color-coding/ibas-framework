@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.db.hana;
 
+import org.colorcoding.ibas.bobas.common.ConditionAliasDataType;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.SqlQuery;
 import org.colorcoding.ibas.bobas.data.KeyValue;
@@ -17,11 +18,11 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	@Override
-	public String getCastTypeString(DbFieldType dbFieldType) {
+	public String getCastTypeString(ConditionAliasDataType type) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("%s");
-		if (dbFieldType != null) {
-			if (dbFieldType == DbFieldType.ALPHANUMERIC) {
+		if (type != null) {
+			if (type == ConditionAliasDataType.ALPHANUMERIC) {
 				stringBuilder = new StringBuilder();
 				stringBuilder.append("CAST");
 				stringBuilder.append("(");
@@ -32,7 +33,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 				stringBuilder.append("NVARCHAR");
 				stringBuilder.append(")");
 				return stringBuilder.toString();
-			} else if (dbFieldType == DbFieldType.DATE) {
+			} else if (type == ConditionAliasDataType.DATE) {
 				stringBuilder = new StringBuilder();
 				stringBuilder.append("CAST");
 				stringBuilder.append("(");
@@ -43,7 +44,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 				stringBuilder.append("DATE");
 				stringBuilder.append(")");
 				return stringBuilder.toString();
-			} else if (dbFieldType == DbFieldType.NUMERIC) {
+			} else if (type == ConditionAliasDataType.NUMERIC) {
 				stringBuilder = new StringBuilder();
 				stringBuilder.append("CAST");
 				stringBuilder.append("(");
@@ -54,7 +55,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 				stringBuilder.append("INTEGER");
 				stringBuilder.append(")");
 				return stringBuilder.toString();
-			} else if (dbFieldType == DbFieldType.DECIMAL) {
+			} else if (type == ConditionAliasDataType.DECIMAL) {
 				stringBuilder = new StringBuilder();
 				stringBuilder.append("CAST");
 				stringBuilder.append("(");

@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.db;
 
+import org.colorcoding.ibas.bobas.common.ConditionAliasDataType;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
@@ -46,13 +47,12 @@ public interface ISqlScripts {
 	/**
 	 * 字段值转为条件字段类型( CAST(%s AS NVARCHAR) )
 	 */
-	String getCastTypeString(DbFieldType dbFieldType);
+	String getCastTypeString(ConditionAliasDataType type);
 
 	/**
 	 * 获取数据库绑定数据类型
 	 * 
-	 * @param dbType
-	 *            数据库数据类型
+	 * @param dbType 数据库数据类型
 	 * @return 数据库绑定数据类型
 	 */
 	DbFieldType toDbFieldType(String dbType);
@@ -60,10 +60,8 @@ public interface ISqlScripts {
 	/**
 	 * 获取值的语句
 	 * 
-	 * @param type
-	 *            类型
-	 * @param value
-	 *            字符串
+	 * @param type  类型
+	 * @param value 字符串
 	 * @return 语句值 （N'%s'）
 	 * @throws SqlScriptException
 	 */
@@ -72,10 +70,8 @@ public interface ISqlScripts {
 	/**
 	 * 获取条件操作符的语句
 	 * 
-	 * @param value
-	 *            操作符
-	 * @param opValue
-	 *            操作的值
+	 * @param value   操作符
+	 * @param opValue 操作的值
 	 * @return 语句值（ = %s）
 	 * @throws SqlScriptException
 	 */
@@ -84,8 +80,7 @@ public interface ISqlScripts {
 	/**
 	 * 获取条件操作符的语句
 	 * 
-	 * @param value
-	 *            操作符
+	 * @param value 操作符
 	 * @return 语句值（ = %s）
 	 * @throws SqlScriptException
 	 */
@@ -94,8 +89,7 @@ public interface ISqlScripts {
 	/**
 	 * 获取条件关系的语句
 	 * 
-	 * @param value
-	 *            关系符
+	 * @param value 关系符
 	 * @return 语句值 （and）
 	 * @throws SqlScriptException
 	 */
@@ -104,8 +98,7 @@ public interface ISqlScripts {
 	/**
 	 * 获取排序的语句
 	 * 
-	 * @param value
-	 *            排序
+	 * @param value 排序
 	 * @return 语句值 （DESC;ASC）
 	 * @throws SqlScriptException
 	 */
@@ -114,8 +107,7 @@ public interface ISqlScripts {
 	/**
 	 * 获取业务对象主键查询
 	 * 
-	 * @param boCode
-	 *            业务对象
+	 * @param boCode 业务对象
 	 * @return 主键查询语句，例:SELECT "AutoKey" FROM "CC_SYS_ONNM" WHERE "ObjectCode" =
 	 *         '%s'
 	 * @throws SqlScriptException
@@ -125,8 +117,7 @@ public interface ISqlScripts {
 	/**
 	 * 获取业务对象系列
 	 * 
-	 * @param boCode
-	 *            业务对象
+	 * @param boCode 业务对象
 	 * @return 主键查询语句，例:SELECT "NextNum", "Template" FROM "CC_SYS_NNM1" WHERE
 	 *         "ObjectCode" = '%s' AND "Series" = %s AND "Locked" = 'N'
 	 * @throws SqlScriptException
@@ -136,10 +127,8 @@ public interface ISqlScripts {
 	/**
 	 * 获取更新业务对象主键查询
 	 * 
-	 * @param boCode
-	 *            业务对象
-	 * @param addValue
-	 *            增加值
+	 * @param boCode   业务对象
+	 * @param addValue 增加值
 	 * @return 主键查询语句，例:UPDATE "CC_SYS_NNM1" SET "NextNum" = "NextNum" + {addValue}
 	 *         WHERE "ObjectCode" = '%s' AND "Series" = %s AND "Locked" = 'N'
 	 * @throws SqlScriptException
@@ -149,10 +138,8 @@ public interface ISqlScripts {
 	/**
 	 * 获取更新业务对象主键查询
 	 * 
-	 * @param boCode
-	 *            业务对象
-	 * @param addValue
-	 *            增加值
+	 * @param boCode   业务对象
+	 * @param addValue 增加值
 	 * @return 主键查询语句，例:UPDATE "CC_SYS_ONNM" SET "AutoKey" = "AutoKey" + {addValue}
 	 *         WHERE "ObjectCode" = '%s'
 	 * @throws SqlScriptException
@@ -162,16 +149,11 @@ public interface ISqlScripts {
 	/**
 	 * 获取业务对象事务通知语句
 	 * 
-	 * @param boCode
-	 *            业务对象编码
-	 * @param type
-	 *            事务类型
-	 * @param keyCount
-	 *            对象主键数量
-	 * @param keyNames
-	 *            对象主键名称
-	 * @param keyValues
-	 *            对象主键值
+	 * @param boCode    业务对象编码
+	 * @param type      事务类型
+	 * @param keyCount  对象主键数量
+	 * @param keyNames  对象主键名称
+	 * @param keyValues 对象主键值
 	 * @return
 	 * @throws SqlScriptException
 	 */
@@ -180,16 +162,11 @@ public interface ISqlScripts {
 	/**
 	 * 组合select查询
 	 * 
-	 * @param partSelect
-	 *            select部分（*）
-	 * @param table
-	 *            表名（"OUSR"）
-	 * @param partWhere
-	 *            条件（空；"Supper" = 'Y' AND "Name" = 'admin'）
-	 * @param partOrder
-	 *            排序（空； "Code" DESC, "Name" ASC）
-	 * @param result
-	 *            结果数量（-1，不限制；100）
+	 * @param partSelect select部分（*）
+	 * @param table      表名（"OUSR"）
+	 * @param partWhere  条件（空；"Supper" = 'Y' AND "Name" = 'admin'）
+	 * @param partOrder  排序（空； "Code" DESC, "Name" ASC）
+	 * @param result     结果数量（-1，不限制；100）
 	 * @return 组合后的查询
 	 * @throws SqlScriptException
 	 */
@@ -198,10 +175,8 @@ public interface ISqlScripts {
 	/**
 	 * 组合删除查询
 	 * 
-	 * @param table
-	 *            表
-	 * @param partWhere
-	 *            条件
+	 * @param table     表
+	 * @param partWhere 条件
 	 * @return
 	 * @throws SqlScriptException
 	 */
@@ -210,12 +185,9 @@ public interface ISqlScripts {
 	/**
 	 * 组合更新查询
 	 * 
-	 * @param table
-	 *            表
-	 * @param partFieldValues
-	 *            字段及值
-	 * @param partWhere
-	 *            条件
+	 * @param table           表
+	 * @param partFieldValues 字段及值
+	 * @param partWhere       条件
 	 * @return
 	 * @throws SqlScriptException
 	 */
@@ -224,12 +196,9 @@ public interface ISqlScripts {
 	/**
 	 * 组合插入查询
 	 * 
-	 * @param table
-	 *            表
-	 * @param partFields
-	 *            字段
-	 * @param partValues
-	 *            值
+	 * @param table      表
+	 * @param partFields 字段
+	 * @param partValues 值
 	 * @return
 	 * @throws SqlScriptException
 	 */
@@ -238,12 +207,9 @@ public interface ISqlScripts {
 	/**
 	 * 组合获取最大值查询
 	 * 
-	 * @param field
-	 *            最大值字段
-	 * @param table
-	 *            表名
-	 * @param partWhere
-	 *            条件
+	 * @param field     最大值字段
+	 * @param table     表名
+	 * @param partWhere 条件
 	 * @return
 	 * @throws SqlScriptException
 	 */
@@ -252,12 +218,9 @@ public interface ISqlScripts {
 	/**
 	 * 组合存储过程语句
 	 * 
-	 * @param spName
-	 *            存储过程名称
-	 * @param selects
-	 *            选择的列名称，可能为空
-	 * @param parameters
-	 *            参数
+	 * @param spName     存储过程名称
+	 * @param selects    选择的列名称，可能为空
+	 * @param parameters 参数
 	 * @return
 	 * @throws SqlScriptException
 	 */

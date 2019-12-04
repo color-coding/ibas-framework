@@ -9,6 +9,7 @@ import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.bo.IBOUserFields;
 import org.colorcoding.ibas.bobas.bo.IUserField;
 import org.colorcoding.ibas.bobas.bo.UserField;
+import org.colorcoding.ibas.bobas.common.ConditionAliasDataType;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
@@ -179,15 +180,17 @@ public abstract class BOAdapter implements IBOAdapter {
 					stringBuilder.append("(");
 				}
 				// 字段名
-				if ((condition.getAliasDataType() == DbFieldType.NUMERIC
-						|| condition.getAliasDataType() == DbFieldType.DECIMAL
-						|| condition.getAliasDataType() == DbFieldType.DATE)
+				if (condition.getAliasDataType() == ConditionAliasDataType.FREE_TEXT) {
+					stringBuilder.append(sqlScripts.getSqlString(DbFieldType.ALPHANUMERIC, condition.getAlias()));
+				} else if ((condition.getAliasDataType() == ConditionAliasDataType.NUMERIC
+						|| condition.getAliasDataType() == ConditionAliasDataType.DECIMAL
+						|| condition.getAliasDataType() == ConditionAliasDataType.DATE)
 						&& (condition.getOperation() == ConditionOperation.START
 								|| condition.getOperation() == ConditionOperation.END
 								|| condition.getOperation() == ConditionOperation.CONTAIN
 								|| condition.getOperation() == ConditionOperation.NOT_CONTAIN)) {
 					// 数值类型的字段且需要作为字符比较的
-					String toVarchar = sqlScripts.getCastTypeString(DbFieldType.ALPHANUMERIC);
+					String toVarchar = sqlScripts.getCastTypeString(ConditionAliasDataType.ALPHANUMERIC);
 					stringBuilder.append(String.format(toVarchar, String.format(dbObject, condition.getAlias())));
 				} else if (condition.getComparedAlias() != null && !condition.getComparedAlias().isEmpty()) {
 					// 字段之间比较，以主条件为比较类型
@@ -216,18 +219,23 @@ public abstract class BOAdapter implements IBOAdapter {
 						stringBuilder.append(sqlScripts.getSqlString(condition.getOperation(), condition.getValue()));
 					} else {
 						// 与值比较，[ItemCode] = 'A000001'
-						if (condition.getAliasDataType() == DbFieldType.NUMERIC
-								|| condition.getAliasDataType() == DbFieldType.DECIMAL) {
+						if (condition.getAliasDataType() == ConditionAliasDataType.NUMERIC
+								|| condition.getAliasDataType() == ConditionAliasDataType.DECIMAL) {
 							// 数值类型的字段
 							stringBuilder.append(sqlScripts.getSqlString(condition.getOperation()));
 							stringBuilder.append(" ");
 							stringBuilder.append(condition.getValue());
+						} else if (condition.getAliasDataType() == ConditionAliasDataType.DATE) {
+							// 日期类型
+							stringBuilder.append(sqlScripts.getSqlString(condition.getOperation()));
+							stringBuilder.append(" ");
+							stringBuilder.append(sqlScripts.getSqlString(DbFieldType.DATE, condition.getValue()));
 						} else {
 							// 非数值类型字段
 							stringBuilder.append(sqlScripts.getSqlString(condition.getOperation()));
 							stringBuilder.append(" ");
-							stringBuilder.append(
-									sqlScripts.getSqlString(condition.getAliasDataType(), condition.getValue()));
+							stringBuilder
+									.append(sqlScripts.getSqlString(DbFieldType.ALPHANUMERIC, condition.getValue()));
 						}
 					}
 				}
@@ -341,10 +349,6 @@ public abstract class BOAdapter implements IBOAdapter {
 			}
 			if (fieldsBuilder.length() == 0) {
 				// 没有字段
-				throw new ParsingException(I18N.prop("msg_bobas_not_allow_sql_scripts"));
-			}
-			if (valuesBuilder.length() == 0) {
-				// 没有字段值
 				throw new ParsingException(I18N.prop("msg_bobas_not_allow_sql_scripts"));
 			}
 			return new SqlQuery(

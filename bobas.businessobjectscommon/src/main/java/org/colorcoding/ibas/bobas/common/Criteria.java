@@ -25,6 +25,7 @@ import org.colorcoding.ibas.bobas.core.PropertyInfo;
 import org.colorcoding.ibas.bobas.core.PropertyInfoManager;
 import org.colorcoding.ibas.bobas.db.DataConvert;
 import org.colorcoding.ibas.bobas.mapping.DbField;
+import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.ISerializerManager;
 import org.colorcoding.ibas.bobas.serialization.Serializable;
@@ -499,7 +500,19 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 				// 修正字段名称
 				condition.setAlias(dbField.name());
 				// 修正类型
-				condition.setAliasDataType(dbField.type());
+				if (condition.getAliasDataType() != ConditionAliasDataType.FREE_TEXT) {
+					if (dbField.type() == DbFieldType.ALPHANUMERIC || dbField.type() == DbFieldType.MEMO) {
+						condition.setAliasDataType(ConditionAliasDataType.ALPHANUMERIC);
+					} else if (dbField.type() == DbFieldType.NUMERIC) {
+						condition.setAliasDataType(ConditionAliasDataType.NUMERIC);
+					} else if (dbField.type() == DbFieldType.DECIMAL) {
+						condition.setAliasDataType(ConditionAliasDataType.DECIMAL);
+					} else if (dbField.type() == DbFieldType.DATE) {
+						condition.setAliasDataType(ConditionAliasDataType.DATE);
+					} else {
+						condition.setAliasDataType(ConditionAliasDataType.ALPHANUMERIC);
+					}
+				}
 				// 修正枚举值
 				if (propertyInfo.getValueType().isEnum()) {
 					Object value = null;

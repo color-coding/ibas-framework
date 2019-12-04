@@ -1,7 +1,5 @@
 package org.colorcoding.ibas.bobas.common;
 
-import org.colorcoding.ibas.bobas.mapping.DbFieldType;
-
 /**
  * 查询条件
  * 
@@ -119,14 +117,14 @@ public interface ICondition {
 	 * 
 	 * @return
 	 */
-	DbFieldType getAliasDataType();
+	ConditionAliasDataType getAliasDataType();
 
 	/**
 	 * 设置-条件字段类型的字段
 	 * 
 	 * @param value
 	 */
-	void setAliasDataType(DbFieldType value);
+	void setAliasDataType(ConditionAliasDataType value);
 
 	/**
 	 * 获取-备注

@@ -21,6 +21,7 @@ import org.colorcoding.ibas.bobas.bo.IBOSeriesKey;
 import org.colorcoding.ibas.bobas.bo.IBOSimple;
 import org.colorcoding.ibas.bobas.bo.IBOSimpleLine;
 import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
+import org.colorcoding.ibas.bobas.common.ConditionAliasDataType;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
@@ -40,7 +41,6 @@ import org.colorcoding.ibas.bobas.db.ISqlScripts;
 import org.colorcoding.ibas.bobas.db.ParsingException;
 import org.colorcoding.ibas.bobas.db.SqlScriptException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
 class FileKeysManager implements IBOKeysManager {
 
@@ -421,7 +421,7 @@ class DbKeysManager implements IBOKeysManager {
 				ICriteria criteria = new Criteria();
 				ICondition condition = criteria.getConditions().create();
 				condition.setAlias(IBODocumentLine.MASTER_PRIMARY_KEY_NAME);
-				condition.setAliasDataType(DbFieldType.NUMERIC);
+				condition.setAliasDataType(ConditionAliasDataType.NUMERIC);
 				condition.setValue(item.getDocEntry().toString());
 				String table = String.format(sqlScripts.getDbObjectSign(),
 						this.getAdapter().getMasterTable((IManagedFields) bo));
@@ -482,7 +482,7 @@ class DbKeysManager implements IBOKeysManager {
 				ICriteria criteria = new Criteria();
 				ICondition condition = criteria.getConditions().create();
 				condition.setAlias(IBOSimpleLine.MASTER_PRIMARY_KEY_NAME);
-				condition.setAliasDataType(DbFieldType.NUMERIC);
+				condition.setAliasDataType(ConditionAliasDataType.NUMERIC);
 				condition.setValue(item.getObjectKey());
 				String table = String.format(sqlScripts.getDbObjectSign(),
 						this.getAdapter().getMasterTable((IManagedFields) bo));

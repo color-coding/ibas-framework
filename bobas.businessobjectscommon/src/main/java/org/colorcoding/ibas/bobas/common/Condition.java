@@ -9,7 +9,6 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.db.DataConvert;
-import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 import org.colorcoding.ibas.bobas.serialization.Serializable;
 
 /**
@@ -172,21 +171,21 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		this.relationship = value;
 	}
 
-	private DbFieldType aliasDataType = DbFieldType.UNKNOWN;
+	private ConditionAliasDataType aliasDataType = null;
 
 	// @XmlElement(name = "AliasDataType")
 	// 运行过程值，序列化不用输出
 	@Override
 	@XmlTransient
-	public DbFieldType getAliasDataType() {
+	public ConditionAliasDataType getAliasDataType() {
 		if (this.aliasDataType == null) {
-			this.aliasDataType = DbFieldType.UNKNOWN;
+			this.aliasDataType = ConditionAliasDataType.ALPHANUMERIC;
 		}
 		return this.aliasDataType;
 	}
 
 	@Override
-	public void setAliasDataType(DbFieldType value) {
+	public void setAliasDataType(ConditionAliasDataType value) {
 		this.aliasDataType = value;
 	}
 

@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.db.mysql;
 
+import org.colorcoding.ibas.bobas.common.ConditionAliasDataType;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.SqlQuery;
@@ -33,11 +34,11 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	 * 将字段转换成条件字段的类型
 	 */
 	@Override
-	public String getCastTypeString(DbFieldType dbFieldType) {
+	public String getCastTypeString(ConditionAliasDataType type) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("%s");
-		if (dbFieldType != null) {
-			if (dbFieldType == DbFieldType.ALPHANUMERIC) {
+		if (type != null) {
+			if (type == ConditionAliasDataType.ALPHANUMERIC) {
 				stringBuilder = new StringBuilder();
 				stringBuilder.append("CAST");
 				stringBuilder.append("(");
@@ -48,7 +49,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 				stringBuilder.append("CHAR");
 				stringBuilder.append(")");
 				return stringBuilder.toString();
-			} else if (dbFieldType == DbFieldType.DATE) {
+			} else if (type == ConditionAliasDataType.DATE) {
 				stringBuilder = new StringBuilder();
 				stringBuilder.append("CAST");
 				stringBuilder.append("(");
@@ -59,7 +60,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 				stringBuilder.append("DATETIME");
 				stringBuilder.append(")");
 				return stringBuilder.toString();
-			} else if (dbFieldType == DbFieldType.NUMERIC) {
+			} else if (type == ConditionAliasDataType.NUMERIC) {
 				stringBuilder = new StringBuilder();
 				stringBuilder.append("CAST");
 				stringBuilder.append("(");
@@ -70,7 +71,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 				stringBuilder.append("SIGNED");
 				stringBuilder.append(")");
 				return stringBuilder.toString();
-			} else if (dbFieldType == DbFieldType.DECIMAL) {
+			} else if (type == ConditionAliasDataType.DECIMAL) {
 				stringBuilder = new StringBuilder();
 				stringBuilder.append("CAST");
 				stringBuilder.append("(");
