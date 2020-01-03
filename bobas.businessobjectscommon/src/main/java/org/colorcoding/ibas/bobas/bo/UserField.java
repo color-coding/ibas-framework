@@ -15,7 +15,7 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-public class UserField extends BindableBase implements IUserField {
+public final class UserField extends BindableBase implements IUserField {
 
 	private static final long serialVersionUID = -4092373163622194831L;
 
@@ -40,31 +40,31 @@ public class UserField extends BindableBase implements IUserField {
 
 	@Override
 	@XmlElement(name = "Name")
-	public String getName() {
+	public final String getName() {
 		return this.fieldData.getName();
 	}
 
 	@Override
 	@XmlElement(name = "ValueType")
-	public DbFieldType getValueType() {
+	public final DbFieldType getValueType() {
 		return this.fieldData.getFieldType();
 	}
 
 	@Override
 	@XmlElement(name = "Value")
-	public Object getValue() {
+	public final Object getValue() {
 		return this.fieldData.getValue();
 	}
 
 	@Override
-	public void setValue(Object value) {
+	public final void setValue(Object value) {
 		Object oldValue = this.fieldData.getValue();
 		this.fieldData.setValue(value);
 		this.firePropertyChange(this.getName(), oldValue, value);
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return String.format("{user field: %s %s}", this.getName(), this.getValue());
 	}
 }

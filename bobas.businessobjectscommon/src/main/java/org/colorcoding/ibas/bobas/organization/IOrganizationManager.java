@@ -16,8 +16,7 @@ public interface IOrganizationManager {
 	/**
 	 * 获取用户
 	 * 
-	 * @param token
-	 *            用户的口令
+	 * @param token 用户的口令
 	 * @return 未找到应返回null
 	 */
 	IUser getUser(String token);
@@ -25,8 +24,7 @@ public interface IOrganizationManager {
 	/**
 	 * 获取用户
 	 * 
-	 * @param id
-	 *            用户ID
+	 * @param id 用户ID
 	 * @return 未找到返回UnknownUser
 	 */
 	IUser getUser(int id);
@@ -35,15 +33,8 @@ public interface IOrganizationManager {
 	 * 注册用户
 	 * 
 	 * @param user
+	 * @return 返回注册用户
 	 */
-	void register(IUser user);
+	IUser register(IUser user);
 
-	/**
-	 * 获取用户角色
-	 * 
-	 * @param user
-	 *            查询的用户
-	 * @return
-	 */
-	String[] getRoles(IUser user);
 }

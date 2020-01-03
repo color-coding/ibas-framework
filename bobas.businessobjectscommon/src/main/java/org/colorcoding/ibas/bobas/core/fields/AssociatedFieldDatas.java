@@ -5,7 +5,7 @@ import java.lang.reflect.Array;
 /**
  * 关联字段，业务对象
  */
-class AssociatedFieldDataBO extends AssociatedFieldDataBase<Object> {
+final class AssociatedFieldDataBO extends AssociatedFieldDataBase<Object> {
 
 	public AssociatedFieldDataBO(int assoCount) {
 		super(assoCount);
@@ -14,12 +14,12 @@ class AssociatedFieldDataBO extends AssociatedFieldDataBase<Object> {
 	private Object value = null;
 
 	@Override
-	public Object getValue() {
+	public final Object getValue() {
 		return this.value;
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		if (this.value != null && this.value.equals(value)) {
 			return false;
 		}
@@ -31,7 +31,7 @@ class AssociatedFieldDataBO extends AssociatedFieldDataBase<Object> {
 /**
  * 关联字段，业务数组
  */
-class AssociatedFieldDataArray extends AssociatedFieldDataBase<Object> {
+final class AssociatedFieldDataArray extends AssociatedFieldDataBase<Object> {
 
 	public AssociatedFieldDataArray(int assoCount) {
 		super(assoCount);
@@ -40,12 +40,12 @@ class AssociatedFieldDataArray extends AssociatedFieldDataBase<Object> {
 	private Object value;
 
 	@Override
-	public Object getValue() {
+	public final Object getValue() {
 		return this.value;
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		if (value == null) {
 			// 置空
 			this.value = null;

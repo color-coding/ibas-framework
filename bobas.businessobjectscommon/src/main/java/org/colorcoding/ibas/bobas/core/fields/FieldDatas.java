@@ -11,22 +11,24 @@ import org.colorcoding.ibas.bobas.data.Decimal;
 /**
  * 字段，整数型
  */
-class FieldDataInteger extends FieldDataBase<Integer> {
+final class FieldDataInteger extends FieldDataBase<Integer> {
+
+	public final static Integer DEFAULT_VALUE = Integer.valueOf("0");
 
 	public FieldDataInteger(Class<?> valueType) {
 		this.setValueType(valueType);
 	}
 
-	private int value = 0;
+	private Integer value = DEFAULT_VALUE;
 
 	@Override
-	public Integer getValue() {
+	public final Integer getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(Integer value) {
+	public final boolean setValue(Integer value) {
 		if (value == null) {
-			value = 0;
+			value = DEFAULT_VALUE;
 		}
 		if (this.value == value) {
 			return false;
@@ -36,7 +38,7 @@ class FieldDataInteger extends FieldDataBase<Integer> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((Integer) value);
 	}
 
@@ -45,22 +47,24 @@ class FieldDataInteger extends FieldDataBase<Integer> {
 /**
  * 字段，短整数型
  */
-class FieldDataShort extends FieldDataBase<Short> {
+final class FieldDataShort extends FieldDataBase<Short> {
+
+	public final static Short DEFAULT_VALUE = Short.valueOf("0");
 
 	public FieldDataShort(Class<?> valueType) {
 		this.setValueType(valueType);
 	}
 
-	private short value = 0;
+	private Short value = DEFAULT_VALUE;
 
 	@Override
-	public Short getValue() {
+	public final Short getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(Short value) {
+	public final boolean setValue(Short value) {
 		if (value == null) {
-			value = 0;
+			value = DEFAULT_VALUE;
 		}
 		if (this.value == value) {
 			return false;
@@ -70,7 +74,7 @@ class FieldDataShort extends FieldDataBase<Short> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((Short) value);
 	}
 
@@ -79,24 +83,25 @@ class FieldDataShort extends FieldDataBase<Short> {
 /**
  * 字段，字符型
  */
-class FieldDataChar extends FieldDataBase<Character> {
+final class FieldDataChar extends FieldDataBase<Character> {
+
 	public FieldDataChar(Class<?> valueType) {
 		this.setValueType(valueType);
 	}
 
 	@Override
-	public Class<?> getValueType() {
+	public final Class<?> getValueType() {
 		return Character.class;
 	}
 
 	private Character value = null;
 
 	@Override
-	public Character getValue() {
+	public final Character getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(Character value) {
+	public final boolean setValue(Character value) {
 		if (this.value != null && this.value.equals(value)) {
 			return false;
 		}
@@ -105,7 +110,7 @@ class FieldDataChar extends FieldDataBase<Character> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((Character) value);
 	}
 
@@ -114,7 +119,7 @@ class FieldDataChar extends FieldDataBase<Character> {
 /**
  * 字段，字符串
  */
-class FieldDataString extends FieldDataBase<String> {
+final class FieldDataString extends FieldDataBase<String> {
 
 	public FieldDataString(Class<?> valueType) {
 		this.setValueType(valueType);
@@ -123,11 +128,11 @@ class FieldDataString extends FieldDataBase<String> {
 	private String value = null;
 
 	@Override
-	public String getValue() {
+	public final String getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(String value) {
+	public final boolean setValue(String value) {
 		if (this.value != null && this.value.equals(value)) {
 			return false;
 		}
@@ -136,7 +141,7 @@ class FieldDataString extends FieldDataBase<String> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((String) value);
 	}
 }
@@ -144,22 +149,24 @@ class FieldDataString extends FieldDataBase<String> {
 /**
  * 字段，十进制数值
  */
-class FieldDataDecimal extends FieldDataBase<BigDecimal> {
+final class FieldDataDecimal extends FieldDataBase<BigDecimal> {
+
+	public final static BigDecimal DEFAULT_VALUE = Decimal.ZERO;
 
 	public FieldDataDecimal(Class<?> valueType) {
 		this.setValueType(valueType);
 	}
 
-	private BigDecimal value = Decimal.ZERO;
+	private BigDecimal value = DEFAULT_VALUE;
 
 	@Override
-	public BigDecimal getValue() {
+	public final BigDecimal getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(BigDecimal value) {
+	public final boolean setValue(BigDecimal value) {
 		if (value == null) {
-			value = Decimal.ZERO;
+			value = DEFAULT_VALUE;
 		}
 		if (this.value != null && (this.value.equals(value) || this.value.compareTo(value) == 0)) {
 			return false;
@@ -169,7 +176,7 @@ class FieldDataDecimal extends FieldDataBase<BigDecimal> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((BigDecimal) value);
 	}
 }
@@ -177,22 +184,24 @@ class FieldDataDecimal extends FieldDataBase<BigDecimal> {
 /**
  * 字段，日期
  */
-class FieldDataDateTime extends FieldDataBase<DateTime> {
+final class FieldDataDateTime extends FieldDataBase<DateTime> {
+
+	public final static DateTime DEFAULT_VALUE = DateTime.MIN_VALUE;
 
 	public FieldDataDateTime(Class<?> valueType) {
 		this.setValueType(valueType);
 	}
 
-	private DateTime value = DateTime.MIN_VALUE;
+	private DateTime value = DEFAULT_VALUE;
 
 	@Override
-	public DateTime getValue() {
+	public final DateTime getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(DateTime value) {
+	public final boolean setValue(DateTime value) {
 		if (value == null) {
-			value = DateTime.MIN_VALUE;
+			value = DEFAULT_VALUE;
 		}
 		if (this.value != null && (this.value.equals(value) || this.value.compareTo(value) == 0)) {
 			return false;
@@ -202,7 +211,7 @@ class FieldDataDateTime extends FieldDataBase<DateTime> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((DateTime) value);
 	}
 }
@@ -210,22 +219,24 @@ class FieldDataDateTime extends FieldDataBase<DateTime> {
 /**
  * 字段，单精度小数
  */
-class FieldDataFloat extends FieldDataBase<Float> {
+final class FieldDataFloat extends FieldDataBase<Float> {
+
+	public final static Float DEFAULT_VALUE = Float.valueOf("0");
 
 	public FieldDataFloat(Class<?> valueType) {
 		this.setValueType(valueType);
 	}
 
-	private float value = 0.0f;
+	private Float value = DEFAULT_VALUE;
 
 	@Override
-	public Float getValue() {
+	public final Float getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(Float value) {
+	public final boolean setValue(Float value) {
 		if (value == null) {
-			value = 0.0f;
+			value = DEFAULT_VALUE;
 		}
 		if (this.value == value) {
 			return false;
@@ -235,7 +246,7 @@ class FieldDataFloat extends FieldDataBase<Float> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((Float) value);
 	}
 }
@@ -243,22 +254,24 @@ class FieldDataFloat extends FieldDataBase<Float> {
 /**
  * 字段，双精度小数
  */
-class FieldDataDouble extends FieldDataBase<Double> {
+final class FieldDataDouble extends FieldDataBase<Double> {
+
+	public final static Double DEFAULT_VALUE = Double.valueOf("0");
 
 	public FieldDataDouble(Class<?> valueType) {
 		this.setValueType(valueType);
 	}
 
-	private double value = 0.0;
+	private Double value = DEFAULT_VALUE;
 
 	@Override
-	public Double getValue() {
+	public final Double getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(Double value) {
+	public final boolean setValue(Double value) {
 		if (value == null) {
-			value = 0.0;
+			value = DEFAULT_VALUE;
 		}
 		if (this.value == value) {
 			return false;
@@ -268,7 +281,7 @@ class FieldDataDouble extends FieldDataBase<Double> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((Double) value);
 	}
 }
@@ -276,7 +289,7 @@ class FieldDataDouble extends FieldDataBase<Double> {
 /**
  * 字段，布尔
  */
-class FieldDataBoolean extends FieldDataBase<Boolean> {
+final class FieldDataBoolean extends FieldDataBase<Boolean> {
 
 	public FieldDataBoolean(Class<?> valueType) {
 		this.setValueType(valueType);
@@ -285,11 +298,11 @@ class FieldDataBoolean extends FieldDataBase<Boolean> {
 	private boolean value = false;
 
 	@Override
-	public Boolean getValue() {
+	public final Boolean getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(Boolean value) {
+	public final boolean setValue(Boolean value) {
 		if (this.value == value) {
 			return false;
 		}
@@ -298,7 +311,7 @@ class FieldDataBoolean extends FieldDataBase<Boolean> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((Boolean) value);
 	}
 }
@@ -306,7 +319,7 @@ class FieldDataBoolean extends FieldDataBase<Boolean> {
 /**
  * 字段，枚举
  */
-class FieldDataEnum extends FieldDataBase<Enum<?>> {
+final class FieldDataEnum extends FieldDataBase<Enum<?>> {
 
 	public FieldDataEnum(Class<?> valueType) {
 		this.setValueType(valueType);
@@ -319,11 +332,11 @@ class FieldDataEnum extends FieldDataBase<Enum<?>> {
 	private Enum<?> value = null;
 
 	@Override
-	public Enum<?> getValue() {
+	public final Enum<?> getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(Enum<?> value) {
+	public final boolean setValue(Enum<?> value) {
 		if (this.value != null && this.value.equals(value)) {
 			return false;
 		}
@@ -332,7 +345,7 @@ class FieldDataEnum extends FieldDataBase<Enum<?>> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((Enum<?>) value);
 	}
 }
@@ -340,7 +353,7 @@ class FieldDataEnum extends FieldDataBase<Enum<?>> {
 /**
  * 字段，业务对象
  */
-class FieldDataBO extends FieldDataBase<IBusinessObjectBase> {
+final class FieldDataBO extends FieldDataBase<IBusinessObjectBase> {
 
 	public FieldDataBO(Class<?> valueType) {
 		this.setValueType(valueType);
@@ -350,11 +363,11 @@ class FieldDataBO extends FieldDataBase<IBusinessObjectBase> {
 	private IBusinessObjectBase value = null;
 
 	@Override
-	public IBusinessObjectBase getValue() {
+	public final IBusinessObjectBase getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(IBusinessObjectBase value) {
+	public final boolean setValue(IBusinessObjectBase value) {
 		if (this.value != null && this.value.equals(value)) {
 			return false;
 		}
@@ -363,7 +376,7 @@ class FieldDataBO extends FieldDataBase<IBusinessObjectBase> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((IBusinessObjectBase) value);
 	}
 }
@@ -371,7 +384,7 @@ class FieldDataBO extends FieldDataBase<IBusinessObjectBase> {
 /**
  * 字段，业务对象集合
  */
-class FieldDataBOs extends FieldDataBase<IBusinessObjectsBase<?>> {
+final class FieldDataBOs extends FieldDataBase<IBusinessObjectsBase<?>> {
 
 	public FieldDataBOs(Class<?> valueType) {
 		this.setValueType(valueType);
@@ -381,11 +394,11 @@ class FieldDataBOs extends FieldDataBase<IBusinessObjectsBase<?>> {
 	private IBusinessObjectsBase<?> value = null;
 
 	@Override
-	public IBusinessObjectsBase<?> getValue() {
+	public final IBusinessObjectsBase<?> getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(IBusinessObjectsBase<?> value) {
+	public final boolean setValue(IBusinessObjectsBase<?> value) {
 		if (this.value != null && this.value.equals(value)) {
 			return false;
 		}
@@ -394,7 +407,7 @@ class FieldDataBOs extends FieldDataBase<IBusinessObjectsBase<?>> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((IBusinessObjectsBase<?>) value);
 	}
 }

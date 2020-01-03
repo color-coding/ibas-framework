@@ -114,18 +114,6 @@ public class OrganizationFactory extends ConfigurableFactory<IOrganizationManage
 				this.users = new ArrayList<>();
 			}
 
-			private final String[] NO_ROLES = new String[] {};
-
-			@Override
-			public String[] getRoles(IUser user) {
-				for (IUser item : this.getUsers()) {
-					if (item == user) {
-						return new String[] { item.getBelong() };
-					}
-				}
-				return NO_ROLES;
-			}
-
 			private volatile ArrayList<IUser> users;
 
 			public List<IUser> getUsers() {
@@ -140,21 +128,20 @@ public class OrganizationFactory extends ConfigurableFactory<IOrganizationManage
 			}
 
 			@Override
-			public void register(IUser user) {
-				if (user == null) {
-					return;
-				}
-				for (int i = 0; i < this.getUsers().size(); i++) {
-					IUser item = this.getUsers().get(i);
-					if (item == null) {
-						continue;
+			public IUser register(IUser user) {
+				if (user != null) {
+					for (int i = 0; i < this.getUsers().size(); i++) {
+						IUser item = this.getUsers().get(i);
+						if (item == null) {
+							continue;
+						}
+						if (item.getId() == user.getId()) {
+							this.getUsers().set(i, user);
+						}
 					}
-					if (item.getId() == user.getId()) {
-						this.getUsers().set(i, user);
-						return;
-					}
+					this.getUsers().add(user);
 				}
-				this.getUsers().add(user);
+				return user;
 			}
 		};
 	}

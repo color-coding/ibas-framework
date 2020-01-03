@@ -6,12 +6,12 @@ import org.colorcoding.ibas.bobas.core.BOFactory;
 import org.colorcoding.ibas.bobas.data.measurement.IMeasurement;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 
-class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?>> {
+final class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?>> {
 
 	private IMeasurement<?, ?> value = null;
 
 	@Override
-	public IMeasurement<?, ?> getValue() {
+	public final IMeasurement<?, ?> getValue() {
 		if (this.value == null) {
 			// 如果未初始化，则尝试自动初始化
 			try {
@@ -24,11 +24,11 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((IMeasurement<?, ?>) value);
 	}
 
-	public boolean setValue(IMeasurement<?, ?> value) {
+	public final boolean setValue(IMeasurement<?, ?> value) {
 		if (this.value != null && this.value.equals(value)) {
 			return false;
 		}
@@ -80,7 +80,7 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 	 * @author Niuren.Zhu
 	 *
 	 */
-	private class FieldData4Value extends FieldDataDb4Complex<BigDecimal> {
+	private final class FieldData4Value extends FieldDataDb4Complex<BigDecimal> {
 
 		public FieldData4Value(IMeasurement<?, ?> value) {
 			this.setMeasurement(value);
@@ -97,17 +97,17 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 		}
 
 		@Override
-		public Object getData() {
+		public final Object getData() {
 			return this.getMeasurement();
 		}
 
 		@Override
-		public void setData(Object value) {
+		public final void setData(Object value) {
 			this.setMeasurement((IMeasurement<?, ?>) value);
 		}
 
 		@Override
-		public boolean setValue(Object value) {
+		public final boolean setValue(Object value) {
 			if (this.getMeasurement() == null) {
 				return false;
 			}
@@ -116,7 +116,7 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 		}
 
 		@Override
-		public BigDecimal getValue() {
+		public final BigDecimal getValue() {
 			if (this.getMeasurement() == null) {
 				return null;
 			}
@@ -124,7 +124,7 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 		}
 
 		@Override
-		public DbFieldType getFieldType() {
+		public final DbFieldType getFieldType() {
 			return DbFieldType.DECIMAL;
 		}
 
@@ -136,7 +136,7 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 	 * @author Niuren.Zhu
 	 *
 	 */
-	private class FieldData4Unit extends FieldDataDb4Complex<Object> {
+	private final class FieldData4Unit extends FieldDataDb4Complex<Object> {
 
 		public FieldData4Unit(IMeasurement<?, ?> value) {
 			this.setMeasurement(value);
@@ -153,17 +153,17 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 		}
 
 		@Override
-		public Object getData() {
+		public final Object getData() {
 			return this.getMeasurement();
 		}
 
 		@Override
-		public void setData(Object value) {
+		public final void setData(Object value) {
 			this.setMeasurement((IMeasurement<?, ?>) value);
 		}
 
 		@Override
-		public boolean setValue(Object value) {
+		public final boolean setValue(Object value) {
 			if (this.getMeasurement() == null) {
 				return false;
 			}
@@ -172,7 +172,7 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 		}
 
 		@Override
-		public Object getValue() {
+		public final Object getValue() {
 			if (this.getMeasurement() == null) {
 				return null;
 			}
@@ -180,7 +180,7 @@ class ComplexFieldDataMeasurement extends ComplexFieldDataBase<IMeasurement<?, ?
 		}
 
 		@Override
-		public DbFieldType getFieldType() {
+		public final DbFieldType getFieldType() {
 			return DbFieldType.ALPHANUMERIC;
 		}
 

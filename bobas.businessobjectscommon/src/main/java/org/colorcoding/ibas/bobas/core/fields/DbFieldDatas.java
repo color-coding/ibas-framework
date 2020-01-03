@@ -10,22 +10,24 @@ import org.colorcoding.ibas.bobas.mapping.DbFieldType;
 /**
  * 字段，整数型
  */
-class DbFieldDataInteger extends FieldDataDbBase<Integer> {
+final class DbFieldDataInteger extends FieldDataDbBase<Integer> {
+
+	public static final Integer DEFAULT_VALUE = Integer.valueOf("0");
 
 	public DbFieldDataInteger(Class<?> valueType) {
 		this.setValueType(valueType);
 	}
 
-	private int value = 0;
+	private Integer value = DEFAULT_VALUE;
 
 	@Override
-	public Integer getValue() {
+	public final Integer getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(Integer value) {
+	public final boolean setValue(Integer value) {
 		if (value == null) {
-			value = 0;
+			value = DEFAULT_VALUE;
 		}
 		if (this.value == value) {
 			return false;
@@ -35,12 +37,12 @@ class DbFieldDataInteger extends FieldDataDbBase<Integer> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((Integer) value);
 	}
 
 	@Override
-	public DbFieldType getFieldType() {
+	public final DbFieldType getFieldType() {
 		return DbFieldType.NUMERIC;
 	}
 
@@ -49,22 +51,24 @@ class DbFieldDataInteger extends FieldDataDbBase<Integer> {
 /**
  * 字段，短整数型
  */
-class DbFieldDataShort extends FieldDataDbBase<Short> {
+final class DbFieldDataShort extends FieldDataDbBase<Short> {
+
+	public static final Short DEFAULT_VALUE = Short.valueOf("0");
 
 	public DbFieldDataShort(Class<?> valueType) {
 		this.setValueType(valueType);
 	}
 
-	private short value = 0;
+	private Short value = DEFAULT_VALUE;
 
 	@Override
-	public Short getValue() {
+	public final Short getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(Short value) {
+	public final boolean setValue(Short value) {
 		if (value == null) {
-			value = 0;
+			value = DEFAULT_VALUE;
 		}
 		if (this.value == value) {
 			return false;
@@ -74,12 +78,12 @@ class DbFieldDataShort extends FieldDataDbBase<Short> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((Short) value);
 	}
 
 	@Override
-	public DbFieldType getFieldType() {
+	public final DbFieldType getFieldType() {
 		return DbFieldType.NUMERIC;
 	}
 
@@ -88,7 +92,7 @@ class DbFieldDataShort extends FieldDataDbBase<Short> {
 /**
  * 字段，字符型
  */
-class DbFieldDataChar extends FieldDataDbBase<Character> {
+final class DbFieldDataChar extends FieldDataDbBase<Character> {
 
 	public DbFieldDataChar(Class<?> valueType) {
 		this.setValueType(valueType);
@@ -97,11 +101,11 @@ class DbFieldDataChar extends FieldDataDbBase<Character> {
 	private Character value = null;
 
 	@Override
-	public Character getValue() {
+	public final Character getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(Character value) {
+	public final boolean setValue(Character value) {
 		if (this.value != null && this.value.equals(value)) {
 			return false;
 		}
@@ -110,12 +114,12 @@ class DbFieldDataChar extends FieldDataDbBase<Character> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((Character) value);
 	}
 
 	@Override
-	public DbFieldType getFieldType() {
+	public final DbFieldType getFieldType() {
 		return DbFieldType.ALPHANUMERIC;
 	}
 
@@ -124,7 +128,7 @@ class DbFieldDataChar extends FieldDataDbBase<Character> {
 /**
  * 字段，字符串
  */
-class DbFieldDataString extends FieldDataDbBase<String> {
+final class DbFieldDataString extends FieldDataDbBase<String> {
 
 	public DbFieldDataString(Class<?> valueType) {
 		this.setValueType(valueType);
@@ -133,11 +137,11 @@ class DbFieldDataString extends FieldDataDbBase<String> {
 	private String value = null;
 
 	@Override
-	public String getValue() {
+	public final String getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(String value) {
+	public final boolean setValue(String value) {
 		if (this.value != null && this.value.equals(value)) {
 			return false;
 		}
@@ -146,12 +150,12 @@ class DbFieldDataString extends FieldDataDbBase<String> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((String) value);
 	}
 
 	@Override
-	public DbFieldType getFieldType() {
+	public final DbFieldType getFieldType() {
 		return DbFieldType.ALPHANUMERIC;
 	}
 
@@ -160,22 +164,24 @@ class DbFieldDataString extends FieldDataDbBase<String> {
 /**
  * 字段，十进制数值
  */
-class DbFieldDataDecimal extends FieldDataDbBase<BigDecimal> {
+final class DbFieldDataDecimal extends FieldDataDbBase<BigDecimal> {
+
+	public static final BigDecimal DEFAULT_VALUE = Decimal.ZERO;
 
 	public DbFieldDataDecimal(Class<?> valueType) {
 		this.setValueType(valueType);
 	}
 
-	private BigDecimal value = Decimal.ZERO;
+	private BigDecimal value = DEFAULT_VALUE;
 
 	@Override
-	public BigDecimal getValue() {
+	public final BigDecimal getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(BigDecimal value) {
+	public final boolean setValue(BigDecimal value) {
 		if (value == null) {
-			value = Decimal.ZERO;
+			value = DEFAULT_VALUE;
 		}
 		if (this.value != null && (this.value.equals(value) || this.value.compareTo(value) == 0)) {
 			return false;
@@ -185,12 +191,12 @@ class DbFieldDataDecimal extends FieldDataDbBase<BigDecimal> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((BigDecimal) value);
 	}
 
 	@Override
-	public DbFieldType getFieldType() {
+	public final DbFieldType getFieldType() {
 		return DbFieldType.DECIMAL;
 	}
 
@@ -199,22 +205,24 @@ class DbFieldDataDecimal extends FieldDataDbBase<BigDecimal> {
 /**
  * 字段，日期
  */
-class DbFieldDataDateTime extends FieldDataDbBase<DateTime> {
+final class DbFieldDataDateTime extends FieldDataDbBase<DateTime> {
+
+	public static final DateTime DEFAULT_VALUE = DateTime.MIN_VALUE;
 
 	public DbFieldDataDateTime(Class<?> valueType) {
 		this.setValueType(valueType);
 	}
 
-	private DateTime value = DateTime.MIN_VALUE;
+	private DateTime value = DEFAULT_VALUE;
 
 	@Override
-	public DateTime getValue() {
+	public final DateTime getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(DateTime value) {
+	public final boolean setValue(DateTime value) {
 		if (value == null) {
-			value = DateTime.MIN_VALUE;
+			value = DEFAULT_VALUE;
 		}
 		if (this.value != null && (this.value.equals(value) || this.value.compareTo(value) == 0)) {
 			return false;
@@ -224,12 +232,12 @@ class DbFieldDataDateTime extends FieldDataDbBase<DateTime> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((DateTime) value);
 	}
 
 	@Override
-	public DbFieldType getFieldType() {
+	public final DbFieldType getFieldType() {
 		return DbFieldType.DATE;
 	}
 
@@ -238,22 +246,24 @@ class DbFieldDataDateTime extends FieldDataDbBase<DateTime> {
 /**
  * 字段，单精度小数
  */
-class DbFieldDataFloat extends FieldDataDbBase<Float> {
+final class DbFieldDataFloat extends FieldDataDbBase<Float> {
+
+	public static final Float DEFAULT_VALUE = Float.valueOf("0");
 
 	public DbFieldDataFloat(Class<?> valueType) {
 		this.setValueType(valueType);
 	}
 
-	private float value = 0.0f;
+	private Float value = DEFAULT_VALUE;
 
 	@Override
-	public Float getValue() {
+	public final Float getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(Float value) {
+	public final boolean setValue(Float value) {
 		if (value == null) {
-			value = 0.0f;
+			value = DEFAULT_VALUE;
 		}
 		if (this.value == value) {
 			return false;
@@ -263,12 +273,12 @@ class DbFieldDataFloat extends FieldDataDbBase<Float> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((Float) value);
 	}
 
 	@Override
-	public DbFieldType getFieldType() {
+	public final DbFieldType getFieldType() {
 		return DbFieldType.DECIMAL;
 	}
 
@@ -277,22 +287,24 @@ class DbFieldDataFloat extends FieldDataDbBase<Float> {
 /**
  * 字段，双精度小数
  */
-class DbFieldDataDouble extends FieldDataDbBase<Double> {
+final class DbFieldDataDouble extends FieldDataDbBase<Double> {
+
+	public static final Double DEFAULT_VALUE = Double.valueOf("0");
 
 	public DbFieldDataDouble(Class<?> valueType) {
 		this.setValueType(valueType);
 	}
 
-	private double value = 0.0;
+	private Double value = DEFAULT_VALUE;
 
 	@Override
-	public Double getValue() {
+	public final Double getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(Double value) {
+	public final boolean setValue(Double value) {
 		if (value == null) {
-			value = 0.0;
+			value = DEFAULT_VALUE;
 		}
 		if (this.value == value) {
 			return false;
@@ -302,12 +314,12 @@ class DbFieldDataDouble extends FieldDataDbBase<Double> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((Double) value);
 	}
 
 	@Override
-	public DbFieldType getFieldType() {
+	public final DbFieldType getFieldType() {
 		return DbFieldType.DECIMAL;
 	}
 
@@ -316,7 +328,7 @@ class DbFieldDataDouble extends FieldDataDbBase<Double> {
 /**
  * 字段，布尔
  */
-class DbFieldDataBoolean extends FieldDataDbBase<Boolean> {
+final class DbFieldDataBoolean extends FieldDataDbBase<Boolean> {
 
 	public DbFieldDataBoolean(Class<?> valueType) {
 		this.setValueType(valueType);
@@ -325,11 +337,11 @@ class DbFieldDataBoolean extends FieldDataDbBase<Boolean> {
 	private boolean value = false;
 
 	@Override
-	public Boolean getValue() {
+	public final Boolean getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(Boolean value) {
+	public final boolean setValue(Boolean value) {
 		if (this.value == value) {
 			return false;
 		}
@@ -338,12 +350,12 @@ class DbFieldDataBoolean extends FieldDataDbBase<Boolean> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((Boolean) value);
 	}
 
 	@Override
-	public DbFieldType getFieldType() {
+	public final DbFieldType getFieldType() {
 		return DbFieldType.NUMERIC;
 	}
 
@@ -352,7 +364,7 @@ class DbFieldDataBoolean extends FieldDataDbBase<Boolean> {
 /**
  * 字段，枚举
  */
-class DbFieldDataEnum extends FieldDataDbBase<Enum<?>> {
+final class DbFieldDataEnum extends FieldDataDbBase<Enum<?>> {
 
 	public DbFieldDataEnum(Class<?> valueType) {
 		this.setValueType(valueType);
@@ -365,11 +377,11 @@ class DbFieldDataEnum extends FieldDataDbBase<Enum<?>> {
 	private Enum<?> value = null;
 
 	@Override
-	public Enum<?> getValue() {
+	public final Enum<?> getValue() {
 		return this.value;
 	}
 
-	public boolean setValue(Enum<?> value) {
+	public final boolean setValue(Enum<?> value) {
 		if (this.value != null && this.value.equals(value)) {
 			return false;
 		}
@@ -378,12 +390,12 @@ class DbFieldDataEnum extends FieldDataDbBase<Enum<?>> {
 	}
 
 	@Override
-	public boolean setValue(Object value) {
+	public final boolean setValue(Object value) {
 		return this.setValue((Enum<?>) value);
 	}
 
 	@Override
-	public DbFieldType getFieldType() {
+	public final DbFieldType getFieldType() {
 		return DbFieldType.ALPHANUMERIC;
 	}
 

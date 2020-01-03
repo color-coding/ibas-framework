@@ -5,7 +5,7 @@ import java.lang.annotation.Annotation;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.List;
 
-public class PropertyInfo<P> implements IPropertyInfo<P> {
+public final class PropertyInfo<P> implements IPropertyInfo<P> {
 
 	public final static String DEFALUT_NAME = "";
 
@@ -16,48 +16,48 @@ public class PropertyInfo<P> implements IPropertyInfo<P> {
 
 	private String name = DEFALUT_NAME;
 
-	public String getName() {
+	public final String getName() {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	public final void setName(String name) {
 		this.name = name;
 	}
 
 	private int index = -1;
 
-	public int getIndex() {
+	public final int getIndex() {
 		return this.index;
 	}
 
-	public void setIndex(int value) {
+	public final void setIndex(int value) {
 		this.index = value;
 	}
 
 	private Class<P> valueType = null;
 
-	public Class<P> getValueType() {
+	public final Class<P> getValueType() {
 		return this.valueType;
 	}
 
-	public void setValueType(Class<P> value) {
+	public final void setValueType(Class<P> value) {
 		this.valueType = value;
 	}
 
 	private P defaultValue;
 
-	public P getDefaultValue() {
+	public final P getDefaultValue() {
 		return this.defaultValue;
 	}
 
-	public void setDefaultValue(P value) {
+	public final void setDefaultValue(P value) {
 		this.defaultValue = value;
 	}
 
 	private List<Annotation> annotations = null;
 
 	@SuppressWarnings("unchecked")
-	public <A extends Annotation> A getAnnotation(Class<A> type) {
+	public final <A extends Annotation> A getAnnotation(Class<A> type) {
 		if (this.annotations == null) {
 			return null;
 		}
@@ -69,7 +69,7 @@ public class PropertyInfo<P> implements IPropertyInfo<P> {
 		return null;
 	}
 
-	public void addAnnotation(Annotation item) {
+	public final void addAnnotation(Annotation item) {
 		if (item == null) {
 			return;
 		}
@@ -79,7 +79,7 @@ public class PropertyInfo<P> implements IPropertyInfo<P> {
 		this.annotations.add(item);
 	}
 
-	public void addAnnotation(Annotation[] items) {
+	public final void addAnnotation(Annotation[] items) {
 		if (items == null || items.length == 0) {
 			return;
 		}
@@ -92,7 +92,7 @@ public class PropertyInfo<P> implements IPropertyInfo<P> {
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return String.format("{property info: %s}", this.getName());
 	}
 }
