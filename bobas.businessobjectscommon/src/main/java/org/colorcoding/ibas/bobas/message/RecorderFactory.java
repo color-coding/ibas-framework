@@ -2,9 +2,6 @@ package org.colorcoding.ibas.bobas.message;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
-import org.colorcoding.ibas.bobas.message.IMessageRecorder;
-import org.colorcoding.ibas.bobas.message.MessageRecorder4File;
-import org.colorcoding.ibas.bobas.message.RecorderFactory;
 
 /**
  * 记录者工厂

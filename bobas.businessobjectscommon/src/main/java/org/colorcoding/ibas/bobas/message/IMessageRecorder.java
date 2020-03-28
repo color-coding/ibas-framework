@@ -1,7 +1,5 @@
 package org.colorcoding.ibas.bobas.message;
 
-import org.colorcoding.ibas.bobas.message.IMessage;
-
 /**
  * 消息记录者
  * 
@@ -13,8 +11,7 @@ public interface IMessageRecorder {
 	/**
 	 * 记录
 	 * 
-	 * @param message
-	 *            消息
+	 * @param message 消息
 	 */
 	void record(IMessage message);
 

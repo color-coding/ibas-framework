@@ -1,9 +1,5 @@
 package org.colorcoding.ibas.bobas.message;
 
-import org.colorcoding.ibas.bobas.message.IMessage;
-import org.colorcoding.ibas.bobas.message.IMessageRecorder;
-import org.colorcoding.ibas.bobas.message.MessageLevel;
-
 /**
  * 消息记录者，到控制台
  * 
@@ -17,8 +13,7 @@ public class MessageRecorder implements IMessageRecorder {
 	 * 
 	 * 此方法记录消息到控制台，建议子类保留调用
 	 * 
-	 * @param message
-	 *            消息
+	 * @param message 消息
 	 */
 	@Override
 	public void record(IMessage message) {

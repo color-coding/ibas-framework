@@ -3,8 +3,6 @@ package org.colorcoding.ibas.bobas.expression;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IFieldDataDb;
 import org.colorcoding.ibas.bobas.core.fields.IManagedFields;
-import org.colorcoding.ibas.bobas.expression.IPropertyValueOperator;
-import org.colorcoding.ibas.bobas.expression.JudgmentLinkException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 
 /**
