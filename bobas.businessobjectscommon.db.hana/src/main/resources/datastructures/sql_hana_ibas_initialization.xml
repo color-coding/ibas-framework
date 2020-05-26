@@ -11,24 +11,24 @@
     <DbPassword>${DbPassword}</DbPassword>
     <Action Name="create db" Isolated="true">
         <Step Name="check db exists">
-            <Script>
+            <Script><![CDATA[
                 SELECT COUNT(0) FROM "SCHEMAS" WHERE "SCHEMA_NAME" = '${DbName}';
-            </Script>
+            ]]></Script>
         </Step>
         <Step Name="create db" RunOnValue="0">
-            <Script>
+            <Script><![CDATA[
                  CREATE SCHEMA "${DbName}";
-            </Script>
+            ]]></Script>
         </Step>
     </Action>
     <Action Name="create stored procedures ${Company}_SP_TRANSACTION_NOTIFICATION" Isolated="true" DbUrl="jdbc:sap://${DbServer}:${DbPort}/?currentschema=&quot;${DbName}&quot;">
         <Step Name="check stored procedures exists">
-            <Script>
+            <Script><![CDATA[
                 SELECT COUNT(0) FROM "PROCEDURES" WHERE "SCHEMA_NAME" = '${DbName}' AND "PROCEDURE_NAME" = '${Company}_SP_TRANSACTION_NOTIFICATION';
-            </Script>
+            ]]></Script>
         </Step>
         <Step Name="create stored procedures" RunOnValue="0">
-            <Script>
+            <Script><![CDATA[
                 CREATE PROCEDURE "${DbName}"."${Company}_SP_TRANSACTION_NOTIFICATION" (
                     IN object_type nvarchar(30),                       --对象类型（BOCode）
                     IN transaction_type nvarchar(1),                   --业务类型（Add:A-添加, Update:U-更新, Delete:D-删除）
@@ -48,7 +48,7 @@
                     --返回结果
                     SELECT TO_INTEGER(error_code) "Code", error_message "Message" FROM dummy;
                 END;
-            </Script>
+            ]]></Script>
         </Step>
     </Action>
 </ns2:DataStructureOrchestration>

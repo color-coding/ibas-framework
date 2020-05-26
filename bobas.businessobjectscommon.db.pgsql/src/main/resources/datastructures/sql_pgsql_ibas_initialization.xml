@@ -11,34 +11,34 @@
     <DbPassword>${DbPassword}</DbPassword>
     <Action Name="create db" Isolated="true" DbUrl="jdbc:postgresql://${DbServer}:${DbPort}/postgres">
         <Step Name="check db exists">
-            <Script>
+            <Script><![CDATA[
                 SELECT COUNT(0) FROM pg_database WHERE datname = '${DbName}';
-            </Script>
+            ]]></Script>
         </Step>
         <Step Name="create db" RunOnValue="0">
-            <Script>
+            <Script><![CDATA[
                  CREATE DATABASE "${DbName}";
-            </Script>
+            ]]></Script>
         </Step>
     </Action>
     <Action Name="create stored procedures ${Company}_SP_TRANSACTION_NOTIFICATION">
         <Step Name="check and drop exists stored procedures">
-            <Script>
+            <Script><![CDATA[
                 DROP FUNCTION IF EXISTS "${Company}_SP_TRANSACTION_NOTIFICATION"(character varying, character, integer, character varying, character varying);
-            </Script>
+            ]]></Script>
         </Step>
         <Step Name="check and drop exists return type">
-            <Script>
+            <Script><![CDATA[
                 DROP TYPE IF EXISTS "RESULT_TYPE_${Company}_SP_TRANSACTION_NOTIFICATION";
-            </Script>
+            ]]></Script>
         </Step>
         <Step Name="create return type">
-            <Script>
+            <Script><![CDATA[
                 CREATE TYPE "RESULT_TYPE_${Company}_SP_TRANSACTION_NOTIFICATION" AS("Code" integer,"Message" varchar(200));
-            </Script>
+            ]]></Script>
         </Step>
         <Step Name="create stored procedures">
-            <Script>
+            <Script><![CDATA[
                 CREATE OR REPLACE FUNCTION "${Company}_SP_TRANSACTION_NOTIFICATION" (
                     object_type character varying,                             /*对象类型（BOCode）*/
                     transaction_type character,                                /*业务类型（Add:A-添加, Update:U-更新, Delete:D-删除）*/
@@ -62,7 +62,7 @@
                     end loop;
                 END;
                 $_$ LANGUAGE plpgsql;
-            </Script>
+            ]]></Script>
         </Step>
     </Action>
 </ns2:DataStructureOrchestration>

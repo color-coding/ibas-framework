@@ -11,24 +11,24 @@
     <DbPassword>${DbPassword}</DbPassword>
     <Action Name="create db" Isolated="true">
         <Step Name="check db exists">
-            <Script>
+            <Script><![CDATA[
                 SELECT COUNT(0) FROM sys.databases WHERE name = '${DbName}';
-            </Script>
+            ]]></Script>
         </Step>
         <Step Name="create db" RunOnValue="0">
-            <Script>
+            <Script><![CDATA[
                  CREATE DATABASE "${DbName}";
-            </Script>
+            ]]></Script>
         </Step>
     </Action>
     <Action Name="create stored procedures ${Company}_SP_TRANSACTION_NOTIFICATION" Isolated="true" DbUrl="jdbc:sqlserver://${DbServer}:${DbPort};DatabaseName=${DbName}">
         <Step Name="check stored procedures exists">
-            <Script>
+            <Script><![CDATA[
                 SELECT COUNT(0) FROM sys.sysobjects WHERE name = '${Company}_SP_TRANSACTION_NOTIFICATION' AND type = 'P';
-            </Script>
+            ]]></Script>
         </Step>
         <Step Name="create stored procedures" RunOnValue="0">
-            <Script>
+            <Script><![CDATA[
                 CREATE PROCEDURE ${Company}_SP_TRANSACTION_NOTIFICATION
                     @object_type nvarchar(30),                 --对象类型（BOCode）
                     @transaction_type nchar(1),                --业务类型（Add:A-添加, Update:U-更新, Delete:D-删除）
@@ -47,7 +47,7 @@
                     --返回结果
                     select @error_code "Code", @error_message "Message"
                 END;
-            </Script>
+            ]]></Script>
         </Step>
     </Action>
 </ns2:DataStructureOrchestration>

@@ -11,19 +11,19 @@
     <DbPassword>${DbPassword}</DbPassword>
     <Action Name="create db" Isolated="true">
         <Step Name="check and create db">
-            <Script>
+            <Script><![CDATA[
                 CREATE DATABASE IF NOT EXISTS `${DbName}` CHARACTER SET utf8mb4;
-            </Script>
+            ]]></Script>
         </Step>
     </Action>
     <Action Name="create stored procedures ${Company}_SP_TRANSACTION_NOTIFICATION">
         <Step Name="check and drop exists stored procedures">
-            <Script>
+            <Script><![CDATA[
                 DROP PROCEDURE IF EXISTS `${DbName}`.`${Company}_SP_TRANSACTION_NOTIFICATION`;
-            </Script>
+            ]]></Script>
         </Step>
         <Step Name="create stored procedures">
-            <Script>
+            <Script><![CDATA[
                 CREATE PROCEDURE `${DbName}`.`${Company}_SP_TRANSACTION_NOTIFICATION` (
                     object_type varchar(30),                  /*对象类型（BOCode）*/
                     transaction_type char(1),                 /*业务类型（Add:A-添加, Update:U-更新, Delete:D-删除）*/
@@ -42,7 +42,7 @@
                     /*返回结果*/
                     select error_code 'Code', error_message 'Message';
                 END;
-            </Script>
+            ]]></Script>
         </Step>
     </Action>
 </ns2:DataStructureOrchestration>

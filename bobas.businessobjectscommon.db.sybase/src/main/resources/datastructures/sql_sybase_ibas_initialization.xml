@@ -11,22 +11,22 @@
     <DbPassword>${DbPassword}</DbPassword>
     <Action Name="create db" Isolated="true" DbUrl="jdbc:sybase:Tds:${DbServer}:${DbPort}?ServiceName=${DbName}">
         <Step Name="check db ${DbName} exists">
-            <Script>
+            <Script><![CDATA[
                 SELECT COUNT(0) FROM sa_db_list() WHERE "Number" = db_id('${DbName}')
-            </Script>
+            ]]></Script>
         </Step>
         <Step Name="create db ${DbName}" RunOnValue="0">
-            <Script>
+            <Script><![CDATA[
                  CREATE DATABASE '${DbName}.db'
                  DBA USER '${DbUser}'
                  DBA PASSWORD '${DbPassword}'
                  LOG ON '${DbName}.log'
-            </Script>
+            ]]></Script>
         </Step>
     </Action>
     <Action Name="create stored procedures ${Company}_SP_TRANSACTION_NOTIFICATION" Isolated="true" DbUrl="jdbc:sybase:Tds:${DbServer}:${DbPort}?ServiceName=${DbName}">
         <Step Name="create stored procedures">
-            <Script>
+            <Script><![CDATA[
                 CREATE OR REPLACE PROCEDURE ${Company}_SP_TRANSACTION_NOTIFICATION (
                     IN object_type nvarchar(30),                 --对象类型（BOCode）
                     IN transaction_type nchar(1),                --业务类型（Add:A-添加, Update:U-更新, Delete:D-删除）
@@ -46,7 +46,7 @@
                     --返回结果
                     select error_code "Code", error_message "Message";
                 END;
-            </Script>
+            ]]></Script>
         </Step>
     </Action>
 </ns2:DataStructureOrchestration>
