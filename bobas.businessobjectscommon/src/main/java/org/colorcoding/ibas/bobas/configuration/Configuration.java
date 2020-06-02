@@ -63,8 +63,7 @@ public class Configuration {
 	/**
 	 * 创建实例
 	 * 
-	 * @param configFile
-	 *            配置文件路径
+	 * @param configFile 配置文件路径
 	 * @return
 	 */
 	public static IConfigurationManager create(String configFile) throws Exception {
@@ -89,11 +88,9 @@ public class Configuration {
 	/**
 	 * 获取配置的值
 	 * 
-	 * @param key
-	 *            配置项
+	 * @param key          配置项
 	 * 
-	 * @param defaultValue
-	 *            默认值
+	 * @param defaultValue 默认值
 	 * 
 	 * @return 配置的值（P类型）
 	 */
@@ -104,8 +101,7 @@ public class Configuration {
 	/**
 	 * 获取配置项的值
 	 * 
-	 * @param key
-	 *            配置项
+	 * @param key 配置项
 	 * @return
 	 */
 	public static String getConfigValue(String key) {
@@ -115,14 +111,11 @@ public class Configuration {
 	/**
 	 * 添加配置项，存在则替换
 	 * 
-	 * @param key
-	 *            项
-	 * @param value
-	 *            值
+	 * @param key   项
+	 * @param value 值
 	 */
 	public static void addConfigValue(String key, Object value) {
-		String tmpValue = String.valueOf(value);
-		create().addConfigValue(key, tmpValue);
+		create().addConfigValue(key, value == null ? null : String.valueOf(value));
 	}
 
 	/**
@@ -177,8 +170,7 @@ public class Configuration {
 	/**
 	 * 获取资源地址
 	 * 
-	 * @param type
-	 *            资源名称
+	 * @param type 资源名称
 	 * @return 统一格式（此对象避免路径的中文问题）
 	 * @throws URISyntaxException
 	 */
@@ -252,8 +244,7 @@ public class Configuration {
 	/**
 	 * 用配置项替换字符中的变量
 	 * 
-	 * @param variable
-	 *            待处理字符
+	 * @param variable 待处理字符
 	 * @return 替换过字符
 	 */
 	public static String applyVariables(String variable) {
@@ -306,10 +297,8 @@ public class Configuration {
 	/**
 	 * 查询并替换字符中的变量
 	 * 
-	 * @param value
-	 *            待处理字符
-	 * @param variables
-	 *            变量
+	 * @param value     待处理字符
+	 * @param variables 变量
 	 * @return 替换过字符
 	 */
 	public static String applyVariables(String value, Iterator<IKeyText> variables) {
@@ -338,10 +327,8 @@ public class Configuration {
 	/**
 	 * 查询并替换字符中的变量
 	 * 
-	 * @param value
-	 *            待处理字符
-	 * @param variables
-	 *            变量
+	 * @param value     待处理字符
+	 * @param variables 变量
 	 * @return 替换过字符
 	 */
 	public static String applyVariables(String value, Iterable<IKeyText> variables) {

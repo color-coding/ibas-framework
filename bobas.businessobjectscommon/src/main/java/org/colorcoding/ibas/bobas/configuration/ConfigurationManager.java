@@ -56,6 +56,11 @@ public abstract class ConfigurationManager implements IConfigurationManager {
 	@Override
 	public void addConfigValue(String key, String value) {
 		IConfigurationElement element = this.elementsMap.get(key);
+		// 值是空是删除配置项
+		if (key == null && element != null) {
+			this.elementsMap.remove(key);
+			return;
+		}
 		if (element == null) {
 			element = new ConfigurationElement();
 			element.setKey(key);
