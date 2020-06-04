@@ -56,7 +56,7 @@ public class OperationResult<P> extends OperationMessage implements IOperationRe
 		return this.resultObjects;
 	}
 
-	public final IOperationResult<P> addResultObjects(Iterable<P> values) {
+	public final OperationResult<P> addResultObjects(Iterable<P> values) {
 		if (values != null) {
 			if (values instanceof Collection) {
 				if (this.resultObjects == null) {
@@ -72,7 +72,7 @@ public class OperationResult<P> extends OperationMessage implements IOperationRe
 	}
 
 	@SuppressWarnings("unchecked")
-	public final IOperationResult<P> addResultObjects(Object value) {
+	public final OperationResult<P> addResultObjects(Object value) {
 		if (value != null) {
 			if (value.getClass().isArray()) {
 				int length = Array.getLength(value);
@@ -103,24 +103,24 @@ public class OperationResult<P> extends OperationMessage implements IOperationRe
 		return this.informations;
 	}
 
-	public final IOperationResult<P> addInformations(String name, String content, String tag) {
+	public final OperationResult<P> addInformations(String name, String content, String tag) {
 		this.getInformations().add(new OperationInformation(name, content, tag));
 		return this;
 	}
 
-	public final IOperationResult<P> addInformations(String name, String content) {
+	public final OperationResult<P> addInformations(String name, String content) {
 		this.getInformations().add(new OperationInformation(name, content));
 		return this;
 	}
 
-	public final IOperationResult<P> addInformations(IOperationInformation value) {
+	public final OperationResult<P> addInformations(IOperationInformation value) {
 		if (value != null) {
 			this.getInformations().add(value);
 		}
 		return this;
 	}
 
-	public final IOperationResult<P> addInformations(Iterable<IOperationInformation> values) {
+	public final OperationResult<P> addInformations(Iterable<IOperationInformation> values) {
 		if (values != null) {
 			this.getInformations().addAll(values);
 		}
@@ -128,7 +128,7 @@ public class OperationResult<P> extends OperationMessage implements IOperationRe
 	}
 
 	@Override
-	public IOperationResult<P> copy(IOperationResult<?> content) {
+	public OperationResult<P> copy(IOperationResult<?> content) {
 		if (content != null) {
 			super.copy(content);
 			this.addResultObjects(content.getResultObjects());

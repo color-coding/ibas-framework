@@ -146,7 +146,7 @@ public class OperationMessage extends Result implements IOperationMessage {
 	 * @return 当前实例
 	 */
 	@Override
-	public IOperationMessage copy(IOperationMessage content) {
+	public OperationMessage copy(IOperationMessage content) {
 		this.setSignID(content.getSignID());
 		this.setUserSign(content.getUserSign());
 		this.setTime(content.getTime());
