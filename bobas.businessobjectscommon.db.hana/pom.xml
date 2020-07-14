@@ -1,30 +1,31 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>bobas.businessobjectscommon.db.hana</artifactId>
-  <name>bobas.businessobjectscommon.db.hana</name>
-  <url>https://colorcoding.org/ibas/bobas/db/hana</url>
-  <parent>
-    <groupId>org.colorcoding.ibas</groupId>
-    <artifactId>bobas.businessobjectscommon.parent</artifactId>
-    <version>0.1.2</version>
-  </parent>
-  <organization>
-    <name>Color-Coding Studio</name>
-    <url>https://colorcoding.org</url>
-  </organization>
-  <properties>
-  </properties>
-  <dependencies>
-    <dependency>
-      <groupId>org.colorcoding.ibas</groupId>
-      <artifactId>bobas.businessobjectscommon</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.sap.hana</groupId>
-      <artifactId>ngdbc</artifactId>
-      <version>2.4</version>
-    </dependency>
-  </dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>bobas.businessobjectscommon.db.hana</artifactId>
+	<name>bobas.businessobjectscommon.db.hana</name>
+	<url>https://colorcoding.org/ibas/bobas/db/hana</url>
+	<parent>
+		<groupId>org.colorcoding.ibas</groupId>
+		<artifactId>bobas.businessobjectscommon.parent</artifactId>
+		<version>0.1.2</version>
+	</parent>
+	<organization>
+		<name>Color-Coding Studio</name>
+		<url>https://colorcoding.org</url>
+	</organization>
+	<properties>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.colorcoding.ibas</groupId>
+			<artifactId>bobas.businessobjectscommon</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sap.cloud.db.jdbc</groupId>
+			<artifactId>ngdbc</artifactId>
+			<version>2.5.49</version>
+		</dependency>
+	</dependencies>
 </project>

@@ -1,7 +1,5 @@
 package org.colorcoding.ibas.bobas.message;
 
-import org.colorcoding.ibas.bobas.message.IMessageRecorder;
-
 /**
  * 消息记录者，文件记录
  * 
@@ -36,8 +34,7 @@ public interface IMessageRecorder4File extends IMessageRecorder {
 	/**
 	 * 设置文件名称标记
 	 * 
-	 * @param value
-	 *            标记(ibas_runtime_%s.log)
+	 * @param value 标记(ibas_runtime_%s.log)
 	 */
 	void setFileSign(String value);
 }
