@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE DataStructureOrchestration>
+<ns2:DataStructureOrchestration xmlns:ns2="http://colorcoding.org/btulz/transformers">
+    <Name>sql_sqlite_ibas_initialization</Name>
+    <Description>基于sqlite的结构映射说明</Description>
+    <Integrated>true</Integrated>
+    <DriverName>org.sqlite.JDBC</DriverName>
+    <DbUrl>jdbc:sqlite:${DbName}</DbUrl>
+    <DbUser>${DbUser}</DbUser>
+    <DbPassword>${DbPassword}</DbPassword>
+    <Action Name="create stored procedures ${Company}_SP_TRANSACTION_NOTIFICATION">
+        <Step Name="check and drop exists stored procedures">
+            <Script><![CDATA[
+               SELECT COUNT(0) FROM "sqlite_master" WHERE "type" = 'view' AND "name" = '${Company}_SP_TRANSACTION_NOTIFICATION';
+            ]]></Script>
+        </Step>
+        <Step Name="create stored procedures" RunOnValue="0">
+            <Script><![CDATA[
+                CREATE VIEW "${Company}_SP_TRANSACTION_NOTIFICATION" AS
+                    /* 数据库不支持此功能 */
+                    SELECT 0 AS Code, 'OK' AS Message;
+            ]]></Script>
+        </Step>
+    </Action>
+</ns2:DataStructureOrchestration>

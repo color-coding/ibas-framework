@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE configuration>
+<ns2:configuration xmlns:ns2="http://colorcoding.org/ibas/bobas/configuration">
+    <appSettings>
+        <add key="MessageLevel" value="DEBUG" />
+        <add key="LiveBizRules" value="true" />
+        <add key="MasterDbType" value="SQLITE" />
+        <add key="MasterDbServer" value="ibas-db-sqlite" />
+        <add key="MasterDbName" value="ibas_demo" />
+    </appSettings>
+</ns2:configuration>

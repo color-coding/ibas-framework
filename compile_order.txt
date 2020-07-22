@@ -4,5 +4,6 @@ bobas.businessobjectscommon.db.mssql
 bobas.businessobjectscommon.db.mysql
 bobas.businessobjectscommon.db.pgsql
 bobas.businessobjectscommon.db.sybase
+bobas.businessobjectscommon.db.sqlite
 bobas.businessobjectscommon.jersey
 bobas.businessobjectscommon.cxf
