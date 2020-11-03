@@ -10,6 +10,9 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 
 public class DataConvert {
 
+	public static final String STRING_VALUE_ZERO = "0";
+	public static final String STRING_VALUE_EMPTY = "";
+
 	/**
 	 * 转换类型
 	 * 
@@ -17,44 +20,45 @@ public class DataConvert {
 	 * @param value 值
 	 * @return 目标类型值
 	 */
-	public static Object convert(Class<?> type, Object value) {
-		if (type == null || value == null) {
-			return value;
+	@SuppressWarnings("unchecked")
+	public static <P> P convert(Class<P> type, Object value) {
+		if (type == null) {
+			return null;
 		}
 		if (type == value.getClass()) {
-			return value;
+			return (P) value;
 		}
+		String sValue = toString(value);
 		if (type == String.class) {
-			return toString(value);
+			return (P) sValue;
 		} else if (type == Short.class) {
-			return Short.valueOf(toString(value));
+			return (P) (isNullOrEmpty(sValue) ? Short.valueOf(STRING_VALUE_ZERO) : Short.valueOf(sValue));
 		} else if (type == Integer.class) {
-			return Integer.valueOf(toString(value));
+			return (P) (isNullOrEmpty(sValue) ? Integer.valueOf(STRING_VALUE_ZERO) : Integer.valueOf(sValue));
 		} else if (type == Long.class) {
-			return Long.valueOf(toString(value));
+			return (P) (isNullOrEmpty(sValue) ? Long.valueOf(STRING_VALUE_ZERO) : Long.valueOf(sValue));
 		} else if (type == BigInteger.class) {
-			return new BigInteger(toString(value));
+			return (P) (isNullOrEmpty(sValue) ? BigInteger.ZERO : BigInteger.valueOf(Long.valueOf(sValue)));
 		} else if (type == Double.class) {
-			return Double.valueOf(toString(value));
+			return (P) (isNullOrEmpty(sValue) ? Double.valueOf(STRING_VALUE_ZERO) : Double.valueOf(sValue));
 		} else if (type == Float.class) {
-			return Float.valueOf(toString(value));
+			return (P) (isNullOrEmpty(sValue) ? Float.valueOf(STRING_VALUE_ZERO) : Float.valueOf(sValue));
 		} else if (type == BigDecimal.class) {
-			return Decimal.valueOf(toString(value));
+			return (P) (isNullOrEmpty(sValue) ? Decimal.ZERO : Decimal.valueOf(sValue));
 		} else if (type == Boolean.class) {
-			return Boolean.valueOf(toString(value));
+			return (P) Boolean.valueOf(sValue);
 		} else if (type == DateTime.class) {
 			if (value.getClass() == Long.class) {
-				return DateTime.valueOf((long) value);
+				return (P) DateTime.valueOf((long) value);
 			} else if (value.getClass() == Date.class) {
-				return DateTime.valueOf((Date) value);
+				return (P) DateTime.valueOf((Date) value);
 			} else {
-				return DateTime.valueOf(toString(value));
+				return (P) DateTime.valueOf(sValue);
 			}
 		} else if (type.isEnum()) {
-			String tmp = toString(value);
 			for (Object item : type.getEnumConstants()) {
-				if (tmp.equals(item.toString())) {
-					return item;
+				if (sValue.equals(item.toString())) {
+					return (P) item;
 				}
 			}
 		}
@@ -63,16 +67,9 @@ public class DataConvert {
 
 	public static String toString(Object value) {
 		if (value == null) {
-			return "";
+			return STRING_VALUE_EMPTY;
 		}
-		return value.toString();
-	}
-
-	public static String toString(DateTime value) {
-		if (value == null) {
-			return null;
-		}
-		return value.toString();
+		return String.valueOf(value);
 	}
 
 	public static String toString(DateTime value, String format) {
@@ -99,6 +96,9 @@ public class DataConvert {
 	}
 
 	public static double toDouble(BigDecimal value) {
+		if (value == null) {
+			return Double.valueOf(STRING_VALUE_ZERO);
+		}
 		return value.doubleValue();
 	}
 
@@ -119,6 +119,9 @@ public class DataConvert {
 	}
 
 	public static float toFloat(BigDecimal value) {
+		if (value == null) {
+			return Float.valueOf(STRING_VALUE_ZERO);
+		}
 		return value.floatValue();
 	}
 
@@ -139,6 +142,9 @@ public class DataConvert {
 	}
 
 	public static int toInt(BigDecimal value) {
+		if (value == null) {
+			return Integer.valueOf(STRING_VALUE_ZERO);
+		}
 		return value.intValue();
 	}
 
@@ -159,6 +165,9 @@ public class DataConvert {
 	}
 
 	public static long toLong(BigDecimal value) {
+		if (value == null) {
+			return Long.valueOf(STRING_VALUE_ZERO);
+		}
 		return value.longValue();
 	}
 
@@ -283,5 +292,21 @@ public class DataConvert {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * 判断字符串是否为空值
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static boolean isNullOrEmpty(String value) {
+		if (value == null) {
+			return true;
+		}
+		if (value.isEmpty()) {
+			return true;
+		}
+		return false;
 	}
 }
