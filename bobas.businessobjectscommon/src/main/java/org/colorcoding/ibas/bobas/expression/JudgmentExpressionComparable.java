@@ -5,8 +5,7 @@ package org.colorcoding.ibas.bobas.expression;
  * 
  * @author Niuren.Zhu
  *
- * @param <T>
- *            可比较类型子类
+ * @param <T> 可比较类型子类
  */
 public abstract class JudgmentExpressionComparable<T extends Comparable<T>> extends JudgmentExpression<T> {
 	public JudgmentExpressionComparable() {
@@ -28,6 +27,9 @@ public abstract class JudgmentExpressionComparable<T extends Comparable<T>> exte
 				}
 				return false;
 			}
+			if (this.getRightValue() == null) {
+				return false;
+			}
 			// 比较左右值
 			if (this.getLeftValue().compareTo(this.getRightValue()) == 0) {
 				return true;
@@ -42,6 +44,9 @@ public abstract class JudgmentExpressionComparable<T extends Comparable<T>> exte
 					return true;
 				}
 				return false;
+			}
+			if (this.getRightValue() == null) {
+				return true;
 			}
 			// 比较左右值
 			if (this.getLeftValue().compareTo(this.getRightValue()) != 0) {
