@@ -246,4 +246,9 @@ class DaemonTaskWrapping {
 			Thread.currentThread().setName("ibas-task|sleeping");
 		}
 	}
+
+	@Override
+	public String toString() {
+		return String.format("{Task: %s}", this.getName());
+	}
 }

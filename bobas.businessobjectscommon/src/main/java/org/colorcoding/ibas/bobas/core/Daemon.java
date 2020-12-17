@@ -24,12 +24,12 @@ public class Daemon implements IDaemon {
 	protected static final String MSG_DAEMON_REMOVE_TASK = "daemon: remove task id [%s], name [%s].";
 	protected static final String MSG_DAEMON_TASK_COMPLETED = "daemon: end task [%s - %s] %sth running and for [%s] milliseconds.";
 	protected static final String MSG_DAEMON_TASK_START = "daemon: begin to run task [%s - %s], %sth running.";
+	protected static final String MSG_DAEMON_THREAD_POOL_INFO = "daemon: cpu %s, thread pool size %s and queue size %s.";
 
 	/**
 	 * 注册后台任务
 	 * 
-	 * @param task
-	 *            任务
+	 * @param task 任务
 	 * @return 任务ID，小于0任务注册失败
 	 * @throws InvalidDaemonTaskException
 	 */
@@ -40,10 +40,8 @@ public class Daemon implements IDaemon {
 	/**
 	 * 注册后台任务
 	 * 
-	 * @param task
-	 *            任务
-	 * @param log
-	 *            是否记录日志
+	 * @param task 任务
+	 * @param log  是否记录日志
 	 * @return 任务ID，小于0任务注册失败
 	 * @throws InvalidDaemonTaskException
 	 */
@@ -69,8 +67,7 @@ public class Daemon implements IDaemon {
 	/**
 	 * 移出任务
 	 * 
-	 * @param id
-	 *            注册时分配的id
+	 * @param id 注册时分配的id
 	 * @return true，成功；false，失败
 	 */
 	public static boolean unRegister(long id) {
@@ -103,11 +100,11 @@ public class Daemon implements IDaemon {
 				@Override
 				public void run() {
 					while (running) {
-						checkRun();
 						try {
+							checkRun();
 							Thread.sleep(500);// 每500毫秒检查次任务
 						} catch (Exception e) {
-							Logger.log(e);
+							System.err.println(e);
 						}
 					}
 				}
@@ -186,15 +183,17 @@ public class Daemon implements IDaemon {
 		return false;
 	}
 
-	ExecutorService threadPool;
+	private ExecutorService threadPool;
 
 	public ExecutorService getThreadPool() {
 		if (this.threadPool == null) {
 			int cpu = Runtime.getRuntime().availableProcessors();
-			int size = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_TASK_THREAD_POOL_SIZE, cpu);
-			// this.threadPool = Executors.newFixedThreadPool(size);
-			this.threadPool = new ThreadPoolExecutor(1, size, 1000L, TimeUnit.MILLISECONDS,
-					new LinkedBlockingQueue<Runnable>());
+			int pSize = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_TASK_THREAD_POOL_SIZE, cpu);
+			pSize = pSize < 3 ? 3 : pSize;
+			int qSize = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_TASK_THREAD_QUEUE_SIZE, 3);
+			this.threadPool = new ThreadPoolExecutor(1, pSize, 55, TimeUnit.SECONDS,
+					new LinkedBlockingQueue<Runnable>(qSize));
+			Logger.log(MessageLevel.INFO, MSG_DAEMON_THREAD_POOL_INFO, cpu, pSize, qSize);
 		}
 		return threadPool;
 	}
@@ -214,21 +213,26 @@ public class Daemon implements IDaemon {
 				if (!wrapping.isActivated()) {
 					continue;
 				}
+				// 可以运行否
 				boolean done = wrapping.tryRun(time);
 				if (done) {
-					// 可以运行
-					wrapping.setRunning(true);// 设置状态为运行中
-					long start = System.currentTimeMillis();
-					long times = wrapping.getRunTimes() + 1;
-					if (wrapping.isLog() && MyConfiguration.isDebugMode()) {
-						Logger.log(MessageLevel.DEBUG, MSG_DAEMON_TASK_START, wrapping.getId(), wrapping.getName(),
-								times);
-					}
 					// 从线程池中调用新的线程运行此任务
 					this.getThreadPool().execute(new Runnable() {
 
 						@Override
 						public void run() {
+							if (wrapping.isRunning()) {
+								// 如果已在执行则退出
+								return;
+							}
+							// 设置状态为运行中
+							wrapping.setRunning(true);
+							long start = System.currentTimeMillis();
+							long times = wrapping.getRunTimes() + 1;
+							if (wrapping.isLog() && MyConfiguration.isDebugMode()) {
+								Logger.log(MessageLevel.DEBUG, MSG_DAEMON_TASK_START, wrapping.getId(),
+										wrapping.getName(), times);
+							}
 							wrapping.run();
 							long end = System.currentTimeMillis();
 							if (wrapping.isLog() && MyConfiguration.isDebugMode()) {
