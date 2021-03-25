@@ -405,7 +405,7 @@ public class DbDataReader implements IDbDataReader {
 					IDataTableRow row = dataTable.getRows().create();
 					// 行的每列赋值
 					for (int i = 0; i < dataTable.getColumns().size(); i++) {
-						row.setValue(i, this.getObject(i + 1));
+						row.setValue(i, this.resultSet.getObject(i + 1, dataTable.getColumns().get(i).getDataType()));
 					}
 				}
 			}
