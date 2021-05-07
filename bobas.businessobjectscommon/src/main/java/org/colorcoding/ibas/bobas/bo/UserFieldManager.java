@@ -49,34 +49,23 @@ public class UserFieldManager {
 		FieldDataDbBase<?> dfieldData = FieldsFactory.create().createDbField(propertyInfo.getValueType());
 		dfieldData.setName(propertyInfo.getName());
 		dfieldData.setDbField(propertyInfo.getName());
-		dfieldData.setOriginal(false);
-		return new UserField(dfieldData);
-	}
-
-	public static UserField create(String name, DbFieldType type) {
-		if (name == null || type == null) {
-			return null;
-		}
-		FieldDataDbBase<?> dfieldData = FieldsFactory.create().createDbField(getFieldType(type));
-		dfieldData.setName(name);
-		dfieldData.setDbField(name);
 		dfieldData.setPrimaryKey(false);
 		dfieldData.setOriginal(false);
 		dfieldData.setSavable(true);
 		return new UserField(dfieldData);
 	}
 
-	private static Class<?> getFieldType(DbFieldType type) {
-		if (type == DbFieldType.ALPHANUMERIC) {
-			return String.class;
-		} else if (type == DbFieldType.DATE) {
-			return DateTime.class;
-		} else if (type == DbFieldType.DECIMAL) {
-			return BigDecimal.class;
-		} else if (type == DbFieldType.NUMERIC) {
-			return Integer.class;
+	public static UserField create(String name, Class<?> type) {
+		if (name == null || type == null) {
+			return null;
 		}
-		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", type.toString()));
+		FieldDataDbBase<?> dfieldData = FieldsFactory.create().createDbField(type);
+		dfieldData.setName(name);
+		dfieldData.setDbField(name);
+		dfieldData.setPrimaryKey(false);
+		dfieldData.setOriginal(false);
+		dfieldData.setSavable(true);
+		return new UserField(dfieldData);
 	}
 
 	private static final UserField[] NO_USER_FIELDS = new UserField[] {};
@@ -93,4 +82,16 @@ public class UserFieldManager {
 		return NO_USER_FIELDS;
 	}
 
+	public static Class<?> getFieldType(DbFieldType type) {
+		if (type == DbFieldType.ALPHANUMERIC) {
+			return String.class;
+		} else if (type == DbFieldType.DATE) {
+			return DateTime.class;
+		} else if (type == DbFieldType.DECIMAL) {
+			return BigDecimal.class;
+		} else if (type == DbFieldType.NUMERIC) {
+			return Integer.class;
+		}
+		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", type.toString()));
+	}
 }

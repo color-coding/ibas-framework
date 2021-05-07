@@ -29,4 +29,13 @@ public enum DbFieldType {
 	 * 字节
 	 */
 	BYTES;
+
+	public static DbFieldType forValue(String value) {
+		for (Object item : DbFieldType.class.getEnumConstants()) {
+			if (item.toString().equalsIgnoreCase(value)) {
+				return (DbFieldType) item;
+			}
+		}
+		return null;
+	}
 }

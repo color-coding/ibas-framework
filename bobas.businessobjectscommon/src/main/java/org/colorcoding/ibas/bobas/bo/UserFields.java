@@ -137,6 +137,16 @@ class UserFields extends ArrayList<IUserField> implements IUserFields, IBindable
 	 * @param valueType 值类型
 	 */
 	public IUserField register(String name, DbFieldType valueType) {
+		return register(name, UserFieldManager.getFieldType(valueType));
+	}
+
+	/**
+	 * 注册用户字段
+	 * 
+	 * @param name      名称
+	 * @param valueType 值类型
+	 */
+	public IUserField register(String name, Class<?> valueType) {
 		UserField userField = UserFieldManager.create(name, valueType);
 		if (userField != null) {
 			Logger.log(MessageLevel.DEBUG, MSG_REGISTER_USER_FIELD, this.parent, name, valueType);

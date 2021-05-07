@@ -36,6 +36,15 @@ public interface IUserFields extends Iterable<IUserField> {
 	IUserField register(String name, DbFieldType valueType);
 
 	/**
+	 * 注册用户字段
+	 * 
+	 * @param name 名称
+	 * @param type 值类型
+	 * @return
+	 */
+	IUserField register(String name, Class<?> valueType);
+
+	/**
 	 * 注册用户字段到全局
 	 */
 	void register();
