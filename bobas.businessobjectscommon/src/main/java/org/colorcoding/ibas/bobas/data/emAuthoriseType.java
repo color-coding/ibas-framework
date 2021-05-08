@@ -29,11 +29,18 @@ public enum emAuthoriseType {
 	@Value("N")
 	NONE;
 
-	public int getValue() {
-		return this.ordinal();
+	public static emAuthoriseType valueOf(int value) {
+		return values()[value];
 	}
 
-	public static emAuthoriseType forValue(int value) {
-		return values()[value];
+	public static emAuthoriseType valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : emAuthoriseType.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (emAuthoriseType) item;
+				}
+			}
+		}
+		return emAuthoriseType.valueOf(value);
 	}
 }

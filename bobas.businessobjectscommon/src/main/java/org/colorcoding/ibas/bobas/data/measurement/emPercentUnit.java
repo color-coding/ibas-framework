@@ -22,7 +22,7 @@ public enum emPercentUnit {
 
 	private synchronized static java.util.HashMap<Integer, emPercentUnit> getMappings() {
 		if (mappings == null) {
-			mappings = new java.util.HashMap<Integer, emPercentUnit>();
+			mappings = new java.util.HashMap<Integer, emPercentUnit>(1);
 		}
 		return mappings;
 	}
@@ -36,8 +36,22 @@ public enum emPercentUnit {
 		return intValue;
 	}
 
-	public static emPercentUnit forValue(int value) {
-		return getMappings().get(value);
+	public static emPercentUnit valueOf(int value, boolean valueIndex) {
+		if (valueIndex) {
+			return getMappings().get(value);
+		}
+		return values()[value];
+	}
+
+	public static emPercentUnit valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : emPercentUnit.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (emPercentUnit) item;
+				}
+			}
+		}
+		return emPercentUnit.valueOf(value);
 	}
 
 	/**

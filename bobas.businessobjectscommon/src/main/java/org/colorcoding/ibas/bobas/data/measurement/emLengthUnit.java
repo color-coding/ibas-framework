@@ -31,7 +31,7 @@ public enum emLengthUnit {
 
 	private synchronized static java.util.HashMap<Integer, emLengthUnit> getMappings() {
 		if (mappings == null) {
-			mappings = new java.util.HashMap<Integer, emLengthUnit>();
+			mappings = new java.util.HashMap<Integer, emLengthUnit>(4);
 		}
 		return mappings;
 	}
@@ -45,8 +45,22 @@ public enum emLengthUnit {
 		return intValue;
 	}
 
-	public static emLengthUnit forValue(int value) {
-		return getMappings().get(value);
+	public static emLengthUnit valueOf(int value, boolean valueIndex) {
+		if (valueIndex) {
+			return getMappings().get(value);
+		}
+		return values()[value];
+	}
+
+	public static emLengthUnit valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : emLengthUnit.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (emLengthUnit) item;
+				}
+			}
+		}
+		return emLengthUnit.valueOf(value);
 	}
 
 	/**

@@ -34,7 +34,7 @@ public enum emTimeUnit {
 
 	private synchronized static java.util.HashMap<Integer, emTimeUnit> getMappings() {
 		if (mappings == null) {
-			mappings = new java.util.HashMap<Integer, emTimeUnit>();
+			mappings = new java.util.HashMap<Integer, emTimeUnit>(3);
 		}
 		return mappings;
 	}
@@ -48,8 +48,22 @@ public enum emTimeUnit {
 		return intValue;
 	}
 
-	public static emTimeUnit forValue(int value) {
-		return getMappings().get(value);
+	public static emTimeUnit valueOf(int value, boolean valueIndex) {
+		if (valueIndex) {
+			return getMappings().get(value);
+		}
+		return values()[value];
+	}
+
+	public static emTimeUnit valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : emTimeUnit.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (emTimeUnit) item;
+				}
+			}
+		}
+		return emTimeUnit.valueOf(value);
 	}
 
 	/**

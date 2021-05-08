@@ -20,5 +20,20 @@ public enum ConditionAliasDataType {
 	/**
 	 * 自定义文本
 	 */
-	FREE_TEXT
+	FREE_TEXT;
+
+	public static ConditionAliasDataType valueOf(int value) {
+		return values()[value];
+	}
+
+	public static ConditionAliasDataType valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : ConditionAliasDataType.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (ConditionAliasDataType) item;
+				}
+			}
+		}
+		return ConditionAliasDataType.valueOf(value);
+	}
 }

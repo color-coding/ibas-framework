@@ -37,11 +37,18 @@ public enum emApprovalResult {
 	// */
 	// @Value("P") CANCELLED;
 
-	public int getValue() {
-		return this.ordinal();
+	public static emApprovalResult valueOf(int value) {
+		return values()[value];
 	}
 
-	public static emApprovalResult forValue(int value) {
-		return values()[value];
+	public static emApprovalResult valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : emApprovalResult.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (emApprovalResult) item;
+				}
+			}
+		}
+		return emApprovalResult.valueOf(value);
 	}
 }

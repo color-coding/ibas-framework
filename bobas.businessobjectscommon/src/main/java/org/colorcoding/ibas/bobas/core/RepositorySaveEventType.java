@@ -31,4 +31,19 @@ public enum RepositorySaveEventType {
 	 * 删除后
 	 */
 	DELETED;
+
+	public static RepositorySaveEventType valueOf(int value) {
+		return values()[value];
+	}
+
+	public static RepositorySaveEventType valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : RepositorySaveEventType.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (RepositorySaveEventType) item;
+				}
+			}
+		}
+		return RepositorySaveEventType.valueOf(value);
+	}
 }

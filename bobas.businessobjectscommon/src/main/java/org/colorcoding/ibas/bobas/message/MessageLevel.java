@@ -26,5 +26,20 @@ public enum MessageLevel {
 	/**
 	 * 调试信息
 	 */
-	DEBUG,
+	DEBUG;
+
+	public static MessageLevel valueOf(int value) {
+		return values()[value];
+	}
+
+	public static MessageLevel valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : MessageLevel.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (MessageLevel) item;
+				}
+			}
+		}
+		return MessageLevel.valueOf(value);
+	}
 }

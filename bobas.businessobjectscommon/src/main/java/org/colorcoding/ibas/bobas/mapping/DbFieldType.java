@@ -30,12 +30,18 @@ public enum DbFieldType {
 	 */
 	BYTES;
 
-	public static DbFieldType forValue(String value) {
-		for (Object item : DbFieldType.class.getEnumConstants()) {
-			if (item.toString().equalsIgnoreCase(value)) {
-				return (DbFieldType) item;
+	public static DbFieldType valueOf(int value) {
+		return values()[value];
+	}
+
+	public static DbFieldType valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : DbFieldType.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (DbFieldType) item;
+				}
 			}
 		}
-		return null;
+		return DbFieldType.valueOf(value);
 	}
 }

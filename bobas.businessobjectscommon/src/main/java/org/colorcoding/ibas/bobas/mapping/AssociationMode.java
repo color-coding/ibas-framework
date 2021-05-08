@@ -18,5 +18,20 @@ public enum AssociationMode {
 	/**
 	 * 一对多
 	 */
-	ONE_TO_MANY
+	ONE_TO_MANY;
+
+	public static AssociationMode valueOf(int value) {
+		return values()[value];
+	}
+
+	public static AssociationMode valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : AssociationMode.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (AssociationMode) item;
+				}
+			}
+		}
+		return AssociationMode.valueOf(value);
+	}
 }

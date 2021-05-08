@@ -47,11 +47,18 @@ public enum emApprovalStatus {
 	@Value("C")
 	CANCELLED;
 
-	public int getValue() {
-		return this.ordinal();
+	public static emApprovalStatus valueOf(int value) {
+		return values()[value];
 	}
 
-	public static emApprovalStatus forValue(int value) {
-		return values()[value];
+	public static emApprovalStatus valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : emApprovalStatus.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (emApprovalStatus) item;
+				}
+			}
+		}
+		return emApprovalStatus.valueOf(value);
 	}
 }

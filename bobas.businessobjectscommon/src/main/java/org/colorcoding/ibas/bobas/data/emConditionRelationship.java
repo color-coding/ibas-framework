@@ -29,11 +29,18 @@ public enum emConditionRelationship {
 	@Value("OR")
 	OR;
 
-	public int getValue() {
-		return this.ordinal();
+	public static emConditionRelationship valueOf(int value) {
+		return values()[value];
 	}
 
-	public static emConditionRelationship forValue(int value) {
-		return values()[value];
+	public static emConditionRelationship valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : emConditionRelationship.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (emConditionRelationship) item;
+				}
+			}
+		}
+		return emConditionRelationship.valueOf(value);
 	}
 }

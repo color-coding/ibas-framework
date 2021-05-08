@@ -34,11 +34,18 @@ public enum emDocumentStatus {
 	@Value("C")
 	CLOSED;
 
-	public int getValue() {
-		return this.ordinal();
+	public static emDocumentStatus valueOf(int value) {
+		return values()[value];
 	}
 
-	public static emDocumentStatus forValue(int value) {
-		return values()[value];
+	public static emDocumentStatus valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : emDocumentStatus.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (emDocumentStatus) item;
+				}
+			}
+		}
+		return emDocumentStatus.valueOf(value);
 	}
 }

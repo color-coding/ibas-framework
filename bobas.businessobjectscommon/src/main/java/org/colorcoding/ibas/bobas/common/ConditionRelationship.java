@@ -26,11 +26,18 @@ public enum ConditionRelationship {
 	@Value("O")
 	OR;
 
-	public int getValue() {
-		return this.ordinal();
+	public static ConditionRelationship valueOf(int value) {
+		return values()[value];
 	}
 
-	public static ConditionRelationship forValue(int value) {
-		return values()[value];
+	public static ConditionRelationship valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : ConditionRelationship.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (ConditionRelationship) item;
+				}
+			}
+		}
+		return ConditionRelationship.valueOf(value);
 	}
 }

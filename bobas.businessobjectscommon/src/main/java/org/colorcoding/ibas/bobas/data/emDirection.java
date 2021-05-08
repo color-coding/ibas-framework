@@ -24,11 +24,18 @@ public enum emDirection {
 	@Value("O")
 	OUT;
 
-	public int getValue() {
-		return this.ordinal();
+	public static emDirection valueOf(int value) {
+		return values()[value];
 	}
 
-	public static emDirection forValue(int value) {
-		return values()[value];
+	public static emDirection valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : emDirection.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (emDirection) item;
+				}
+			}
+		}
+		return emDirection.valueOf(value);
 	}
 }

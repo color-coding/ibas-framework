@@ -26,11 +26,18 @@ public enum emBOStatus {
 	@Value("C")
 	CLOSED;
 
-	public int getValue() {
-		return this.ordinal();
+	public static emBOStatus valueOf(int value) {
+		return values()[value];
 	}
 
-	public static emBOStatus forValue(int value) {
-		return values()[value];
+	public static emBOStatus valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : emBOStatus.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (emBOStatus) item;
+				}
+			}
+		}
+		return emBOStatus.valueOf(value);
 	}
 }

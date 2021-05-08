@@ -55,12 +55,19 @@ public enum ConditionOperation {
 	@Value("NOT_NULL")
 	NOT_NULL;
 
-	public int getValue() {
-		return this.ordinal();
+	public static ConditionOperation valueOf(int value) {
+		return values()[value];
 	}
 
-	public static ConditionOperation forValue(int value) {
-		return values()[value];
+	public static ConditionOperation valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : ConditionOperation.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (ConditionOperation) item;
+				}
+			}
+		}
+		return ConditionOperation.valueOf(value);
 	}
 
 }

@@ -38,5 +38,20 @@ public enum TransactionType {
 	 * 删除前
 	 */
 	@Value("S")
-	BEFORE_DELETE,
+	BEFORE_DELETE;
+
+	public static TransactionType valueOf(int value) {
+		return values()[value];
+	}
+
+	public static TransactionType valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : TransactionType.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (TransactionType) item;
+				}
+			}
+		}
+		return TransactionType.valueOf(value);
+	}
 }

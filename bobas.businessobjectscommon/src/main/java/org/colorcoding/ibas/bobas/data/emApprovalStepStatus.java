@@ -44,11 +44,18 @@ public enum emApprovalStepStatus {
 	@Value("S")
 	SKIPPED;
 
-	public int getValue() {
-		return this.ordinal();
+	public static emApprovalStepStatus valueOf(int value) {
+		return values()[value];
 	}
 
-	public static emApprovalStepStatus forValue(int value) {
-		return values()[value];
+	public static emApprovalStepStatus valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : emApprovalStepStatus.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (emApprovalStepStatus) item;
+				}
+			}
+		}
+		return emApprovalStepStatus.valueOf(value);
 	}
 }

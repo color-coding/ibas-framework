@@ -24,11 +24,18 @@ public enum emYesNo {
 	@Value("Y")
 	YES;
 
-	public int getValue() {
-		return this.ordinal();
+	public static emYesNo valueOf(int value) {
+		return values()[value];
 	}
 
-	public static emYesNo forValue(int value) {
-		return values()[value];
+	public static emYesNo valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : emYesNo.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (emYesNo) item;
+				}
+			}
+		}
+		return emYesNo.valueOf(value);
 	}
 }

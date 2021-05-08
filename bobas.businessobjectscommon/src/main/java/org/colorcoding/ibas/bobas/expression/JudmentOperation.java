@@ -69,6 +69,21 @@ public enum JudmentOperation {
 	 */
 	OR;
 
+	public static JudmentOperation valueOf(int value) {
+		return values()[value];
+	}
+
+	public static JudmentOperation valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : JudmentOperation.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (JudmentOperation) item;
+				}
+			}
+		}
+		return JudmentOperation.valueOf(value);
+	}
+
 	public static JudmentOperation valueOf(ConditionOperation value) {
 		if (value == null) {
 			return null;
@@ -152,4 +167,5 @@ public enum JudmentOperation {
 		}
 		return null;
 	}
+
 }

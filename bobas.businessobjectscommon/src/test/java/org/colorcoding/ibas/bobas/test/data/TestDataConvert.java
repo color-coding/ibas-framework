@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.test.data;
 import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.data.emConditionOperation;
 import org.colorcoding.ibas.bobas.data.emYesNo;
+import org.colorcoding.ibas.bobas.data.measurement.emAreaUnit;
 import org.colorcoding.ibas.bobas.db.DataConvert;
 
 import junit.framework.TestCase;
@@ -22,11 +23,15 @@ public class TestDataConvert extends TestCase {
 		assertEquals(emYesNo.YES, emValue);
 		// 值测试
 		emConditionOperation emcpValue = (emConditionOperation) DataConvert.toEnumValue(emConditionOperation.class,
-				emConditionOperation.CONTAIN.getValue());
+				emConditionOperation.CONTAIN.ordinal());
 		assertEquals(emConditionOperation.CONTAIN, emcpValue);
 
 		for (KeyValue item : DataConvert.toKeyValues(emYesNo.class)) {
 			System.out.println(item.toString());
 		}
+		for (KeyValue item : DataConvert.toKeyValues(emAreaUnit.class)) {
+			System.out.println(item.toString());
+		}
+
 	}
 }

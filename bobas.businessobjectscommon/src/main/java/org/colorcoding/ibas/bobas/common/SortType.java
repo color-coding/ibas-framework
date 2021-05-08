@@ -18,11 +18,18 @@ public enum SortType {
 	@Value("A")
 	ASCENDING;
 
-	public int getValue() {
-		return this.ordinal();
+	public static SortType valueOf(int value) {
+		return values()[value];
 	}
 
-	public static SortType forValue(int value) {
-		return values()[value];
+	public static SortType valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : SortType.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (SortType) item;
+				}
+			}
+		}
+		return SortType.valueOf(value);
 	}
 }

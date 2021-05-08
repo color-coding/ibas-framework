@@ -86,12 +86,19 @@ public enum emConditionOperation {
 	@Value("NC")
 	NOT_CONTAIN;
 
-	public int getValue() {
-		return this.ordinal();
+	public static emConditionOperation valueOf(int value) {
+		return values()[value];
 	}
 
-	public static emConditionOperation forValue(int value) {
-		return values()[value];
+	public static emConditionOperation valueOf(String value, boolean ignoreCase) {
+		if (ignoreCase) {
+			for (Object item : emConditionOperation.class.getEnumConstants()) {
+				if (item.toString().equalsIgnoreCase(value)) {
+					return (emConditionOperation) item;
+				}
+			}
+		}
+		return emConditionOperation.valueOf(value);
 	}
 
 }
