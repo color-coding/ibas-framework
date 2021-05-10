@@ -97,6 +97,20 @@ public class JudgmentExpressionDateTime extends JudgmentExpression<DateTime> {
 			}
 			return false;
 		}
+		// 空值
+		else if (this.getOperation() == JudmentOperation.IS_NULL) {
+			if (this.getLeftValue() == null) {
+				return true;
+			}
+			return false;
+		}
+		// 非空值
+		else if (this.getOperation() == JudmentOperation.NOT_NULL) {
+			if (this.getLeftValue() != null) {
+				return false;
+			}
+			return true;
+		}
 		return super.result();
 	}
 

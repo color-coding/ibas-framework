@@ -61,6 +61,14 @@ public enum JudmentOperation {
 	 */
 	NOT_CONTAIN,
 	/**
+	 * 是空
+	 */
+	IS_NULL,
+	/**
+	 * 非空
+	 */
+	NOT_NULL,
+	/**
 	 * 与（仅布尔比较有效）
 	 */
 	AND,
@@ -108,6 +116,10 @@ public enum JudmentOperation {
 			return JudmentOperation.BEGIN_WITH;
 		} else if (value == ConditionOperation.END) {
 			return JudmentOperation.END_WITH;
+		} else if (value == ConditionOperation.IS_NULL) {
+			return JudmentOperation.IS_NULL;
+		} else if (value == ConditionOperation.NOT_NULL) {
+			return JudmentOperation.NOT_NULL;
 		}
 		return null;
 	}

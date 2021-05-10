@@ -9,6 +9,7 @@ import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
+import org.colorcoding.ibas.bobas.core.ITrackStatus;
 import org.colorcoding.ibas.bobas.core.RepositoryException;
 import org.colorcoding.ibas.bobas.db.DbException;
 import org.colorcoding.ibas.bobas.db.IBOAdapter;
@@ -384,6 +385,12 @@ public class BORepositoryService implements IBORepositoryService {
 	protected final <P extends IBusinessObject> OperationResult<P> save(P bo, String token) {
 		OperationResult<P> operationResult = new OperationResult<P>();
 		try {
+			if (bo instanceof ITrackStatus) {
+				ITrackStatus status = (ITrackStatus) bo;
+				if (status.isDeleted() && status.isNew() && status.isSavable()) {
+					throw new RepositoryException(I18N.prop("msg_bobas_not_allow_delete_new_bo"));
+				}
+			}
 			this.setCurrentUser(token);// 解析并设置当前用户
 			operationResult.addResultObjects(this.save(bo));
 		} catch (Exception e) {

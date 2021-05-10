@@ -111,6 +111,20 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 			}
 			return false;
 		}
+		// 空值
+		else if (this.getOperation() == JudmentOperation.IS_NULL) {
+			if (this.getLeftValue() == null) {
+				return true;
+			}
+			return false;
+		}
+		// 非空值
+		else if (this.getOperation() == JudmentOperation.NOT_NULL) {
+			if (this.getLeftValue() != null) {
+				return false;
+			}
+			return true;
+		}
 		// 其他
 		return super.result();
 	}
