@@ -7,6 +7,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.core.IManagedProperties;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
+import org.colorcoding.ibas.bobas.core.TrackableBase;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
@@ -18,6 +19,16 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
  *
  */
 public abstract class BusinessRuleCommon extends BusinessRule {
+
+	private boolean affectedInSilent;
+
+	public final boolean isAffectedInSilent() {
+		return affectedInSilent;
+	}
+
+	public final void setAffectedInSilent(boolean affectedInSilent) {
+		this.affectedInSilent = affectedInSilent;
+	}
 
 	@Override
 	public final void execute(IBusinessObject bo, String trigger) throws BusinessRuleException {
@@ -40,7 +51,13 @@ public abstract class BusinessRuleCommon extends BusinessRule {
 			this.execute(context);
 			// 赋值输出属性
 			if (bo instanceof IManagedProperties) {
+				TrackableBase trackable = null;
 				IManagedProperties boProperties = (IManagedProperties) bo;
+				if (this.isAffectedInSilent() && !bo.isLoading() && bo instanceof TrackableBase) {
+					// 静默模式，不触发属性改变事件
+					trackable = (TrackableBase) bo;
+					trackable.setLoading(true);
+				}
 				for (IPropertyInfo<?> propertyInfo : this.getAffectedProperties()) {
 					@SuppressWarnings("unchecked")
 					IPropertyInfo<Object> property = (IPropertyInfo<Object>) propertyInfo;
@@ -48,6 +65,10 @@ public abstract class BusinessRuleCommon extends BusinessRule {
 					if (value != null) {
 						boProperties.setProperty(property, value);
 					}
+				}
+				if (trackable != null) {
+					// 取消静默模式
+					trackable.setLoading(false);
 				}
 			}
 		} catch (Exception e) {

@@ -19,6 +19,7 @@ public class BusinessRuleDocumentStatus extends BusinessRuleCollection {
 
 	protected BusinessRuleDocumentStatus() {
 		this.setName(I18N.prop("msg_bobas_business_rule_element_status"));
+		this.setAffectedInSilent(true);
 	}
 
 	/**
@@ -82,13 +83,15 @@ public class BusinessRuleDocumentStatus extends BusinessRuleCollection {
 			for (int i = 0; i < values.length; i++) {
 				Object value = values[i];
 				if (value instanceof emDocumentStatus) {
-					emDocumentStatus tmp = (emDocumentStatus) value;
-					if (result == emDocumentStatus.PLANNED) {
-						result = tmp;
-					} else if (result != tmp) {
-						// 退出，并不修改状态
-						result = emDocumentStatus.PLANNED;
-						break;
+					emDocumentStatus line = (emDocumentStatus) value;
+					if (line.ordinal() > emDocumentStatus.PLANNED.ordinal()) {
+						if (result == emDocumentStatus.PLANNED) {
+							result = line;
+						} else {
+							if (line.ordinal() < result.ordinal()) {
+								result = line;
+							}
+						}
 					}
 				}
 			}
