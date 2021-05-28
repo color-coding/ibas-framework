@@ -1,7 +1,5 @@
 package org.colorcoding.ibas.bobas.approval;
 
-import org.colorcoding.ibas.bobas.bo.IBODocument;
-import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
 import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
 import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
@@ -13,7 +11,6 @@ import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalResult;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emApprovalStepStatus;
-import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
@@ -345,24 +342,6 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 				IBOTagCanceled referenced = (IBOTagCanceled) this.getApprovalData();
 				if (referenced.getCanceled() == emYesNo.YES) {
 					// 可标记取消数据
-					return;
-				}
-			}
-			if (this.getApprovalData() instanceof IBODocument) {
-				// 单据类型
-				IBODocument document = (IBODocument) this.getApprovalData();
-				if (document.getStatus() == emBOStatus.CLOSED
-						&& this.getApprovalData().getApprovalStatus() == emApprovalStatus.APPROVED) {
-					// 可关闭数据，仅审批通过后
-					return;
-				}
-			}
-			if (this.getApprovalData() instanceof IBODocumentLine) {
-				// 单据行类型
-				IBODocumentLine documentLine = (IBODocumentLine) this.getApprovalData();
-				if (documentLine.getStatus() == emBOStatus.CLOSED
-						&& this.getApprovalData().getApprovalStatus() == emApprovalStatus.APPROVED) {
-					// 可关闭数据，仅审批通过后
 					return;
 				}
 			}
