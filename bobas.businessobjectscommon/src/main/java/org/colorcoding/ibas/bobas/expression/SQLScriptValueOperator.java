@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.expression;
 
-import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
@@ -9,9 +10,10 @@ import org.colorcoding.ibas.bobas.common.SqlQuery;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IFieldDataDb;
 import org.colorcoding.ibas.bobas.core.fields.IManagedFields;
+import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.data.IDataTable;
-import org.colorcoding.ibas.bobas.data.IKeyText;
 import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.repository.IBORepository4DbReadonly;
 
 /**
@@ -55,51 +57,19 @@ public class SQLScriptValueOperator implements IPropertyValueOperator {
 			}
 			String query = this.propertyName;
 			// 替换查询中的变量
-			if (this.bo instanceof IManagedFields) {
-				IManagedFields boFields = (IManagedFields) this.bo;
-				query = MyConfiguration.applyVariables(query, new Iterator<IKeyText>() {
-					IFieldData[] fieldDatas = boFields.getFields(c -> c instanceof IFieldDataDb);
-					int index;
-
-					@Override
-					public IKeyText next() {
-						IFieldData fieldData = fieldDatas[index];
-						IKeyText next = new IKeyText() {
-
-							@Override
-							public void setText(String value) {
-							}
-
-							@Override
-							public void setKey(String value) {
-							}
-
-							@Override
-							public String getText() {
-								return fieldData.getValue() == null ? null : fieldData.getValue().toString();
-							}
-
-							@Override
-							public String getKey() {
-								return ((IFieldDataDb) fieldData).getDbField();
-							}
-
-							@Override
-							public String toString() {
-								return String.format("{key text: %s %s}", this.getKey(), this.getText());
-							}
-
-						};
-						index++;
-						return next;
+			Matcher matcher = Pattern.compile(MyConfiguration.VARIABLE_PATTERN).matcher(query);
+			while (matcher.find()) {
+				// 带格式名称${}
+				try {
+					String vName = matcher.group(0);
+					String tName = vName.substring(2, vName.length() - 1);
+					String vValue = this.getPropertyValues(this.bo, tName);
+					if (vValue != null) {
+						query = query.replace(vName, vValue.replace("'", "''"));
 					}
-
-					@Override
-					public boolean hasNext() {
-						return index < fieldDatas.length ? true : false;
-					}
-				});
-				;
+				} catch (Exception e) {
+					Logger.log(e);
+				}
 			}
 			IOperationResult<IDataTable> opRslt = this.repository.query(new SqlQuery(query, true, false));
 			if (opRslt.getError() != null) {
@@ -135,6 +105,76 @@ public class SQLScriptValueOperator implements IPropertyValueOperator {
 
 	@Override
 	public String toString() {
-		return String.format("{property's value: %s}", this.propertyName);
+		return String.format("{sql operator: %s}",
+				this.propertyName != null
+						? this.propertyName.length() > 10 ? this.propertyName.substring(0, 10)
+								: this.propertyName.substring(0, this.propertyName.length())
+						: DataConvert.STRING_VALUE_EMPTY);
+	}
+
+	protected String getPropertyValues(IBusinessObject bo, String path) throws JudmentOperationException {
+		try {
+			if (bo instanceof IManagedFields) {
+				IManagedFields boFields = (IManagedFields) bo;
+				String property = path;
+				if (path.indexOf(".") > 1) {
+					property = path.split("\\.")[0];
+				}
+				for (IFieldData fieldData : boFields.getFields()) {
+					if (fieldData instanceof IFieldDataDb) {
+						IFieldDataDb dbField = (IFieldDataDb) fieldData;
+						if (!dbField.getName().equalsIgnoreCase(property)
+								&& !dbField.getDbField().equalsIgnoreCase(property)) {
+							continue;
+						}
+					} else {
+						if (!fieldData.getName().equalsIgnoreCase(property)) {
+							continue;
+						}
+					}
+					Object value = fieldData.getValue();
+					if (value == null) {
+						return DataConvert.STRING_VALUE_EMPTY;
+					}
+					if (value instanceof Iterable) {
+						if (path.indexOf(".", property.length()) > 1) {
+							String cPath = path.substring(property.length() + 1, path.length());
+							StringBuilder stringBuilder = new StringBuilder();
+							boolean done = false;
+							for (Object item : (Iterable<?>) value) {
+								if (done) {
+									stringBuilder.append(", ");
+								}
+								if (!(item instanceof IBusinessObject)) {
+									continue;
+								}
+								stringBuilder.append(this.getPropertyValues((IBusinessObject) item, cPath));
+								done = true;
+							}
+							return stringBuilder.toString();
+						} else {
+							StringBuilder stringBuilder = new StringBuilder();
+							boolean done = false;
+							for (Object item : (Iterable<?>) value) {
+								if (done) {
+									stringBuilder.append(", ");
+								}
+								if (item == null) {
+									stringBuilder.append(DataConvert.STRING_VALUE_EMPTY);
+								} else {
+									stringBuilder.append(String.valueOf(item));
+								}
+								done = true;
+							}
+							return stringBuilder.toString();
+						}
+					}
+					return String.valueOf(value);
+				}
+			}
+			return null;
+		} catch (Exception e) {
+			throw new JudmentOperationException(I18N.prop("msg_bobas_not_found_property_path_value", path), e);
+		}
 	}
 }

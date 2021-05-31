@@ -4,11 +4,29 @@ import java.math.BigDecimal;
 
 import org.colorcoding.ibas.bobas.bo.BOException;
 import org.colorcoding.ibas.bobas.bo.BOUtilities;
+import org.colorcoding.ibas.bobas.common.ICriteria;
+import org.colorcoding.ibas.bobas.common.IOperationResult;
+import org.colorcoding.ibas.bobas.common.ISqlQuery;
+import org.colorcoding.ibas.bobas.common.ISqlStoredProcedure;
+import org.colorcoding.ibas.bobas.common.OperationResult;
+import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
+import org.colorcoding.ibas.bobas.core.RepositoryException;
+import org.colorcoding.ibas.bobas.data.DataTable;
+import org.colorcoding.ibas.bobas.data.DataTableColumn;
+import org.colorcoding.ibas.bobas.data.DataTableRow;
 import org.colorcoding.ibas.bobas.data.DateTime;
+import org.colorcoding.ibas.bobas.data.IDataTable;
+import org.colorcoding.ibas.bobas.data.SingleValue;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.measurement.Time;
 import org.colorcoding.ibas.bobas.data.measurement.emTimeUnit;
+import org.colorcoding.ibas.bobas.db.DbException;
+import org.colorcoding.ibas.bobas.db.IBOAdapter;
+import org.colorcoding.ibas.bobas.db.IDbConnection;
+import org.colorcoding.ibas.bobas.expression.SQLScriptValueOperator;
 import org.colorcoding.ibas.bobas.mapping.DbFieldType;
+import org.colorcoding.ibas.bobas.organization.IUser;
+import org.colorcoding.ibas.bobas.repository.IBORepository4DbReadonly;
 
 import junit.framework.TestCase;
 
@@ -59,7 +77,7 @@ public class TestBOUtilities extends TestCase {
 
 		Object value3 = BOUtilities.getPropertyValue(order, path3);
 		assertEquals(String.format("%s not equals.", path3), value3,
-				order.getUserFields().get("U_LineType").getValue());
+				order.getUserFields().get("U_OrderType").getValue());
 
 		orderItem = order.getSalesOrderItems().get(0);
 
@@ -74,5 +92,143 @@ public class TestBOUtilities extends TestCase {
 
 		value2 = BOUtilities.getPropertyValue(order, path2, 1);
 		assertEquals(String.format("%s not equals.", path2), value2, orderItem.getItemCode());
+
+		SQLScriptValueOperator operator = new SQLScriptValueOperator(new IBORepository4DbReadonly() {
+
+			@Override
+			public IUser getCurrentUser() {
+				return null;
+			}
+
+			@Override
+			public void setCurrentUser(IUser user) {
+
+			}
+
+			@Override
+			public void dispose() throws RepositoryException {
+			}
+
+			@Override
+			public DateTime getServerTime() {
+				return null;
+			}
+
+			@Override
+			public String getTransactionId() {
+				return null;
+			}
+
+			@Override
+			public <T extends IBusinessObjectBase> IOperationResult<T> fetch(ICriteria criteria, Class<T> boType) {
+				return null;
+			}
+
+			@Override
+			public <T extends IBusinessObjectBase> IOperationResult<T> fetchEx(ICriteria criteria, Class<T> boType) {
+				return null;
+			}
+
+			@Override
+			public <T extends IBusinessObjectBase> IOperationResult<T> fetchCopy(T bo) {
+				return null;
+			}
+
+			@Override
+			public <T extends IBusinessObjectBase> IOperationResult<T> fetchCopyEx(T bo) {
+				return null;
+			}
+
+			@Override
+			public IDbConnection getDbConnection() throws DbException {
+				return null;
+			}
+
+			@Override
+			public void setDbConnection(IDbConnection connection) {
+
+			}
+
+			@Override
+			public IBOAdapter getBOAdapter() throws DbException {
+				return null;
+			}
+
+			@Override
+			public void setBOAdapter(IBOAdapter boAdapter) {
+
+			}
+
+			@Override
+			public void connectDb(String dbType, String dbServer, String dbName, String dbUser, String dbPassword)
+					throws DbException {
+
+			}
+
+			@Override
+			public void connectDb(String dbServer, String dbName, String dbUser, String dbPassword) throws DbException {
+
+			}
+
+			@Override
+			public boolean openDbConnection() throws DbException {
+				return false;
+			}
+
+			@Override
+			public void closeDbConnection() throws DbException {
+
+			}
+
+			@Override
+			public <T extends IBusinessObjectBase> IOperationResult<T> fetch(ISqlQuery sqlQuery, Class<T> boType) {
+				return null;
+			}
+
+			@Override
+			public <T extends IBusinessObjectBase> IOperationResult<T> fetchEx(ISqlQuery sqlQuery, Class<T> boType) {
+				return null;
+			}
+
+			@Override
+			public IOperationResult<SingleValue> fetch(ISqlQuery sqlQuery) {
+				return null;
+			}
+
+			@Override
+			public IOperationResult<IDataTable> query(ISqlQuery sqlQuery) {
+				System.out.println(sqlQuery.toString());
+				DataTable dataTable = new DataTable();
+				dataTable.getColumns().add(new DataTableColumn());
+				dataTable.getColumns().get(0).setDataType(String.class);
+				dataTable.getRows().add(new DataTableRow());
+				dataTable.getRows().get(0).setValue(0, "OK");
+				return new OperationResult<IDataTable>().addResultObjects(dataTable);
+			}
+
+			@Override
+			public <T extends IBusinessObjectBase> IOperationResult<T> fetch(ISqlStoredProcedure sp, Class<T> boType) {
+
+				return null;
+			}
+
+			@Override
+			public <T extends IBusinessObjectBase> IOperationResult<T> fetchEx(ISqlStoredProcedure sp,
+					Class<T> boType) {
+				return null;
+			}
+
+			@Override
+			public IOperationResult<SingleValue> fetch(ISqlStoredProcedure sp) {
+				return null;
+			}
+
+		});
+		orderItem = order.getSalesOrderItems().create();
+		orderItem = order.getSalesOrderItems().create();
+		orderItem.setItemCode("A0000'2");
+		operator.setPropertyName("select 1 where CHARINDEX('LM4029D','${SalesOrderItems.ItemCode}') > 0");
+		operator.setValue(order);
+		System.out.println(operator.getValue());
 	}
 }

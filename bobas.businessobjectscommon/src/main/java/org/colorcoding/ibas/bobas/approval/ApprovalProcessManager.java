@@ -51,10 +51,14 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
 		if (data == null) {
 			return null;
 		}
-		for (IApprovalProcess item : myProcesses) {
+		for (IApprovalProcess item : this.myProcesses) {
 			if (item.getApprovalData() == data) {
 				return item;
 			}
+		}
+		// 已保存的，仅看处理过的（没匹配的保存后又进行匹配）
+		if (data.isDirty() == false) {
+			return null;
 		}
 		IApprovalProcess process = null;
 		if (!data.isNew()) {

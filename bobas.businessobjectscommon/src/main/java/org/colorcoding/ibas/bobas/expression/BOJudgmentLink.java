@@ -9,7 +9,7 @@ import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManagedFields;
 import org.colorcoding.ibas.bobas.data.ArrayList;
-import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
 
@@ -20,75 +20,20 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
  *
  */
 public class BOJudgmentLink extends JudgmentLink {
+
 	/**
 	 * 创建属性操作者
 	 * 
 	 * @return
 	 */
 	protected IPropertyValueOperator createPropertyValueOperator() {
-		return new IPropertyValueOperator() {
-			private IManagedFields value;
-			private IFieldData field = null;
-
-			private IFieldData getField() {
-				if (this.field == null) {
-					this.field = this.value.getField(this.getPropertyName());
-				}
-				if (this.field == null) {
-					throw new JudgmentLinkException(I18N.prop("msg_bobas_not_found_bo_field", this.getPropertyName()));
-				}
-				return this.field;
-			}
-
-			@Override
-			public void setValue(Object value) {
-				if (value != null && !(value instanceof IManagedFields)) {
-					throw new JudgmentLinkException(I18N.prop("msg_bobas_invaild_bo_type"));
-				}
-				this.value = (IManagedFields) value;
-				this.field = null;
-			}
-
-			@Override
-			public Object getValue() {
-				if (this.value == null) {
-					return null;
-				}
-				return this.getField().getValue();
-			}
-
-			@Override
-			public Class<?> getValueClass() {
-				if (this.value == null) {
-					return null;
-				}
-				return this.getField().getValueType();
-			}
-
-			private String propertyName;
-
-			@Override
-			public void setPropertyName(String value) {
-				this.propertyName = value;
-			}
-
-			@Override
-			public String getPropertyName() {
-				return this.propertyName;
-			}
-
-			@Override
-			public String toString() {
-				return String.format("{property's value: %s}", this.getPropertyName());
-			}
-		};
+		return new FieldValueOperator();
 	}
 
 	/**
 	 * 判断
 	 * 
-	 * @param bo
-	 *            待判断的对象
+	 * @param bo 待判断的对象
 	 * @return true，满足条件；false，不满足
 	 * @throws JudmentOperationException
 	 */
@@ -104,8 +49,9 @@ public class BOJudgmentLink extends JudgmentLink {
 			if (item.getLeftOperter() instanceof IPropertyValueOperator) {
 				IPropertyValueOperator propertyOperator = (IPropertyValueOperator) item.getLeftOperter();
 				propertyOperator.setValue(bo);
-				if (propertyOperator.getPropertyName() != null && !propertyOperator.getPropertyName().isEmpty()
-						&& propertyOperator.getPropertyName().indexOf(".") > 0) {
+				if (!DataConvert.isNullOrEmpty(propertyOperator.getPropertyName())
+						&& propertyOperator.getPropertyName().indexOf(".") > 0
+						&& item.getLeftOperter() instanceof FieldValueOperator) {
 					// 存在子属性的判断
 					if (MyConfiguration.isDebugMode()) {
 						Logger.log(MessageLevel.DEBUG, MSG_JUDGMENT_ENTRY_SUB_JUDGMENT, item.toString());
@@ -219,8 +165,10 @@ public class BOJudgmentLink extends JudgmentLink {
 			// 比较类型
 			jItem.setOperation(parent.getOperation());
 			// 获取右值，使用父项的运算结果避免藏数据
-			parent.getRightOperter().setValue(item);
 			IValueOperator valueOperator = this.createValueOperator();
+			if (parent.getRightOperter() instanceof FieldValueOperator) {
+				parent.getRightOperter().setValue(item);
+			}
 			valueOperator.setValue(parent.getRightOperter().getValue());
 			// 设置右值
 			jItem.setRightOperter(valueOperator);
