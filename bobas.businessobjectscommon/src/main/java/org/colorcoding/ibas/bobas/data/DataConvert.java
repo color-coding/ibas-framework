@@ -25,6 +25,9 @@ public class DataConvert {
 		if (type == null) {
 			return null;
 		}
+		if (value == null) {
+			return null;
+		}
 		if (type == value.getClass()) {
 			return (P) value;
 		}

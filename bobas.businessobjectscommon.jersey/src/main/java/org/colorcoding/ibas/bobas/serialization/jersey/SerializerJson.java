@@ -1,12 +1,8 @@
 package org.colorcoding.ibas.bobas.serialization.jersey;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,11 +28,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.fge.jackson.JsonLoader;
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
-import com.github.fge.jsonschema.core.report.ProcessingReport;
-import com.github.fge.jsonschema.main.JsonSchema;
-import com.github.fge.jsonschema.main.JsonSchemaFactory;
+import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
 
 /**
  * JSON序列化，包含ROOT
@@ -66,17 +58,7 @@ public class SerializerJson extends Serializer<JsonSchema> {
 
 	@Override
 	public JsonSchema getSchema(Class<?> type) throws SerializationException {
-		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-			this.getSchema(type, outputStream);
-			try (InputStream stream = new ByteArrayInputStream(outputStream.toByteArray())) {
-				try (Reader reader = new InputStreamReader(stream)) {
-					JsonNode jsonSchema = JsonLoader.fromReader(reader);
-					return JsonSchemaFactory.byDefault().getJsonSchema(jsonSchema);
-				}
-			}
-		} catch (IOException | ProcessingException e) {
-			throw new SerializationException(e);
-		}
+		throw new UnsupportedOperationException();
 	}
 
 	private JAXBContext context;
@@ -129,25 +111,11 @@ public class SerializerJson extends Serializer<JsonSchema> {
 
 	@Override
 	public void validate(JsonSchema schema, InputStream data) throws ValidateException {
-		try (Reader reader = new InputStreamReader(data)) {
-			JsonNode jsonData = JsonLoader.fromReader(reader);
-			this.validate(schema, jsonData);
-		} catch (IOException e) {
-			throw new ValidateException(e);
-		}
+		throw new UnsupportedOperationException();
 	}
 
 	public void validate(JsonSchema schema, JsonNode data) throws ValidateException {
-		try {
-			ProcessingReport report = schema.validate(data);
-			if (!report.isSuccess()) {
-				throw new ValidateException(report.toString());
-			}
-		} catch (ValidateException e) {
-			throw e;
-		} catch (ProcessingException e) {
-			throw new ValidateException(e);
-		}
+		throw new UnsupportedOperationException();
 	}
 
 }
