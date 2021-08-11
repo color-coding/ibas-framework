@@ -28,6 +28,19 @@ public class BusinessRuleDivision extends BusinessRuleCommon {
 	 */
 	public BusinessRuleDivision(IPropertyInfo<BigDecimal> result, IPropertyInfo<BigDecimal> dividend,
 			IPropertyInfo<BigDecimal> divisor) {
+		this(result, dividend, divisor, Decimal.DECIMAL_PLACES_RUNNING);
+	}
+
+	/**
+	 * 构造方法
+	 * 
+	 * @param result   属性-结果
+	 * @param dividend 属性-被除数
+	 * @param divisor  属性-除数
+	 * @param scale    小数位
+	 */
+	public BusinessRuleDivision(IPropertyInfo<BigDecimal> result, IPropertyInfo<BigDecimal> dividend,
+			IPropertyInfo<BigDecimal> divisor, int scale) {
 		this();
 		this.setDividend(dividend);
 		this.setDivisor(divisor);
@@ -38,6 +51,8 @@ public class BusinessRuleDivision extends BusinessRuleCommon {
 		this.getInputProperties().add(this.getResult());
 		// 结果
 		this.getAffectedProperties().add(this.getResult());
+		// 小数位
+		this.setScale(scale);
 	}
 
 	private IPropertyInfo<BigDecimal> dividend;
@@ -70,6 +85,16 @@ public class BusinessRuleDivision extends BusinessRuleCommon {
 		this.result = result;
 	}
 
+	private int scale;
+
+	public final int getScale() {
+		return scale;
+	}
+
+	public final void setScale(int scale) {
+		this.scale = scale;
+	}
+
 	@Override
 	protected void execute(BusinessRuleContext context) throws Exception {
 		BigDecimal dividend = (BigDecimal) context.getInputValues().get(this.getDividend());
@@ -83,11 +108,11 @@ public class BusinessRuleDivision extends BusinessRuleCommon {
 		}
 		BigDecimal result = Decimal.divide(dividend, divisor);
 		// 截取精度
-		result = Decimal.round(result, Decimal.DECIMAL_PLACES_RUNNING);
+		result = Decimal.round(result, this.getScale());
 		BigDecimal oResult = (BigDecimal) context.getInputValues().get(this.getResult());
 		if (oResult != null) {
-			BigDecimal tOld = Decimal.round(oResult, Decimal.DECIMAL_PLACES_STORAGE);
-			BigDecimal tNew = Decimal.round(result, Decimal.DECIMAL_PLACES_STORAGE);
+			BigDecimal tOld = Decimal.round(oResult, this.getScale());
+			BigDecimal tNew = Decimal.round(result, this.getScale());
 			if (tOld.compareTo(tNew) == 0) {
 				// 存储精度内保持一致，则退出
 				return;

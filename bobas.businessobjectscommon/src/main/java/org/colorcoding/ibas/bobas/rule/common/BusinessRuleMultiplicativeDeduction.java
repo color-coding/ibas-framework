@@ -28,6 +28,19 @@ public class BusinessRuleMultiplicativeDeduction extends BusinessRuleCommon {
 	 */
 	public BusinessRuleMultiplicativeDeduction(IPropertyInfo<BigDecimal> multiplicand,
 			IPropertyInfo<BigDecimal> multiplier, IPropertyInfo<BigDecimal> result) {
+		this(multiplicand, multiplier, result, Decimal.DECIMAL_PLACES_RUNNING);
+	}
+
+	/**
+	 * 构造方法
+	 * 
+	 * @param multiplicand 属性-被乘数
+	 * @param multiplier   属性-乘数
+	 * @param result       属性-结果
+	 * @param scale        小数位
+	 */
+	public BusinessRuleMultiplicativeDeduction(IPropertyInfo<BigDecimal> multiplicand,
+			IPropertyInfo<BigDecimal> multiplier, IPropertyInfo<BigDecimal> result, int scale) {
 		this();
 		this.setMultiplicand(multiplicand);
 		this.setMultiplier(multiplier);
@@ -39,6 +52,8 @@ public class BusinessRuleMultiplicativeDeduction extends BusinessRuleCommon {
 		// 结果
 		this.getAffectedProperties().add(this.getResult());
 		this.getAffectedProperties().add(this.getMultiplier());
+		// 小数位
+		this.setScale(scale);
 	}
 
 	private IPropertyInfo<BigDecimal> multiplicand;
@@ -71,6 +86,16 @@ public class BusinessRuleMultiplicativeDeduction extends BusinessRuleCommon {
 		this.result = result;
 	}
 
+	private int scale;
+
+	public final int getScale() {
+		return scale;
+	}
+
+	public final void setScale(int scale) {
+		this.scale = scale;
+	}
+
 	@Override
 	protected void execute(BusinessRuleContext context) throws Exception {
 		BigDecimal multiplicand = (BigDecimal) context.getInputValues().get(this.getMultiplicand());
@@ -92,12 +117,11 @@ public class BusinessRuleMultiplicativeDeduction extends BusinessRuleCommon {
 		if (!Decimal.isZero(multiplier) && Decimal.isZero(result)) {
 			// 结果 = 乘数 * 被乘数
 			result = Decimal.multiply(multiplicand, multiplier);
-			context.getOutputValues().put(this.getResult(), Decimal.round(result, Decimal.DECIMAL_PLACES_RUNNING));
+			context.getOutputValues().put(this.getResult(), Decimal.round(result, this.getScale()));
 		} else if (!Decimal.isZero(multiplicand) && !Decimal.isZero(result)) {
 			// 乘数 = 结果 / 被乘数
 			multiplier = Decimal.divide(result, multiplicand);
-			context.getOutputValues().put(this.getMultiplier(),
-					Decimal.round(multiplier, Decimal.DECIMAL_PLACES_RUNNING));
+			context.getOutputValues().put(this.getMultiplier(), Decimal.round(multiplier, this.getScale()));
 		}
 	}
 

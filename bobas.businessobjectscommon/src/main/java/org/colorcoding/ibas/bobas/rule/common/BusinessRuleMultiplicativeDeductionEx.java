@@ -28,6 +28,19 @@ public class BusinessRuleMultiplicativeDeductionEx extends BusinessRuleMultiplic
 	 */
 	public BusinessRuleMultiplicativeDeductionEx(IPropertyInfo<BigDecimal> multiplicand,
 			IPropertyInfo<BigDecimal> multiplier, IPropertyInfo<BigDecimal> result) {
+		this(multiplicand, multiplier, result, Decimal.DECIMAL_PLACES_RUNNING);
+	}
+
+	/**
+	 * 构造方法
+	 * 
+	 * @param multiplicand 属性-被乘数
+	 * @param multiplier   属性-乘数
+	 * @param result       属性-结果
+	 * @param scale        小数位
+	 */
+	public BusinessRuleMultiplicativeDeductionEx(IPropertyInfo<BigDecimal> multiplicand,
+			IPropertyInfo<BigDecimal> multiplier, IPropertyInfo<BigDecimal> result, int scale) {
 		super(multiplicand, multiplier, result);
 		this.getAffectedProperties().add(this.getMultiplicand());
 	}
@@ -54,14 +67,13 @@ public class BusinessRuleMultiplicativeDeductionEx extends BusinessRuleMultiplic
 				if (!Decimal.isZero(multiplicand) && Decimal.isZero(multiplier)) {
 					// 乘数 = 结果 / 被乘数
 					multiplier = Decimal.divide(result, multiplicand);
-					context.getOutputValues().put(this.getMultiplier(),
-							Decimal.round(multiplier, Decimal.DECIMAL_PLACES_RUNNING));
+					context.getOutputValues().put(this.getMultiplier(), Decimal.round(multiplier, this.getScale()));
 				} else if (!Decimal.isZero(multiplier)) {
 					// 被乘数 = 结果 / 乘数
 					BigDecimal newMultiplicand = Decimal.divide(result, multiplier);
 					if (Decimal.subtract(newMultiplicand, multiplicand).abs().compareTo(PRECISION_VALUE) > 0) {
 						context.getOutputValues().put(this.getMultiplicand(),
-								Decimal.round(newMultiplicand, Decimal.DECIMAL_PLACES_RUNNING));
+								Decimal.round(newMultiplicand, this.getScale()));
 					}
 				}
 			} else if (context.getTrigger().equalsIgnoreCase(this.getMultiplicand().getName())
@@ -69,8 +81,7 @@ public class BusinessRuleMultiplicativeDeductionEx extends BusinessRuleMultiplic
 				// 结果 = 乘数 * 被乘数
 				BigDecimal newResult = Decimal.multiply(multiplicand, multiplier);
 				if (Decimal.subtract(newResult, result).abs().compareTo(PRECISION_VALUE) > 0) {
-					context.getOutputValues().put(this.getResult(),
-							Decimal.round(newResult, Decimal.DECIMAL_PLACES_RUNNING));
+					context.getOutputValues().put(this.getResult(), Decimal.round(newResult, this.getScale()));
 				}
 			} else {
 				super.execute(context);

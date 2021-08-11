@@ -28,6 +28,19 @@ public class BusinessRuleMultiplication extends BusinessRuleCommon {
 	 */
 	public BusinessRuleMultiplication(IPropertyInfo<BigDecimal> result, IPropertyInfo<BigDecimal> multiplicand,
 			IPropertyInfo<BigDecimal> multiplier) {
+		this(result, multiplicand, multiplier, Decimal.DECIMAL_PLACES_RUNNING);
+	}
+
+	/**
+	 * 构造方法
+	 * 
+	 * @param result       属性-结果
+	 * @param multiplicand 属性-被乘数
+	 * @param multiplier   属性-乘数
+	 * @param scale        小数位
+	 */
+	public BusinessRuleMultiplication(IPropertyInfo<BigDecimal> result, IPropertyInfo<BigDecimal> multiplicand,
+			IPropertyInfo<BigDecimal> multiplier, int scale) {
 		this();
 		this.setMultiplicand(multiplicand);
 		this.setMultiplier(multiplier);
@@ -37,6 +50,8 @@ public class BusinessRuleMultiplication extends BusinessRuleCommon {
 		this.getInputProperties().add(this.getMultiplier());
 		// 结果
 		this.getAffectedProperties().add(this.getResult());
+		// 小数位
+		this.setScale(scale);
 	}
 
 	private IPropertyInfo<BigDecimal> multiplicand;
@@ -69,6 +84,16 @@ public class BusinessRuleMultiplication extends BusinessRuleCommon {
 		this.result = result;
 	}
 
+	private int scale;
+
+	public final int getScale() {
+		return scale;
+	}
+
+	public final void setScale(int scale) {
+		this.scale = scale;
+	}
+
 	@Override
 	protected void execute(BusinessRuleContext context) throws Exception {
 		BigDecimal multiplicand = (BigDecimal) context.getInputValues().get(this.getMultiplicand());
@@ -81,7 +106,7 @@ public class BusinessRuleMultiplication extends BusinessRuleCommon {
 		}
 		BigDecimal result = Decimal.multiply(multiplicand, multiplier);
 		// 截取精度
-		result = Decimal.round(result, Decimal.DECIMAL_PLACES_RUNNING);
+		result = Decimal.round(result, this.getScale());
 		context.getOutputValues().put(this.getResult(), result);
 	}
 
