@@ -39,6 +39,12 @@ public enum emApprovalStepStatus {
 	REJECTED,
 
 	/**
+	 * 已退回
+	 */
+	@Value("T")
+	RETURNED,
+
+	/**
 	 * 已跳过
 	 */
 	@Value("S")

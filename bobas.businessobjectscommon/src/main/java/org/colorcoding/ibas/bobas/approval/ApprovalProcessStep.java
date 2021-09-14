@@ -53,8 +53,7 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
 	/**
 	 * 批准
 	 * 
-	 * @param judgment
-	 *            意见
+	 * @param judgment 意见
 	 * @throws UnlogicalException
 	 */
 	void approve(String judgment) throws UnlogicalException {
@@ -69,8 +68,7 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
 	/**
 	 * 拒绝
 	 * 
-	 * @param judgment
-	 *            意见
+	 * @param judgment 意见
 	 * @throws UnlogicalException
 	 */
 	void reject(String judgment) throws UnlogicalException {
@@ -79,6 +77,21 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
 		}
 		this.setFinishedTime(DateTime.getNow());
 		this.setStatus(emApprovalStepStatus.REJECTED);
+		this.setJudgment(judgment);
+	}
+
+	/**
+	 * 退回
+	 * 
+	 * @param judgment 意见
+	 * @throws UnlogicalException
+	 */
+	void retreat(String judgment) throws UnlogicalException {
+		if (this.getStatus() != emApprovalStepStatus.PROCESSING) {
+			throw new UnlogicalException();
+		}
+		this.setFinishedTime(DateTime.getNow());
+		this.setStatus(emApprovalStepStatus.RETURNED);
 		this.setJudgment(judgment);
 	}
 

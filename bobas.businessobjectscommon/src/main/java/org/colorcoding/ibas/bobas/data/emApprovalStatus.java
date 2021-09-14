@@ -37,10 +37,11 @@ public enum emApprovalStatus {
 	 */
 	@Value("R")
 	REJECTED,
-	// /**
-	// * 已退回
-	// */
-	// @Value("T") RETURNED,
+	/**
+	 * 已退回
+	 */
+	@Value("T")
+	RETURNED,
 	/**
 	 * 已取消
 	 */

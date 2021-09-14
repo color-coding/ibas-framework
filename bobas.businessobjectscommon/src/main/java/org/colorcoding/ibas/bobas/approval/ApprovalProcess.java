@@ -114,6 +114,13 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 					return item;
 				}
 			}
+		} else if (this.getStatus() == emApprovalStatus.RETURNED) {
+			for (int i = this.getProcessSteps().length - 1; i >= 0; i--) {
+				IApprovalProcessStep item = this.getProcessSteps()[i];
+				if (item.getStatus() == emApprovalStepStatus.RETURNED) {
+					return item;
+				}
+			}
 		}
 		return null;
 	}
@@ -285,6 +292,13 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 				// 任意步骤拒绝，流程拒绝
 				this.setFinishedTime(DateTime.getNow());
 				this.setStatus(emApprovalStatus.REJECTED);
+				this.onStatusChanged();
+			} else if (apResult == emApprovalResult.RETURNED) {
+				// 退回
+				apStep.retreat(judgment);
+				// 任意步骤退回，流程退回
+				this.setFinishedTime(DateTime.getNow());
+				this.setStatus(emApprovalStatus.RETURNED);
 				this.onStatusChanged();
 			}
 		}

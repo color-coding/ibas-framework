@@ -27,15 +27,16 @@ public enum emApprovalResult {
 	 * 重置为进行中
 	 */
 	@Value("P")
-	PROCESSING;
-	// /**
-	// * 退回
-	// */
-	// @Value("P") RETURNED,
+	PROCESSING,
+	/**
+	 * 退回
+	 */
+	@Value("T")
+	RETURNED;
 	// /**
 	// * 取消
 	// */
-	// @Value("P") CANCELLED;
+	// @Value("C") CANCELLED;
 
 	public static emApprovalResult valueOf(int value) {
 		return values()[value];

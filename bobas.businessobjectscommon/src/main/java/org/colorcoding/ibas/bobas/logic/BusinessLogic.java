@@ -141,8 +141,9 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			IApprovalData apData = (IApprovalData) data;
 			if (apData.getApprovalStatus() == emApprovalStatus.CANCELLED
 					|| apData.getApprovalStatus() == emApprovalStatus.PROCESSING
-					|| apData.getApprovalStatus() == emApprovalStatus.REJECTED) {
-				// 审批中，取消，拒绝
+					|| apData.getApprovalStatus() == emApprovalStatus.REJECTED
+					|| apData.getApprovalStatus() == emApprovalStatus.RETURNED) {
+				// 审批中，取消，拒绝，退回
 				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
 						"ApprovalStatus", apData.getApprovalStatus());
 				return false;
