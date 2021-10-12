@@ -176,8 +176,9 @@ public class Daemon implements IDaemon {
 				}
 				if (wrapping.getId() == taskId) {
 					this.getWrappings().remove(i);
+					Logger.log(MSG_DAEMON_REMOVE_TASK, wrapping.getId(), wrapping.getName());
+					return true;
 				}
-				Logger.log(MSG_DAEMON_REMOVE_TASK, wrapping.getId(), wrapping.getName());
 			}
 		}
 		return false;
@@ -238,6 +239,10 @@ public class Daemon implements IDaemon {
 							if (wrapping.isLog() && MyConfiguration.isDebugMode()) {
 								Logger.log(MessageLevel.DEBUG, MSG_DAEMON_TASK_COMPLETED, wrapping.getId(),
 										wrapping.getName(), times, (end - start));
+							}
+							if (wrapping.getNextRunTime() <= 0l) {
+								// 下次运行时间，小于等于0，则移出任务
+								Daemon.this.remove(wrapping.getId());
 							}
 						}
 					});

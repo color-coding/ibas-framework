@@ -290,6 +290,12 @@ public class DataConvert {
 			return false;
 		}
 		for (int i = 0; i < value.length(); i++) {
+			if (value.charAt(i) == '-' && i == 0) {
+				continue;
+			}
+			if (value.charAt(i) == '.') {
+				continue;
+			}
 			if (!Character.isDigit(value.charAt(i))) {
 				return false;
 			}

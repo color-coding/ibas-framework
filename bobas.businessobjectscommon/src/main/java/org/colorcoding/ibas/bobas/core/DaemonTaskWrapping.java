@@ -23,7 +23,7 @@ class DaemonTaskWrapping {
 		}
 		this.setTask(task);
 		// 设置首次运行时间
-		this.setNextRunTime(System.currentTimeMillis() + task.getInterval() * 1000);
+		this.setNextRunTime(System.currentTimeMillis() + (task.getInterval() * 1000l));
 	}
 
 	public DaemonTaskWrapping() {
@@ -33,11 +33,6 @@ class DaemonTaskWrapping {
 
 	private long id;
 
-	/**
-	 * id
-	 * 
-	 * @return
-	 */
 	public long getId() {
 		return id;
 	}
@@ -88,7 +83,7 @@ class DaemonTaskWrapping {
 	}
 
 	private void addRunTimes() {
-		this.setRunTimes(this.getRunTimes() + 1);
+		this.setRunTimes(this.getRunTimes() + 1l);
 	}
 
 	private long lastRunTime;
@@ -120,9 +115,14 @@ class DaemonTaskWrapping {
 
 	private void setNextRunTime() {
 		if (this.getTask() != null) {
-			this.setNextRunTime(this.getLastRunTime() + this.getTask().getInterval() * 1000);
+			if (this.getTask().getInterval() == 0l && this.getLastRunTime() > 0l) {
+				// 间隔0秒，执行过则不在执行
+				this.setNextRunTime(0l);
+			} else {
+				this.setNextRunTime(this.getLastRunTime() + (this.getTask().getInterval() * 1000l));
+			}
 		} else {
-			this.setNextRunTime(0);
+			this.setNextRunTime(0l);
 		}
 	}
 
