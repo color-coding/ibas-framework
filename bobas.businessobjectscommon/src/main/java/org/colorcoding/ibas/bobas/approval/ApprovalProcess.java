@@ -335,30 +335,53 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	 */
 	@Override
 	public void checkToSave(IUser user) throws ApprovalProcessException {
-		// 流程未开始，所有者可以修改数据
+		// 没有审批步骤，无效的审批流，可修改数据
 		if (this.getProcessSteps() == null || this.getProcessSteps().length == 0) {
 			return;
 		}
+		// 所有者修改数据
 		if (Integer.compare(this.getApprovalData().getDataOwner(), user.getId()) == 0) {
-			// 所有者修改数据
-			if (this.getApprovalData().isDeleted()) {
-				// 可删除数据
+			// 审批新建状态，可修改数据
+			if (this.isNew()) {
 				return;
 			}
+			// 可删除数据
+			if (this.getApprovalData().isDeleted()) {
+				return;
+			}
+			// 可标记删除数据
 			if (this.getApprovalData() instanceof IBOTagDeleted) {
 				IBOTagDeleted referenced = (IBOTagDeleted) this.getApprovalData();
 				if (referenced.getDeleted() == emYesNo.YES) {
-					// 可标记删除数据
 					return;
 				}
 			}
+			// 可标记取消数据
 			if (this.getApprovalData() instanceof IBOTagCanceled) {
 				IBOTagCanceled referenced = (IBOTagCanceled) this.getApprovalData();
 				if (referenced.getCanceled() == emYesNo.YES) {
-					// 可标记取消数据
 					return;
 				}
 			}
+			// 审批尚未开始，可修改数据
+			if (this.getProcessSteps() != null) {
+				boolean not_start = true;
+				for (int i = 0; i < this.getProcessSteps().length; i++) {
+					if (this.getProcessSteps()[i].getStatus() == emApprovalStepStatus.APPROVED
+							|| this.getProcessSteps()[i].getStatus() == emApprovalStepStatus.REJECTED) {
+						not_start = false;
+						break;
+					}
+				}
+				if (not_start) {
+					return;
+				}
+			}
+		}
+		// 已批准
+		if (this.getStatus() == emApprovalStatus.APPROVED) {
+			throw new ApprovalProcessException(
+					I18N.prop("msg_bobas_data_was_approved_not_allow_to_update", this.getApprovalData().toString()));
 		}
 		// 不允许修改数据
 		throw new ApprovalProcessException(I18N.prop("msg_bobas_data_in_approval_process_not_allow_to_update",
