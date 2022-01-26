@@ -31,6 +31,21 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	}
 
 	/**
+	 * 数据的安全性检查
+	 * 
+	 * @param data
+	 */
+	@Override
+	protected String checkSecurity(String data) {
+		data = super.checkSecurity(data);
+		if (data == null || data.isEmpty()) {
+			return data;
+		}
+		// 处理单引号
+		return data.replace("\\", "\\\\");
+	}
+
+	/**
 	 * 将字段转换成条件字段的类型
 	 */
 	@Override
