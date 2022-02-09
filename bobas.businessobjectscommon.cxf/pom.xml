@@ -14,7 +14,7 @@
     <url>https://colorcoding.org</url>
   </organization>
   <properties>
-    <cxf.version>3.3.11</cxf.version>
+    <cxf.version>3.3.12</cxf.version>
   </properties>
   <dependencies>
     <dependency>
