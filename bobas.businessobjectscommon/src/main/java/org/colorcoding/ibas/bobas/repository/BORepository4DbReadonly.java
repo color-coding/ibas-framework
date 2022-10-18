@@ -378,15 +378,23 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 			IBOAdapter adapter = this.getBOAdapter();
 			ISqlQuery sqlQuery = adapter.parseSqlQuery(criteria, boType);
 			IBusinessObjectBase[] mainBOs = this.myFetch(sqlQuery, boType);
+			IBusinessObjectBase lastBO = mainBOs.length > 0 ? mainBOs[mainBOs.length - 1] : null;
 			this.myFetchEx(mainBOs, criteria);// 加载子项
-			if (!criteria.getChildCriterias().isEmpty()) {
-				// 存在子项过滤状况，移出可能为空的返回值
+			// 存在子项过滤状况
+			if (!criteria.getChildCriterias().isEmpty() && mainBOs.length > 0) {
+				// 移出可能为空的返回值
 				ArrayList<IBusinessObjectBase> tmpList = new ArrayList<>();
 				for (IBusinessObjectBase bo : mainBOs) {
 					if (bo == null) {
 						continue;
 					}
 					tmpList.add(bo);
+				}
+				// 不足不够查询
+				if (criteria.getResultCount() > 0 && criteria.getResultCount() > tmpList.size()) {
+					ICriteria nCriteria = criteria.next(lastBO);
+					nCriteria.setResultCount(criteria.getResultCount() - tmpList.size());
+					tmpList.addAll(this.myFetchEx(nCriteria, boType));
 				}
 				mainBOs = tmpList.toArray(new IBusinessObjectBase[] {});
 			}
