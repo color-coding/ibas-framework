@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE DataStructureOrchestration>
+<ns2:DataStructureOrchestration xmlns:ns2="http://colorcoding.org/btulz/transformers">
+    <Name>sql_dm8_ibas_initialization</Name>
+    <Description>基于DM8的结构映射说明</Description>
+    <Integrated>true</Integrated>
+    <DriverName>dm.jdbc.driver.DmDriver</DriverName>
+    <DbUrl>jdbc:dm://${DbServer}:${DbPort}</DbUrl>
+    <DbUser>${DbUser}</DbUser>
+    <DbPassword>${DbPassword}</DbPassword>
+    <Action Name="create db" Isolated="true">
+        <Step Name="check db exists">
+            <Script><![CDATA[
+                SELECT COUNT(0) FROM "SYS"."DBA_OBJECTS" WHERE "OBJECT_NAME" = '${DbName}' AND "OBJECT_TYPE" = 'SCH'
+            ]]></Script>
+        </Step>
+        <Step Name="create db" RunOnValue="0">
+            <Script><![CDATA[
+                CREATE SCHEMA "${DbName}" AUTHORIZATION ${DbUser}
+            ]]></Script>
+        </Step>
+    </Action>
+    <Action Name="create stored procedures ${Company}_SP_TRANSACTION_NOTIFICATION" Isolated="true" DbUrl="jdbc:dm://${DbServer}:${DbPort}?schema=&quot;&quot;${DbName}&quot;&quot;">
+        <Step Name="check stored procedures exists">
+            <Script><![CDATA[
+                SELECT COUNT(0) FROM "SYS"."DBA_PROCEDURES" WHERE "OWNER" = '${DbName}' AND "PROCEDURE_NAME" = '${Company}_SP_TRANSACTION_NOTIFICATION'
+            ]]></Script>
+        </Step>
+        <Step Name="create stored procedures" RunOnValue="0">
+            <Script><![CDATA[
+                CREATE PROCEDURE "${Company}_SP_TRANSACTION_NOTIFICATION" (
+                    object_type IN nvarchar(30),                 --对象类型（BOCode）
+                    transaction_type IN nchar(1),                --业务类型（Add:A-添加, Update:U-更新, Delete:D-删除）
+                    num_of_cols_in_key IN int,                   --主键个数
+                    list_of_key_cols_tab_del IN nvarchar(255),   --主键名称
+                    list_of_cols_val_tab_del IN nvarchar(255)    --主键值
+                ) AS
+                    error_code int;                            --返回值(0 无错误)
+                    error_message nvarchar(200);               --返回的消息
+                BEGIN
+                    error_code := 0;
+                    error_message := 'OK';
+                    --------------------------------------------------------------------------------------------------------------------------------
+                    --ADD YOUR CODE HERE
+                    --------------------------------------------------------------------------------------------------------------------------------
+					select error_code, error_message;
+                END;
+            ]]></Script>
+        </Step>
+    </Action>
+</ns2:DataStructureOrchestration>

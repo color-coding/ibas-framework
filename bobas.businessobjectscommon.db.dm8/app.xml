@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE configuration>
+<ns2:configuration xmlns:ns2="http://colorcoding.org/ibas/bobas/configuration">
+    <appSettings>
+        <add key="DebugMode" value="true" />
+        <add key="MessageLevel" value="INFO" />
+        <add key="LiveBizRules" value="true" />
+        <add key="MasterDbType" value="DM8" />
+        <add key="MasterDbServer" value="ibas-db-dm8" />
+        <add key="MasterDbName" value="ibas_demo" />
+        <add key="MasterDbUserID" value="SYSDBA" />
+        <add key="MasterDbUserPassword" value="SYSDBA" />
+        <add key="EnabledReadonlyRepository" value="false" />
+        <add key="ReadonlyDbType" value="MSSQL" />
+        <add key="ReadonlyDbServer" value="ibas-db-dm8" />
+        <add key="ReadonlyDbName" value="ibas_demo" />
+        <add key="ReadonlyDbUserID" value="SYSDBA" />
+        <add key="ReadonlyDbUserPassword" value="SYSDBA" />
+    </appSettings>
+</ns2:configuration>
