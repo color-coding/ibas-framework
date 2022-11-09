@@ -11,6 +11,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 		stringBuilder.append("CALL");
 		stringBuilder.append(" ");
 		stringBuilder.append(String.format("\"%s_SP_TRANSACTION_NOTIFICATION\"", this.getCompanyId()));
+		stringBuilder.append(" ");
 		stringBuilder.append("(");
 		stringBuilder.append("N'");
 		stringBuilder.append(this.checkSecurity(boCode));

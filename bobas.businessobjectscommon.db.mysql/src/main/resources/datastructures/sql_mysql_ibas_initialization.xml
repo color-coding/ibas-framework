@@ -9,6 +9,7 @@
     <DbUrl>jdbc:mysql://${DbServer}:${DbPort}/mysql?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=${Timezone}</DbUrl>
     <DbUser>${DbUser}</DbUser>
     <DbPassword>${DbPassword}</DbPassword>
+    <EncodeDbUrl>true</EncodeDbUrl>
     <Action Name="create db" Isolated="true">
         <Step Name="check and create db">
             <Script><![CDATA[
