@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Map;
 
+import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
@@ -48,6 +49,12 @@ public class BusinessRuleRequiredElements extends BusinessRuleCommon {
 			if (valueType.isArray()) {
 				// 数组
 				if (Array.getLength(entry.getValue()) == 0)
+					throw new Exception(
+							I18N.prop("msg_bobas_business_rule_required_elements_error", entry.getKey().getName()));
+			} else if (entry.getValue() instanceof IBusinessObjects<?, ?>) {
+				// 是业务对象集合，非删除的
+				IBusinessObjects<?, ?> objects = (IBusinessObjects<?, ?>) entry.getValue();
+				if (objects.where(c -> c.isSavable() == true && c.isDeleted() == false).size() == 0)
 					throw new Exception(
 							I18N.prop("msg_bobas_business_rule_required_elements_error", entry.getKey().getName()));
 			} else if (entry.getValue() instanceof Collection<?>) {

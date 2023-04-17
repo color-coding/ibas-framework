@@ -38,4 +38,11 @@ public interface List<E> extends java.util.List<E> {
 	 * @return 元素实例
 	 */
 	E lastOrDefault(Predicate<? super E> filter);
+
+	/**
+	 * 符合条件的实例集合
+	 * 
+	 * @return 元素实例集合
+	 */
+	List<E> where(Predicate<? super E> filter);
 }
