@@ -22,7 +22,7 @@ public class BusinessRuleMaxLength extends BusinessRuleCommon {
 	 * 构造
 	 * 
 	 * @param maxLength     最大长度
-	 * @param propertyInfos 要求值的属性数组
+	 * @param propertyInfos 属性数组
 	 */
 	public BusinessRuleMaxLength(int maxLength, IPropertyInfo<?>... propertyInfos) {
 		this();

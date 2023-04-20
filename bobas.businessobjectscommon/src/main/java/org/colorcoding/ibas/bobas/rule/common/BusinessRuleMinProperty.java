@@ -13,57 +13,63 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
  *
  * @param <T> 值类型，需要实现Comparable
  */
-public class BusinessRuleMinValue<T extends Comparable<?>> extends BusinessRuleCommon {
+public class BusinessRuleMinProperty<T extends Comparable<?>> extends BusinessRuleCommon {
 
-	protected BusinessRuleMinValue() {
-		this.setName(I18N.prop("msg_bobas_business_rule_min_value"));
+	protected BusinessRuleMinProperty() {
+		this.setName(I18N.prop("msg_bobas_business_rule_min_property"));
 	}
 
 	/**
 	 * 构造
 	 * 
-	 * @param minValue      最小值
+	 * @param minProperty   最小值属性
 	 * @param propertyInfos 属性数组
 	 */
 	@SafeVarargs
-	public BusinessRuleMinValue(T minValue, IPropertyInfo<T>... propertyInfos) {
+	public BusinessRuleMinProperty(IPropertyInfo<T> minProperty, IPropertyInfo<T>... propertyInfos) {
 		this();
-		this.setMinValue(minValue);
+		this.setMinProperty(minProperty);
 		// 要输入的参数
 		if (propertyInfos != null) {
 			for (IPropertyInfo<?> item : propertyInfos) {
 				this.getInputProperties().add(item);
 			}
 		}
+		this.getInputProperties().add(this.getMinProperty());
 	}
 
-	private T minValue;
+	private IPropertyInfo<T> minProperty;
 
-	public final T getMinValue() {
-		return minValue;
+	public final IPropertyInfo<T> getMinProperty() {
+		return minProperty;
 	}
 
-	public final void setMinValue(T minValue) {
-		this.minValue = minValue;
+	public final void setMinProperty(IPropertyInfo<T> minProperty) {
+		this.minProperty = minProperty;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void execute(BusinessRuleContext context) throws Exception {
-		if (this.getMinValue() == null) {
-			// 比较值为空，则永远成立
+		if (this.getMinProperty() == null) {
+			return;
+		}
+		Comparable<T> minValue = (Comparable<T>) context.getInputValues().get(this.getMinProperty());
+		if (minValue == null) {
 			return;
 		}
 		T value = null;
-		Comparable<T> minValue = (Comparable<T>) this.getMinValue();
 		for (Map.Entry<IPropertyInfo<?>, Object> entry : context.getInputValues().entrySet()) {
+			if (entry.getKey() == this.getMinProperty()) {
+				continue;
+			}
 			if (entry.getValue() == null) {
 				throw new Exception(I18N.prop("msg_bobas_business_rule_required_error", entry.getKey().getName()));
 			}
 			value = (T) entry.getValue();
 			if (minValue.compareTo(value) > 0) {
-				throw new Exception(I18N.prop("msg_bobas_business_rule_min_value_error", entry.getKey().getName(),
-						value, this.getMinValue()));
+				throw new Exception(I18N.prop("msg_bobas_business_rule_min_property_error", entry.getKey().getName(),
+						this.getMinProperty().getName()));
 			}
 		}
 	}

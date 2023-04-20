@@ -13,60 +13,65 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
  *
  * @param <T> 值类型，需要实现Comparable
  */
-public class BusinessRuleMaxValue<T extends Comparable<?>> extends BusinessRuleCommon {
+public class BusinessRuleMaxProperty<T extends Comparable<?>> extends BusinessRuleCommon {
 
-	protected BusinessRuleMaxValue() {
-		this.setName(I18N.prop("msg_bobas_business_rule_max_value"));
+	protected BusinessRuleMaxProperty() {
+		this.setName(I18N.prop("msg_bobas_business_rule_max_property"));
 	}
 
 	/**
 	 * 构造
 	 * 
-	 * @param maxValue      最大值
+	 * @param maxProperty   最大值属性
 	 * @param propertyInfos 属性数组
 	 */
 	@SafeVarargs
-	public BusinessRuleMaxValue(T maxValue, IPropertyInfo<T>... propertyInfos) {
+	public BusinessRuleMaxProperty(IPropertyInfo<T> maxProperty, IPropertyInfo<T>... propertyInfos) {
 		this();
-		this.setMaxValue(maxValue);
+		this.setMaxProperty(maxProperty);
 		// 要输入的参数
 		if (propertyInfos != null) {
 			for (IPropertyInfo<?> item : propertyInfos) {
 				this.getInputProperties().add(item);
 			}
 		}
+		this.getInputProperties().add(this.getMaxProperty());
 	}
 
-	private T maxValue;
+	private IPropertyInfo<T> maxProperty;
 
-	public final T getMaxValue() {
-		return maxValue;
+	public final IPropertyInfo<T> getMaxProperty() {
+		return maxProperty;
 	}
 
-	public final void setMaxValue(T maxValue) {
-		this.maxValue = maxValue;
+	public final void setMaxProperty(IPropertyInfo<T> maxProperty) {
+		this.maxProperty = maxProperty;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void execute(BusinessRuleContext context) throws Exception {
-		if (this.getMaxValue() == null) {
-			// 比较值为空，则永远成立
+		if (this.getMaxProperty() == null) {
+			return;
+		}
+		Comparable<T> maxValue = (Comparable<T>) context.getInputValues().get(this.getMaxProperty());
+		if (maxValue == null) {
 			return;
 		}
 		T value = null;
-		Comparable<T> maxValue = (Comparable<T>) this.getMaxValue();
 		for (Map.Entry<IPropertyInfo<?>, Object> entry : context.getInputValues().entrySet()) {
+			if (entry.getKey() == this.getMaxProperty()) {
+				continue;
+			}
 			if (entry.getValue() == null) {
 				throw new Exception(I18N.prop("msg_bobas_business_rule_required_error", entry.getKey().getName()));
 			}
 			value = (T) entry.getValue();
 			if (maxValue.compareTo(value) < 0) {
-				throw new Exception(I18N.prop("msg_bobas_business_rule_max_value_error", entry.getKey().getName(),
-						value, this.getMaxValue()));
+				throw new Exception(I18N.prop("msg_bobas_business_rule_max_property_error", entry.getKey().getName(),
+						this.getMaxProperty().getName()));
 			}
 		}
-
 	}
 
 }
