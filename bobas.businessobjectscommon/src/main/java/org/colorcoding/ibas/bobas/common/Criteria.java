@@ -494,6 +494,9 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 			}
 			// 修正查询字段名称
 			for (ICondition condition : this.getConditions()) {
+				if (propertyInfo.getName().equalsIgnoreCase(condition.getComparedAlias())) {
+					condition.setComparedAlias(dbField.name());
+				}
 				if (!propertyInfo.getName().equalsIgnoreCase(condition.getAlias())) {
 					continue;
 				}
