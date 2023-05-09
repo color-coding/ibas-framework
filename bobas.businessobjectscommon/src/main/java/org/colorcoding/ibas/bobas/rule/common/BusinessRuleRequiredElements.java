@@ -40,6 +40,10 @@ public class BusinessRuleRequiredElements extends BusinessRuleCommon {
 
 	@Override
 	protected void execute(BusinessRuleContext context) throws Exception {
+		// 主对象删除时，不检查
+		if (context.getSource().isDeleted()) {
+			return;
+		}
 		for (Map.Entry<IPropertyInfo<?>, Object> entry : context.getInputValues().entrySet()) {
 			if (entry.getValue() == null) {
 				throw new Exception(
