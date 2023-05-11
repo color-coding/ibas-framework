@@ -146,7 +146,11 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 */
 	private void checkPeriods(IBusinessObject bo) throws PeriodException {
 		if (!(bo instanceof IPeriodData)) {
-			// 退出处理
+			// 业务对象不是期间数据，退出处理
+			return;
+		}
+		if (!bo.isSavable()) {
+			// 业务对象不是可保存对象，退出处理
 			return;
 		}
 		IPeriodsManager manager = PeriodsFactory.create().createManager();
@@ -165,7 +169,9 @@ public class BORepositoryLogicService extends BORepositoryService {
 		// 运行对象业务规则
 		if (bo instanceof BusinessObject<?>) {
 			((BusinessObject<?>) bo).executeRules();
-		} else if (bo instanceof ICheckRules) {
+		}
+		// 检查业务规则
+		if (bo instanceof ICheckRules) {
 			((ICheckRules) bo).check();
 		}
 	}
@@ -183,6 +189,10 @@ public class BORepositoryLogicService extends BORepositoryService {
 	private void checkApprovals(TransactionType type, IBusinessObject bo) throws ApprovalProcessException {
 		if (!(bo instanceof IApprovalData)) {
 			// 业务对象不是需要审批的数据，退出处理
+			return;
+		}
+		if (!bo.isSavable()) {
+			// 业务对象不是可保存对象，退出处理
 			return;
 		}
 		if (this.approvalManager == null) {
