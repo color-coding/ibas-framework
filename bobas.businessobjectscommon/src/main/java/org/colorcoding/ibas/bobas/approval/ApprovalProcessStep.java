@@ -8,10 +8,6 @@ import org.colorcoding.ibas.bobas.data.emApprovalStepStatus;
  */
 public abstract class ApprovalProcessStep implements IApprovalProcessStep {
 
-	public ApprovalProcessStep() {
-
-	}
-
 	protected abstract void setId(int value);
 
 	protected abstract void setStatus(emApprovalStepStatus value);
@@ -35,6 +31,21 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
 		this.setStartedTime(DateTime.MAX_VALUE);
 		this.setFinishedTime(DateTime.MAX_VALUE);
 		this.setJudgment("");
+		if (this instanceof IApprovalProcessStepMultiOwner) {
+			IApprovalProcessStepMultiOwner multiStep = (IApprovalProcessStepMultiOwner) this;
+			if (multiStep.getItems() != null) {
+				ApprovalProcessStep itemStep = null;
+				for (IApprovalProcessStepItem item : multiStep.getItems()) {
+					if (item instanceof ApprovalProcessStep) {
+						itemStep = (ApprovalProcessStep) item;
+						itemStep.setStatus(this.getStatus());
+						itemStep.setStartedTime(this.getStartedTime());
+						itemStep.setFinishedTime(this.getFinishedTime());
+						itemStep.setJudgment(this.getJudgment());
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -48,6 +59,19 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
 		}
 		this.setStartedTime(DateTime.getNow());
 		this.setStatus(emApprovalStepStatus.PROCESSING);
+		if (this instanceof IApprovalProcessStepMultiOwner) {
+			IApprovalProcessStepMultiOwner multiStep = (IApprovalProcessStepMultiOwner) this;
+			if (multiStep.getItems() != null) {
+				ApprovalProcessStep itemStep = null;
+				for (IApprovalProcessStepItem item : multiStep.getItems()) {
+					if (item instanceof ApprovalProcessStep) {
+						itemStep = (ApprovalProcessStep) item;
+						itemStep.setStartedTime(this.getStartedTime());
+						itemStep.setStatus(this.getStatus());
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -56,7 +80,7 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
 	 * @param judgment 意见
 	 * @throws UnlogicalException
 	 */
-	void approve(String judgment) throws UnlogicalException {
+	public void approve(String judgment) throws UnlogicalException {
 		if (this.getStatus() != emApprovalStepStatus.PROCESSING) {
 			throw new UnlogicalException();
 		}
@@ -71,7 +95,7 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
 	 * @param judgment 意见
 	 * @throws UnlogicalException
 	 */
-	void reject(String judgment) throws UnlogicalException {
+	public void reject(String judgment) throws UnlogicalException {
 		if (this.getStatus() != emApprovalStepStatus.PROCESSING) {
 			throw new UnlogicalException();
 		}
@@ -86,7 +110,7 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
 	 * @param judgment 意见
 	 * @throws UnlogicalException
 	 */
-	void retreat(String judgment) throws UnlogicalException {
+	public void retreat(String judgment) throws UnlogicalException {
 		if (this.getStatus() != emApprovalStepStatus.PROCESSING) {
 			throw new UnlogicalException();
 		}
@@ -100,7 +124,7 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
 	 * 
 	 * @throws UnlogicalException
 	 */
-	void reset() throws UnlogicalException {
+	public void reset() throws UnlogicalException {
 		if (this.getStatus() != emApprovalStepStatus.APPROVED && this.getStatus() != emApprovalStepStatus.REJECTED) {
 			throw new UnlogicalException();
 		}
@@ -114,7 +138,7 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
 	 * 
 	 * @throws UnlogicalException
 	 */
-	void skip() throws UnlogicalException {
+	public void skip() throws UnlogicalException {
 		if (this.getStatus() != emApprovalStepStatus.PENDING) {
 			throw new UnlogicalException();
 		}
@@ -122,6 +146,21 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
 		this.setFinishedTime(DateTime.getNow());
 		this.setStatus(emApprovalStepStatus.SKIPPED);
 		this.setJudgment("");
+		if (this instanceof IApprovalProcessStepMultiOwner) {
+			IApprovalProcessStepMultiOwner multiStep = (IApprovalProcessStepMultiOwner) this;
+			if (multiStep.getItems() != null) {
+				ApprovalProcessStep itemStep = null;
+				for (IApprovalProcessStepItem item : multiStep.getItems()) {
+					if (item instanceof ApprovalProcessStep) {
+						itemStep = (ApprovalProcessStep) item;
+						itemStep.setStartedTime(this.getStartedTime());
+						itemStep.setFinishedTime(this.getFinishedTime());
+						itemStep.setStatus(this.getStatus());
+						itemStep.setJudgment("");
+					}
+				}
+			}
+		}
 	}
 
 }

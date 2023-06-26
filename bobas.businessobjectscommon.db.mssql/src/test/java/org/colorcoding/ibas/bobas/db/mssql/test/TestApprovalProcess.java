@@ -290,7 +290,8 @@ class ApprovalProcess extends org.colorcoding.ibas.bobas.approval.ApprovalProces
 
 }
 
-class ApprovalProcessStep extends org.colorcoding.ibas.bobas.approval.ApprovalProcessStep {
+class ApprovalProcessStep extends org.colorcoding.ibas.bobas.approval.ApprovalProcessStep
+		implements org.colorcoding.ibas.bobas.approval.IApprovalProcessStepSingleOwner {
 
 	private int id;
 

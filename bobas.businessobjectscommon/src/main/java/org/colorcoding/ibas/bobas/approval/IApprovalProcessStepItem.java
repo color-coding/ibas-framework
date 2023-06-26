@@ -2,6 +2,7 @@ package org.colorcoding.ibas.bobas.approval;
 
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalStepStatus;
+import org.colorcoding.ibas.bobas.organization.IUser;
 
 /**
  * 审批步骤
@@ -9,7 +10,13 @@ import org.colorcoding.ibas.bobas.data.emApprovalStepStatus;
  * @author Niuren.Zhu
  *
  */
-public interface IApprovalProcessStep {
+public interface IApprovalProcessStepItem {
+	/**
+	 * 获取-父项
+	 * 
+	 * @return
+	 */
+	IApprovalProcessStepMultiOwner getParent();
 
 	/**
 	 * 获取-编号
@@ -19,11 +26,11 @@ public interface IApprovalProcessStep {
 	int getId();
 
 	/**
-	 * 获取-条件
+	 * 获取步骤所有者
 	 * 
 	 * @return
 	 */
-	IApprovalProcessStepCondition[] getConditions();
+	IUser getOwner();
 
 	/**
 	 * 获取-开始时间

@@ -5,7 +5,8 @@ import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalStepStatus;
 import org.colorcoding.ibas.bobas.organization.IUser;
 
-public class ApprovalProcessStep extends org.colorcoding.ibas.bobas.approval.ApprovalProcessStep {
+public class ApprovalProcessStep extends org.colorcoding.ibas.bobas.approval.ApprovalProcessStep
+		implements org.colorcoding.ibas.bobas.approval.IApprovalProcessStepSingleOwner {
 
 	private int id;
 

@@ -312,9 +312,12 @@ public class BORepositoryService implements IBORepositoryService {
 				bo = null;
 			}
 			return bo;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			if (myDbTrans) {
 				this.rollbackTransaction();// 自己打开的事务自己关闭
+			}
+			if (!(e instanceof Exception)) {
+				throw new Exception(e);
 			}
 			throw e;
 		} finally {

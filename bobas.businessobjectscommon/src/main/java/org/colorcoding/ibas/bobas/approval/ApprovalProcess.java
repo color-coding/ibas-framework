@@ -77,6 +77,14 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 			if (item.getId() == id) {
 				return (ApprovalProcessStep) item;
 			}
+			if (item instanceof IApprovalProcessStepMultiOwner) {
+				IApprovalProcessStepMultiOwner mtlStep = (IApprovalProcessStepMultiOwner) item;
+				for (IApprovalProcessStepItem sItem : mtlStep.getItems()) {
+					if (sItem.getId() == id) {
+						return (ApprovalProcessStep) sItem;
+					}
+				}
+			}
 		}
 		return null;
 	}
@@ -240,10 +248,25 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 			throw new ApprovalProcessException(I18N.prop("msg_bobas_not_found_approval_process_step", stepId));
 		}
 		try {
-			apStep.getOwner().checkAuthorization(authorizationCode);
+			if (apStep instanceof IApprovalProcessStepSingleOwner) {
+				IApprovalProcessStepSingleOwner ownerApStep = (IApprovalProcessStepSingleOwner) apStep;
+				ownerApStep.getOwner().checkAuthorization(authorizationCode);
+				this.approval(ownerApStep, apResult, judgment);
+			} else if (apStep instanceof IApprovalProcessStepItem) {
+				IApprovalProcessStepItem apStepItem = (IApprovalProcessStepItem) apStep;
+				apStepItem.getOwner().checkAuthorization(authorizationCode);
+				this.approval(apStepItem, apResult, judgment);
+			} else {
+				throw new ApprovalProcessException(
+						I18N.prop("msg_bobas_commands_invalid_argument", apStep.getClass().getName()));
+			}
 		} catch (InvalidAuthorizationException e) {
 			throw new ApprovalProcessException(I18N.prop("msg_bobas_invaild_user_authorization"), e);
 		}
+	}
+
+	private void approval(IApprovalProcessStep apStep, emApprovalResult apResult, String judgment)
+			throws ApprovalProcessException {
 		if (apResult == emApprovalResult.PROCESSING) {
 			// 重置步骤，上一个步骤操作
 			ApprovalProcessStep curStep = (ApprovalProcessStep) this.currentStep();
@@ -260,13 +283,14 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 			} else {
 				// 操作的步骤不是正在进行的步骤
 				throw new ApprovalProcessException(
-						I18N.prop("msg_bobas_next_approval_process_step_was_stated", stepId));
+						I18N.prop("msg_bobas_next_approval_process_step_was_stated", apStep.getId()));
 			}
 		} else {
 			// 当前步骤操作
 			if (apStep != this.currentStep()) {
 				// 操作的步骤不是正在进行的步骤
-				throw new ApprovalProcessException(I18N.prop("msg_bobas_not_processing_approval_process_step", stepId));
+				throw new ApprovalProcessException(
+						I18N.prop("msg_bobas_not_processing_approval_process_step", apStep.getId()));
 			}
 			if (apResult == emApprovalResult.APPROVED) {
 				// 批准
@@ -300,6 +324,55 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 				this.setFinishedTime(DateTime.getNow());
 				this.setStatus(emApprovalStatus.RETURNED);
 				this.onStatusChanged();
+			}
+		}
+	}
+
+	private void approval(IApprovalProcessStepItem apStep, emApprovalResult apResult, String judgment)
+			throws ApprovalProcessException {
+		IApprovalProcessStepMultiOwner parent = apStep.getParent();
+		if (apResult == emApprovalResult.PROCESSING) {
+			apStep.reset();
+			boolean done = true;
+			for (IApprovalProcessStepItem apItem : parent.getItems()) {
+				if (apItem.getStatus() != emApprovalStepStatus.PROCESSING) {
+					done = false;
+					break;
+				}
+			}
+			if (done) {
+				// 子项都重置了，则父项重置
+				this.approval(parent, apResult, judgment);
+			}
+		} else {
+			if (apResult == emApprovalResult.APPROVED) {
+				// 批准
+				apStep.approve(judgment);
+				int count = 0;
+				for (IApprovalProcessStepItem apItem : parent.getItems()) {
+					if (apItem.getStatus() == emApprovalStepStatus.APPROVED) {
+						count++;
+					}
+				}
+				if (parent.getApproversRequired() > 0) {
+					// 设置了审批人数
+					if (count >= parent.getApproversRequired()) {
+						this.approval(parent, apResult, judgment);
+					}
+				} else {
+					// 没设置审批人数，则需要全部通过
+					if (count == parent.getItems().length) {
+						this.approval(parent, apResult, judgment);
+					}
+				}
+			} else if (apResult == emApprovalResult.REJECTED) {
+				// 拒绝
+				apStep.reject(judgment);
+				this.approval(parent, apResult, judgment);
+			} else if (apResult == emApprovalResult.RETURNED) {
+				// 退回
+				apStep.retreat(judgment);
+				this.approval(parent, apResult, judgment);
 			}
 		}
 	}
