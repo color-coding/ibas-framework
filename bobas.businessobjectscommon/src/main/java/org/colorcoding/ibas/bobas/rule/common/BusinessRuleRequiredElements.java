@@ -4,8 +4,10 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Map;
 
+import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
+import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
@@ -43,6 +45,12 @@ public class BusinessRuleRequiredElements extends BusinessRuleCommon {
 		// 主对象删除时，不检查
 		if (context.getSource().isDeleted()) {
 			return;
+		}
+		// 标记删除，不检查
+		if (context.getSource() instanceof IBOTagDeleted) {
+			if (((IBOTagDeleted) context.getSource()).getDeleted() == emYesNo.YES) {
+				return;
+			}
 		}
 		for (Map.Entry<IPropertyInfo<?>, Object> entry : context.getInputValues().entrySet()) {
 			if (entry.getValue() == null) {

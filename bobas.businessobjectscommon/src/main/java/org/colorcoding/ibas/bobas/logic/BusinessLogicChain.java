@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.logic;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.Iterator;
 
 import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
@@ -217,7 +218,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 			IBOStorageTag copyTag = (IBOStorageTag) copy;
 			if (copyTag.getLogInst() > hostTag.getLogInst()) {
 				// 副本版本更高，不能被覆盖逻辑
-				throw new BusinessLogicException(I18N.prop("msg_bobas_bo_copy_is_more_newer"));
+				throw new BusinessLogicException(I18N.prop("msg_bobas_bo_copy_is_more_newer", trigger.toString()));
 			}
 		}
 		return copy;
@@ -232,7 +233,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 	 */
 	protected final IBusinessLogic<?>[] getTriggerLogics() {
 		if (this.triggerLogics == null) {
-			this.triggerLogics = this.analyzeContracts(this.getTrigger());
+			this.triggerLogics = this.analyzeContracts(this.getTrigger(), false);
 			Logger.log(MessageLevel.INFO, MSG_TRIGGER_EXISTING_CONTRACT, this.getTrigger(), this.triggerLogics.length);
 		}
 		return triggerLogics;
@@ -247,7 +248,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 	 */
 	protected final IBusinessLogic<?>[] getTriggerCopyLogics() {
 		if (this.triggerCopyLogics == null) {
-			this.triggerCopyLogics = this.analyzeContracts(this.getTriggerCopy());
+			this.triggerCopyLogics = this.analyzeContracts(this.getTriggerCopy(), true);
 			Logger.log(MessageLevel.INFO, MSG_TRIGGER_COPY_EXISTING_CONTRACT, this.getTriggerCopy(),
 					this.triggerCopyLogics.length);
 		}
@@ -313,7 +314,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 	 * @param bo 数据
 	 * @return 具有的契约
 	 */
-	protected IBusinessLogic<?>[] analyzeContracts(Object bo) {
+	protected IBusinessLogic<?>[] analyzeContracts(Object bo, boolean reverse) {
 		if (bo == null || bo instanceof IBusinessObjectProxy) {
 			return NO_BUSINESS_LOGICS;
 		}
@@ -327,7 +328,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 					continue;
 				}
 				if (item.getValue() instanceof IBusinessObject) {
-					IBusinessLogic<?>[] tmpLogics = this.analyzeContracts((IBusinessObject) item.getValue());
+					IBusinessLogic<?>[] tmpLogics = this.analyzeContracts((IBusinessObject) item.getValue(), reverse);
 					// 记录父项
 					for (IBusinessLogic<?> tmpLogic : tmpLogics) {
 						if (tmpLogic instanceof BusinessLogic<?, ?>) {
@@ -339,7 +340,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 				} else if (item.getValue() instanceof IBusinessObjects<?, ?>) {
 					IBusinessObjects<?, ?> bos = (IBusinessObjects<?, ?>) item.getValue();
 					for (IBusinessObject boItem : bos) {
-						IBusinessLogic<?>[] tmpLogics = this.analyzeContracts(boItem);
+						IBusinessLogic<?>[] tmpLogics = this.analyzeContracts(boItem, reverse);
 						// 记录父项
 						for (IBusinessLogic<?> tmpLogic : tmpLogics) {
 							if (tmpLogic instanceof BusinessLogic<?, ?>) {
@@ -391,6 +392,9 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 				}
 			}
 		}
+		if (reverse) {
+			Collections.reverse(contracts);
+		}
 		return contracts.toArray(new IBusinessLogic<?>[] {});
 	}
 
@@ -411,13 +415,23 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 				// 无效值
 				continue;
 			}
-			if (!type.isInstance(logic.getBeAffected())) {
-				// 类型不符
-				continue;
-			}
-			if (this.judge(logic.getBeAffected(), criteria)) {
-				// 值比较通过
-				return (B) logic.getBeAffected();
+			if (type.isInstance(logic.getBeAffected())) {
+				// 类型对象
+				if (this.judge(logic.getBeAffected(), criteria)) {
+					// 值比较通过
+					return (B) logic.getBeAffected();
+				}
+			} else if (logic.getBeAffected() instanceof Iterable) {
+				// 对象集合
+				Iterable<?> iterable = (Iterable<?>) logic.getBeAffected();
+				for (Object item : iterable) {
+					if (type.isInstance(item)) {
+						if (this.judge(item, criteria)) {
+							// 值比较通过
+							return (B) item;
+						}
+					}
+				}
 			}
 		}
 		return null;
@@ -516,8 +530,8 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 				continue;
 			}
 			if (beAffecteds.contains(logic.getBeAffected())) {
-				// 重复的被影响对象
-				continue;
+				// 重复的被影响对象，位置后移
+				beAffecteds.remove(logic.getBeAffected());
 			}
 			Logger.log(MessageLevel.DEBUG, MSG_LOGICS_RUNNING_LOGIC_COMMIT, logic.getClass().getName());
 			beAffecteds.add(logic.getBeAffected());
