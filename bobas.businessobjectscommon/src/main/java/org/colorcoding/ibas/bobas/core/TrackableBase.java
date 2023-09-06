@@ -56,10 +56,6 @@ public abstract class TrackableBase extends BindableBase implements ITrackStatus
 		if (value == this.isDeleted) {
 			return;
 		}
-		if (this.isNew() && value) {
-			// 新建状态，不允许删除
-			return;
-		}
 		boolean oldValue = this.isDeleted;
 		this.isDeleted = value;
 		this.firePropertyChange("isDeleted", oldValue, this.isDeleted);

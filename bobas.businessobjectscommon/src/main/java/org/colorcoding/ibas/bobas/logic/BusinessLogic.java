@@ -32,9 +32,9 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
 public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends IBusinessObject>
 		implements IBusinessLogic<B> {
 
-	protected static final String MSG_LOGICS_FOUND_DATA_IN_CHAIN = "logics: found affected data in chain.";
-	protected static final String MSG_LOGICS_RUNNING_LOGIC_FORWARD = "logics: forward logic [%s].";
-	protected static final String MSG_LOGICS_RUNNING_LOGIC_REVERSE = "logics: reverse logic [%s].";
+	protected static final String MSG_LOGICS_FOUND_DATA_IN_CHAIN = "logics: found be affected data in chain.";
+	protected static final String MSG_LOGICS_RUNNING_LOGIC_FORWARD = "logics: forward logic [%s], %sth time.";
+	protected static final String MSG_LOGICS_RUNNING_LOGIC_REVERSE = "logics: reverse logic [%s], %sth time.";
 	protected static final String MSG_LOGICS_SKIP_LOGIC_EXECUTION = "logics: skip logic [%s], because [%s = %s].";
 
 	private L contract;
@@ -172,6 +172,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		return true;
 	}
 
+	private int forwardCount = 0;
+
 	/**
 	 * 运行正向逻辑
 	 */
@@ -193,7 +195,16 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			return;
 		}
 		// 执行正向逻辑
-		Logger.log(MessageLevel.DEBUG, MSG_LOGICS_RUNNING_LOGIC_FORWARD, this.getClass().getName());
+		this.forwardCount++;
+		Logger.log(this.forwardCount > 1 ? MessageLevel.WARN : MessageLevel.DEBUG, MSG_LOGICS_RUNNING_LOGIC_FORWARD,
+				this.getClass().getName(), this.forwardCount);
+		if (this.forwardCount > 1) {
+			if (!this.onRepeatedImpact(this.forwardCount)) {
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
+						"forwardCount", this.forwardCount);
+				return;
+			}
+		}
 		if (this.beAffected == null) {
 			// 加载被影响的数据
 			this.beAffected = this.fetchBeAffected(this.getContract());
@@ -222,6 +233,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 		this.impact(this.getContract());
 	}
 
+	private int reverseCount = 0;
+
 	/**
 	 * 运行方向逻辑
 	 */
@@ -249,12 +262,21 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			// 数据状态不通过，跳过正向逻辑执行
 			return;
 		}
-		// 执行撤销逻辑
-		Logger.log(MessageLevel.DEBUG, MSG_LOGICS_RUNNING_LOGIC_REVERSE, this.getClass().getName());
+		this.reverseCount++;
+		Logger.log(this.reverseCount > 1 ? MessageLevel.WARN : MessageLevel.DEBUG, MSG_LOGICS_RUNNING_LOGIC_REVERSE,
+				this.getClass().getName(), this.reverseCount);
+		if (this.reverseCount > 1) {
+			if (!this.onRepeatedRevoke(this.reverseCount)) {
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
+						"reverseCount", this.reverseCount);
+				return;
+			}
+		}
 		if (this.beAffected == null) {
 			// 加载被影响的数据
 			this.beAffected = this.fetchBeAffected(this.getContract());
 		}
+		// 执行撤销逻辑
 		this.revoke(this.getContract());
 	}
 
@@ -292,6 +314,26 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, B extends 
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * 重复执行正向逻辑时
+	 * 
+	 * @param times 次数
+	 * @return 是否继续执行
+	 */
+	protected boolean onRepeatedImpact(int times) {
+		return false;
+	}
+
+	/**
+	 * 重复执行反向逻辑时
+	 * 
+	 * @param times 次数
+	 * @return 是否继续执行
+	 */
+	protected boolean onRepeatedRevoke(int times) {
+		return false;
 	}
 
 	/**

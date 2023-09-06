@@ -94,6 +94,9 @@ public class BORepositoryLogicService extends BORepositoryService {
 	 */
 	@Override
 	protected void fireTransaction(TransactionType type, IBusinessObject trigger) throws TransactionException {
+		if (trigger == null) {
+			return;
+		}
 		if (type == TransactionType.BEFORE_ADD) {
 			// 运行基类方法
 			super.fireTransaction(type, trigger);

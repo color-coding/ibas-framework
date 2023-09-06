@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.logic;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -123,6 +124,11 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public Iterator<IBusinessLogicChain> iterator() {
+		return this.getLogicChains().iterator();
 	}
 
 }
