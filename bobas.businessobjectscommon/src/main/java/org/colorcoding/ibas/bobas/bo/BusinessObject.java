@@ -245,7 +245,6 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 			IBODocument docBO = (IBODocument) this;
 			docBO.setStatus(emBOStatus.OPEN);
 			docBO.setDocumentStatus(emDocumentStatus.PLANNED);
-			docBO.setDocNum(0);
 		}
 		if (this instanceof IBODocumentLine) {
 			IBODocumentLine docLineBO = (IBODocumentLine) this;

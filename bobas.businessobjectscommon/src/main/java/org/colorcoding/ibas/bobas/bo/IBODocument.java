@@ -31,20 +31,6 @@ public interface IBODocument extends IBusinessObject, IBOStorageTag {
 	void setDocEntry(Integer value);
 
 	/**
-	 * 获取-单据流水号
-	 * 
-	 * @return
-	 */
-	Integer getDocNum();
-
-	/**
-	 * 设置-单据流水号
-	 * 
-	 * @param value
-	 */
-	void setDocNum(Integer value);
-
-	/**
 	 * 获取-状态
 	 * 
 	 * @return
