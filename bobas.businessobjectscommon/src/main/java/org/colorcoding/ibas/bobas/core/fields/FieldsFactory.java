@@ -45,6 +45,8 @@ public class FieldsFactory {
 			return new FieldDataDateTime(type);
 		} else if (type == Short.class) {
 			return new FieldDataShort(type);
+		} else if (type == Long.class) {
+			return new FieldDataLong(type);
 		} else if (type == Character.class) {
 			return new FieldDataChar(type);
 		} else if (type == Float.class) {
@@ -94,6 +96,8 @@ public class FieldsFactory {
 			return new DbFieldDataDateTime(type);
 		} else if (type == Short.class) {
 			return new DbFieldDataShort(type);
+		} else if (type == Long.class) {
+			return new DbFieldDataLong(type);
 		} else if (type == Character.class) {
 			return new DbFieldDataChar(type);
 		} else if (type == Float.class) {

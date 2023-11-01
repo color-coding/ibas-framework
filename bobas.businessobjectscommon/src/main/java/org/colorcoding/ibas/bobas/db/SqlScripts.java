@@ -97,15 +97,16 @@ public class SqlScripts implements ISqlScripts {
 
 	@Override
 	public DbFieldType toDbFieldType(String dbType) {
-		if (dbType.equals("nvarchar") || dbType.equals("ntext")) {
+		if (dbType.equalsIgnoreCase("nvarchar") || dbType.equalsIgnoreCase("ntext")) {
 			return DbFieldType.ALPHANUMERIC;
-		} else if (dbType.equals("int") || dbType.equals("smallint")) {
+		} else if (dbType.equalsIgnoreCase("int") || dbType.equalsIgnoreCase("smallint")
+				|| dbType.equalsIgnoreCase("bigint")) {
 			return DbFieldType.NUMERIC;
-		} else if (dbType.equals("datetime")) {
+		} else if (dbType.equalsIgnoreCase("datetime")) {
 			return DbFieldType.DATE;
-		} else if (dbType.equals("numeric")) {
+		} else if (dbType.equalsIgnoreCase("numeric")) {
 			return DbFieldType.DECIMAL;
-		} else if (dbType.equals("bit")) {
+		} else if (dbType.equalsIgnoreCase("bit")) {
 			return DbFieldType.BYTES;
 		}
 		return DbFieldType.UNKNOWN;

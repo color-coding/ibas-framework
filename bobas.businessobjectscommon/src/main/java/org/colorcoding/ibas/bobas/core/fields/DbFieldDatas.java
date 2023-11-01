@@ -90,6 +90,47 @@ final class DbFieldDataShort extends FieldDataDbBase<Short> {
 }
 
 /**
+ * 字段，长整数型
+ */
+final class DbFieldDataLong extends FieldDataDbBase<Long> {
+
+	public static final Long DEFAULT_VALUE = Long.valueOf("0");
+
+	public DbFieldDataLong(Class<?> valueType) {
+		this.setValueType(valueType);
+	}
+
+	private Long value = DEFAULT_VALUE;
+
+	@Override
+	public final Long getValue() {
+		return this.value;
+	}
+
+	public final boolean setValue(Long value) {
+		if (value == null) {
+			value = DEFAULT_VALUE;
+		}
+		if (this.value == value) {
+			return false;
+		}
+		this.value = value;
+		return true;
+	}
+
+	@Override
+	public final boolean setValue(Object value) {
+		return this.setValue((Long) value);
+	}
+
+	@Override
+	public final DbFieldType getFieldType() {
+		return DbFieldType.NUMERIC;
+	}
+
+}
+
+/**
  * 字段，字符型
  */
 final class DbFieldDataChar extends FieldDataDbBase<Character> {

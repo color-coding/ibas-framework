@@ -625,6 +625,8 @@ public abstract class BOAdapter implements IBOAdapter {
 			fieldData.setValue(reader.getDateTime(rCol));
 		} else if (fieldData.getValueType() == Short.class) {
 			fieldData.setValue(reader.getShort(rCol));
+		} else if (fieldData.getValueType() == Long.class) {
+			fieldData.setValue(reader.getLong(rCol));
 		} else if (fieldData.getValueType().isEnum()) {
 			fieldData.setValue(DataConvert.toEnumValue(fieldData.getValueType(), reader.getString(rCol)));
 		} else if (fieldData.getValueType() == Float.class) {

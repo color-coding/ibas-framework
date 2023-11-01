@@ -91,7 +91,8 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	public DbFieldType toDbFieldType(String dbType) {
 		if (dbType.equalsIgnoreCase("varchar") || dbType.equalsIgnoreCase("text")) {
 			return DbFieldType.ALPHANUMERIC;
-		} else if (dbType.equalsIgnoreCase("int") || dbType.equalsIgnoreCase("smallint")) {
+		} else if (dbType.equalsIgnoreCase("int") || dbType.equalsIgnoreCase("smallint")
+				|| dbType.equalsIgnoreCase("bigint")) {
 			return DbFieldType.NUMERIC;
 		} else if (dbType.equalsIgnoreCase("datetime")) {
 			return DbFieldType.DATE;

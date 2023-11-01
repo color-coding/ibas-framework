@@ -81,6 +81,42 @@ final class FieldDataShort extends FieldDataBase<Short> {
 }
 
 /**
+ * 字段，大整数型
+ */
+final class FieldDataLong extends FieldDataBase<Long> {
+
+	public final static Long DEFAULT_VALUE = Long.valueOf("0");
+
+	public FieldDataLong(Class<?> valueType) {
+		this.setValueType(valueType);
+	}
+
+	private Long value = DEFAULT_VALUE;
+
+	@Override
+	public final Long getValue() {
+		return this.value;
+	}
+
+	public final boolean setValue(Long value) {
+		if (value == null) {
+			value = DEFAULT_VALUE;
+		}
+		if (this.value == value) {
+			return false;
+		}
+		this.value = value;
+		return true;
+	}
+
+	@Override
+	public final boolean setValue(Object value) {
+		return this.setValue((Long) value);
+	}
+
+}
+
+/**
  * 字段，字符型
  */
 final class FieldDataChar extends FieldDataBase<Character> {

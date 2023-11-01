@@ -75,7 +75,8 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 	public DbFieldType toDbFieldType(String dbType) {
 		if (dbType.equalsIgnoreCase("NVARCHAR") || dbType.equalsIgnoreCase("NCLOB")) {
 			return DbFieldType.ALPHANUMERIC;
-		} else if (dbType.equalsIgnoreCase("INTEGER") || dbType.equalsIgnoreCase("SMALLINT")) {
+		} else if (dbType.equalsIgnoreCase("INTEGER") || dbType.equalsIgnoreCase("SMALLINT")
+				|| dbType.equalsIgnoreCase("BIGINT")) {
 			return DbFieldType.NUMERIC;
 		} else if (dbType.equalsIgnoreCase("DATE")) {
 			return DbFieldType.DATE;
