@@ -264,4 +264,8 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-文档文件夹
 	 */
 	public final static String CONFIG_ITEM_DOCUMENT_FOLDER = "DocumentFolder";
+	/**
+	 * 配置项目-开启自动标记删除
+	 */
+	public final static String CONFIG_ITEM_ENABLED_AUTOMATIC_TAG_DELETION = "EnabledAutomaticTagDeletion";
 }

@@ -14,6 +14,7 @@ import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.logic.BusinessLogicException;
 import org.colorcoding.ibas.bobas.mapping.BusinessObjectUnit;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
@@ -286,22 +287,33 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 						I18N.prop("msg_bobas_to_save_bo_unauthorized", bo.getClass().getSimpleName()));
 			}
 		}
+		// 将要删除的数据
 		boolean deleted = bo.isDeleted();
-		// 删除前重新查询数据，避免漏或多删子项
-		if (deleted && this.isRefetchBeforeDelete()) {
-			IOperationResult<P> opRsltCopy = boRepository.fetchCopyEx(bo);
-			if (opRsltCopy.getError() != null) {
-				throw opRsltCopy.getError();
+		if (deleted) {
+			// 已使用的数据，是否允许标记删除
+			if (bo instanceof IBOTagDeleted) {
+				IBOTagDeleted boTag = (IBOTagDeleted) bo;
+				if (boTag.getReferenced() == emYesNo.YES && !MyConfiguration
+						.getConfigValue(MyConfiguration.CONFIG_ITEM_ENABLED_AUTOMATIC_TAG_DELETION, false)) {
+					throw new BusinessLogicException(I18N.prop("msg_bobas_not_allow_delete_referenced_bo", bo));
+				}
 			}
-			P boCopy = opRsltCopy.getResultObjects().firstOrDefault();
-			if (boCopy != null && boCopy.getClass() == bo.getClass()) {
-				// 使用BO的删除方法，引用对象时不进行删除操作
-				boCopy.delete();
-				bo = boCopy;
-				Logger.log(MessageLevel.DEBUG, MSG_REPOSITORY_REPLACED_BE_DELETED_BO, bo);
-			} else {
-				// 没有找到有效的副本
-				throw new Exception(I18N.prop("msg_bobas_not_found_bo_copy", bo));
+			// 删除前重新查询数据，避免漏或多删子项
+			if (this.isRefetchBeforeDelete()) {
+				IOperationResult<P> opRsltCopy = boRepository.fetchCopyEx(bo);
+				if (opRsltCopy.getError() != null) {
+					throw opRsltCopy.getError();
+				}
+				P boCopy = opRsltCopy.getResultObjects().firstOrDefault();
+				if (boCopy != null && boCopy.getClass() == bo.getClass()) {
+					// 使用BO的删除方法，引用对象时不进行删除操作
+					boCopy.delete();
+					bo = boCopy;
+					Logger.log(MessageLevel.DEBUG, MSG_REPOSITORY_REPLACED_BE_DELETED_BO, bo);
+				} else {
+					// 没有找到有效的副本
+					throw new Exception(I18N.prop("msg_bobas_not_found_bo_copy", bo));
+				}
 			}
 		}
 		bo = super.save(boRepository, bo);
