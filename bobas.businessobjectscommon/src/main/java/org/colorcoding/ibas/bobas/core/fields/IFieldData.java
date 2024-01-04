@@ -48,10 +48,4 @@ public interface IFieldData {
 	 */
 	boolean isOriginal();
 
-	/**
-	 * 是否联动，响应父项的变化
-	 * 
-	 */
-	boolean isLinkage();
-
 }

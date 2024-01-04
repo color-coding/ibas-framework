@@ -106,17 +106,6 @@ public abstract class FieldDataBase<T> implements IFieldData {
 		this.original = value;
 	}
 
-	private boolean linkage = true;
-
-	@Override
-	public final boolean isLinkage() {
-		return this.linkage;
-	}
-
-	public final void setLinkage(boolean value) {
-		this.linkage = value;
-	}
-
 	@Override
 	public abstract T getValue();
 

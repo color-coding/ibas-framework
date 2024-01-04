@@ -14,6 +14,7 @@ import org.colorcoding.ibas.bobas.core.IBORepository;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManagedFields;
 import org.colorcoding.ibas.bobas.data.ArrayList;
+import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.expression.ExpressionFactory;
 import org.colorcoding.ibas.bobas.expression.JudgmentLink;
 import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
@@ -367,11 +368,33 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 		return contracts.toArray(new IBusinessLogic<?>[] {});
 	}
 
+	/**
+	 * 逻辑链中查询被影响对象（仅第一个）
+	 * 
+	 * @param <B>
+	 * @param criteria
+	 * @param type
+	 * @return
+	 */
+	public final <B> B fetchBeAffected(ICriteria criteria, Class<B> type) {
+		return this.fetchBeAffected(criteria, type, false).firstOrDefault();
+	}
+
+	/**
+	 * 逻辑链中查询被影响对象
+	 * 
+	 * @param <B>
+	 * @param criteria
+	 * @param type
+	 * @param all      返回全部
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
-	public <B> B fetchBeAffected(ICriteria criteria, Class<B> type) {
+	public <B> List<B> fetchBeAffected(ICriteria criteria, Class<B> type, boolean all) {
 		// 查询被影响对象，从整个事务缓存中查询
 		IBusinessLogic<?> logic;
 		Iterator<IBusinessLogic<?>> logics;
+		List<B> results = new ArrayList<>();
 		for (IBusinessLogicChain chainItem : this.getLogicsManager()) {
 			if (!chainItem.getGroup().equals(this.getGroup())) {
 				// 事务ID一致
@@ -397,7 +420,10 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 						// 类型对象
 						if (this.judge(logic.getBeAffected(), criteria)) {
 							// 值比较通过
-							return (B) logic.getBeAffected();
+							results.add((B) logic.getBeAffected());
+							if (all == false) {
+								break;
+							}
 						}
 					} else if (logic.getBeAffected() instanceof IBusinessObjectGroup) {
 						// 对象集合
@@ -406,7 +432,10 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 							if (type.isInstance(item)) {
 								if (this.judge(item, criteria)) {
 									// 值比较通过
-									return (B) item;
+									results.add((B) item);
+									if (all == false) {
+										break;
+									}
 								}
 							}
 						}
@@ -414,7 +443,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 				}
 			}
 		}
-		return null;
+		return results;
 	}
 
 	private boolean judge(Object data, ICriteria criteria) {
