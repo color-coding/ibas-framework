@@ -86,9 +86,7 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 
 	@Override
 	public IDbConnection getDbConnection() throws DbException {
-		if (this.dbConnection == null) {
-			this.dbConnection = this.createDbAdapter().createDbConnection(this.getDbSign());
-		} else if (this.dbConnection.isClosed()) {
+		if (this.dbConnection == null || this.dbConnection.isClosed()) {
 			if (this.dbServer != null && this.dbName != null && this.dbUser != null) {
 				// 手工连接的
 				this.dbConnection = this.createDbAdapter().createDbConnection(this.dbServer, this.dbName, this.dbUser,
