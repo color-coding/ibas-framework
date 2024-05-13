@@ -94,7 +94,7 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 				stringBuilder.append(" ");
 				stringBuilder.append("AS");
 				stringBuilder.append(" ");
-				stringBuilder.append("DECIMAL");
+				stringBuilder.append("DECIMAL(19, 6)");
 				stringBuilder.append(")");
 				return stringBuilder.toString();
 			}

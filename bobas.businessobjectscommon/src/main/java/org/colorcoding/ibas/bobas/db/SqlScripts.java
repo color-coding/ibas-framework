@@ -87,7 +87,7 @@ public class SqlScripts implements ISqlScripts {
 				stringBuilder.append(" ");
 				stringBuilder.append("AS");
 				stringBuilder.append(" ");
-				stringBuilder.append("NUMERIC");
+				stringBuilder.append("NUMERIC(19, 6)");
 				stringBuilder.append(")");
 				return stringBuilder.toString();
 			}

@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.core.BOFactory;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.mapping.LogicContract;
 
 /**
@@ -128,7 +129,7 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 
 	@Override
 	public Iterator<IBusinessLogicChain> iterator() {
-		return this.getLogicChains().iterator();
+		return new ArrayList<>(this.getLogicChains()).iterator();
 	}
 
 }
