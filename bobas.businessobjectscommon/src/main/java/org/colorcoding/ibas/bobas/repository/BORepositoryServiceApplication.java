@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.repository;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
@@ -316,21 +317,29 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 				}
 			}
 		}
-		bo = super.save(boRepository, bo);
+		P nBO = super.save(boRepository, bo);
 		// 要求重新查询
-		if (!deleted && bo.isSavable() && this.isRefetchAfterSave()) {
+		if (!deleted && nBO.isSavable() && this.isRefetchAfterSave()) {
 			// 要求重新查询
-			IOperationResult<P> opRsltCopy = boRepository.fetchCopyEx(bo);
+			IOperationResult<P> opRsltCopy = boRepository.fetchCopyEx(nBO);
 			if (opRsltCopy.getError() != null) {
 				throw opRsltCopy.getError();
 			}
 			P boCopy = opRsltCopy.getResultObjects().firstOrDefault();
-			if (boCopy != null && boCopy.getClass() == bo.getClass()) {
-				bo = boCopy;
+			if (boCopy != null && boCopy.getClass() == nBO.getClass()) {
+				nBO = boCopy;
 			} else {
 				// 没有找到有效的副本
-				throw new Exception(I18N.prop("msg_bobas_not_found_bo_copy", bo));
+				throw new Exception(I18N.prop("msg_bobas_not_found_bo_copy", nBO));
 			}
+		}
+		// 记录对象实例（重新查询的则有存储过程影响）
+		if (nBO instanceof IBOStorageTag && nBO.isSavable()) {
+			// nBo非空（非删除）
+			this.getOwnershipJudger().logging((IBOStorageTag) nBO, this.getCurrentUser());
+		} else if (deleted && bo instanceof IBOStorageTag && bo.isSavable()) {
+			// 删除时，使用旧实例
+			this.getOwnershipJudger().logging((IBOStorageTag) bo, this.getCurrentUser());
 		}
 		return bo;
 	}
