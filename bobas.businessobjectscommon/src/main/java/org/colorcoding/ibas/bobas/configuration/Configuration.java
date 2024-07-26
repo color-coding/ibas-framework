@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.data.IKeyText;
 import org.colorcoding.ibas.bobas.message.Logger;
 
@@ -200,7 +201,11 @@ public class Configuration {
 				// 没有配置工作目录
 				path = getStartupFolder();
 			}
-			workFolder = (new File(path)).getPath();
+			File folder = new File(path);
+			if (!folder.exists()) {
+				folder.mkdirs();
+			}
+			workFolder = folder.getPath();
 		}
 		return workFolder;
 	}
@@ -211,7 +216,13 @@ public class Configuration {
 	 * @return
 	 */
 	public static String getTempFolder() {
-		return System.getProperty("java.io.tmpdir");
+		File folder = DataConvert.isNullOrEmpty(System.getProperty("java.io.tmpdir"))
+				? new File(getWorkFolder(), "temp")
+				: new File(System.getProperty("java.io.tmpdir"));
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
+		return folder.getPath();
 	}
 
 	/**
@@ -220,7 +231,11 @@ public class Configuration {
 	 * @return
 	 */
 	public static String getDataFolder() {
-		return getWorkFolder() + File.separator + "data";
+		File folder = new File(getWorkFolder(), "data");
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
+		return folder.getPath();
 	}
 
 	/**
@@ -229,7 +244,11 @@ public class Configuration {
 	 * @return
 	 */
 	public static String getLogFolder() {
-		return getWorkFolder() + File.separator + "logs";
+		File folder = new File(getWorkFolder(), "logs");
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
+		return folder.getPath();
 	}
 
 	/**

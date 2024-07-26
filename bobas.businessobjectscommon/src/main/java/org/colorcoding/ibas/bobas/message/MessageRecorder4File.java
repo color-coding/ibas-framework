@@ -212,7 +212,7 @@ public class MessageRecorder4File extends MessageRecorder implements IMessageRec
 			while (!this.getMessageQueue().isEmpty()) {
 				IMessage message = this.getMessageQueue().poll();
 				if (message != null) {
-					System.err.println(message.toString());
+					System.err.println(message.outString());
 				}
 			}
 		} finally {
