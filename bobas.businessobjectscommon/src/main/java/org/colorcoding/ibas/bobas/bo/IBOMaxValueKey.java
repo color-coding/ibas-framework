@@ -27,4 +27,13 @@ public interface IBOMaxValueKey extends IBOCustomKey {
 	 * @return 条件
 	 */
 	ICondition[] getMaxValueConditions();
+
+	/**
+	 * 增长步长
+	 * 
+	 * @return
+	 */
+	default int getMaxValueStep() {
+		return 1;
+	}
 }

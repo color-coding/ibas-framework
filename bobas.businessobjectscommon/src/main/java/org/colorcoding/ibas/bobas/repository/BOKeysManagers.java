@@ -252,8 +252,9 @@ class DbKeysManager implements IBOKeysManager {
 					boKey.setLineId((int) (key.getValue()));
 				}
 			}
-		} else if (bo instanceof IBOCustomKey) {
-			// 自定义主键
+		}
+		// 自定义主键
+		if (bo instanceof IBOCustomKey) {
 			if (bo instanceof IBOMaxValueKey) {
 				IBOMaxValueKey maxValueKey = (IBOMaxValueKey) bo;
 				IFieldDataDb dbField = maxValueKey.getMaxValueField();
@@ -529,7 +530,7 @@ class DbKeysManager implements IBOKeysManager {
 					String where = this.getAdapter().parseSqlQuery(criteria.getConditions()).getQueryString();
 					reader = command.executeReader(sqlScripts.groupMaxValueQuery(field, table, where));
 					if (reader.next()) {
-						keys.add(new KeyValue(dbField.getName(), reader.getInt(1) + 1));
+						keys.add(new KeyValue(dbField.getName(), reader.getInt(1) + maxValueKey.getMaxValueStep()));
 					} else {
 						throw new BOException(
 								I18N.prop("msg_bobas_not_found_bo_primary_key", bo.getClass().getSimpleName()));
@@ -563,8 +564,10 @@ class DbKeysManager implements IBOKeysManager {
 				return;
 			}
 			if (bo instanceof IBOCustomKey) {
-				// 自定义主键，不做处理
-				return;
+				if (!(bo instanceof IBOMaxValueKey)) {
+					// 自定义主键，不做处理
+					return;
+				}
 			}
 			ISqlScripts sqlScripts = this.getAdapter().getSqlScripts();
 			if (sqlScripts == null) {
