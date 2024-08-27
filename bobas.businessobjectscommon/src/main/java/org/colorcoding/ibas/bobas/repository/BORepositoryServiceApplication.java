@@ -341,7 +341,7 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 			// 删除时，使用旧实例
 			this.getOwnershipJudger().logging((IBOStorageTag) bo, this.getCurrentUser());
 		}
-		return bo;
+		return nBO;
 	}
 
 }
