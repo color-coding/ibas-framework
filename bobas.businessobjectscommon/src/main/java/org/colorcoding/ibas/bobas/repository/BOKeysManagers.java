@@ -580,25 +580,41 @@ class DbKeysManager implements IBOKeysManager {
 				IBODocument item = (IBODocument) bo;
 				nextValue = item.getDocEntry() + addValue;
 				boCode = item.getObjectCode();
+				if (boCode == null || nextValue == 0) {
+					// 未能有效解析
+					throw new ParsingException(
+							I18N.prop("msg_bobas_not_specify_primary_keys_obtaining_method", bo.toString()));
+				}
+				// 更新数据记录
+				command = this.getDbConnection().createCommand();
+				command.executeUpdate(sqlScripts.getUpdatePrimaryKeyScript(boCode, addValue));
 			} else if (bo instanceof IBOMasterData) {
 				// 主数据主键
 				IBOMasterData item = (IBOMasterData) bo;
 				nextValue = item.getDocEntry() + addValue;
 				boCode = item.getObjectCode();
+				if (boCode == null || nextValue == 0) {
+					// 未能有效解析
+					throw new ParsingException(
+							I18N.prop("msg_bobas_not_specify_primary_keys_obtaining_method", bo.toString()));
+				}
+				// 更新数据记录
+				command = this.getDbConnection().createCommand();
+				command.executeUpdate(sqlScripts.getUpdatePrimaryKeyScript(boCode, addValue));
 			} else if (bo instanceof IBOSimple) {
 				// 简单对象主键
 				IBOSimple item = (IBOSimple) bo;
 				nextValue = item.getObjectKey() + addValue;
 				boCode = item.getObjectCode();
+				if (boCode == null || nextValue == 0) {
+					// 未能有效解析
+					throw new ParsingException(
+							I18N.prop("msg_bobas_not_specify_primary_keys_obtaining_method", bo.toString()));
+				}
+				// 更新数据记录
+				command = this.getDbConnection().createCommand();
+				command.executeUpdate(sqlScripts.getUpdatePrimaryKeyScript(boCode, addValue));
 			}
-			if (boCode == null || nextValue == 0) {
-				// 未能有效解析
-				throw new ParsingException(
-						I18N.prop("msg_bobas_not_specify_primary_keys_obtaining_method", bo.toString()));
-			}
-			// 更新数据记录
-			command = this.getDbConnection().createCommand();
-			command.executeUpdate(sqlScripts.getUpdatePrimaryKeyScript(boCode, addValue));
 		} finally {
 			if (command != null) {
 				command.close();
