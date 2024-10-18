@@ -2,6 +2,8 @@ package org.colorcoding.ibas.bobas.configuration;
 
 import java.util.Collection;
 
+import org.colorcoding.ibas.bobas.data.KeyText;
+
 /**
  * 配置项操作接口
  * 
@@ -12,7 +14,7 @@ public interface IConfigurationManager {
 	 * 
 	 * @return
 	 */
-	Collection<IConfigurationElement> getElements();
+	Collection<KeyText> getElements();
 
 	/**
 	 * 获取值

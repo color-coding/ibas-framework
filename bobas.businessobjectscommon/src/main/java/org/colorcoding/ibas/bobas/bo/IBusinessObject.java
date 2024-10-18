@@ -1,8 +1,16 @@
 package org.colorcoding.ibas.bobas.bo;
 
-import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
+import org.colorcoding.ibas.bobas.common.ICriteria;
+import org.colorcoding.ibas.bobas.core.IFieldedObject;
 
-public interface IBusinessObject extends IBusinessObjectBase {
+public interface IBusinessObject extends IFieldedObject {
+
+	/**
+	 * 获取对象查询条件
+	 * 
+	 * @return 当前的查询条件
+	 */
+	ICriteria getCriteria();
 
 	/**
 	 * 对象识别码

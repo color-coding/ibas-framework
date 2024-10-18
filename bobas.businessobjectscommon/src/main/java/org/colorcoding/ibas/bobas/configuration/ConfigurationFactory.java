@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.data.KeyText;
 
 /**
  * 审批工厂
@@ -28,43 +29,34 @@ public class ConfigurationFactory extends ConfigurableFactory<IConfigurationMana
 		return instance;
 	}
 
-	@Override
 	protected IConfigurationManager createDefault(String typeName) {
 		return new IConfigurationManager() {
 
-			@Override
-			public Collection<IConfigurationElement> getElements() {
+			public Collection<KeyText> getElements() {
 				return new ArrayList<>();
 			}
 
-			@Override
 			public String getConfigValue(String key) {
 				return MyConfiguration.getConfigValue(key);
 			}
 
-			@Override
 			public <P> P getConfigValue(String key, P defaultValue) {
 				return MyConfiguration.getConfigValue(key, defaultValue);
 			}
 
-			@Override
 			public void addConfigValue(String key, String value) {
 			}
 
-			@Override
 			public String getConfigSign() {
 				return null;
 			}
 
-			@Override
 			public void setConfigSign(String configSign) {
 			}
 
-			@Override
 			public void save() {
 			}
 
-			@Override
 			public void update() {
 			}
 

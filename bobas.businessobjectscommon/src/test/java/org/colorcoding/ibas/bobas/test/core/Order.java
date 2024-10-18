@@ -5,15 +5,16 @@ import java.math.BigDecimal;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.colorcoding.ibas.bobas.core.BusinessObjectBase;
+import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.core.FieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
-import org.colorcoding.ibas.bobas.mapping.DbField;
-import org.colorcoding.ibas.bobas.mapping.DbFieldType;
+import org.colorcoding.ibas.bobas.db.DbField;
+import org.colorcoding.ibas.bobas.db.DbFieldType;
 
-@XmlRootElement(name = "Order", namespace = "httpL//ibas.club/bobas/test")
-public class Order extends BusinessObjectBase<Order> {
+@XmlRootElement(name = "Order", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
+public class Order extends FieldedObject<Order> {
 
 	private static final long serialVersionUID = 4771656989360317386L;
 
@@ -25,11 +26,6 @@ public class Order extends BusinessObjectBase<Order> {
 	 * 数据库表
 	 */
 	public final static String DB_TABLE_NAME = "CC_SM_OPOR";
-
-	/**
-	 * 业务对象名称
-	 */
-	public static final String BUSINESS_OBJECT_NAME = "SalesOrder";
 
 	/**
 	 * 属性名称-凭证编号
@@ -63,37 +59,6 @@ public class Order extends BusinessObjectBase<Order> {
 	}
 
 	/**
-	 * 属性名称-客户代码
-	 */
-	private static final String PROPERTY_CUSTOMERCODE_NAME = "CustomerCode";
-
-	/**
-	 * 客户代码 属性
-	 */
-	@DbField(name = "CardCode", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
-	public static final IPropertyInfo<String> PROPERTY_CUSTOMERCODE = registerProperty(PROPERTY_CUSTOMERCODE_NAME,
-			String.class, MY_CLASS);
-
-	/**
-	 * 获取-客户代码
-	 * 
-	 * @return 值
-	 */
-	@XmlElement(name = PROPERTY_CUSTOMERCODE_NAME)
-	public final String getCustomerCode() {
-		return this.getProperty(PROPERTY_CUSTOMERCODE);
-	}
-
-	/**
-	 * 设置-客户代码
-	 * 
-	 * @param value 值
-	 */
-	public final void setCustomerCode(String value) {
-		this.setProperty(PROPERTY_CUSTOMERCODE, value);
-	}
-
-	/**
 	 * 属性名称-凭证日期
 	 */
 	private static final String PROPERTY_DOCUMENTDATE_NAME = "DocumentDate";
@@ -101,7 +66,7 @@ public class Order extends BusinessObjectBase<Order> {
 	/**
 	 * 凭证日期 属性
 	 */
-	@DbField(name = "TaxDate", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "TaxDate", type = DbFieldType.DATE, table = DB_TABLE_NAME)
 	public static final IPropertyInfo<DateTime> PROPERTY_DOCUMENTDATE = registerProperty(PROPERTY_DOCUMENTDATE_NAME,
 			DateTime.class, MY_CLASS);
 
@@ -132,7 +97,7 @@ public class Order extends BusinessObjectBase<Order> {
 	/**
 	 * 单据状态 属性
 	 */
-	@DbField(name = "DocStatus", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "DocStatus", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME)
 	public static final IPropertyInfo<emDocumentStatus> PROPERTY_DOCUMENTSTATUS = registerProperty(
 			PROPERTY_DOCUMENTSTATUS_NAME, emDocumentStatus.class, MY_CLASS);
 
@@ -163,7 +128,7 @@ public class Order extends BusinessObjectBase<Order> {
 	/**
 	 * 已激活的 属性
 	 */
-	@DbField(name = "Activated", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Activated", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME)
 	public static final IPropertyInfo<Boolean> PROPERTY_ACTIVATED = registerProperty(PROPERTY_ACTIVATED_NAME,
 			Boolean.class, MY_CLASS);
 
@@ -194,7 +159,7 @@ public class Order extends BusinessObjectBase<Order> {
 	/**
 	 * 单据总计 属性
 	 */
-	@DbField(name = "DocTotal", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "DocTotal", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME)
 	public static final IPropertyInfo<BigDecimal> PROPERTY_DOCUMENTTOTAL = registerProperty(PROPERTY_DOCUMENTTOTAL_NAME,
 			BigDecimal.class, MY_CLASS);
 
@@ -215,33 +180,6 @@ public class Order extends BusinessObjectBase<Order> {
 	 */
 	public final void setDocumentTotal(BigDecimal value) {
 		this.setProperty(PROPERTY_DOCUMENTTOTAL, value);
-	}
-
-	@DbField(name = "Suppler", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
-	public final static IPropertyInfo<String> SupplerProperty = registerProperty("Suppler", String.class, MY_CLASS);
-
-	/**
-	 * 供应商
-	 * 
-	 * @return
-	 */
-	@XmlElement(name = "Suppler")
-	public final String getSuppler() {
-		return this.getProperty(SupplerProperty);
-	}
-
-	public final void setSuppler(String value) {
-		this.setProperty(SupplerProperty, value);
-	}
-
-	@Override
-	public String toString(String type) {
-		return this.toString();
-	}
-
-	@Override
-	public void markOld(boolean recursive) {
-		this.markOld();
 	}
 
 }

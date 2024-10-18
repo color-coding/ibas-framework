@@ -5,10 +5,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.serialization.Serializable;
+import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.core.Serializable;
 
 /**
  * 值及描述
+ * 
+ * @author Niuren.Zhu
  */
 @XmlType(name = "KeyText", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 @XmlRootElement(name = "KeyText", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
@@ -16,11 +19,9 @@ public class KeyText extends Serializable implements IKeyText {
 
 	private static final long serialVersionUID = 4725190510330982065L;
 
-	private final static String EMPTY = "";
-
 	public KeyText() {
-		this.key = EMPTY;
-		this.text = EMPTY;
+		this.key = Strings.VALUE_EMPTY;
+		this.text = Strings.VALUE_EMPTY;
 	}
 
 	public KeyText(String key, String text) {
@@ -36,7 +37,7 @@ public class KeyText extends Serializable implements IKeyText {
 
 	public final String getKey() {
 		if (this.key == null) {
-			this.key = EMPTY;
+			this.key = Strings.VALUE_EMPTY;
 		}
 		return key;
 	}
@@ -59,7 +60,7 @@ public class KeyText extends Serializable implements IKeyText {
 		this.text = text;
 	}
 
-	@Override
+
 	public String toString() {
 		return String.format("{key text: %s %s}", this.getKey(), this.getText());
 	}

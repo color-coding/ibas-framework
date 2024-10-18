@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.common;
 
-import org.colorcoding.ibas.bobas.data.List;
+import org.colorcoding.ibas.bobas.data.IArrayList;
 
 /**
  * 操作结果
@@ -14,13 +14,13 @@ public interface IOperationResult<P> extends IOperationMessage {
 	 * 返回对象
 	 * 
 	 */
-	List<P> getResultObjects();
+	IArrayList<P> getResultObjects();
 
 	/**
 	 * 操作执行信息
 	 * 
 	 */
-	List<IOperationInformation> getInformations();
+	IArrayList<IOperationInformation> getInformations();
 
 	/**
 	 * 复制数据

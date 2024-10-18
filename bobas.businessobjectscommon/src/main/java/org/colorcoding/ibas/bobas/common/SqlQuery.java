@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.serialization.Serializable;
+import org.colorcoding.ibas.bobas.core.Serializable;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "SqlQuery", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
@@ -15,7 +15,6 @@ import org.colorcoding.ibas.bobas.serialization.Serializable;
 public class SqlQuery extends Serializable implements ISqlQuery {
 
 	private static final long serialVersionUID = -4755976465377026859L;
-	private static final String SQL_EMPTY = "";
 
 	/**
 	 * 构造
@@ -28,8 +27,7 @@ public class SqlQuery extends Serializable implements ISqlQuery {
 	/**
 	 * 构造
 	 * 
-	 * @param sql
-	 *            脚本内容
+	 * @param sql 脚本内容
 	 */
 	public SqlQuery(String sql) {
 		this();
@@ -39,12 +37,9 @@ public class SqlQuery extends Serializable implements ISqlQuery {
 	/**
 	 * 构造
 	 * 
-	 * @param sql
-	 *            脚本内容
-	 * @param read
-	 *            允许读取数据
-	 * @param write
-	 *            允许写入数据
+	 * @param sql   脚本内容
+	 * @param read  允许读取数据
+	 * @param write 允许写入数据
 	 */
 	public SqlQuery(String sql, boolean read, boolean write) {
 		this(sql);
@@ -58,7 +53,7 @@ public class SqlQuery extends Serializable implements ISqlQuery {
 	@XmlElement(name = "QueryString")
 	public final String getQueryString() {
 		if (this.queryString == null) {
-			this.queryString = SQL_EMPTY;
+			this.queryString = Strings.VALUE_EMPTY;
 		}
 		return this.queryString;
 	}

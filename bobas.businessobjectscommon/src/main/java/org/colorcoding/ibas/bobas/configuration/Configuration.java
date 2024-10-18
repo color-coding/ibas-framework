@@ -10,8 +10,10 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.data.IKeyText;
-import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.data.KeyText;
+import org.colorcoding.ibas.bobas.logging.Logger;
 
 /**
  * 配置
@@ -200,7 +202,11 @@ public class Configuration {
 				// 没有配置工作目录
 				path = getStartupFolder();
 			}
-			workFolder = (new File(path)).getPath();
+			File folder = new File(path);
+			if (!folder.exists()) {
+				folder.mkdirs();
+			}
+			workFolder = folder.getPath();
 		}
 		return workFolder;
 	}
@@ -211,7 +217,12 @@ public class Configuration {
 	 * @return
 	 */
 	public static String getTempFolder() {
-		return System.getProperty("java.io.tmpdir");
+		File folder = Strings.isNullOrEmpty(System.getProperty("java.io.tmpdir")) ? new File(getWorkFolder(), "temp")
+				: new File(System.getProperty("java.io.tmpdir"));
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
+		return folder.getPath();
 	}
 
 	/**
@@ -220,7 +231,11 @@ public class Configuration {
 	 * @return
 	 */
 	public static String getDataFolder() {
-		return getWorkFolder() + File.separator + "data";
+		File folder = new File(getWorkFolder(), "data");
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
+		return folder.getPath();
 	}
 
 	/**
@@ -229,7 +244,11 @@ public class Configuration {
 	 * @return
 	 */
 	public static String getLogFolder() {
-		return getWorkFolder() + File.separator + "logs";
+		File folder = new File(getWorkFolder(), "logs");
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
+		return folder.getPath();
 	}
 
 	/**
@@ -250,44 +269,14 @@ public class Configuration {
 	public static String applyVariables(String variable) {
 		String value = applyVariables(variable, new Iterator<IKeyText>() {
 
-			private Iterator<IConfigurationElement> iterator = create().getElements().iterator();
+			private Iterator<KeyText> iterator = create().getElements().iterator();
 
-			@Override
 			public boolean hasNext() {
 				return iterator.hasNext();
 			}
 
-			@Override
 			public IKeyText next() {
-				IConfigurationElement next = iterator.next();
-				return new IKeyText() {
-
-					@Override
-					public void setText(String value) {
-						next.setValue(value);
-					}
-
-					@Override
-					public void setKey(String value) {
-						next.setKey(value);
-					}
-
-					@Override
-					public String getText() {
-						return next.getValue();
-					}
-
-					@Override
-					public String getKey() {
-						return next.getKey();
-					}
-
-					@Override
-					public String toString() {
-						return String.format("{key text: %s %s}", this.getKey(), this.getText());
-					}
-
-				};
+				return iterator.next();
 			}
 
 		});

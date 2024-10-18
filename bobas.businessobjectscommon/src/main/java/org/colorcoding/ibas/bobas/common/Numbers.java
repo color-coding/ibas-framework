@@ -1,0 +1,147 @@
+package org.colorcoding.ibas.bobas.common;
+
+import java.math.BigDecimal;
+import java.util.Objects;
+
+public class Numbers {
+
+	private Numbers() {
+	}
+
+	/**
+	 * 类型默认值
+	 * 
+	 * @return
+	 */
+	public static Number defaultValue(Class<?> numberType) {
+		Objects.requireNonNull(numberType);
+		if (numberType == Integer.class) {
+			return Integer.valueOf(Strings.VALUE_ZERO);
+		} else if (numberType == Short.class) {
+			return Short.valueOf(Strings.VALUE_ZERO);
+		} else if (numberType == Long.class) {
+			return Short.valueOf(Strings.VALUE_ZERO);
+		} else if (numberType == Double.class) {
+			return Short.valueOf(Strings.VALUE_ZERO);
+		} else if (numberType == Float.class) {
+			return Short.valueOf(Strings.VALUE_ZERO);
+		}
+		throw new ClassCastException("is not Number.");
+	}
+
+	/**
+	 * 判断字符串是否为数字
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static boolean isNumeric(String value) {
+		if (value == null || value.isEmpty()) {
+			return false;
+		}
+		for (int i = 0; i < value.length(); i++) {
+			if (value.charAt(i) == '-' && i == 0) {
+				continue;
+			}
+			if (value.charAt(i) == '.') {
+				continue;
+			}
+			if (!Character.isDigit(value.charAt(i))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static double toDouble(float value) {
+		return value;
+	}
+
+	public static double toDouble(int value) {
+		return value;
+	}
+
+	public static double toDouble(long value) {
+		return value;
+	}
+
+	public static double toDouble(short value) {
+		return value;
+	}
+
+	public static double toDouble(BigDecimal value) {
+		if (value == null) {
+			return Double.valueOf(Strings.VALUE_ZERO);
+		}
+		return value.doubleValue();
+	}
+
+	public static float toFloat(double value) {
+		return (float) value;
+	}
+
+	public static float toFloat(int value) {
+		return value;
+	}
+
+	public static float toFloat(long value) {
+		return value;
+	}
+
+	public static float toFloat(short value) {
+		return value;
+	}
+
+	public static float toFloat(BigDecimal value) {
+		if (value == null) {
+			return Float.valueOf(Strings.VALUE_ZERO);
+		}
+		return value.floatValue();
+	}
+
+	public static int toInt(double value) {
+		return (int) value;
+	}
+
+	public static int toInt(float value) {
+		return (int) value;
+	}
+
+	public static int toInt(long value) {
+		return (int) value;
+	}
+
+	public static int toInt(short value) {
+		return value;
+	}
+
+	public static int toInt(BigDecimal value) {
+		if (value == null) {
+			return Integer.valueOf(Strings.VALUE_ZERO);
+		}
+		return value.intValue();
+	}
+
+	public static long toLong(double value) {
+		return (long) value;
+	}
+
+	public static long toLong(float value) {
+		return (long) value;
+	}
+
+	public static long toLong(int value) {
+		return value;
+	}
+
+	public static long toLong(short value) {
+		return value;
+	}
+
+	public static long toLong(BigDecimal value) {
+		if (value == null) {
+			return Long.valueOf(Strings.VALUE_ZERO);
+		}
+		return value.longValue();
+	}
+}

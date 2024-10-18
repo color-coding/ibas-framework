@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.common;
 
-import org.colorcoding.ibas.bobas.data.List;
+import org.colorcoding.ibas.bobas.data.IArrayList;
 
 /**
  * 子对象查询
@@ -8,7 +8,7 @@ import org.colorcoding.ibas.bobas.data.List;
  * @author Niuren.Zhu
  *
  */
-public interface IChildCriterias extends List<IChildCriteria> {
+public interface IChildCriterias extends IArrayList<IChildCriteria> {
 	/**
 	 * 创建子项查询
 	 * 
@@ -19,8 +19,7 @@ public interface IChildCriterias extends List<IChildCriteria> {
 	/**
 	 * 获取子对象查询
 	 * 
-	 * @param index
-	 *            索引
+	 * @param index 索引
 	 * @return
 	 */
 	IChildCriteria get(int index);
@@ -28,8 +27,7 @@ public interface IChildCriterias extends List<IChildCriteria> {
 	/**
 	 * 获取子项查询
 	 * 
-	 * @param propertyPath
-	 *            查询的子项
+	 * @param propertyPath 查询的子项
 	 * @return
 	 */
 	IChildCriteria getCriteria(String propertyPath);

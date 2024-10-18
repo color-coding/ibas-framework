@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.data.KeyText;
 
 /**
  * 配置项操作类-XML
@@ -45,22 +46,21 @@ public class ConfigurationManagerFile extends ConfigurationManager {
 	}
 
 	@XmlElementWrapper(name = "appSettings")
-	@XmlElement(name = "add", type = ConfigurationElement.class)
-	private ConfigurationElement[] getConfigurationElements() {
-		return this.getElements().toArray(new ConfigurationElement[] {});
+	@XmlElement(name = "add", type = KeyText.class)
+	private KeyText[] getConfigurationElements() {
+		return this.getElements().toArray(new KeyText[] {});
 	}
 
 	@SuppressWarnings("unused")
-	private void setConfigurationElements(ConfigurationElement[] value) {
+	private void setConfigurationElements(KeyText[] value) {
 		if (value == null) {
 			return;
 		}
-		for (ConfigurationElement item : value) {
-			this.addConfigValue(item.getKey(), item.getValue());
+		for (KeyText item : value) {
+			this.addConfigValue(item.getKey(), item.getText());
 		}
 	}
 
-	@Override
 	public synchronized void save() {
 		try {
 			if (this.getConfigFile() == null || this.getConfigFile().isEmpty())
@@ -80,7 +80,6 @@ public class ConfigurationManagerFile extends ConfigurationManager {
 		}
 	}
 
-	@Override
 	public synchronized void update() {
 		if (this.getConfigFile() == null || this.getConfigFile().isEmpty()) {
 			return;
@@ -93,8 +92,8 @@ public class ConfigurationManagerFile extends ConfigurationManager {
 			JAXBContext context = JAXBContext.newInstance(ConfigurationManagerFile.class);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			ConfigurationManagerFile tmpManager = (ConfigurationManagerFile) unmarshaller.unmarshal(stream);
-			for (IConfigurationElement item : tmpManager.getElements()) {
-				this.addConfigValue(item.getKey(), item.getValue());
+			for (KeyText item : tmpManager.getElements()) {
+				this.addConfigValue(item.getKey(), item.getText());
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);

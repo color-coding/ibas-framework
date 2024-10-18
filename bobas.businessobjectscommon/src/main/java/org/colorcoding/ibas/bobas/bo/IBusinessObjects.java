@@ -1,10 +1,9 @@
 package org.colorcoding.ibas.bobas.bo;
 
 import org.colorcoding.ibas.bobas.common.ICriteria;
-import org.colorcoding.ibas.bobas.core.IBusinessObjectsBase;
+import org.colorcoding.ibas.bobas.data.IArrayList;
 
-public interface IBusinessObjects<E extends IBusinessObject, P extends IBusinessObject>
-		extends IBusinessObjectsBase<E> {
+public interface IBusinessObjects<E extends IBusinessObject, P extends IBusinessObject> extends IArrayList<E> {
 	/**
 	 * 子项查询
 	 * 
@@ -27,16 +26,14 @@ public interface IBusinessObjects<E extends IBusinessObject, P extends IBusiness
 	/**
 	 * 删除元素（仅新对象移出集合）
 	 * 
-	 * @param item
-	 *            删除的对象
+	 * @param item 删除的对象
 	 */
 	void delete(E item);
 
 	/**
 	 * 删除元素（仅新对象移出集合）
 	 * 
-	 * @param index
-	 *            删除的对象的索引
+	 * @param index 删除的对象的索引
 	 */
 	void delete(int index);
 

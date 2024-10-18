@@ -2,13 +2,6 @@
 业务系统架构，提供了一套完整的系统分析，设计，开发规范及流程。<br>
 [btulz.transforms](https://github.com/color-coding/btulz.transforms "业务系统工具")可实现根据模型自动生成此架构代码。<br>
 
-## 鼓励师 | Encourager
-![](encourager.gif "はしもとかんな")
-* 姓名：桥本环奈（はしもとかんな）
-* 生日：1999年2月3日
-* 国籍：日本
-* WOW ：[曼秀雷敦花絮](http://www.bilibili.com/video/av2708978/ "B站指日可待")
-
 ## 项目结构 | Projects
 * bobas.businessobjectscommon           框架核心项目
 * bobas.businessobjectscommon.db.*      数据库支持项目

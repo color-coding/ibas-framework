@@ -1,6 +1,5 @@
 package org.colorcoding.ibas.bobas.common;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -10,6 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 
@@ -30,13 +30,13 @@ public class OperationMessage extends Result implements IOperationMessage {
 	public OperationMessage() {
 		super();
 		this.setSignID(UUID.randomUUID().toString());
-		this.setTime(DateTime.getNow());
+		this.setTime(DateTimes.getNow());
 	}
 
 	public OperationMessage(int resultCode, String message) {
 		super(resultCode, message);
 		this.setSignID(UUID.randomUUID().toString());
-		this.setTime(DateTime.getNow());
+		this.setTime(DateTimes.getNow());
 	}
 
 	public OperationMessage(Exception exception) {

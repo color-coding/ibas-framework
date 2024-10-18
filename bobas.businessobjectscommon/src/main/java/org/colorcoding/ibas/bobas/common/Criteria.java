@@ -1,9 +1,5 @@
 package org.colorcoding.ibas.bobas.common;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Collection;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -18,18 +14,8 @@ import org.colorcoding.ibas.bobas.bo.IBOMasterData;
 import org.colorcoding.ibas.bobas.bo.IBOMasterDataLine;
 import org.colorcoding.ibas.bobas.bo.IBOSimple;
 import org.colorcoding.ibas.bobas.bo.IBOSimpleLine;
-import org.colorcoding.ibas.bobas.bo.UserFieldManager;
-import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
-import org.colorcoding.ibas.bobas.core.IPropertyInfo;
-import org.colorcoding.ibas.bobas.core.PropertyInfo;
-import org.colorcoding.ibas.bobas.core.PropertyInfoManager;
-import org.colorcoding.ibas.bobas.db.DataConvert;
-import org.colorcoding.ibas.bobas.mapping.DbField;
-import org.colorcoding.ibas.bobas.mapping.DbFieldType;
-import org.colorcoding.ibas.bobas.serialization.ISerializer;
-import org.colorcoding.ibas.bobas.serialization.ISerializerManager;
-import org.colorcoding.ibas.bobas.serialization.Serializable;
-import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
+import org.colorcoding.ibas.bobas.bo.IBusinessObject;
+import org.colorcoding.ibas.bobas.core.Serializable;
 
 /**
  * 查询
@@ -63,19 +49,6 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 		if (value.startsWith("{[") && value.endsWith("]}")) {
 			// 对象识别码
 			return fromIdentifiers(value);
-		} else {
-			ISerializerManager manager = SerializerFactory.create().createManager();
-			if (value.startsWith("<?xml")) {
-				// xml
-				ISerializer<?> serializer = manager.create(ISerializerManager.TYPE_XML);
-				return (ICriteria) serializer.deserialize(value, Criteria.class, Conditions.class, Condition.class,
-						Sorts.class, Sort.class, ChildCriterias.class, ChildCriteria.class);
-			} else if (value.startsWith("{") && value.endsWith("}")) {
-				// json
-				ISerializer<?> serializer = manager.create(ISerializerManager.TYPE_JSON);
-				return (ICriteria) serializer.deserialize(value, Criteria.class, Conditions.class, Condition.class,
-						Sorts.class, Sort.class, ChildCriterias.class, ChildCriteria.class);
-			}
 		}
 		return null;
 	}
@@ -105,10 +78,10 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 		return criteria;
 	}
 
-	private String businessObject = "";
+	@XmlElement(name = "BusinessObject")
+	private String businessObject;
 
 	@Override
-	@XmlElement(name = "BusinessObject")
 	public final String getBusinessObject() {
 		if (this.businessObject == null) {
 			this.businessObject = "";
@@ -121,10 +94,10 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 		this.businessObject = value;
 	}
 
+	@XmlElement(name = "ResultCount")
 	private int resultCount = -1;
 
 	@Override
-	@XmlElement(name = "ResultCount")
 	public final int getResultCount() {
 		return this.resultCount;
 	}
@@ -134,10 +107,10 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 		this.resultCount = value;
 	}
 
+	@XmlElement(name = "NoChilds")
 	private boolean noChilds = false;
 
 	@Override
-	@XmlElement(name = "NoChilds")
 	public final boolean isNoChilds() {
 		return this.noChilds;
 	}
@@ -147,10 +120,10 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 		this.noChilds = value;
 	}
 
-	private String remarks = "";
+	@XmlElement(name = "Remarks")
+	private String remarks;
 
 	@Override
-	@XmlElement(name = "Remarks")
 	public final String getRemarks() {
 		return this.remarks;
 	}
@@ -160,11 +133,11 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 		this.remarks = value;
 	}
 
+	@XmlElementWrapper(name = "Conditions")
+	@XmlElement(name = "Condition", type = Condition.class)
 	private IConditions conditions = null;
 
 	@Override
-	@XmlElementWrapper(name = "Conditions")
-	@XmlElement(name = "Condition", type = Condition.class)
 	public final IConditions getConditions() {
 		if (this.conditions == null) {
 			this.conditions = new Conditions();
@@ -176,11 +149,11 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 		this.conditions = value;
 	}
 
+	@XmlElementWrapper(name = "ChildCriterias")
+	@XmlElement(name = "ChildCriteria", type = ChildCriteria.class, nillable = true)
 	private IChildCriterias childCriterias = null;
 
 	@Override
-	@XmlElementWrapper(name = "ChildCriterias")
-	@XmlElement(name = "ChildCriteria", type = ChildCriteria.class, nillable = true)
 	public final IChildCriterias getChildCriterias() {
 		if (this.childCriterias == null) {
 			this.childCriterias = new ChildCriterias();
@@ -192,11 +165,11 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 		this.childCriterias = value;
 	}
 
+	@XmlElementWrapper(name = "Sorts")
+	@XmlElement(name = "Sort", type = Sort.class, nillable = true)
 	private ISorts sorts = null;
 
 	@Override
-	@XmlElementWrapper(name = "Sorts")
-	@XmlElement(name = "Sort", type = Sort.class, nillable = true)
 	public final ISorts getSorts() {
 		if (this.sorts == null) {
 			this.sorts = new Sorts();
@@ -232,17 +205,6 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 	}
 
 	@Override
-	public String toString(String type) {
-		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
-			ISerializer<?> serializer = SerializerFactory.create().createManager().create(type);
-			serializer.serialize(this, writer);
-			return writer.toString();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("{criteria: ");
@@ -256,7 +218,7 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 		return stringBuilder.toString();
 	}
 
-	protected ICriteria boCriteria(IBusinessObjectBase bo, ConditionOperation operation) {
+	protected ICriteria boCriteria(IBusinessObject bo, ConditionOperation operation) {
 		ICriteria boCriteria = null;
 		// 判断BO类型，添加下个集合条件，尽量使用数值字段
 		if (bo instanceof IBOSimple) {
@@ -287,7 +249,7 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 			IBOSimpleLine line = (IBOSimpleLine) bo;
 			boCriteria = new Criteria();
 			boCriteria.setBusinessObject(line.getObjectCode());
-			// 父项相等时，lineid比较方式
+			// 父项相等时，lineId比较方式
 			ICondition condition = boCriteria.getConditions().create();
 			condition.setBracketOpen(2);
 			condition.setAlias(IBOSimpleLine.MASTER_PRIMARY_KEY_NAME);
@@ -307,7 +269,7 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 			IBODocumentLine line = (IBODocumentLine) bo;
 			boCriteria = new Criteria();
 			boCriteria.setBusinessObject(line.getObjectCode());
-			// 父项相等时，lineid比较方式
+			// 父项相等时，lineId比较方式
 			ICondition condition = boCriteria.getConditions().create();
 			condition.setBracketOpen(2);
 			condition.setAlias(IBOSimpleLine.MASTER_PRIMARY_KEY_NAME);
@@ -327,7 +289,7 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 			IBOMasterDataLine line = (IBOMasterDataLine) bo;
 			boCriteria = new Criteria();
 			boCriteria.setBusinessObject(line.getObjectCode());
-			// 父项相等时，lineid比较方式
+			// 父项相等时，lineId比较方式
 			ICondition condition = boCriteria.getConditions().create();
 			condition.setBracketOpen(2);
 			condition.setAlias(IBOSimpleLine.MASTER_PRIMARY_KEY_NAME);
@@ -354,7 +316,7 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 	}
 
 	@Override
-	public final ICriteria next(IBusinessObjectBase lastBO) {
+	public final ICriteria next(IBusinessObject lastBO) {
 		if (lastBO != null) {
 			SortType sortType = SortType.ASCENDING;
 			ConditionOperation operation = ConditionOperation.GRATER_THAN;
@@ -374,7 +336,7 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 	}
 
 	@Override
-	public final ICriteria previous(IBusinessObjectBase firstBO) {
+	public final ICriteria previous(IBusinessObject firstBO) {
 		if (firstBO != null) {
 			SortType sortType = SortType.ASCENDING;
 			ConditionOperation operation = ConditionOperation.LESS_THAN;
@@ -456,90 +418,4 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 		return nCriteria;
 	}
 
-	@Override
-	public void check(Class<?> type) {
-		if (type == null) {
-			return;
-		}
-		// 检查属性
-		this.check(PropertyInfoManager.getPropertyInfoList(type));
-		// 检查用户字段
-		this.check(UserFieldManager.getUserFieldInfoList(type));
-	}
-
-	/**
-	 * 检查排序查询条件
-	 * 
-	 * @param propertyInfos
-	 */
-	protected void check(Collection<IPropertyInfo<?>> propertyInfos) {
-		if (propertyInfos == null || propertyInfos.isEmpty()) {
-			return;
-		}
-		for (IPropertyInfo<?> item : propertyInfos) {
-			if (item.getName() == null || item.getName().isEmpty()) {
-				continue;
-			}
-			if (!(item instanceof PropertyInfo<?>)) {
-				continue;
-			}
-			PropertyInfo<?> propertyInfo = (PropertyInfo<?>) item;
-			DbField dbField = propertyInfo.getAnnotation(DbField.class);
-			if (dbField == null) {
-				continue;
-			}
-			// 绑定数据库的字段
-			if (dbField.name() == null || dbField.name().isEmpty()) {
-				continue;
-			}
-			// 修正查询字段名称
-			for (ICondition condition : this.getConditions()) {
-				if (propertyInfo.getName().equalsIgnoreCase(condition.getComparedAlias())) {
-					condition.setComparedAlias(dbField.name());
-				}
-				if (!propertyInfo.getName().equalsIgnoreCase(condition.getAlias())) {
-					continue;
-				}
-				// 修正字段名称
-				condition.setAlias(dbField.name());
-				// 修正类型
-				if (condition.getAliasDataType() != ConditionAliasDataType.FREE_TEXT) {
-					if (dbField.type() == DbFieldType.ALPHANUMERIC || dbField.type() == DbFieldType.MEMO) {
-						condition.setAliasDataType(ConditionAliasDataType.ALPHANUMERIC);
-					} else if (dbField.type() == DbFieldType.NUMERIC) {
-						condition.setAliasDataType(ConditionAliasDataType.NUMERIC);
-					} else if (dbField.type() == DbFieldType.DECIMAL) {
-						condition.setAliasDataType(ConditionAliasDataType.DECIMAL);
-					} else if (dbField.type() == DbFieldType.DATE) {
-						condition.setAliasDataType(ConditionAliasDataType.DATE);
-					} else {
-						condition.setAliasDataType(ConditionAliasDataType.ALPHANUMERIC);
-					}
-				}
-				// 修正枚举值
-				if (propertyInfo.getValueType().isEnum()) {
-					Object value = null;
-					try {
-						// 数字转枚举
-						value = DataConvert.toEnumValue(propertyInfo.getValueType(),
-								Integer.valueOf(condition.getValue()));
-					} catch (Exception e) {
-					}
-					if (value == null) {
-						value = DataConvert.toEnumValue(propertyInfo.getValueType(), condition.getValue());
-					}
-					if (value != null) {
-						condition.setValue(value);
-					}
-				}
-			}
-			// 修正排序的字段名称
-			for (ISort sort : this.getSorts()) {
-				if (!propertyInfo.getName().equalsIgnoreCase(sort.getAlias())) {
-					continue;
-				}
-				sort.setAlias(dbField.name());
-			}
-		}
-	}
 }

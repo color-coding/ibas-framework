@@ -8,8 +8,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.db.DataConvert;
-import org.colorcoding.ibas.bobas.serialization.Serializable;
+import org.colorcoding.ibas.bobas.core.Serializable;
+import org.colorcoding.ibas.bobas.db.DbFieldType;
 
 /**
  * 查询条件
@@ -129,14 +129,7 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 
 	@Override
 	public final void setValue(Object value) {
-		this.setValue(this.toValue(value));
-	}
-
-	protected String toValue(Object value) {
-		if (value == null) {
-			return null;
-		}
-		return DataConvert.toDbValue(value);
+		this.setValue(Strings.valueOf(value));
 	}
 
 	private ConditionOperation operation = ConditionOperation.EQUAL;
@@ -171,21 +164,21 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		this.relationship = value;
 	}
 
-	private ConditionAliasDataType aliasDataType = null;
+	private DbFieldType aliasDataType = null;
 
-	// @XmlElement(name = "AliasDataType")
 	// 运行过程值，序列化不用输出
 	@Override
 	@XmlTransient
-	public ConditionAliasDataType getAliasDataType() {
+	// @XmlElement(name = "AliasDataType")
+	public DbFieldType getAliasDataType() {
 		if (this.aliasDataType == null) {
-			this.aliasDataType = ConditionAliasDataType.ALPHANUMERIC;
+			this.aliasDataType = DbFieldType.ALPHANUMERIC;
 		}
 		return this.aliasDataType;
 	}
 
 	@Override
-	public void setAliasDataType(ConditionAliasDataType value) {
+	public void setAliasDataType(DbFieldType value) {
 		this.aliasDataType = value;
 	}
 
