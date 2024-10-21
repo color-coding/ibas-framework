@@ -49,10 +49,10 @@ public class OperationMessage extends Result implements IOperationMessage {
 		this.copy(result);
 	}
 
+	@XmlElement(name = "SignID")
 	private String signID;
 
 	@Override
-	@XmlElement(name = "SignID")
 	public final String getSignID() {
 		return this.signID;
 	}
@@ -61,10 +61,10 @@ public class OperationMessage extends Result implements IOperationMessage {
 		this.signID = value;
 	}
 
+	@XmlElement(name = "Time")
 	private DateTime time;
 
 	@Override
-	@XmlElement(name = "Time")
 	public final DateTime getTime() {
 		return this.time;
 	}
@@ -73,10 +73,10 @@ public class OperationMessage extends Result implements IOperationMessage {
 		this.time = value;
 	}
 
+	@XmlElement(name = "UserSign")
 	private String userSign;
 
 	@Override
-	@XmlElement(name = "UserSign")
 	public final String getUserSign() {
 		return this.userSign;
 	}

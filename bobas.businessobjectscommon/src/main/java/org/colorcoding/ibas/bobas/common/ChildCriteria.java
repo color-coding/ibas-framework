@@ -18,10 +18,10 @@ public class ChildCriteria extends Criteria implements IChildCriteria {
 
 	private static final long serialVersionUID = -4641570686942910575L;
 
-	private String propertyPath = Strings.VALUE_EMPTY;
+	@XmlElement(name = "PropertyPath")
+	private String propertyPath;
 
 	@Override
-	@XmlElement(name = "PropertyPath")
 	public final String getPropertyPath() {
 		return this.propertyPath;
 	}
@@ -31,10 +31,10 @@ public class ChildCriteria extends Criteria implements IChildCriteria {
 		this.propertyPath = value;
 	}
 
+	@XmlElement(name = "OnlyHasChilds")
 	private boolean onlyHasChilds = true;
 
 	@Override
-	@XmlElement(name = "OnlyHasChilds")
 	public final boolean isOnlyHasChilds() {
 		return this.onlyHasChilds;
 	}
@@ -44,10 +44,10 @@ public class ChildCriteria extends Criteria implements IChildCriteria {
 		this.onlyHasChilds = value;
 	}
 
+	@XmlElement(name = "IncludingOtherChilds")
 	private boolean includingOtherChilds = false;
 
 	@Override
-	@XmlElement(name = "IncludingOtherChilds")
 	public final boolean isIncludingOtherChilds() {
 		return includingOtherChilds;
 	}

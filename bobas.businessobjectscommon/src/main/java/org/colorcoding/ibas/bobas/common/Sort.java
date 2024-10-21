@@ -29,10 +29,10 @@ public class Sort extends Serializable implements ISort, Cloneable {
 		this.setSortType(sortType);
 	}
 
+	@XmlElement(name = "Alias")
 	private String alias = "";
 
 	@Override
-	@XmlElement(name = "Alias")
 	public final String getAlias() {
 		if (this.alias == null) {
 			this.alias = "";
@@ -45,10 +45,10 @@ public class Sort extends Serializable implements ISort, Cloneable {
 		this.alias = value;
 	}
 
+	@XmlElement(name = "SortType")
 	private SortType sortType = SortType.ASCENDING;
 
 	@Override
-	@XmlElement(name = "SortType")
 	public final SortType getSortType() {
 		if (this.sortType == null) {
 			this.sortType = SortType.ASCENDING;

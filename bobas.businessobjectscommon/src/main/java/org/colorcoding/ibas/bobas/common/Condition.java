@@ -22,7 +22,6 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 	private static final long serialVersionUID = 3151721602767228504L;
 
 	public Condition() {
-
 	}
 
 	public Condition(String alias, ConditionOperation operation, Object value) {
@@ -32,13 +31,13 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		this.setValue(value);
 	}
 
-	private String alias = "";
+	@XmlElement(name = "Alias")
+	private String alias;
 
 	@Override
-	@XmlElement(name = "Alias")
 	public final String getAlias() {
 		if (this.alias == null) {
-			this.alias = "";
+			this.alias = Strings.VALUE_EMPTY;
 		}
 		return this.alias;
 	}
@@ -48,10 +47,10 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		this.alias = value;
 	}
 
+	@XmlElement(name = "BracketClose")
 	private int bracketClose = 0;
 
 	@Override
-	@XmlElement(name = "BracketClose")
 	public final int getBracketClose() {
 		if (this.bracketClose < 0) {
 			this.bracketClose = 0;
@@ -64,10 +63,10 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		this.bracketClose = value;
 	}
 
+	@XmlElement(name = "BracketOpen")
 	private int bracketOpen = 0;
 
 	@Override
-	@XmlElement(name = "BracketOpen")
 	public final int getBracketOpen() {
 		if (this.bracketOpen < 0) {
 			this.bracketOpen = 0;
@@ -80,13 +79,13 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		this.bracketOpen = value;
 	}
 
-	private String comparedAlias = "";
+	@XmlElement(name = "ComparedAlias")
+	private String comparedAlias;
 
 	@Override
-	@XmlElement(name = "ComparedAlias")
 	public final String getComparedAlias() {
 		if (this.comparedAlias == null) {
-			this.comparedAlias = "";
+			this.comparedAlias = Strings.VALUE_EMPTY;
 		}
 		return this.comparedAlias;
 	}
@@ -96,13 +95,13 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		this.comparedAlias = value;
 	}
 
-	private String value = "";
+	@XmlElement(name = "Value")
+	private String value;
 
 	@Override
-	@XmlElement(name = "Value")
 	public final String getValue() {
 		if (this.value == null) {
-			this.value = "";
+			this.value = Strings.VALUE_EMPTY;
 		}
 		return this.value;
 	}
@@ -117,7 +116,7 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 			} else if (this.getOperation() == ConditionOperation.NOT_EQUAL) {
 				this.setOperation(ConditionOperation.NOT_NULL);
 			}
-		} else if (this.value != null && !this.value.isEmpty()) {
+		} else if (Strings.isNullOrEmpty(this.value)) {
 			// 非null时，自动改变计算方式
 			if (this.getOperation() == ConditionOperation.IS_NULL) {
 				this.setOperation(ConditionOperation.EQUAL);
@@ -132,10 +131,10 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		this.setValue(Strings.valueOf(value));
 	}
 
+	@XmlElement(name = "Operation")
 	private ConditionOperation operation = ConditionOperation.EQUAL;
 
 	@Override
-	@XmlElement(name = "Operation")
 	public final ConditionOperation getOperation() {
 		if (this.operation == null) {
 			this.operation = ConditionOperation.EQUAL;
@@ -148,10 +147,10 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		this.operation = value;
 	}
 
+	@XmlElement(name = "Relationship")
 	private ConditionRelationship relationship = ConditionRelationship.AND;
 
 	@Override
-	@XmlElement(name = "Relationship")
 	public final ConditionRelationship getRelationship() {
 		if (this.relationship == null) {
 			this.relationship = ConditionRelationship.AND;
@@ -169,7 +168,6 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 	// 运行过程值，序列化不用输出
 	@Override
 	@XmlTransient
-	// @XmlElement(name = "AliasDataType")
 	public DbFieldType getAliasDataType() {
 		if (this.aliasDataType == null) {
 			this.aliasDataType = DbFieldType.ALPHANUMERIC;
@@ -182,13 +180,13 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		this.aliasDataType = value;
 	}
 
-	private String remarks = "";
+	@XmlElement(name = "Remarks")
+	private String remarks;
 
 	@Override
-	@XmlElement(name = "Remarks")
 	public final String getRemarks() {
 		if (this.remarks == null) {
-			this.remarks = "";
+			this.remarks = Strings.VALUE_EMPTY;
 		}
 		return this.remarks;
 	}

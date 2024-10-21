@@ -7,9 +7,10 @@ import javax.xml.bind.annotation.XmlElement;
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class Trackable extends Bindable implements ITrackable {
 
+	private static final long serialVersionUID = 1L;
+
 	@XmlElement
 	private volatile boolean isDirty = true;
-
 
 	public final boolean isDirty() {
 		return this.isDirty;
@@ -27,7 +28,6 @@ public abstract class Trackable extends Bindable implements ITrackable {
 	@XmlElement
 	private volatile boolean isDeleted = false;
 
-
 	public final boolean isDeleted() {
 		return this.isDeleted;
 	}
@@ -43,7 +43,6 @@ public abstract class Trackable extends Bindable implements ITrackable {
 
 	@XmlElement
 	private volatile boolean isNew = true;
-
 
 	public final boolean isNew() {
 		return this.isNew;
@@ -61,12 +60,11 @@ public abstract class Trackable extends Bindable implements ITrackable {
 	@XmlElement
 	private volatile boolean isSavable = true;
 
-
 	public final boolean isSavable() {
 		return this.isSavable;
 	}
 
-	final void setSavable(boolean value) {
+	public final void setSavable(boolean value) {
 		this.isSavable = value;
 	}
 
@@ -88,35 +86,71 @@ public abstract class Trackable extends Bindable implements ITrackable {
 	 * 
 	 * @param value
 	 */
-	final void setLoading(boolean value) {
+	public final void setLoading(boolean value) {
 		this.isLoading = value;
 	}
 
-	public final void markOld() {
+	public void markOld() {
 		this.setNew(false);
 		this.setDirty(false);
-		// this.setDeleted(false);// 删除标记不去除
+		this.setDeleted(false);// 删除标记不去除??
 	}
 
-	public final void markNew() {
+	public void markNew() {
 		this.setNew(true);
 		this.setDirty(true);
 		this.setDeleted(false);
 	}
 
-	public final void markDeleted() {
+	public void markDeleted() {
 		this.setDirty(true);
 		this.setDeleted(true);
 	}
 
-	public final void clearDeleted() {
+	public void clearDeleted() {
 		if (!this.isDirty()) {
 			this.markDirty();
 		}
 		this.setDeleted(false);
 	}
 
-	public final void markDirty() {
+	public void markDirty() {
 		this.setDirty(true);
+	}
+
+	/**
+	 * 反序列化之前调用
+	 * 
+	 * @param parent 所属父项
+	 */
+	protected void beforeUnmarshal(Object parent) {
+		super.beforeUnmarshal(parent);
+		this.setLoading(true);
+	}
+
+	/**
+	 * 反序列化之后调用
+	 * 
+	 * @param parent 所属父项
+	 */
+	protected void afterUnmarshal(Object parent) {
+		super.afterUnmarshal(parent);
+		this.setLoading(false);
+	}
+
+	/**
+	 * 序列化之前调用
+	 */
+	protected void beforeMarshal() {
+		super.beforeMarshal();
+		this.setLoading(true);
+	}
+
+	/**
+	 * 序列化之后调用
+	 */
+	protected void afterMarshal() {
+		super.afterMarshal();
+		this.setLoading(false);
 	}
 }

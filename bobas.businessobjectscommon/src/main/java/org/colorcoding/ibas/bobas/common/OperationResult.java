@@ -44,11 +44,11 @@ public class OperationResult<P> extends OperationMessage implements IOperationRe
 		this.copy(result);
 	}
 
+	@XmlElement(name = "ResultObject")
+	@XmlElementWrapper(name = "ResultObjects")
 	private ArrayList<P> resultObjects = null;
 
 	@Override
-	@XmlElementWrapper(name = "ResultObjects")
-	@XmlElement(name = "ResultObject")
 	public final ArrayList<P> getResultObjects() {
 		if (this.resultObjects == null) {
 			this.resultObjects = new ArrayList<P>();
@@ -91,11 +91,11 @@ public class OperationResult<P> extends OperationMessage implements IOperationRe
 		return this;
 	}
 
+	@XmlElementWrapper(name = "Informations")
+	@XmlElement(name = "Information", type = OperationInformation.class)
 	private ArrayList<IOperationInformation> informations = null;
 
 	@Override
-	@XmlElementWrapper(name = "Informations")
-	@XmlElement(name = "Information", type = OperationInformation.class)
 	public final ArrayList<IOperationInformation> getInformations() {
 		if (this.informations == null) {
 			this.informations = new ArrayList<IOperationInformation>();

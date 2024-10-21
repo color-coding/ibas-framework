@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.common.Strings;
 
 /**
  * 业务对象工厂
@@ -24,13 +25,13 @@ public class BOFactory {
 
 	public static String codeOf(Class<?> type) {
 		if (type == null) {
-			return null;
+			return Strings.VALUE_EMPTY;
 		}
 		BusinessObjectUnit businessObjectUnit = type.getAnnotation(BusinessObjectUnit.class);
 		if (businessObjectUnit != null) {
 			return MyConfiguration.applyVariables(businessObjectUnit.code());
 		}
-		return null;
+		return Strings.VALUE_EMPTY;
 	}
 
 	public static boolean register(Class<?> type) {

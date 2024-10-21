@@ -84,7 +84,7 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 	@Override
 	public final String getBusinessObject() {
 		if (this.businessObject == null) {
-			this.businessObject = "";
+			this.businessObject = Strings.VALUE_EMPTY;
 		}
 		return this.businessObject;
 	}
@@ -125,6 +125,9 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 
 	@Override
 	public final String getRemarks() {
+		if (this.remarks == null) {
+			this.remarks = Strings.VALUE_EMPTY;
+		}
 		return this.remarks;
 	}
 

@@ -12,31 +12,14 @@ public enum ConditionRelationship {
 	/**
 	 * 没关系
 	 */
-	@Value("N")
 	NONE,
 	/**
 	 * 且
 	 */
-	@Value("A")
 	AND,
 	/**
 	 * 或
 	 */
-	@Value("O")
 	OR;
 
-	public static ConditionRelationship valueOf(int value) {
-		return values()[value];
-	}
-
-	public static ConditionRelationship valueOf(String value, boolean ignoreCase) {
-		if (ignoreCase) {
-			for (Object item : ConditionRelationship.class.getEnumConstants()) {
-				if (item.toString().equalsIgnoreCase(value)) {
-					return (ConditionRelationship) item;
-				}
-			}
-		}
-		return ConditionRelationship.valueOf(value);
-	}
 }
