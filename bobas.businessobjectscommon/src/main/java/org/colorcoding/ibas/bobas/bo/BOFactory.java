@@ -36,7 +36,7 @@ public class BOFactory {
 
 	public static boolean register(Class<?> type) {
 		String boCode = codeOf(type);
-		if (boCode != null && !boCode.isEmpty()) {
+		if (!Strings.isNullOrEmpty(boCode)) {
 			MAP_BO2CODE.put(type, boCode);
 			MAP_CODE2BO.put(boCode, type);
 			return true;

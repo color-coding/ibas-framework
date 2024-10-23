@@ -1,15 +1,18 @@
-package org.colorcoding.ibas.bobas.test.core;
+package org.colorcoding.ibas.bobas.test.core.demo;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.bo.BusinessObjectUnit;
+import org.colorcoding.ibas.bobas.bo.IBOUserFields;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.db.DbField;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
 
+@BusinessObjectUnit(code = "SALESORDER")
 @XmlRootElement(name = "SalesOrder", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
-public class SalesOrder extends Order {
+public class SalesOrder extends Order implements IBOUserFields {
 
 	private static final long serialVersionUID = 1656677742867240562L;
 

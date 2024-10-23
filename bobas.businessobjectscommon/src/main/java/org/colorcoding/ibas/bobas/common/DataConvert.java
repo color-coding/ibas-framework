@@ -8,6 +8,9 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 
 public class DataConvert {
 
+	private DataConvert() {
+	}
+
 	/**
 	 * 转换类型
 	 * 

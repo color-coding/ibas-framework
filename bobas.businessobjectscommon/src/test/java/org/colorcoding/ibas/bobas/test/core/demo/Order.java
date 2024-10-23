@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.bobas.test.core;
+package org.colorcoding.ibas.bobas.test.core.demo;
 
 import java.math.BigDecimal;
 
@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.core.FieldedObject;
+import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
@@ -14,7 +14,7 @@ import org.colorcoding.ibas.bobas.db.DbField;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
 
 @XmlRootElement(name = "Order", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
-public class Order extends FieldedObject<Order> {
+public class Order extends BusinessObject<Order> {
 
 	private static final long serialVersionUID = 4771656989360317386L;
 

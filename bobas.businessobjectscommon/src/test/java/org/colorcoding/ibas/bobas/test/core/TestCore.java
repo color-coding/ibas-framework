@@ -2,14 +2,21 @@ package org.colorcoding.ibas.bobas.test.core;
 
 import java.math.BigDecimal;
 
+import org.colorcoding.ibas.bobas.bo.BOFactory;
+import org.colorcoding.ibas.bobas.bo.IUserField;
+import org.colorcoding.ibas.bobas.bo.IUserFields;
 import org.colorcoding.ibas.bobas.common.DateTimes;
+import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
+import org.colorcoding.ibas.bobas.db.DbField;
+import org.colorcoding.ibas.bobas.test.core.demo.Order;
+import org.colorcoding.ibas.bobas.test.core.demo.SalesOrder;
 
 import junit.framework.TestCase;
 
 public class TestCore extends TestCase {
 
-	public void testOrder() {
+	public void testBasic() {
 		Order order = new Order();
 		order.setDocEntry(1);
 		order.setDocumentDate(DateTimes.getToday());
@@ -46,5 +53,36 @@ public class TestCore extends TestCase {
 		salesOrder = new SalesOrder();
 
 		assertEquals("Property [DocumentStatus] faild. ", salesOrder.getDocumentStatus(), emDocumentStatus.PLANNED);
+
+		BOFactory.register(SalesOrder.class);
+	}
+
+	public void testUserFields() {
+		SalesOrder salesOrder = new SalesOrder();
+		IUserFields userFields = salesOrder.getUserFields();
+		userFields.register("U_String", String.class);
+		userFields.register("U_Integer", Integer.class);
+
+		SalesOrder salesOrder2 = new SalesOrder();
+		salesOrder2.setDocEntry(1);
+		salesOrder2.setDocumentDate(DateTimes.getToday());
+		salesOrder2.setDocumentStatus(emDocumentStatus.RELEASED);
+		salesOrder2.setDocumentTotal(new BigDecimal("99.99"));
+		salesOrder2.setActivated(true);
+		salesOrder2.setCustomerCode("C00001");
+		salesOrder2.markOld();
+
+		IUserField<String> userField = salesOrder2.getUserFields().get("U_String");
+		userField.setValue("hello.");
+		salesOrder2.getUserFields().get("U_Integer").setValue(100);
+		for (IUserField<?> item : salesOrder2.getUserFields()) {
+			System.out.println(String.format("%s = %s", item.getName(), item.getValue()));
+		}
+		for (IPropertyInfo<?> item : salesOrder2.properties()) {
+			DbField annotation = item.getAnnotation(DbField.class);
+			if (annotation != null) {
+				System.out.println(String.format("%s = %s", annotation.table(), annotation.name()));
+			}
+		}
 	}
 }

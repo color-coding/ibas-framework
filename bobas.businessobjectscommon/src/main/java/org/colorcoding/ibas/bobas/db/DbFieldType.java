@@ -1,5 +1,9 @@
 package org.colorcoding.ibas.bobas.db;
 
+import java.math.BigDecimal;
+
+import org.colorcoding.ibas.bobas.data.DateTime;
+
 public enum DbFieldType {
 	/**
 	 * 未知
@@ -30,18 +34,17 @@ public enum DbFieldType {
 	 */
 	BYTES;
 
-	public static DbFieldType valueOf(int value) {
-		return values()[value];
-	}
-
-	public static DbFieldType valueOf(String value, boolean ignoreCase) {
-		if (ignoreCase) {
-			for (Object item : DbFieldType.class.getEnumConstants()) {
-				if (item.toString().equalsIgnoreCase(value)) {
-					return (DbFieldType) item;
-				}
-			}
+	public static DbFieldType valueOf(Class<?> type) {
+		if (type == BigDecimal.class) {
+			return DECIMAL;
+		} else if (type == Integer.class || type == Short.class || type == Float.class || type == Double.class
+				|| type == Long.class) {
+			return NUMERIC;
+		} else if (type == DateTime.class) {
+			return DATE;
+		} else if (type == String.class) {
+			return ALPHANUMERIC;
 		}
-		return DbFieldType.valueOf(value);
+		return UNKNOWN;
 	}
 }

@@ -34,7 +34,6 @@ class PropertyInfoManager {
 			super(initialCapacity);
 		}
 
-	
 		public synchronized boolean add(IPropertyInfo<?> e) {
 			for (IPropertyInfo<?> item : this) {
 				if (item.getName().equals(e.getName())) {
@@ -63,7 +62,7 @@ class PropertyInfoManager {
 			PropertyInfoList propertys = PROPERTY_INFOS.get(objectType);
 			if (propertys != null) {
 				propertys.add(property);
-				property.setIndex(propertys.size() - 1);// 没排序，坑
+				property.setIndex(propertys.size() - 1);
 			} else {
 				propertys = new PropertyInfoList();
 				// 获取父类的属性定义
@@ -163,7 +162,7 @@ class PropertyInfoManager {
 	 * 
 	 * @param objectType 类型
 	 * @return 类型的属性列表
-	 * @throws NotRegisterTypeException
+	 * @throws IllegalArgumentException
 	 */
 	public static PropertyInfoList getPropertyInfoList(Class<?> objectType) {
 		synchronized (PROPERTY_INFOS) {
@@ -171,17 +170,15 @@ class PropertyInfoManager {
 			if (propertyInfoList != null) {
 				return propertyInfoList;
 			} else {
-				propertyInfoList = PROPERTY_INFOS.get(objectType);
-				if (propertyInfoList != null) {
-					return propertyInfoList;
-				} else {
-					// 未注册，检索父项是否注册
-					Class<?> superClass = objectType.getSuperclass();
-					while (superClass != null) {
-						if (PROPERTY_INFOS.containsKey(superClass))
-							return PROPERTY_INFOS.get(superClass);
-						superClass = objectType.getSuperclass();
+				// 未注册，检索父项是否注册
+				Class<?> superClass = objectType.getSuperclass();
+				while (superClass != null) {
+					if (superClass == FieldedObject.class) {
+						return new PropertyInfoList(0);
 					}
+					if (PROPERTY_INFOS.containsKey(superClass))
+						return PROPERTY_INFOS.get(superClass);
+					superClass = superClass.getSuperclass();
 				}
 			}
 			throw new IllegalArgumentException(I18N.prop("msg_bobas_not_register_bo_type", objectType.getName()));
@@ -206,7 +203,7 @@ class PropertyInfoManager {
 	 * @return
 	 */
 	public static Map<IPropertyInfo<?>, Object> initFields(Class<?> objectType) {
-		PropertyInfoList propertyInfoList = PropertyInfoManager.getPropertyInfoList(objectType);
+		PropertyInfoList propertyInfoList = getPropertyInfoList(objectType);
 		Map<IPropertyInfo<?>, Object> fieldsMap = new HashMap<>(propertyInfoList.size());
 		for (IPropertyInfo<?> propertyInfo : propertyInfoList) {
 			fieldsMap.put(propertyInfo, null);

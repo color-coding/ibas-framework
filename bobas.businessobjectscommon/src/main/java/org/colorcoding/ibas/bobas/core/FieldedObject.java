@@ -10,7 +10,7 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.IArrayList;
 
 @XmlAccessorType(XmlAccessType.NONE)
-public abstract class FieldedObject<T extends IFieldedObject> extends Trackable implements IFieldedObject {
+public abstract class FieldedObject extends Trackable implements IFieldedObject {
 
 	private static final long serialVersionUID = 1L;
 
@@ -57,14 +57,14 @@ public abstract class FieldedObject<T extends IFieldedObject> extends Trackable 
 	/**
 	 * 被修改的字段
 	 */
-	private IArrayList<IPropertyInfo<?>> modifiedFields = null;
+	protected IArrayList<IPropertyInfo<?>> modifiedFields = null;
 
 	/**
 	 * 属性
 	 * 
 	 * @return
 	 */
-	public final IArrayList<IPropertyInfo<?>> properties() {
+	public IArrayList<IPropertyInfo<?>> properties() {
 		ArrayList<IPropertyInfo<?>> propertyInfos = new ArrayList<>();
 		for (IPropertyInfo<?> item : this.fields.keySet()) {
 			propertyInfos.add(item);
@@ -110,17 +110,25 @@ public abstract class FieldedObject<T extends IFieldedObject> extends Trackable 
 			this.fields.put(property, value);
 		} else {
 			P oldValue = (P) this.fields.get(property);
-			this.fields.put(property, value);
-			if (this.modifiedFields != null && !this.modifiedFields.contains(property)) {
-				this.modifiedFields.add(property);
+			if (oldValue != value) {
+				this.fields.put(property, value);
+				if (this.modifiedFields != null && !this.modifiedFields.contains(property)) {
+					this.modifiedFields.add(property);
+				}
+				this.markDirty();
+				this.firePropertyChange(property.getName(), oldValue, value);
 			}
-			this.firePropertyChange(property.getName(), oldValue, value);
 		}
 	}
 
 	@Override
-	public void markDirty() {
-		super.markDirty();
+	protected void firePropertyChange(String name, Object oldValue, Object newValue) {
+		super.firePropertyChange(name, oldValue, newValue);
+	}
+
+	@Override
+	public void markOld() {
+		super.markOld();
 		if (this.modifiedFields != null) {
 			this.modifiedFields.clear();
 		}

@@ -16,12 +16,30 @@ public interface IBusinessObjects<E extends IBusinessObject, P extends IBusiness
 	 * 
 	 * @return 元素类型
 	 */
-	Class<?> getElementType();
+	Class<E> getElementType();
+
+	/**
+	 * 创建新的元素实例
+	 * 
+	 * @return 新的元素实例
+	 */
+	E create();
 
 	/**
 	 * 添加元素
+	 * 
+	 * @param item
+	 * @return
 	 */
 	boolean add(E item);
+
+	/**
+	 * 添加集合
+	 * 
+	 * @param items
+	 * @return
+	 */
+	boolean addAll(Iterable<? extends E> items);
 
 	/**
 	 * 删除元素（仅新对象移出集合）
