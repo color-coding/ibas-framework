@@ -2,8 +2,11 @@ package org.colorcoding.ibas.bobas.rule.common;
 
 import java.util.function.Predicate;
 
+import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
+import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
+import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleCollection;
 
@@ -39,6 +42,20 @@ public class BusinessRuleDocumentStatus extends BusinessRuleCollection {
 		this.getInputProperties().add(this.getStatus());
 		// 结果
 		this.getAffectedProperties().add(this.getResult());
+		// 默认过滤条件
+		this.setCollectionFilter(new Predicate<IBusinessObject>() {
+
+			@Override
+			public boolean test(IBusinessObject t) {
+				if (t instanceof IBOTagDeleted) {
+					IBOTagDeleted tagDeleted = (IBOTagDeleted) t;
+					if (tagDeleted.getDeleted() == emYesNo.YES) {
+						return false;
+					}
+				}
+				return true;
+			}
+		});
 	}
 
 	/**
