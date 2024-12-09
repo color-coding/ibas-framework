@@ -11,7 +11,7 @@ import org.colorcoding.ibas.bobas.common.Value;
  * @author Niuren.Zhu
  *
  */
-@XmlType(name = "emApprovalStepStatus", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public enum emApprovalStepStatus {
 
 	/**

@@ -17,11 +17,11 @@ public class BOFactory {
 	/**
 	 * 业务对象的编码字典
 	 */
-	private volatile static Map<Class<?>, String> MAP_BO2CODE = new HashMap<Class<?>, String>();
+	private volatile static Map<Class<?>, String> MAP_BO2CODE = new HashMap<Class<?>, String>(256);
 	/**
 	 * 业务编码的对象字典
 	 */
-	private volatile static Map<String, Class<?>> MAP_CODE2BO = new HashMap<String, Class<?>>();
+	private volatile static Map<String, Class<?>> MAP_CODE2BO = new HashMap<String, Class<?>>(256);
 
 	public static String codeOf(Class<?> type) {
 		if (type == null) {

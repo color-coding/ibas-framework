@@ -7,7 +7,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 /**
  * 条件之间关系
  */
-@XmlType(name = "ConditionRelationship", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
+@XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public enum ConditionRelationship {
 	/**
 	 * 没关系

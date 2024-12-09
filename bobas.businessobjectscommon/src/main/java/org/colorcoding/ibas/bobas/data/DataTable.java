@@ -11,8 +11,8 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.core.Serializable;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "DataTable", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
-@XmlRootElement(name = "DataTable", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlRootElement(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class DataTable extends Serializable implements IDataTable {
 
 	private static final long serialVersionUID = -5646933951739886585L;

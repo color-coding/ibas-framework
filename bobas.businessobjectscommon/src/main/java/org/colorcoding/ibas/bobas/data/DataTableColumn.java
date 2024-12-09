@@ -9,7 +9,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.core.Serializable;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "DataTableColumn", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class DataTableColumn extends Serializable implements IDataTableColumn {
 
 	private static final long serialVersionUID = 1631814339522850980L;

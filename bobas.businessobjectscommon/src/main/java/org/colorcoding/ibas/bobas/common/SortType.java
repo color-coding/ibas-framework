@@ -7,7 +7,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 /**
  * 排序
  */
-@XmlType(name = "SortType", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
+@XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public enum SortType {
 	/** 降序 */
 	DESCENDING,

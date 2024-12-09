@@ -44,7 +44,8 @@ class PropertyInfoManager {
 		}
 	}
 
-	private volatile static Map<Class<?>, PropertyInfoList> PROPERTY_INFOS = new HashMap<Class<?>, PropertyInfoList>();
+	private volatile static Map<Class<?>, PropertyInfoList> PROPERTY_INFOS = new HashMap<Class<?>, PropertyInfoList>(
+			256);
 
 	protected static <P> PropertyInfo<P> createProperty(String name, Class<P> type) {
 		PropertyInfo<P> property = new PropertyInfo<P>(name, type);
@@ -64,7 +65,7 @@ class PropertyInfoManager {
 				propertys.add(property);
 				property.setIndex(propertys.size() - 1);
 			} else {
-				propertys = new PropertyInfoList();
+				propertys = new PropertyInfoList(32);
 				// 获取父类的属性定义
 				for (IPropertyInfo<?> item : recursePropertyInfos(objectType.getSuperclass())) {
 					propertys.add(item);
@@ -138,7 +139,7 @@ class PropertyInfoManager {
 		if (objectType == FieldedObject.class) {
 			return new IPropertyInfo<?>[] {};
 		}
-		PropertyInfoList propertys = new PropertyInfoList();
+		PropertyInfoList propertys = new PropertyInfoList(32);
 		// 获取当前类的属性
 		try {
 			for (IPropertyInfo<?> item : getPropertyInfoList(objectType)) {
@@ -204,7 +205,7 @@ class PropertyInfoManager {
 	 */
 	public static Map<IPropertyInfo<?>, Object> initFields(Class<?> objectType) {
 		PropertyInfoList propertyInfoList = getPropertyInfoList(objectType);
-		Map<IPropertyInfo<?>, Object> fieldsMap = new HashMap<>(propertyInfoList.size());
+		Map<IPropertyInfo<?>, Object> fieldsMap = new HashMap<>(propertyInfoList.size(), 1);
 		for (IPropertyInfo<?> propertyInfo : propertyInfoList) {
 			fieldsMap.put(propertyInfo, null);
 		}

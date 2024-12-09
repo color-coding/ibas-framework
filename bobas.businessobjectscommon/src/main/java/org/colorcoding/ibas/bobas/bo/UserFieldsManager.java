@@ -16,7 +16,7 @@ public class UserFieldsManager {
 	private UserFieldsManager() {
 	}
 
-	private volatile static Map<Class<?>, UserFieldInfoList> USER_FIELDS = new HashMap<Class<?>, UserFieldInfoList>();
+	private volatile static Map<Class<?>, UserFieldInfoList> USER_FIELDS = new HashMap<Class<?>, UserFieldInfoList>(64);
 
 	public static class UserFieldInfoList extends ArrayList<IPropertyInfo<?>> {
 
@@ -194,7 +194,7 @@ public class UserFieldsManager {
 	 */
 	public static Map<IPropertyInfo<?>, Object> initFields(Class<?> objectType) {
 		UserFieldInfoList infoList = getUserFieldInfoList(objectType);
-		Map<IPropertyInfo<?>, Object> fieldsMap = new HashMap<>(infoList.size());
+		Map<IPropertyInfo<?>, Object> fieldsMap = new HashMap<>(infoList.size(), 1);
 		for (IPropertyInfo<?> propertyInfo : infoList) {
 			fieldsMap.put(propertyInfo, null);
 		}

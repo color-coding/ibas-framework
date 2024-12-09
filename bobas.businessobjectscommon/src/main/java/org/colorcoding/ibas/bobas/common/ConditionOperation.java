@@ -8,7 +8,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
  * 对比条件
  * 
  */
-@XmlType(name = "ConditionOperation", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
+@XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public enum ConditionOperation {
 	/** 无 */
 	NONE,

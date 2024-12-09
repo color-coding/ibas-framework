@@ -16,8 +16,8 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
  *
  * @param <E> 集合类型
  */
-@XmlType(name = "ArrayList", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
-@XmlRootElement(name = "ArrayList", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlRootElement(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class ArrayList<E> extends java.util.ArrayList<E> implements IArrayList<E> {
 
 	private static final long serialVersionUID = 721283937680328856L;
@@ -33,20 +33,17 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements IArrayList<E
 		super(arg0);
 	}
 
-
 	public final E firstOrDefault() {
 		if (!this.isEmpty())
 			return this.get(0);
 		return null;
 	}
 
-
 	public final E lastOrDefault() {
 		if (!this.isEmpty())
 			return this.get(this.size() - 1);
 		return null;
 	}
-
 
 	public E firstOrDefault(E defalutValue) {
 		E value = this.firstOrDefault();
@@ -56,7 +53,6 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements IArrayList<E
 		return value;
 	}
 
-
 	public E lastOrDefault(E defalutValue) {
 		E value = this.lastOrDefault();
 		if (value == null) {
@@ -64,7 +60,6 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements IArrayList<E
 		}
 		return value;
 	}
-
 
 	public final E firstOrDefault(Predicate<? super E> filter) {
 		Objects.requireNonNull(filter);
@@ -78,7 +73,6 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements IArrayList<E
 		return null;
 	}
 
-
 	public final E lastOrDefault(Predicate<? super E> filter) {
 		Objects.requireNonNull(filter);
 		for (int i = this.size() - 1; i >= 0; i--) {
@@ -91,7 +85,6 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements IArrayList<E
 		return null;
 	}
 
-
 	public E firstOrDefault(Predicate<? super E> filter, E defalutValue) {
 		E value = this.firstOrDefault(filter);
 		if (value == null) {
@@ -99,7 +92,6 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements IArrayList<E
 		}
 		return value;
 	}
-
 
 	public E lastOrDefault(Predicate<? super E> filter, E defalutValue) {
 		E value = this.lastOrDefault(filter);
@@ -126,7 +118,6 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements IArrayList<E
 		}
 		return true;
 	}
-
 
 	public IArrayList<E> where(Predicate<? super E> filter) {
 		Objects.requireNonNull(filter);

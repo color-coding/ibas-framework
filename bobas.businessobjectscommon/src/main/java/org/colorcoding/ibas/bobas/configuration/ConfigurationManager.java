@@ -18,7 +18,7 @@ import org.colorcoding.ibas.bobas.logging.Logger;
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class ConfigurationManager implements IConfigurationManager {
 
-	private HashMap<String, KeyText> elementsMap = new HashMap<String, KeyText>();
+	private HashMap<String, KeyText> elementsMap = new HashMap<String, KeyText>(128);
 
 	public Collection<KeyText> getElements() {
 		return this.elementsMap.values();

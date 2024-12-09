@@ -10,7 +10,7 @@ import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.Serializable;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "DataTableRow", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class DataTableRow extends Serializable implements IDataTableRow {
 
 	private static final long serialVersionUID = -1613267620773820698L;

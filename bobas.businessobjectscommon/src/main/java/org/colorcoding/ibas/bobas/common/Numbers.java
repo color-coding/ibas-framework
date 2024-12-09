@@ -53,92 +53,92 @@ public class Numbers {
 		return true;
 	}
 
-	public static double doubleOf(float value) {
+	public static double toDouble(float value) {
 		return value;
 	}
 
-	public static double doubleOf(int value) {
+	public static double toDouble(int value) {
 		return value;
 	}
 
-	public static double doubleOf(long value) {
+	public static double toDouble(long value) {
 		return value;
 	}
 
-	public static double doubleOf(short value) {
+	public static double toDouble(short value) {
 		return value;
 	}
 
-	public static double doubleOf(BigDecimal value) {
+	public static double toDouble(BigDecimal value) {
 		if (value == null) {
 			return Double.valueOf(Strings.VALUE_ZERO);
 		}
 		return value.doubleValue();
 	}
 
-	public static float floatOf(double value) {
+	public static float toFloat(double value) {
 		return (float) value;
 	}
 
-	public static float floatOf(int value) {
+	public static float toFloat(int value) {
 		return value;
 	}
 
-	public static float floatOf(long value) {
+	public static float toFloat(long value) {
 		return value;
 	}
 
-	public static float floatOf(short value) {
+	public static float toFloat(short value) {
 		return value;
 	}
 
-	public static float floatOf(BigDecimal value) {
+	public static float toFloat(BigDecimal value) {
 		if (value == null) {
 			return Float.valueOf(Strings.VALUE_ZERO);
 		}
 		return value.floatValue();
 	}
 
-	public static int intOf(double value) {
+	public static int toInteger(double value) {
 		return (int) value;
 	}
 
-	public static int intOf(float value) {
+	public static int toInteger(float value) {
 		return (int) value;
 	}
 
-	public static int intOf(long value) {
+	public static int toInteger(long value) {
 		return (int) value;
 	}
 
-	public static int intOf(short value) {
+	public static int toInteger(short value) {
 		return value;
 	}
 
-	public static int intOf(BigDecimal value) {
+	public static int toInteger(BigDecimal value) {
 		if (value == null) {
 			return Integer.valueOf(Strings.VALUE_ZERO);
 		}
 		return value.intValue();
 	}
 
-	public static long longOf(double value) {
+	public static long toLong(double value) {
 		return (long) value;
 	}
 
-	public static long longOf(float value) {
+	public static long toLong(float value) {
 		return (long) value;
 	}
 
-	public static long longOf(int value) {
+	public static long toLong(int value) {
 		return value;
 	}
 
-	public static long longOf(short value) {
+	public static long toLong(short value) {
 		return value;
 	}
 
-	public static long longOf(BigDecimal value) {
+	public static long toLong(BigDecimal value) {
 		if (value == null) {
 			return Long.valueOf(Strings.VALUE_ZERO);
 		}

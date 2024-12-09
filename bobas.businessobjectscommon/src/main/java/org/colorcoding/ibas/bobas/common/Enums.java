@@ -11,7 +11,7 @@ public class Enums {
 	private Enums() {
 	}
 
-	private static Map<Class<?>, Enum<?>> DEFAULT_VALUES = new HashMap<>();
+	private static Map<Class<?>, Enum<?>> DEFAULT_VALUES = new HashMap<>(64);
 
 	/**
 	 * 类型默认值

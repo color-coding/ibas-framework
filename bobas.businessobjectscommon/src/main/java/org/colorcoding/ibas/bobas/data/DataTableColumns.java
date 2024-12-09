@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "DataTableColumns", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 @XmlSeeAlso({ DataTableColumn.class })
 public class DataTableColumns extends ArrayList<IDataTableColumn> implements IDataTableColumns {
 

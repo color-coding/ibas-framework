@@ -13,7 +13,7 @@ import org.colorcoding.ibas.bobas.common.DateTimes;
 /**
  * 日期类型
  */
-@XmlType(name = "DateTime", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class DateTime extends Date implements Serializable {
 
 	private static final long serialVersionUID = 9197442988053540497L;
@@ -25,7 +25,6 @@ public class DateTime extends Date implements Serializable {
 	public DateTime(long date) {
 		super(date);
 	}
-
 
 	public String toString() {
 		return this.toString(DateTimes.FORMAT_DATE);

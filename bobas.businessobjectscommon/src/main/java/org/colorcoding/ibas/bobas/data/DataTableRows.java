@@ -11,7 +11,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
  * 行 集合
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "DataTableRows", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 @XmlSeeAlso({ DataTableRow.class })
 public class DataTableRows extends ArrayList<IDataTableRow> implements IDataTableRows {
 
