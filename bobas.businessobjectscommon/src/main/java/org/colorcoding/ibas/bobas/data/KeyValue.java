@@ -14,8 +14,8 @@ import org.colorcoding.ibas.bobas.core.Serializable;
  * @author Niuren.Zhu
  *
  */
-@XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
-@XmlRootElement(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "KeyValue", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlRootElement(name = "KeyValue", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class KeyValue extends Serializable implements IKeyValue {
 
 	private static final long serialVersionUID = 5102847294361392265L;

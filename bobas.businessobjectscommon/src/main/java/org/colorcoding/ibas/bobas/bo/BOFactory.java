@@ -23,6 +23,44 @@ public class BOFactory {
 	 */
 	private volatile static Map<String, Class<?>> MAP_CODE2BO = new HashMap<String, Class<?>>(256);
 
+	/**
+	 * 注册对象
+	 * 
+	 * @param type 对象类型
+	 * @return
+	 */
+	public static boolean register(Class<?> type) {
+		String boCode = codeOf(type);
+		if (!Strings.isNullOrEmpty(boCode)) {
+			MAP_BO2CODE.put(type, boCode);
+			MAP_CODE2BO.put(boCode, type);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 注册对象
+	 * 
+	 * @param boCode 对象编码
+	 * @param type   对象类型
+	 * @return
+	 */
+	public static boolean register(String boCode, Class<?> type) {
+		if (type == null) {
+			return false;
+		}
+		MAP_BO2CODE.put(type, boCode);
+		MAP_CODE2BO.put(boCode, type);
+		return true;
+	}
+
+	/**
+	 * 获取对象编码
+	 * 
+	 * @param type 对象类型
+	 * @return
+	 */
 	public static String codeOf(Class<?> type) {
 		if (type == null) {
 			return Strings.VALUE_EMPTY;
@@ -34,22 +72,4 @@ public class BOFactory {
 		return Strings.VALUE_EMPTY;
 	}
 
-	public static boolean register(Class<?> type) {
-		String boCode = codeOf(type);
-		if (!Strings.isNullOrEmpty(boCode)) {
-			MAP_BO2CODE.put(type, boCode);
-			MAP_CODE2BO.put(boCode, type);
-			return true;
-		}
-		return false;
-	}
-
-	public static boolean register(String boCode, Class<?> type) {
-		if (type == null) {
-			return false;
-		}
-		MAP_BO2CODE.put(type, boCode);
-		MAP_CODE2BO.put(boCode, type);
-		return true;
-	}
 }

@@ -143,4 +143,170 @@ public class Decimals {
 		return new BigDecimal(value);
 	}
 
+	/**
+	 * 是否相等
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static boolean equals(BigDecimal a, BigDecimal b) {
+		if (a == null || b == null) {
+			return false;
+		}
+		if (a == b) {
+			return true;
+		}
+		if (a.compareTo(b) == 0) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 是否大于(a > b)
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static boolean graterThan(BigDecimal a, BigDecimal b) {
+		if (a == null || b == null) {
+			return false;
+		}
+		return a.compareTo(b) > 0;
+	}
+
+	/**
+	 * 是否小于(a < b)
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static boolean lessThan(BigDecimal a, BigDecimal b) {
+		if (a == null || b == null) {
+			return false;
+		}
+		return a.compareTo(b) < 0;
+	}
+
+	/**
+	 * 是否为零
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static boolean isZero(BigDecimal value) {
+		if (VALUE_ZERO.equals(value)) {
+			return true;
+		} else if (VALUE_ZERO.compareTo(value) == 0) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 除法
+	 * 
+	 * @param dividend 被除数
+	 * @param divisor  除数
+	 * @return
+	 */
+	public static BigDecimal divide(BigDecimal dividend, BigDecimal divisor) {
+		return divide(dividend, divisor, DECIMAL_PLACES_RUNNING, ROUNDING_MODE_DEFAULT);
+	}
+
+	/**
+	 * 除法
+	 * 
+	 * @param dividend 被除数
+	 * @param divisor  除数
+	 * @param scale    保留小数位
+	 * @return
+	 */
+	public static BigDecimal divide(BigDecimal dividend, BigDecimal divisor, int scale) {
+		return divide(dividend, divisor, scale, ROUNDING_MODE_DEFAULT);
+	}
+
+	/**
+	 * 除法
+	 * 
+	 * @param dividend 被除数
+	 * @param divisor  除数
+	 * @param scale    保留小数位
+	 * @param rounding 进位方式
+	 * @return
+	 */
+	public static BigDecimal divide(BigDecimal dividend, BigDecimal divisor, int scale, RoundingMode roundingMode) {
+		return dividend.divide(divisor, scale, roundingMode);
+	}
+
+	/**
+	 * 除法
+	 * 
+	 * @param dividend 被除数
+	 * @param divisors 乘除数组（0个，返回被除数）
+	 * @return
+	 */
+	public static BigDecimal divide(BigDecimal dividend, BigDecimal... divisors) {
+		if (divisors == null || divisors.length == 0) {
+			return dividend;
+		}
+		for (BigDecimal divisor : divisors) {
+			dividend = divide(dividend, divisor);
+		}
+		return dividend;
+	}
+
+	/**
+	 * 乘法
+	 * 
+	 * @param multiplicand 被乘数
+	 * @param multipliers  乘数数组（0个，返回被乘数）
+	 * @return
+	 */
+	public static BigDecimal multiply(BigDecimal multiplicand, BigDecimal... multipliers) {
+		if (multipliers == null || multipliers.length == 0) {
+			return multiplicand;
+		}
+		for (BigDecimal multiplier : multipliers) {
+			multiplicand = multiplicand.multiply(multiplier);
+		}
+		return multiplicand;
+	}
+
+	/**
+	 * 加法
+	 * 
+	 * @param augend  被加数
+	 * @param addends 加数组（0个，返回被加数）
+	 * @return
+	 */
+	public static BigDecimal add(BigDecimal augend, BigDecimal... addends) {
+		if (addends == null || addends.length == 0) {
+			return augend;
+		}
+		for (BigDecimal addend : addends) {
+			augend = augend.add(addend);
+		}
+		return augend;
+	}
+
+	/**
+	 * 减法
+	 * 
+	 * @param subtrahend 被减数
+	 * @param addends    减数组（0个，返回被减数）
+	 * @return
+	 */
+	public static BigDecimal subtract(BigDecimal subtrahend, BigDecimal... subtractors) {
+		if (subtractors == null || subtractors.length == 0) {
+			return subtrahend;
+		}
+		for (BigDecimal subtractor : subtractors) {
+			subtrahend = subtrahend.subtract(subtractor);
+		}
+		return subtrahend;
+	}
 }

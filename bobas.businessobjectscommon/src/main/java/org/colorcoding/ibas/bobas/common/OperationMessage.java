@@ -30,13 +30,13 @@ public class OperationMessage extends Result implements IOperationMessage {
 	public OperationMessage() {
 		super();
 		this.setSignID(UUID.randomUUID().toString());
-		this.setTime(DateTimes.getNow());
+		this.setTime(DateTimes.now());
 	}
 
 	public OperationMessage(int resultCode, String message) {
 		super(resultCode, message);
 		this.setSignID(UUID.randomUUID().toString());
-		this.setTime(DateTimes.getNow());
+		this.setTime(DateTimes.now());
 	}
 
 	public OperationMessage(Exception exception) {

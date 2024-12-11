@@ -16,4 +16,14 @@ public class Booleans {
 	public static Boolean defaultValue() {
 		return false;
 	}
+
+	public static boolean equals(Boolean a, Boolean b) {
+		if (a == null || b == null) {
+			return false;
+		}
+		if (a == b) {
+			return true;
+		}
+		return false;
+	}
 }

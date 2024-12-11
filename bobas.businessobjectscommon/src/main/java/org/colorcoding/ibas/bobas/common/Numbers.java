@@ -144,4 +144,39 @@ public class Numbers {
 		}
 		return value.longValue();
 	}
+
+	/**
+	 * 判断是否相等（任意空值则不等）
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static boolean equals(Object a, Object b) {
+		if (a == null || b == null) {
+			return false;
+		}
+		if (a == b) {
+			return true;
+		}
+		if (a.equals(b)) {
+			return true;
+		}
+		if (a instanceof Comparable<?> && b instanceof Comparable<?>) {
+			@SuppressWarnings("unchecked")
+			Comparable<Object> A = (Comparable<Object>) a;
+			@SuppressWarnings("unchecked")
+			Comparable<Object> B = (Comparable<Object>) b;
+			if (A.compareTo(B) == 0) {
+				return true;
+			}
+		} else {
+			String A = Strings.valueOf(a);
+			String B = Strings.valueOf(b);
+			if (A.equals(B)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

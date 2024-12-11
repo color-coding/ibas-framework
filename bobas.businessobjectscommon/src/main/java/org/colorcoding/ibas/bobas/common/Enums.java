@@ -11,7 +11,7 @@ public class Enums {
 	private Enums() {
 	}
 
-	private static Map<Class<?>, Enum<?>> DEFAULT_VALUES = new HashMap<>(64);
+	private static Map<Class<?>, Enum<?>> DEFAULT_VALUES = new HashMap<>(32);
 
 	/**
 	 * 类型默认值
@@ -31,6 +31,29 @@ public class Enums {
 			}
 		}
 		return DEFAULT_VALUES.get(enumType);
+	}
+
+	/**
+	 * 属性标记值
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static String annotationValue(Object value) {
+		if (value != null) {
+			Class<?> valueType = value.getClass();
+			if (valueType.isEnum()) {
+				for (java.lang.reflect.Field field : valueType.getDeclaredFields()) {
+					Value annotation = field.getAnnotation(Value.class);
+					if (annotation != null) {
+						if (field.getName().equals(value.toString())) {
+							return annotation.value();
+						}
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -54,5 +77,20 @@ public class Enums {
 			return values;
 		}
 		return new KeyValue[] {};
+	}
+
+	public static boolean equals(Object a, Object b) {
+		if (a == null || b == null) {
+			return false;
+		}
+		if (a == b) {
+			return true;
+		}
+		if (a.getClass() == b.getClass()) {
+			if (Numbers.equals(a, b)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

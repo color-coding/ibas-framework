@@ -16,8 +16,8 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
  *
  * @param <E> 集合类型
  */
-@XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
-@XmlRootElement(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "ArrayList", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlRootElement(name = "ArrayList", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class ArrayList<E> extends java.util.ArrayList<E> implements IArrayList<E> {
 
 	private static final long serialVersionUID = 721283937680328856L;

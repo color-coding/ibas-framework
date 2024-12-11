@@ -8,8 +8,8 @@ import javax.xml.bind.annotation.XmlType;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 @XmlSeeAlso({ DataTableColumn.class })
+@XmlType(name = "DataTableColumns",namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class DataTableColumns extends ArrayList<IDataTableColumn> implements IDataTableColumns {
 
 	private static final long serialVersionUID = -592228599611799067L;

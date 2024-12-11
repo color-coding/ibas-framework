@@ -1,8 +1,11 @@
 package org.colorcoding.ibas.bobas.bo;
 
 import java.lang.reflect.Array;
+import java.util.Objects;
 import java.util.function.Consumer;
 
+import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.core.FieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 
 public class BOUtilities {
@@ -47,6 +50,72 @@ public class BOUtilities {
 				}
 			}
 		}
+	}
+
+	/**
+	 * 是否为对象
+	 * 
+	 * @param bo
+	 * @return
+	 */
+	public static boolean isBusinessObject(Object bo) {
+		if (bo instanceof BusinessObject<?>) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 获取对象的属性
+	 * 
+	 * @param <P>          属性的值类型
+	 * @param bo           对象
+	 * @param propertyName 属性名称
+	 * @return 找不到为空
+	 */
+	@SuppressWarnings("unchecked")
+	public static <P> IPropertyInfo<P> propertyInfo(IBusinessObject bo, String propertyName) {
+		if (!(bo instanceof FieldedObject)) {
+			return null;
+		}
+		if (Strings.isNullOrEmpty(propertyName)) {
+			return null;
+		}
+		FieldedObject fieldedObject = (FieldedObject) bo;
+		for (IPropertyInfo<?> item : fieldedObject.properties()) {
+			if (item.getName().equalsIgnoreCase(propertyName)) {
+				return (IPropertyInfo<P>) item;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * 获取对象的属性值
+	 * 
+	 * @param <P>      值类型
+	 * @param bo       对象
+	 * @param property 属性
+	 * @return
+	 */
+	public static <P> P propertyValue(IBusinessObject bo, IPropertyInfo<P> property) {
+		if (!(bo instanceof FieldedObject)) {
+			return null;
+		}
+		Objects.requireNonNull(property);
+		return ((FieldedObject) bo).getProperty(property);
+	}
+
+	/**
+	 * 获取对象的属性值
+	 * 
+	 * @param <P>          值类型
+	 * @param bo           对象
+	 * @param propertyName 属性名称
+	 * @return
+	 */
+	public static <P> P propertyValue(IBusinessObject bo, String propertyName) {
+		return propertyValue(bo, propertyInfo(bo, propertyName));
 	}
 
 }

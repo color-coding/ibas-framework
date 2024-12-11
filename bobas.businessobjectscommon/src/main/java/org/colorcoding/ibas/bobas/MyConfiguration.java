@@ -60,4 +60,25 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-配置方式
 	 */
 	public final static String CONFIG_ITEM_CONFIGURATION_WAY = "ConfigurationWay";
+
+	/**
+	 * 配置项目-数据库类型
+	 */
+	public final static String CONFIG_ITEM_DB_TYPE = "DbType";
+	/**
+	 * 配置项目-数据库地址
+	 */
+	public final static String CONFIG_ITEM_DB_SERVER = "DbServer";
+	/**
+	 * 配置项目-数据库名称
+	 */
+	public final static String CONFIG_ITEM_DB_NAME = "DbName";
+	/**
+	 * 配置项目-数据库用户名称
+	 */
+	public final static String CONFIG_ITEM_DB_USER_ID = "DbUserID";
+	/**
+	 * 配置项目-数据库用户密码
+	 */
+	public final static String CONFIG_ITEM_DB_USER_PASSWORD = "DbUserPassword";
 }

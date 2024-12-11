@@ -19,13 +19,13 @@ public class TestCore extends TestCase {
 	public void testBasic() {
 		Order order = new Order();
 		order.setDocEntry(1);
-		order.setDocumentDate(DateTimes.getToday());
+		order.setDocumentDate(DateTimes.today());
 		order.setDocumentStatus(emDocumentStatus.RELEASED);
 		order.setDocumentTotal(new BigDecimal("99.99"));
 		order.setActivated(true);
 
 		assertEquals("Property [DocEntry] faild. ", (int) order.getDocEntry(), 1);
-		assertTrue("Property [DueDate] faild. ", order.getDocumentDate().equals(DateTimes.getToday()));
+		assertTrue("Property [DueDate] faild. ", order.getDocumentDate().equals(DateTimes.today()));
 		assertEquals("Property [DocumentStatus] faild. ", order.getDocumentStatus(), emDocumentStatus.RELEASED);
 		assertEquals("Property [Activted] faild. ", (boolean) order.getActivated(), true);
 		assertTrue("Property [DocumentTotal] faild. ", order.getDocumentTotal().toString().equals("99.99"));
@@ -35,7 +35,7 @@ public class TestCore extends TestCase {
 
 		SalesOrder salesOrder = new SalesOrder();
 		salesOrder.setDocEntry(1);
-		salesOrder.setDocumentDate(DateTimes.getToday());
+		salesOrder.setDocumentDate(DateTimes.today());
 		salesOrder.setDocumentStatus(emDocumentStatus.RELEASED);
 		salesOrder.setDocumentTotal(new BigDecimal("99.99"));
 		salesOrder.setActivated(true);
@@ -45,7 +45,7 @@ public class TestCore extends TestCase {
 
 		assertEquals("Property [DocEntry] faild. ", (int) salesOrder.getDocEntry(), 1);
 		assertEquals("Property [CustomerCode] faild. ", salesOrder.getCustomerCode(), "C00001");
-		assertTrue("Property [DueDate] faild. ", salesOrder.getDocumentDate().equals(DateTimes.getToday()));
+		assertTrue("Property [DueDate] faild. ", salesOrder.getDocumentDate().equals(DateTimes.today()));
 		assertEquals("Property [DocumentStatus] faild. ", salesOrder.getDocumentStatus(), emDocumentStatus.RELEASED);
 		assertEquals("Property [Activted] faild. ", (boolean) salesOrder.getActivated(), true);
 		assertTrue("Property [DocumentTotal] faild. ", salesOrder.getDocumentTotal().toString().equals("99.99"));
@@ -65,7 +65,7 @@ public class TestCore extends TestCase {
 
 		SalesOrder salesOrder2 = new SalesOrder();
 		salesOrder2.setDocEntry(1);
-		salesOrder2.setDocumentDate(DateTimes.getToday());
+		salesOrder2.setDocumentDate(DateTimes.today());
 		salesOrder2.setDocumentStatus(emDocumentStatus.RELEASED);
 		salesOrder2.setDocumentTotal(new BigDecimal("99.99"));
 		salesOrder2.setActivated(true);

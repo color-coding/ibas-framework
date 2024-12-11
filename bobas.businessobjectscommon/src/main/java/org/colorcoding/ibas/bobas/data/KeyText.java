@@ -13,8 +13,8 @@ import org.colorcoding.ibas.bobas.core.Serializable;
  * 
  * @author Niuren.Zhu
  */
-@XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
-@XmlRootElement(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "KeyText", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlRootElement(name = "KeyText", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class KeyText extends Serializable implements IKeyText {
 
 	private static final long serialVersionUID = 4725190510330982065L;

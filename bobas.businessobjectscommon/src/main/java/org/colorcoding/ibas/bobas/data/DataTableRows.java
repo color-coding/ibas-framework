@@ -11,8 +11,8 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
  * 行 集合
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 @XmlSeeAlso({ DataTableRow.class })
+@XmlType(name = "DataTableRows", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class DataTableRows extends ArrayList<IDataTableRow> implements IDataTableRows {
 
 	private static final long serialVersionUID = -6899298407933961527L;

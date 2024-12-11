@@ -114,14 +114,14 @@ public class DateTimes {
 	/**
 	 * 当前时间
 	 */
-	public static DateTime getNow() {
+	public static DateTime now() {
 		return valueOf(Calendar.getInstance().getTimeInMillis());
 	}
 
 	/**
 	 * 当天
 	 */
-	public static DateTime getToday() {
+	public static DateTime today() {
 		Calendar calendar = Calendar.getInstance();
 		int year = calendar.get(Calendar.YEAR);
 		int month = calendar.get(Calendar.MONTH);
@@ -155,4 +155,51 @@ public class DateTimes {
 		throw new ArithmeticException(I18N.prop("msg_bobas_not_support_the_compute"));
 	}
 
+	/**
+	 * 是否相等
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static boolean equals(DateTime a, DateTime b) {
+		if (a == null || b == null) {
+			return false;
+		}
+		if (a == b) {
+			return true;
+		}
+		if (a.compareTo(b) == 0) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 是否大于(a > b)
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static boolean graterThan(DateTime a, DateTime b) {
+		if (a == null || b == null) {
+			return false;
+		}
+		return a.compareTo(b) > 0;
+	}
+
+	/**
+	 * 是否小于(a < b)
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static boolean lessThan(DateTime a, DateTime b) {
+		if (a == null || b == null) {
+			return false;
+		}
+		return a.compareTo(b) < 0;
+	}
 }
