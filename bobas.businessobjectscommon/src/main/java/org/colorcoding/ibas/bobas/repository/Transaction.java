@@ -10,7 +10,6 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.expression.BOJudgmentLinkCondition;
 import org.colorcoding.ibas.bobas.expression.JudgmentLink;
 import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
-import org.colorcoding.ibas.bobas.logging.Logger;
 
 public abstract class Transaction implements ITransaction {
 
@@ -32,6 +31,16 @@ public abstract class Transaction implements ITransaction {
 	}
 
 	/**
+	 * 释放占用资源
+	 * 
+	 * @throws
+	 */
+	@Override
+	public void close() throws Exception {
+		this.cacheDatas.clear();
+	}
+
+	/**
 	 * 缓存中查询数据
 	 * 
 	 * @param <T>      数据类型
@@ -40,7 +49,8 @@ public abstract class Transaction implements ITransaction {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends IBusinessObject> T[] fetchInCache(ICriteria criteria, Class<T> boType) {
+	public <T extends IBusinessObject> T[] fetchInCache(ICriteria criteria, Class<T> boType)
+			throws RepositoryException {
 		Objects.requireNonNull(criteria);
 		Objects.requireNonNull(boType);
 
@@ -54,14 +64,18 @@ public abstract class Transaction implements ITransaction {
 			if (!boType.isInstance(item)) {
 				continue;
 			}
-			if (this.judge(judgmentLink, datas, criteria)) {
-				datas.add((T) item);
+			try {
+				if (this.judge(judgmentLink, datas, criteria)) {
+					datas.add((T) item);
+				}
+			} catch (Exception e) {
+				throw new RepositoryException(e);
 			}
 		}
 		return (T[]) datas.toArray(new Object[] {});
 	}
 
-	private boolean judge(JudgmentLink judgmentLink, Object data, ICriteria criteria) {
+	private boolean judge(JudgmentLink judgmentLink, Object data, ICriteria criteria) throws Exception {
 		try {
 			if (judgmentLink.judge(data)) {
 				boolean pass = true;
@@ -95,7 +109,7 @@ public abstract class Transaction implements ITransaction {
 								break;
 							}
 						} catch (Exception e) {
-							Logger.log(e);
+							throw e;
 						}
 					}
 					return pass;
@@ -103,7 +117,7 @@ public abstract class Transaction implements ITransaction {
 				return pass;
 			}
 		} catch (JudmentOperationException e) {
-			Logger.log(e);
+			throw e;
 		}
 		return false;
 	}

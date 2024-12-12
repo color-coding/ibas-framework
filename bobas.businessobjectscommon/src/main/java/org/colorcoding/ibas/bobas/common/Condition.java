@@ -163,11 +163,11 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		this.relationship = value;
 	}
 
+	// 运行过程值，序列化不用输出
+	@XmlTransient
 	private DbFieldType aliasDataType = null;
 
-	// 运行过程值，序列化不用输出
 	@Override
-	@XmlTransient
 	public DbFieldType getAliasDataType() {
 		if (this.aliasDataType == null) {
 			this.aliasDataType = DbFieldType.ALPHANUMERIC;

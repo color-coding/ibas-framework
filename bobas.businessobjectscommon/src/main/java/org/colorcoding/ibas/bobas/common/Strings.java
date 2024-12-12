@@ -11,6 +11,7 @@ public class Strings {
 	public static final String VALUE_ZERO = "0";
 	public static final String VALUE_ONE = "1";
 	public static final String VALUE_EMPTY = "";
+	public static final String VALUE_SPACE = " ";
 	public static final String VALUE_DATA_SEPARATOR = ",";
 
 	/**

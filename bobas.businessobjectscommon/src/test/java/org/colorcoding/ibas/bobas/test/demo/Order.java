@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.bobas.test.core.demo;
+package org.colorcoding.ibas.bobas.test.demo;
 
 import java.math.BigDecimal;
 

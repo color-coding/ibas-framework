@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.bobas.test.core;
+package org.colorcoding.ibas.bobas.test;
 
 import java.math.BigDecimal;
 
@@ -9,8 +9,8 @@ import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.db.DbField;
-import org.colorcoding.ibas.bobas.test.core.demo.Order;
-import org.colorcoding.ibas.bobas.test.core.demo.SalesOrder;
+import org.colorcoding.ibas.bobas.test.demo.Order;
+import org.colorcoding.ibas.bobas.test.demo.SalesOrder;
 
 import junit.framework.TestCase;
 

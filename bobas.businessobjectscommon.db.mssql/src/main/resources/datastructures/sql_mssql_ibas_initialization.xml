@@ -31,10 +31,11 @@
             <Script><![CDATA[
                 CREATE PROCEDURE ${Company}_SP_TRANSACTION_NOTIFICATION
                     @object_type nvarchar(30),                 --对象类型（BOCode）
-                    @transaction_type nchar(1),                --业务类型（Add:A-添加, Update:U-更新, Delete:D-删除）
+                    @transaction_type nvarchar(1),             --业务类型（Add:A-添加, Update:U-更新, Delete:D-删除）
                     @num_of_cols_in_key int,                   --主键个数
                     @list_of_key_cols_tab_del nvarchar(255),   --主键名称
-                    @list_of_cols_val_tab_del nvarchar(255)    --主键值
+                    @list_of_cols_val_tab_del nvarchar(255),   --主键值
+                    @user int                                  --用户标识
                 AS
                 BEGIN
                     declare @error_code int                        --返回值(0 无错误)

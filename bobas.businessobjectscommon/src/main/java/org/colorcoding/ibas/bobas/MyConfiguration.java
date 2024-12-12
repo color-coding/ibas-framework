@@ -8,21 +8,6 @@ import org.colorcoding.ibas.bobas.configuration.Configuration;
 public class MyConfiguration extends Configuration {
 
 	/**
-	 * 配置项目-调试模式
-	 */
-	public final static String CONFIG_ITEM_DEBUG_MODE = "DebugMode";
-	private static volatile short DEBUG_MODE = -1;
-
-	/**
-	 * 处于debug模式
-	 * 
-	 * @return
-	 */
-	public static boolean isDebugMode() {
-		return DEBUG_MODE == 1 ? true : false;
-	}
-
-	/**
 	 * 框架核心命名空间
 	 */
 	public static final String NAMESPACE_BOBAS = "http://colorcoding.org/ibas/bobas";
@@ -46,6 +31,10 @@ public class MyConfiguration extends Configuration {
 	 * 国际化语言命名空间
 	 */
 	public static final String NAMESPACE_BOBAS_I18N = NAMESPACE_BOBAS + "/i18n";
+	/**
+	 * 数据库命名空间
+	 */
+	public static final String NAMESPACE_BOBAS_DB = NAMESPACE_BOBAS + "/db";
 
 	/**
 	 * 配置项命名空间
@@ -55,6 +44,26 @@ public class MyConfiguration extends Configuration {
 	 * 序列化命名空间
 	 */
 	public static final String NAMESPACE_BOBAS_SERIALIZATION = NAMESPACE_BOBAS + "/serialization";
+
+	/**
+	 * 配置项目-调试模式
+	 */
+	public final static String CONFIG_ITEM_DEBUG_MODE = "DebugMode";
+	private static volatile short DEBUG_MODE = -1;
+
+	/**
+	 * 处于debug模式
+	 * 
+	 * @return
+	 */
+	public static boolean isDebugMode() {
+		return DEBUG_MODE == 1 ? true : false;
+	}
+
+	/**
+	 * 配置项目-应用名称
+	 */
+	public final static String CONFIG_ITEM_APPLICATION_NAME = "AppName";
 
 	/**
 	 * 配置项目-配置方式

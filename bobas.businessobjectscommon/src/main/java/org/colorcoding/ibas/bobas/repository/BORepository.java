@@ -1,13 +1,28 @@
 package org.colorcoding.ibas.bobas.repository;
 
-import java.util.Objects;
-
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 
-public abstract class BORepository {
+public abstract class BORepository implements AutoCloseable {
+
+	private volatile ITransaction transaction;
+
+	public synchronized final ITransaction getTransaction() {
+		return transaction;
+	}
+
+	public synchronized final void setTransaction(ITransaction transaction) {
+		this.transaction = transaction;
+	}
+
+	public synchronized boolean inTransaction() {
+		if (this.transaction == null) {
+			return false;
+		}
+		return true;
+	}
 
 	public synchronized boolean beginTransaction() throws RepositoryException {
 		if (this.inTransaction()) {
@@ -43,22 +58,38 @@ public abstract class BORepository {
 		}
 	}
 
-	private volatile ITransaction transaction;
-
-	public synchronized boolean inTransaction() {
-		if (this.transaction == null) {
-			return false;
+	@Override
+	public synchronized void close() throws Exception {
+		if (this.transaction != null) {
+			this.transaction.close();
+			this.transaction = null;
 		}
-		return true;
 	}
-
-	protected abstract ITransaction startTransaction();
 
 	protected <T extends IBusinessObject> IOperationResult<T> fetch(ICriteria criteria, Class<T> boType) {
 		try {
-			ITransaction transaction = this.inTransaction() ? this.transaction : this.startTransaction();
-			Objects.requireNonNull(transaction);
-			return new OperationResult<T>().addResultObjects(transaction.fetch(criteria, boType));
+			boolean mine = this.beginTransaction();
+			try {
+				OperationResult<T> operationResult = new OperationResult<T>();
+				for (T item : this.transaction.fetch(criteria, boType)) {
+					operationResult.addResultObjects(item);
+				}
+				if (mine == true) {
+					synchronized (this) {
+						this.commitTransaction();
+						this.close();
+					}
+				}
+				return operationResult;
+			} catch (Exception e) {
+				if (mine == true) {
+					synchronized (this) {
+						this.rollbackTransaction();
+						this.close();
+					}
+				}
+				throw e;
+			}
 		} catch (Exception e) {
 			return new OperationResult<>(e);
 		}
@@ -66,11 +97,30 @@ public abstract class BORepository {
 
 	protected <T extends IBusinessObject> IOperationResult<T> save(T bo) {
 		try {
-			ITransaction transaction = this.inTransaction() ? this.transaction : this.startTransaction();
-			Objects.requireNonNull(transaction);
-			return new OperationResult<T>().addResultObjects(transaction.save(bo));
+			boolean mine = this.beginTransaction();
+			try {
+				OperationResult<T> operationResult = new OperationResult<T>();
+				operationResult.addResultObjects(this.transaction.save(bo));
+				if (mine == true) {
+					synchronized (this) {
+						this.commitTransaction();
+						this.close();
+					}
+				}
+				return operationResult;
+			} catch (Exception e) {
+				if (mine == true) {
+					synchronized (this) {
+						this.rollbackTransaction();
+						this.close();
+					}
+				}
+				throw e;
+			}
 		} catch (Exception e) {
 			return new OperationResult<>(e);
 		}
 	}
+
+	protected abstract ITransaction startTransaction() throws RepositoryException;
 }
