@@ -79,13 +79,14 @@ public class BOFactory {
 	/**
 	 * 创建对象实例
 	 * 
-	 * @param <P>
+	 * @param <T>
 	 * @param type
 	 * @return
 	 */
-	public static <P> P newInstance(Class<P> type) {
+	@SuppressWarnings("unchecked")
+	public static <T> T newInstance(Class<?> type) {
 		try {
-			return type.newInstance();
+			return (T) type.newInstance();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

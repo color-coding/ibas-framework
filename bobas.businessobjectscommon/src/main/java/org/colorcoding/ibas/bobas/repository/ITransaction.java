@@ -24,7 +24,7 @@ public interface ITransaction extends AutoCloseable {
 	 * 
 	 * @return 操作结果及新对象实例
 	 */
-	<T extends IBusinessObject> T[] fetch(ICriteria criteria, Class<T> boType) throws RepositoryException;
+	<T extends IBusinessObject> T[] fetch(ICriteria criteria, Class<?> boType) throws RepositoryException;
 
 	/**
 	 * 保存对象

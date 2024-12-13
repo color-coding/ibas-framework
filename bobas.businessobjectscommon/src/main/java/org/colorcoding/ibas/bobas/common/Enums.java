@@ -64,7 +64,7 @@ public class Enums {
 	 * @return 字符串对应的枚举值
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T valueOf(Class<T> type, String value) {
+	public static <T> T valueOf(Class<?> type, String value) {
 		// 无效值
 		if (type == null || value == null) {
 			return null;
@@ -95,7 +95,7 @@ public class Enums {
 	 * @return 数值对应的枚举值
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T valueOf(Class<T> type, int value) {
+	public static <T> T valueOf(Class<?> type, int value) {
 		// 无效值
 		if (type == null || !type.isEnum()) {
 			return null;

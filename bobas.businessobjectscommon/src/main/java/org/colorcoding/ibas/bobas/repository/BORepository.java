@@ -66,12 +66,12 @@ public abstract class BORepository implements AutoCloseable {
 		}
 	}
 
-	protected <T extends IBusinessObject> IOperationResult<T> fetch(ICriteria criteria, Class<T> boType) {
+	protected <T extends IBusinessObject> IOperationResult<T> fetch(ICriteria criteria, Class<?> boType) {
 		try {
 			boolean mine = this.beginTransaction();
 			try {
 				OperationResult<T> operationResult = new OperationResult<T>();
-				for (T item : this.transaction.fetch(criteria, boType)) {
+				for (IBusinessObject item : this.transaction.fetch(criteria, boType)) {
 					operationResult.addResultObjects(item);
 				}
 				if (mine == true) {

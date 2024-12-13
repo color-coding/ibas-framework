@@ -53,7 +53,7 @@ public abstract class DbAdapter {
 	 * @return
 	 * @throws SQLException
 	 */
-	public <T> IArrayList<T> parsingDatas(Class<T> boType, ResultSet resultSet) throws SQLException {
+	public <T> IArrayList<T> parsingDatas(Class<?> boType, ResultSet resultSet) throws SQLException {
 		ArrayList<T> datas = new ArrayList<>();
 		IPropertyInfo<?>[] orderProperties = null;
 		while (resultSet.next()) {
@@ -94,11 +94,10 @@ public abstract class DbAdapter {
 	 * @return
 	 * @throws SQLException
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public <T> T setProperties(T data, ResultSet resultSet, IPropertyInfo<?>[] orderProperties) throws SQLException {
 		if (data instanceof BusinessObject<?>) {
 			BusinessObject<?> boData = ((BusinessObject<?>) data);
-			IPropertyInfo propertyInfo;
+			IPropertyInfo<?> propertyInfo;
 			boData.setLoading(true);
 			for (int i = 0; i < orderProperties.length; i++) {
 				propertyInfo = orderProperties[i];

@@ -1,9 +1,12 @@
 package org.colorcoding.ibas.bobas.bo;
 
-import org.colorcoding.ibas.bobas.common.ICriteria;
-import org.colorcoding.ibas.bobas.core.IFieldedObject;
+import java.io.Serializable;
 
-public interface IBusinessObject extends IFieldedObject {
+import org.colorcoding.ibas.bobas.common.ICriteria;
+import org.colorcoding.ibas.bobas.core.IBindable;
+import org.colorcoding.ibas.bobas.core.ITrackable;
+
+public interface IBusinessObject extends Cloneable, Serializable, IBindable, ITrackable {
 
 	/**
 	 * 获取对象查询条件

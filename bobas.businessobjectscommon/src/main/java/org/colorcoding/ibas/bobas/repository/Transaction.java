@@ -49,7 +49,7 @@ public abstract class Transaction implements ITransaction {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends IBusinessObject> T[] fetchInCache(ICriteria criteria, Class<T> boType)
+	public <T extends IBusinessObject> T[] fetchInCache(ICriteria criteria, Class<?> boType)
 			throws RepositoryException {
 		Objects.requireNonNull(criteria);
 		Objects.requireNonNull(boType);

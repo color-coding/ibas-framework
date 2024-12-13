@@ -80,13 +80,13 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject 
 	 * @return 属性的值
 	 */
 	@SuppressWarnings("unchecked")
-	public final <P> P getProperty(IPropertyInfo<P> property) {
+	public final <P> P getProperty(IPropertyInfo<?> property) {
 		Objects.requireNonNull(property);
 		if (this.fields.containsKey(property)) {
 			P value = (P) this.fields.get(property);
 			// 值是空，则使用默认值（减少内存占用）
 			if (value == null) {
-				return property.getDefaultValue();
+				return (P) property.getDefaultValue();
 			}
 			return value;
 		}
@@ -101,7 +101,7 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject 
 	 * @param value    新的值
 	 */
 	@SuppressWarnings("unchecked")
-	public final <P> void setProperty(IPropertyInfo<P> property, P value) {
+	public final <P> void setProperty(IPropertyInfo<?> property, P value) {
 		Objects.requireNonNull(property);
 		if (!this.fields.containsKey(property)) {
 			throw new IllegalArgumentException("not found property.");
