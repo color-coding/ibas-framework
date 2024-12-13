@@ -47,4 +47,20 @@ public enum DbFieldType {
 		}
 		return UNKNOWN;
 	}
+
+	public static DbFieldType valueOf(int sqlTypes) {
+		if (java.sql.Types.NVARCHAR == sqlTypes) {
+			return ALPHANUMERIC;
+		} else if (java.sql.Types.NUMERIC == sqlTypes) {
+			return DECIMAL;
+		} else if (java.sql.Types.DATE == sqlTypes) {
+			return DATE;
+		} else if (java.sql.Types.INTEGER == sqlTypes) {
+			return NUMERIC;
+		} else if (java.sql.Types.NCLOB == sqlTypes) {
+			return ALPHANUMERIC;
+		}
+		return UNKNOWN;
+	}
+
 }

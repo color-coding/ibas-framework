@@ -5,6 +5,10 @@ import java.util.Map;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.core.FieldedObject;
+import org.colorcoding.ibas.bobas.core.IPropertyInfo;
+import org.colorcoding.ibas.bobas.data.IArrayList;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 
 /**
  * 业务对象工厂
@@ -70,6 +74,41 @@ public class BOFactory {
 			return MyConfiguration.applyVariables(businessObjectUnit.code());
 		}
 		return Strings.VALUE_EMPTY;
+	}
+
+	/**
+	 * 创建对象实例
+	 * 
+	 * @param <P>
+	 * @param type
+	 * @return
+	 */
+	public static <P> P newInstance(Class<P> type) {
+		try {
+			return type.newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private static Map<Class<?>, IArrayList<IPropertyInfo<?>>> boProperties = new HashMap<>();
+
+	/**
+	 * 获取对象的所有属性
+	 * 
+	 * @param type 对象
+	 * @return
+	 */
+	public static IArrayList<IPropertyInfo<?>> propertyInfos(Class<?> type) {
+		if (boProperties.containsKey(type)) {
+			return boProperties.get(type);
+		}
+		Object data = newInstance(type);
+		if (data instanceof FieldedObject) {
+			boProperties.put(type, ((FieldedObject) data).properties());
+			return propertyInfos(type);
+		}
+		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", type.toString()));
 	}
 
 }

@@ -72,7 +72,7 @@ public abstract class Transaction implements ITransaction {
 				throw new RepositoryException(e);
 			}
 		}
-		return (T[]) datas.toArray(new Object[] {});
+		return (T[]) datas.toArray();
 	}
 
 	private boolean judge(JudgmentLink judgmentLink, Object data, ICriteria criteria) throws Exception {

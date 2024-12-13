@@ -57,6 +57,62 @@ public class Enums {
 	}
 
 	/**
+	 * 获取枚举值
+	 * 
+	 * @param type  枚举类型
+	 * @param value 字符串（包括dbValue）
+	 * @return 字符串对应的枚举值
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T valueOf(Class<T> type, String value) {
+		// 无效值
+		if (type == null || value == null) {
+			return null;
+		}
+		// 不是枚举
+		if (!type.isEnum()) {
+			return null;
+		}
+		for (Object enumItem : type.getEnumConstants()) {
+			if (value.equalsIgnoreCase(enumItem.toString())) {
+				// 枚举的字符串
+				return (T) enumItem;
+			}
+			String dbValue = annotationValue(enumItem);
+			if (value.equalsIgnoreCase(dbValue)) {
+				// 枚举的dbValue
+				return (T) enumItem;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * 获取枚举值
+	 * 
+	 * @param type  枚举类型
+	 * @param value 枚举的数值（枚举值或索引）
+	 * @return 数值对应的枚举值
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T valueOf(Class<T> type, int value) {
+		// 无效值
+		if (type == null || !type.isEnum()) {
+			return null;
+		}
+		for (Object enumItem : type.getEnumConstants()) {
+			if (enumItem instanceof Enum<?>) {
+				// 枚举值（比对枚举索引）
+				Enum<?> itemValue = (Enum<?>) enumItem;
+				if (itemValue.ordinal() == value) {
+					return (T) enumItem;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * 转换类型为KeyValue
 	 * 
 	 * @param type 目前可识别的类型：枚举类型
