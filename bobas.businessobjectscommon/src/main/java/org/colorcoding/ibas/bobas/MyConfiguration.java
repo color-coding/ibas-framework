@@ -61,14 +61,19 @@ public class MyConfiguration extends Configuration {
 	}
 
 	/**
-	 * 配置项目-应用名称
-	 */
-	public final static String CONFIG_ITEM_APPLICATION_NAME = "AppName";
-
-	/**
 	 * 配置项目-配置方式
 	 */
 	public final static String CONFIG_ITEM_CONFIGURATION_WAY = "ConfigurationWay";
+
+	/**
+	 * 配置项目-公司标记
+	 */
+	public final static String CONFIG_ITEM_COMPANY = "Company";
+
+	/**
+	 * 配置项目-应用名称
+	 */
+	public final static String CONFIG_ITEM_APPLICATION_NAME = "AppName";
 
 	/**
 	 * 配置项目-数据库类型

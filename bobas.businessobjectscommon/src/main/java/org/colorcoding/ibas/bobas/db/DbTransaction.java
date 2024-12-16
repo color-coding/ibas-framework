@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.Objects;
 
 import org.colorcoding.ibas.bobas.bo.BOFactory;
+import org.colorcoding.ibas.bobas.bo.BOUtilities;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.BusinessObjects;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
@@ -19,6 +20,7 @@ import org.colorcoding.ibas.bobas.core.FieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.IArrayList;
 import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.logic.BusinessLogicChain;
 import org.colorcoding.ibas.bobas.repository.RepositoryException;
 import org.colorcoding.ibas.bobas.repository.Transaction;
 
@@ -140,10 +142,10 @@ public class DbTransaction extends Transaction {
 							|| condition.getOperation() == ConditionOperation.CONTAIN
 							|| condition.getOperation() == ConditionOperation.NOT_CONTAIN)) {
 						statement.setObject(index, condition.getValue(),
-								this.getAdapter().toSqlTypes(DbFieldType.ALPHANUMERIC));
+								this.getAdapter().sqlTypeOf(DbFieldType.ALPHANUMERIC));
 					} else {
 						statement.setObject(index, condition.getValue(),
-								this.getAdapter().toSqlTypes(condition.getAliasDataType()));
+								this.getAdapter().sqlTypeOf(condition.getAliasDataType()));
 					}
 					index += 1;
 				}
@@ -174,6 +176,7 @@ public class DbTransaction extends Transaction {
 									}
 								}
 							} else if (propertyInfo.getValueType().isAssignableFrom(BusinessObjects.class)) {
+								boolean onlyHasChilds = false;
 								BusinessObjects cDatas = null;
 								for (T data : datas) {
 									propertyValue = ((FieldedObject) data).getProperty(propertyInfo);
@@ -190,17 +193,22 @@ public class DbTransaction extends Transaction {
 										for (IChildCriteria item : criteria.getChildCriterias()) {
 											if (propertyInfo.getName().equalsIgnoreCase(item.getPropertyPath())) {
 												cCriteria.copyFrom(item);
+												onlyHasChilds = item.isOnlyHasChilds();
 											}
 										}
 										for (IBusinessObject item : this.fetch(cCriteria, cDatas.getElementType())) {
 											cDatas.add(item);
+										}
+										// 要求子项必须有值
+										if (onlyHasChilds && cDatas.isEmpty()) {
+											data.delete();
 										}
 									}
 								}
 							}
 						}
 					}
-					return (T[]) datas.toArray();
+					return (T[]) datas.where(c -> c.isDeleted() == false).toArray();
 				}
 			}
 		} catch (Exception e) {
@@ -209,8 +217,28 @@ public class DbTransaction extends Transaction {
 	}
 
 	@Override
-	public <T extends IBusinessObject> T save(T bo) {
+	public <T extends IBusinessObject> T save(T bo) throws RepositoryException {
 		Objects.requireNonNull(bo);
+
+		T boCopy = null;
+		if (bo.isSavable() && !bo.isNew()) {
+			// 更新数据，先查数据库副本
+			T[] datas = this.fetch(bo.getCriteria(), bo.getClass());
+			if (datas != null && datas.length > 0) {
+				boCopy = datas[0];
+			}
+			if (boCopy == null) {
+				throw new RepositoryException(Strings.format("not found %s in database.", bo.toString()));
+			}
+			if (BOUtilities.isNewer(boCopy, bo)) {
+				throw new RepositoryException(Strings.format("%s db copy is more newer.", bo.toString()));
+			}
+		}
+		BusinessLogicChain logicChain = new BusinessLogicChain();
+		logicChain.setTrigger(bo);
+		logicChain.setTriggerCopy(boCopy);
+		logicChain.setTransaction(this);
+
 		return bo;
 	}
 

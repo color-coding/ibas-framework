@@ -10,6 +10,8 @@ import java.util.Map;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.BOFactory;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
+import org.colorcoding.ibas.bobas.bo.IBusinessObject;
+import org.colorcoding.ibas.bobas.common.Condition;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.Criteria;
@@ -32,6 +34,15 @@ import org.colorcoding.ibas.bobas.logging.Logger;
  * 数据库适配器
  */
 public abstract class DbAdapter {
+
+	private String companyId;
+
+	protected String getCompanyId() {
+		if (this.companyId == null) {
+			this.companyId = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_COMPANY, "CC");
+		}
+		return this.companyId;
+	}
 
 	/**
 	 * 创建数据库链接
@@ -145,7 +156,7 @@ public abstract class DbAdapter {
 		}
 	}
 
-	public int toSqlTypes(DbFieldType type) {
+	public int sqlTypeOf(DbFieldType type) {
 		if (type == DbFieldType.ALPHANUMERIC) {
 			return java.sql.Types.VARCHAR;
 		} else if (type == DbFieldType.DECIMAL) {
@@ -379,6 +390,10 @@ public abstract class DbAdapter {
 	}
 
 	public String parsingSelect(Class<?> boType, ICriteria criteria) {
+		return this.parsingSelect(boType, criteria, false);
+	}
+
+	public String parsingSelect(Class<?> boType, ICriteria criteria, boolean withLock) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("SELECT");
 		if (criteria.getResultCount() > 0) {
@@ -395,6 +410,10 @@ public abstract class DbAdapter {
 		stringBuilder.append(this.identifier());
 		stringBuilder.append(this.table(boType));
 		stringBuilder.append(this.identifier());
+		if (withLock == true) {
+			stringBuilder.append(" ");
+			stringBuilder.append("WITH (UPDLOCK)");
+		}
 		if (criteria.getConditions().size() > 0) {
 			stringBuilder.append(" ");
 			stringBuilder.append("WHERE");
@@ -467,4 +486,152 @@ public abstract class DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	public String parsingWhere(IBusinessObject bo) {
+		DbField dbField = null;
+		ICondition condition = null;
+		BusinessObject<?> boData = (BusinessObject<?>) bo;
+		ArrayList<ICondition> conditions = new ArrayList<>();
+		for (IPropertyInfo<?> item : boData.properties().where(c -> c.isPrimaryKey())) {
+			dbField = item.getAnnotation(DbField.class);
+			if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
+				continue;
+			}
+			condition = new Condition();
+			condition.setAlias(dbField.name());
+			condition.setOperation(ConditionOperation.EQUAL);
+			condition.setValue(boData.getProperty(item));
+			conditions.add(condition);
+		}
+		if (conditions.isEmpty()) {
+			throw new RuntimeException("not found primary key.");
+		}
+		return this.parsingWhere(conditions);
+	}
+
+	public String parsingDelete(IBusinessObject bo) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("DELETE");
+		stringBuilder.append(" ");
+		stringBuilder.append(this.identifier());
+		stringBuilder.append(this.table(bo.getClass()));
+		stringBuilder.append(this.identifier());
+		stringBuilder.append(" ");
+		stringBuilder.append("WHERE");
+		stringBuilder.append(" ");
+		stringBuilder.append(this.parsingWhere(bo));
+		return stringBuilder.toString();
+	}
+
+	public String parsingUpdate(IBusinessObject bo) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("UPDATE");
+		stringBuilder.append(" ");
+		stringBuilder.append(this.identifier());
+		stringBuilder.append(this.table(bo.getClass()));
+		stringBuilder.append(this.identifier());
+		stringBuilder.append(" ");
+		stringBuilder.append("SET");
+		stringBuilder.append(" ");
+		DbField dbField = null;
+		int count = stringBuilder.length();
+		BusinessObject<?> boData = (BusinessObject<?>) bo;
+		for (IPropertyInfo<?> item : boData.properties().where(c -> !c.isPrimaryKey())) {
+			dbField = item.getAnnotation(DbField.class);
+			if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
+				continue;
+			}
+			if (!boData.isDirty(item)) {
+				continue;
+			}
+			if (stringBuilder.length() > count) {
+				stringBuilder.append(this.separation());
+			}
+			stringBuilder.append(this.identifier());
+			stringBuilder.append(dbField.name());
+			stringBuilder.append(this.identifier());
+			stringBuilder.append(" ");
+			stringBuilder.append("=");
+			stringBuilder.append(" ");
+			stringBuilder.append("?");
+		}
+		stringBuilder.append(" ");
+		stringBuilder.append("WHERE");
+		stringBuilder.append(" ");
+		stringBuilder.append(this.parsingWhere(bo));
+		return stringBuilder.toString();
+	}
+
+	public String parsingInsert(IBusinessObject bo) {
+		StringBuilder fieldsBuilder = new StringBuilder();
+		StringBuilder valuesBuilder = new StringBuilder();
+
+		DbField dbField = null;
+		BusinessObject<?> boData = (BusinessObject<?>) bo;
+		for (IPropertyInfo<?> item : boData.properties()) {
+			dbField = item.getAnnotation(DbField.class);
+			if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
+				continue;
+			}
+
+			if (fieldsBuilder.length() > 0) {
+				fieldsBuilder.append(this.separation());
+			}
+			fieldsBuilder.append(this.identifier());
+			fieldsBuilder.append(dbField.name());
+			fieldsBuilder.append(this.identifier());
+
+			if (valuesBuilder.length() > 0) {
+				valuesBuilder.append(this.separation());
+			}
+			valuesBuilder.append("?");
+		}
+		if (fieldsBuilder.length() == 0 || valuesBuilder.length() == 0) {
+			throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", bo.toString()));
+		}
+
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("INSERT");
+		stringBuilder.append(" ");
+		stringBuilder.append("INTO");
+		stringBuilder.append(this.identifier());
+		stringBuilder.append(this.table(bo.getClass()));
+		stringBuilder.append(this.identifier());
+		stringBuilder.append("(");
+		stringBuilder.append(fieldsBuilder);
+		stringBuilder.append(")");
+		stringBuilder.append(" ");
+		stringBuilder.append("VALUES");
+		stringBuilder.append("(");
+		stringBuilder.append(valuesBuilder);
+		stringBuilder.append(")");
+		return stringBuilder.toString();
+	}
+
+	public String parsingStoredProcedure(String spName, String... args) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("EXEC");
+		stringBuilder.append(" ");
+		stringBuilder.append(this.identifier());
+		stringBuilder.append(MyConfiguration.applyVariables(spName));
+		stringBuilder.append(this.identifier());
+		if (args.length > 0) {
+			stringBuilder.append(" ");
+			int count = stringBuilder.length();
+			for (String arg : args) {
+				if (stringBuilder.length() > count) {
+					stringBuilder.append(this.separation());
+				}
+				if (Strings.isNullOrEmpty(arg)) {
+					stringBuilder.append("?");
+				} else {
+					stringBuilder.append(arg);
+					stringBuilder.append(" ");
+					stringBuilder.append("=");
+					stringBuilder.append(" ");
+					stringBuilder.append("?");
+				}
+			}
+		}
+		return stringBuilder.toString();
+	}
 }

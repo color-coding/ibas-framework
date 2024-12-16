@@ -1,9 +1,11 @@
 package org.colorcoding.ibas.bobas.bo;
 
+import java.beans.PropertyChangeListener;
 import java.lang.reflect.Array;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.FieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
@@ -12,6 +14,62 @@ public class BOUtilities {
 
 	private BOUtilities() {
 	}
+
+	public static IBusinessObject EMPTY = new IBusinessObject() {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public boolean isSavable() {
+			return false;
+		}
+
+		@Override
+		public boolean isNew() {
+			return false;
+		}
+
+		@Override
+		public boolean isLoading() {
+			return true;
+		}
+
+		@Override
+		public boolean isDirty() {
+			return false;
+		}
+
+		@Override
+		public boolean isDeleted() {
+			return false;
+		}
+
+		@Override
+		public void removeListener(PropertyChangeListener listener) {
+		}
+
+		@Override
+		public void registerListener(PropertyChangeListener listener) {
+		}
+
+		@Override
+		public void undelete() {
+		}
+
+		@Override
+		public void delete() {
+		}
+
+		@Override
+		public String getIdentifiers() {
+			return Strings.format("{EMPTY: %s}", this.hashCode());
+		}
+
+		@Override
+		public ICriteria getCriteria() {
+			return null;
+		}
+	};
 
 	/**
 	 * 循环属性，值为IBusinessObject执行方法
@@ -118,4 +176,22 @@ public class BOUtilities {
 		return propertyValue(bo, propertyInfo(bo, propertyName));
 	}
 
+	/**
+	 * 是否a比b更新
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static boolean isNewer(IBusinessObject a, IBusinessObject b) {
+		if (!(a instanceof IBOStorageTag) || !(b instanceof IBOStorageTag)) {
+			return false;
+		}
+		IBOStorageTag tagA = (IBOStorageTag) a;
+		IBOStorageTag tagB = (IBOStorageTag) b;
+		if (tagA.getLogInst() > tagB.getLogInst()) {
+			return true;
+		}
+		return false;
+	}
 }

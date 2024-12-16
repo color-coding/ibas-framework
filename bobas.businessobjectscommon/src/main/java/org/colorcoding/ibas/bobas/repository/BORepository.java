@@ -78,6 +78,7 @@ public abstract class BORepository implements AutoCloseable {
 					synchronized (this) {
 						this.commitTransaction();
 						this.close();
+						mine = false;
 					}
 				}
 				return operationResult;
@@ -105,6 +106,7 @@ public abstract class BORepository implements AutoCloseable {
 					synchronized (this) {
 						this.commitTransaction();
 						this.close();
+						mine = false;
 					}
 				}
 				return operationResult;

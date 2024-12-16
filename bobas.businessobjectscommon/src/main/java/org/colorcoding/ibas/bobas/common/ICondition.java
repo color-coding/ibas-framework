@@ -129,20 +129,6 @@ public interface ICondition {
 	void setAliasDataType(DbFieldType value);
 
 	/**
-	 * 获取-备注
-	 * 
-	 * @return
-	 */
-	String getRemarks();
-
-	/**
-	 * 设置-备注
-	 * 
-	 * @param value
-	 */
-	void setRemarks(String value);
-
-	/**
 	 * 克隆
 	 * 
 	 * @return

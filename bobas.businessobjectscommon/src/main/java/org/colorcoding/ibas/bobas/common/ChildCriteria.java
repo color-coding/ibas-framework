@@ -31,6 +31,18 @@ public class ChildCriteria extends Criteria implements IChildCriteria {
 		this.propertyPath = value;
 	}
 
+	@XmlElement(name = "Entry")
+	private boolean entry = false;
+
+	@XmlElement(name = "Entry")
+	public final boolean isEntry() {
+		return entry;
+	}
+
+	public final void setEntry(boolean entry) {
+		this.entry = entry;
+	}
+
 	@XmlElement(name = "OnlyHasChilds")
 	private boolean onlyHasChilds = true;
 
@@ -42,19 +54,6 @@ public class ChildCriteria extends Criteria implements IChildCriteria {
 	@Override
 	public final void setOnlyHasChilds(boolean value) {
 		this.onlyHasChilds = value;
-	}
-
-	@XmlElement(name = "IncludingOtherChilds")
-	private boolean includingOtherChilds = false;
-
-	@Override
-	public final boolean isIncludingOtherChilds() {
-		return includingOtherChilds;
-	}
-
-	@Override
-	public final void setIncludingOtherChilds(boolean value) {
-		this.includingOtherChilds = value;
 	}
 
 	@Override

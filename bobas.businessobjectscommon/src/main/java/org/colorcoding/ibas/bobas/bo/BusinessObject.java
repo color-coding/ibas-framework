@@ -267,4 +267,15 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 		super.firePropertyChange(userField.getName(), oldValue, newValue);
 	}
 
+	public boolean isDirty(IPropertyInfo<?> propertyInfo) {
+		if (this.modifiedFields != null) {
+			for (IPropertyInfo<?> item : this.modifiedFields) {
+				if (item.equals(propertyInfo)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 }

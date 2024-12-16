@@ -180,22 +180,6 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		this.aliasDataType = value;
 	}
 
-	@XmlElement(name = "Remarks")
-	private String remarks;
-
-	@Override
-	public final String getRemarks() {
-		if (this.remarks == null) {
-			this.remarks = Strings.VALUE_EMPTY;
-		}
-		return this.remarks;
-	}
-
-	@Override
-	public final void setRemarks(String value) {
-		this.remarks = value;
-	}
-
 	@Override
 	public ICondition clone() {
 		try {
