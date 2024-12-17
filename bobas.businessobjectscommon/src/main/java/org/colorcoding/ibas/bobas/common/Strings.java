@@ -210,4 +210,18 @@ public class Strings {
 		}
 		return Strings.VALUE_EMPTY;
 	}
+
+	/**
+	 * 字符串位置
+	 * 
+	 * @param content 字符串
+	 * @param value   待查询内容
+	 * @return
+	 */
+	public static int indexOf(String content, String value) {
+		if (content == null) {
+			return -1;
+		}
+		return content.indexOf(value);
+	}
 }

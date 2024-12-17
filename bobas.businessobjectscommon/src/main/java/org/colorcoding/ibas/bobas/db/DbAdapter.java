@@ -9,9 +9,9 @@ import java.util.Map;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.BOFactory;
+import org.colorcoding.ibas.bobas.bo.BOUtilities;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
-import org.colorcoding.ibas.bobas.common.Condition;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.Criteria;
@@ -21,12 +21,15 @@ import org.colorcoding.ibas.bobas.common.Enums;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.ISort;
+import org.colorcoding.ibas.bobas.common.Result;
 import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.IArrayList;
+import org.colorcoding.ibas.bobas.data.KeyText;
+import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logging.Logger;
 
@@ -44,6 +47,15 @@ public abstract class DbAdapter {
 		return this.companyId;
 	}
 
+	private int batchCount = -1;
+
+	public int getBatchCount() {
+		if (this.batchCount < 0) {
+			this.batchCount = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_STATEMENT_BATCH_COUNT, 300);
+		}
+		return this.batchCount;
+	}
+
 	/**
 	 * 创建数据库链接
 	 * 
@@ -59,38 +71,47 @@ public abstract class DbAdapter {
 	 * 解析数据
 	 * 
 	 * @param <T>       对象类型
-	 * @param boType    对象类型
+	 * @param boType    对象类型（Result、KeyText、KeyValue、BusinessObject）
 	 * @param resultSet 结果集
 	 * @return
 	 * @throws SQLException
 	 */
+	@SuppressWarnings("unchecked")
 	public <T> IArrayList<T> parsingDatas(Class<?> boType, ResultSet resultSet) throws SQLException {
 		ArrayList<T> datas = new ArrayList<>();
 		IPropertyInfo<?>[] orderProperties = null;
 		while (resultSet.next()) {
-			if (orderProperties == null) {
-				IArrayList<IPropertyInfo<?>> propertyInfos = BOFactory.propertyInfos(boType);
-				orderProperties = new IPropertyInfo<?>[propertyInfos.size()];
-				IPropertyInfo<?> propertyInfo;
-				DbField dbField;
-				int index;
-				for (int i = 0; i < orderProperties.length; i++) {
-					try {
-						propertyInfo = propertyInfos.get(i);
-						dbField = propertyInfo.getAnnotation(DbField.class);
-						index = resultSet.findColumn(dbField.name());
-						if (index >= 0) {
-							orderProperties[i] = propertyInfo;
+			if (boType.equals(Result.class)) {
+				datas.add((T) new Result(resultSet.getInt(0), resultSet.getString(1)));
+			} else if (boType.equals(KeyText.class)) {
+				datas.add((T) new KeyText(resultSet.getString(0), resultSet.getString(1)));
+			} else if (boType.equals(KeyValue.class)) {
+				datas.add((T) new KeyValue(resultSet.getString(0), resultSet.getObject(1)));
+			} else if (boType.isAssignableFrom(BusinessObject.class)) {
+				if (orderProperties == null) {
+					IArrayList<IPropertyInfo<?>> propertyInfos = BOFactory.propertyInfos(boType);
+					orderProperties = new IPropertyInfo<?>[propertyInfos.size()];
+					IPropertyInfo<?> propertyInfo;
+					DbField dbField;
+					int index;
+					for (int i = 0; i < orderProperties.length; i++) {
+						try {
+							propertyInfo = propertyInfos.get(i);
+							dbField = propertyInfo.getAnnotation(DbField.class);
+							index = resultSet.findColumn(dbField.name());
+							if (index >= 0) {
+								orderProperties[i] = propertyInfo;
+							}
+						} catch (Exception e) {
+							Logger.log(e);
 						}
-					} catch (Exception e) {
-						Logger.log(e);
 					}
+					propertyInfos = null;
+					propertyInfo = null;
+					dbField = null;
 				}
-				propertyInfos = null;
-				propertyInfo = null;
-				dbField = null;
+				datas.add(this.setProperties(BOFactory.newInstance(boType), resultSet, orderProperties));
 			}
-			datas.add(this.setProperties(BOFactory.newInstance(boType), resultSet, orderProperties));
 		}
 		return datas;
 	}
@@ -106,7 +127,7 @@ public abstract class DbAdapter {
 	 * @throws SQLException
 	 */
 	public <T> T setProperties(T data, ResultSet resultSet, IPropertyInfo<?>[] orderProperties) throws SQLException {
-		if (data instanceof BusinessObject<?>) {
+		if (BOUtilities.isBusinessObject(data)) {
 			BusinessObject<?> boData = ((BusinessObject<?>) data);
 			IPropertyInfo<?> propertyInfo;
 			boData.setLoading(true);
@@ -222,6 +243,15 @@ public abstract class DbAdapter {
 
 	public String separation() {
 		return ", ";
+	}
+
+	public String where() {
+		return "WHERE";
+	}
+
+	public String sp_transaction_notification() {
+		return this.parsingStoredProcedure(Strings.format("%s_SP_TRANSACTION_NOTIFICATION", this.getCompanyId()),
+				new String[6]);
 	}
 
 	public String parsing(SortType type) {
@@ -416,7 +446,7 @@ public abstract class DbAdapter {
 		}
 		if (criteria.getConditions().size() > 0) {
 			stringBuilder.append(" ");
-			stringBuilder.append("WHERE");
+			stringBuilder.append(this.where());
 			stringBuilder.append(" ");
 			stringBuilder.append(this.parsingWhere(criteria.getConditions()));
 		}
@@ -488,24 +518,25 @@ public abstract class DbAdapter {
 
 	public String parsingWhere(IBusinessObject bo) {
 		DbField dbField = null;
-		ICondition condition = null;
 		BusinessObject<?> boData = (BusinessObject<?>) bo;
-		ArrayList<ICondition> conditions = new ArrayList<>();
+		StringBuilder stringBuilder = new StringBuilder();
 		for (IPropertyInfo<?> item : boData.properties().where(c -> c.isPrimaryKey())) {
 			dbField = item.getAnnotation(DbField.class);
 			if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
 				continue;
 			}
-			condition = new Condition();
-			condition.setAlias(dbField.name());
-			condition.setOperation(ConditionOperation.EQUAL);
-			condition.setValue(boData.getProperty(item));
-			conditions.add(condition);
+			if (stringBuilder.length() > 0) {
+				stringBuilder.append(this.parsing(ConditionRelationship.AND));
+			}
+			stringBuilder.append(this.identifier());
+			stringBuilder.append(dbField.name());
+			stringBuilder.append(this.identifier());
+			stringBuilder.append(" ");
+			stringBuilder.append("=");
+			stringBuilder.append(" ");
+			stringBuilder.append("?");
 		}
-		if (conditions.isEmpty()) {
-			throw new RuntimeException("not found primary key.");
-		}
-		return this.parsingWhere(conditions);
+		return stringBuilder.toString();
 	}
 
 	public String parsingDelete(IBusinessObject bo) {
@@ -516,7 +547,7 @@ public abstract class DbAdapter {
 		stringBuilder.append(this.table(bo.getClass()));
 		stringBuilder.append(this.identifier());
 		stringBuilder.append(" ");
-		stringBuilder.append("WHERE");
+		stringBuilder.append(this.where());
 		stringBuilder.append(" ");
 		stringBuilder.append(this.parsingWhere(bo));
 		return stringBuilder.toString();
@@ -555,7 +586,7 @@ public abstract class DbAdapter {
 			stringBuilder.append("?");
 		}
 		stringBuilder.append(" ");
-		stringBuilder.append("WHERE");
+		stringBuilder.append(this.where());
 		stringBuilder.append(" ");
 		stringBuilder.append(this.parsingWhere(bo));
 		return stringBuilder.toString();
@@ -634,4 +665,5 @@ public abstract class DbAdapter {
 		}
 		return stringBuilder.toString();
 	}
+
 }

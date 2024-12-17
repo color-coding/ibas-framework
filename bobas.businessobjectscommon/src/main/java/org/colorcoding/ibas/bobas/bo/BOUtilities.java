@@ -9,6 +9,7 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.FieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 
 public class BOUtilities {
 
@@ -72,6 +73,60 @@ public class BOUtilities {
 	};
 
 	/**
+	 * 是否为对象
+	 * 
+	 * @param data
+	 * @return
+	 */
+	public static boolean isBusinessObject(Object data) {
+		if (data instanceof BusinessObject<?>) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 是否为对象集合
+	 * 
+	 * @param data
+	 * @return
+	 */
+	public static boolean isBusinessObjects(Object data) {
+		if (data instanceof BusinessObjects<?, ?>) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 是否可存储
+	 * 
+	 * @param data
+	 * @return
+	 */
+	public static boolean isSavable(Object data) {
+		if (data instanceof IBusinessObject && data != EMPTY) {
+			return ((IBusinessObject) data).isSavable();
+		}
+		return false;
+	}
+
+	/**
+	 * 克隆实例
+	 * 
+	 * @param <T>
+	 * @param data
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T clone(T data) {
+		if (isBusinessObject(data)) {
+			return (T) ((BusinessObject<?>) data).clone();
+		}
+		throw new RuntimeException(I18N.prop("msg_bobas_invalid_data"));
+	}
+
+	/**
 	 * 循环属性，值为IBusinessObject执行方法
 	 * 
 	 * @param action
@@ -86,14 +141,14 @@ public class BOUtilities {
 			if (data == null) {
 				continue;
 			}
-			if (data instanceof BusinessObject<?>) {
+			if (isBusinessObject(data)) {
 				// 值是业务对象
 				action.accept((BusinessObject<?>) data);
 			} else if (data instanceof Iterable<?>) {
 				// 值是业务对象列表
 				Iterable<?> datas = (Iterable<?>) data;
 				for (Object item : datas) {
-					if (item instanceof BusinessObject<?>) {
+					if (isBusinessObject(item)) {
 						action.accept((BusinessObject<?>) item);
 					}
 				}
@@ -102,25 +157,12 @@ public class BOUtilities {
 				int length = Array.getLength(data);
 				for (int i = 0; i < length; i++) {
 					Object itemData = Array.get(data, i);
-					if (itemData instanceof BusinessObject<?>) {
+					if (isBusinessObject(itemData)) {
 						action.accept((BusinessObject<?>) itemData);
 					}
 				}
 			}
 		}
-	}
-
-	/**
-	 * 是否为对象
-	 * 
-	 * @param bo
-	 * @return
-	 */
-	public static boolean isBusinessObject(Object bo) {
-		if (bo instanceof BusinessObject<?>) {
-			return true;
-		}
-		return false;
 	}
 
 	/**
@@ -177,7 +219,7 @@ public class BOUtilities {
 	}
 
 	/**
-	 * 是否a比b更新
+	 * 版本实例a比b新
 	 * 
 	 * @param a
 	 * @param b

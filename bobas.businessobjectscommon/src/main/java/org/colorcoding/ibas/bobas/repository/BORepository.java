@@ -1,19 +1,32 @@
 package org.colorcoding.ibas.bobas.repository;
 
+import org.colorcoding.ibas.bobas.bo.BOUtilities;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
+import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.logic.BusinessLogicChain;
 
 public abstract class BORepository implements AutoCloseable {
 
+	private boolean skipLogics;
+
+	public final boolean isSkipLogics() {
+		return skipLogics;
+	}
+
+	public final void setSkipLogics(boolean skipLogics) {
+		this.skipLogics = skipLogics;
+	}
+
 	private volatile ITransaction transaction;
 
-	public synchronized final ITransaction getTransaction() {
+	public final synchronized ITransaction getTransaction() {
 		return transaction;
 	}
 
-	public synchronized final void setTransaction(ITransaction transaction) {
+	public final synchronized void setTransaction(ITransaction transaction) {
 		this.transaction = transaction;
 	}
 
@@ -100,8 +113,40 @@ public abstract class BORepository implements AutoCloseable {
 		try {
 			boolean mine = this.beginTransaction();
 			try {
+				T boCopy = null;
+				// 更新数据时，检查版本是否新于数据库副本
+				if (bo.isSavable() && !bo.isNew()) {
+					IOperationResult<T> opRsltFetch = this.fetch(bo.getCriteria(), bo.getClass());
+					if (opRsltFetch.getError() != null) {
+						throw opRsltFetch.getError();
+					}
+					boCopy = opRsltFetch.getResultObjects().firstOrDefault();
+					if (boCopy == null) {
+						throw new RepositoryException(Strings.format("not found %s in database.", bo.toString()));
+					}
+					if (BOUtilities.isNewer(boCopy, bo)) {
+						throw new RepositoryException(Strings.format("%s db copy is more newer.", bo.toString()));
+					}
+					// 如果是删除数据，则使用数据库副本
+					if (bo.isDeleted()) {
+						bo = BOUtilities.clone(boCopy);
+						bo.delete();
+					}
+				}
+				// 返回结果
 				OperationResult<T> operationResult = new OperationResult<T>();
-				operationResult.addResultObjects(this.transaction.save(bo));
+				if (this.isSkipLogics()) {
+					this.transaction.save(new IBusinessObject[] { bo });
+					operationResult.addResultObjects(bo);
+				} else {
+					// 执行业务逻辑
+					BusinessLogicChain logicChain = new BusinessLogicChain();
+					logicChain.setTransaction(this.transaction);
+					logicChain.setTrigger(bo);
+					logicChain.setTriggerCopy(boCopy);
+					logicChain.commit();
+					operationResult.addResultObjects(bo);
+				}
 				if (mine == true) {
 					synchronized (this) {
 						this.commitTransaction();

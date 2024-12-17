@@ -21,7 +21,7 @@ public class BORepository4DB extends BORepository {
 	private String dbSign;
 	private Connection dbConnection;
 
-	public synchronized final void connect(String dbType, String dbServer, String dbName, String dbUser,
+	public final synchronized void connect(String dbType, String dbServer, String dbName, String dbUser,
 			String dbPassword) throws RepositoryException {
 		try {
 			if (Strings.isNullOrEmpty(dbType)) {

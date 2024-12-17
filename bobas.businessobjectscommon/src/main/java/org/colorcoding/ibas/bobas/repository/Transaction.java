@@ -2,16 +2,37 @@ package org.colorcoding.ibas.bobas.repository;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
+import java.util.UUID;
 
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.IChildCriteria;
 import org.colorcoding.ibas.bobas.common.ICriteria;
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.expression.BOJudgmentLinkCondition;
 import org.colorcoding.ibas.bobas.expression.JudgmentLink;
 import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
 
 public abstract class Transaction implements ITransaction {
+
+	public Transaction() {
+		this.setId(UUID.randomUUID().toString());
+	}
+
+	private String id;
+
+	public synchronized final String getId() {
+		return id;
+	}
+
+	private synchronized final void setId(String id) {
+		this.id = id;
+	}
+
+	@Override
+	public String toString() {
+		return Strings.format("{trans: %s...}", Strings.substring(this.getId(), 8));
+	}
 
 	private volatile ArrayList<IBusinessObject> cacheDatas = new ArrayList<>();
 

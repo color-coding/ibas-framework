@@ -93,7 +93,11 @@ public abstract class Trackable extends Bindable implements ITrackable {
 	public void markOld() {
 		this.setNew(false);
 		this.setDirty(false);
-		this.setDeleted(false);// 删除标记不去除??
+		/*
+		 * 删除标记不去除??
+		 * 
+		 * this.setDeleted(false);
+		 */
 	}
 
 	public void markNew() {

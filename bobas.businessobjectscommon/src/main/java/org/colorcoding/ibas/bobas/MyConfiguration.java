@@ -95,4 +95,8 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-数据库用户密码
 	 */
 	public final static String CONFIG_ITEM_DB_USER_PASSWORD = "DbUserPassword";
+	/**
+	 * 配置项目-数据库语句批量数量
+	 */
+	public final static String CONFIG_ITEM_DB_STATEMENT_BATCH_COUNT = "DbBatchCount";
 }
