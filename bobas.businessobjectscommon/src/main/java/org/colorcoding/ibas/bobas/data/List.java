@@ -9,7 +9,7 @@ import java.util.function.Predicate;
  *
  * @param <E>
  */
-public interface IArrayList<E> extends java.util.List<E> {
+public interface List<E> extends java.util.List<E> {
 
 	/***
 	 * 返回第一个，不存在则返回默认
@@ -81,5 +81,5 @@ public interface IArrayList<E> extends java.util.List<E> {
 	 * 
 	 * @return 元素实例集合
 	 */
-	IArrayList<E> where(Predicate<? super E> filter);
+	List<E> where(Predicate<? super E> filter);
 }

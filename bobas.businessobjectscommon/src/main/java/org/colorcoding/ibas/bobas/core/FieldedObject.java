@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
 import org.colorcoding.ibas.bobas.data.ArrayList;
-import org.colorcoding.ibas.bobas.data.IArrayList;
+import org.colorcoding.ibas.bobas.data.List;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class FieldedObject extends Trackable implements IFieldedObject {
@@ -57,14 +57,14 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject 
 	/**
 	 * 被修改的字段
 	 */
-	protected IArrayList<IPropertyInfo<?>> modifiedFields = null;
+	protected List<IPropertyInfo<?>> modifiedFields = null;
 
 	/**
 	 * 属性
 	 * 
 	 * @return
 	 */
-	public IArrayList<IPropertyInfo<?>> properties() {
+	public List<IPropertyInfo<?>> properties() {
 		ArrayList<IPropertyInfo<?>> propertyInfos = new ArrayList<>();
 		for (IPropertyInfo<?> item : this.fields.keySet()) {
 			propertyInfos.add(item);

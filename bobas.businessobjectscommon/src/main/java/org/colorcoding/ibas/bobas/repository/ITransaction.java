@@ -4,6 +4,12 @@ import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 
 public interface ITransaction extends AutoCloseable {
+	/**
+	 * 获取-标识
+	 * 
+	 * @return
+	 */
+	String getId();
 
 	/**
 	 * 回滚事务
@@ -33,5 +39,5 @@ public interface ITransaction extends AutoCloseable {
 	 * 
 	 * @return
 	 */
-	<T extends IBusinessObject> T[] save(IBusinessObject[] bos) throws RepositoryException;
+	<T extends IBusinessObject> T[] save(T[] bos) throws RepositoryException;
 }

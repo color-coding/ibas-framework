@@ -18,7 +18,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
  */
 @XmlType(name = "ArrayList", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 @XmlRootElement(name = "ArrayList", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
-public class ArrayList<E> extends java.util.ArrayList<E> implements IArrayList<E> {
+public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 
 	private static final long serialVersionUID = 721283937680328856L;
 
@@ -119,9 +119,9 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements IArrayList<E
 		return true;
 	}
 
-	public IArrayList<E> where(Predicate<? super E> filter) {
+	public List<E> where(Predicate<? super E> filter) {
 		Objects.requireNonNull(filter);
-		IArrayList<E> results = new ArrayList<E>();
+		List<E> results = new ArrayList<E>();
 		for (int i = this.size() - 1; i >= 0; i--) {
 			E item = this.get(i);
 			if (item == null)

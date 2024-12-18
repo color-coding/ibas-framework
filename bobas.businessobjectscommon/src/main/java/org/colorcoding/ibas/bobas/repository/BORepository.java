@@ -1,12 +1,16 @@
 package org.colorcoding.ibas.bobas.repository;
 
+import java.util.Objects;
+
 import org.colorcoding.ibas.bobas.bo.BOUtilities;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.common.Strings;
-import org.colorcoding.ibas.bobas.logic.BusinessLogicChain;
+import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.logic.BusinessLogicsManager;
+import org.colorcoding.ibas.bobas.logic.IBusinessLogicChain;
 
 public abstract class BORepository implements AutoCloseable {
 
@@ -81,10 +85,11 @@ public abstract class BORepository implements AutoCloseable {
 
 	protected <T extends IBusinessObject> IOperationResult<T> fetch(ICriteria criteria, Class<?> boType) {
 		try {
+			Objects.requireNonNull(boType);
 			boolean mine = this.beginTransaction();
 			try {
 				OperationResult<T> operationResult = new OperationResult<T>();
-				for (IBusinessObject item : this.transaction.fetch(criteria, boType)) {
+				for (IBusinessObject item : this.getTransaction().fetch(criteria, boType)) {
 					operationResult.addResultObjects(item);
 				}
 				if (mine == true) {
@@ -111,12 +116,18 @@ public abstract class BORepository implements AutoCloseable {
 
 	protected <T extends IBusinessObject> IOperationResult<T> save(T bo) {
 		try {
+			Objects.requireNonNull(bo);
 			boolean mine = this.beginTransaction();
 			try {
 				T boCopy = null;
 				// 更新数据时，检查版本是否新于数据库副本
 				if (bo.isSavable() && !bo.isNew()) {
-					IOperationResult<T> opRsltFetch = this.fetch(bo.getCriteria(), bo.getClass());
+					ICriteria criteria = bo.getCriteria();
+					if (criteria == null || criteria.getConditions().isEmpty()) {
+						throw new RepositoryException(I18N.prop("msg_bobas_invaild_criteria"));
+					}
+					criteria.setResultCount(1);
+					IOperationResult<T> opRsltFetch = this.fetch(criteria, bo.getClass());
 					if (opRsltFetch.getError() != null) {
 						throw opRsltFetch.getError();
 					}
@@ -136,15 +147,19 @@ public abstract class BORepository implements AutoCloseable {
 				// 返回结果
 				OperationResult<T> operationResult = new OperationResult<T>();
 				if (this.isSkipLogics()) {
-					this.transaction.save(new IBusinessObject[] { bo });
-					operationResult.addResultObjects(bo);
+					// 跳过业务逻辑
+					this.getTransaction().save(new IBusinessObject[] { bo });
 				} else {
 					// 执行业务逻辑
-					BusinessLogicChain logicChain = new BusinessLogicChain();
-					logicChain.setTransaction(this.transaction);
-					logicChain.setTrigger(bo);
-					logicChain.setTriggerCopy(boCopy);
-					logicChain.commit();
+					try (IBusinessLogicChain logicChain = BusinessLogicsManager.create()
+							.createChain(this.getTransaction())) {
+						logicChain.setTrigger(bo);
+						logicChain.setTriggerCopy(boCopy);
+						logicChain.commit();
+					}
+				}
+				// 非删除，返回对象
+				if (bo.isDeleted() == false) {
 					operationResult.addResultObjects(bo);
 				}
 				if (mine == true) {

@@ -2,7 +2,7 @@ package org.colorcoding.ibas.bobas.core;
 
 import java.io.Serializable;
 
-import org.colorcoding.ibas.bobas.data.IArrayList;
+import org.colorcoding.ibas.bobas.data.List;
 
 public interface IFieldedObject extends Cloneable, Serializable, IBindable, ITrackable {
 	/**
@@ -10,7 +10,7 @@ public interface IFieldedObject extends Cloneable, Serializable, IBindable, ITra
 	 * 
 	 * @return
 	 */
-	IArrayList<IPropertyInfo<?>> properties();
+	List<IPropertyInfo<?>> properties();
 
 	/**
 	 * 获取属性值

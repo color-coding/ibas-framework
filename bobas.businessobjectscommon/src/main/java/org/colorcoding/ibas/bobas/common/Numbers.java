@@ -9,6 +9,43 @@ public class Numbers {
 	}
 
 	/**
+	 * 整型：1
+	 */
+	public final static int INTEGER_VALUE_ONE = 1;
+
+	/**
+	 * 整型：0
+	 */
+	public final static int INTEGER_VALUE_ZERO = 0;
+
+	/**
+	 * 整型：-1
+	 */
+	public final static int INTEGER_VALUE_MINUS_ONE = -1;
+
+	/**
+	 * 短整型：1
+	 */
+	public final static short SHORT_VALUE_ONE = 1;
+
+	/**
+	 * 短整型：0
+	 */
+	public final static short SHORT_VALUE_ZERO = 0;
+	/**
+	 * 长整型：0
+	 */
+	public final static long LONG_VALUE_ZERO = 0;
+	/**
+	 * 双精度型：0
+	 */
+	public final static double DOUBLE_VALUE_ZERO = 0;
+	/**
+	 * 浮点型：0
+	 */
+	public final static float FLOAT_VALUE_ZERO = 0;
+
+	/**
 	 * 类型默认值
 	 * 
 	 * @return
@@ -16,15 +53,15 @@ public class Numbers {
 	public static Number defaultValue(Class<?> numberType) {
 		Objects.requireNonNull(numberType);
 		if (numberType == Integer.class) {
-			return Integer.valueOf(Strings.VALUE_ZERO);
+			return INTEGER_VALUE_ZERO;
 		} else if (numberType == Short.class) {
-			return Short.valueOf(Strings.VALUE_ZERO);
+			return SHORT_VALUE_ZERO;
 		} else if (numberType == Long.class) {
-			return Short.valueOf(Strings.VALUE_ZERO);
+			return LONG_VALUE_ZERO;
 		} else if (numberType == Double.class) {
-			return Short.valueOf(Strings.VALUE_ZERO);
+			return DOUBLE_VALUE_ZERO;
 		} else if (numberType == Float.class) {
-			return Short.valueOf(Strings.VALUE_ZERO);
+			return FLOAT_VALUE_ZERO;
 		}
 		throw new ClassCastException("is not Number.");
 	}

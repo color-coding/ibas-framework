@@ -27,9 +27,9 @@ import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.data.IArrayList;
 import org.colorcoding.ibas.bobas.data.KeyText;
 import org.colorcoding.ibas.bobas.data.KeyValue;
+import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logging.Logger;
 
@@ -77,7 +77,7 @@ public abstract class DbAdapter {
 	 * @throws SQLException
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> IArrayList<T> parsingDatas(Class<?> boType, ResultSet resultSet) throws SQLException {
+	public <T> List<T> parsingDatas(Class<?> boType, ResultSet resultSet) throws SQLException {
 		ArrayList<T> datas = new ArrayList<>();
 		IPropertyInfo<?>[] orderProperties = null;
 		while (resultSet.next()) {
@@ -89,7 +89,7 @@ public abstract class DbAdapter {
 				datas.add((T) new KeyValue(resultSet.getString(0), resultSet.getObject(1)));
 			} else if (boType.isAssignableFrom(BusinessObject.class)) {
 				if (orderProperties == null) {
-					IArrayList<IPropertyInfo<?>> propertyInfos = BOFactory.propertyInfos(boType);
+					List<IPropertyInfo<?>> propertyInfos = BOFactory.propertyInfos(boType);
 					orderProperties = new IPropertyInfo<?>[propertyInfos.size()];
 					IPropertyInfo<?> propertyInfo;
 					DbField dbField;
@@ -420,7 +420,11 @@ public abstract class DbAdapter {
 	}
 
 	public String parsingSelect(Class<?> boType, ICriteria criteria) {
-		return this.parsingSelect(boType, criteria, false);
+		if (boType.isAssignableFrom(IDbTableLock.class)) {
+			return this.parsingSelect(boType, criteria, true);
+		} else {
+			return this.parsingSelect(boType, criteria, false);
+		}
 	}
 
 	public String parsingSelect(Class<?> boType, ICriteria criteria, boolean withLock) {

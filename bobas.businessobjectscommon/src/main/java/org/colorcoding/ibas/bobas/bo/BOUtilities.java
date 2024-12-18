@@ -2,13 +2,20 @@ package org.colorcoding.ibas.bobas.bo;
 
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import org.colorcoding.ibas.bobas.common.IChildCriteria;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.FieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
+import org.colorcoding.ibas.bobas.data.ArrayList;
+import org.colorcoding.ibas.bobas.data.List;
+import org.colorcoding.ibas.bobas.expression.BOJudgmentLinkCondition;
+import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 
 public class BOUtilities {
@@ -16,7 +23,7 @@ public class BOUtilities {
 	private BOUtilities() {
 	}
 
-	public static IBusinessObject EMPTY = new IBusinessObject() {
+	public static IBusinessObject VALUE_EMPTY = new IBusinessObject() {
 
 		private static final long serialVersionUID = 1L;
 
@@ -105,7 +112,7 @@ public class BOUtilities {
 	 * @return
 	 */
 	public static boolean isSavable(Object data) {
-		if (data instanceof IBusinessObject && data != EMPTY) {
+		if (data instanceof IBusinessObject && data != VALUE_EMPTY) {
 			return ((IBusinessObject) data).isSavable();
 		}
 		return false;
@@ -127,42 +134,22 @@ public class BOUtilities {
 	}
 
 	/**
-	 * 循环属性，值为IBusinessObject执行方法
+	 * 版本实例a比b新
 	 * 
-	 * @param action
+	 * @param a
+	 * @param b
+	 * @return
 	 */
-	public static void traverse(BusinessObject<?> bo, Consumer<BusinessObject<?>> action) {
-		if (action == null) {
-			return;
+	public static boolean isNewer(IBusinessObject a, IBusinessObject b) {
+		if (!(a instanceof IBOStorageTag) || !(b instanceof IBOStorageTag)) {
+			return false;
 		}
-		Object data = null;
-		for (IPropertyInfo<?> property : bo.properties()) {
-			data = bo.getProperty(property);
-			if (data == null) {
-				continue;
-			}
-			if (isBusinessObject(data)) {
-				// 值是业务对象
-				action.accept((BusinessObject<?>) data);
-			} else if (data instanceof Iterable<?>) {
-				// 值是业务对象列表
-				Iterable<?> datas = (Iterable<?>) data;
-				for (Object item : datas) {
-					if (isBusinessObject(item)) {
-						action.accept((BusinessObject<?>) item);
-					}
-				}
-			} else if (data.getClass().isArray()) {
-				// 值是数组
-				int length = Array.getLength(data);
-				for (int i = 0; i < length; i++) {
-					Object itemData = Array.get(data, i);
-					if (isBusinessObject(itemData)) {
-						action.accept((BusinessObject<?>) itemData);
-					}
-				}
-			}
+		IBOStorageTag tagA = (IBOStorageTag) a;
+		IBOStorageTag tagB = (IBOStorageTag) b;
+		if (tagA.getLogInst() > tagB.getLogInst()) {
+			return true;
 		}
+		return false;
 	}
 
 	/**
@@ -219,21 +206,132 @@ public class BOUtilities {
 	}
 
 	/**
-	 * 版本实例a比b新
+	 * 循环属性，值为IBusinessObject执行方法
 	 * 
-	 * @param a
-	 * @param b
-	 * @return
+	 * @param action
 	 */
-	public static boolean isNewer(IBusinessObject a, IBusinessObject b) {
-		if (!(a instanceof IBOStorageTag) || !(b instanceof IBOStorageTag)) {
-			return false;
+	public static void traverse(BusinessObject<?> bo, Consumer<BusinessObject<?>> action) {
+		if (action == null) {
+			return;
 		}
-		IBOStorageTag tagA = (IBOStorageTag) a;
-		IBOStorageTag tagB = (IBOStorageTag) b;
-		if (tagA.getLogInst() > tagB.getLogInst()) {
-			return true;
+		Object data = null;
+		for (IPropertyInfo<?> property : bo.properties()) {
+			data = bo.getProperty(property);
+			if (data == null) {
+				continue;
+			}
+			if (isBusinessObject(data)) {
+				// 值是业务对象
+				action.accept((BusinessObject<?>) data);
+			} else if (data instanceof Iterable<?>) {
+				// 值是业务对象列表
+				Iterable<?> datas = (Iterable<?>) data;
+				for (Object item : datas) {
+					if (isBusinessObject(item)) {
+						action.accept((BusinessObject<?>) item);
+					}
+				}
+			} else if (data.getClass().isArray()) {
+				// 值是数组
+				int length = Array.getLength(data);
+				for (int i = 0; i < length; i++) {
+					Object itemData = Array.get(data, i);
+					if (isBusinessObject(itemData)) {
+						action.accept((BusinessObject<?>) itemData);
+					}
+				}
+			}
 		}
-		return false;
+	}
+
+	/**
+	 * 查询数据
+	 * 
+	 * @param <T>
+	 * @param criteria 查询条件
+	 * @param datas    目标数据集
+	 * @return
+	 * @throws JudmentOperationException
+	 */
+	public static <T> List<T> fetch(ICriteria criteria, Iterable<T> datas) throws JudmentOperationException {
+		return fetch(criteria, datas == null ? null : datas.iterator());
+	}
+
+	/**
+	 * 查询数据
+	 * 
+	 * @param <T>
+	 * @param criteria 查询条件（可指定数量）
+	 * @param datas    目标数据集
+	 * @return
+	 * @throws JudmentOperationException
+	 */
+	public static <T> List<T> fetch(ICriteria criteria, Iterator<T> datas) throws JudmentOperationException {
+		ArrayList<T> results = new ArrayList<>();
+		if (datas == null) {
+			return results;
+		}
+		if (criteria == null) {
+			T data;
+			while (datas.hasNext()) {
+				data = datas.next();
+				if (!isBusinessObject(data)) {
+					continue;
+				}
+				results.add(data);
+			}
+			return results;
+		}
+
+		BOJudgmentLinkCondition judgmentLink = new BOJudgmentLinkCondition();
+		judgmentLink.parsingConditions(criteria.getConditions());
+		T data;
+		Object cData;
+		boolean checked;
+		IPropertyInfo<?> propertyInfo;
+		while (datas.hasNext()) {
+			data = datas.next();
+			if (!isBusinessObject(data)) {
+				continue;
+			}
+			if (judgmentLink.judge(data)) {
+				checked = true;
+				// 存在子项查询，则判断子项是否符合条件
+				if (!criteria.getChildCriterias().isEmpty()) {
+					for (IChildCriteria cCriteria : criteria.getChildCriterias()) {
+						propertyInfo = propertyInfo((IBusinessObject) data, cCriteria.getPropertyPath());
+						if (propertyInfo == null) {
+							throw new JudmentOperationException(
+									I18N.prop("not found property %s.", cCriteria.getPropertyPath()));
+						}
+						cData = propertyValue((IBusinessObject) data, propertyInfo);
+						if (cData instanceof IBusinessObjects) {
+							if (fetch(cCriteria, ((IBusinessObjects<?, ?>) cData)).isEmpty()) {
+								checked = false;
+								break;
+							}
+						} else if (cData instanceof IBusinessObject) {
+							if (fetch(cCriteria, Arrays.asList(cData)).isEmpty()) {
+								checked = false;
+								break;
+							}
+						} else {
+							checked = false;
+							break;
+						}
+					}
+				}
+				if (checked) {
+					results.add(data);
+				}
+				// 指定查询数量，够则退出
+				if (criteria.getResultCount() > 0) {
+					if (results.size() >= criteria.getResultCount()) {
+						return results;
+					}
+				}
+			}
+		}
+		return results;
 	}
 }

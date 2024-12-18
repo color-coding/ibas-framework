@@ -1,9 +1,9 @@
 package org.colorcoding.ibas.bobas.bo;
 
 import org.colorcoding.ibas.bobas.common.ICriteria;
-import org.colorcoding.ibas.bobas.data.IArrayList;
+import org.colorcoding.ibas.bobas.data.List;
 
-public interface IBusinessObjects<E extends IBusinessObject, P extends IBusinessObject> extends IArrayList<E> {
+public interface IBusinessObjects<E extends IBusinessObject, P extends IBusinessObject> extends List<E> {
 	/**
 	 * 子项查询
 	 * 

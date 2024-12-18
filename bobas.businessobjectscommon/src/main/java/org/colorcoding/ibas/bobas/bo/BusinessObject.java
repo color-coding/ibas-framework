@@ -11,7 +11,7 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.FieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
-import org.colorcoding.ibas.bobas.data.IArrayList;
+import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
@@ -28,9 +28,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	public BusinessObject() {
 		super();
 		this.setLoading(true);
-		if (this instanceof IBOUserFields) {
-			this.userFields = UserFieldsManager.initFields(this.getClass());
-		}
+		this.initialize();
 		this.setLoading(false);
 	}
 
@@ -235,9 +233,9 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	 * 
 	 * @return
 	 */
-	public final IArrayList<IPropertyInfo<?>> properties() {
+	public final List<IPropertyInfo<?>> properties() {
 		if (this instanceof IBOUserFields && this.userFields != null && !this.userFields.isEmpty()) {
-			IArrayList<IPropertyInfo<?>> propertyInfos = super.properties();
+			List<IPropertyInfo<?>> propertyInfos = super.properties();
 			for (IPropertyInfo<?> item : this.userFields.keySet()) {
 				propertyInfos.add(item);
 			}
@@ -276,6 +274,15 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * 初始化数据
+	 */
+	protected void initialize() {
+		if (this instanceof IBOUserFields) {
+			this.userFields = UserFieldsManager.initFields(this.getClass());
+		}
 	}
 
 }

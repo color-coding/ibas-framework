@@ -58,6 +58,10 @@ public class DateTimes {
 	 */
 	public static String FORMAT_DATE = "yyyy-MM-dd";
 	/**
+	 * 时间格式，默HH:mm:ss.SSS
+	 */
+	public static String FORMAT_TIME = "HH:mm:ss.SSS";
+	/**
 	 * 日期时间格式，默认yyyy-MM-dd'T'HH:mm:ss
 	 */
 	public static String FORMAT_DATETIME = "yyyy-MM-dd'T'HH:mm:ss";

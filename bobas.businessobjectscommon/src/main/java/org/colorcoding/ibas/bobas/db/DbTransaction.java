@@ -25,7 +25,7 @@ import org.colorcoding.ibas.bobas.common.Result;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
-import org.colorcoding.ibas.bobas.data.IArrayList;
+import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.repository.RepositoryException;
 import org.colorcoding.ibas.bobas.repository.Transaction;
@@ -158,7 +158,7 @@ public class DbTransaction extends Transaction {
 				}
 				// 运行查询
 				try (ResultSet resultSet = statement.executeQuery()) {
-					IArrayList<T> datas = this.getAdapter().parsingDatas(boType, resultSet);
+					List<T> datas = this.getAdapter().parsingDatas(boType, resultSet);
 					// 加载子对象
 					if (!datas.isEmpty() && !criteria.isNoChilds()) {
 						Object propertyValue = null;
@@ -224,8 +224,7 @@ public class DbTransaction extends Transaction {
 	}
 
 	@Override
-	@SuppressWarnings({ "unchecked" })
-	public final <T extends IBusinessObject> T[] save(IBusinessObject[] bos) throws RepositoryException {
+	public final <T extends IBusinessObject> T[] save(T[] bos) throws RepositoryException {
 		try {
 			Objects.requireNonNull(bos);
 			if (bos.length == 0) {
@@ -236,11 +235,11 @@ public class DbTransaction extends Transaction {
 				Object cData = null;
 				Class<?> boType = null;
 				BusinessObject<?> boData = null;
-				IArrayList<IBusinessObject> boChilds = new ArrayList<>();
-				IArrayList<BusinessObject<?>> boDatas = new ArrayList<>();
-				Map<Class<?>, IArrayList<BusinessObject<?>>> boDeletes = new HashMap<>(bos.length, 1);
-				Map<Class<?>, IArrayList<BusinessObject<?>>> boUpdates = new HashMap<>(bos.length, 1);
-				Map<Class<?>, IArrayList<BusinessObject<?>>> boInserts = new HashMap<>(bos.length, 1);
+				List<IBusinessObject> boChilds = new ArrayList<>();
+				List<BusinessObject<?>> boDatas = new ArrayList<>();
+				Map<Class<?>, List<BusinessObject<?>>> boDeletes = new HashMap<>(bos.length, 1);
+				Map<Class<?>, List<BusinessObject<?>>> boUpdates = new HashMap<>(bos.length, 1);
+				Map<Class<?>, List<BusinessObject<?>>> boInserts = new HashMap<>(bos.length, 1);
 
 				// 分析数据，形成待处理集合
 				for (IBusinessObject bo : bos) {
@@ -297,15 +296,15 @@ public class DbTransaction extends Transaction {
 				boData = null;
 				// 分配执行语句的方法
 				int batchCount = this.getAdapter().getBatchCount();
-				BiFunction<String, IArrayList<BusinessObject<?>>, Exception> sqlExecuter = new BiFunction<String, IArrayList<BusinessObject<?>>, Exception>() {
+				BiFunction<String, List<BusinessObject<?>>, Exception> sqlExecuter = new BiFunction<String, List<BusinessObject<?>>, Exception>() {
 					@Override
-					public Exception apply(String sql, IArrayList<BusinessObject<?>> datas) {
+					public Exception apply(String sql, List<BusinessObject<?>> datas) {
 						try (PreparedStatement statement = DbTransaction.this.connection.prepareStatement(sql)) {
 							int count = 0;
 							int index = 0;
 							DbField dbField;
 							BusinessObject<?> data;
-							IArrayList<IPropertyInfo<?>> propertyInfos;
+							List<IPropertyInfo<?>> propertyInfos;
 							// 语句存在where，则主键参数最后
 							boolean hasWhere = Strings.indexOf(sql, DbTransaction.this.getAdapter().where()) >= 0 ? true
 									: false;
@@ -365,7 +364,7 @@ public class DbTransaction extends Transaction {
 				};
 				// 处理删除内容
 				Exception result;
-				for (IArrayList<BusinessObject<?>> datas : boDeletes.values()) {
+				for (List<BusinessObject<?>> datas : boDeletes.values()) {
 					if (datas.size() > 0) {
 						result = sqlExecuter.apply(this.getAdapter().parsingDelete(datas.get(0)), datas);
 						if (result instanceof Exception) {
@@ -374,7 +373,7 @@ public class DbTransaction extends Transaction {
 					}
 				}
 				// 处理更新内容
-				for (IArrayList<BusinessObject<?>> datas : boUpdates.values()) {
+				for (List<BusinessObject<?>> datas : boUpdates.values()) {
 					if (datas.size() > 0) {
 						result = sqlExecuter.apply(this.getAdapter().parsingUpdate(datas.get(0)), datas);
 						if (result instanceof Exception) {
@@ -383,7 +382,7 @@ public class DbTransaction extends Transaction {
 					}
 				}
 				// 处理新建内容
-				for (IArrayList<BusinessObject<?>> datas : boInserts.values()) {
+				for (List<BusinessObject<?>> datas : boInserts.values()) {
 					if (datas.size() > 0) {
 						result = sqlExecuter.apply(this.getAdapter().parsingInsert(datas.get(0)), datas);
 						if (result instanceof Exception) {
@@ -392,9 +391,9 @@ public class DbTransaction extends Transaction {
 					}
 				}
 				// 处理事务存储过程
-				sqlExecuter = new BiFunction<String, IArrayList<BusinessObject<?>>, Exception>() {
+				sqlExecuter = new BiFunction<String, List<BusinessObject<?>>, Exception>() {
 					@Override
-					public Exception apply(String sql, IArrayList<BusinessObject<?>> datas) {
+					public Exception apply(String sql, List<BusinessObject<?>> datas) {
 						int keyCount;
 						DbField dbField;
 						BusinessObject<?> data;
@@ -444,7 +443,7 @@ public class DbTransaction extends Transaction {
 
 								// 运行语句，非0则抛异常
 								try (ResultSet resultSet = statement.executeQuery()) {
-									IArrayList<Result> results = DbTransaction.this.getAdapter()
+									List<Result> results = DbTransaction.this.getAdapter()
 											.parsingDatas(Result.class, resultSet);
 									for (Result result : results) {
 										if (result.getResultCode() != 0) {

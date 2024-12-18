@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.common;
 
-import org.colorcoding.ibas.bobas.data.IArrayList;
+import org.colorcoding.ibas.bobas.data.List;
 
 /**
  * 查询条件集合
@@ -8,7 +8,7 @@ import org.colorcoding.ibas.bobas.data.IArrayList;
  * @author Niuren.Zhu
  *
  */
-public interface IConditions extends IArrayList<ICondition> {
+public interface IConditions extends List<ICondition> {
 	/**
 	 * 新建条件
 	 *
