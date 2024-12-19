@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
 
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.BOFactory;
 import org.colorcoding.ibas.bobas.bo.BOUtilities;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
@@ -35,6 +36,18 @@ public class DbTransaction extends Transaction {
 	public DbTransaction(Connection connection) {
 		Objects.requireNonNull(connection);
 		this.connection = connection;
+		this.replacementUpdate = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_REPLACEMENT_UPDATE,
+				true);
+	}
+
+	private boolean replacementUpdate;
+
+	public synchronized final boolean isReplacementUpdate() {
+		return replacementUpdate;
+	}
+
+	public synchronized final void setReplacementUpdate(boolean replacementUpdate) {
+		this.replacementUpdate = replacementUpdate;
 	}
 
 	private volatile Connection connection;
@@ -263,13 +276,22 @@ public class DbTransaction extends Transaction {
 					// 分析待处理方式（按类型分组）
 					if (bo.isSavable() && bo.isDirty()) {
 						if (bo.isDeleted()) {
+							// 删除
 							boDeletes.get(boType).add(boData);
 						} else if (bo.isNew()) {
+							// 新建
+
 							boInserts.get(boType).add(boData);
 						} else {
-							boUpdates.get(boType).add(boData);
-							boDeletes.get(boType).add(boData);
-							boInserts.get(boType).add(boData);
+							// 更新
+							if (this.isReplacementUpdate()) {
+								// 替换更新：删除后新建
+								boDeletes.get(boType).add(boData);
+								boInserts.get(boType).add(boData);
+							} else {
+								// 更新修改项
+								boUpdates.get(boType).add(boData);
+							}
 						}
 						// 业务主对象
 						if (boType.getAnnotation(BusinessObjectUnit.class) != null) {
@@ -443,8 +465,8 @@ public class DbTransaction extends Transaction {
 
 								// 运行语句，非0则抛异常
 								try (ResultSet resultSet = statement.executeQuery()) {
-									List<Result> results = DbTransaction.this.getAdapter()
-											.parsingDatas(Result.class, resultSet);
+									List<Result> results = DbTransaction.this.getAdapter().parsingDatas(Result.class,
+											resultSet);
 									for (Result result : results) {
 										if (result.getResultCode() != 0) {
 											throw new TransactionException(Strings.format("%s - %s",

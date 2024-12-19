@@ -99,4 +99,8 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-数据库语句批量数量
 	 */
 	public final static String CONFIG_ITEM_DB_STATEMENT_BATCH_COUNT = "DbBatchCount";
+	/**
+	 * 配置项目-数据库替换更新方式
+	 */
+	public final static String CONFIG_ITEM_DB_REPLACEMENT_UPDATE = "DbReplacementUpdate";
 }

@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.BusinessObjects;
+import org.colorcoding.ibas.bobas.bo.IBOLine;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.Criteria;
@@ -31,7 +32,7 @@ public class BOPrimaryKeyService extends BusinessLogic<IBOPrimaryKeyContract, BO
 
 	@Override
 	protected boolean checkDataStatus(Object data) {
-		if (data instanceof IBusinessObject) {
+		if (data instanceof IBusinessObject && data == this.getHost()) {
 			IBusinessObject boData = (IBusinessObject) data;
 			if (boData.isSavable() == false) {
 				return false;
@@ -53,14 +54,13 @@ public class BOPrimaryKeyService extends BusinessLogic<IBOPrimaryKeyContract, BO
 			if (contract.getSeries() > 0) {
 				IChildCriteria cCriteria = criteria.getChildCriterias().create();
 				cCriteria.setPropertyPath(BONumbering.PROPERTY_BOSERIESNUMBERINGS.getName());
-				cCriteria.setOnlyHasChilds(true);
-				condition = cCriteria.getConditions().create();
-				condition.setAlias(BOSeriesNumbering.PROPERTY_SERIES.getName());
-				condition.setValue(contract.getSeries());
 				condition = cCriteria.getConditions().create();
 				condition.setAlias(BOSeriesNumbering.PROPERTY_LOCKED.getName());
 				condition.setOperation(ConditionOperation.NOT_EQUAL);
 				condition.setValue(emYesNo.YES);
+			}
+			if (contract instanceof IBOLine) {
+
 			}
 			BONumbering numbering = this.fetchBeAffected(criteria, BONumbering.class);
 			if (numbering == null) {
@@ -73,7 +73,7 @@ public class BOPrimaryKeyService extends BusinessLogic<IBOPrimaryKeyContract, BO
 			if (!criteria.getChildCriterias().isEmpty()) {
 				if (numbering.getBOSeriesNumberings().isEmpty()) {
 					throw new BusinessLogicException(
-							I18N.prop("not found [%s]'s [%s] keys.", contract.getObjectCode(), contract.getSeries()));
+							I18N.prop("not found [%s]'s series [%s].", contract.getObjectCode(), contract.getSeries()));
 				}
 			}
 			return numbering;
@@ -84,19 +84,31 @@ public class BOPrimaryKeyService extends BusinessLogic<IBOPrimaryKeyContract, BO
 
 	@Override
 	protected void impact(IBOPrimaryKeyContract contract) {
-		int key = this.getBeAffected().getAutoKey();
-		contract.setPrimaryKey(key);
-		this.getBeAffected().setAutoKey(key + 1);
-		if (contract.getSeries() > 0) {
-			BOSeriesNumbering series = this.getBeAffected().getBOSeriesNumberings()
-					.firstOrDefault(c -> Numbers.equals(c.getSeries(), contract.getSeries()));
-			if (series == null) {
+		int key = 0;
+		if (contract instanceof IBOLine) {
+			BOLineNumbering numbering = this.getBeAffected().getBOLineNumberings().firstOrDefault();
+			if (numbering == null) {
 				throw new BusinessLogicException(
-						I18N.prop("not found [%s]'s [%s] keys.", contract.getObjectCode(), contract.getSeries()));
+						I18N.prop("not found [%s]'s max line id.", this.getHost().getClass().getSimpleName()));
 			}
-			key = series.getNextNumber();
-			contract.setSeriesKey(Strings.format(series.getTemplate(), key));
-			series.setNextNumber(key + 1);
+			key = numbering.getLineId() + 1;
+			contract.setPrimaryKey(key);
+			numbering.setLineId(key);
+		} else {
+			key = this.getBeAffected().getAutoKey();
+			contract.setPrimaryKey(key);
+			this.getBeAffected().setAutoKey(key + 1);
+		}
+		if (contract.getSeries() > 0) {
+			BOSeriesNumbering numbering = this.getBeAffected().getBOSeriesNumberings()
+					.firstOrDefault(c -> Numbers.equals(c.getSeries(), contract.getSeries()));
+			if (numbering == null) {
+				throw new BusinessLogicException(
+						I18N.prop("not found [%s]'s series [%s].", contract.getObjectCode(), contract.getSeries()));
+			}
+			key = numbering.getNextNumber();
+			contract.setSeriesKey(Strings.format(numbering.getTemplate(), key));
+			numbering.setNextNumber(key + 1);
 		}
 	}
 
@@ -215,17 +227,48 @@ class BONumbering extends BusinessObject<BONumbering> implements IDbTableLock {
 	}
 
 	/**
+	 * 属性名称-业务对象行编号
+	 */
+	private static final String PROPERTY_BOLINENUMBERINGS_NAME = "BOLineNumberings";
+
+	/**
+	 * 业务对象行编号属性
+	 * 
+	 */
+	public static final IPropertyInfo<BOLineNumberings> PROPERTY_BOLINENUMBERINGS = registerProperty(
+			PROPERTY_BOLINENUMBERINGS_NAME, BOLineNumberings.class, MY_CLASS);
+
+	/**
+	 * 获取-业务对象行编号
+	 * 
+	 * @return 值
+	 */
+	public final BOLineNumberings getBOLineNumberings() {
+		return this.getProperty(PROPERTY_BOLINENUMBERINGS);
+	}
+
+	/**
+	 * 设置-业务对象行编号
+	 * 
+	 * @param value 值
+	 */
+	public final void setBOLineNumberings(BOLineNumberings value) {
+		this.setProperty(PROPERTY_BOLINENUMBERINGS, value);
+	}
+
+	/**
 	 * 初始化数据
 	 */
 	@Override
 	protected void initialize() {
 		super.initialize();
 		this.setBOSeriesNumberings(new BOSeriesNumberings(this));
+		this.setBOLineNumberings(new BOLineNumberings(this));
 	}
 }
 
 /**
- * 库存发货-行 集合
+ * 业务对象系列编号 集合
  */
 class BOSeriesNumberings extends BusinessObjects<BOSeriesNumbering, BONumbering> {
 
@@ -481,6 +524,111 @@ class BOSeriesNumbering extends BusinessObject<BOSeriesNumbering> implements IDb
 	 */
 	public final void setTemplate(String value) {
 		this.setProperty(PROPERTY_TEMPLATE, value);
+	}
+
+	/**
+	 * 初始化数据
+	 */
+	@Override
+	protected void initialize() {
+		super.initialize();
+	}
+
+}
+
+/**
+ * 业务对象行号 集合
+ */
+class BOLineNumberings extends BusinessObjects<BOLineNumbering, BONumbering> {
+
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * 构造方法
+	 */
+	public BOLineNumberings() {
+		super();
+	}
+
+	/**
+	 * 构造方法
+	 * 
+	 * @param parent 父项对象
+	 */
+	public BOLineNumberings(BONumbering parent) {
+		super(parent);
+	}
+
+	/**
+	 * 元素类型
+	 */
+	public Class<BOLineNumbering> getElementType() {
+		return BOLineNumbering.class;
+	}
+
+	/**
+	 * 创建库存发货-行
+	 * 
+	 * @return 库存发货-行
+	 */
+	public BOLineNumbering create() {
+		BOLineNumbering item = new BOLineNumbering();
+		if (this.add(item)) {
+			return item;
+		}
+		return null;
+	}
+
+	@Override
+	public ICriteria getElementCriteria() {
+		ICriteria criteria = new Criteria();
+
+		return criteria;
+	}
+
+}
+
+/**
+ * 业务对象序列编号方式
+ * 
+ */
+class BOLineNumbering extends BusinessObject<BOLineNumbering> {
+
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * 当前类型
+	 */
+	private static final Class<?> MY_CLASS = BOLineNumbering.class;
+
+	/**
+	 * 属性名称-最大序号
+	 */
+	private static final String PROPERTY_LINEID_NAME = "LineId";
+
+	/**
+	 * 最大序号 属性
+	 */
+	@DbField(name = "LineId", type = DbFieldType.NUMERIC)
+	public static final IPropertyInfo<Integer> PROPERTY_LINEID = registerProperty(PROPERTY_LINEID_NAME, Integer.class,
+			MY_CLASS);
+
+	/**
+	 * 获取-最大序号
+	 * 
+	 * @return 值
+	 */
+	public final Integer getLineId() {
+		return this.getProperty(PROPERTY_LINEID);
+	}
+
+	/**
+	 * 设置-最大序号
+	 * 
+	 * @param value 值
+	 */
+	public final void setLineId(Integer value) {
+		this.setProperty(PROPERTY_LINEID, value);
 	}
 
 	/**

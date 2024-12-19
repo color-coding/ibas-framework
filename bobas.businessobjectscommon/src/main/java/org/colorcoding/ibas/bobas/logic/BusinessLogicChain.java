@@ -1,11 +1,15 @@
 package org.colorcoding.ibas.bobas.logic;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 import org.colorcoding.ibas.bobas.bo.BOUtilities;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
+import org.colorcoding.ibas.bobas.bo.IApprovalData;
+import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
+import org.colorcoding.ibas.bobas.bo.IPeriodData;
 import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
@@ -210,7 +214,70 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 	}
 
 	protected IBusinessLogic<?>[] analyzeContracts(IBusinessObject data) {
+		/**
+		 * 分析并创建契约服务
+		 */
+		Function<IBusinessLogicContract, IBusinessLogic<?>> analyzer = new Function<IBusinessLogicContract, IBusinessLogic<?>>() {
+
+			@Override
+			public IBusinessLogic<?> apply(IBusinessLogicContract contract) {
+				Class<?> tmpClass = contract.getClass();
+				// 开始检查契约
+				while (tmpClass != null) {
+					for (Class<?> item : tmpClass.getInterfaces()) {
+						boolean exists = false;
+						for (Class<?> subItem : item.getInterfaces()) {
+							if (subItem.equals(IBusinessLogicContract.class)) {
+								// 业务逻辑契约的扩展类型
+								exists = true;
+								break;
+							}
+						}
+						if (exists) {
+							// 存在契约，创建契约对应的逻辑实例
+							BusinessLogic<?, ?> logic = BusinessLogicsManager.create().createLogic(item);
+							if (logic == null) {
+								throw new BusinessLogicException(
+										I18N.prop("not found business logic [%s].", item.getName()));
+							}
+							logic.setTransaction(BusinessLogicChain.this.getTransaction());
+							logic.setLogicChain(BusinessLogicChain.this);
+							logic.setContract(contract);
+							logic.setHost(data);
+
+							return logic;
+						}
+					}
+					// 检查基类的契约
+					tmpClass = tmpClass.getSuperclass();
+					if (tmpClass.equals(BusinessObject.class)) {
+						tmpClass = null;
+					}
+				}
+				return null;
+			}
+		};
+
 		ArrayList<IBusinessLogic<?>> logics = new ArrayList<>(16);
+		// 主键编号
+		if (data.isSavable() && data.isNew()) {
+			logics.add(analyzer.apply(new BOPrimaryKeyContract(data)));
+		}
+		// 单据期间
+		if (data.isSavable() && !data.isDeleted() && data.isDirty() && data instanceof IPeriodData) {
+			logics.add(analyzer.apply(new BOPeriodContract((IPeriodData) data)));
+		}
+		// 业务逻辑执行
+		logics.add(analyzer.apply(new BORulesContract(data)));
+		// 审批流程（仅触发对象）
+		if (data.isSavable() && data == this.getTrigger() && data.isDirty() && data instanceof IApprovalData) {
+			logics.add(analyzer.apply(new BOApprovalContract((IApprovalData) data)));
+		}
+		// 数据标记
+		if (data.isSavable() && !data.isDeleted() && data.isDirty() && data instanceof IBOStorageTag) {
+			logics.add(analyzer.apply(new BOStorageTagContract((IBOStorageTag) data)));
+		}
+
 		// 先子项，再自身（注意：避免嵌套后无限循环寻找契约）
 		if (data instanceof BusinessObject) {
 			Object cData;
@@ -221,7 +288,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 					if (cData instanceof IBusinessObject) {
 						for (IBusinessLogic<?> item : this.analyzeContracts((IBusinessObject) cData)) {
 							if (item instanceof BusinessLogic) {
-								((BusinessLogic<?, ?>) item).setParent(boData);
+								((BusinessLogic<?, ?>) item).setParent(data);
 							}
 							logics.add(item);
 						}
@@ -232,7 +299,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 						for (IBusinessObject item : ((IBusinessObjects<?, ?>) cData)) {
 							for (IBusinessLogic<?> sItem : this.analyzeContracts(item)) {
 								if (sItem instanceof BusinessLogic) {
-									((BusinessLogic<?, ?>) sItem).setParent(boData);
+									((BusinessLogic<?, ?>) sItem).setParent(data);
 								}
 								logics.add(sItem);
 							}
@@ -240,59 +307,25 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 					}
 				}
 			}
-		}
-		// 注册固有契约
-		ArrayList<IBusinessLogicContract> contracts = new ArrayList<>(16);
-		// 主键编号
-		if (data.isSavable() && data.isNew()) {
-			contracts.add(new BOPrimaryKeyContract(data));
+			cData = null;
+			boData = null;
 		}
 		// 获取自身契约
 		if (data instanceof IBusinessLogicsHost) {
 			IBusinessLogicContract[] hostContracts = ((IBusinessLogicsHost) data).getContracts();
 			if (hostContracts != null) {
 				for (IBusinessLogicContract item : hostContracts) {
-					contracts.add(item);
+					logics.add(analyzer.apply(item));
 				}
 			}
+			hostContracts = null;
 		}
-		// 分析契约
-		for (IBusinessLogicContract contract : contracts) {
-			Class<?> tmpClass = contract.getClass();
-			// 开始检查契约
-			while (tmpClass != null) {
-				for (Class<?> item : tmpClass.getInterfaces()) {
-					boolean exists = false;
-					for (Class<?> subItem : item.getInterfaces()) {
-						if (subItem.equals(IBusinessLogicContract.class)) {
-							// 业务逻辑契约的扩展类型
-							exists = true;
-							break;
-						}
-					}
-					if (exists) {
-						// 存在契约，创建契约对应的逻辑实例
-						BusinessLogic<?, ?> logic = BusinessLogicsManager.create().createLogic(item);
-						if (logic == null) {
-							throw new BusinessLogicException(
-									I18N.prop("not found business logic [%s].", item.getName()));
-						}
-						logic.setTransaction(this.getTransaction());
-						logic.setContract(contract);
-						logic.setLogicChain(this);
-						logic.setHost(data);
-
-						logics.add(logic);
-					}
-				}
-				// 检查基类的契约
-				tmpClass = tmpClass.getSuperclass();
-				if (tmpClass.equals(BusinessObject.class)) {
-					tmpClass = null;
-				}
-			}
+		// 数据日志（仅触发对象）
+		if (data.isSavable() && data == this.getTrigger() && data.isDirty() && data instanceof IBOStorageTag) {
+			logics.add(analyzer.apply(new BOInstanceLogContract((IBOStorageTag) data)));
 		}
-		return logics.toArray(new IBusinessLogic<?>[] {});
+		// 返回并剔除无效的
+		return logics.where(c -> c != null).toArray(new IBusinessLogic<?>[] {});
 	}
 
 	private IBusinessLogic<?>[] triggerLogics;
