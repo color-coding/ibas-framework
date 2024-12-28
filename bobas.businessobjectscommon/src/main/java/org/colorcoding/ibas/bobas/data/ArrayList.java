@@ -132,4 +132,17 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 		return results;
 	}
 
+	@Override
+	public boolean contains(Predicate<? super E> filter) {
+		Objects.requireNonNull(filter);
+		for (int i = this.size() - 1; i >= 0; i--) {
+			E item = this.get(i);
+			if (item == null)
+				continue;
+			if (filter.test(item))
+				return true;
+		}
+		return false;
+	}
+
 }

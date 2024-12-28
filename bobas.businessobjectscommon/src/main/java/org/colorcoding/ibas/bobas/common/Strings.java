@@ -224,4 +224,29 @@ public class Strings {
 		}
 		return content.indexOf(value);
 	}
+
+	/**
+	 * 判断字符串开头结尾
+	 * 
+	 * @param content 字符串
+	 * @param prefix  开头字符（空跳过）
+	 * @param suffix  结尾字符（空跳过）
+	 * @return
+	 */
+	public static boolean isWith(String content, String prefix, String suffix) {
+		if (isNullOrEmpty(content)) {
+			return false;
+		}
+		if (!isNullOrEmpty(prefix)) {
+			if (!content.startsWith(prefix)) {
+				return false;
+			}
+		}
+		if (!isNullOrEmpty(suffix)) {
+			if (!content.endsWith(suffix)) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

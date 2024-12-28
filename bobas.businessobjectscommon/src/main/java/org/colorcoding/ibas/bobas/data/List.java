@@ -82,4 +82,12 @@ public interface List<E> extends java.util.List<E> {
 	 * @return 元素实例集合
 	 */
 	List<E> where(Predicate<? super E> filter);
+
+	/**
+	 * 判断是否包含符合条件的数据
+	 * 
+	 * @param filter 过滤条件
+	 * @return
+	 */
+	boolean contains(Predicate<? super E> filter);
 }

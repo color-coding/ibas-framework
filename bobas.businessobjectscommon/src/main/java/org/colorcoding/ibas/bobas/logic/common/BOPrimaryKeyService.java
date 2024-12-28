@@ -5,10 +5,10 @@ import java.beans.PropertyChangeEvent;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.BusinessObjects;
 import org.colorcoding.ibas.bobas.bo.IBOLine;
+import org.colorcoding.ibas.bobas.bo.IBOSeriesKey;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.Criteria;
-import org.colorcoding.ibas.bobas.common.IChildCriteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Numbers;
@@ -47,21 +47,11 @@ public class BOPrimaryKeyService extends BusinessLogic<IBOPrimaryKeyContract, BO
 	@Override
 	protected BONumbering fetchBeAffected(IBOPrimaryKeyContract contract) {
 		try {
+			// 获取主编号
 			ICriteria criteria = new Criteria();
 			ICondition condition = criteria.getConditions().create();
 			condition.setAlias(BONumbering.PROPERTY_OBJECTCODE.getName());
 			condition.setValue(contract.getObjectCode());
-			if (contract.getSeries() > 0) {
-				IChildCriteria cCriteria = criteria.getChildCriterias().create();
-				cCriteria.setPropertyPath(BONumbering.PROPERTY_BOSERIESNUMBERINGS.getName());
-				condition = cCriteria.getConditions().create();
-				condition.setAlias(BOSeriesNumbering.PROPERTY_LOCKED.getName());
-				condition.setOperation(ConditionOperation.NOT_EQUAL);
-				condition.setValue(emYesNo.YES);
-			}
-			if (contract instanceof IBOLine) {
-
-			}
 			BONumbering numbering = this.fetchBeAffected(criteria, BONumbering.class);
 			if (numbering == null) {
 				BONumbering[] numberings = this.getTransaction().fetch(criteria, BONumbering.class);
@@ -70,10 +60,34 @@ public class BOPrimaryKeyService extends BusinessLogic<IBOPrimaryKeyContract, BO
 				}
 				numbering = numberings[0];
 			}
-			if (!criteria.getChildCriterias().isEmpty()) {
-				if (numbering.getBOSeriesNumberings().isEmpty()) {
-					throw new BusinessLogicException(
-							I18N.prop("not found [%s]'s series [%s].", contract.getObjectCode(), contract.getSeries()));
+			// 获取系列编号
+			if (this.getHost() instanceof IBOSeriesKey && contract.getSeries() > 0) {
+				if (numbering.getBOSeriesNumberings()
+						.contains(c -> Numbers.equals(c.getSeries(), contract.getSeries()))) {
+					// 不包含此系列，则从数据库中查询
+					criteria = new Criteria();
+					condition = criteria.getConditions().create();
+					condition.setAlias(BOSeriesNumbering.PROPERTY_OBJECTCODE.getName());
+					condition.setValue(contract.getObjectCode());
+					condition = criteria.getConditions().create();
+					condition.setAlias(BOSeriesNumbering.PROPERTY_SERIES.getName());
+					condition.setValue(contract.getSeries());
+					condition.setAlias(BOSeriesNumbering.PROPERTY_LOCKED.getName());
+					condition.setOperation(ConditionOperation.NOT_EQUAL);
+					condition.setValue(emYesNo.YES);
+					BOSeriesNumbering[] numberings = this.getTransaction().fetch(criteria, BOSeriesNumbering.class);
+					if (numberings == null || numberings.length == 0) {
+						throw new BusinessLogicException(I18N.prop("not found [%s]'s series [%s].",
+								contract.getObjectCode(), contract.getSeries()));
+					}
+					numbering.getBOSeriesNumberings().addAll(numberings);
+				}
+			}
+			// 获取子项编号
+			if (this.getHost() instanceof IBOLine) {
+				String masterKey = ((IBOLine) this.getHost()).getMasterPrimaryKey();
+				if (!numbering.getBOLineNumberings().contains(c -> Strings.equals(c.getMasterKey(), masterKey))) {
+
 				}
 			}
 			return numbering;
@@ -600,6 +614,36 @@ class BOLineNumbering extends BusinessObject<BOLineNumbering> {
 	 * 当前类型
 	 */
 	private static final Class<?> MY_CLASS = BOLineNumbering.class;
+
+	/**
+	 * 属性名称-主序号
+	 */
+	private static final String PROPERTY_MASTERKEY_NAME = "MasterKey";
+
+	/**
+	 * 主序号 属性
+	 */
+	@DbField(name = "MasterKey", type = DbFieldType.NUMERIC)
+	public static final IPropertyInfo<String> PROPERTY_MASTERKEY = registerProperty(PROPERTY_MASTERKEY_NAME,
+			String.class, MY_CLASS);
+
+	/**
+	 * 获取-主序号
+	 * 
+	 * @return 值
+	 */
+	public final String getMasterKey() {
+		return this.getProperty(PROPERTY_MASTERKEY);
+	}
+
+	/**
+	 * 设置-主序号
+	 * 
+	 * @param value 值
+	 */
+	public final void setMasterKey(String value) {
+		this.setProperty(PROPERTY_MASTERKEY, value);
+	}
 
 	/**
 	 * 属性名称-最大序号
