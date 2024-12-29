@@ -1,11 +1,20 @@
 package org.colorcoding.ibas.bobas.logic.common;
 
+import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.logic.IBusinessLogicContract;
 
 /**
  * 业务对象主键契约
  */
 public interface IBOPrimaryKeyContract extends IBusinessLogicContract {
+
+	/**
+	 * 业务对象实例
+	 * 
+	 * @return
+	 */
+	IBusinessObject getHost();
+
 	/**
 	 * 对象编码
 	 * 

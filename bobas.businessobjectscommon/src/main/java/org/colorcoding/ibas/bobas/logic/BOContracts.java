@@ -30,7 +30,7 @@ class BOContract<T> implements IBusinessLogicContract {
 
 	private T host;
 
-	protected synchronized final T getHost() {
+	public synchronized final T getHost() {
 		return host;
 	}
 

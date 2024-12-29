@@ -4,8 +4,12 @@ import java.beans.PropertyChangeEvent;
 
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.BusinessObjects;
+import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
 import org.colorcoding.ibas.bobas.bo.IBOLine;
+import org.colorcoding.ibas.bobas.bo.IBOMasterDataLine;
+import org.colorcoding.ibas.bobas.bo.IBOMaxValueKey;
 import org.colorcoding.ibas.bobas.bo.IBOSeriesKey;
+import org.colorcoding.ibas.bobas.bo.IBOSimpleLine;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.Criteria;
@@ -61,7 +65,7 @@ public class BOPrimaryKeyService extends BusinessLogic<IBOPrimaryKeyContract, BO
 				numbering = numberings[0];
 			}
 			// 获取系列编号
-			if (this.getHost() instanceof IBOSeriesKey && contract.getSeries() > 0) {
+			if (contract.getHost() instanceof IBOSeriesKey && contract.getSeries() > 0) {
 				if (numbering.getBOSeriesNumberings()
 						.contains(c -> Numbers.equals(c.getSeries(), contract.getSeries()))) {
 					// 不包含此系列，则从数据库中查询
@@ -84,11 +88,20 @@ public class BOPrimaryKeyService extends BusinessLogic<IBOPrimaryKeyContract, BO
 				}
 			}
 			// 获取子项编号
-			if (this.getHost() instanceof IBOLine) {
-				String masterKey = ((IBOLine) this.getHost()).getMasterPrimaryKey();
-				if (!numbering.getBOLineNumberings().contains(c -> Strings.equals(c.getMasterKey(), masterKey))) {
+			if (contract.getHost() instanceof IBOLine) {
+				String masterKey = null;
+				if (contract.getHost() instanceof IBODocumentLine) {
+					masterKey = Strings.valueOf(((IBODocumentLine) contract.getHost()).getDocEntry());
+				} else if (contract.getHost() instanceof IBOSimpleLine) {
+					masterKey = Strings.valueOf(((IBOSimpleLine) contract.getHost()).getObjectKey());
+				} else if (contract.getHost() instanceof IBOMasterDataLine) {
+					masterKey = ((IBOMasterDataLine) contract.getHost()).getCode();
+				}
+				if (masterKey != null) {
 
 				}
+			} else if (contract.getHost() instanceof IBOMaxValueKey) {
+
 			}
 			return numbering;
 		} catch (Exception e) {
@@ -99,7 +112,7 @@ public class BOPrimaryKeyService extends BusinessLogic<IBOPrimaryKeyContract, BO
 	@Override
 	protected void impact(IBOPrimaryKeyContract contract) {
 		int key = 0;
-		if (contract instanceof IBOLine) {
+		if (contract.getHost() instanceof IBOLine) {
 			BOLineNumbering numbering = this.getBeAffected().getBOLineNumberings().firstOrDefault();
 			if (numbering == null) {
 				throw new BusinessLogicException(
