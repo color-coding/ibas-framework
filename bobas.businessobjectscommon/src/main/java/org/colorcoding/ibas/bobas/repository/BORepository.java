@@ -83,13 +83,13 @@ public abstract class BORepository implements AutoCloseable {
 		}
 	}
 
-	protected <T extends IBusinessObject> IOperationResult<T> fetch(ICriteria criteria, Class<?> boType) {
+	protected <T extends IBusinessObject> IOperationResult<T> fetch(Class<?> boType, ICriteria criteria) {
 		try {
 			Objects.requireNonNull(boType);
 			boolean mine = this.beginTransaction();
 			try {
 				OperationResult<T> operationResult = new OperationResult<T>();
-				for (IBusinessObject item : this.getTransaction().fetch(criteria, boType)) {
+				for (IBusinessObject item : this.getTransaction().fetch(boType, criteria)) {
 					operationResult.addResultObjects(item);
 				}
 				if (mine == true) {
@@ -127,7 +127,7 @@ public abstract class BORepository implements AutoCloseable {
 						throw new RepositoryException(I18N.prop("msg_bobas_invaild_criteria"));
 					}
 					criteria.setResultCount(1);
-					IOperationResult<T> opRsltFetch = this.fetch(criteria, bo.getClass());
+					IOperationResult<T> opRsltFetch = this.fetch(bo.getClass(), criteria);
 					if (opRsltFetch.getError() != null) {
 						throw opRsltFetch.getError();
 					}

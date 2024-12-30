@@ -194,7 +194,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 							throw new RepositoryException(I18N.prop("msg_bobas_invaild_criteria"));
 						}
 						criteria.setResultCount(1);
-						tmpDatas = this.getTransaction().fetch(criteria, item.getClass());
+						tmpDatas = this.getTransaction().fetch(item.getClass(), criteria);
 						if (tmpDatas == null || tmpDatas.length != 1) {
 							throw new RepositoryException(I18N.prop("msg_bobas_fetch_bo_copy_faild", item));
 						}
@@ -261,7 +261,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 		ArrayList<IBusinessLogic<?>> logics = new ArrayList<>(16);
 		// 主键编号
 		if (data.isSavable() && data.isNew()) {
-			logics.add(analyzer.apply(new BOPrimaryKeyContract(data)));
+			logics.add(analyzer.apply(new BOKeysContract(data)));
 		}
 		// 单据期间
 		if (data.isSavable() && !data.isDeleted() && data.isDirty() && data instanceof IPeriodData) {

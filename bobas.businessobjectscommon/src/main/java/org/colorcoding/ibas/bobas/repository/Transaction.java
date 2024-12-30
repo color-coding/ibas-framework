@@ -62,12 +62,12 @@ public abstract class Transaction implements ITransaction {
 	 * 缓存中查询数据
 	 * 
 	 * @param <T>      数据类型
-	 * @param criteria 查询条件
 	 * @param boType   类型
+	 * @param criteria 查询条件
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends IBusinessObject> T[] fetchInCache(ICriteria criteria, Class<?> boType)
+	public <T extends IBusinessObject> T[] fetchInCache(Class<?> boType, ICriteria criteria)
 			throws RepositoryException {
 		try {
 			Objects.requireNonNull(criteria);

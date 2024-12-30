@@ -16,7 +16,7 @@ import org.colorcoding.ibas.bobas.core.Serializable;
  */
 @XmlType(name = "KeyValue", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 @XmlRootElement(name = "KeyValue", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
-public class KeyValue extends Serializable implements IKeyValue {
+public class KeyValue<T> extends Serializable implements IKeyValue<T> {
 
 	private static final long serialVersionUID = 5102847294361392265L;
 
@@ -24,9 +24,10 @@ public class KeyValue extends Serializable implements IKeyValue {
 		this.key = Strings.VALUE_EMPTY;
 	}
 
+	@SuppressWarnings("unchecked")
 	public KeyValue(String key, Object value) {
 		this.key = key;
-		this.value = value;
+		this.value = (T) value;
 	}
 
 	/**
@@ -50,13 +51,13 @@ public class KeyValue extends Serializable implements IKeyValue {
 	 * 值
 	 */
 	@XmlElement(name = "Value")
-	private Object value;
+	private T value;
 
-	public final Object getValue() {
+	public final T getValue() {
 		return value;
 	}
 
-	public final void setValue(Object value) {
+	public final void setValue(T value) {
 		this.value = value;
 	}
 

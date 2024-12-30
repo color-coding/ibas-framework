@@ -33,18 +33,21 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 		super(arg0);
 	}
 
+	@Override
 	public final E firstOrDefault() {
 		if (!this.isEmpty())
 			return this.get(0);
 		return null;
 	}
 
+	@Override
 	public final E lastOrDefault() {
 		if (!this.isEmpty())
 			return this.get(this.size() - 1);
 		return null;
 	}
 
+	@Override
 	public E firstOrDefault(E defalutValue) {
 		E value = this.firstOrDefault();
 		if (value == null) {
@@ -53,6 +56,7 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 		return value;
 	}
 
+	@Override
 	public E lastOrDefault(E defalutValue) {
 		E value = this.lastOrDefault();
 		if (value == null) {
@@ -61,6 +65,7 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 		return value;
 	}
 
+	@Override
 	public final E firstOrDefault(Predicate<? super E> filter) {
 		Objects.requireNonNull(filter);
 		for (int i = 0; i < this.size(); i++) {
@@ -73,6 +78,7 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 		return null;
 	}
 
+	@Override
 	public final E lastOrDefault(Predicate<? super E> filter) {
 		Objects.requireNonNull(filter);
 		for (int i = this.size() - 1; i >= 0; i--) {
@@ -85,6 +91,7 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 		return null;
 	}
 
+	@Override
 	public E firstOrDefault(Predicate<? super E> filter, E defalutValue) {
 		E value = this.firstOrDefault(filter);
 		if (value == null) {
@@ -93,6 +100,7 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 		return value;
 	}
 
+	@Override
 	public E lastOrDefault(Predicate<? super E> filter, E defalutValue) {
 		E value = this.lastOrDefault(filter);
 		if (value == null) {
@@ -101,6 +109,7 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 		return value;
 	}
 
+	@Override
 	public boolean addAll(E[] c) {
 		if (c != null) {
 			for (E item : c) {
@@ -110,6 +119,7 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 		return true;
 	}
 
+	@Override
 	public boolean addAll(Iterable<? extends E> c) {
 		if (c != null) {
 			for (E item : c) {
@@ -119,6 +129,7 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 		return true;
 	}
 
+	@Override
 	public List<E> where(Predicate<? super E> filter) {
 		Objects.requireNonNull(filter);
 		List<E> results = new ArrayList<E>();

@@ -1,10 +1,14 @@
 package org.colorcoding.ibas.bobas.logic;
 
+import org.colorcoding.ibas.bobas.bo.BOFactory;
+import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IApprovalData;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
+import org.colorcoding.ibas.bobas.bo.IBOLine;
 import org.colorcoding.ibas.bobas.bo.IBOMasterData;
 import org.colorcoding.ibas.bobas.bo.IBOMasterDataLine;
+import org.colorcoding.ibas.bobas.bo.IBOMaxValueKey;
 import org.colorcoding.ibas.bobas.bo.IBOSeriesKey;
 import org.colorcoding.ibas.bobas.bo.IBOSimple;
 import org.colorcoding.ibas.bobas.bo.IBOSimpleLine;
@@ -14,12 +18,14 @@ import org.colorcoding.ibas.bobas.bo.IPeriodData;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Numbers;
 import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
+import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.logic.common.IBOApprovalContract;
 import org.colorcoding.ibas.bobas.logic.common.IBOInstanceLogContract;
+import org.colorcoding.ibas.bobas.logic.common.IBOKeysContract;
 import org.colorcoding.ibas.bobas.logic.common.IBOPeriodContract;
-import org.colorcoding.ibas.bobas.logic.common.IBOPrimaryKeyContract;
 import org.colorcoding.ibas.bobas.logic.common.IBORulesContract;
 import org.colorcoding.ibas.bobas.logic.common.IBOStorageTagContract;
 
@@ -47,9 +53,9 @@ class BOContract<T> implements IBusinessLogicContract {
 	}
 }
 
-class BOPrimaryKeyContract extends BOContract<IBusinessObject> implements IBOPrimaryKeyContract {
+class BOKeysContract extends BOContract<IBusinessObject> implements IBOKeysContract {
 
-	public BOPrimaryKeyContract(IBusinessObject host) {
+	public BOKeysContract(IBusinessObject host) {
 		super(host);
 	}
 
@@ -59,14 +65,6 @@ class BOPrimaryKeyContract extends BOContract<IBusinessObject> implements IBOPri
 			return ((IBOStorageTag) this.getHost()).getObjectCode();
 		}
 		return Strings.VALUE_EMPTY;
-	}
-
-	@Override
-	public Integer getSeries() {
-		if (this.getHost() instanceof IBOSeriesKey) {
-			return ((IBOSeriesKey) this.getHost()).getSeries();
-		}
-		return Numbers.INTEGER_VALUE_ZERO;
 	}
 
 	@Override
@@ -114,12 +112,95 @@ class BOPrimaryKeyContract extends BOContract<IBusinessObject> implements IBOPri
 	}
 
 	@Override
+	public Integer getSeries() {
+		if (this.getHost() instanceof IBOSeriesKey) {
+			return ((IBOSeriesKey) this.getHost()).getSeries();
+		}
+		return Numbers.INTEGER_VALUE_ZERO;
+	}
+
+	@Override
 	public boolean setSeriesKey(String key) {
 		if (this.getHost() instanceof IBOSeriesKey) {
 			((IBOSeriesKey) this.getHost()).setSeriesValue(key);
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public IPropertyInfo<?> getMaxValueField() {
+		if (this.getHost() instanceof IBOMaxValueKey) {
+			return ((IBOMaxValueKey) this.getHost()).getMaxValueField();
+		} else if (this.getHost() instanceof IBOLine) {
+			return BOFactory.propertyInfos(this.getHost().getClass())
+					.firstOrDefault(c -> IBOLine.SECONDARY_PRIMARY_KEY_NAME.equalsIgnoreCase(c.getName()));
+		}
+		return null;
+	}
+
+	@Override
+	public IPropertyInfo<?>[] getMaxValueConditions() {
+		if (this.getHost() instanceof IBOMaxValueKey) {
+			return ((IBOMaxValueKey) this.getHost()).getMaxValueConditions();
+		}
+		IPropertyInfo<?>[] conditions = new IPropertyInfo<?>[] {};
+		List<IPropertyInfo<?>> propertyInfos = BOFactory.propertyInfos(this.getHost().getClass());
+		if (this.getHost() instanceof IBODocumentLine) {
+			return propertyInfos.where(c -> IBODocument.MASTER_PRIMARY_KEY_NAME.equalsIgnoreCase(c.getName()))
+					.toArray(conditions);
+		} else if (this.getHost() instanceof IBOSimpleLine) {
+			return propertyInfos.where(c -> IBOSimple.MASTER_PRIMARY_KEY_NAME.equalsIgnoreCase(c.getName()))
+					.toArray(conditions);
+		} else if (this.getHost() instanceof IBOMasterDataLine) {
+			return propertyInfos.where(c -> IBOMasterData.MASTER_PRIMARY_KEY_NAME.equalsIgnoreCase(c.getName()))
+					.toArray(conditions);
+		}
+		return conditions;
+	}
+
+	private String maxValueKey = null;
+
+	@Override
+	public String getMaxValueKey() {
+		if (this.maxValueKey == null) {
+			if (this.getHost() instanceof IBOMaxValueKey && this.getHost() instanceof BusinessObject<?>) {
+				BusinessObject<?> bo = (BusinessObject<?>) this.getHost();
+				StringBuilder stringBuilder = new StringBuilder();
+				for (IPropertyInfo<?> item : this.getMaxValueConditions()) {
+					if (stringBuilder.length() > 0) {
+						stringBuilder.append("&");
+					}
+					stringBuilder.append(item.getName());
+					stringBuilder.append("=");
+					stringBuilder.append(Strings.valueOf(bo.getProperty(item)));
+				}
+				this.maxValueKey = stringBuilder.toString();
+
+			}
+			this.maxValueKey = Strings.VALUE_EMPTY;
+		}
+		return this.maxValueKey;
+	}
+
+	@Override
+	public boolean setMaxValue(Integer value) {
+		if (this.getHost() instanceof IBOMaxValueKey) {
+			return ((IBOMaxValueKey) this.getHost()).setMaxValue(value);
+		} else if (this.getHost() instanceof IBOLine && this.getHost() instanceof BusinessObject<?>) {
+			BusinessObject<?> bo = (BusinessObject<?>) this.getHost();
+			bo.setProperty(this.getMaxValueField(), value);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public int getMaxValueStep() {
+		if (this.getHost() instanceof IBOMaxValueKey) {
+			return ((IBOMaxValueKey) this.getHost()).getMaxValueStep();
+		}
+		return 1;
 	}
 }
 

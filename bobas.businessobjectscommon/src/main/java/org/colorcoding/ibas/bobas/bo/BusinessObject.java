@@ -233,6 +233,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	 * 
 	 * @return
 	 */
+	@Override
 	public final List<IPropertyInfo<?>> properties() {
 		if (this instanceof IBOUserFields && this.userFields != null && !this.userFields.isEmpty()) {
 			List<IPropertyInfo<?>> propertyInfos = super.properties();
@@ -245,7 +246,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 		}
 	}
 
-	public IUserFields getUserFields() {
+	public final IUserFields getUserFields() {
 		if (this.userFields != null) {
 			return new UserFields(this);
 		}
@@ -263,17 +264,6 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 		}
 		this.markDirty();
 		super.firePropertyChange(userField.getName(), oldValue, newValue);
-	}
-
-	public boolean isDirty(IPropertyInfo<?> propertyInfo) {
-		if (this.modifiedFields != null) {
-			for (IPropertyInfo<?> item : this.modifiedFields) {
-				if (item.equals(propertyInfo)) {
-					return true;
-				}
-			}
-		}
-		return false;
 	}
 
 	/**

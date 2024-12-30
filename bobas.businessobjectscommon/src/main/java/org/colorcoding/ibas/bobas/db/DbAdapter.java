@@ -9,9 +9,6 @@ import java.util.Map;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.BOFactory;
-import org.colorcoding.ibas.bobas.bo.BOUtilities;
-import org.colorcoding.ibas.bobas.bo.BusinessObject;
-import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.Criteria;
@@ -24,6 +21,7 @@ import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.Result;
 import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.core.FieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DateTime;
@@ -38,22 +36,22 @@ import org.colorcoding.ibas.bobas.logging.Logger;
  */
 public abstract class DbAdapter {
 
-	private String companyId;
-
-	protected String getCompanyId() {
-		if (this.companyId == null) {
-			this.companyId = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_COMPANY, "CC");
-		}
-		return this.companyId;
-	}
-
 	private int batchCount = -1;
 
-	public int getBatchCount() {
+	public final int getBatchCount() {
 		if (this.batchCount < 0) {
 			this.batchCount = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_STATEMENT_BATCH_COUNT, 300);
 		}
 		return this.batchCount;
+	}
+
+	private String companyId;
+
+	protected final String getCompanyId() {
+		if (this.companyId == null) {
+			this.companyId = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_COMPANY, "CC");
+		}
+		return this.companyId;
 	}
 
 	/**
@@ -86,8 +84,8 @@ public abstract class DbAdapter {
 			} else if (boType.equals(KeyText.class)) {
 				datas.add((T) new KeyText(resultSet.getString(0), resultSet.getString(1)));
 			} else if (boType.equals(KeyValue.class)) {
-				datas.add((T) new KeyValue(resultSet.getString(0), resultSet.getObject(1)));
-			} else if (boType.isAssignableFrom(BusinessObject.class)) {
+				datas.add((T) new KeyValue<Object>(resultSet.getString(0), resultSet.getObject(1)));
+			} else if (boType.isAssignableFrom(FieldedObject.class)) {
 				if (orderProperties == null) {
 					List<IPropertyInfo<?>> propertyInfos = BOFactory.propertyInfos(boType);
 					orderProperties = new IPropertyInfo<?>[propertyInfos.size()];
@@ -127,9 +125,9 @@ public abstract class DbAdapter {
 	 * @throws SQLException
 	 */
 	public <T> T setProperties(T data, ResultSet resultSet, IPropertyInfo<?>[] orderProperties) throws SQLException {
-		if (BOUtilities.isBusinessObject(data)) {
-			BusinessObject<?> boData = ((BusinessObject<?>) data);
+		if (data instanceof FieldedObject) {
 			IPropertyInfo<?> propertyInfo;
+			FieldedObject boData = (FieldedObject) data;
 			boData.setLoading(true);
 			for (int i = 0; i < orderProperties.length; i++) {
 				propertyInfo = orderProperties[i];
@@ -202,6 +200,17 @@ public abstract class DbAdapter {
 	 * @return
 	 */
 	public ICriteria convert(ICriteria criteria, Class<?> boType) {
+		return this.convert(criteria, BOFactory.propertyInfos(boType));
+	}
+
+	/**
+	 * 转化查询（属性名称、属性类型）
+	 * 
+	 * @param criteria      待处理查询
+	 * @param propertyInfos 对象属性
+	 * @return
+	 */
+	public ICriteria convert(ICriteria criteria, List<IPropertyInfo<?>> propertyInfos) {
 		if (criteria == null) {
 			criteria = new Criteria();
 		} else {
@@ -209,7 +218,7 @@ public abstract class DbAdapter {
 		}
 		DbField dbField;
 		for (ICondition condition : criteria.getConditions()) {
-			for (IPropertyInfo<?> propertyInfo : BOFactory.propertyInfos(boType)) {
+			for (IPropertyInfo<?> propertyInfo : propertyInfos) {
 				if (Strings.equalsIgnoreCase(condition.getAlias(), propertyInfo.getName())) {
 					// 属性名称转数据库字段
 					dbField = propertyInfo.getAnnotation(DbField.class);
@@ -249,9 +258,149 @@ public abstract class DbAdapter {
 		return "WHERE";
 	}
 
-	public String sp_transaction_notification() {
+	public final String sp_transaction_notification() {
 		return this.parsingStoredProcedure(Strings.format("%s_SP_TRANSACTION_NOTIFICATION", this.getCompanyId()),
 				new String[6]);
+	}
+
+	public final String parsingSelect(Class<?> boType) {
+		return this.parsingSelect(boType, new Criteria());
+	}
+
+	public final String parsingSelect(Class<?> boType, Iterable<ICondition> conditions) {
+		ICriteria criteria = new Criteria();
+		if (conditions != null) {
+			for (ICondition item : conditions) {
+				criteria.getConditions().add(item);
+			}
+		}
+		return this.parsingSelect(boType, criteria);
+	}
+
+	public final String parsingSelect(Class<?> boType, ICriteria criteria) {
+		if (boType.isAssignableFrom(SPValues.class)) {
+			// 存储过程赋值对象
+			DbProcedure procedure = boType.getAnnotation(DbProcedure.class);
+			if (procedure == null) {
+				throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", boType.toString()));
+			}
+			return this.parsingStoredProcedure(procedure.name(), new String[criteria.getConditions().size()]);
+		}
+		return this.parsingSelect(boType, criteria, boType.isAssignableFrom(IDbTableLock.class));
+	}
+
+	private Map<Class<?>, String> tables = new HashMap<>();
+
+	public String table(Class<?> boType) {
+		try {
+			if (this.tables.containsKey(boType)) {
+				return this.tables.get(boType);
+			}
+			DbField dbField;
+			for (IPropertyInfo<?> item : BOFactory.propertyInfos(boType)) {
+				dbField = item.getAnnotation(DbField.class);
+				if (dbField != null && Strings.isNullOrEmpty(dbField.table())) {
+					this.tables.put(boType, MyConfiguration.applyVariables(dbField.table()));
+					return this.table(boType);
+				}
+			}
+			throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", boType.toString()));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public String parsingSelect(Class<?> boType, ICriteria criteria, boolean withLock) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("SELECT");
+		if (criteria.getResultCount() > 0) {
+			stringBuilder.append(" ");
+			stringBuilder.append("TOP");
+			stringBuilder.append(" ");
+			stringBuilder.append(criteria.getResultCount());
+		}
+		stringBuilder.append(" ");
+		stringBuilder.append("*");
+		stringBuilder.append(" ");
+		stringBuilder.append("FROM");
+		stringBuilder.append(" ");
+		stringBuilder.append(this.identifier());
+		stringBuilder.append(this.table(boType));
+		stringBuilder.append(this.identifier());
+		if (boType.isAssignableFrom(IDbTableLock.class)) {
+			stringBuilder.append(" ");
+			stringBuilder.append("WITH (UPDLOCK)");
+		}
+		if (criteria.getConditions().size() > 0) {
+			stringBuilder.append(" ");
+			stringBuilder.append(this.where());
+			stringBuilder.append(" ");
+			stringBuilder.append(this.parsingWhere(criteria.getConditions()));
+		}
+		if (criteria.getSorts().size() > 0) {
+			stringBuilder.append(" ");
+			stringBuilder.append("ORDER BY");
+			stringBuilder.append(" ");
+			stringBuilder.append(this.parsingOrder(criteria.getSorts()));
+		}
+		return stringBuilder.toString();
+	}
+
+	public String castAs(DbFieldType type, String alias) {
+		StringBuilder stringBuilder = new StringBuilder();
+		if (type == DbFieldType.ALPHANUMERIC) {
+			stringBuilder.append("CAST");
+			stringBuilder.append("(");
+			stringBuilder.append(this.identifier());
+			stringBuilder.append(alias);
+			stringBuilder.append(this.identifier());
+			stringBuilder.append(" ");
+			stringBuilder.append("AS");
+			stringBuilder.append(" ");
+			stringBuilder.append("NVARCHAR");
+			stringBuilder.append(")");
+		} else if (type == DbFieldType.DATE) {
+			stringBuilder = new StringBuilder();
+			stringBuilder.append("CAST");
+			stringBuilder.append("(");
+			stringBuilder.append(this.identifier());
+			stringBuilder.append(alias);
+			stringBuilder.append(this.identifier());
+			stringBuilder.append(" ");
+			stringBuilder.append("AS");
+			stringBuilder.append(" ");
+			stringBuilder.append("DATETIME");
+			stringBuilder.append(")");
+		} else if (type == DbFieldType.NUMERIC) {
+			stringBuilder = new StringBuilder();
+			stringBuilder.append("CAST");
+			stringBuilder.append("(");
+			stringBuilder.append(this.identifier());
+			stringBuilder.append(alias);
+			stringBuilder.append(this.identifier());
+			stringBuilder.append(" ");
+			stringBuilder.append("AS");
+			stringBuilder.append(" ");
+			stringBuilder.append("INT");
+			stringBuilder.append(")");
+			return stringBuilder.toString();
+		} else if (type == DbFieldType.DECIMAL) {
+			stringBuilder.append("CAST");
+			stringBuilder.append("(");
+			stringBuilder.append(this.identifier());
+			stringBuilder.append(alias);
+			stringBuilder.append(this.identifier());
+			stringBuilder.append(" ");
+			stringBuilder.append("AS");
+			stringBuilder.append(" ");
+			stringBuilder.append("NUMERIC(19, 6)");
+			stringBuilder.append(")");
+		} else {
+			stringBuilder.append(this.identifier());
+			stringBuilder.append(alias);
+			stringBuilder.append(this.identifier());
+		}
+		return stringBuilder.toString();
 	}
 
 	public String parsing(SortType type) {
@@ -299,20 +448,6 @@ public abstract class DbAdapter {
 			return "LIKE";
 		}
 		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
-	}
-
-	public String parsingSelect(Class<?> boType) {
-		return this.parsingSelect(boType, new Criteria());
-	}
-
-	public String parsingSelect(Class<?> boType, Iterable<ICondition> conditions) {
-		ICriteria criteria = new Criteria();
-		if (conditions != null) {
-			for (ICondition item : conditions) {
-				criteria.getConditions().add(item);
-			}
-		}
-		return this.parsingSelect(boType, criteria);
 	}
 
 	public String parsingWhere(Iterable<ICondition> conditions) {
@@ -398,131 +533,8 @@ public abstract class DbAdapter {
 		return stringBuilder.toString();
 	}
 
-	private Map<Class<?>, String> tables = new HashMap<>();
-
-	public String table(Class<?> boType) {
-		try {
-			if (this.tables.containsKey(boType)) {
-				return this.tables.get(boType);
-			}
-			DbField dbField;
-			for (IPropertyInfo<?> item : BOFactory.propertyInfos(boType)) {
-				dbField = item.getAnnotation(DbField.class);
-				if (dbField != null && Strings.isNullOrEmpty(dbField.table())) {
-					this.tables.put(boType, MyConfiguration.applyVariables(dbField.table()));
-					return this.table(boType);
-				}
-			}
-			throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", boType.toString()));
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public String parsingSelect(Class<?> boType, ICriteria criteria) {
-		if (boType.isAssignableFrom(IDbTableLock.class)) {
-			return this.parsingSelect(boType, criteria, true);
-		} else {
-			return this.parsingSelect(boType, criteria, false);
-		}
-	}
-
-	public String parsingSelect(Class<?> boType, ICriteria criteria, boolean withLock) {
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("SELECT");
-		if (criteria.getResultCount() > 0) {
-			stringBuilder.append(" ");
-			stringBuilder.append("TOP");
-			stringBuilder.append(" ");
-			stringBuilder.append(criteria.getResultCount());
-		}
-		stringBuilder.append(" ");
-		stringBuilder.append("*");
-		stringBuilder.append(" ");
-		stringBuilder.append("FROM");
-		stringBuilder.append(" ");
-		stringBuilder.append(this.identifier());
-		stringBuilder.append(this.table(boType));
-		stringBuilder.append(this.identifier());
-		if (withLock == true) {
-			stringBuilder.append(" ");
-			stringBuilder.append("WITH (UPDLOCK)");
-		}
-		if (criteria.getConditions().size() > 0) {
-			stringBuilder.append(" ");
-			stringBuilder.append(this.where());
-			stringBuilder.append(" ");
-			stringBuilder.append(this.parsingWhere(criteria.getConditions()));
-		}
-		if (criteria.getSorts().size() > 0) {
-			stringBuilder.append(" ");
-			stringBuilder.append("ORDER BY");
-			stringBuilder.append(" ");
-			stringBuilder.append(this.parsingOrder(criteria.getSorts()));
-		}
-		return stringBuilder.toString();
-	}
-
-	public String castAs(DbFieldType type, String alias) {
-		StringBuilder stringBuilder = new StringBuilder();
-		if (type == DbFieldType.ALPHANUMERIC) {
-			stringBuilder.append("CAST");
-			stringBuilder.append("(");
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(alias);
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(" ");
-			stringBuilder.append("AS");
-			stringBuilder.append(" ");
-			stringBuilder.append("NVARCHAR");
-			stringBuilder.append(")");
-		} else if (type == DbFieldType.DATE) {
-			stringBuilder = new StringBuilder();
-			stringBuilder.append("CAST");
-			stringBuilder.append("(");
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(alias);
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(" ");
-			stringBuilder.append("AS");
-			stringBuilder.append(" ");
-			stringBuilder.append("DATETIME");
-			stringBuilder.append(")");
-		} else if (type == DbFieldType.NUMERIC) {
-			stringBuilder = new StringBuilder();
-			stringBuilder.append("CAST");
-			stringBuilder.append("(");
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(alias);
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(" ");
-			stringBuilder.append("AS");
-			stringBuilder.append(" ");
-			stringBuilder.append("INT");
-			stringBuilder.append(")");
-			return stringBuilder.toString();
-		} else if (type == DbFieldType.DECIMAL) {
-			stringBuilder.append("CAST");
-			stringBuilder.append("(");
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(alias);
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(" ");
-			stringBuilder.append("AS");
-			stringBuilder.append(" ");
-			stringBuilder.append("NUMERIC(19, 6)");
-			stringBuilder.append(")");
-		} else {
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(alias);
-			stringBuilder.append(this.identifier());
-		}
-		return stringBuilder.toString();
-	}
-
-	public String parsingWhere(IBusinessObject bo) {
+	public String parsingWhere(FieldedObject boData) {
 		DbField dbField = null;
-		BusinessObject<?> boData = (BusinessObject<?>) bo;
 		StringBuilder stringBuilder = new StringBuilder();
 		for (IPropertyInfo<?> item : boData.properties().where(c -> c.isPrimaryKey())) {
 			dbField = item.getAnnotation(DbField.class);
@@ -543,33 +555,32 @@ public abstract class DbAdapter {
 		return stringBuilder.toString();
 	}
 
-	public String parsingDelete(IBusinessObject bo) {
+	public String parsingDelete(FieldedObject boData) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("DELETE");
 		stringBuilder.append(" ");
 		stringBuilder.append(this.identifier());
-		stringBuilder.append(this.table(bo.getClass()));
+		stringBuilder.append(this.table(boData.getClass()));
 		stringBuilder.append(this.identifier());
 		stringBuilder.append(" ");
 		stringBuilder.append(this.where());
 		stringBuilder.append(" ");
-		stringBuilder.append(this.parsingWhere(bo));
+		stringBuilder.append(this.parsingWhere(boData));
 		return stringBuilder.toString();
 	}
 
-	public String parsingUpdate(IBusinessObject bo) {
+	public String parsingUpdate(FieldedObject boData) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("UPDATE");
 		stringBuilder.append(" ");
 		stringBuilder.append(this.identifier());
-		stringBuilder.append(this.table(bo.getClass()));
+		stringBuilder.append(this.table(boData.getClass()));
 		stringBuilder.append(this.identifier());
 		stringBuilder.append(" ");
 		stringBuilder.append("SET");
 		stringBuilder.append(" ");
 		DbField dbField = null;
 		int count = stringBuilder.length();
-		BusinessObject<?> boData = (BusinessObject<?>) bo;
 		for (IPropertyInfo<?> item : boData.properties().where(c -> !c.isPrimaryKey())) {
 			dbField = item.getAnnotation(DbField.class);
 			if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
@@ -592,16 +603,15 @@ public abstract class DbAdapter {
 		stringBuilder.append(" ");
 		stringBuilder.append(this.where());
 		stringBuilder.append(" ");
-		stringBuilder.append(this.parsingWhere(bo));
+		stringBuilder.append(this.parsingWhere(boData));
 		return stringBuilder.toString();
 	}
 
-	public String parsingInsert(IBusinessObject bo) {
+	public String parsingInsert(FieldedObject boData) {
 		StringBuilder fieldsBuilder = new StringBuilder();
 		StringBuilder valuesBuilder = new StringBuilder();
 
 		DbField dbField = null;
-		BusinessObject<?> boData = (BusinessObject<?>) bo;
 		for (IPropertyInfo<?> item : boData.properties()) {
 			dbField = item.getAnnotation(DbField.class);
 			if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
@@ -621,7 +631,7 @@ public abstract class DbAdapter {
 			valuesBuilder.append("?");
 		}
 		if (fieldsBuilder.length() == 0 || valuesBuilder.length() == 0) {
-			throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", bo.toString()));
+			throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", boData.toString()));
 		}
 
 		StringBuilder stringBuilder = new StringBuilder();
@@ -629,7 +639,7 @@ public abstract class DbAdapter {
 		stringBuilder.append(" ");
 		stringBuilder.append("INTO");
 		stringBuilder.append(this.identifier());
-		stringBuilder.append(this.table(bo.getClass()));
+		stringBuilder.append(this.table(boData.getClass()));
 		stringBuilder.append(this.identifier());
 		stringBuilder.append("(");
 		stringBuilder.append(fieldsBuilder);
@@ -670,4 +680,30 @@ public abstract class DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	public String parsingMaxValue(MaxValue maxValue, Iterable<ICondition> conditions) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("SELECT");
+		stringBuilder.append(" ");
+		stringBuilder.append("Max");
+		stringBuilder.append("(");
+		stringBuilder.append(this.identifier());
+		stringBuilder.append(maxValue.getKeyField().getName());
+		stringBuilder.append(this.identifier());
+		stringBuilder.append(")");
+		stringBuilder.append(" ");
+		stringBuilder.append("FROM");
+		stringBuilder.append(" ");
+		stringBuilder.append(this.identifier());
+		stringBuilder.append(this.table(maxValue.getType()));
+		stringBuilder.append(this.identifier());
+		if (maxValue instanceof IDbTableLock) {
+			stringBuilder.append(" ");
+			stringBuilder.append("WITH (UPDLOCK)");
+		}
+		stringBuilder.append(" ");
+		stringBuilder.append(this.where());
+		stringBuilder.append(" ");
+		stringBuilder.append(this.parsingWhere(conditions));
+		return stringBuilder.toString();
+	}
 }

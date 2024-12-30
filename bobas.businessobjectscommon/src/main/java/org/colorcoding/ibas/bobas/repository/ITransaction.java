@@ -24,13 +24,13 @@ public interface ITransaction extends AutoCloseable {
 	/**
 	 * 查询对象
 	 * 
-	 * @param criteria 查询条件
-	 * 
 	 * @param boType   查询的对象类型
+	 * 
+	 * @param criteria 查询条件
 	 * 
 	 * @return
 	 */
-	<T extends IBusinessObject> T[] fetch(ICriteria criteria, Class<?> boType) throws RepositoryException;
+	<T extends IBusinessObject> T[] fetch(Class<?> boType, ICriteria criteria) throws RepositoryException;
 
 	/**
 	 * 保存对象

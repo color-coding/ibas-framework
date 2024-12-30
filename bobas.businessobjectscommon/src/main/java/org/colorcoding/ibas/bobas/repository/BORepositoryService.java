@@ -37,11 +37,11 @@ public class BORepositoryService extends BORepository4DB {
 	 * 可基于子项结果再查父项
 	 * 
 	 * @param <T>      对象类型
-	 * @param criteria 查询条件
 	 * @param boType   对象类型
+	 * @param criteria 查询条件
 	 * @return
 	 */
-	protected <T extends IBusinessObject> IOperationResult<T> fetch(ICriteria criteria, Class<?> boType) {
+	protected <T extends IBusinessObject> IOperationResult<T> fetch(Class<?> boType, ICriteria criteria) {
 		if (criteria != null) {
 			// 有子项的查询结果后，再筛选父项
 			IChildCriteria cCriteria = criteria.getChildCriterias().firstOrDefault(c -> c.isEntry());
@@ -80,7 +80,7 @@ public class BORepositoryService extends BORepository4DB {
 
 					boolean mine = this.beginTransaction();
 					try {
-						IOperationResult<IBusinessObject> opRsltChilds = this.fetch(cCriteria, subType);
+						IOperationResult<IBusinessObject> opRsltChilds = this.fetch(subType, cCriteria);
 						if (opRsltChilds.getError() != null) {
 							throw opRsltChilds.getError();
 						}
@@ -109,7 +109,7 @@ public class BORepositoryService extends BORepository4DB {
 							condition.setBracketClose(condition.getBracketClose() + 1);
 						}
 						// 查询父项，并填充子项
-						IOperationResult<T> opRsltParent = this.fetch(nCriteria, boType);
+						IOperationResult<T> opRsltParent = this.fetch(boType, nCriteria);
 						if (opRsltParent.getError() != null) {
 							throw opRsltParent.getError();
 						}
@@ -156,7 +156,7 @@ public class BORepositoryService extends BORepository4DB {
 			}
 		}
 		// 父项查询，再查子项
-		return super.fetch(criteria, boType);
+		return super.fetch(boType, criteria);
 	}
 
 	/**
@@ -183,7 +183,7 @@ public class BORepositoryService extends BORepository4DB {
 						this.close();
 						mine = false;
 					}
-					return this.fetch(bo.getCriteria(), bo.getClass());
+					return this.fetch(bo.getClass(), bo.getCriteria());
 				}
 				// 非自建事务，不获取新对象实例
 				return operationResult;

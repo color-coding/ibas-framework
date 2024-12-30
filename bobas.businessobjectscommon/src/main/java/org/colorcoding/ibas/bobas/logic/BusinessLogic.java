@@ -301,25 +301,25 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 	 * 逻辑链中查询被影响对象（仅第一个）
 	 * 
 	 * @param <B>
+	 * @param boType
 	 * @param criteria
-	 * @param type
 	 * @return
 	 */
-	protected final <B> B fetchBeAffected(ICriteria criteria, Class<B> boType) {
-		return this.fetchBeAffected(criteria, boType, false).firstOrDefault();
+	protected final <B> B fetchBeAffected(Class<B> boType, ICriteria criteria) {
+		return this.fetchBeAffected(boType, criteria, false).firstOrDefault();
 	}
 
 	/**
 	 * 逻辑链中查询被影响对象
 	 * 
 	 * @param <B>
-	 * @param criteria
 	 * @param boType
+	 * @param criteria
 	 * @param all      返回全部
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	protected final <B> List<B> fetchBeAffected(ICriteria criteria, Class<B> boType, boolean all) {
+	protected final <B> List<B> fetchBeAffected(Class<B> boType, ICriteria criteria, boolean all) {
 		Objects.requireNonNull(boType);
 		Objects.requireNonNull(criteria);
 		Objects.requireNonNull(this.getLogicChain());

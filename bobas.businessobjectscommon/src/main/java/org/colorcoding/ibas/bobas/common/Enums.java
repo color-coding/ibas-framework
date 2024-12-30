@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.KeyValue;
 
 public class Enums {
@@ -118,21 +119,21 @@ public class Enums {
 	 * @param type 目前可识别的类型：枚举类型
 	 * @return
 	 */
-	public static KeyValue[] toKeyValues(Class<?> enumType) {
+	@SuppressWarnings("unchecked")
+	public static KeyValue<Integer>[] toKeyValues(Class<?> enumType) {
 		Objects.requireNonNull(enumType);
 		if (!enumType.isEnum()) {
 			throw new ClassCastException("is not Enum.");
 		}
 		Object[] constants = enumType.getEnumConstants();
+		ArrayList<KeyValue<Integer>> values = new ArrayList<>();
 		if (constants.length > 0) {
-			KeyValue[] values = new KeyValue[constants.length];
-			for (int i = 0; i < values.length; i++) {
+			for (int i = 0; i < constants.length; i++) {
 				Enum<?> item = (Enum<?>) constants[i];
-				values[i] = new KeyValue(item.name(), item.ordinal());
+				values.add(new KeyValue<Integer>(item.name(), item.ordinal()));
 			}
-			return values;
 		}
-		return new KeyValue[] {};
+		return (KeyValue<Integer>[]) values.toArray(new KeyValue<?>[] {});
 	}
 
 	public static boolean equals(Object a, Object b) {

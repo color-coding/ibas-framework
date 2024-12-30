@@ -134,6 +134,17 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject 
 		}
 	}
 
+	public boolean isDirty(IPropertyInfo<?> propertyInfo) {
+		if (this.modifiedFields != null) {
+			for (IPropertyInfo<?> item : this.modifiedFields) {
+				if (item.equals(propertyInfo)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	public String toString() {
 		return String.format("{%s: %s}", this.getClass().getSimpleName(), this.hashCode());
 	}

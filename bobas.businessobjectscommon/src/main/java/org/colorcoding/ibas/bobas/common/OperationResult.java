@@ -62,7 +62,7 @@ public class OperationResult<P> extends OperationMessage implements IOperationRe
 				if (this.resultObjects == null) {
 					this.resultObjects = new ArrayList<>((Collection<P>) values);
 				} else {
-					this.getResultObjects().addAll((Collection<P>) values);
+					this.getResultObjects().addAll(values);
 				}
 			} else {
 				this.getResultObjects().addAll(values);

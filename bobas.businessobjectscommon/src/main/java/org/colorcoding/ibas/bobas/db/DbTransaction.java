@@ -18,6 +18,7 @@ import org.colorcoding.ibas.bobas.bo.BusinessObjects;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
+import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.Enums;
 import org.colorcoding.ibas.bobas.common.IChildCriteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
@@ -26,6 +27,8 @@ import org.colorcoding.ibas.bobas.common.Result;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
+import org.colorcoding.ibas.bobas.data.DataTable;
+import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.repository.RepositoryException;
@@ -138,7 +141,7 @@ public class DbTransaction extends Transaction {
 
 	@Override
 	@SuppressWarnings({ "unchecked" })
-	public final <T extends IBusinessObject> T[] fetch(ICriteria criteria, Class<?> boType) throws RepositoryException {
+	public final <T extends IBusinessObject> T[] fetch(Class<?> boType, ICriteria criteria) throws RepositoryException {
 		try {
 			Objects.requireNonNull(boType);
 			// 查询方法，不主动开启事务
@@ -190,7 +193,7 @@ public class DbTransaction extends Transaction {
 										if (cCriteria.getConditions().isEmpty()) {
 											continue;
 										}
-										for (IBusinessObject item : this.fetch(cCriteria, cData.getClass())) {
+										for (IBusinessObject item : this.fetch(cData.getClass(), cCriteria)) {
 											cData.setProperty(propertyInfo, item);
 										}
 									}
@@ -216,7 +219,7 @@ public class DbTransaction extends Transaction {
 												onlyHasChilds = item.isOnlyHasChilds();
 											}
 										}
-										for (IBusinessObject item : this.fetch(cCriteria, cDatas.getElementType())) {
+										for (IBusinessObject item : this.fetch(cDatas.getElementType(), cCriteria)) {
 											cDatas.add(item);
 										}
 										// 要求子项必须有值
@@ -531,4 +534,51 @@ public class DbTransaction extends Transaction {
 		}
 	}
 
+	public final MaxValue fetch(MaxValue maxValue) throws RepositoryException {
+		try {
+			Objects.requireNonNull(maxValue);
+			// 查询方法，不主动开启事务
+			ICriteria criteria = new Criteria();
+			for (IPropertyInfo<?> item : maxValue.getConditionFields()) {
+				ICondition condition = criteria.getConditions().create();
+				condition.setAlias(item.getName());
+				condition.setValue(maxValue.getProperty(item));
+			}
+			criteria = this.getAdapter().convert(criteria, maxValue.getType());
+			try (PreparedStatement statement = this.connection
+					.prepareStatement(this.getAdapter().parsingMaxValue(maxValue, criteria.getConditions()))) {
+				// 设置参数
+				int index = 0;
+				for (ICondition condition : criteria.getConditions()) {
+					statement.setObject(index, condition.getValue(),
+							this.getAdapter().sqlTypeOf(condition.getAliasDataType()));
+					index += 1;
+				}
+				// 运行查询
+				try (ResultSet resultSet = statement.executeQuery()) {
+					maxValue = this.getAdapter().setProperties(maxValue, resultSet,
+							new IPropertyInfo<?>[] { maxValue.getKeyField() });
+				}
+			}
+			return maxValue;
+		} catch (Exception e) {
+			throw new RepositoryException(e);
+		}
+	}
+
+	public final IDataTable fetch(ISqlStatement sqlStatement) throws RepositoryException {
+		try {
+			Objects.requireNonNull(sqlStatement);
+			// 查询方法，不主动开启事务
+			IDataTable dataTable = new DataTable();
+			try (PreparedStatement statement = this.connection.prepareStatement(sqlStatement.getContent())) {
+				// 运行查询
+				try (ResultSet resultSet = statement.executeQuery()) {
+				}
+			}
+			return dataTable;
+		} catch (Exception e) {
+			throw new RepositoryException(e);
+		}
+	}
 }

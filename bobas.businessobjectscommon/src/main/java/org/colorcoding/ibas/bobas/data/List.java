@@ -90,4 +90,21 @@ public interface List<E> extends java.util.List<E> {
 	 * @return
 	 */
 	boolean contains(Predicate<? super E> filter);
+
+	/**
+	 * 添加数组元素
+	 * 
+	 * @param c
+	 * @return
+	 */
+	boolean addAll(E[] c);
+
+	/**
+	 * 添加数组元素
+	 * 
+	 * @param c
+	 * @return
+	 */
+	boolean addAll(Iterable<? extends E> c);
+
 }
