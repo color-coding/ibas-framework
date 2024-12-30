@@ -205,8 +205,12 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 				int filterCount = 0;// 过滤的数量
 				int fetchTime = 0;// 查询的次数
 				int fetchCount = 0;// 查询的数量
-				boolean dataFull = criteria.getResultCount() > 0 ? false : true;// 数据填充满
+				boolean dataFull = true;// 数据填充满
 				ICriteria oCriteria = criteria;// 原始查询
+				if (criteria.getResultCount() > 0) {
+					dataFull = false;
+					oCriteria = criteria.clone();
+				}
 				// 使用对象过滤
 				do {
 					// 循环查询数据，直至填满或没有新的数据
@@ -244,8 +248,7 @@ public class BORepositoryServiceApplication extends BORepositorySmartService imp
 					}
 					if (!dataFull) {
 						// 结果数量不满足，进行下一组数据查询
-						IBusinessObject lastBO = opRslt.getResultObjects().lastOrDefault();
-						criteria = oCriteria.next(lastBO);// 下组数据的查询条件
+						criteria = oCriteria.next(opRslt.getResultObjects().lastOrDefault());
 					}
 				} while (!dataFull);
 				if (filterCount > 0) {
