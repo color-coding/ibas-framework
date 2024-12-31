@@ -46,18 +46,18 @@ public class ConfigurationManagerFile extends ConfigurationManager {
 	}
 
 	@XmlElementWrapper(name = "appSettings")
-	@XmlElement(name = "add", type = KeyText.class)
-	private KeyText[] getConfigurationElements() {
-		return this.getElements().toArray(new KeyText[] {});
+	@XmlElement(name = "add", type = ConfigurationElement.class)
+	private ConfigurationElement[] getConfigurationElements() {
+		return this.getElements().toArray(new ConfigurationElement[] {});
 	}
 
 	@SuppressWarnings("unused")
-	private void setConfigurationElements(KeyText[] value) {
+	private void setConfigurationElements(ConfigurationElement[] value) {
 		if (value == null) {
 			return;
 		}
-		for (KeyText item : value) {
-			this.addConfigValue(item.getKey(), item.getText());
+		for (ConfigurationElement item : value) {
+			this.addConfigValue(item.getKey(), item.getValue());
 		}
 	}
 

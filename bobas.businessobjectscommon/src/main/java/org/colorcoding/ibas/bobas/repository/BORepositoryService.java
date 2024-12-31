@@ -46,8 +46,8 @@ public class BORepositoryService extends BORepository4DB {
 			// 有子项的查询结果后，再筛选父项
 			IChildCriteria cCriteria = criteria.getChildCriterias().firstOrDefault(c -> c.isEntry());
 			if (cCriteria != null && !Strings.isNullOrEmpty(cCriteria.getPropertyPath())
-					&& (boType.isAssignableFrom(IBODocument.class) || boType.isAssignableFrom(IBOSimple.class)
-							|| boType.isAssignableFrom(IBOMasterData.class))) {
+					&& (IBODocument.class.isAssignableFrom(boType) || IBOSimple.class.isAssignableFrom(boType)
+							|| IBOMasterData.class.isAssignableFrom(boType))) {
 				try {
 					IPropertyInfo<?> propertyInfo = BOFactory.propertyInfos(boType)
 							.firstOrDefault(c -> c.getName().equalsIgnoreCase(cCriteria.getPropertyPath()));
@@ -55,7 +55,7 @@ public class BORepositoryService extends BORepository4DB {
 						throw new RepositoryException(
 								Strings.format("not found property %s.", cCriteria.getPropertyPath()));
 					}
-					if (!propertyInfo.getValueType().isAssignableFrom(IBusinessObjects.class)) {
+					if (!IBusinessObjects.class.isAssignableFrom(propertyInfo.getValueType())) {
 						throw new RepositoryException(
 								Strings.format("unrecognizable property %s value class.", propertyInfo.getName()));
 					}
@@ -65,9 +65,9 @@ public class BORepositoryService extends BORepository4DB {
 					if (tmpObjects instanceof IBusinessObjects<?, ?>) {
 						subType = ((IBusinessObjects<?, ?>) tmpObjects).getElementType();
 					}
-					if (subType == null || !(subType.isAssignableFrom(IBODocumentLine.class)
-							|| subType.isAssignableFrom(IBOSimpleLine.class)
-							|| subType.isAssignableFrom(IBOMasterDataLine.class))) {
+					if (subType == null || !(IBODocumentLine.class.isAssignableFrom(subType)
+							|| IBOSimpleLine.class.isAssignableFrom(subType)
+							|| IBOMasterDataLine.class.isAssignableFrom(subType))) {
 						throw new RepositoryException(
 								Strings.format("unrecognizable property %s value class.", propertyInfo.getName()));
 					}

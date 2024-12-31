@@ -6,6 +6,12 @@ import org.colorcoding.ibas.bobas.logic.IBusinessLogicContract;
 /**
  * 业务对象存储标记契约
  */
-public interface IBOStorageTagContract extends IBusinessLogicContract, IBOStorageTag {
+public interface IBOStorageTagContract extends IBusinessLogicContract {
 
+	/**
+	 * 业务对象实例
+	 * 
+	 * @return
+	 */
+	IBOStorageTag getHost();
 }

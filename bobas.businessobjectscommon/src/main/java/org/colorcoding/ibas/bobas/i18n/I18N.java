@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.i18n;
 
+import org.colorcoding.ibas.bobas.common.Strings;
+
 /**
  * 多语言
  * 
@@ -18,7 +20,7 @@ public class I18N {
 	 * @return 返回key所对应的值
 	 */
 	public static String prop(String key, Object... args) {
-		return key;
+		return Strings.format(key, args);
 	}
 
 }

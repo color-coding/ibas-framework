@@ -29,8 +29,8 @@ public class DbFactory {
 	public DbAdapter createAdapter(String type) throws Exception {
 		if (!this.adapters.containsKey(type)) {
 			String namespace = DbAdapter.class.getName();
-			namespace = namespace.substring(0, namespace.lastIndexOf(this.getClass().getSimpleName()));
-			String nameClass = Strings.concat(namespace, type.toLowerCase());
+			namespace = namespace.substring(0, namespace.lastIndexOf(".") + 1);
+			String nameClass = Strings.concat(namespace, type.toLowerCase(), ".", DbAdapter.class.getSimpleName());
 			Class<?> adapterClass = Class.forName(nameClass);
 			if (adapterClass == null || adapterClass.isAssignableFrom(DbAdapter.class)) {
 				throw new Exception(Strings.format("unavailable [%s].", nameClass));

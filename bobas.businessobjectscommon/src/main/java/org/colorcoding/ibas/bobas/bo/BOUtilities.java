@@ -77,6 +77,11 @@ public class BOUtilities {
 		public ICriteria getCriteria() {
 			return null;
 		}
+
+		@Override
+		public void setLoading(boolean value) {
+
+		}
 	};
 
 	/**

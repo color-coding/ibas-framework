@@ -123,7 +123,7 @@ public class DateTimes {
 	}
 
 	/**
-	 * 当天
+	 * 当前时间（天部分）
 	 */
 	public static DateTime today() {
 		Calendar calendar = Calendar.getInstance();
@@ -133,6 +133,13 @@ public class DateTimes {
 		calendar.clear();
 		calendar.set(year, month, day, 0, 0, 0);
 		return valueOf(calendar.getTimeInMillis());
+	}
+
+	/**
+	 * 当前时间（时间部分）
+	 */
+	public static short time() {
+		return Short.valueOf(now().toString("HHmm"));
 	}
 
 	/**
@@ -206,4 +213,5 @@ public class DateTimes {
 		}
 		return a.compareTo(b) < 0;
 	}
+
 }

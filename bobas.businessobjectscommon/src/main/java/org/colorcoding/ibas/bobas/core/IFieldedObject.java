@@ -29,4 +29,14 @@ public interface IFieldedObject extends Cloneable, Serializable, IBindable, ITra
 	 * @param value    值
 	 */
 	<P> void setProperty(IPropertyInfo<?> property, P value);
+
+	/**
+	 * 属性是否改变
+	 * 
+	 * @param propertyInfo 属性
+	 * @return
+	 */
+	default boolean isDirty(IPropertyInfo<?> propertyInfo) {
+		return false;
+	}
 }

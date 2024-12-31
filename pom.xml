@@ -1,5 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.colorcoding.ibas</groupId>
   <artifactId>bobas.businessobjectscommon.parent</artifactId>
@@ -13,14 +13,14 @@
   </organization>
   <developers>
     <developer>
-      <name>Niuren Zhu</name>
+      <name>Niuren.Zhu</name>
       <organization>Color-Coding Studio</organization>
       <organizationUrl>https://colorcoding.org/</organizationUrl>
       <url>https://colorcoding.org/niurenzhu</url>
     </developer>
   </developers>
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <build>
     <plugins>
@@ -64,7 +64,7 @@
   <repositories>
     <repository>
       <id>ibas-maven</id>
-      <name>ibas maven repository</name>
+      <name>Color-Coding Maven Repository</name>
       <url>http://maven.colorcoding.org/repository/maven-public/</url>
       <layout>default</layout>
       <snapshots>

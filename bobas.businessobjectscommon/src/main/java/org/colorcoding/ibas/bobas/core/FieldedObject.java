@@ -6,6 +6,7 @@ import java.util.Objects;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.List;
 
@@ -64,6 +65,7 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject 
 	 * 
 	 * @return
 	 */
+	@Override
 	public List<IPropertyInfo<?>> properties() {
 		ArrayList<IPropertyInfo<?>> propertyInfos = new ArrayList<>();
 		for (IPropertyInfo<?> item : this.fields.keySet()) {
@@ -79,6 +81,7 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject 
 	 * 
 	 * @return 属性的值
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public final <P> P getProperty(IPropertyInfo<?> property) {
 		Objects.requireNonNull(property);
@@ -90,7 +93,8 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject 
 			}
 			return value;
 		}
-		throw new IllegalArgumentException("not found property.");
+		throw new IllegalArgumentException(
+				Strings.format("[%s] not exists property [%s].", this.getClass().getName(), property.getName()));
 	}
 
 	/**
@@ -100,11 +104,13 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject 
 	 * 
 	 * @param value    新的值
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public final <P> void setProperty(IPropertyInfo<?> property, P value) {
 		Objects.requireNonNull(property);
 		if (!this.fields.containsKey(property)) {
-			throw new IllegalArgumentException("not found property.");
+			throw new IllegalArgumentException(
+					Strings.format("[%s] not exists property [%s].", this.getClass().getName(), property.getName()));
 		}
 		if (this.isLoading()) {
 			this.fields.put(property, value);
@@ -134,6 +140,7 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject 
 		}
 	}
 
+	@Override
 	public boolean isDirty(IPropertyInfo<?> propertyInfo) {
 		if (this.modifiedFields != null) {
 			for (IPropertyInfo<?> item : this.modifiedFields) {
@@ -145,6 +152,7 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject 
 		return false;
 	}
 
+	@Override
 	public String toString() {
 		return String.format("{%s: %s}", this.getClass().getSimpleName(), this.hashCode());
 	}

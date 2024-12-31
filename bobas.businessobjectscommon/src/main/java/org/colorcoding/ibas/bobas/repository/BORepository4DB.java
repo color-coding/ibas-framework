@@ -26,7 +26,7 @@ public class BORepository4DB extends BORepository {
 		try {
 			if (Strings.isNullOrEmpty(dbType)) {
 				dbType = MyConfiguration
-						.getConfigValue(Strings.concat(this.dbSign, MyConfiguration.CONFIG_ITEM_DB_TYPE, "sqlite"));
+						.getConfigValue(Strings.concat(this.dbSign, MyConfiguration.CONFIG_ITEM_DB_TYPE), "sqlite");
 			}
 			if (Strings.isNullOrEmpty(dbServer)) {
 				dbServer = MyConfiguration.getConfigValue(
@@ -45,7 +45,7 @@ public class BORepository4DB extends BORepository {
 						Strings.concat(this.dbSign, MyConfiguration.CONFIG_ITEM_DB_USER_PASSWORD), "1q2w3e");
 			}
 			if (this.dbConnection == null) {
-				this.dbConnection = DbFactory.create().createConnection(dbType, dbServer, dbName, dbName, dbUser);
+				this.dbConnection = DbFactory.create().createConnection(dbType, dbServer, dbName, dbUser, dbPassword);
 			}
 		} catch (Exception e) {
 			throw new RepositoryException(e);

@@ -61,7 +61,7 @@ public class BusinessLogicsManager {
 				}
 			}
 		}
-		if (logicClass != null && logicClass.isAssignableFrom(BusinessLogic.class)) {
+		if (logicClass != null && BusinessLogic.class.isAssignableFrom(logicClass)) {
 			try {
 				return (BusinessLogic<?, ?>) logicClass.newInstance();
 			} catch (Exception e) {

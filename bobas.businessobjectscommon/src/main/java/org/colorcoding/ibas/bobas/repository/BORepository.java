@@ -9,6 +9,7 @@ import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.logging.Logger;
 import org.colorcoding.ibas.bobas.logic.BusinessLogicsManager;
 import org.colorcoding.ibas.bobas.logic.IBusinessLogicChain;
 
@@ -110,6 +111,7 @@ public abstract class BORepository implements AutoCloseable {
 				throw e;
 			}
 		} catch (Exception e) {
+			Logger.log(e);
 			return new OperationResult<>(e);
 		}
 	}
@@ -180,6 +182,7 @@ public abstract class BORepository implements AutoCloseable {
 				throw e;
 			}
 		} catch (Exception e) {
+			Logger.log(e);
 			return new OperationResult<>(e);
 		}
 	}

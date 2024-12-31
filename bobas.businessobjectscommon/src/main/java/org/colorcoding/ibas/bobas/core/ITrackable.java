@@ -35,4 +35,11 @@ public interface ITrackable {
 	 * @return
 	 */
 	boolean isLoading();
+
+	/**
+	 * 设置是否加载中
+	 * 
+	 * @param value
+	 */
+	void setLoading(boolean value);
 }

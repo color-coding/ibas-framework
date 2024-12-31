@@ -283,7 +283,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 			Object cData;
 			BusinessObject<?> boData = (BusinessObject<?>) data;
 			for (IPropertyInfo<?> propertyInfo : boData.properties()) {
-				if (propertyInfo.getValueType().isAssignableFrom(IBusinessObject.class)) {
+				if (IBusinessObject.class.isAssignableFrom(propertyInfo.getValueType())) {
 					cData = BOUtilities.propertyValue(boData, propertyInfo);
 					if (cData instanceof IBusinessObject) {
 						for (IBusinessLogic<?> item : this.analyzeContracts((IBusinessObject) cData)) {
@@ -293,7 +293,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 							logics.add(item);
 						}
 					}
-				} else if (propertyInfo.getValueType().isAssignableFrom(IBusinessObjects.class)) {
+				} else if (IBusinessObjects.class.isAssignableFrom(propertyInfo.getValueType())) {
 					cData = BOUtilities.propertyValue(boData, propertyInfo);
 					if (cData instanceof IBusinessObjects) {
 						for (IBusinessObject item : ((IBusinessObjects<?, ?>) cData)) {

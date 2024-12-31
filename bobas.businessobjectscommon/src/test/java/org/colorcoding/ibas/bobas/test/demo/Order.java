@@ -25,7 +25,7 @@ public class Order extends BusinessObject<Order> {
 	/**
 	 * 数据库表
 	 */
-	public final static String DB_TABLE_NAME = "CC_SM_OPOR";
+	public final static String DB_TABLE_NAME = "CC_SL_ORDR";
 
 	/**
 	 * 属性名称-凭证编号
@@ -128,7 +128,6 @@ public class Order extends BusinessObject<Order> {
 	/**
 	 * 已激活的 属性
 	 */
-	@DbField(name = "Activated", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME)
 	public static final IPropertyInfo<Boolean> PROPERTY_ACTIVATED = registerProperty(PROPERTY_ACTIVATED_NAME,
 			Boolean.class, MY_CLASS);
 

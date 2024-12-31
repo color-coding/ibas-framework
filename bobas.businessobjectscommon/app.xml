@@ -4,8 +4,6 @@
     <appSettings>
         <!-- 配置项目-是否开启调试模式 -->
         <add key="DebugMode" value="true"  />
-        <!-- 配置项目-实时运行业务规则 -->
-        <add key="LiveBizRules" value="true"  />
         <!-- 配置项目-数据库类型 -->
         <add key="DbType" value="MSSQL" />
         <!-- 配置项目-数据库地址 -->

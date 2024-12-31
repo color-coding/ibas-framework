@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.db;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,10 +22,14 @@ import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.Result;
 import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.common.Strings;
-import org.colorcoding.ibas.bobas.core.FieldedObject;
+import org.colorcoding.ibas.bobas.core.IFieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
+import org.colorcoding.ibas.bobas.data.DataTable;
 import org.colorcoding.ibas.bobas.data.DateTime;
+import org.colorcoding.ibas.bobas.data.IDataTable;
+import org.colorcoding.ibas.bobas.data.IDataTableColumn;
+import org.colorcoding.ibas.bobas.data.IDataTableRow;
 import org.colorcoding.ibas.bobas.data.KeyText;
 import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.data.List;
@@ -69,7 +74,7 @@ public abstract class DbAdapter {
 	 * 解析数据
 	 * 
 	 * @param <T>       对象类型
-	 * @param boType    对象类型（Result、KeyText、KeyValue、BusinessObject）
+	 * @param boType    对象类型（Result、KeyText、KeyValue、BusinessObject、SPValues）
 	 * @param resultSet 结果集
 	 * @return
 	 * @throws SQLException
@@ -85,7 +90,7 @@ public abstract class DbAdapter {
 				datas.add((T) new KeyText(resultSet.getString(0), resultSet.getString(1)));
 			} else if (boType.equals(KeyValue.class)) {
 				datas.add((T) new KeyValue<Object>(resultSet.getString(0), resultSet.getObject(1)));
-			} else if (boType.isAssignableFrom(FieldedObject.class)) {
+			} else if (IFieldedObject.class.isAssignableFrom(boType)) {
 				if (orderProperties == null) {
 					List<IPropertyInfo<?>> propertyInfos = BOFactory.propertyInfos(boType);
 					orderProperties = new IPropertyInfo<?>[propertyInfos.size()];
@@ -125,13 +130,13 @@ public abstract class DbAdapter {
 	 * @throws SQLException
 	 */
 	public <T> T setProperties(T data, ResultSet resultSet, IPropertyInfo<?>[] orderProperties) throws SQLException {
-		if (data instanceof FieldedObject) {
-			IPropertyInfo<?> propertyInfo;
-			FieldedObject boData = (FieldedObject) data;
+		if (data instanceof IFieldedObject) {
+			IFieldedObject boData = (IFieldedObject) data;
 			boData.setLoading(true);
+			IPropertyInfo<?> propertyInfo;
 			for (int i = 0; i < orderProperties.length; i++) {
 				propertyInfo = orderProperties[i];
-				boData.setProperty(propertyInfo, this.parsingValue(resultSet, i, propertyInfo.getValueType()));
+				boData.setProperty(propertyInfo, this.parsingValue(resultSet, i + 1, propertyInfo.getValueType()));
 			}
 			boData.setLoading(false);
 		}
@@ -173,6 +178,47 @@ public abstract class DbAdapter {
 		} else {
 			return DataConvert.convert(dataType, resultSet.getObject(columnIndex));
 		}
+	}
+
+	/**
+	 * 解析数据集到表格
+	 * 
+	 * @param resultSet 数据集
+	 * @return
+	 * @throws SQLException
+	 * @throws ClassNotFoundException
+	 */
+	public IDataTable parsingDatas(ResultSet resultSet) throws SQLException, ClassNotFoundException {
+		DataTable dataTable = new DataTable();
+		ResultSetMetaData metaData = resultSet.getMetaData();
+		if (metaData.getColumnCount() > 0) {
+			// 设置表名
+			dataTable.setName(metaData.getTableName(1));
+			// 创建列
+			IDataTableColumn dtColumn;
+			String name;
+			for (int i = 1; i <= metaData.getColumnCount(); i++) {
+				dtColumn = dataTable.getColumns().create();
+				name = metaData.getColumnName(i);
+				if (Strings.isNullOrEmpty(name)) {
+					name = String.format("col_%s", i);
+				}
+				dtColumn.setName(name);
+				if (!dtColumn.getName().equalsIgnoreCase(metaData.getColumnLabel(i))) {
+					dtColumn.setDescription(metaData.getColumnLabel(i));
+				}
+				dtColumn.setDataType(Class.forName(metaData.getColumnClassName(i)));
+			}
+			// 添加行数据
+			while (resultSet.next()) {
+				IDataTableRow row = dataTable.getRows().create();
+				// 行的每列赋值
+				for (int i = 0; i < dataTable.getColumns().size(); i++) {
+					row.setValue(i, resultSet.getObject(i + 1, dataTable.getColumns().get(i).getDataType()));
+				}
+			}
+		}
+		return dataTable;
 	}
 
 	public int sqlTypeOf(DbFieldType type) {
@@ -225,7 +271,7 @@ public abstract class DbAdapter {
 					if (dbField != null) {
 						condition.setAlias(dbField.name());
 					}
-					condition.setAliasDataType(DbFieldType.valueOf(propertyInfo.getClass()));
+					condition.setAliasDataType(DbFieldType.valueOf(propertyInfo.getValueType()));
 				}
 				if (Strings.equalsIgnoreCase(condition.getComparedAlias(), propertyInfo.getName())) {
 					// 属性名称转数据库字段
@@ -278,7 +324,7 @@ public abstract class DbAdapter {
 	}
 
 	public final String parsingSelect(Class<?> boType, ICriteria criteria) {
-		if (boType.isAssignableFrom(SPValues.class)) {
+		if (SPValues.class.isAssignableFrom(boType)) {
 			// 存储过程赋值对象
 			DbProcedure procedure = boType.getAnnotation(DbProcedure.class);
 			if (procedure == null) {
@@ -286,7 +332,7 @@ public abstract class DbAdapter {
 			}
 			return this.parsingStoredProcedure(procedure.name(), new String[criteria.getConditions().size()]);
 		}
-		return this.parsingSelect(boType, criteria, boType.isAssignableFrom(IDbTableLock.class));
+		return this.parsingSelect(boType, criteria, IDbTableLock.class.isAssignableFrom(boType));
 	}
 
 	private Map<Class<?>, String> tables = new HashMap<>();
@@ -299,12 +345,12 @@ public abstract class DbAdapter {
 			DbField dbField;
 			for (IPropertyInfo<?> item : BOFactory.propertyInfos(boType)) {
 				dbField = item.getAnnotation(DbField.class);
-				if (dbField != null && Strings.isNullOrEmpty(dbField.table())) {
+				if (dbField != null && !Strings.isNullOrEmpty(dbField.table())) {
 					this.tables.put(boType, MyConfiguration.applyVariables(dbField.table()));
 					return this.table(boType);
 				}
 			}
-			throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", boType.toString()));
+			throw new RuntimeException(I18N.prop("not found [%s]'s table.", boType.toString()));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -327,7 +373,7 @@ public abstract class DbAdapter {
 		stringBuilder.append(this.identifier());
 		stringBuilder.append(this.table(boType));
 		stringBuilder.append(this.identifier());
-		if (boType.isAssignableFrom(IDbTableLock.class)) {
+		if (IDbTableLock.class.isAssignableFrom(boType)) {
 			stringBuilder.append(" ");
 			stringBuilder.append("WITH (UPDLOCK)");
 		}
@@ -533,7 +579,7 @@ public abstract class DbAdapter {
 		return stringBuilder.toString();
 	}
 
-	public String parsingWhere(FieldedObject boData) {
+	public String parsingWhere(IFieldedObject boData) {
 		DbField dbField = null;
 		StringBuilder stringBuilder = new StringBuilder();
 		for (IPropertyInfo<?> item : boData.properties().where(c -> c.isPrimaryKey())) {
@@ -555,7 +601,7 @@ public abstract class DbAdapter {
 		return stringBuilder.toString();
 	}
 
-	public String parsingDelete(FieldedObject boData) {
+	public String parsingDelete(IFieldedObject boData) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("DELETE");
 		stringBuilder.append(" ");
@@ -569,7 +615,7 @@ public abstract class DbAdapter {
 		return stringBuilder.toString();
 	}
 
-	public String parsingUpdate(FieldedObject boData) {
+	public String parsingUpdate(IFieldedObject boData) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("UPDATE");
 		stringBuilder.append(" ");
@@ -607,7 +653,7 @@ public abstract class DbAdapter {
 		return stringBuilder.toString();
 	}
 
-	public String parsingInsert(FieldedObject boData) {
+	public String parsingInsert(IFieldedObject boData) {
 		StringBuilder fieldsBuilder = new StringBuilder();
 		StringBuilder valuesBuilder = new StringBuilder();
 
@@ -638,14 +684,17 @@ public abstract class DbAdapter {
 		stringBuilder.append("INSERT");
 		stringBuilder.append(" ");
 		stringBuilder.append("INTO");
+		stringBuilder.append(" ");
 		stringBuilder.append(this.identifier());
 		stringBuilder.append(this.table(boData.getClass()));
 		stringBuilder.append(this.identifier());
+		stringBuilder.append(" ");
 		stringBuilder.append("(");
 		stringBuilder.append(fieldsBuilder);
 		stringBuilder.append(")");
 		stringBuilder.append(" ");
 		stringBuilder.append("VALUES");
+		stringBuilder.append(" ");
 		stringBuilder.append("(");
 		stringBuilder.append(valuesBuilder);
 		stringBuilder.append(")");

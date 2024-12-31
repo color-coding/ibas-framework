@@ -1,7 +1,7 @@
 package org.colorcoding.ibas.bobas.logic;
 
-import org.colorcoding.ibas.bobas.bo.BOFactory;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
+import org.colorcoding.ibas.bobas.bo.BusinessObjectUnit;
 import org.colorcoding.ibas.bobas.bo.IApprovalData;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
@@ -20,7 +20,6 @@ import org.colorcoding.ibas.bobas.common.Numbers;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.logic.common.IBOApprovalContract;
 import org.colorcoding.ibas.bobas.logic.common.IBOInstanceLogContract;
@@ -61,8 +60,28 @@ class BOKeysContract extends BOContract<IBusinessObject> implements IBOKeysContr
 
 	@Override
 	public String getObjectCode() {
-		if (this.getHost() instanceof IBOStorageTag) {
-			return ((IBOStorageTag) this.getHost()).getObjectCode();
+		if (this.getHost() instanceof IBOLine) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(this.getHost().getClass().getSimpleName());
+			if (this.getHost() instanceof IBODocumentLine) {
+				stringBuilder.append("-");
+				stringBuilder.append(((IBODocumentLine) this.getHost()).getDocEntry());
+			} else if (this.getHost() instanceof IBOSimpleLine) {
+				stringBuilder.append("-");
+				stringBuilder.append(((IBOSimpleLine) this.getHost()).getObjectKey());
+			} else if (this.getHost() instanceof IBOMasterDataLine) {
+				stringBuilder.append("-");
+				stringBuilder.append(((IBOMasterDataLine) this.getHost()).getCode());
+			}
+			return stringBuilder.toString();
+		} else {
+			if (this.getHost() instanceof IBOStorageTag) {
+				return ((IBOStorageTag) this.getHost()).getObjectCode();
+			}
+			BusinessObjectUnit boUnit = this.getHost().getClass().getAnnotation(BusinessObjectUnit.class);
+			if (boUnit != null) {
+				return boUnit.code();
+			}
 		}
 		return Strings.VALUE_EMPTY;
 	}
@@ -132,9 +151,6 @@ class BOKeysContract extends BOContract<IBusinessObject> implements IBOKeysContr
 	public IPropertyInfo<?> getMaxValueField() {
 		if (this.getHost() instanceof IBOMaxValueKey) {
 			return ((IBOMaxValueKey) this.getHost()).getMaxValueField();
-		} else if (this.getHost() instanceof IBOLine) {
-			return BOFactory.propertyInfos(this.getHost().getClass())
-					.firstOrDefault(c -> IBOLine.SECONDARY_PRIMARY_KEY_NAME.equalsIgnoreCase(c.getName()));
 		}
 		return null;
 	}
@@ -144,19 +160,7 @@ class BOKeysContract extends BOContract<IBusinessObject> implements IBOKeysContr
 		if (this.getHost() instanceof IBOMaxValueKey) {
 			return ((IBOMaxValueKey) this.getHost()).getMaxValueConditions();
 		}
-		IPropertyInfo<?>[] conditions = new IPropertyInfo<?>[] {};
-		List<IPropertyInfo<?>> propertyInfos = BOFactory.propertyInfos(this.getHost().getClass());
-		if (this.getHost() instanceof IBODocumentLine) {
-			return propertyInfos.where(c -> IBODocument.MASTER_PRIMARY_KEY_NAME.equalsIgnoreCase(c.getName()))
-					.toArray(conditions);
-		} else if (this.getHost() instanceof IBOSimpleLine) {
-			return propertyInfos.where(c -> IBOSimple.MASTER_PRIMARY_KEY_NAME.equalsIgnoreCase(c.getName()))
-					.toArray(conditions);
-		} else if (this.getHost() instanceof IBOMasterDataLine) {
-			return propertyInfos.where(c -> IBOMasterData.MASTER_PRIMARY_KEY_NAME.equalsIgnoreCase(c.getName()))
-					.toArray(conditions);
-		}
-		return conditions;
+		return new IPropertyInfo<?>[] {};
 	}
 
 	private String maxValueKey = null;
@@ -208,116 +212,6 @@ class BOStorageTagContract extends BOContract<IBOStorageTag> implements IBOStora
 
 	public BOStorageTagContract(IBOStorageTag host) {
 		super(host);
-	}
-
-	@Override
-	public String getObjectCode() {
-		return this.getHost().getObjectCode();
-	}
-
-	@Override
-	public DateTime getCreateDate() {
-		return this.getHost().getCreateDate();
-	}
-
-	@Override
-	public void setCreateDate(DateTime value) {
-		this.getHost().setCreateDate(value);
-
-	}
-
-	@Override
-	public Short getCreateTime() {
-		return this.getHost().getCreateTime();
-	}
-
-	@Override
-	public void setCreateTime(Short value) {
-		this.getHost().setCreateTime(value);
-
-	}
-
-	@Override
-	public DateTime getUpdateDate() {
-		return this.getHost().getUpdateDate();
-	}
-
-	@Override
-	public void setUpdateDate(DateTime value) {
-		this.getHost().setUpdateDate(value);
-
-	}
-
-	@Override
-	public Short getUpdateTime() {
-		return this.getHost().getUpdateTime();
-	}
-
-	@Override
-	public void setUpdateTime(Short value) {
-		this.getHost().setUpdateTime(value);
-
-	}
-
-	@Override
-	public Integer getLogInst() {
-		return this.getHost().getLogInst();
-	}
-
-	@Override
-	public void setLogInst(Integer value) {
-		this.getHost().setLogInst(value);
-	}
-
-	@Override
-	public Integer getCreateUserSign() {
-		return this.getHost().getCreateUserSign();
-	}
-
-	@Override
-	public void setCreateUserSign(Integer value) {
-		this.getHost().setCreateUserSign(value);
-
-	}
-
-	@Override
-	public Integer getUpdateUserSign() {
-		return this.getHost().getUpdateUserSign();
-	}
-
-	@Override
-	public void setUpdateUserSign(Integer value) {
-		this.getHost().setUpdateUserSign(value);
-	}
-
-	@Override
-	public String getCreateActionId() {
-		return this.getHost().getCreateActionId();
-	}
-
-	@Override
-	public void setCreateActionId(String value) {
-		this.getHost().setCreateActionId(value);
-	}
-
-	@Override
-	public String getUpdateActionId() {
-		return this.getHost().getUpdateActionId();
-	}
-
-	@Override
-	public void setUpdateActionId(String value) {
-		this.getHost().setUpdateActionId(value);
-	}
-
-	@Override
-	public String getDataSource() {
-		return this.getHost().getDataSource();
-	}
-
-	@Override
-	public void setDataSource(String value) {
-		this.getHost().setDataSource(value);
 	}
 
 }
@@ -404,6 +298,11 @@ class BOApprovalContract extends BOContract<IApprovalData> implements IBOApprova
 	@Override
 	public boolean isLoading() {
 		return this.getHost().isLoading();
+	}
+
+	@Override
+	public void setLoading(boolean value) {
+
 	}
 
 }
@@ -522,6 +421,11 @@ class BOInstanceLogContract extends BOContract<IBOStorageTag> implements IBOInst
 	@Override
 	public void setDataSource(String value) {
 		this.getHost().setDataSource(value);
+	}
+
+	@Override
+	public boolean isNew() {
+		return this.getHost().isNew();
 	}
 
 }
