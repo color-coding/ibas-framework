@@ -12,6 +12,14 @@ public interface ITransaction extends AutoCloseable {
 	String getId();
 
 	/**
+	 * 处于事务中
+	 * 
+	 * @return
+	 * @throws RepositoryException
+	 */
+	boolean inTransaction() throws RepositoryException;
+
+	/**
 	 * 回滚事务
 	 */
 	void rollback() throws RepositoryException;

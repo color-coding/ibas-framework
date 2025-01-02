@@ -77,20 +77,28 @@ public class DbTransaction extends Transaction {
 		return this.adapter;
 	}
 
-	public final synchronized boolean inTransaction() throws SQLException {
-		return !this.getConnection().getAutoCommit();
+	public final synchronized boolean inTransaction() throws RepositoryException {
+		try {
+			return !this.getConnection().getAutoCommit();
+		} catch (SQLException e) {
+			throw new RepositoryException(e);
+		}
 	}
 
-	public final synchronized boolean beginTransaction() throws SQLException {
-		if (this.isClosed()) {
-			throw new SQLException(I18N.prop("msg_bobas_database_connection_is_closed"));
+	public final synchronized boolean beginTransaction() throws RepositoryException {
+		try {
+			if (this.isClosed()) {
+				throw new SQLException(I18N.prop("msg_bobas_database_connection_is_closed"));
+			}
+			if (this.inTransaction()) {
+				return false;
+			}
+			// 手动提交事务
+			this.getConnection().setAutoCommit(false);
+			return true;
+		} catch (SQLException e) {
+			throw new RepositoryException(e);
 		}
-		if (this.inTransaction()) {
-			return false;
-		}
-		// 手动提交事务
-		this.getConnection().setAutoCommit(false);
-		return true;
 	}
 
 	public final synchronized boolean isClosed() throws SQLException {
@@ -250,8 +258,12 @@ public class DbTransaction extends Transaction {
 								}
 							}
 						}
+
 					}
 					return datas.where(c -> c.isDeleted() == false).toArray((T[]) Array.newInstance(boType, 0));
+				} catch (SQLException e) {
+					Logger.log("sql: %", this.getAdapter().parsingSelect(boType, criteria));
+					throw e;
 				}
 			}
 		} catch (Exception e) {
@@ -505,7 +517,9 @@ public class DbTransaction extends Transaction {
 								// 主键值
 								statement.setString(5, valuesBuilder.toString());
 								// 操作用户
-								statement.setInt(6, -1);
+								if (!DbTransaction.this.getAdapter().isNoUserTansactionSP()) {
+									statement.setInt(6, -1);
+								}
 
 								// 运行语句，非0则抛异常
 								try (ResultSet resultSet = statement.executeQuery()) {
@@ -523,6 +537,9 @@ public class DbTransaction extends Transaction {
 							data = null;
 							fieldsBuilder = null;
 							valuesBuilder = null;
+						} catch (SQLException e) {
+							Logger.log("error: %", sql);
+							return e;
 						} catch (Exception e) {
 							return e;
 						}
@@ -603,6 +620,9 @@ public class DbTransaction extends Transaction {
 						maxValue = this.getAdapter().setProperties(maxValue, resultSet,
 								new IPropertyInfo<?>[] { maxValue.getKeyField() });
 					}
+				} catch (SQLException e) {
+					Logger.log("error: %", this.getAdapter().parsingMaxValue(maxValue, criteria.getConditions()));
+					throw e;
 				}
 			}
 			return maxValue;
@@ -625,6 +645,9 @@ public class DbTransaction extends Transaction {
 			try (Statement statement = this.connection.createStatement()) {
 				try (ResultSet resultSet = statement.executeQuery(sqlStatement.getContent())) {
 					return this.getAdapter().parsingDatas(resultSet);
+				} catch (SQLException e) {
+					Logger.log("error: %", sqlStatement.getContent());
+					throw e;
 				}
 			}
 		} catch (Exception e) {

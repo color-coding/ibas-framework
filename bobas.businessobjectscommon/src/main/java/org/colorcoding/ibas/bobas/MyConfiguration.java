@@ -103,4 +103,8 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-数据库替换更新方式
 	 */
 	public final static String CONFIG_ITEM_DB_REPLACEMENT_UPDATE = "DbReplacementUpdate";
+	/**
+	 * 配置项目-数据库无用户事务通知
+	 */
+	public final static String CONFIG_ITEM_DB_NO_USER_TANSACTION_SP = "DbNoUserTansactionSP";
 }

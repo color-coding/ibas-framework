@@ -5,10 +5,9 @@ import java.math.BigDecimal;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
-import org.colorcoding.ibas.bobas.bo.IBOLine;
+import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
 import org.colorcoding.ibas.bobas.bo.IBOUserFields;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
@@ -23,8 +22,7 @@ import org.colorcoding.ibas.bobas.db.DbFieldType;
  * 
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = SalesOrderItem.BUSINESS_OBJECT_NAME)
-public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IBOLine, IBOUserFields {
+public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IBODocumentLine, IBOUserFields {
 
 	/**
 	 * 序列化版本标记
@@ -39,7 +37,7 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IB
 	/**
 	 * 数据库表
 	 */
-	public static final String DB_TABLE_NAME = "CC_SL_RDR1";
+	public static final String DB_TABLE_NAME = "CC_TT_RDR1";
 
 	/**
 	 * 业务对象名称
@@ -106,6 +104,37 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IB
 	 */
 	public final void setLineId(Integer value) {
 		this.setProperty(PROPERTY_LINEID, value);
+	}
+
+	/**
+	 * 属性名称-显示顺序
+	 */
+	private static final String PROPERTY_VISORDER_NAME = "VisOrder";
+
+	/**
+	 * 显示顺序 属性
+	 */
+	@DbField(name = "VisOrder", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	public static final IPropertyInfo<Integer> PROPERTY_VISORDER = registerProperty(PROPERTY_VISORDER_NAME,
+			Integer.class, MY_CLASS);
+
+	/**
+	 * 获取-显示顺序
+	 * 
+	 * @return 值
+	 */
+	@XmlElement(name = PROPERTY_VISORDER_NAME)
+	public final Integer getVisOrder() {
+		return this.getProperty(PROPERTY_VISORDER);
+	}
+
+	/**
+	 * 设置-显示顺序
+	 * 
+	 * @param value 值
+	 */
+	public final void setVisOrder(Integer value) {
+		this.setProperty(PROPERTY_VISORDER, value);
 	}
 
 	/**
@@ -890,5 +919,4 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IB
 	protected void initialize() {
 		super.initialize();
 	}
-
 }

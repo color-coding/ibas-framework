@@ -59,6 +59,20 @@ public abstract class DbAdapter {
 		return this.companyId;
 	}
 
+	private Boolean noUserTansactionSP;
+
+	public final Boolean isNoUserTansactionSP() {
+		if (this.noUserTansactionSP == null) {
+			this.noUserTansactionSP = MyConfiguration
+					.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_NO_USER_TANSACTION_SP, false);
+		}
+		return noUserTansactionSP;
+	}
+
+	protected final void setNoUserTansactionSP(Boolean noUserTansactionSP) {
+		this.noUserTansactionSP = noUserTansactionSP;
+	}
+
 	/**
 	 * 创建数据库链接
 	 * 
@@ -85,11 +99,11 @@ public abstract class DbAdapter {
 		IPropertyInfo<?>[] orderProperties = null;
 		while (resultSet.next()) {
 			if (boType.equals(Result.class)) {
-				datas.add((T) new Result(resultSet.getInt(0), resultSet.getString(1)));
+				datas.add((T) new Result(resultSet.getInt(1), resultSet.getString(2)));
 			} else if (boType.equals(KeyText.class)) {
-				datas.add((T) new KeyText(resultSet.getString(0), resultSet.getString(1)));
+				datas.add((T) new KeyText(resultSet.getString(1), resultSet.getString(2)));
 			} else if (boType.equals(KeyValue.class)) {
-				datas.add((T) new KeyValue<Object>(resultSet.getString(0), resultSet.getObject(1)));
+				datas.add((T) new KeyValue<Object>(resultSet.getString(1), resultSet.getObject(2)));
 			} else if (IFieldedObject.class.isAssignableFrom(boType)) {
 				if (orderProperties == null) {
 					List<IPropertyInfo<?>> propertyInfos = BOFactory.propertyInfos(boType);
@@ -306,7 +320,7 @@ public abstract class DbAdapter {
 
 	public final String sp_transaction_notification() {
 		return this.parsingStoredProcedure(Strings.format("%s_SP_TRANSACTION_NOTIFICATION", this.getCompanyId()),
-				new String[6]);
+				new String[this.isNoUserTansactionSP() ? 5 : 6]);
 	}
 
 	public final String parsingSelect(Class<?> boType) {

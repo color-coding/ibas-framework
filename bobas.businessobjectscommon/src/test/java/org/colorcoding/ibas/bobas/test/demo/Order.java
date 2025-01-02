@@ -25,7 +25,7 @@ public class Order extends BusinessObject<Order> {
 	/**
 	 * 数据库表
 	 */
-	public final static String DB_TABLE_NAME = "CC_SL_ORDR";
+	public final static String DB_TABLE_NAME = "CC_TT_ORDR";
 
 	/**
 	 * 属性名称-凭证编号

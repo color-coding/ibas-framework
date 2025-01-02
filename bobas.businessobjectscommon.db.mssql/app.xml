@@ -16,5 +16,7 @@
         <add key="MasterDbUserID" value="sa" />
         <!-- 配置项目-数据库用户密码 -->
         <add key="MasterDbUserPassword" value="1q2w3e" />
+        <!-- 配置项目-数据库无用户事务通知 -->
+        <add key="DbNoUserTansactionSP" value="true" />
     </appSettings>
 </ns2:configuration>

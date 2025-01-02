@@ -35,11 +35,11 @@ public abstract class BORepository implements AutoCloseable {
 		this.transaction = transaction;
 	}
 
-	public synchronized boolean inTransaction() {
+	public synchronized boolean inTransaction() throws RepositoryException {
 		if (this.transaction == null) {
 			return false;
 		}
-		return true;
+		return this.transaction.inTransaction();
 	}
 
 	public synchronized boolean beginTransaction() throws RepositoryException {

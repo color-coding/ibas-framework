@@ -259,25 +259,27 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 		};
 
 		ArrayList<IBusinessLogic<?>> logics = new ArrayList<>(16);
-		// 主键编号
-		if (data.isSavable() && data.isNew()) {
-			logics.add(analyzer.apply(new BOKeysContract(data)));
+		// 仅业务对象增加默认逻辑
+		if (data instanceof IBusinessObject) {
+			// 主键编号
+			if (data.isSavable() && data.isNew()) {
+				logics.add(analyzer.apply(new BOKeysContract(data)));
+			}
+			// 单据期间
+			if (data.isSavable() && !data.isDeleted() && data.isDirty() && data instanceof IPeriodData) {
+				logics.add(analyzer.apply(new BOPeriodContract((IPeriodData) data)));
+			}
+			// 业务逻辑执行
+			logics.add(analyzer.apply(new BORulesContract(data)));
+			// 审批流程（仅触发对象）
+			if (data.isSavable() && data == this.getTrigger() && data.isDirty() && data instanceof IApprovalData) {
+				logics.add(analyzer.apply(new BOApprovalContract((IApprovalData) data)));
+			}
+			// 数据标记
+			if (data.isSavable() && !data.isDeleted() && data.isDirty() && data instanceof IBOStorageTag) {
+				logics.add(analyzer.apply(new BOStorageTagContract((IBOStorageTag) data)));
+			}
 		}
-		// 单据期间
-		if (data.isSavable() && !data.isDeleted() && data.isDirty() && data instanceof IPeriodData) {
-			logics.add(analyzer.apply(new BOPeriodContract((IPeriodData) data)));
-		}
-		// 业务逻辑执行
-		logics.add(analyzer.apply(new BORulesContract(data)));
-		// 审批流程（仅触发对象）
-		if (data.isSavable() && data == this.getTrigger() && data.isDirty() && data instanceof IApprovalData) {
-			logics.add(analyzer.apply(new BOApprovalContract((IApprovalData) data)));
-		}
-		// 数据标记
-		if (data.isSavable() && !data.isDeleted() && data.isDirty() && data instanceof IBOStorageTag) {
-			logics.add(analyzer.apply(new BOStorageTagContract((IBOStorageTag) data)));
-		}
-
 		// 先子项，再自身（注意：避免嵌套后无限循环寻找契约）
 		if (data instanceof BusinessObject) {
 			Object cData;
@@ -320,9 +322,12 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 			}
 			hostContracts = null;
 		}
-		// 数据日志（仅触发对象）
-		if (data.isSavable() && data == this.getTrigger() && data.isDirty() && data instanceof IBOStorageTag) {
-			logics.add(analyzer.apply(new BOInstanceLogContract((IBOStorageTag) data)));
+		// 仅业务对象增加默认逻辑
+		if (data instanceof IBusinessObject) {
+			// 数据日志（仅触发对象）
+			if (data.isSavable() && data == this.getTrigger() && data.isDirty() && data instanceof IBOStorageTag) {
+				logics.add(analyzer.apply(new BOInstanceLogContract((IBOStorageTag) data)));
+			}
 		}
 		// 返回并剔除无效的
 		return logics.where(c -> c != null).toArray(new IBusinessLogic<?>[] {});

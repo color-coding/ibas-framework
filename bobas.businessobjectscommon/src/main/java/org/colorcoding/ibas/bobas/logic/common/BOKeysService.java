@@ -21,6 +21,8 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.db.DbTransaction;
 import org.colorcoding.ibas.bobas.db.MaxValue;
 import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.logging.Logger;
+import org.colorcoding.ibas.bobas.logging.LoggingLevel;
 import org.colorcoding.ibas.bobas.logic.BusinessLogic;
 import org.colorcoding.ibas.bobas.logic.BusinessLogicException;
 import org.colorcoding.ibas.bobas.logic.LogicContract;
@@ -83,7 +85,7 @@ public class BOKeysService extends BusinessLogic<IBOKeysContract, BONumbering> {
 							}
 						}
 						maxValue = dbTransaction.fetch(maxValue);
-						numbering.setAutoKey((int) maxValue.getValue());
+						numbering.setAutoKey((int) maxValue.getValue() + 1);
 					}
 				} else {
 					// 主对象获取主键
@@ -155,6 +157,9 @@ public class BOKeysService extends BusinessLogic<IBOKeysContract, BONumbering> {
 		key = this.getBeAffected().getAutoKey();
 		if (contract.setPrimaryKey(key)) {
 			this.getBeAffected().setAutoKey(key + 1);
+		} else {
+			Logger.log(LoggingLevel.DEBUG, "%s: not set [%s]'s primarkey.", this.getClass().getSimpleName(),
+					contract.getIdentifiers());
 		}
 		// 系列号赋值
 		if (contract.getSeries() > 0) {
