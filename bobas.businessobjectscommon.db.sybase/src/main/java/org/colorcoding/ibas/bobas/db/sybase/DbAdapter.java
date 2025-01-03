@@ -3,14 +3,13 @@ package org.colorcoding.ibas.bobas.db.sybase;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-import org.colorcoding.ibas.bobas.db.DbException;
-import org.colorcoding.ibas.bobas.db.IBOAdapter;
+import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.common.Strings;
 
 public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 
 	@Override
-	public Connection createConnection(String server, String dbName, String userName, String userPwd,
-			String applicationName) throws DbException {
+	public Connection createConnection(String server, String dbName, String userName, String userPwd) {
 		try {
 			Class.forName("com.sybase.jdbc4.jdbc.SybDriver");
 			if (server.indexOf(":") < 0) {
@@ -21,13 +20,38 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			return DriverManager.getConnection(dbURL, userName, userPwd);
 		} catch (Exception e) {
 			// 接数据库失败
-			throw new DbException(e);
+			throw new RuntimeException(e);
 		}
 	}
 
 	@Override
-	public IBOAdapter createBOAdapter() {
-		return new BOAdapter();
+	public String parsingStoredProcedure(String spName, String... args) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("CALL");
+		stringBuilder.append(" ");
+		stringBuilder.append(this.identifier());
+		stringBuilder.append(MyConfiguration.applyVariables(spName));
+		stringBuilder.append(this.identifier());
+		if (args.length > 0) {
+			stringBuilder.append(" ");
+			stringBuilder.append("(");
+			int count = stringBuilder.length();
+			for (String arg : args) {
+				if (stringBuilder.length() > count) {
+					stringBuilder.append(this.separation());
+				}
+				if (Strings.isNullOrEmpty(arg)) {
+					stringBuilder.append("?");
+				} else {
+					stringBuilder.append(arg);
+					stringBuilder.append(" ");
+					stringBuilder.append("=");
+					stringBuilder.append(" ");
+					stringBuilder.append("?");
+				}
+			}
+			stringBuilder.append(")");
+		}
+		return stringBuilder.toString();
 	}
-
 }

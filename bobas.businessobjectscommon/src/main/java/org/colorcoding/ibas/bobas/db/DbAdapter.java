@@ -22,6 +22,7 @@ import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.Result;
 import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.core.FieldedObject;
 import org.colorcoding.ibas.bobas.core.IFieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
@@ -34,7 +35,6 @@ import org.colorcoding.ibas.bobas.data.KeyText;
 import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.logging.Logger;
 
 /**
  * 数据库适配器
@@ -95,6 +95,7 @@ public abstract class DbAdapter {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> List<T> parsingDatas(Class<?> boType, ResultSet resultSet) throws SQLException {
+		T data = null;
 		ArrayList<T> datas = new ArrayList<>();
 		IPropertyInfo<?>[] orderProperties = null;
 		while (resultSet.next()) {
@@ -107,27 +108,37 @@ public abstract class DbAdapter {
 			} else if (IFieldedObject.class.isAssignableFrom(boType)) {
 				if (orderProperties == null) {
 					List<IPropertyInfo<?>> propertyInfos = BOFactory.propertyInfos(boType);
-					orderProperties = new IPropertyInfo<?>[propertyInfos.size()];
+					orderProperties = new IPropertyInfo<?>[resultSet.getMetaData().getColumnCount()];
 					IPropertyInfo<?> propertyInfo;
 					DbField dbField;
 					int index;
-					for (int i = 0; i < orderProperties.length; i++) {
-						try {
-							propertyInfo = propertyInfos.get(i);
-							dbField = propertyInfo.getAnnotation(DbField.class);
-							index = resultSet.findColumn(dbField.name());
-							if (index >= 0) {
-								orderProperties[i] = propertyInfo;
-							}
-						} catch (Exception e) {
-							Logger.log(e);
+					for (int i = 0; i < propertyInfos.size(); i++) {
+						propertyInfo = propertyInfos.get(i);
+						dbField = propertyInfo.getAnnotation(DbField.class);
+						if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
+							continue;
+						}
+						index = resultSet.findColumn(dbField.name());
+						if (index > 0) {
+							orderProperties[index - 1] = propertyInfo;
 						}
 					}
 					propertyInfos = null;
 					propertyInfo = null;
 					dbField = null;
 				}
-				datas.add(this.setProperties(BOFactory.newInstance(boType), resultSet, orderProperties));
+				data = BOFactory.newInstance(boType);
+				if (data instanceof IFieldedObject) {
+					((IFieldedObject) data).setLoading(true);
+				}
+				data = this.setProperties(data, resultSet, orderProperties);
+				if (data instanceof IFieldedObject) {
+					((IFieldedObject) data).setLoading(false);
+				}
+				if (data instanceof FieldedObject) {
+					((FieldedObject) data).markOld();
+				}
+				datas.add(data);
 			}
 		}
 		return datas;
@@ -150,6 +161,9 @@ public abstract class DbAdapter {
 			IPropertyInfo<?> propertyInfo;
 			for (int i = 0; i < orderProperties.length; i++) {
 				propertyInfo = orderProperties[i];
+				if (propertyInfo == null) {
+					continue;
+				}
 				boData.setProperty(propertyInfo, this.parsingValue(resultSet, i + 1, propertyInfo.getValueType()));
 			}
 			boData.setLoading(false);
@@ -602,7 +616,9 @@ public abstract class DbAdapter {
 				continue;
 			}
 			if (stringBuilder.length() > 0) {
+				stringBuilder.append(" ");
 				stringBuilder.append(this.parsing(ConditionRelationship.AND));
+				stringBuilder.append(" ");
 			}
 			stringBuilder.append(this.identifier());
 			stringBuilder.append(dbField.name());

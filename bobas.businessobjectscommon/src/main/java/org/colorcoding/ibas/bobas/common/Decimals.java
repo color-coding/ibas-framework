@@ -207,6 +207,41 @@ public class Decimals {
 	}
 
 	/**
+	 * 截取小数位
+	 * 
+	 * @param value 值
+	 * @param scale 保留位数
+	 * @param mode  截取方式
+	 * @return
+	 */
+	public static BigDecimal round(BigDecimal value, int scale, RoundingMode mode) {
+		return value.divide(VALUE_ONE, scale, mode);
+	}
+
+	/**
+	 * 四舍五入小数位
+	 * 
+	 * @param value 值
+	 * @param scale 保留小数位数
+	 * @return
+	 */
+	public static BigDecimal round(BigDecimal value, int scale) {
+		return round(value, scale, ROUNDING_MODE_DEFAULT);
+	}
+
+	/**
+	 * 四舍五入小数位
+	 * 
+	 * 保留运行时位数（默认9位）
+	 * 
+	 * @param value 值
+	 * @return
+	 */
+	public static BigDecimal round(BigDecimal value) {
+		return round(value, DECIMAL_PLACES_RUNNING, ROUNDING_MODE_DEFAULT);
+	}
+
+	/**
 	 * 除法
 	 * 
 	 * @param dividend 被除数

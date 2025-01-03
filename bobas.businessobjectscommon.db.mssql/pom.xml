@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.colorcoding.ibas</groupId>
 		<artifactId>bobas.businessobjectscommon.parent</artifactId>
-		<version>0.1.2</version>
+		<version>0.2.0</version>
 	</parent>
 	<organization>
 		<name>Color-Coding Studio</name>
@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>org.colorcoding.ibas</groupId>
 			<artifactId>bobas.businessobjectscommon</artifactId>
-			<version>0.1.2</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>

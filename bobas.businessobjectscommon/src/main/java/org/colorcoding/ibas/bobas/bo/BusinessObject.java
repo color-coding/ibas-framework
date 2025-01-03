@@ -64,7 +64,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 			for (IPropertyInfo<?> property : this.properties().where(c -> c.isPrimaryKey())) {
 				ICondition condition = criteria.getConditions().create();
 				condition.setAlias(property.getName());
-				condition.setValue(this.getProperty(property));
+				condition.setValue((Object) this.getProperty(property));
 			}
 		}
 		if (criteria.getConditions().isEmpty()) {

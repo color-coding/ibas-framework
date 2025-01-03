@@ -71,6 +71,35 @@ public class MyConfiguration extends Configuration {
 	public final static String CONFIG_ITEM_COMPANY = "Company";
 
 	/**
+	 * 配置项目-任务线程池大小
+	 */
+	public final static String CONFIG_ITEM_TASK_THREAD_POOL_SIZE = "TaskThreadPoolSize";
+	/**
+	 * 配置项目-任务线程队列大小
+	 */
+	public final static String CONFIG_ITEM_TASK_THREAD_QUEUE_SIZE = "TaskThreadQueueSize";
+	/**
+	 * 配置项目-日志文件保存路径
+	 */
+	public final static String CONFIG_ITEM_LOG_FILE_FOLDER = "LogFileFolder";
+	/**
+	 * 配置项目-消息日志大小限制（单位兆）
+	 */
+	public final static String CONFIG_ITEM_LOG_FILE_SIZE_LIMIT = "LogFileSize";
+	/**
+	 * 配置项目-日志消息级别
+	 */
+	public final static String CONFIG_ITEM_LOG_MESSAGE_LEVEL = "MessageLevel";
+	/**
+	 * 配置项目-国际化文件路径
+	 */
+	public final static String CONFIG_ITEM_I18N_PATH = "I18nFolder";
+	/**
+	 * 配置项目-语言编码
+	 */
+	public final static String CONFIG_ITEM_LANGUAGE_CODE = "LanguageCode";
+
+	/**
 	 * 配置项目-应用名称
 	 */
 	public final static String CONFIG_ITEM_APPLICATION_NAME = "AppName";

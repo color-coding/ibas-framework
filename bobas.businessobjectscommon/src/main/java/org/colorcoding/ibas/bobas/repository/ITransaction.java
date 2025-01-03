@@ -20,6 +20,14 @@ public interface ITransaction extends AutoCloseable {
 	boolean inTransaction() throws RepositoryException;
 
 	/**
+	 * 开启事务
+	 * 
+	 * @return
+	 * @throws RepositoryException
+	 */
+	boolean beginTransaction() throws RepositoryException;
+
+	/**
 	 * 回滚事务
 	 */
 	void rollback() throws RepositoryException;

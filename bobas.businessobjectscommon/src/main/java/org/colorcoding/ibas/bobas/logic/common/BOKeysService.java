@@ -65,6 +65,7 @@ public class BOKeysService extends BusinessLogic<IBOKeysContract, BONumbering> {
 				if (contract.getHost() instanceof IBOLine) {
 					// 行对象获取第二主键
 					numbering = new BONumbering();
+					numbering.setSavable(false);
 					numbering.setObjectCode(contract.getObjectCode());
 					numbering.setAutoKey(1);
 					if (this.getTransaction() instanceof DbTransaction && contract.getHost() instanceof FieldedObject) {

@@ -28,6 +28,7 @@ import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Result;
 import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.core.FieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.IDataTable;
@@ -262,7 +263,7 @@ public class DbTransaction extends Transaction {
 					}
 					return datas.where(c -> c.isDeleted() == false).toArray((T[]) Array.newInstance(boType, 0));
 				} catch (SQLException e) {
-					Logger.log("sql: %", this.getAdapter().parsingSelect(boType, criteria));
+					Logger.log("sql: %s", this.getAdapter().parsingSelect(boType, criteria));
 					throw e;
 				}
 			}
@@ -315,7 +316,6 @@ public class DbTransaction extends Transaction {
 							boDeletes.get(boType).add(boData);
 						} else if (bo.isNew()) {
 							// 新建
-
 							boInserts.get(boType).add(boData);
 						} else {
 							// 更新
@@ -353,24 +353,52 @@ public class DbTransaction extends Transaction {
 				boData = null;
 				// 分配执行语句的方法
 				int batchCount = this.getAdapter().getBatchCount();
-				BiFunction<String, List<BusinessObject<?>>, Exception> sqlExecuter = new BiFunction<String, List<BusinessObject<?>>, Exception>() {
+				BiFunction<TransactionType, List<BusinessObject<?>>, Exception> sqlExecuter = new BiFunction<TransactionType, List<BusinessObject<?>>, Exception>() {
 					@Override
-					public Exception apply(String sql, List<BusinessObject<?>> datas) {
+					public Exception apply(TransactionType type, List<BusinessObject<?>> datas) {
+						String sql = null;
+						try {
+							if (type == TransactionType.ADD) {
+								sql = DbTransaction.this.getAdapter().parsingInsert(datas.get(0));
+							} else if (type == TransactionType.DELETE) {
+								sql = DbTransaction.this.getAdapter().parsingDelete(datas.get(0));
+							} else if (type == TransactionType.UPDATE) {
+								sql = DbTransaction.this.getAdapter().parsingUpdate(datas.get(0));
+							}
+						} catch (Exception e) {
+							return e;
+						}
+						if (Strings.isNullOrEmpty(sql)) {
+							return new SQLException("no sql statement.");
+						}
 						try (PreparedStatement statement = DbTransaction.this.connection.prepareStatement(sql)) {
 							int count = 0;
 							int index = 0;
 							DbField dbField;
 							BusinessObject<?> data;
 							List<IPropertyInfo<?>> propertyInfos;
-							// 语句存在where，则主键参数最后
-							boolean hasWhere = Strings.indexOf(sql, DbTransaction.this.getAdapter().where()) >= 0 ? true
-									: false;
 							for (int i = 0; i < datas.size(); i++) {
 								index = 1;
 								data = datas.get(i);
 								propertyInfos = data.properties();
 
-								if (hasWhere == true) {
+								if (type == TransactionType.DELETE) {
+									for (IPropertyInfo<?> propertyInfo : propertyInfos.where(c -> c.isPrimaryKey())) {
+										dbField = propertyInfo.getAnnotation(DbField.class);
+										if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
+											continue;
+										}
+										if (propertyInfo.getValueType().isEnum()) {
+											statement.setObject(index,
+													Enums.annotationValue(data.getProperty(propertyInfo)),
+													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type()));
+										} else {
+											statement.setObject(index, data.getProperty(propertyInfo),
+													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type()));
+										}
+										index += 1;
+									}
+								} else if (type == TransactionType.UPDATE) {
 									for (IPropertyInfo<?> propertyInfo : propertyInfos.where(c -> !c.isPrimaryKey())) {
 										dbField = propertyInfo.getAnnotation(DbField.class);
 										if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
@@ -401,7 +429,7 @@ public class DbTransaction extends Transaction {
 										}
 										index += 1;
 									}
-								} else {
+								} else if (type == TransactionType.ADD) {
 									for (IPropertyInfo<?> propertyInfo : propertyInfos) {
 										dbField = propertyInfo.getAnnotation(DbField.class);
 										if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
@@ -444,7 +472,7 @@ public class DbTransaction extends Transaction {
 				Exception result;
 				for (List<BusinessObject<?>> datas : boDeletes.values()) {
 					if (datas.size() > 0) {
-						result = sqlExecuter.apply(this.getAdapter().parsingDelete(datas.get(0)), datas);
+						result = sqlExecuter.apply(TransactionType.DELETE, datas);
 						if (result instanceof Exception) {
 							throw result;
 						}
@@ -453,7 +481,7 @@ public class DbTransaction extends Transaction {
 				// 处理更新内容
 				for (List<BusinessObject<?>> datas : boUpdates.values()) {
 					if (datas.size() > 0) {
-						result = sqlExecuter.apply(this.getAdapter().parsingUpdate(datas.get(0)), datas);
+						result = sqlExecuter.apply(TransactionType.UPDATE, datas);
 						if (result instanceof Exception) {
 							throw result;
 						}
@@ -462,31 +490,31 @@ public class DbTransaction extends Transaction {
 				// 处理新建内容
 				for (List<BusinessObject<?>> datas : boInserts.values()) {
 					if (datas.size() > 0) {
-						result = sqlExecuter.apply(this.getAdapter().parsingInsert(datas.get(0)), datas);
+						result = sqlExecuter.apply(TransactionType.ADD, datas);
 						if (result instanceof Exception) {
 							throw result;
 						}
 					}
 				}
 				// 处理事务存储过程
-				sqlExecuter = new BiFunction<String, List<BusinessObject<?>>, Exception>() {
+				sqlExecuter = new BiFunction<TransactionType, List<BusinessObject<?>>, Exception>() {
 					@Override
-					public Exception apply(String sql, List<BusinessObject<?>> datas) {
+					public Exception apply(TransactionType type, List<BusinessObject<?>> datas) {
 						int keyCount;
 						DbField dbField;
 						BusinessObject<?> data;
 						StringBuilder fieldsBuilder;
 						StringBuilder valuesBuilder;
-						TransactionType transactionType;
-						try (PreparedStatement statement = DbTransaction.this.connection.prepareStatement(sql)) {
+						try (PreparedStatement statement = DbTransaction.this.connection
+								.prepareStatement(DbTransaction.this.getAdapter().sp_transaction_notification())) {
 							for (int i = 0; i < datas.size(); i++) {
 								data = (BusinessObject<?>) datas.get(i);
 								if (data.isDeleted()) {
-									transactionType = TransactionType.DELETE;
+									type = TransactionType.DELETE;
 								} else if (data.isNew()) {
-									transactionType = TransactionType.ADD;
+									type = TransactionType.ADD;
 								} else {
-									transactionType = TransactionType.UPDATE;
+									type = TransactionType.UPDATE;
 								}
 								keyCount = 0;
 								fieldsBuilder = new StringBuilder();
@@ -509,7 +537,7 @@ public class DbTransaction extends Transaction {
 								// 对象编码
 								statement.setString(1, BOFactory.codeOf(data.getClass()));
 								// 事务类型
-								statement.setString(2, Enums.annotationValue(transactionType));
+								statement.setString(2, Enums.annotationValue(type));
 								// 主键个数
 								statement.setInt(3, keyCount);
 								// 主键名称
@@ -537,16 +565,13 @@ public class DbTransaction extends Transaction {
 							data = null;
 							fieldsBuilder = null;
 							valuesBuilder = null;
-						} catch (SQLException e) {
-							Logger.log("error: %", sql);
-							return e;
 						} catch (Exception e) {
 							return e;
 						}
 						return null;
 					}
 				};
-				result = sqlExecuter.apply(this.getAdapter().sp_transaction_notification(), boDatas);
+				result = sqlExecuter.apply(null, boDatas);
 				if (result instanceof Exception) {
 					throw result;
 				}
@@ -577,7 +602,9 @@ public class DbTransaction extends Transaction {
 					if (bo.isDirty() == false) {
 						continue;
 					}
-					((BusinessObject<?>) bo).markOld();
+					if (bo instanceof FieldedObject) {
+						((FieldedObject) bo).markOld();
+					}
 				}
 				return (T[]) bos;
 			} catch (Exception e) {
@@ -621,7 +648,7 @@ public class DbTransaction extends Transaction {
 								new IPropertyInfo<?>[] { maxValue.getKeyField() });
 					}
 				} catch (SQLException e) {
-					Logger.log("error: %", this.getAdapter().parsingMaxValue(maxValue, criteria.getConditions()));
+					Logger.log("error: %s", this.getAdapter().parsingMaxValue(maxValue, criteria.getConditions()));
 					throw e;
 				}
 			}
@@ -646,7 +673,7 @@ public class DbTransaction extends Transaction {
 				try (ResultSet resultSet = statement.executeQuery(sqlStatement.getContent())) {
 					return this.getAdapter().parsingDatas(resultSet);
 				} catch (SQLException e) {
-					Logger.log("error: %", sqlStatement.getContent());
+					Logger.log("error: %s", sqlStatement.getContent());
 					throw e;
 				}
 			}

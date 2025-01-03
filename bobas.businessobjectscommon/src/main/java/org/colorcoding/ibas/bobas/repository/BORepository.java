@@ -48,10 +48,10 @@ public abstract class BORepository implements AutoCloseable {
 		}
 		try {
 			this.transaction = this.startTransaction();
+			return this.transaction.beginTransaction();
 		} catch (Exception e) {
 			throw new RepositoryException(e);
 		}
-		return true;
 	}
 
 	public synchronized void rollbackTransaction() throws RepositoryException {

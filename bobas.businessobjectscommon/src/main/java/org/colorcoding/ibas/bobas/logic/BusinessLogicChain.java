@@ -343,7 +343,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 	protected final synchronized IBusinessLogic<?>[] getTriggerLogics() {
 		if (this.triggerLogics == null) {
 			this.triggerLogics = this.analyzeContracts(this.getTrigger());
-			Logger.log(LoggingLevel.INFO, "logics chain [%s]: trigger's copy [%s] has [%s] contracts.", this.hashCode(),
+			Logger.log(LoggingLevel.INFO, "logics chain [%s]: trigger [%s] has [%s] contracts.", this.hashCode(),
 					this.getTrigger(), this.triggerLogics.length);
 		}
 		return this.triggerLogics;

@@ -50,6 +50,9 @@ public class DateTimes {
 	 * @return 日期
 	 */
 	public static DateTime valueOf(Date value) {
+		if (value == null) {
+			return VALUE_MIN;
+		}
 		return new DateTime(value.getTime());
 	}
 
