@@ -14,7 +14,6 @@ import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
-import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.db.DbField;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
@@ -1141,7 +1140,6 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument {
 		super.initialize();
 		this.setSalesOrderItems(new SalesOrderItems(this));
 		this.setObjectCode(BUSINESS_OBJECT_CODE);
-		this.setDocumentStatus(emDocumentStatus.RELEASED);
 
 	}
 

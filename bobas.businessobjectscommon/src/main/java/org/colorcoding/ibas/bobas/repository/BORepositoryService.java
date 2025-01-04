@@ -19,6 +19,7 @@ import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.FieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.expression.BOJudgmentLinkCondition;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 
 public class BORepositoryService extends BORepository4DB {
 
@@ -53,11 +54,11 @@ public class BORepositoryService extends BORepository4DB {
 							.firstOrDefault(c -> c.getName().equalsIgnoreCase(cCriteria.getPropertyPath()));
 					if (propertyInfo == null) {
 						throw new RepositoryException(
-								Strings.format("not found property %s.", cCriteria.getPropertyPath()));
+								I18N.prop("msg_bobas_not_found_bo_property", cCriteria.getPropertyPath()));
 					}
 					if (!IBusinessObjects.class.isAssignableFrom(propertyInfo.getValueType())) {
 						throw new RepositoryException(
-								Strings.format("unrecognizable property %s value class.", propertyInfo.getName()));
+								I18N.prop("msg_bobas_commands_invalid_argument", propertyInfo.getName()));
 					}
 					Class<?> subType = null;
 					IBusinessObjects<IBusinessObject, IBusinessObject> tmpObjects = BOFactory
@@ -69,7 +70,7 @@ public class BORepositoryService extends BORepository4DB {
 							|| IBOSimpleLine.class.isAssignableFrom(subType)
 							|| IBOMasterDataLine.class.isAssignableFrom(subType))) {
 						throw new RepositoryException(
-								Strings.format("unrecognizable property %s value class.", propertyInfo.getName()));
+								I18N.prop("msg_bobas_commands_invalid_argument", propertyInfo.getName()));
 					}
 					// 新建主项查询，不再查子项
 					ICriteria nCriteria = criteria.clone();

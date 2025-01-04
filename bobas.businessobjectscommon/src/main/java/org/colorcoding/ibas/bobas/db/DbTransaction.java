@@ -197,75 +197,75 @@ public class DbTransaction extends Transaction {
 			Objects.requireNonNull(boType);
 			// 查询方法，不主动开启事务
 			criteria = this.getAdapter().convert(criteria, boType);
-			try (PreparedStatement statement = this.connection
-					.prepareStatement(this.getAdapter().parsingSelect(boType, criteria))) {
+			String sql = this.getAdapter().parsingSelect(boType, criteria);
+			try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
 				// 填充参数
 				this.fillingParameters(statement, criteria.getConditions(), 1);
 				// 运行查询
-				try (ResultSet resultSet = statement.executeQuery()) {
-					List<T> datas = this.getAdapter().parsingDatas(boType, resultSet);
-					// 加载子对象
-					if (!datas.isEmpty() && !criteria.isNoChilds()) {
-						Object propertyValue = null;
-						ICriteria cCriteria = null;
-						for (IPropertyInfo<?> propertyInfo : BOFactory.propertyInfos(boType)) {
-							if (BusinessObject.class.isAssignableFrom(propertyInfo.getValueType())) {
-								BusinessObject<?> cData = null;
-								for (T data : datas) {
-									propertyValue = ((BusinessObject<?>) data).getProperty(propertyInfo);
-									if (BOUtilities.isBusinessObject(propertyValue)) {
-										cData = (BusinessObject<?>) propertyValue;
-										cCriteria = cData.getCriteria();
-										if (cCriteria == null) {
-											continue;
-										}
-										if (cCriteria.getConditions().isEmpty()) {
-											continue;
-										}
-										for (IBusinessObject item : this.fetch(cData.getClass(), cCriteria)) {
-											cData.setProperty(propertyInfo, item);
-										}
+				List<T> datas = null;
+				try (ResultSet resultSet = statement.executeQuery();) {
+					datas = this.getAdapter().parsingDatas(boType, resultSet);
+				} catch (SQLException e) {
+					Logger.log("error: %s", sql);
+					throw e;
+				}
+				// 加载子对象
+				if (!datas.isEmpty() && !criteria.isNoChilds()) {
+					Object propertyValue = null;
+					ICriteria cCriteria = null;
+					for (IPropertyInfo<?> propertyInfo : BOFactory.propertyInfos(boType)) {
+						if (BusinessObject.class.isAssignableFrom(propertyInfo.getValueType())) {
+							BusinessObject<?> cData = null;
+							for (T data : datas) {
+								propertyValue = ((BusinessObject<?>) data).getProperty(propertyInfo);
+								if (BOUtilities.isBusinessObject(propertyValue)) {
+									cData = (BusinessObject<?>) propertyValue;
+									cCriteria = cData.getCriteria();
+									if (cCriteria == null) {
+										continue;
+									}
+									if (cCriteria.getConditions().isEmpty()) {
+										continue;
+									}
+									for (IBusinessObject item : this.fetch(cData.getClass(), cCriteria)) {
+										cData.setProperty(propertyInfo, item);
 									}
 								}
-							} else if (BusinessObjects.class.isAssignableFrom(propertyInfo.getValueType())) {
-								boolean onlyHasChilds = false;
-								BusinessObjects<IBusinessObject, ?> cDatas = null;
-								for (T data : datas) {
-									propertyValue = ((BusinessObject<?>) data).getProperty(propertyInfo);
-									if (BOUtilities.isBusinessObjects(propertyValue)) {
-										cDatas = (BusinessObjects<IBusinessObject, ?>) propertyValue;
-										cCriteria = cDatas.getElementCriteria();
-										if (cCriteria == null) {
-											continue;
+							}
+						} else if (BusinessObjects.class.isAssignableFrom(propertyInfo.getValueType())) {
+							boolean onlyHasChilds = false;
+							BusinessObjects<IBusinessObject, ?> cDatas = null;
+							for (T data : datas) {
+								propertyValue = ((BusinessObject<?>) data).getProperty(propertyInfo);
+								if (BOUtilities.isBusinessObjects(propertyValue)) {
+									cDatas = (BusinessObjects<IBusinessObject, ?>) propertyValue;
+									cCriteria = cDatas.getElementCriteria();
+									if (cCriteria == null) {
+										continue;
+									}
+									if (cCriteria.getConditions().isEmpty()) {
+										continue;
+									}
+									// 复制指定的子项查询
+									for (IChildCriteria item : criteria.getChildCriterias()) {
+										if (propertyInfo.getName().equalsIgnoreCase(item.getPropertyPath())) {
+											cCriteria.copyFrom(item);
+											onlyHasChilds = item.isOnlyHasChilds();
 										}
-										if (cCriteria.getConditions().isEmpty()) {
-											continue;
-										}
-										// 复制指定的子项查询
-										for (IChildCriteria item : criteria.getChildCriterias()) {
-											if (propertyInfo.getName().equalsIgnoreCase(item.getPropertyPath())) {
-												cCriteria.copyFrom(item);
-												onlyHasChilds = item.isOnlyHasChilds();
-											}
-										}
-										for (IBusinessObject item : this.fetch(cDatas.getElementType(), cCriteria)) {
-											cDatas.add(item);
-										}
-										// 要求子项必须有值
-										if (onlyHasChilds && cDatas.isEmpty()) {
-											data.delete();
-										}
+									}
+									for (IBusinessObject item : this.fetch(cDatas.getElementType(), cCriteria)) {
+										cDatas.add(item);
+									}
+									// 要求子项必须有值
+									if (onlyHasChilds && cDatas.isEmpty()) {
+										data.delete();
 									}
 								}
 							}
 						}
-
 					}
-					return datas.where(c -> c.isDeleted() == false).toArray((T[]) Array.newInstance(boType, 0));
-				} catch (SQLException e) {
-					Logger.log("sql: %s", this.getAdapter().parsingSelect(boType, criteria));
-					throw e;
 				}
+				return datas.where(c -> c.isDeleted() == false).toArray((T[]) Array.newInstance(boType, 0));
 			}
 		} catch (Exception e) {
 			throw new RepositoryException(e);
@@ -637,8 +637,8 @@ public class DbTransaction extends Transaction {
 				condition.setValue(Strings.valueOf(maxValue.getProperty(item)));
 			}
 			criteria = this.getAdapter().convert(criteria, maxValue.getType());
-			try (PreparedStatement statement = this.connection
-					.prepareStatement(this.getAdapter().parsingMaxValue(maxValue, criteria.getConditions()))) {
+			String sql = this.getAdapter().parsingMaxValue(maxValue, criteria.getConditions());
+			try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
 				// 填充参数
 				this.fillingParameters(statement, criteria.getConditions(), 1);
 				// 运行查询
@@ -648,7 +648,7 @@ public class DbTransaction extends Transaction {
 								new IPropertyInfo<?>[] { maxValue.getKeyField() });
 					}
 				} catch (SQLException e) {
-					Logger.log("error: %s", this.getAdapter().parsingMaxValue(maxValue, criteria.getConditions()));
+					Logger.log("error: %s", sql);
 					throw e;
 				}
 			}

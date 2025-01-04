@@ -92,7 +92,8 @@ public class BOKeysService extends BusinessLogic<IBOKeysContract, BONumbering> {
 					// 主对象获取主键
 					BONumbering[] numberings = this.getTransaction().fetch(BONumbering.class, criteria);
 					if (numberings == null || numberings.length == 0) {
-						throw new BusinessLogicException(I18N.prop("not found [%s] keys.", contract.getObjectCode()));
+						throw new BusinessLogicException(
+								I18N.prop("msg_bobas_not_found_bo_primary_key", contract.getObjectCode()));
 					}
 					numbering = numberings[0];
 				}
@@ -114,7 +115,7 @@ public class BOKeysService extends BusinessLogic<IBOKeysContract, BONumbering> {
 					condition.setValue(emYesNo.YES);
 					BOSeriesNumbering[] numberings = this.getTransaction().fetch(BOSeriesNumbering.class, criteria);
 					if (numberings == null || numberings.length == 0) {
-						throw new BusinessLogicException(I18N.prop("not found [%s]'s series [%s].",
+						throw new BusinessLogicException(I18N.prop("msg_bobas_not_found_bo_series_key",
 								contract.getObjectCode(), contract.getSeries()));
 					}
 					numbering.getSeriesNumberings().addAll(numberings);
@@ -167,8 +168,8 @@ public class BOKeysService extends BusinessLogic<IBOKeysContract, BONumbering> {
 			BOSeriesNumbering numbering = this.getBeAffected().getSeriesNumberings()
 					.firstOrDefault(c -> Numbers.equals(c.getSeries(), contract.getSeries()));
 			if (numbering == null) {
-				throw new BusinessLogicException(
-						I18N.prop("not found [%s]'s series [%s].", contract.getObjectCode(), contract.getSeries()));
+				throw new BusinessLogicException(I18N.prop("msg_bobas_not_found_bo_series_key.",
+						contract.getObjectCode(), contract.getSeries()));
 			}
 			key = numbering.getNextNumber();
 			if (contract.setSeriesKey(Strings.format(numbering.getTemplate(), key))) {
@@ -181,7 +182,7 @@ public class BOKeysService extends BusinessLogic<IBOKeysContract, BONumbering> {
 			IKeyValue<Integer> keyValue = this.getBeAffected().getMaxValueNumbering()
 					.firstOrDefault(c -> c.getKey().equals(contract.getMaxValueKey()));
 			if (keyValue == null) {
-				throw new BusinessLogicException(I18N.prop("not found [%s]'s max [%s] value.",
+				throw new BusinessLogicException(I18N.prop("msg_bobas_not_found_bo_max_values",
 						this.getHost().getClass().getSimpleName(), keyProperty.getName()));
 			}
 			key = keyValue.getValue();

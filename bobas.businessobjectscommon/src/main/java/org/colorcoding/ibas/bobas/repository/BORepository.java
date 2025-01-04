@@ -7,7 +7,6 @@ import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
-import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logging.Logger;
 import org.colorcoding.ibas.bobas.logic.BusinessLogicsManager;
@@ -135,10 +134,10 @@ public abstract class BORepository implements AutoCloseable {
 					}
 					boCopy = opRsltFetch.getResultObjects().firstOrDefault();
 					if (boCopy == null) {
-						throw new RepositoryException(Strings.format("not found %s in database.", bo.toString()));
+						throw new RepositoryException(I18N.prop("msg_bobas_not_found_bo_copy", bo.toString()));
 					}
 					if (BOUtilities.isNewer(boCopy, bo)) {
-						throw new RepositoryException(Strings.format("%s db copy is more newer.", bo.toString()));
+						throw new RepositoryException(I18N.prop("msg_bobas_bo_copy_is_more_newer", bo.toString()));
 					}
 					// 如果是删除数据，则使用数据库副本
 					if (bo.isDeleted()) {

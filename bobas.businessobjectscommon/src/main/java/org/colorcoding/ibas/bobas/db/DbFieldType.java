@@ -42,7 +42,7 @@ public enum DbFieldType {
 			return NUMERIC;
 		} else if (type == DateTime.class) {
 			return DATE;
-		} else if (type == String.class) {
+		} else if (type == String.class || type.isEnum()) {
 			return ALPHANUMERIC;
 		}
 		return UNKNOWN;

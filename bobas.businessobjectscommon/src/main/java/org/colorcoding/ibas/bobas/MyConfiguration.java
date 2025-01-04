@@ -57,6 +57,19 @@ public class MyConfiguration extends Configuration {
 	 * @return
 	 */
 	public static boolean isDebugMode() {
+		// 访问频繁，提高下性能
+		if (DEBUG_MODE == -1) {
+			synchronized (MyConfiguration.class) {
+				if (DEBUG_MODE == -1) {
+					boolean value = MyConfiguration.getConfigValue(CONFIG_ITEM_DEBUG_MODE, false);
+					if (value) {
+						DEBUG_MODE = 1;
+					} else {
+						DEBUG_MODE = 0;
+					}
+				}
+			}
+		}
 		return DEBUG_MODE == 1 ? true : false;
 	}
 

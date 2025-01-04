@@ -238,7 +238,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 							BusinessLogic<?, ?> logic = BusinessLogicsManager.create().createLogic(item);
 							if (logic == null) {
 								throw new BusinessLogicException(
-										I18N.prop("not found business logic [%s].", item.getName()));
+										I18N.prop("msg_bobas_not_found_bo_logic", item.getName()));
 							}
 							logic.setTransaction(BusinessLogicChain.this.getTransaction());
 							logic.setLogicChain(BusinessLogicChain.this);
@@ -373,12 +373,14 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 	protected final IBusinessLogic<?>[] getLogics() {
 		ArrayList<IBusinessLogic<?>> logics = new ArrayList<>(16);
 		if (this.triggerCopyLogics != null) {
-			for (int i = this.triggerCopyLogics.length - 1; i >= 0; i--) {
+			for (int i = 0; i < this.triggerCopyLogics.length; i++) {
+				// for (int i = this.triggerCopyLogics.length - 1; i >= 0; i--) {
 				logics.add(this.triggerCopyLogics[i]);
 			}
 		}
 		if (this.triggerLogics != null) {
-			for (int i = this.triggerLogics.length - 1; i >= 0; i--) {
+			for (int i = 0; i < this.triggerLogics.length; i++) {
+				// for (int i = this.triggerLogics.length - 1; i >= 0; i--) {
 				logics.add(this.triggerLogics[i]);
 			}
 		}

@@ -307,7 +307,7 @@ public class BOUtilities {
 						propertyInfo = propertyInfo((IBusinessObject) data, cCriteria.getPropertyPath());
 						if (propertyInfo == null) {
 							throw new JudmentOperationException(
-									I18N.prop("not found property %s.", cCriteria.getPropertyPath()));
+									I18N.prop("msg_bobas_not_found_bo_property", cCriteria.getPropertyPath()));
 						}
 						cData = propertyValue((IBusinessObject) data, propertyInfo);
 						if (cData instanceof IBusinessObjects) {

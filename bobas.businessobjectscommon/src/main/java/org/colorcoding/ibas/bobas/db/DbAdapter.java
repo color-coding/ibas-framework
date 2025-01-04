@@ -16,6 +16,7 @@ import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.DataConvert;
 import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.common.Enums;
+import org.colorcoding.ibas.bobas.common.IChildCriteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.ISort;
@@ -291,8 +292,8 @@ public abstract class DbAdapter {
 			criteria = criteria.clone();
 		}
 		DbField dbField;
-		for (ICondition condition : criteria.getConditions()) {
-			for (IPropertyInfo<?> propertyInfo : propertyInfos) {
+		for (IPropertyInfo<?> propertyInfo : propertyInfos) {
+			for (ICondition condition : criteria.getConditions()) {
 				if (Strings.equalsIgnoreCase(condition.getAlias(), propertyInfo.getName())) {
 					// 属性名称转数据库字段
 					dbField = propertyInfo.getAnnotation(DbField.class);
@@ -314,6 +315,20 @@ public abstract class DbAdapter {
 						|| condition.getOperation() == ConditionOperation.START
 						|| condition.getOperation() == ConditionOperation.END) {
 					condition.setAliasDataType(DbFieldType.ALPHANUMERIC);
+				}
+			}
+			for (ISort sort : criteria.getSorts()) {
+				if (Strings.equalsIgnoreCase(sort.getAlias(), propertyInfo.getName())) {
+					// 属性名称转数据库字段
+					dbField = propertyInfo.getAnnotation(DbField.class);
+					if (dbField != null) {
+						sort.setAlias(dbField.name());
+					}
+				}
+			}
+			for (IChildCriteria item : criteria.getChildCriterias()) {
+				if (Strings.equalsIgnoreCase(item.getPropertyPath(), propertyInfo.getName())) {
+					this.convert(item, propertyInfo.getValueType());
 				}
 			}
 		}
@@ -378,7 +393,7 @@ public abstract class DbAdapter {
 					return this.table(boType);
 				}
 			}
-			throw new RuntimeException(I18N.prop("not found [%s]'s table.", boType.toString()));
+			throw new RuntimeException(I18N.prop("msg_bobas_not_found_bo_table", boType.toString()));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
