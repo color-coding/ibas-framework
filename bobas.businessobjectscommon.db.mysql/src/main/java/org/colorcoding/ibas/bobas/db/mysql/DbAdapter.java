@@ -22,7 +22,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			}
 			String dbURL = String.format(
 					"jdbc:mysql://%s/%s?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=%s",
-					server, dbName, timeZone);
+					server, dbName, java.net.URLEncoder.encode(timeZone, "UTF-8"));
 			Connection connection = DriverManager.getConnection(dbURL, userName, userPwd);
 			connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 			return connection;

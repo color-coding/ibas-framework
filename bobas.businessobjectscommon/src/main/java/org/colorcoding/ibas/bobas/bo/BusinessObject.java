@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
@@ -16,6 +17,8 @@ import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
+import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
+import org.colorcoding.ibas.bobas.serialization.XmlAdapter4UDF;
 
 /**
  * 业务对象基础类型
@@ -157,11 +160,11 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	@SuppressWarnings("unchecked")
 	public T clone() {
 		try {
-			T nBO = (T) super.clone();
-			if (nBO instanceof BusinessObject<?>) {
-				((BusinessObject<?>) nBO).reset();
+			T nData = (T) SerializerFactory.create().clone(this);
+			if (nData instanceof BusinessObject) {
+				((BusinessObject<T>) nData).reset();
 			}
-			return nBO;
+			return nData;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -253,6 +256,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 		return UserFields.EMPTY_DATA;
 	}
 
+	@XmlJavaTypeAdapter(value = XmlAdapter4UDF.class)
 	transient Map<IPropertyInfo<?>, Object> userFields = null;
 
 	void firePropertyChange(IPropertyInfo<?> userField, Object oldValue, Object newValue) {

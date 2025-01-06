@@ -249,4 +249,15 @@ public class Strings {
 		}
 		return true;
 	}
+
+	/**
+	 * 转移字符串为16进制字符串
+	 * 
+	 * @param src
+	 * @return
+	 */
+	public static String toHexString(String src) {
+		return Bytes.toHexString(src.getBytes());
+	}
+
 }

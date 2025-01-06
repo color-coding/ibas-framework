@@ -1,16 +1,23 @@
 package org.colorcoding.ibas.bobas.test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 
-import org.colorcoding.ibas.bobas.bo.BOFactory;
 import org.colorcoding.ibas.bobas.bo.IUserField;
 import org.colorcoding.ibas.bobas.bo.IUserFields;
 import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
+import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.db.DbField;
+import org.colorcoding.ibas.bobas.serialization.ISerializer;
+import org.colorcoding.ibas.bobas.serialization.SerializerXml;
+import org.colorcoding.ibas.bobas.serialization.ValidateException;
 import org.colorcoding.ibas.bobas.test.demo.Order;
 import org.colorcoding.ibas.bobas.test.demo.SalesOrder;
+import org.colorcoding.ibas.bobas.test.demo.SalesOrderItem;
+import org.xml.sax.SAXException;
 
 import junit.framework.TestCase;
 
@@ -50,11 +57,13 @@ public class TestCore extends TestCase {
 		assertEquals("Property [Activted] faild. ", (boolean) salesOrder.getActivated(), true);
 		assertTrue("Property [DocumentTotal] faild. ", salesOrder.getDocumentTotal().toString().equals("99.99"));
 
-		salesOrder = new SalesOrder();
+		Order salesOrder2 = salesOrder.clone();
 
+		System.out.println(salesOrder2.toString());
+
+		salesOrder = new SalesOrder();
 		assertEquals("Property [DocumentStatus] faild. ", salesOrder.getDocumentStatus(), emDocumentStatus.PLANNED);
 
-		BOFactory.register(SalesOrder.class);
 	}
 
 	public void testUserFields() {
@@ -85,4 +94,34 @@ public class TestCore extends TestCase {
 			}
 		}
 	}
+
+	public void testXml() throws SAXException, IOException, ValidateException {
+		SalesOrder order = new SalesOrder();
+		order.setDocEntry(1);
+		order.setCustomerCode("C00001");
+		order.setDeliveryDate(DateTimes.today());
+		order.setDocumentStatus(emDocumentStatus.RELEASED);
+		order.setDocumentTotal(new BigDecimal("99.99"));
+		order.getUserFields().register("U_OrderType", String.class);
+		order.getUserFields().register("U_OrderId", Integer.class);
+		order.getUserFields().register("U_OrderDate", DateTime.class);
+		order.getUserFields().register("U_OrderTotal", BigDecimal.class);
+		order.getUserFields().get("U_OrderType").setValue("S0000");
+		order.getUserFields().get("U_OrderId").setValue(5768);
+		order.getUserFields().get("U_OrderDate").setValue(DateTimes.today());
+		order.getUserFields().get("U_OrderTotal").setValue(new BigDecimal("999.888"));
+		SalesOrderItem orderItem = order.getSalesOrderItems().create();
+		orderItem.setItemCode("A00001");
+		orderItem.setQuantity(new BigDecimal(10));
+		orderItem.setPrice(BigDecimal.valueOf(99.99));
+		orderItem = order.getSalesOrderItems().create();
+		orderItem.setItemCode("A00002");
+		orderItem.setQuantity(BigDecimal.valueOf(10));
+		orderItem.setPrice(BigDecimal.valueOf(199.99));
+		ISerializer<?> serializer = new SerializerXml();
+		ByteArrayOutputStream writer = new ByteArrayOutputStream();
+		serializer.serialize(order, writer);
+		System.out.println(writer.toString());
+	}
+
 }

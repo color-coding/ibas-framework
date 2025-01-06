@@ -111,6 +111,10 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-语言编码
 	 */
 	public final static String CONFIG_ITEM_LANGUAGE_CODE = "LanguageCode";
+	/**
+	 * 配置项目-格式化输出
+	 */
+	public final static String CONFIG_ITEM_FORMATTED_OUTPUT = "FormattedOutput";
 
 	/**
 	 * 配置项目-应用名称

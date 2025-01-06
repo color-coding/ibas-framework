@@ -30,6 +30,8 @@ import org.colorcoding.ibas.bobas.repository.ITransaction;
 public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends IBusinessObject>
 		implements IBusinessLogic<T> {
 
+	protected static final String MSG_LOGICS_SKIP_LOGIC_EXECUTION = "logics: skip logic [%s], because [%s = %s].";
+
 	private L contract;
 
 	/**
@@ -115,8 +117,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 			// 标记删除的数据无效
 			ITrackable status = (ITrackable) data;
 			if (status.isDeleted()) {
-				Logger.log(LoggingLevel.DEBUG, "logics: skip logic [%s], because [%s = %s].", this.getClass().getName(),
-						"isDeleted", status.isDeleted());
+				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "isDeleted",
+						status.isDeleted());
 				return false;
 			}
 		}
@@ -124,8 +126,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 			// 引用数据，已标记删除的，不影响业务逻辑
 			IBOTagDeleted refData = (IBOTagDeleted) data;
 			if (refData.getDeleted() == emYesNo.YES) {
-				Logger.log(LoggingLevel.DEBUG, "logics: skip logic [%s], because [%s = %s].", this.getClass().getName(),
-						"Deleted", refData.getDeleted());
+				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "Deleted",
+						refData.getDeleted());
 				return false;
 			}
 		}
@@ -133,8 +135,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 			// 引用数据，已标记取消的，不影响业务逻辑
 			IBOTagCanceled refData = (IBOTagCanceled) data;
 			if (refData.getCanceled() == emYesNo.YES) {
-				Logger.log(LoggingLevel.DEBUG, "logics: skip logic [%s], because [%s = %s].", this.getClass().getName(),
-						"Canceled", refData.getCanceled());
+				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "Canceled",
+						refData.getCanceled());
 				return false;
 			}
 		}
@@ -146,7 +148,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 					|| apData.getApprovalStatus() == emApprovalStatus.REJECTED
 					|| apData.getApprovalStatus() == emApprovalStatus.RETURNED) {
 				// 审批中，取消，拒绝，退回
-				Logger.log(LoggingLevel.DEBUG, "logics: skip logic [%s], because [%s = %s].", this.getClass().getName(),
+				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
 						"ApprovalStatus", apData.getApprovalStatus());
 				return false;
 			}
@@ -156,7 +158,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 			IBODocument docData = (IBODocument) data;
 			if (docData.getDocumentStatus() == emDocumentStatus.PLANNED) {
 				// 计划状态
-				Logger.log(LoggingLevel.DEBUG, "logics: skip logic [%s], because [%s = %s].", this.getClass().getName(),
+				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
 						"DocumentStatus", docData.getDocumentStatus());
 				return false;
 			}
@@ -166,8 +168,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 			IBODocumentLine lineData = (IBODocumentLine) data;
 			if (lineData.getLineStatus() == emDocumentStatus.PLANNED) {
 				// 计划状态
-				Logger.log(LoggingLevel.DEBUG, "logics: skip logic [%s], because [%s = %s].", this.getClass().getName(),
-						"LineStatus", lineData.getLineStatus());
+				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "LineStatus",
+						lineData.getLineStatus());
 				return false;
 			}
 		}
@@ -202,7 +204,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 				"logics: forward logic [%s], %sth time.", this.getClass().getName(), this.forwardCount);
 		if (this.forwardCount > 1) {
 			if (!this.onRepeatedImpact(this.forwardCount)) {
-				Logger.log(LoggingLevel.DEBUG, "logics: skip logic [%s], because [%s = %s].", this.getClass().getName(),
+				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
 						"forwardCount", this.forwardCount);
 				return;
 			}
@@ -269,7 +271,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 				"logics: reverse logic [%s], %sth time.", this.getClass().getName(), this.reverseCount);
 		if (this.reverseCount > 1) {
 			if (!this.onRepeatedRevoke(this.reverseCount)) {
-				Logger.log(LoggingLevel.DEBUG, "logics: skip logic [%s], because [%s = %s].", this.getClass().getName(),
+				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
 						"reverseCount", this.reverseCount);
 				return;
 			}

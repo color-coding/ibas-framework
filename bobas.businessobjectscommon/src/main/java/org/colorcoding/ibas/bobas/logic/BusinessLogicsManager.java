@@ -14,7 +14,7 @@ import org.colorcoding.ibas.bobas.repository.ITransaction;
 public class BusinessLogicsManager {
 
 	private BusinessLogicsManager() {
-		this.logicClasses = new HashMap<>();
+		this.logicClasses = new HashMap<>(128);
 	}
 
 	private volatile static BusinessLogicsManager instance;

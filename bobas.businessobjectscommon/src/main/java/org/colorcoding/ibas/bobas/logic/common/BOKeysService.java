@@ -39,13 +39,19 @@ public class BOKeysService extends BusinessLogic<IBOKeysContract, BONumbering> {
 		if (data instanceof IBusinessObject && data == this.getHost()) {
 			IBusinessObject boData = (IBusinessObject) data;
 			if (boData.isSavable() == false) {
+				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "isSavable",
+						"false");
 				return false;
 			}
 			if (boData.isNew() == false) {
+				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "isNew",
+						"false");
 				return false;
 			}
 			if (data instanceof IBOCustomKey) {
 				// 自定义键，不执行业务逻辑
+				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
+						"isCustomKey", "true");
 				return false;
 			}
 		}
