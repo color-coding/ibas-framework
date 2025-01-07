@@ -192,8 +192,8 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 		}
 	}
 
-	/*
-	 * 创建副本 可重载 注意重置对象
+	/**
+	 * 克隆对象
 	 */
 	@Override
 	public T clone() {

@@ -404,14 +404,17 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 					continue;
 				}
 				boolean isNew = true;
-				for (IChildCriteria myChildCriteria : nCriteria.getChildCriterias()) {
+				for (int i = 0; i < nCriteria.getChildCriterias().size(); i++) {
+					IChildCriteria myChildCriteria = nCriteria.getChildCriterias().get(i);
 					if (myChildCriteria.getPropertyPath() == null) {
 						continue;
 					}
-					if (myChildCriteria.getPropertyPath().equals(tmpChildCriteria.getPropertyPath())) {
-						isNew = false;
-						break;
+					if (!myChildCriteria.getPropertyPath().equals(tmpChildCriteria.getPropertyPath())) {
+						continue;
 					}
+					isNew = false;
+					nCriteria.getChildCriterias().set(i, (IChildCriteria) myChildCriteria.copyFrom(tmpChildCriteria));
+					break;
 				}
 				if (isNew) {
 					nCriteria.getChildCriterias().add(tmpChildCriteria);
