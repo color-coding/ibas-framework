@@ -9,9 +9,9 @@ public interface IUserField<P> {
 	String getName();
 
 	/**
-	 * 值的类型
+	 * 获取-值类型
 	 */
-	java.lang.Class<P> getValueType();
+	Class<?> getValueType();
 
 	/**
 	 * 获取-值

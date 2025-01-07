@@ -33,9 +33,8 @@ class UserFields implements IUserFields {
 				}
 
 				@Override
-				@SuppressWarnings("unchecked")
-				public Class<Object> getValueType() {
-					return (Class<Object>) property.getValueType();
+				public Class<?> getValueType() {
+					return property.getValueType();
 				}
 
 				@Override

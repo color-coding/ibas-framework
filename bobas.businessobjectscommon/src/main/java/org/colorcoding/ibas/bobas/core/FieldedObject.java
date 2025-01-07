@@ -55,11 +55,11 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject 
 	/**
 	 * 字段值
 	 */
-	private Map<IPropertyInfo<?>, Object> fields = null;
+	private transient Map<IPropertyInfo<?>, Object> fields = null;
 	/**
 	 * 被修改的字段
 	 */
-	protected List<IPropertyInfo<?>> modifiedFields = null;
+	protected transient List<IPropertyInfo<?>> modifiedFields = null;
 
 	/**
 	 * 属性

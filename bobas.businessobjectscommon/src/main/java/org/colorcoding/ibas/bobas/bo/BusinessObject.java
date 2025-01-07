@@ -1,24 +1,27 @@
 package org.colorcoding.ibas.bobas.bo;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 
 import org.colorcoding.ibas.bobas.common.Criteria;
+import org.colorcoding.ibas.bobas.common.DataConvert;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.FieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
-import org.colorcoding.ibas.bobas.serialization.XmlAdapter4UDF;
 
 /**
  * 业务对象基础类型
@@ -256,7 +259,49 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 		return UserFields.EMPTY_DATA;
 	}
 
-	@XmlJavaTypeAdapter(value = XmlAdapter4UDF.class)
+	@XmlElementWrapper(name = "UserFields")
+	@XmlElement(name = "UserField", type = UserFieldProxy.class, required = false)
+	private UserFieldProxy[] getUserFieldProxies() {
+		if (this.userFields == null) {
+			return null;
+		}
+		int i = 0;
+		UserFieldProxy proxyField;
+		UserFieldProxy[] proxyFields = new UserFieldProxy[this.userFields.size()];
+		for (Entry<IPropertyInfo<?>, Object> entry : this.userFields.entrySet()) {
+			proxyField = new UserFieldProxy();
+			proxyField.setName(entry.getKey().getName());
+			proxyField.setValueType(entry.getKey().getValueType());
+			proxyField.setValue(entry.getValue());
+			proxyFields[i] = proxyField;
+			i += 1;
+		}
+		return proxyFields;
+	}
+
+	@SuppressWarnings("unused")
+	private void setUserFieldProxies(UserFieldProxy[] values) {
+		if (this.userFields == null || values == null) {
+			return;
+		}
+		IPropertyInfo<?> userPropertyInfo;
+		List<IPropertyInfo<?>> userPropertyInfos = new ArrayList<>(this.userFields.keySet());
+		for (UserFieldProxy proxyField : values) {
+			userPropertyInfo = userPropertyInfos
+					.firstOrDefault(c -> Strings.equalsIgnoreCase(c.getName(), proxyField.getName()));
+			if (userPropertyInfo == null) {
+
+				userPropertyInfo = UserFieldsManager.registerUserField(this.getClass(), proxyField.getName(),
+						proxyField.getValueType());
+			}
+			if (userPropertyInfo == null) {
+				continue;
+			}
+			this.userFields.put(userPropertyInfo,
+					DataConvert.convert(userPropertyInfo.getValueType(), proxyField.getValue()));
+		}
+	}
+
 	transient Map<IPropertyInfo<?>, Object> userFields = null;
 
 	void firePropertyChange(IPropertyInfo<?> userField, Object oldValue, Object newValue) {

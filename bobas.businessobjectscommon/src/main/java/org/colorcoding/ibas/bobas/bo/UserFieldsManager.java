@@ -187,12 +187,24 @@ public class UserFieldsManager {
 	}
 
 	/**
+	 * 注册属性
+	 * 
+	 * @param objectType 所属类型
+	 * @param name       名称
+	 * @param valueType  值类型
+	 * @return
+	 */
+	public static IPropertyInfo<?> registerUserField(Class<?> objectType, String name, Class<?> valueType) {
+		return registerUserField(objectType, createUserField(name, valueType));
+	}
+
+	/**
 	 * 初始化对象字段
 	 * 
 	 * @param objectType 对象类型
 	 * @return
 	 */
-	public static Map<IPropertyInfo<?>, Object> initFields(Class<?> objectType) {
+	static Map<IPropertyInfo<?>, Object> initFields(Class<?> objectType) {
 		UserFieldInfoList infoList = getUserFieldInfoList(objectType);
 		Map<IPropertyInfo<?>, Object> fieldsMap = new HashMap<>(infoList.size(), 1);
 		for (IPropertyInfo<?> propertyInfo : infoList) {
@@ -200,4 +212,5 @@ public class UserFieldsManager {
 		}
 		return fieldsMap;
 	}
+
 }
