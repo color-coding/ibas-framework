@@ -153,4 +153,24 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-数据库无用户事务通知
 	 */
 	public final static String CONFIG_ITEM_DB_NO_USER_TANSACTION_SP = "DbNoUserTansactionSP";
+	/**
+	 * 配置项目-组织方式
+	 */
+	public final static String CONFIG_ITEM_ORGANIZATION_WAY = "OrganizationWay";
+	/**
+	 * 配置项目-组织管理员失效时间
+	 */
+	public final static String CONFIG_ITEM_ORGANIZATION_MANAGER_EXPIRY_VALUE = "OrgManagerExpiry";
+	/**
+	 * 配置项目-权限判断方式
+	 */
+	public final static String CONFIG_ITEM_OWNERSHIP_WAY = "OwnershipWay";
+	/**
+	 * 配置项目-权限判断员失效时间
+	 */
+	public final static String CONFIG_ITEM_OWNERSHIP_JUDGER_EXPIRY_VALUE = "OwnJudgerExpiry";
+	/**
+	 * 配置项目-审批方式
+	 */
+	public final static String CONFIG_ITEM_APPROVAL_WAY = "ApprovalWay";
 }

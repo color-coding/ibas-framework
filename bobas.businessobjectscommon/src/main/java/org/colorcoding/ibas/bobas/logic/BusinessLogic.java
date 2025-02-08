@@ -2,8 +2,8 @@ package org.colorcoding.ibas.bobas.logic;
 
 import java.util.Objects;
 
+import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.bo.BOUtilities;
-import org.colorcoding.ibas.bobas.bo.IApprovalData;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
 import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
@@ -19,6 +19,7 @@ import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.logging.Logger;
 import org.colorcoding.ibas.bobas.logging.LoggingLevel;
+import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.repository.ITransaction;
 
 /**
@@ -31,6 +32,30 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 		implements IBusinessLogic<T> {
 
 	protected static final String MSG_LOGICS_SKIP_LOGIC_EXECUTION = "logics: skip logic [%s], because [%s = %s].";
+
+	private BusinessLogicChain logicChain;
+
+	/**
+	 * 获取-业务逻辑链
+	 * 
+	 * @return
+	 */
+	final BusinessLogicChain getLogicChain() {
+		return this.logicChain;
+	}
+
+	final void setLogicChain(BusinessLogicChain value) {
+		this.logicChain = value;
+	}
+
+	/**
+	 * 获取-当前用户
+	 * 
+	 * @return
+	 */
+	protected final IUser getUser() {
+		return this.getLogicChain().getUser();
+	}
 
 	private L contract;
 
@@ -284,21 +309,6 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 		this.revoke(this.getContract());
 	}
 
-	private BusinessLogicChain logicChain;
-
-	/**
-	 * 获取-业务逻辑链
-	 * 
-	 * @return
-	 */
-	final BusinessLogicChain getLogicChain() {
-		return this.logicChain;
-	}
-
-	final void setLogicChain(BusinessLogicChain value) {
-		this.logicChain = value;
-	}
-
 	/**
 	 * 逻辑链中查询被影响对象（仅第一个）
 	 * 
@@ -344,7 +354,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 				criteria = criteria.clone();
 				criteria.setResultCount(1);
 			}
-			return BOUtilities.fetch(criteria, results);
+			return BOUtilities.fetch(results, criteria);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

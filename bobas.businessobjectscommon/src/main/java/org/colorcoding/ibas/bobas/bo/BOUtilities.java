@@ -1,6 +1,5 @@
 package org.colorcoding.ibas.bobas.bo;
 
-import java.beans.PropertyChangeListener;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -25,8 +24,6 @@ public class BOUtilities {
 
 	public static IBusinessObject VALUE_EMPTY = new IBusinessObject() {
 
-		private static final long serialVersionUID = 1L;
-
 		@Override
 		public boolean isSavable() {
 			return false;
@@ -50,14 +47,6 @@ public class BOUtilities {
 		@Override
 		public boolean isDeleted() {
 			return false;
-		}
-
-		@Override
-		public void removeListener(PropertyChangeListener listener) {
-		}
-
-		@Override
-		public void registerListener(PropertyChangeListener listener) {
 		}
 
 		@Override
@@ -206,7 +195,35 @@ public class BOUtilities {
 	 * @param propertyName 属性名称
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static <P> P propertyValue(IBusinessObject bo, String propertyName) {
+		if (Strings.indexOf(propertyName, ".") > 1) {
+			// 属性是路径
+			String property = propertyName.split("\\.")[0];
+			Object value = propertyValue(bo, property);
+			if (value == null) {
+				return null;
+			}
+			if (value instanceof Iterable) {
+				Object cValue;
+				List<Object> cValues = new ArrayList<>();
+				String cProperty = propertyName.substring(property.length() + 1, propertyName.length());
+				for (Object item : (Iterable<?>) value) {
+					if (!(item instanceof IBusinessObject)) {
+						continue;
+					}
+					cValue = propertyValue((IBusinessObject) item, cProperty);
+					if (cValue != null && cValue.getClass().isArray()) {
+						for (int i = 0; i < Array.getLength(cValue); i++) {
+							cValues.add(Array.get(cValue, i));
+						}
+					}
+				}
+				return (P) cValues.toArray();
+			} else {
+				return (P) value;
+			}
+		}
 		return propertyValue(bo, propertyInfo(bo, propertyName));
 	}
 
@@ -258,8 +275,8 @@ public class BOUtilities {
 	 * @return
 	 * @throws JudmentOperationException
 	 */
-	public static <T> List<T> fetch(ICriteria criteria, Iterable<T> datas) throws JudmentOperationException {
-		return fetch(criteria, datas == null ? null : datas.iterator());
+	public static <T> List<T> fetch(Iterable<T> datas, ICriteria criteria) throws JudmentOperationException {
+		return fetch(datas == null ? null : datas.iterator(), criteria);
 	}
 
 	/**
@@ -271,7 +288,7 @@ public class BOUtilities {
 	 * @return
 	 * @throws JudmentOperationException
 	 */
-	public static <T> List<T> fetch(ICriteria criteria, Iterator<T> datas) throws JudmentOperationException {
+	public static <T> List<T> fetch(Iterator<T> datas, ICriteria criteria) throws JudmentOperationException {
 		ArrayList<T> results = new ArrayList<>();
 		if (datas == null) {
 			return results;
@@ -311,12 +328,12 @@ public class BOUtilities {
 						}
 						cData = propertyValue((IBusinessObject) data, propertyInfo);
 						if (cData instanceof IBusinessObjects) {
-							if (fetch(cCriteria, ((IBusinessObjects<?, ?>) cData)).isEmpty()) {
+							if (fetch(((IBusinessObjects<?, ?>) cData), cCriteria).isEmpty()) {
 								checked = false;
 								break;
 							}
 						} else if (cData instanceof IBusinessObject) {
-							if (fetch(cCriteria, Arrays.asList(cData)).isEmpty()) {
+							if (fetch(Arrays.asList(cData), cCriteria).isEmpty()) {
 								checked = false;
 								break;
 							}

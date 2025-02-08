@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.logic;
 import java.util.HashMap;
 
 import org.colorcoding.ibas.bobas.bo.BOFactory;
+import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.repository.ITransaction;
 
 /**
@@ -32,6 +33,12 @@ public class BusinessLogicsManager {
 
 	public synchronized IBusinessLogicChain createChain(ITransaction transaction) {
 		return new BusinessLogicChain(transaction);
+	}
+
+	public synchronized IBusinessLogicChain createChain(ITransaction transaction, IUser user) {
+		BusinessLogicChain logicChain = new BusinessLogicChain(transaction);
+		logicChain.setUser(user);
+		return logicChain;
 	}
 
 	private HashMap<Class<?>, Class<?>> logicClasses;

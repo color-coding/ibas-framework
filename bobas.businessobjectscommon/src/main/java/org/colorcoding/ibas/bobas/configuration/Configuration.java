@@ -23,9 +23,6 @@ import org.colorcoding.ibas.bobas.logging.Logger;
  */
 public class Configuration {
 
-	protected static final String MSG_CONFIG_READ_FILE_DATA = "config: read file's data [%s].";
-	protected static final String MSG_CONFIG_READ_FILE_DATA_FAILD = "config: read file's data [%s] faild.";
-
 	private volatile static IConfigurationManager instance;
 
 	/**
@@ -50,11 +47,11 @@ public class Configuration {
 					}
 					if (instance == null) {
 						// 读取配置文件失败
-						System.err.println(String.format(MSG_CONFIG_READ_FILE_DATA_FAILD, configFile));
+						System.err.println(String.format("config: read file's data [%s] faild.", configFile));
 						instance = new ConfigurationManagerFile(configFile);
 					} else {
 						// 读取配置文件成功
-						Logger.log(MSG_CONFIG_READ_FILE_DATA, configFile);
+						Logger.log("config: read file's data [%s].", configFile);
 					}
 				}
 			}

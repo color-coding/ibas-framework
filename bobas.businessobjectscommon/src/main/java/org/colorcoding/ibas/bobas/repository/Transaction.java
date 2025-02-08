@@ -72,7 +72,7 @@ public abstract class Transaction implements ITransaction {
 		try {
 			Objects.requireNonNull(criteria);
 			Objects.requireNonNull(boType);
-			return (T[]) BOUtilities.fetch(criteria, this.cacheDatas.where(c -> boType.isInstance(c))).toArray();
+			return (T[]) BOUtilities.fetch(this.cacheDatas.where(c -> boType.isInstance(c)), criteria).toArray();
 		} catch (JudmentOperationException e) {
 			throw new RepositoryException(e);
 		}

@@ -11,6 +11,8 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logging.Logger;
 import org.colorcoding.ibas.bobas.logic.BusinessLogicsManager;
 import org.colorcoding.ibas.bobas.logic.IBusinessLogicChain;
+import org.colorcoding.ibas.bobas.organization.IUser;
+import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
 
 public abstract class BORepository implements AutoCloseable {
 
@@ -83,6 +85,19 @@ public abstract class BORepository implements AutoCloseable {
 		}
 	}
 
+	private IUser currentUser;
+
+	public final IUser getCurrentUser() {
+		if (this.currentUser == null) {
+			return OrganizationFactory.UNKNOWN_USER;
+		}
+		return currentUser;
+	}
+
+	protected void setCurrentUser(IUser currentUser) {
+		this.currentUser = currentUser;
+	}
+
 	protected <T extends IBusinessObject> IOperationResult<T> fetch(Class<?> boType, ICriteria criteria) {
 		try {
 			Objects.requireNonNull(boType);
@@ -153,10 +168,10 @@ public abstract class BORepository implements AutoCloseable {
 				} else {
 					// 执行业务逻辑
 					try (IBusinessLogicChain logicChain = BusinessLogicsManager.create()
-							.createChain(this.getTransaction())) {
+							.createChain(this.getTransaction(), this.getCurrentUser())) {
 						logicChain.setTrigger(bo);
 						logicChain.setTriggerCopy(boCopy);
-						logicChain.commit();
+						logicChain.execute();
 					}
 				}
 				// 非删除，返回对象

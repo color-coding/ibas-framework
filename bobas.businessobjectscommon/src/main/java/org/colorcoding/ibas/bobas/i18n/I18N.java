@@ -7,6 +7,7 @@ package org.colorcoding.ibas.bobas.i18n;
  *
  */
 public class I18N {
+
 	private I18N() {
 	}
 

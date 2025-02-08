@@ -4,6 +4,9 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logging.Logger;
 import org.colorcoding.ibas.bobas.logging.LoggingLevel;
+import org.colorcoding.ibas.bobas.task.Daemon;
+import org.colorcoding.ibas.bobas.task.IDaemonTask;
+import org.colorcoding.ibas.bobas.task.InvalidDaemonTaskException;
 
 /**
  * 可配置工厂
@@ -13,9 +16,6 @@ import org.colorcoding.ibas.bobas.logging.LoggingLevel;
  * @param <T> 工厂创建的类型
  */
 public abstract class ConfigurableFactory<T> {
-
-	protected static final String MSG_CONFIG_COMBINED_CLASS_NAME = "configurable factory: combined class name [%s].";
-	protected static final String MSG_CONFIG_NOT_CONFIGURATION_USING_DEFALUT = "configurable factory: not configured [%s], using defalut [%s].";
 
 	/**
 	 * 获取类型
@@ -57,7 +57,7 @@ public abstract class ConfigurableFactory<T> {
 		}
 		// 获取类类型
 		String fullName = stringBuilder.toString();
-		Logger.log(LoggingLevel.INFO, MSG_CONFIG_COMBINED_CLASS_NAME, fullName);
+		Logger.log(LoggingLevel.INFO, "configurable factory: combined class name [%s].", fullName);
 		return (Class<T>) Class.forName(fullName);
 	}
 
@@ -93,7 +93,8 @@ public abstract class ConfigurableFactory<T> {
 		String configValue = MyConfiguration.getConfigValue(configKey, "").toLowerCase();
 		if (configValue == null || configValue.isEmpty()) {
 			// 没有配置，则使用默认
-			Logger.log(LoggingLevel.WARN, MSG_CONFIG_NOT_CONFIGURATION_USING_DEFALUT, configKey, typeName);
+			Logger.log(LoggingLevel.WARN, "configurable factory: not configured [%s], using defalut [%s].", configKey,
+					typeName);
 			return this.createDefault(typeName);
 		}
 		// 使用配置的实例
@@ -103,6 +104,24 @@ public abstract class ConfigurableFactory<T> {
 		} catch (Exception e) {
 			throw new RuntimeException(I18N.prop("msg_bobas_configurable_factory_create_instance_faild", typeName), e);
 		}
+	}
+
+	/**
+	 * 注册后台任务
+	 * 
+	 * @param task
+	 * @return 是否成功
+	 */
+	protected boolean register(IDaemonTask task) {
+		if (task == null) {
+			return false;
+		}
+		try {
+			Daemon.register(task);
+		} catch (InvalidDaemonTaskException e) {
+			throw new RuntimeException(e);
+		}
+		return true;
 	}
 
 	/**

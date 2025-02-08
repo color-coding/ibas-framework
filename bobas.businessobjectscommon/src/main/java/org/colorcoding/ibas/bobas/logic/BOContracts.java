@@ -1,8 +1,8 @@
 package org.colorcoding.ibas.bobas.logic;
 
+import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.BusinessObjectUnit;
-import org.colorcoding.ibas.bobas.bo.IApprovalData;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
 import org.colorcoding.ibas.bobas.bo.IBOLine;
@@ -15,12 +15,10 @@ import org.colorcoding.ibas.bobas.bo.IBOSimpleLine;
 import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.bo.IPeriodData;
-import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Numbers;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.logic.common.IBOApprovalContract;
 import org.colorcoding.ibas.bobas.logic.common.IBOInstanceLogContract;
 import org.colorcoding.ibas.bobas.logic.common.IBOKeysContract;
@@ -28,6 +26,11 @@ import org.colorcoding.ibas.bobas.logic.common.IBOPeriodContract;
 import org.colorcoding.ibas.bobas.logic.common.IBORulesContract;
 import org.colorcoding.ibas.bobas.logic.common.IBOStorageTagContract;
 
+/**
+ * 业务对象契约（基类）
+ * 
+ * @param <T>
+ */
 class BOContract<T> implements IBusinessLogicContract {
 	public BOContract(T host) {
 		this.setHost(host);
@@ -52,6 +55,9 @@ class BOContract<T> implements IBusinessLogicContract {
 	}
 }
 
+/**
+ * 对象主键契约
+ */
 class BOKeysContract extends BOContract<IBusinessObject> implements IBOKeysContract {
 
 	public BOKeysContract(IBusinessObject host) {
@@ -208,6 +214,9 @@ class BOKeysContract extends BOContract<IBusinessObject> implements IBOKeysContr
 	}
 }
 
+/**
+ * 业务对象存储标记契约
+ */
 class BOStorageTagContract extends BOContract<IBOStorageTag> implements IBOStorageTagContract {
 
 	public BOStorageTagContract(IBOStorageTag host) {
@@ -216,6 +225,9 @@ class BOStorageTagContract extends BOContract<IBOStorageTag> implements IBOStora
 
 }
 
+/**
+ * 业务对象期间契约
+ */
 class BOPeriodContract extends BOContract<IPeriodData> implements IBOPeriodContract {
 
 	public BOPeriodContract(IPeriodData host) {
@@ -244,69 +256,20 @@ class BOPeriodContract extends BOContract<IPeriodData> implements IBOPeriodContr
 
 }
 
+/**
+ * 业务对象审批契约
+ */
 class BOApprovalContract extends BOContract<IApprovalData> implements IBOApprovalContract {
 
 	public BOApprovalContract(IApprovalData host) {
 		super(host);
 	}
 
-	@Override
-	public String getObjectCode() {
-		return this.getHost().getObjectCode();
-	}
-
-	@Override
-	public Integer getDataOwner() {
-		return this.getHost().getDataOwner();
-	}
-
-	@Override
-	public emApprovalStatus getApprovalStatus() {
-		return this.getHost().getApprovalStatus();
-	}
-
-	@Override
-	public void setApprovalStatus(emApprovalStatus value) {
-		this.getHost().setApprovalStatus(value);
-	}
-
-	@Override
-	public ICriteria getCriteria() {
-		return this.getHost().getCriteria();
-	}
-
-	@Override
-	public boolean isDirty() {
-		return this.getHost().isDirty();
-	}
-
-	@Override
-	public boolean isDeleted() {
-		return this.getHost().isDeleted();
-	}
-
-	@Override
-	public boolean isNew() {
-		return this.getHost().isNew();
-	}
-
-	@Override
-	public boolean isSavable() {
-		return this.getHost().isSavable();
-	}
-
-	@Override
-	public boolean isLoading() {
-		return this.getHost().isLoading();
-	}
-
-	@Override
-	public void setLoading(boolean value) {
-
-	}
-
 }
 
+/**
+ * 业务对象实例日志契约
+ */
 class BOInstanceLogContract extends BOContract<IBOStorageTag> implements IBOInstanceLogContract {
 
 	public BOInstanceLogContract(IBOStorageTag host) {
@@ -430,6 +393,9 @@ class BOInstanceLogContract extends BOContract<IBOStorageTag> implements IBOInst
 
 }
 
+/**
+ * 业务对象规则契约
+ */
 class BORulesContract extends BOContract<IBusinessObject> implements IBORulesContract {
 
 	public BORulesContract(IBusinessObject host) {

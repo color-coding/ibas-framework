@@ -20,11 +20,6 @@ import org.colorcoding.ibas.bobas.logging.LoggingLevel;
  *
  */
 public class Daemon implements IDaemon {
-	protected static final String MSG_DAEMON_REGISTER_TASK = "daemon: register task id [%s], name [%s].";
-	protected static final String MSG_DAEMON_REMOVE_TASK = "daemon: remove task id [%s], name [%s].";
-	protected static final String MSG_DAEMON_TASK_COMPLETED = "daemon: end task [%s - %s] %sth running and for [%s] milliseconds.";
-	protected static final String MSG_DAEMON_TASK_START = "daemon: begin to run task [%s - %s], %sth running.";
-	protected static final String MSG_DAEMON_THREAD_POOL_INFO = "daemon: cpu %s, thread pool size %s and queue size %s.";
 
 	/**
 	 * 注册后台任务
@@ -158,7 +153,7 @@ public class Daemon implements IDaemon {
 			wrapping.setLog(isLog);
 			wrapping.setId(Math.abs(UUID.randomUUID().getLeastSignificantBits()));
 			this.getWrappings().add(wrapping);
-			Logger.log(MSG_DAEMON_REGISTER_TASK, wrapping.getId(), wrapping.getName());
+			Logger.log("daemon: register task id [%s], name [%s].", wrapping.getId(), wrapping.getName());
 			return wrapping.getId();
 		}
 	}
@@ -176,7 +171,7 @@ public class Daemon implements IDaemon {
 				}
 				if (wrapping.getId() == taskId) {
 					this.getWrappings().remove(i);
-					Logger.log(MSG_DAEMON_REMOVE_TASK, wrapping.getId(), wrapping.getName());
+					Logger.log("daemon: remove task id [%s], name [%s].", wrapping.getId(), wrapping.getName());
 					return true;
 				}
 			}
@@ -194,7 +189,7 @@ public class Daemon implements IDaemon {
 			int qSize = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_TASK_THREAD_QUEUE_SIZE, 3);
 			this.threadPool = new ThreadPoolExecutor(1, pSize, 55, TimeUnit.SECONDS,
 					new LinkedBlockingQueue<Runnable>(qSize));
-			Logger.log(LoggingLevel.INFO, MSG_DAEMON_THREAD_POOL_INFO, cpu, pSize, qSize);
+			Logger.log(LoggingLevel.INFO, "daemon: cpu %s, thread pool size %s and queue size %s.", cpu, pSize, qSize);
 		}
 		return threadPool;
 	}
@@ -231,14 +226,15 @@ public class Daemon implements IDaemon {
 							long start = System.currentTimeMillis();
 							long times = wrapping.getRunTimes() + 1;
 							if (wrapping.isLog() && MyConfiguration.isDebugMode()) {
-								Logger.log(LoggingLevel.DEBUG, MSG_DAEMON_TASK_START, wrapping.getId(),
-										wrapping.getName(), times);
+								Logger.log(LoggingLevel.DEBUG, "daemon: begin to run task [%s - %s], %sth running.",
+										wrapping.getId(), wrapping.getName(), times);
 							}
 							wrapping.run();
 							long end = System.currentTimeMillis();
 							if (wrapping.isLog() && MyConfiguration.isDebugMode()) {
-								Logger.log(LoggingLevel.DEBUG, MSG_DAEMON_TASK_COMPLETED, wrapping.getId(),
-										wrapping.getName(), times, (end - start));
+								Logger.log(LoggingLevel.DEBUG,
+										"daemon: end task [%s - %s] %sth running and for [%s] milliseconds.",
+										wrapping.getId(), wrapping.getName(), times, (end - start));
 							}
 							if (wrapping.getNextRunTime() <= 0l) {
 								// 下次运行时间，小于等于0，则移出任务

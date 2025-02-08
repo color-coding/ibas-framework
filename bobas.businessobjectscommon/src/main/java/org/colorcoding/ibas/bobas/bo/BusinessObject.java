@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.bo;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -8,12 +9,14 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 
+import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.DataConvert;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.FieldedObject;
+import org.colorcoding.ibas.bobas.core.IBindable;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.List;
@@ -27,7 +30,8 @@ import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
  * 业务对象基础类型
  */
 @XmlAccessorType(XmlAccessType.NONE)
-public abstract class BusinessObject<T extends IBusinessObject> extends FieldedObject implements IBusinessObject {
+public abstract class BusinessObject<T extends IBusinessObject> extends FieldedObject
+		implements IBusinessObject, Serializable, IBindable {
 
 	private static final long serialVersionUID = 1L;
 

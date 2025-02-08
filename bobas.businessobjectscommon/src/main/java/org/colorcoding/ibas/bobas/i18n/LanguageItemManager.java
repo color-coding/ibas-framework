@@ -32,8 +32,7 @@ import org.colorcoding.ibas.bobas.logging.LoggingLevel;
  *
  */
 public class LanguageItemManager {
-	protected static final String MSG_I18N_READ_FILE_DATA = "i18n: read file's data [%s].";
-	protected static final String MSG_I18N_RESOURCES_FOLDER = "i18n: use folder [%s].";
+
 	private String languageCode;
 
 	public String getLanguageCode() {
@@ -108,7 +107,7 @@ public class LanguageItemManager {
 				}
 			}
 			workFolder = new File(path).getPath();
-			Logger.log(LoggingLevel.DEBUG, MSG_I18N_RESOURCES_FOLDER, workFolder);
+			Logger.log(LoggingLevel.DEBUG, "i18n: use folder [%s].", workFolder);
 		}
 		return workFolder;
 	}
@@ -153,7 +152,7 @@ public class LanguageItemManager {
 							this.getLanguageItems().put(item.getKey(), item);
 						}
 						if (languageItems.size() > 0) {
-							Logger.log(LoggingLevel.DEBUG, MSG_I18N_READ_FILE_DATA, file.toString());
+							Logger.log(LoggingLevel.DEBUG, "i18n: read file's data [%s].", file.toString());
 						}
 					} catch (UnsupportedEncodingException e) {
 						Logger.log(LoggingLevel.DEBUG, e);
@@ -224,7 +223,7 @@ public class LanguageItemManager {
 		try (InputStream stream = new FileInputStream(file)) {
 			try (Reader reader = new InputStreamReader(stream, "UTF-8")) {
 				List<LanguageItem> languageItems = this.loadFileContent(reader);
-				Logger.log(MSG_I18N_READ_FILE_DATA, file);
+				Logger.log("i18n: read file's data [%s].", file);
 				return languageItems;
 			} catch (IOException e) {
 				Logger.log(e);

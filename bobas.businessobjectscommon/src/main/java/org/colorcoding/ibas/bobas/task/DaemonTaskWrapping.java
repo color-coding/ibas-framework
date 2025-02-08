@@ -14,7 +14,6 @@ import org.colorcoding.ibas.bobas.logging.LoggingLevel;
  *
  */
 class DaemonTaskWrapping {
-	protected static final String MSG_DAEMON_SINGLE_TASK_WORK_FOLDER_NOT_EXISTS = "daemon: single task work folder not exists.";
 
 	public DaemonTaskWrapping(IDaemonTask task) throws InvalidDaemonTaskException {
 		this();
@@ -192,7 +191,7 @@ class DaemonTaskWrapping {
 					folder.mkdirs();
 				}
 				if (!folder.isDirectory()) {
-					Logger.log(LoggingLevel.ERROR, MSG_DAEMON_SINGLE_TASK_WORK_FOLDER_NOT_EXISTS);
+					Logger.log(LoggingLevel.ERROR, "daemon: single task work folder not exists.");
 					return false;
 				}
 				File lockFile = new File(this.getLockFileName(folder.getPath(), singleTask));

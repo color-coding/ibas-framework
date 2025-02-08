@@ -3,9 +3,9 @@ package org.colorcoding.ibas.bobas.logic;
 import java.util.Objects;
 import java.util.function.Function;
 
+import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.bo.BOUtilities;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
-import org.colorcoding.ibas.bobas.bo.IApprovalData;
 import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
@@ -19,6 +19,7 @@ import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logging.Logger;
 import org.colorcoding.ibas.bobas.logging.LoggingLevel;
+import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.repository.ITransaction;
 import org.colorcoding.ibas.bobas.repository.RepositoryException;
 
@@ -67,11 +68,6 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 
 	private ITransaction transaction;
 
-	/**
-	 * 当前事务
-	 * 
-	 * @return
-	 */
 	protected final ITransaction getTransaction() {
 		return this.transaction;
 	}
@@ -79,6 +75,16 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 	final void setTransaction(ITransaction transaction) {
 		Objects.requireNonNull(transaction);
 		this.transaction = transaction;
+	}
+
+	private IUser user;
+
+	protected final IUser getUser() {
+		return user;
+	}
+
+	final void setUser(IUser user) {
+		this.user = user;
 	}
 
 	/**
@@ -110,10 +116,10 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 	}
 
 	/**
-	 * 提交
+	 * 执行逻辑
 	 */
 	@Override
-	public final void commit() {
+	public final void execute() {
 		// 执行当前逻辑，再执行被影响对象逻辑，最后保存触发对象
 		Objects.requireNonNull(this.getTransaction());
 		// 执行逻辑，先反向，再正向
@@ -184,8 +190,8 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 					// 没有被修改，则跳过
 					continue;
 				}
-				try (IBusinessLogicChain logicChain = BusinessLogicsManager.create()
-						.createChain(this.getTransaction())) {
+				try (IBusinessLogicChain logicChain = BusinessLogicsManager.create().createChain(this.getTransaction(),
+						this.getUser())) {
 					logicChain.setTrigger(item);
 					if (item.isNew() == false) {
 						// 非新建，则查询副本
@@ -200,7 +206,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 						}
 						logicChain.setTriggerCopy(tmpDatas[0]);
 					}
-					logicChain.commit();
+					logicChain.execute();
 				}
 			}
 			DateTime endTime = DateTimes.now();

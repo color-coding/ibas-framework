@@ -31,7 +31,7 @@ public interface IBusinessLogicChain extends AutoCloseable {
 	<T extends IBusinessObject> void setTriggerCopy(T trigger);
 
 	/**
-	 * 提交逻辑
+	 * 执行逻辑
 	 */
-	void commit();
+	void execute();
 }

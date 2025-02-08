@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.bobas.bo;
+package org.colorcoding.ibas.bobas.ownership;
 
 /**
  * 数据所有权

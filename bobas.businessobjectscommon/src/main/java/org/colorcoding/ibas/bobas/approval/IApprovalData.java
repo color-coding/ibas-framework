@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.bobas.bo;
+package org.colorcoding.ibas.bobas.approval;
 
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.core.ITrackable;
