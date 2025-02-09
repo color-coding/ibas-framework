@@ -190,6 +190,8 @@ public class BOUtilities {
 	/**
 	 * 获取对象的属性值
 	 * 
+	 * 支持Item.XXX，并返回数组
+	 * 
 	 * @param <P>          值类型
 	 * @param bo           对象
 	 * @param propertyName 属性名称
@@ -197,6 +199,7 @@ public class BOUtilities {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <P> P propertyValue(IBusinessObject bo, String propertyName) {
+		Objects.requireNonNull(propertyName);
 		if (Strings.indexOf(propertyName, ".") > 1) {
 			// 属性是路径
 			String property = propertyName.split("\\.")[0];
@@ -217,6 +220,8 @@ public class BOUtilities {
 						for (int i = 0; i < Array.getLength(cValue); i++) {
 							cValues.add(Array.get(cValue, i));
 						}
+					} else {
+						cValues.add(cValue);
 					}
 				}
 				return (P) cValues.toArray();

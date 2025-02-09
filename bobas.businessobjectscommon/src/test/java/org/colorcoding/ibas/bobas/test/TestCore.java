@@ -4,9 +4,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 
+import org.colorcoding.ibas.bobas.bo.BOUtilities;
 import org.colorcoding.ibas.bobas.bo.IUserField;
 import org.colorcoding.ibas.bobas.bo.IUserFields;
 import org.colorcoding.ibas.bobas.common.DateTimes;
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
@@ -122,6 +124,9 @@ public class TestCore extends TestCase {
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.serialize(order, writer);
 		System.out.println(writer.toString());
+
+		System.out.println(Strings.valueOf(BOUtilities.propertyValue(order, "CustomerCode")));
+		System.out.println(Strings.valueOf(BOUtilities.propertyValue(order, "SalesOrderItems.ItemCode")));
 	}
 
 }

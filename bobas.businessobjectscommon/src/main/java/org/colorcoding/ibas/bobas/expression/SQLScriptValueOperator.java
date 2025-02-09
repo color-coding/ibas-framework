@@ -92,11 +92,6 @@ public class SQLScriptValueOperator implements IPropertyValueOperator {
 
 	@Override
 	public String toString() {
-		return String
-				.format("{sql operator: %s}",
-						this.propertyName != null
-								? this.propertyName.length() > 10 ? this.propertyName.substring(0, 10)
-										: this.propertyName.substring(0, this.propertyName.length())
-								: Strings.VALUE_EMPTY);
+		return String.format("{sql operator: %s}", Strings.substring(this.getPropertyName(), 10));
 	}
 }

@@ -8,12 +8,11 @@ import org.colorcoding.ibas.bobas.db.DbField;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
 import org.colorcoding.ibas.bobas.db.IDbTableLock;
 
-public
 /**
  * 业务对象序列编号方式
  * 
  */
-class BOSeriesNumbering extends BusinessObject<BOSeriesNumbering> implements IDbTableLock, IBOCustomKey {
+public class BOSeriesNumbering extends BusinessObject<BOSeriesNumbering> implements IDbTableLock, IBOCustomKey {
 
 	private static final long serialVersionUID = 1L;
 

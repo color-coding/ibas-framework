@@ -24,6 +24,9 @@ import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
+import org.colorcoding.ibas.bobas.rule.BusinessRulesManager;
+import org.colorcoding.ibas.bobas.rule.IBusinessRule;
+import org.colorcoding.ibas.bobas.rule.IBusinessRules;
 import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
 
 /**
@@ -38,6 +41,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	public BusinessObject() {
 		super();
 		this.setLoading(true);
+		this.initializeRules();
 		this.initialize();
 		this.setLoading(false);
 	}
@@ -236,6 +240,29 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 			}
 			data.setLoading(false);
 		});
+	}
+
+	/**
+	 * 初始化业务规则
+	 * 
+	 * @throws RuntimeException
+	 */
+	private void initializeRules() {
+		BusinessRulesManager manager = BusinessRulesManager.create();
+		IBusinessRules rules = manager.getRules(this.getClass());
+		if (rules != null && !rules.isInitialized()) {
+			synchronized (rules) {
+				// 未初始化，则进行初始化
+				rules.register(this.registerRules());
+			}
+		}
+	}
+
+	/**
+	 * 注册的业务规则
+	 */
+	protected IBusinessRule[] registerRules() {
+		return null;
 	}
 
 	/**

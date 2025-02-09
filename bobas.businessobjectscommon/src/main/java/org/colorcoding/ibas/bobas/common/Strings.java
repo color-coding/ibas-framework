@@ -114,16 +114,6 @@ public class Strings {
 	 * @return
 	 */
 	public static String valueOf(Object value) {
-		return toString(value);
-	}
-
-	/**
-	 * 转为字符串
-	 * 
-	 * @param value
-	 * @return
-	 */
-	public static String toString(Object value) {
 		if (value == null) {
 			return VALUE_EMPTY;
 		}
@@ -165,7 +155,7 @@ public class Strings {
 		if (a == b) {
 			return true;
 		}
-		if (toString(a).equals(toString(b))) {
+		if (valueOf(a).equals(valueOf(b))) {
 			return true;
 		}
 		return false;
@@ -185,7 +175,7 @@ public class Strings {
 		if (a == b) {
 			return true;
 		}
-		if (toString(a).equalsIgnoreCase(toString(b))) {
+		if (valueOf(a).equalsIgnoreCase(valueOf(b))) {
 			return true;
 		}
 		return false;

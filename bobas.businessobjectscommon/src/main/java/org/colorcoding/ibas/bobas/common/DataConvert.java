@@ -29,7 +29,7 @@ public class DataConvert {
 		if (type == value.getClass()) {
 			return (P) value;
 		}
-		String sValue = Strings.toString(value);
+		String sValue = Strings.valueOf(value);
 		if (type == String.class) {
 			return (P) sValue;
 		} else if (type == Short.class) {

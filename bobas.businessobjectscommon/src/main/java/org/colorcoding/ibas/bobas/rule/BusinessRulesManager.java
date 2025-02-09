@@ -8,7 +8,23 @@ import java.util.HashMap;
  * @author Niuren.Zhu
  *
  */
-public class BusinessRulesManager implements IBusinessRulesManager {
+public class BusinessRulesManager {
+
+	private BusinessRulesManager() {
+	}
+
+	private volatile static BusinessRulesManager instance;
+
+	public synchronized static BusinessRulesManager create() {
+		if (instance == null) {
+			synchronized (BusinessRulesManager.class) {
+				if (instance == null) {
+					instance = new BusinessRulesManager();
+				}
+			}
+		}
+		return instance;
+	}
 
 	private volatile HashMap<Class<?>, IBusinessRules> rules;
 
@@ -19,14 +35,13 @@ public class BusinessRulesManager implements IBusinessRulesManager {
 		if (rules == null) {
 			synchronized (this) {
 				if (rules == null) {
-					rules = new HashMap<Class<?>, IBusinessRules>();
+					rules = new HashMap<Class<?>, IBusinessRules>(256);
 				}
 			}
 		}
 		return rules;
 	}
 
-	@Override
 	public final IBusinessRules getRules(Class<?> type) {
 		if (type == null) {
 			return null;

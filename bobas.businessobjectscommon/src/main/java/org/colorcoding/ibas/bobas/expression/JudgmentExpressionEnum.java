@@ -47,9 +47,9 @@ public class JudgmentExpressionEnum extends JudgmentExpression<Object> {
 		}
 		// 不等
 		else if (this.getOperation() == JudmentOperation.NOT_EQUAL) {
-			String tmpLeft = Strings.toString(this.getLeftValue());
+			String tmpLeft = Strings.valueOf(this.getLeftValue());
 			String tmpLeftDb = Enums.annotationValue(this.getLeftValue());
-			String tmpRight = Strings.toString(this.getRightValue());
+			String tmpRight = Strings.valueOf(this.getRightValue());
 			String tmpRightDb = Enums.annotationValue(this.getRightValue());
 			if (tmpLeft != null && tmpLeft.equals(tmpRight)) {
 				return false;
