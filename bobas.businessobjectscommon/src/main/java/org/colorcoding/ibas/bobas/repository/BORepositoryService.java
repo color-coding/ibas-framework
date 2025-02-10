@@ -58,7 +58,7 @@ public class BORepositoryService extends BORepository4DB {
 					}
 					if (!IBusinessObjects.class.isAssignableFrom(propertyInfo.getValueType())) {
 						throw new RepositoryException(
-								I18N.prop("msg_bobas_commands_invalid_argument", propertyInfo.getName()));
+								I18N.prop("msg_bobas_invalid_argument", propertyInfo.getName()));
 					}
 					Class<?> subType = null;
 					IBusinessObjects<IBusinessObject, IBusinessObject> tmpObjects = BOFactory
@@ -70,7 +70,7 @@ public class BORepositoryService extends BORepository4DB {
 							|| IBOSimpleLine.class.isAssignableFrom(subType)
 							|| IBOMasterDataLine.class.isAssignableFrom(subType))) {
 						throw new RepositoryException(
-								I18N.prop("msg_bobas_commands_invalid_argument", propertyInfo.getName()));
+								I18N.prop("msg_bobas_invalid_argument", propertyInfo.getName()));
 					}
 					// 新建主项查询，不再查子项
 					ICriteria nCriteria = criteria.clone();

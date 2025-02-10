@@ -88,6 +88,14 @@ public class BOFactory {
 		return Strings.VALUE_EMPTY;
 	}
 
+	public static Class<?> classOf(String boCode) {
+		Class<?> clazz = MAP_CODE2BO.get(boCode);
+		if (clazz != null) {
+			return clazz;
+		}
+		throw new RuntimeException(I18N.prop("msg_bobas_not_found_bo_class", boCode));
+	}
+
 	/**
 	 * 创建对象实例
 	 * 

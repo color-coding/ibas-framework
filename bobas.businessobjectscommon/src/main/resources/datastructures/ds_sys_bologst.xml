@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE Domain>
+<Domain>
+  <Model Name="BOLogst" Description="业务对象日志" ModelType="Unspecified" Mapped="${Company}_SYS_BOLOGST">
+    <Property Name="BOCode" Description="类型" DataType="Alphanumeric" DataSubType="Default" EditSize="30" Mapped="BOCode" UniqueKey="Yes"/>
+    <Property Name="BOKeys" Description="主键值" DataType="Alphanumeric" DataSubType="Default" EditSize="100" Mapped="BOKeys" UniqueKey="Yes"/>
+    <Property Name="LogInst" Description="实例号" DataType="Numeric" DataSubType="Default" EditSize="8" Mapped="LogInst" UniqueKey="Yes"/>
+    <Property Name="ModifyUser" Description="修改用户" DataType="Numeric" DataSubType="Default" EditSize="8" Mapped="Modifier"/>
+    <Property Name="ModifyDate" Description="修改日期" DataType="Date" DataSubType="Default" EditSize="8" Mapped="ModifyDate"/>
+    <Property Name="ModifyTime" Description="修改时间" DataType="Date" DataSubType="Time" EditSize="8" Mapped="ModifyTime"/>
+    <Property Name="TransationId" Description="事务标识" DataType="Alphanumeric" DataSubType="Default" EditSize="36" Mapped="TransationId" UniqueKey="Yes"/>
+    <Property Name="Cause" Description="动机" DataType="Alphanumeric" DataSubType="Default" EditSize="8" Mapped="Cause"/>
+    <Property Name="Content" Description="内容" DataType="Memo" DataSubType="Default" EditSize="8" Mapped="Content"/>
+  </Model>
+  <BusinessObject MappedModel="BOLogst" ShortName="${Company}_SYS_BOLOGST"/>
+</Domain>

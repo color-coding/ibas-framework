@@ -233,11 +233,6 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 				IApprovalData apData = (IApprovalData) data;
 				apData.setApprovalStatus(emApprovalStatus.UNAFFECTED);
 			}
-			// 重置期间
-			if (data instanceof IPeriodData) {
-				IPeriodData pdData = (IPeriodData) data;
-				pdData.setPeriod(0);
-			}
 			data.setLoading(false);
 		});
 	}

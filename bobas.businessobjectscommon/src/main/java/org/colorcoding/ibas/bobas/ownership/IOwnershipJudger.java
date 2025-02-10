@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.ownership;
 
+import org.colorcoding.ibas.bobas.bo.BusinessObjectUnit;
+import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.organization.IUser;
 
 /**
@@ -46,4 +48,12 @@ public interface IOwnershipJudger {
 	 */
 	boolean canSave(IDataOwnership data, IUser user, boolean throwError) throws UnauthorizedException;
 
+	/**
+	 * 获取过滤查询
+	 * 
+	 * @param boUnit 对象单元
+	 * @param user   用户
+	 * @return
+	 */
+	ICriteria filterCriteria(BusinessObjectUnit boUnit, IUser user);
 }

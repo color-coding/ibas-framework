@@ -7,17 +7,53 @@ import org.colorcoding.ibas.bobas.data.emApprovalStepStatus;
 /**
  * 审批流程步骤
  */
-public abstract class ApprovalProcessStep implements IApprovalProcessStep {
+public abstract class ApprovalProcessStep<T extends IApprovalProcessStep> {
+
+	public ApprovalProcessStep(T stepData) {
+		this.setStepData(stepData);
+	}
+
+	private T stepData;
+
+	protected final T getStepData() {
+		return stepData;
+	}
+
+	private final void setStepData(T stepData) {
+		this.stepData = stepData;
+	}
+
+	public int getId() {
+		return this.getStepData().getId();
+	}
 
 	protected abstract void setId(int value);
 
-	protected abstract void setStatus(emApprovalStepStatus value);
+	public DateTime getStartedTime() {
+		return this.getStepData().getStartedTime();
+	}
 
 	protected abstract void setStartedTime(DateTime value);
 
+	public DateTime getFinishedTime() {
+		return this.getStepData().getFinishedTime();
+	}
+
 	protected abstract void setFinishedTime(DateTime value);
 
+	public String getJudgment() {
+		return this.getStepData().getJudgment();
+	}
+
 	protected abstract void setJudgment(String value);
+
+	public emApprovalStepStatus getStatus() {
+		return this.getStepData().getStatus();
+	}
+
+	protected abstract void setStatus(emApprovalStepStatus value);
+
+	public abstract IApprovalProcessStepCondition[] getConditions();
 
 	@Override
 	public String toString() {
@@ -35,10 +71,10 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
 		if (this instanceof IApprovalProcessStepMultiOwner) {
 			IApprovalProcessStepMultiOwner multiStep = (IApprovalProcessStepMultiOwner) this;
 			if (multiStep.getItems() != null) {
-				ApprovalProcessStep itemStep = null;
+				ApprovalProcessStep<?> itemStep = null;
 				for (IApprovalProcessStepItem item : multiStep.getItems()) {
 					if (item instanceof ApprovalProcessStep) {
-						itemStep = (ApprovalProcessStep) item;
+						itemStep = (ApprovalProcessStep<?>) item;
 						itemStep.setStatus(this.getStatus());
 						itemStep.setStartedTime(this.getStartedTime());
 						itemStep.setFinishedTime(this.getFinishedTime());
@@ -63,10 +99,10 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
 		if (this instanceof IApprovalProcessStepMultiOwner) {
 			IApprovalProcessStepMultiOwner multiStep = (IApprovalProcessStepMultiOwner) this;
 			if (multiStep.getItems() != null) {
-				ApprovalProcessStep itemStep = null;
+				ApprovalProcessStep<?> itemStep = null;
 				for (IApprovalProcessStepItem item : multiStep.getItems()) {
 					if (item instanceof ApprovalProcessStep) {
-						itemStep = (ApprovalProcessStep) item;
+						itemStep = (ApprovalProcessStep<?>) item;
 						itemStep.setStartedTime(this.getStartedTime());
 						itemStep.setStatus(this.getStatus());
 					}
@@ -150,10 +186,10 @@ public abstract class ApprovalProcessStep implements IApprovalProcessStep {
 		if (this instanceof IApprovalProcessStepMultiOwner) {
 			IApprovalProcessStepMultiOwner multiStep = (IApprovalProcessStepMultiOwner) this;
 			if (multiStep.getItems() != null) {
-				ApprovalProcessStep itemStep = null;
+				ApprovalProcessStep<?> itemStep = null;
 				for (IApprovalProcessStepItem item : multiStep.getItems()) {
 					if (item instanceof ApprovalProcessStep) {
-						itemStep = (ApprovalProcessStep) item;
+						itemStep = (ApprovalProcessStep<?>) item;
 						itemStep.setStartedTime(this.getStartedTime());
 						itemStep.setFinishedTime(this.getFinishedTime());
 						itemStep.setStatus(this.getStatus());

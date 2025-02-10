@@ -1,12 +1,14 @@
 package org.colorcoding.ibas.bobas.approval;
 
+import java.util.Objects;
+
 import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
 import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
-import org.colorcoding.ibas.bobas.core.IBORepository;
+import org.colorcoding.ibas.bobas.common.Numbers;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalResult;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
@@ -15,11 +17,10 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.organization.IOrganizationManager;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
 import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
-import org.colorcoding.ibas.bobas.repository.IBORepository4DbReadonly;
+import org.colorcoding.ibas.bobas.repository.ITransaction;
 import org.colorcoding.ibas.bobas.repository.RepositoryException;
 
 /**
@@ -28,39 +29,104 @@ import org.colorcoding.ibas.bobas.repository.RepositoryException;
  * @author Niuren.Zhu
  *
  */
-public abstract class ApprovalProcess implements IApprovalProcess {
+public abstract class ApprovalProcess<T extends IApprovalProcess> {
 
-	public abstract void setApprovalData(IApprovalData value);
+	public ApprovalProcess(T processData) {
+		this.setProcessData(processData);
+	}
+
+	private ITransaction transaction;
+
+	protected final ITransaction getTransaction() {
+		return this.transaction;
+	}
+
+	final void setTransaction(ITransaction transaction) {
+		Objects.requireNonNull(transaction);
+		this.transaction = transaction;
+	}
+
+	private T processData;
+
+	public final T getProcessData() {
+		return processData;
+	}
+
+	private final void setProcessData(T processData) {
+		this.processData = processData;
+	}
+
+	public String getName() {
+		return this.getProcessData().getName();
+	}
+
+	public emApprovalStatus getStatus() {
+		return this.getProcessData().getStatus();
+	}
 
 	protected abstract void setStatus(emApprovalStatus value);
 
+	public DateTime getStartedTime() {
+		return this.getProcessData().getStartedTime();
+	}
+
 	protected abstract void setStartedTime(DateTime value);
 
-	protected abstract void setFinishedTime(DateTime value);
-
-	/**
-	 * 保存审批流程数据
-	 * 
-	 * @throws Exception 异常
-	 */
-	protected abstract void saveProcess() throws Exception;
-
-	private IUser owner;
-
-	@Override
-	public IUser getOwner() {
-		if (this.owner == null || Integer.compare(this.owner.getId(), this.getApprovalData().getDataOwner()) != 0) {
-			// 通过审批数据的所有者去组织结构里找用户
-			IOrganizationManager orgManger = OrganizationFactory.create().createManager();
-			this.owner = orgManger.getUser((int) this.getApprovalData().getDataOwner());
-		}
-		return this.owner;
+	public DateTime getFinishedTime() {
+		return this.getProcessData().getFinishedTime();
 	}
+
+	protected abstract void setFinishedTime(DateTime value);
 
 	@Override
 	public String toString() {
 		return String.format("{approval process: %s %s}", this.getName(), this.getStatus());
 	}
+
+	public boolean isNew() {
+		if (this.getApprovalData() != null) {
+			return this.getApprovalData().isNew();
+		}
+		return false;
+	}
+
+	private IApprovalData approvalData;
+
+	/**
+	 * 审批数据
+	 */
+	public IApprovalData getApprovalData() {
+		return this.approvalData;
+	}
+
+	public void setApprovalData(IApprovalData approvalData) {
+		this.approvalData = approvalData;
+	}
+
+	/**
+	 * 审批所有者
+	 * 
+	 * @return
+	 */
+	public IUser getOwner() {
+		return OrganizationFactory.create().createManager()
+				.getUser((int) this.getProcessData().getApprovalData().getDataOwner());
+	}
+
+	/**
+	 * 恢复初始状态
+	 */
+	protected final void restore() {
+		this.setStartedTime(DateTimes.VALUE_MIN);
+		this.setFinishedTime(DateTimes.VALUE_MAX);
+		this.setStatus(emApprovalStatus.UNAFFECTED);
+		for (ApprovalProcessStep<?> item : this.getProcessSteps()) {
+			ApprovalProcessStep<?> stepItem = (ApprovalProcessStep<?>) item;
+			stepItem.restore();// 重置初始状态
+		}
+	}
+
+	public abstract ApprovalProcessStep<?>[] getProcessSteps();
 
 	/**
 	 * 获取步骤
@@ -68,19 +134,19 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	 * @param id 步骤编号
 	 * @return
 	 */
-	private ApprovalProcessStep getProcessStep(int id) {
+	protected ApprovalProcessStep<?> getProcessStep(int id) {
 		if (this.getProcessSteps() == null) {
 			return null;
 		}
-		for (IApprovalProcessStep item : this.getProcessSteps()) {
-			if (item.getId() == id) {
-				return (ApprovalProcessStep) item;
+		for (ApprovalProcessStep<?> item : this.getProcessSteps()) {
+			if (Numbers.equals(item.getId(), id)) {
+				return (ApprovalProcessStep<?>) item;
 			}
 			if (item instanceof IApprovalProcessStepMultiOwner) {
 				IApprovalProcessStepMultiOwner mtlStep = (IApprovalProcessStepMultiOwner) item;
 				for (IApprovalProcessStepItem sItem : mtlStep.getItems()) {
-					if (sItem.getId() == id) {
-						return (ApprovalProcessStep) sItem;
+					if (Numbers.equals(sItem.getId(), id)) {
+						return (ApprovalProcessStep<?>) sItem;
 					}
 				}
 			}
@@ -91,17 +157,16 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	/**
 	 * 获取前一个步骤
 	 * 
-	 * @param step 基准步骤
 	 * @return
 	 */
-	private IApprovalProcessStep getPreviousProcessStep() {
+	protected final ApprovalProcessStep<?> getPreviousProcessStep() {
 		if (this.getProcessSteps() == null) {
 			return null;
 		}
 		if (this.getStatus() == emApprovalStatus.PROCESSING) {
-			IApprovalProcessStep preStep = null;
-			IApprovalProcessStep step = this.currentStep();
-			for (IApprovalProcessStep item : this.getProcessSteps()) {
+			ApprovalProcessStep<?> preStep = null;
+			ApprovalProcessStep<?> step = this.currentStep();
+			for (ApprovalProcessStep<?> item : this.getProcessSteps()) {
 				if (step == item) {
 					return preStep;
 				}
@@ -109,21 +174,21 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 			}
 		} else if (this.getStatus() == emApprovalStatus.APPROVED) {
 			for (int i = this.getProcessSteps().length - 1; i >= 0; i--) {
-				IApprovalProcessStep item = this.getProcessSteps()[i];
+				ApprovalProcessStep<?> item = this.getProcessSteps()[i];
 				if (item.getStatus() == emApprovalStepStatus.APPROVED) {
 					return item;
 				}
 			}
 		} else if (this.getStatus() == emApprovalStatus.REJECTED) {
 			for (int i = this.getProcessSteps().length - 1; i >= 0; i--) {
-				IApprovalProcessStep item = this.getProcessSteps()[i];
+				ApprovalProcessStep<?> item = this.getProcessSteps()[i];
 				if (item.getStatus() == emApprovalStepStatus.REJECTED) {
 					return item;
 				}
 			}
 		} else if (this.getStatus() == emApprovalStatus.RETURNED) {
 			for (int i = this.getProcessSteps().length - 1; i >= 0; i--) {
-				IApprovalProcessStep item = this.getProcessSteps()[i];
+				ApprovalProcessStep<?> item = this.getProcessSteps()[i];
 				if (item.getStatus() == emApprovalStepStatus.RETURNED) {
 					return item;
 				}
@@ -133,25 +198,14 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	}
 
 	/**
-	 * 恢复初始状态
+	 * 获取当前步骤
 	 */
-	protected final void restore() {
-		this.setApprovalData(null);
-		this.setStartedTime(DateTimes.VALUE_MIN);
-		this.setFinishedTime(DateTimes.VALUE_MAX);
-		this.setStatus(emApprovalStatus.UNAFFECTED);
-		for (IApprovalProcessStep item : this.getProcessSteps()) {
-			ApprovalProcessStep stepItem = (ApprovalProcessStep) item;
-			stepItem.restore();// 重置初始状态
-		}
-	}
-
-	public final IApprovalProcessStep currentStep() {
+	public final ApprovalProcessStep<?> currentStep() {
 		if (this.getProcessSteps() == null) {
 			return null;
 		}
 		for (int i = 0; i < this.getProcessSteps().length; i++) {
-			IApprovalProcessStep step = this.getProcessSteps()[i];
+			ApprovalProcessStep<?> step = this.getProcessSteps()[i];
 			if (step == null) {
 				continue;
 			}
@@ -168,13 +222,10 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 			return false;
 		}
 		this.restore();// 重置初始状态
-		for (IApprovalProcessStep item : this.getProcessSteps()) {
-			ApprovalProcessStep stepItem = (ApprovalProcessStep) item;
+		for (ApprovalProcessStep<?> item : this.getProcessSteps()) {
+			ApprovalProcessStep<?> stepItem = (ApprovalProcessStep<?>) item;
 			try {
-				ApprovalDataJudgmentLink judgmentLinks = new ApprovalDataJudgmentLink();
-				if (this.getRepository() instanceof IBORepository4DbReadonly) {
-					judgmentLinks.setRepository((IBORepository4DbReadonly) this.getRepository());
-				}
+				ApprovalDataJudgmentLink judgmentLinks = new ApprovalDataJudgmentLink(this.getTransaction());
 				judgmentLinks.parsingConditions(stepItem.getConditions());
 				boolean done = judgmentLinks.judge((IBusinessObject) data);
 				if (done) {
@@ -204,17 +255,14 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	 * @throws ApprovalException
 	 * @throws RepositoryException
 	 */
-	private ApprovalProcessStep nextStep() throws JudmentOperationException, ApprovalException {
-		for (IApprovalProcessStep item : this.getProcessSteps()) {
+	private ApprovalProcessStep<?> nextStep() throws JudmentOperationException, ApprovalException {
+		for (ApprovalProcessStep<?> item : this.getProcessSteps()) {
 			if (item.getStatus() != emApprovalStepStatus.PENDING) {
 				// 只考虑挂起的步骤
 				continue;
 			}
-			ApprovalProcessStep stepItem = (ApprovalProcessStep) item;
-			ApprovalDataJudgmentLink judgmentLinks = new ApprovalDataJudgmentLink();
-			if (this.getRepository() instanceof IBORepository4DbReadonly) {
-				judgmentLinks.setRepository((IBORepository4DbReadonly) this.getRepository());
-			}
+			ApprovalProcessStep<?> stepItem = (ApprovalProcessStep<?>) item;
+			ApprovalDataJudgmentLink judgmentLinks = new ApprovalDataJudgmentLink(this.getTransaction());
 			judgmentLinks.parsingConditions(stepItem.getConditions());
 			boolean done = true;
 			if (judgmentLinks.getJudgmentItems() != null && judgmentLinks.getJudgmentItems().length > 0) {
@@ -240,7 +288,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 
 	public final void approval(int stepId, emApprovalResult apResult, String authorizationCode, String judgment)
 			throws ApprovalException {
-		ApprovalProcessStep apStep = this.getProcessStep(stepId);
+		ApprovalProcessStep<?> apStep = this.getProcessStep(stepId);
 		if (apStep == null) {
 			throw new ApprovalException(I18N.prop("msg_bobas_not_found_approval_process_step", stepId));
 		}
@@ -254,8 +302,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 				apStepItem.getOwner().checkAuthorization(authorizationCode);
 				this.approval(apStepItem, apResult, judgment);
 			} else {
-				throw new ApprovalException(
-						I18N.prop("msg_bobas_commands_invalid_argument", apStep.getClass().getName()));
+				throw new ApprovalException(I18N.prop("msg_bobas_invalid_argument", apStep.getClass().getName()));
 			}
 		} catch (InvalidAuthorizationException e) {
 			throw new ApprovalException(I18N.prop("msg_bobas_invaild_user_authorization"), e);
@@ -266,8 +313,8 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 			throws ApprovalException {
 		if (apResult == emApprovalResult.PROCESSING) {
 			// 重置步骤，上一个步骤操作
-			ApprovalProcessStep curStep = (ApprovalProcessStep) this.currentStep();
-			IApprovalProcessStep preStep = this.getPreviousProcessStep();
+			ApprovalProcessStep<?> curStep = this.currentStep();
+			ApprovalProcessStep<?> preStep = this.getPreviousProcessStep();
 			if (preStep == apStep) {
 				// 上一步骤与操作步骤相同，或操作步骤为第一步骤
 				if (curStep != null && curStep != apStep)
@@ -294,7 +341,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 				apStep.approve(judgment);
 				// 激活下一个符合条件的步骤，不存在则审批完成
 				try {
-					ApprovalProcessStep nextStep = this.nextStep();
+					ApprovalProcessStep<?> nextStep = this.nextStep();
 					if (nextStep == null) {
 						// 没有下一个步骤，流程完成
 						this.setFinishedTime(DateTimes.now());
@@ -401,7 +448,6 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	/**
 	 * 判断用户是否有权限修改数据，可重载。
 	 * 
-	 * 默认流程未开始可以修改； 数据所有者，可以取消，删除数据，其他人不可。
 	 */
 	public void checkToSave(IUser user) throws ApprovalException {
 		// 没有审批步骤，无效的审批流，可修改数据
@@ -469,17 +515,6 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 		}
 	}
 
-	private IBORepository repository;
-
-	protected final IBORepository getRepository() throws ApprovalException {
-		return repository;
-	}
-
-	@Override
-	public final void setRepository(IBORepository repository) {
-		this.repository = repository;
-	}
-
 	private boolean freshData;
 
 	/**
@@ -500,17 +535,12 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 				throw new ApprovalException(I18N.prop("msg_bobas_approval_data_identifiers_unrecognizable",
 						this.getApprovalData().getIdentifiers()));
 			}
-			if (this.getRepository() == null) {
+			if (this.getTransaction() == null) {
 				throw new ApprovalException(I18N.prop("msg_bobas_invaild_bo_repository"));
 			}
-			try {
-				ApprovalProcessRepository apRepository = new ApprovalProcessRepository();
-				apRepository.setRepository(this.getRepository());
-				boolean myOpend = apRepository.openRepository();
+			try (ApprovalProcessRepository apRepository = new ApprovalProcessRepository()) {
+				apRepository.setTransaction(this.getTransaction());
 				IOperationResult<IBusinessObject> opRsltFetch = apRepository.fetchData(criteria);
-				if (myOpend) {
-					apRepository.closeRepository();
-				}
 				if (opRsltFetch.getError() != null) {
 					throw opRsltFetch.getError();
 				}
@@ -531,19 +561,24 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 	}
 
 	/**
+	 * 保存审批流程数据
+	 * 
+	 * @throws Exception 异常
+	 */
+	protected abstract void saveProcess() throws Exception;
+
+	/**
 	 * 保存当前审批流程及数据 保存审批数据时，若不是实际数据，则自动查询实际数据，此时需要保证Class已被加载。
 	 */
 	public void save() throws ApprovalException {
-		boolean myTrans = false;
-		boolean myOpend = false;
-		if (this.getRepository() == null) {
+		if (this.getTransaction() == null) {
 			throw new ApprovalException(I18N.prop("msg_bobas_invaild_bo_repository"));
 		}
+		boolean myTrans = false;
 		ApprovalProcessRepository apRepository = null;
 		try {
 			apRepository = new ApprovalProcessRepository();
-			apRepository.setRepository(this.getRepository());
-			myOpend = apRepository.openRepository();
+			apRepository.setTransaction(this.getTransaction());
 			myTrans = apRepository.beginTransaction();// 开启事务
 			// 调用保存审批数据
 			if (this.getApprovalData().isDirty()) {
@@ -560,13 +595,15 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 			// 调用保存审批流程
 			this.saveProcess();
 			// 提交事务
-			if (myTrans)
+			if (myTrans) {
 				apRepository.commitTransaction();
+			}
 		} catch (Exception e) {
 			try {
 				// 回滚事务
-				if (myTrans)
+				if (myTrans) {
 					apRepository.rollbackTransaction();
+				}
 			} catch (RepositoryException e1) {
 				throw new ApprovalException(e1);
 			}
@@ -575,10 +612,10 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 			}
 			throw new ApprovalException(e);
 		} finally {
-			if (myOpend && apRepository != null) {
+			if (apRepository != null) {
 				try {
-					apRepository.closeRepository();
-				} catch (RepositoryException e) {
+					apRepository.close();
+				} catch (Exception e) {
 					throw new ApprovalException(e);
 				}
 			}

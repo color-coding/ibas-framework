@@ -9,7 +9,6 @@ import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
-import org.colorcoding.ibas.bobas.bo.IPeriodData;
 import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
@@ -271,19 +270,15 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 			if (data.isSavable() && data.isNew()) {
 				logics.add(analyzer.apply(new BOKeysContract(data)));
 			}
-			// 单据期间
-			if (data.isSavable() && !data.isDeleted() && data.isDirty() && data instanceof IPeriodData) {
-				logics.add(analyzer.apply(new BOPeriodContract((IPeriodData) data)));
-			}
 			// 业务逻辑执行
 			logics.add(analyzer.apply(new BORulesContract(data)));
-			// 审批流程（仅触发对象）
-			if (data.isSavable() && data == this.getTrigger() && data.isDirty() && data instanceof IApprovalData) {
-				logics.add(analyzer.apply(new BOApprovalContract((IApprovalData) data)));
-			}
 			// 数据标记
 			if (data.isSavable() && !data.isDeleted() && data.isDirty() && data instanceof IBOStorageTag) {
 				logics.add(analyzer.apply(new BOStorageTagContract((IBOStorageTag) data)));
+			}
+			// 审批流程（仅触发对象）
+			if (data.isSavable() && data == this.getTrigger() && data.isDirty() && data instanceof IApprovalData) {
+				logics.add(analyzer.apply(new BOApprovalContract((IApprovalData) data)));
 			}
 		}
 		// 先子项，再自身（注意：避免嵌套后无限循环寻找契约）

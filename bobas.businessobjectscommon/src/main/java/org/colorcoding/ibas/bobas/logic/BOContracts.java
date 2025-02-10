@@ -14,15 +14,12 @@ import org.colorcoding.ibas.bobas.bo.IBOSimple;
 import org.colorcoding.ibas.bobas.bo.IBOSimpleLine;
 import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
-import org.colorcoding.ibas.bobas.bo.IPeriodData;
 import org.colorcoding.ibas.bobas.common.Numbers;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
-import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.logic.common.IBOApprovalContract;
 import org.colorcoding.ibas.bobas.logic.common.IBOInstanceLogContract;
 import org.colorcoding.ibas.bobas.logic.common.IBOKeysContract;
-import org.colorcoding.ibas.bobas.logic.common.IBOPeriodContract;
 import org.colorcoding.ibas.bobas.logic.common.IBORulesContract;
 import org.colorcoding.ibas.bobas.logic.common.IBOStorageTagContract;
 
@@ -226,37 +223,6 @@ class BOStorageTagContract extends BOContract<IBOStorageTag> implements IBOStora
 }
 
 /**
- * 业务对象期间契约
- */
-class BOPeriodContract extends BOContract<IPeriodData> implements IBOPeriodContract {
-
-	public BOPeriodContract(IPeriodData host) {
-		super(host);
-	}
-
-	@Override
-	public String getObjectCode() {
-		return this.getHost().getObjectCode();
-	}
-
-	@Override
-	public DateTime getDocumentDate() {
-		return this.getHost().getDocumentDate();
-	}
-
-	@Override
-	public Integer getPeriod() {
-		return this.getHost().getPeriod();
-	}
-
-	@Override
-	public void setPeriod(Integer value) {
-		this.getHost().setPeriod(value);
-	}
-
-}
-
-/**
  * 业务对象审批契约
  */
 class BOApprovalContract extends BOContract<IApprovalData> implements IBOApprovalContract {
@@ -274,121 +240,6 @@ class BOInstanceLogContract extends BOContract<IBOStorageTag> implements IBOInst
 
 	public BOInstanceLogContract(IBOStorageTag host) {
 		super(host);
-	}
-
-	@Override
-	public String getObjectCode() {
-		return this.getHost().getObjectCode();
-	}
-
-	@Override
-	public DateTime getCreateDate() {
-		return this.getHost().getCreateDate();
-	}
-
-	@Override
-	public void setCreateDate(DateTime value) {
-		this.getHost().setCreateDate(value);
-
-	}
-
-	@Override
-	public Short getCreateTime() {
-		return this.getHost().getCreateTime();
-	}
-
-	@Override
-	public void setCreateTime(Short value) {
-		this.getHost().setCreateTime(value);
-
-	}
-
-	@Override
-	public DateTime getUpdateDate() {
-		return this.getHost().getUpdateDate();
-	}
-
-	@Override
-	public void setUpdateDate(DateTime value) {
-		this.getHost().setUpdateDate(value);
-
-	}
-
-	@Override
-	public Short getUpdateTime() {
-		return this.getHost().getUpdateTime();
-	}
-
-	@Override
-	public void setUpdateTime(Short value) {
-		this.getHost().setUpdateTime(value);
-
-	}
-
-	@Override
-	public Integer getLogInst() {
-		return this.getHost().getLogInst();
-	}
-
-	@Override
-	public void setLogInst(Integer value) {
-		this.getHost().setLogInst(value);
-	}
-
-	@Override
-	public Integer getCreateUserSign() {
-		return this.getHost().getCreateUserSign();
-	}
-
-	@Override
-	public void setCreateUserSign(Integer value) {
-		this.getHost().setCreateUserSign(value);
-
-	}
-
-	@Override
-	public Integer getUpdateUserSign() {
-		return this.getHost().getUpdateUserSign();
-	}
-
-	@Override
-	public void setUpdateUserSign(Integer value) {
-		this.getHost().setUpdateUserSign(value);
-	}
-
-	@Override
-	public String getCreateActionId() {
-		return this.getHost().getCreateActionId();
-	}
-
-	@Override
-	public void setCreateActionId(String value) {
-		this.getHost().setCreateActionId(value);
-	}
-
-	@Override
-	public String getUpdateActionId() {
-		return this.getHost().getUpdateActionId();
-	}
-
-	@Override
-	public void setUpdateActionId(String value) {
-		this.getHost().setUpdateActionId(value);
-	}
-
-	@Override
-	public String getDataSource() {
-		return this.getHost().getDataSource();
-	}
-
-	@Override
-	public void setDataSource(String value) {
-		this.getHost().setDataSource(value);
-	}
-
-	@Override
-	public boolean isNew() {
-		return this.getHost().isNew();
 	}
 
 }

@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
-import org.colorcoding.ibas.bobas.data.emApprovalStatus;
+import org.colorcoding.ibas.bobas.repository.ITransaction;
 
 /**
  * 审批工厂
@@ -36,43 +36,34 @@ public class ApprovalFactory extends ConfigurableFactory<ApprovalProcessManager>
 	 * @return
 	 * @throws ApprovalException
 	 */
-	public synchronized ApprovalProcessManager createManager() {
-		return this.create(MyConfiguration.CONFIG_ITEM_APPROVAL_WAY, "ApprovalProcessManager");
+	public synchronized ApprovalProcessManager createManager(ITransaction transaction) {
+		ApprovalProcessManager manager = this.create(MyConfiguration.CONFIG_ITEM_APPROVAL_WAY,
+				"ApprovalProcessManager");
+		manager.setTransaction(transaction);
+		return manager;
 	}
 
+	@Override
 	protected ApprovalProcessManager createDefault(String typeName) {
-		return new _ApprovalProcessManager() {
+		return new ApprovalProcessManager() {
 
 			@Override
-			public IApprovalProcess checkProcess(IApprovalData data) {
-				if (data.getApprovalStatus() != emApprovalStatus.UNAFFECTED) {
-					// 重置数据状态
-					data.setApprovalStatus(emApprovalStatus.UNAFFECTED);
-				}
+			public <T extends IApprovalProcess> Iterator<ApprovalProcess<T>> createApprovalProcess(String boCode) {
 				return null;
 			}
+
+			@Override
+			public <T extends IApprovalProcess> ApprovalProcess<T> createApprovalProcess(
+					IApprovalProcess processData) {
+				return null;
+			}
+
+			@Override
+			public <T extends IApprovalProcess> T loadProcessData(IApprovalData apData) {
+				return null;
+			}
+
 		};
 	}
 
-	private class _ApprovalProcessManager extends ApprovalProcessManager {
-		@Override
-		public IApprovalProcess checkProcess(IApprovalData data) {
-			if (data.getApprovalStatus() != emApprovalStatus.UNAFFECTED) {
-				// 重置数据状态
-				data.setApprovalStatus(emApprovalStatus.UNAFFECTED);
-			}
-			return null;
-		}
-
-		@Override
-		protected Iterator<IApprovalProcess> createApprovalProcess(String boCode) {
-			return null;
-		}
-
-		@Override
-		protected IApprovalProcess loadApprovalProcess(String boKey) {
-			return null;
-		}
-
-	}
 }

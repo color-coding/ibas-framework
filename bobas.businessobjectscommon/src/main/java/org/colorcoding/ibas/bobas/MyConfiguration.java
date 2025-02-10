@@ -117,6 +117,11 @@ public class MyConfiguration extends Configuration {
 	public final static String CONFIG_ITEM_FORMATTED_OUTPUT = "FormattedOutput";
 
 	/**
+	 * 配置项目-开启对象日志
+	 */
+	public final static String CONFIG_ITEM_ENABLE_BO_LOGST = "EnableBOLogst";
+
+	/**
 	 * 配置项目-应用名称
 	 */
 	public final static String CONFIG_ITEM_APPLICATION_NAME = "AppName";

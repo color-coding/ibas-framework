@@ -3,10 +3,9 @@ package org.colorcoding.ibas.bobas.approval;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
-import org.colorcoding.ibas.bobas.organization.IUser;
 
 /**
- * 审批流程
+ * 审批流程（数据）
  * 
  * @author Niuren.Zhu
  *
@@ -54,20 +53,5 @@ public interface IApprovalProcess extends IBusinessObject {
 	 * @param value
 	 */
 	void setApprovalData(IApprovalData value);
-
-	/**
-	 * 获取流程所有者
-	 * 
-	 * @return
-	 */
-	IUser getOwner();
-
-	/**
-	 * 检查保存权限
-	 * 
-	 * @param user 操作用户
-	 * @throws ApprovalException
-	 */
-	void checkToSave(IUser user) throws ApprovalException;
 
 }

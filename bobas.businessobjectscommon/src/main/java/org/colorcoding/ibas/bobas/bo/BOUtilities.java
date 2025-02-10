@@ -190,7 +190,7 @@ public class BOUtilities {
 	/**
 	 * 获取对象的属性值
 	 * 
-	 * 支持Item.XXX，并返回数组
+	 * 支持Item.Code，并返回数组
 	 * 
 	 * @param <P>          值类型
 	 * @param bo           对象
