@@ -94,7 +94,7 @@ public abstract class BORepository implements AutoCloseable {
 		return currentUser;
 	}
 
-	protected void setCurrentUser(IUser currentUser) {
+	void setCurrentUser(IUser currentUser) {
 		this.currentUser = currentUser;
 	}
 

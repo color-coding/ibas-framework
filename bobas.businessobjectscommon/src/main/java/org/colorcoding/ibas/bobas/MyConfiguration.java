@@ -112,6 +112,10 @@ public class MyConfiguration extends Configuration {
 	 */
 	public final static String CONFIG_ITEM_LANGUAGE_CODE = "LanguageCode";
 	/**
+	 * 配置项目-序列化管理方式
+	 */
+	public final static String CONFIG_ITEM_SERIALIZATION_WAY = "SerializationWay";
+	/**
 	 * 配置项目-格式化输出
 	 */
 	public final static String CONFIG_ITEM_FORMATTED_OUTPUT = "FormattedOutput";

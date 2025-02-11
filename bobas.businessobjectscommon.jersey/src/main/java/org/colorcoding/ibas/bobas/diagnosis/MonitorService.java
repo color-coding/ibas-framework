@@ -11,8 +11,8 @@ import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.organization.IOrganizationManager;
 import org.colorcoding.ibas.bobas.organization.IUser;
+import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
 import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
-import org.colorcoding.ibas.bobas.repository.InvalidTokenException;
 
 @Path("")
 public class MonitorService {
@@ -31,18 +31,18 @@ public class MonitorService {
 	 * 检查口令
 	 * 
 	 * @param token
-	 * @throws InvalidTokenException
+	 * @throws InvalidAuthorizationException
 	 */
-	protected final void checkToken(String token) throws InvalidTokenException {
+	protected final void checkToken(String token) throws InvalidAuthorizationException {
 		try {
 			IOrganizationManager orgManager = OrganizationFactory.create().createManager();
 			IUser user = orgManager.getUser(token);
 			if (user == null) {
 				// 没有用户匹配次口令
-				throw new InvalidTokenException(I18N.prop("msg_bobas_no_user_match_the_token"));
+				throw new InvalidAuthorizationException(I18N.prop("msg_bobas_no_user_match_the_token"));
 			}
 		} catch (Exception e) {
-			throw new InvalidTokenException(e);
+			throw new InvalidAuthorizationException(e);
 		}
 	}
 

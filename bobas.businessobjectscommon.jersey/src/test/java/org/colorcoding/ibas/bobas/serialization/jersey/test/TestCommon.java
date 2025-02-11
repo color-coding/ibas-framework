@@ -20,6 +20,7 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.common.SortType;
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.data.DataTable;
 import org.colorcoding.ibas.bobas.data.IDataTableColumn;
 import org.colorcoding.ibas.bobas.data.IDataTableRow;
@@ -29,8 +30,8 @@ import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
 import org.colorcoding.ibas.bobas.serialization.ValidateException;
 import org.colorcoding.ibas.bobas.serialization.jersey.SerializerJsonNoRoot;
 import org.colorcoding.ibas.bobas.serialization.jersey.SerializerManager;
-import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
-import org.colorcoding.ibas.bobas.test.bo.SalesOrderItem;
+import org.colorcoding.ibas.bobas.test.demo.SalesOrder;
+import org.colorcoding.ibas.bobas.test.demo.SalesOrderItem;
 
 import junit.framework.TestCase;
 
@@ -66,11 +67,13 @@ public class TestCommon extends TestCase {
 
 	public void testFromString() {
 		ICriteria criteria = this.createCriteria();
-		ICriteria jsonCriteria = Criteria.create(criteria.toString("json"));
-		assertEquals("json marshal and unmarshal not equal", criteria.toString("json"), jsonCriteria.toString("json"));
+		ICriteria jsonCriteria = Criteria.create(Strings.toJsonString(criteria));
+		assertEquals("json marshal and unmarshal not equal", Strings.toJsonString(criteria),
+				Strings.toJsonString(jsonCriteria));
 
-		ICriteria xmlCriteria = Criteria.create(criteria.toString("xml"));
-		assertEquals("xml marshal and unmarshal not equal", criteria.toString("xml"), xmlCriteria.toString("xml"));
+		ICriteria xmlCriteria = Criteria.create(Strings.toXmlString(criteria));
+		assertEquals("xml marshal and unmarshal not equal", Strings.toXmlString(criteria),
+				Strings.toXmlString(xmlCriteria));
 
 		String identifiers1 = "{[CC_TT_SALESORDER].[DocEntry = 1]}";
 		criteria = Criteria.create(identifiers1);
@@ -157,7 +160,7 @@ public class TestCommon extends TestCase {
 
 		assertEquals("marshal and unmarshal not equal",
 				oldJSON.replace(System.getProperty("line.separator"), "").replace(" ", ""),
-				criteria.toString("json").replace(System.getProperty("line.separator"), "").replace(" ", ""));
+				Strings.toJsonString(criteria).replace(System.getProperty("line.separator"), "").replace(" ", ""));
 
 	}
 

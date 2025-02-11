@@ -42,6 +42,7 @@ public class BORepositoryService extends BORepository4DB {
 	 * @param criteria 查询条件
 	 * @return
 	 */
+	@Override
 	protected <T extends IBusinessObject> IOperationResult<T> fetch(Class<?> boType, ICriteria criteria) {
 		if (criteria != null) {
 			// 有子项的查询结果后，再筛选父项
@@ -57,8 +58,7 @@ public class BORepositoryService extends BORepository4DB {
 								I18N.prop("msg_bobas_not_found_bo_property", cCriteria.getPropertyPath()));
 					}
 					if (!IBusinessObjects.class.isAssignableFrom(propertyInfo.getValueType())) {
-						throw new RepositoryException(
-								I18N.prop("msg_bobas_invalid_argument", propertyInfo.getName()));
+						throw new RepositoryException(I18N.prop("msg_bobas_invalid_argument", propertyInfo.getName()));
 					}
 					Class<?> subType = null;
 					IBusinessObjects<IBusinessObject, IBusinessObject> tmpObjects = BOFactory
@@ -69,8 +69,7 @@ public class BORepositoryService extends BORepository4DB {
 					if (subType == null || !(IBODocumentLine.class.isAssignableFrom(subType)
 							|| IBOSimpleLine.class.isAssignableFrom(subType)
 							|| IBOMasterDataLine.class.isAssignableFrom(subType))) {
-						throw new RepositoryException(
-								I18N.prop("msg_bobas_invalid_argument", propertyInfo.getName()));
+						throw new RepositoryException(I18N.prop("msg_bobas_invalid_argument", propertyInfo.getName()));
 					}
 					// 新建主项查询，不再查子项
 					ICriteria nCriteria = criteria.clone();
@@ -169,6 +168,7 @@ public class BORepositoryService extends BORepository4DB {
 	 * @param bo  待保存对象
 	 * @return
 	 */
+	@Override
 	protected <T extends IBusinessObject> IOperationResult<T> save(T bo) {
 		try {
 			boolean mine = this.beginTransaction();

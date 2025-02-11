@@ -1,7 +1,12 @@
 package org.colorcoding.ibas.bobas.common;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Iterator;
+
+import org.colorcoding.ibas.bobas.serialization.ISerializer;
+import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
 
 public class Strings {
 
@@ -250,4 +255,23 @@ public class Strings {
 		return Bytes.toHexString(src.getBytes());
 	}
 
+	public static String toJsonString(Object data) {
+		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
+			ISerializer<?> serializer = SerializerFactory.create().createManager().create(SerializerFactory.TYPE_JSON);
+			serializer.serialize(data, writer);
+			return writer.toString();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static String toXmlString(Object data) {
+		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
+			ISerializer<?> serializer = SerializerFactory.create().createManager().create(SerializerFactory.TYPE_XML);
+			serializer.serialize(data, writer);
+			return writer.toString();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

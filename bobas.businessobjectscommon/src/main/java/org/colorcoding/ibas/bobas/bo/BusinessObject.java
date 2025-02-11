@@ -27,6 +27,7 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.rule.BusinessRulesManager;
 import org.colorcoding.ibas.bobas.rule.IBusinessRule;
 import org.colorcoding.ibas.bobas.rule.IBusinessRules;
+import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
 
 /**
@@ -171,7 +172,8 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	@SuppressWarnings("unchecked")
 	public T clone() {
 		try {
-			T nData = (T) SerializerFactory.create().clone(this);
+			ISerializer<?> serializer = SerializerFactory.create().createManager().create();
+			T nData = (T) serializer.clone(this);
 			if (nData instanceof BusinessObject) {
 				((BusinessObject<T>) nData).reset();
 			}

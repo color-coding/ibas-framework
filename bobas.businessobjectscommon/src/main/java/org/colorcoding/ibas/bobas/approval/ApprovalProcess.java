@@ -2,12 +2,12 @@ package org.colorcoding.ibas.bobas.approval;
 
 import java.util.Objects;
 
+import org.colorcoding.ibas.bobas.bo.BOFactory;
 import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
 import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.common.ICriteria;
-import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.Numbers;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalResult;
@@ -538,18 +538,14 @@ public abstract class ApprovalProcess<T extends IApprovalProcess> {
 			if (this.getTransaction() == null) {
 				throw new ApprovalException(I18N.prop("msg_bobas_invaild_bo_repository"));
 			}
-			try (ApprovalProcessRepository apRepository = new ApprovalProcessRepository()) {
-				apRepository.setTransaction(this.getTransaction());
-				IOperationResult<IBusinessObject> opRsltFetch = apRepository.fetchData(criteria);
-				if (opRsltFetch.getError() != null) {
-					throw opRsltFetch.getError();
-				}
-				Object tmpBO = opRsltFetch.getResultObjects().firstOrDefault();
-				if (!(tmpBO instanceof IApprovalData)) {
-					throw new Exception(
+			try {
+				IBusinessObject[] results = this.getTransaction().fetch(BOFactory.classOf(criteria.getBusinessObject()),
+						criteria);
+				if (results == null || results.length == 0 || !(results[0] instanceof IApprovalData)) {
+					throw new ApprovalException(
 							I18N.prop("msg_bobas_approval_data_not_exist", this.getApprovalData().getIdentifiers()));
 				}
-				IApprovalData data = (IApprovalData) tmpBO;
+				IApprovalData data = (IApprovalData) results[0];
 				data.setApprovalStatus(this.getApprovalData().getApprovalStatus());
 				this.setApprovalData(data);
 				this.freshData = true;
@@ -575,50 +571,33 @@ public abstract class ApprovalProcess<T extends IApprovalProcess> {
 			throw new ApprovalException(I18N.prop("msg_bobas_invaild_bo_repository"));
 		}
 		boolean myTrans = false;
-		ApprovalProcessRepository apRepository = null;
 		try {
-			apRepository = new ApprovalProcessRepository();
-			apRepository.setTransaction(this.getTransaction());
-			myTrans = apRepository.beginTransaction();// 开启事务
+			myTrans = this.getTransaction().beginTransaction();// 开启事务
 			// 调用保存审批数据
 			if (this.getApprovalData().isDirty()) {
 				IApprovalData approvalData = this.getApprovalData(true);
+				// 是业务对象实例时，业务对象实例已在保存队列中
 				if (this.freshData) {
-					// 是业务对象实例时，业务对象实例已在保存队列中
 					// 保存审批数据
-					IOperationResult<?> opRsltSave = apRepository.saveData((IBusinessObject) approvalData);
-					if (opRsltSave.getError() != null) {
-						throw new ApprovalException(opRsltSave.getError());
-					}
+					this.getTransaction().save(new IBusinessObject[] { (IBusinessObject) approvalData });
 				}
 			}
 			// 调用保存审批流程
 			this.saveProcess();
 			// 提交事务
 			if (myTrans) {
-				apRepository.commitTransaction();
+				this.getTransaction().commit();
 			}
 		} catch (Exception e) {
-			try {
-				// 回滚事务
-				if (myTrans) {
-					apRepository.rollbackTransaction();
-				}
-			} catch (RepositoryException e1) {
-				throw new ApprovalException(e1);
-			}
-			if (e instanceof ApprovalException) {
-				throw (ApprovalException) e;
-			}
-			throw new ApprovalException(e);
-		} finally {
-			if (apRepository != null) {
+			// 回滚事务
+			if (myTrans) {
 				try {
-					apRepository.close();
-				} catch (Exception e) {
+					this.getTransaction().rollback();
+				} catch (RepositoryException e1) {
 					throw new ApprovalException(e);
 				}
 			}
+			throw new ApprovalException(e);
 		}
 	}
 

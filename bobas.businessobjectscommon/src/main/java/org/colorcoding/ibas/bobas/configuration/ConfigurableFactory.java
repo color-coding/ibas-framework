@@ -22,7 +22,7 @@ public abstract class ConfigurableFactory<T> {
 	 * 
 	 * @param names 名称，任意值包含“.”，则不在补子类命名空间
 	 * @return 类型，未找到为null
-	 * @throws BOFactoryException
+	 * @throws ClassNotFoundException
 	 */
 	@SuppressWarnings("unchecked")
 	protected Class<T> classOf(String... names) throws ClassNotFoundException {
@@ -85,9 +85,6 @@ public abstract class ConfigurableFactory<T> {
 	 * @param configKey 配置项，提供命名空间
 	 * @param typeName  类名
 	 * @return
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 * @throws BOFactoryException
 	 */
 	protected T create(String configKey, String typeName) {
 		String configValue = MyConfiguration.getConfigValue(configKey, "").toLowerCase();

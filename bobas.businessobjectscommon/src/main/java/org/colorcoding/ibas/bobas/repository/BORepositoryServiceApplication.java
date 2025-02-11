@@ -38,8 +38,9 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 	 * 设置当前用户
 	 * 
 	 * @param token
+	 * @throws InvalidAuthorizationException
 	 */
-	public final void setCurrentUser(String token) {
+	public final void setCurrentUser(String token) throws InvalidAuthorizationException {
 		if (this.getCurrentUser() != null && Strings.equalsIgnoreCase(this.getCurrentUser().getToken(), token)) {
 			// 与当前的口令相同，不做处理
 			return;
@@ -54,16 +55,39 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 	}
 
 	/**
-	 * 查询数据
+	 * 保存数据
 	 * 
-	 * @param <T>      对象类型
-	 * @param criteria 查询条件
-	 * @param boType   对象类型
+	 * @param <T>
+	 * @param bo    被保存对象
+	 * @param token 用户口令
 	 * @return
 	 */
-	protected final <T extends IBusinessObject> IOperationResult<T> fetch(ICriteria criteria, Class<?> boType) {
-		// 兼容性处理
-		return this.fetch(boType, criteria);
+	protected final <T extends IBusinessObject> IOperationResult<T> save(T bo, String token) {
+		try {
+			this.setCurrentUser(token);
+			return this.save(bo);
+		} catch (Exception e) {
+			return new OperationResult<>(e);
+		}
+	}
+
+	/**
+	 * 查询数据
+	 * 
+	 * @param <T>
+	 * @param criteria 条件
+	 * @param boType   数据类型
+	 * @param token    用户口令
+	 * @return
+	 */
+	protected final <T extends IBusinessObject> IOperationResult<T> fetch(ICriteria criteria, Class<?> boType,
+			String token) {
+		try {
+			this.setCurrentUser(token);
+			return this.fetch(boType, criteria);
+		} catch (Exception e) {
+			return new OperationResult<>(e);
+		}
 	}
 
 	private IOwnershipJudger ownershipJudger = null;

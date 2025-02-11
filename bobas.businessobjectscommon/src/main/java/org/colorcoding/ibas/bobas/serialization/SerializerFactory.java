@@ -1,7 +1,7 @@
 package org.colorcoding.ibas.bobas.serialization;
 
-import org.colorcoding.ibas.bobas.common.Strings;
-import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
 
 /**
  * 序列化者工厂
@@ -9,10 +9,7 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
  * @author Niuren.Zhu
  *
  */
-public class SerializerFactory {
-
-	private SerializerFactory() {
-	}
+public class SerializerFactory extends ConfigurableFactory<SerializerManager> {
 
 	/**
 	 * 输出字符串类型，XML
@@ -23,26 +20,33 @@ public class SerializerFactory {
 	 */
 	public final static String TYPE_JSON = "json";
 
-	/**
-	 * 创建序列化者
-	 * 
-	 * @return
-	 */
-	public static final ISerializer<?> create() {
-		return create(null);
+	private SerializerFactory() {
 	}
 
-	/**
-	 * 创建序列化者
-	 * 
-	 * @param type 类型
-	 * @return
-	 */
-	public static ISerializer<?> create(String type) {
-		if (TYPE_XML.equalsIgnoreCase(type) || Strings.isNullOrEmpty(type)) {
-			// 默认使用xml方式
-			return new SerializerXml();
+	private volatile static SerializerFactory instance;
+
+	public synchronized static SerializerFactory create() {
+		if (instance == null) {
+			synchronized (SerializerFactory.class) {
+				if (instance == null) {
+					instance = new SerializerFactory();
+				}
+			}
 		}
-		throw new SerializationException(I18N.prop("msg_bobas_not_support_serialize_type", type));
+		return instance;
+	}
+
+	@Override
+	protected SerializerManager createDefault(String typeName) {
+		return new SerializerManager();
+	}
+
+	private volatile static SerializerManager manager = null;
+
+	public synchronized SerializerManager createManager() {
+		if (manager == null) {
+			manager = this.create(MyConfiguration.CONFIG_ITEM_SERIALIZATION_WAY, "SerializerManager");
+		}
+		return manager;
 	}
 }
