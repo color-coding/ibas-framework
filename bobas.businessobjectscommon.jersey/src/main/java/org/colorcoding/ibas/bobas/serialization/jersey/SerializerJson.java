@@ -22,11 +22,13 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.StreamReadFeature;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
@@ -53,15 +55,28 @@ public class SerializerJson extends Serializer<JsonSchema> {
 			for (int i = 0; i < types.length; i++) {
 				knownTypes[i + 1] = types[i];
 			}
-			ObjectMapper objectMapper = JsonMapper.builder().enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME)
+			ObjectMapper objectMapper = JsonMapper.builder()
+					// 数组外属性名称
+					.enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME)
+					// 属性排序
+					// .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
+					// 含头对象名称
 					// .enable(SerializationFeature.WRAP_ROOT_VALUE)
-					// .enable(SerializationFeature.UNWRAP_ROOT_VALUE)
 					.enable(formated ? SerializationFeature.INDENT_OUTPUT : null)
 					.serializationInclusion(JsonInclude.Include.NON_NULL)
 					.serializationInclusion(JsonInclude.Include.NON_EMPTY).build();
 
+			SimpleModule module = new SimpleModule();
+			module.setSerializerModifier(new AllTypesSerializerModifier());
+			objectMapper.registerModule(module);
+
 			objectMapper.registerModule(new JaxbAnnotationModule());
+
 			objectMapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector(TypeFactory.defaultInstance()));
+
+			// objectMapper.setSerializerFactory(
+			// objectMapper.getSerializerFactory().withSerializerModifier(new
+			// TypePropertySerializerModifier()));
 
 			objectMapper.writeValue(outputStream, object);
 		} catch (IOException e) {
@@ -74,13 +89,13 @@ public class SerializerJson extends Serializer<JsonSchema> {
 		try {
 			ObjectMapper objectMapper = JsonMapper.builder().enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME)
 					// .enable(SerializationFeature.WRAP_ROOT_VALUE)
-					// .enable(SerializationFeature.UNWRAP_ROOT_VALUE)
-					.serializationInclusion(JsonInclude.Include.NON_NULL)
-					.serializationInclusion(JsonInclude.Include.NON_EMPTY).build();
+					.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+					.disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE).build();
 			if (MyConfiguration.isDebugMode()) {
 				// 报错提示jackson位置
 				objectMapper.configure(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION.mappedFeature(), true);
 			}
+
 			// objectMapper.enableDefaultTyping(DefaultTyping.OBJECT_AND_NON_CONCRETE);
 			objectMapper.registerModule(new JaxbAnnotationModule());
 			objectMapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector(TypeFactory.defaultInstance()));

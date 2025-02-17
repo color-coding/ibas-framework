@@ -55,7 +55,10 @@ public class TestBusinessObject extends TestCase {
 		serializer.serialize(order, writer, true);
 		System.out.println(writer.toString());
 		order = (SalesOrder) serializer.deserialize(writer.toString(), order.getClass());
-
+		serializer = SerializerFactory.createManager().create("xml");
+		writer = new ByteArrayOutputStream();
+		serializer.serialize(order, writer, true);
+		System.out.println(writer.toString());
 	}
 
 	public void testSerializStatus() throws ValidateException {
