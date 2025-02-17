@@ -50,7 +50,7 @@ public class TestBusinessObject extends TestCase {
 		orderItem.setQuantity(Decimals.valueOf(10));
 		orderItem.setPrice(Decimals.valueOf(199.99));
 
-		ISerializer<?> serializer = SerializerFactory.create().createManager().create("json");
+		ISerializer<?> serializer = SerializerFactory.createManager().create("json");
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.serialize(order, writer, true);
 		System.out.println(writer.toString());
@@ -119,8 +119,7 @@ public class TestBusinessObject extends TestCase {
 		orderItem.setPrice(Decimals.valueOf(199.99));
 
 		System.out.println("-------------------has root--------------------");
-		ISerializer<?> serializer = SerializerFactory.create().createManager()
-				.create(SerializerManager.TYPE_JSON_HAS_ROOT);
+		ISerializer<?> serializer = SerializerFactory.createManager().create(SerializerManager.TYPE_JSON_HAS_ROOT);
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.getSchema(order.getClass(), writer);
 		System.out.println(writer.toString());
@@ -130,7 +129,7 @@ public class TestBusinessObject extends TestCase {
 		serializer.validate(order.getClass(), writer.toString());
 		System.out.println(serializer.deserialize(writer.toString(), order.getClass()));
 		System.out.println("-------------------no root---------------------");
-		serializer = SerializerFactory.create().createManager().create(SerializerManager.TYPE_JSON_NO_ROOT);
+		serializer = SerializerFactory.createManager().create(SerializerManager.TYPE_JSON_NO_ROOT);
 		writer = new ByteArrayOutputStream();
 		serializer.getSchema(order.getClass(), writer);
 		System.out.println(writer.toString());

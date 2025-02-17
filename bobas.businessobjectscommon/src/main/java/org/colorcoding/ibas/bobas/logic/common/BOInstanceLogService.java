@@ -100,7 +100,7 @@ public class BOInstanceLogService extends BusinessLogic<IBOInstanceLogContract, 
 		boLogst.setModifyUser(this.getUser().getId());
 		boLogst.setTransationId(this.getTransaction().getId());
 
-		ISerializer<?> serializer = SerializerFactory.create().createManager().create(SerializerFactory.TYPE_JSON);
+		ISerializer<?> serializer = SerializerFactory.createManager().create(SerializerFactory.TYPE_JSON);
 		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
 			serializer.serialize(contract.getHost(), writer);
 			boLogst.setContent(writer.toString());
@@ -121,8 +121,7 @@ public class BOInstanceLogService extends BusinessLogic<IBOInstanceLogContract, 
 				boLogst.setModifyUser(this.getUser().getId());
 				boLogst.setTransationId(this.getTransaction().getId());
 
-				ISerializer<?> serializer = SerializerFactory.create().createManager()
-						.create(SerializerFactory.TYPE_JSON);
+				ISerializer<?> serializer = SerializerFactory.createManager().create(SerializerFactory.TYPE_JSON);
 				try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
 					serializer.serialize(contract.getHost(), writer);
 					boLogst.setContent(writer.toString());

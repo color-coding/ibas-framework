@@ -9,7 +9,7 @@ import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
  * @author Niuren.Zhu
  *
  */
-public class SerializerFactory extends ConfigurableFactory<SerializerManager> {
+public class SerializerFactory {
 
 	/**
 	 * 输出字符串类型，XML
@@ -23,30 +23,29 @@ public class SerializerFactory extends ConfigurableFactory<SerializerManager> {
 	private SerializerFactory() {
 	}
 
-	private volatile static SerializerFactory instance;
+	private volatile static SerializerManager instance;
 
-	public synchronized static SerializerFactory create() {
+	public synchronized static SerializerManager createManager() {
 		if (instance == null) {
 			synchronized (SerializerFactory.class) {
 				if (instance == null) {
-					instance = new SerializerFactory();
+					_SerializerFactory factory = new _SerializerFactory();
+					instance = factory.create();
 				}
 			}
 		}
 		return instance;
 	}
 
-	@Override
-	protected SerializerManager createDefault(String typeName) {
-		return new SerializerManager();
-	}
+	private static class _SerializerFactory extends ConfigurableFactory<SerializerManager> {
 
-	private volatile static SerializerManager manager = null;
-
-	public synchronized SerializerManager createManager() {
-		if (manager == null) {
-			manager = this.create(MyConfiguration.CONFIG_ITEM_SERIALIZATION_WAY, "SerializerManager");
+		@Override
+		protected SerializerManager createDefault(String typeName) {
+			return new SerializerManager();
 		}
-		return manager;
+
+		public synchronized SerializerManager create() {
+			return this.create(MyConfiguration.CONFIG_ITEM_SERIALIZATION_WAY, "SerializerManager");
+		}
 	}
 }

@@ -12,58 +12,45 @@ import org.colorcoding.ibas.bobas.repository.ITransaction;
  * @author Niuren.Zhu
  *
  */
-public class ApprovalFactory extends ConfigurableFactory<ApprovalProcessManager> {
+public class ApprovalFactory {
 
 	private ApprovalFactory() {
 	}
 
-	private volatile static ApprovalFactory instance;
+	public synchronized static ApprovalProcessManager createManager(ITransaction transaction) {
+		return new _ApprovalFactory().create(transaction);
+	}
 
-	public synchronized static ApprovalFactory create() {
-		if (instance == null) {
-			synchronized (ApprovalFactory.class) {
-				if (instance == null) {
-					instance = new ApprovalFactory();
-				}
-			}
+	private static class _ApprovalFactory extends ConfigurableFactory<ApprovalProcessManager> {
+
+		public ApprovalProcessManager create(ITransaction transaction) {
+			ApprovalProcessManager manager = this.create(MyConfiguration.CONFIG_ITEM_APPROVAL_WAY,
+					"ApprovalProcessManager");
+			manager.setTransaction(transaction);
+			return manager;
 		}
-		return instance;
+
+		@Override
+		protected ApprovalProcessManager createDefault(String typeName) {
+			return new ApprovalProcessManager() {
+
+				@Override
+				public <T extends IApprovalProcess> Iterator<ApprovalProcess<T>> createApprovalProcess(String boCode) {
+					return null;
+				}
+
+				@Override
+				public <T extends IApprovalProcess> ApprovalProcess<T> createApprovalProcess(
+						IApprovalProcess processData) {
+					return null;
+				}
+
+				@Override
+				public <T extends IApprovalProcess> T loadProcessData(IApprovalData apData) {
+					return null;
+				}
+
+			};
+		}
 	}
-
-	/**
-	 * 创建流程管理员实例
-	 * 
-	 * @return
-	 * @throws ApprovalException
-	 */
-	public synchronized ApprovalProcessManager createManager(ITransaction transaction) {
-		ApprovalProcessManager manager = this.create(MyConfiguration.CONFIG_ITEM_APPROVAL_WAY,
-				"ApprovalProcessManager");
-		manager.setTransaction(transaction);
-		return manager;
-	}
-
-	@Override
-	protected ApprovalProcessManager createDefault(String typeName) {
-		return new ApprovalProcessManager() {
-
-			@Override
-			public <T extends IApprovalProcess> Iterator<ApprovalProcess<T>> createApprovalProcess(String boCode) {
-				return null;
-			}
-
-			@Override
-			public <T extends IApprovalProcess> ApprovalProcess<T> createApprovalProcess(
-					IApprovalProcess processData) {
-				return null;
-			}
-
-			@Override
-			public <T extends IApprovalProcess> T loadProcessData(IApprovalData apData) {
-				return null;
-			}
-
-		};
-	}
-
 }

@@ -172,7 +172,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	@SuppressWarnings("unchecked")
 	public T clone() {
 		try {
-			ISerializer<?> serializer = SerializerFactory.create().createManager().create();
+			ISerializer<?> serializer = SerializerFactory.createManager().create();
 			T nData = (T) serializer.clone(this);
 			if (nData instanceof BusinessObject) {
 				((BusinessObject<T>) nData).reset();

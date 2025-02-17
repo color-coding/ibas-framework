@@ -45,7 +45,7 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 			// 与当前的口令相同，不做处理
 			return;
 		}
-		IOrganizationManager orgManager = OrganizationFactory.create().createManager();
+		IOrganizationManager orgManager = OrganizationFactory.createManager();
 		IUser user = orgManager.getUser(token);
 		if (user == null) {
 			// 没有用户匹配次口令
@@ -94,7 +94,7 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 
 	private final IOwnershipJudger getOwnershipJudger() {
 		if (this.ownershipJudger == null) {
-			this.ownershipJudger = OwnershipFactory.create().createJudger();
+			this.ownershipJudger = OwnershipFactory.createJudger();
 		}
 		return this.ownershipJudger;
 	}

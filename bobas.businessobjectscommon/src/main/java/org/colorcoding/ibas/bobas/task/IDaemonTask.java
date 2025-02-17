@@ -9,13 +9,6 @@ package org.colorcoding.ibas.bobas.task;
 public interface IDaemonTask extends Runnable {
 
 	/**
-	 * 是否激活的
-	 * 
-	 * @return
-	 */
-	boolean isActivated();
-
-	/**
 	 * 任务名称
 	 * 
 	 * @return
@@ -30,4 +23,16 @@ public interface IDaemonTask extends Runnable {
 	 * @return
 	 */
 	long getInterval();
+
+	/**
+	 * 是否激活的
+	 * 
+	 * @return
+	 */
+	default boolean isActivated() {
+		if (this.getInterval() <= 0) {
+			return false;
+		}
+		return true;
+	}
 }

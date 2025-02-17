@@ -109,7 +109,7 @@ public abstract class ApprovalProcess<T extends IApprovalProcess> {
 	 * @return
 	 */
 	public IUser getOwner() {
-		return OrganizationFactory.create().createManager()
+		return OrganizationFactory.createManager()
 				.getUser((int) this.getProcessData().getApprovalData().getDataOwner());
 	}
 

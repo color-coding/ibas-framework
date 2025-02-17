@@ -8,7 +8,9 @@ import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.logging.Logger;
+import org.colorcoding.ibas.bobas.task.Daemon;
 import org.colorcoding.ibas.bobas.task.IDaemonTask;
+import org.colorcoding.ibas.bobas.task.InvalidDaemonTaskException;
 
 /**
  * 组织工厂
@@ -16,7 +18,7 @@ import org.colorcoding.ibas.bobas.task.IDaemonTask;
  * @author Niuren.Zhu
  *
  */
-public class OrganizationFactory extends ConfigurableFactory<IOrganizationManager> {
+public class OrganizationFactory {
 
 	public static IUser UNKNOWN_USER = new IUser() {
 
@@ -83,141 +85,128 @@ public class OrganizationFactory extends ConfigurableFactory<IOrganizationManage
 	private OrganizationFactory() {
 	}
 
-	private volatile static OrganizationFactory instance;
+	private volatile static IOrganizationManager instance;
 
-	public synchronized static OrganizationFactory create() {
+	public synchronized static IOrganizationManager createManager() {
 		if (instance == null) {
 			synchronized (OrganizationFactory.class) {
 				if (instance == null) {
-					instance = new OrganizationFactory();
-					// 注册释放任务
-					instance.register(new IDaemonTask() {
-						@Override
-						public void run() {
-							if (instance.organizationManager == null) {
-								// 未初始化，不做处理
-								return;
+					instance = new _OrganizationFactory().create();
+					try {
+						Daemon.register(new IDaemonTask() {
+							@Override
+							public void run() {
+								if (instance == null) {
+									// 未初始化，不做处理
+									return;
+								}
+								// 刷新组织
+								try {
+									IOrganizationManager orgManager = new _OrganizationFactory().create();
+									orgManager.initialize();
+									instance = orgManager;
+								} catch (Exception e) {
+									// 组织刷新失败，清空
+									instance = null;
+									Logger.log(e);
+								}
 							}
-							// 刷新组织
-							try {
-								IOrganizationManager orgManager = instance
-										.create(MyConfiguration.CONFIG_ITEM_ORGANIZATION_WAY, "OrganizationManager");
-								orgManager.initialize();
-								instance.organizationManager = orgManager;
-							} catch (Exception e) {
-								// 组织刷新失败，清空
-								instance.organizationManager = null;
-								Logger.log(e);
+
+							@Override
+							public String getName() {
+								return "organization cleanner";
 							}
-						}
 
-						@Override
-						public boolean isActivated() {
-							if (this.getInterval() <= 0) {
-								return false;
+							private long interval = MyConfiguration.getConfigValue(
+									MyConfiguration.CONFIG_ITEM_ORGANIZATION_MANAGER_EXPIRY_VALUE,
+									MyConfiguration.isDebugMode() ? 180 : 600);
+
+							@Override
+							public long getInterval() {
+								return this.interval;
 							}
-							return true;
-						}
-
-						private String name = "organization cleanner";
-
-						@Override
-						public String getName() {
-							return this.name;
-						}
-
-						private long interval = MyConfiguration.getConfigValue(
-								MyConfiguration.CONFIG_ITEM_ORGANIZATION_MANAGER_EXPIRY_VALUE,
-								MyConfiguration.isDebugMode() ? 180 : 600);
-
-						@Override
-						public long getInterval() {
-							return this.interval;
-						}
-					});
+						});
+					} catch (InvalidDaemonTaskException e) {
+						throw new RuntimeException(e);
+					}
 				}
 			}
 		}
 		return instance;
 	}
 
-	@Override
-	protected IOrganizationManager createDefault(String typeName) {
-		return new IOrganizationManager() {
-			@Override
-			public IUser getUser(String token) {
-				if (token != null) {
-					if (token.equals(SYSTEM_USER.getToken())) {
+	private static class _OrganizationFactory extends ConfigurableFactory<IOrganizationManager> {
+
+		@Override
+		protected IOrganizationManager createDefault(String typeName) {
+			return new IOrganizationManager() {
+				@Override
+				public IUser getUser(String token) {
+					if (token != null) {
+						if (token.equals(SYSTEM_USER.getToken())) {
+							return SYSTEM_USER;
+						}
+						for (IUser item : this.getUsers()) {
+							if (token.equals(item.getToken())) {
+								return item;
+							}
+						}
+					}
+					return UNKNOWN_USER;
+				}
+
+				@Override
+				public IUser getUser(int id) {
+					if (id == SYSTEM_USER.getId()) {
 						return SYSTEM_USER;
 					}
 					for (IUser item : this.getUsers()) {
-						if (token.equals(item.getToken())) {
+						if (id == item.getId()) {
 							return item;
 						}
 					}
+					return UNKNOWN_USER;
 				}
-				return UNKNOWN_USER;
-			}
 
-			@Override
-			public IUser getUser(int id) {
-				if (id == SYSTEM_USER.getId()) {
-					return SYSTEM_USER;
+				@Override
+				public void initialize() {
+					this.users = new ArrayList<>();
 				}
-				for (IUser item : this.getUsers()) {
-					if (id == item.getId()) {
-						return item;
-					}
-				}
-				return UNKNOWN_USER;
-			}
 
-			@Override
-			public void initialize() {
-				this.users = new ArrayList<>();
-			}
+				private volatile ArrayList<IUser> users;
 
-			private volatile ArrayList<IUser> users;
-
-			public List<IUser> getUsers() {
-				if (this.users == null) {
-					synchronized (this) {
-						if (this.users == null) {
-							this.users = new ArrayList<>();
+				public List<IUser> getUsers() {
+					if (this.users == null) {
+						synchronized (this) {
+							if (this.users == null) {
+								this.users = new ArrayList<>();
+							}
 						}
 					}
+					return this.users;
 				}
-				return this.users;
-			}
 
-			@Override
-			public IUser register(IUser user) {
-				if (user != null) {
-					for (int i = 0; i < this.getUsers().size(); i++) {
-						IUser item = this.getUsers().get(i);
-						if (item == null) {
-							continue;
+				@Override
+				public IUser register(IUser user) {
+					if (user != null) {
+						for (int i = 0; i < this.getUsers().size(); i++) {
+							IUser item = this.getUsers().get(i);
+							if (item == null) {
+								continue;
+							}
+							if (item.getId() == user.getId()) {
+								this.getUsers().set(i, user);
+							}
 						}
-						if (item.getId() == user.getId()) {
-							this.getUsers().set(i, user);
-						}
+						this.getUsers().add(user);
 					}
-					this.getUsers().add(user);
+					return user;
 				}
-				return user;
-			}
-		};
-	}
-
-	private IOrganizationManager organizationManager = null;
-
-	public synchronized IOrganizationManager createManager() {
-		if (this.organizationManager == null) {
-			this.organizationManager = this.create(MyConfiguration.CONFIG_ITEM_ORGANIZATION_WAY, "OrganizationManager");
-			// 有效数据，进行初始化
-			this.organizationManager.initialize();
+			};
 		}
-		return this.organizationManager;
-	}
 
+		public synchronized IOrganizationManager create() {
+			return this.create(MyConfiguration.CONFIG_ITEM_ORGANIZATION_WAY, "OrganizationManager");
+		}
+	}
 }

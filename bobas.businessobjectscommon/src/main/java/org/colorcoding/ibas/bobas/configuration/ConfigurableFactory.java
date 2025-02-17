@@ -4,9 +4,6 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logging.Logger;
 import org.colorcoding.ibas.bobas.logging.LoggingLevel;
-import org.colorcoding.ibas.bobas.task.Daemon;
-import org.colorcoding.ibas.bobas.task.IDaemonTask;
-import org.colorcoding.ibas.bobas.task.InvalidDaemonTaskException;
 
 /**
  * 可配置工厂
@@ -101,24 +98,6 @@ public abstract class ConfigurableFactory<T> {
 		} catch (Exception e) {
 			throw new RuntimeException(I18N.prop("msg_bobas_configurable_factory_create_instance_faild", typeName), e);
 		}
-	}
-
-	/**
-	 * 注册后台任务
-	 * 
-	 * @param task
-	 * @return 是否成功
-	 */
-	protected boolean register(IDaemonTask task) {
-		if (task == null) {
-			return false;
-		}
-		try {
-			Daemon.register(task);
-		} catch (InvalidDaemonTaskException e) {
-			throw new RuntimeException(e);
-		}
-		return true;
 	}
 
 	/**

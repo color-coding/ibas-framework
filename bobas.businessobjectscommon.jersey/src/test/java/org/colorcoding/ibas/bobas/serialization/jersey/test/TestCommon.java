@@ -2,14 +2,8 @@ package org.colorcoding.ibas.bobas.serialization.jersey.test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
@@ -28,7 +22,7 @@ import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
 import org.colorcoding.ibas.bobas.serialization.ValidateException;
-import org.colorcoding.ibas.bobas.serialization.jersey.SerializerJsonNoRoot;
+import org.colorcoding.ibas.bobas.serialization.jersey.SerializerJson;
 import org.colorcoding.ibas.bobas.serialization.jersey.SerializerManager;
 import org.colorcoding.ibas.bobas.test.demo.SalesOrder;
 import org.colorcoding.ibas.bobas.test.demo.SalesOrderItem;
@@ -95,14 +89,13 @@ public class TestCommon extends TestCase {
 	public void testJsonSchema() throws ValidateException {
 		ICriteria criteria = this.createCriteria();
 		System.out.println("-------------------has root--------------------");
-		ISerializer<?> serializer = SerializerFactory.create().createManager()
-				.create(SerializerManager.TYPE_JSON_HAS_ROOT);
+		ISerializer<?> serializer = SerializerFactory.createManager().create(SerializerManager.TYPE_JSON_HAS_ROOT);
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.serialize(criteria, writer);
 		System.out.println(writer.toString());
 		System.out.println(serializer.deserialize(writer.toString(), criteria.getClass()));
 		System.out.println("-------------------no root---------------------");
-		serializer = SerializerFactory.create().createManager().create(SerializerManager.TYPE_JSON_NO_ROOT);
+		serializer = SerializerFactory.createManager().create(SerializerManager.TYPE_JSON_NO_ROOT);
 		writer = new ByteArrayOutputStream();
 		serializer.serialize(criteria, writer);
 		System.out.println(writer.toString());
@@ -136,27 +129,16 @@ public class TestCommon extends TestCase {
 		condition.setOperation(ConditionOperation.CONTAIN);
 		condition.setValue("T000");
 
-		// 设置系统默认工厂
-		System.setProperty("javax.xml.bind.context.factory", "org.eclipse.persistence.jaxb.JAXBContextFactory");
-		Map<String, Object> properties = new HashMap<String, Object>(2);
-		properties.put("eclipselink.media-type", "application/json");
-		// json数组不要前缀类型
-		properties.put("eclipselink.json.wrapper-as-array-name", true);
-		// properties.put("eclipselink.json.include-root", true);
-		// properties.put("eclipselink.json.attribute-prefix", "@");
-		JAXBContext jc = JAXBContext.newInstance(new Class[] { Criteria.class }, properties);
+		SerializerJson serializer = new SerializerJson();
 
-		StringWriter writer = new StringWriter();
-		Marshaller marshaller = jc.createMarshaller();
-		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-		marshaller.marshal(criteria, writer);
+		ByteArrayOutputStream writer = new ByteArrayOutputStream();
+		serializer.serialize(criteria, writer);
 		String oldJSON = writer.toString();
 		System.out.println(oldJSON);
 
-		Unmarshaller unmarshaller = jc.createUnmarshaller();
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(oldJSON.getBytes());
 		inputStream.reset();
-		criteria = (Criteria) unmarshaller.unmarshal(inputStream);
+		criteria = (Criteria) serializer.deserialize(inputStream, Criteria.class);
 
 		assertEquals("marshal and unmarshal not equal",
 				oldJSON.replace(System.getProperty("line.separator"), "").replace(" ", ""),
@@ -175,10 +157,12 @@ public class TestCommon extends TestCase {
 		operationResult.getResultObjects().add(dataTable);
 
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
-		ISerializer<?> serializer = new SerializerJsonNoRoot();
+		SerializerJson serializer = new SerializerJson();
+		serializer.setIncludeJsonRoot(true);
 		serializer.serialize(operationResult, writer, OperationResult.class, DataTable.class);
 		System.out.println(writer.toString());
-		serializer = new SerializerJsonNoRoot();
+		serializer = new SerializerJson();
+		serializer.setIncludeJsonRoot(false);
 		Object data = serializer.deserialize(writer.toString(), OperationResult.class, DataTable.class);
 		System.out.println(data);
 	}

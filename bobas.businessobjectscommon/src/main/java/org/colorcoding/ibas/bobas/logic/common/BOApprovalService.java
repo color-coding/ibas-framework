@@ -46,7 +46,7 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IAppro
 
 	protected final ApprovalProcessManager getProcessManager() {
 		if (this.processManager == null) {
-			this.processManager = ApprovalFactory.create().createManager(this.getTransaction());
+			this.processManager = ApprovalFactory.createManager(this.getTransaction());
 		}
 		return processManager;
 	}

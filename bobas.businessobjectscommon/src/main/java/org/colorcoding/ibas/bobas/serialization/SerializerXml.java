@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -46,10 +47,11 @@ public class SerializerXml extends Serializer<Schema> {
 	@Override
 	public void serialize(Object object, OutputStream outputStream, boolean formated, Class<?>... types) {
 		try {
-			Class<?>[] knwonTypes = new Class<?>[types.length + 1];
-			knwonTypes[0] = object.getClass();
-			System.arraycopy(types, 0, knwonTypes, 1, types.length);
-			JAXBContext context = JAXBContext.newInstance(knwonTypes);
+			Objects.requireNonNull(object);
+			Class<?>[] knownTypes = new Class<?>[types.length + 1];
+			knownTypes[0] = object.getClass();
+			System.arraycopy(types, 0, knownTypes, 1, types.length);
+			JAXBContext context = JAXBContext.newInstance(knownTypes);
 			Marshaller marshaller = context.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");// 编码格式
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);// 是否格式化生成的xml串

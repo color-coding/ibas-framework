@@ -5,12 +5,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.serialization.SerializationException;
 import org.colorcoding.ibas.bobas.serialization.Serializer;
@@ -18,25 +15,86 @@ import org.colorcoding.ibas.bobas.serialization.ValidateException;
 import org.colorcoding.ibas.bobas.serialization.structure.Analyzer;
 import org.colorcoding.ibas.bobas.serialization.structure.Element;
 import org.colorcoding.ibas.bobas.serialization.structure.ElementRoot;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.MarshallerProperties;
-import org.eclipse.persistence.jaxb.UnmarshallerProperties;
-import org.eclipse.persistence.oxm.MediaType;
 import org.xml.sax.InputSource;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
 
-/**
- * JSON序列化，包含ROOT
- * 
- * @author Niuren.Zhu
- *
- */
 public class SerializerJson extends Serializer<JsonSchema> {
+
+	private boolean includeJsonRoot;
+
+	public final boolean isIncludeJsonRoot() {
+		return includeJsonRoot;
+	}
+
+	public final void setIncludeJsonRoot(boolean includeJsonRoot) {
+		this.includeJsonRoot = includeJsonRoot;
+	}
+
+	@Override
+	public void serialize(Object object, OutputStream outputStream, boolean formated, Class<?>... types) {
+		try {
+			Objects.requireNonNull(object);
+			Class<?>[] knownTypes = new Class[types.length + 1];
+			knownTypes[0] = object.getClass();
+			for (int i = 0; i < types.length; i++) {
+				knownTypes[i + 1] = types[i];
+			}
+			ObjectMapper objectMapper = JsonMapper.builder().enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME)
+					// .enable(SerializationFeature.WRAP_ROOT_VALUE)
+					// .enable(SerializationFeature.UNWRAP_ROOT_VALUE)
+					.enable(formated ? SerializationFeature.INDENT_OUTPUT : null)
+					.serializationInclusion(JsonInclude.Include.NON_NULL)
+					.serializationInclusion(JsonInclude.Include.NON_EMPTY).build();
+
+			objectMapper.registerModule(new JaxbAnnotationModule());
+			objectMapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector(TypeFactory.defaultInstance()));
+
+			objectMapper.writeValue(outputStream, object);
+		} catch (IOException e) {
+			throw new SerializationException(e);
+		}
+	}
+
+	@Override
+	public Object deserialize(InputStream ipnInputStream, Class<?>... types) throws SerializationException {
+		try {
+			ObjectMapper objectMapper = JsonMapper.builder().enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME)
+					// .enable(SerializationFeature.WRAP_ROOT_VALUE)
+					// .enable(SerializationFeature.UNWRAP_ROOT_VALUE)
+					.serializationInclusion(JsonInclude.Include.NON_NULL)
+					.serializationInclusion(JsonInclude.Include.NON_EMPTY).build();
+			if (MyConfiguration.isDebugMode()) {
+				// 报错提示jackson位置
+				objectMapper.configure(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION.mappedFeature(), true);
+			}
+			// objectMapper.enableDefaultTyping(DefaultTyping.OBJECT_AND_NON_CONCRETE);
+			objectMapper.registerModule(new JaxbAnnotationModule());
+			objectMapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector(TypeFactory.defaultInstance()));
+
+			return objectMapper.readValue(ipnInputStream, types[0]);
+		} catch (IOException e) {
+			throw new SerializationException(e);
+		}
+	}
+
+	@Override
+	public Object deserialize(InputSource inputSource, Class<?>... types) throws SerializationException {
+		return this.deserialize(inputSource.getByteStream(), types);
+	}
 
 	@Override
 	public void getSchema(Class<?> type, OutputStream outputStream) throws SerializationException {
@@ -59,54 +117,6 @@ public class SerializerJson extends Serializer<JsonSchema> {
 	@Override
 	public JsonSchema getSchema(Class<?> type) throws SerializationException {
 		throw new UnsupportedOperationException();
-	}
-
-	private JAXBContext context;
-
-	/**
-	 * 创建json序列化类
-	 * 
-	 * @param types 已知类型
-	 * @return
-	 * @throws JAXBException
-	 */
-	protected JAXBContext createJAXBContextJson(Class<?>... types) throws JAXBException {
-		if (context == null) {
-			context = JAXBContextFactory.createContext(types, null);
-		}
-		return context;
-	}
-
-	@Override
-	public void serialize(Object object, OutputStream outputStream, boolean formated, Class<?>... types) {
-		try {
-			Class<?>[] knownTypes = new Class[types.length + 1];
-			knownTypes[0] = object.getClass();
-			for (int i = 0; i < types.length; i++) {
-				knownTypes[i + 1] = types[i];
-			}
-			JAXBContext context = createJAXBContextJson(knownTypes);
-			Marshaller marshaller = context.createMarshaller();
-			marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
-			marshaller.setProperty(MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);
-			marshaller.marshal(object, outputStream);
-		} catch (JAXBException e) {
-			throw new SerializationException(e);
-		}
-	}
-
-	@Override
-	public Object deserialize(InputSource inputSource, Class<?>... types) throws SerializationException {
-		try {
-			JAXBContext context = createJAXBContextJson(types);
-			Unmarshaller unmarshaller = context.createUnmarshaller();
-			unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
-			unmarshaller.setProperty(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
-			return unmarshaller.unmarshal(inputSource);
-		} catch (JAXBException e) {
-			throw new SerializationException(e);
-		}
 	}
 
 	@Override
