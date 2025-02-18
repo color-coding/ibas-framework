@@ -138,7 +138,7 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 
 	@XmlElementWrapper(name = "Conditions")
 	@XmlElement(name = "Condition", type = Condition.class)
-	private IConditions conditions = null;
+	private Conditions conditions = null;
 
 	@Override
 	public final IConditions getConditions() {
@@ -148,13 +148,9 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 		return this.conditions;
 	}
 
-	public final void setConditions(IConditions value) {
-		this.conditions = value;
-	}
-
 	@XmlElementWrapper(name = "ChildCriterias")
 	@XmlElement(name = "ChildCriteria", type = ChildCriteria.class, nillable = true)
-	private IChildCriterias childCriterias = null;
+	private ChildCriterias childCriterias = null;
 
 	@Override
 	public final IChildCriterias getChildCriterias() {
@@ -164,13 +160,9 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 		return this.childCriterias;
 	}
 
-	public final void setChildCriterias(IChildCriterias value) {
-		this.childCriterias = value;
-	}
-
 	@XmlElementWrapper(name = "Sorts")
 	@XmlElement(name = "Sort", type = Sort.class, nillable = true)
-	private ISorts sorts = null;
+	private Sorts sorts = new Sorts();
 
 	@Override
 	public final ISorts getSorts() {
@@ -178,10 +170,6 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 			this.sorts = new Sorts();
 		}
 		return this.sorts;
-	}
-
-	public final void setSorts(ISorts value) {
-		this.sorts = value;
 	}
 
 	@Override

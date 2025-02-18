@@ -12,8 +12,11 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.databind.ser.std.BeanSerializerBase;
 
-//自定义通用序列化器
+/**
+ * 自定义通用序列化器
+ */
 class GenericSerializer extends JsonSerializer<Object> {
+
 	private final BeanSerializerBase defaultSerializer;
 
 	public GenericSerializer(BeanSerializerBase defaultSerializer) {
@@ -38,7 +41,9 @@ class GenericSerializer extends JsonSerializer<Object> {
 	}
 }
 
-//自定义 BeanSerializerModifier
+/**
+ * 自定义 BeanSerializerModifier
+ */
 class AllTypesSerializerModifier extends BeanSerializerModifier {
 
 	private static final long serialVersionUID = 1L;
@@ -49,6 +54,6 @@ class AllTypesSerializerModifier extends BeanSerializerModifier {
 		if (serializer instanceof BeanSerializerBase) {
 			return new GenericSerializer((BeanSerializerBase) serializer);
 		}
-		return serializer;
+		return super.modifySerializer(config, beanDesc, serializer);
 	}
 }

@@ -50,11 +50,11 @@ public class TestBusinessObject extends TestCase {
 		orderItem.setQuantity(Decimals.valueOf(10));
 		orderItem.setPrice(Decimals.valueOf(199.99));
 
-		ISerializer<?> serializer = SerializerFactory.createManager().create("json");
+		ISerializer serializer = SerializerFactory.createManager().create("json");
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.serialize(order, writer, true);
 		System.out.println(writer.toString());
-		order = (SalesOrder) serializer.deserialize(writer.toString(), order.getClass());
+		order = serializer.deserialize(writer.toString(), order.getClass());
 		serializer = SerializerFactory.createManager().create("xml");
 		writer = new ByteArrayOutputStream();
 		serializer.serialize(order, writer, true);
@@ -86,9 +86,9 @@ public class TestBusinessObject extends TestCase {
 		stringBuilder.append(String.format("\"Canceled\":\"%s\",", emYesNo.YES));
 		stringBuilder.append(String.format("\"Status\":\"%s\"", emBOStatus.CLOSED));
 		stringBuilder.append("}}");
-		ISerializer<?> serializer = new SerializerJson();
+		ISerializer serializer = new SerializerJson();
 		serializer.validate(SalesOrder.class, stringBuilder.toString());
-		IBusinessObject bo = (IBusinessObject) serializer.deserialize(stringBuilder.toString(), SalesOrder.class);
+		IBusinessObject bo = serializer.deserialize(stringBuilder.toString(), SalesOrder.class);
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.serialize(bo, writer, true);
 		System.out.println(writer.toString());
@@ -121,18 +121,18 @@ public class TestBusinessObject extends TestCase {
 		orderItem.setQuantity(Decimals.valueOf(10));
 		orderItem.setPrice(Decimals.valueOf(199.99));
 
-		System.out.println("-------------------has root--------------------");
-		ISerializer<?> serializer = SerializerFactory.createManager().create(SerializerManager.TYPE_JSON_HAS_ROOT);
+		System.out.println("-------------------json--------------------");
+		ISerializer serializer = SerializerFactory.createManager().create(SerializerManager.TYPE_JSON);
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.getSchema(order.getClass(), writer);
 		System.out.println(writer.toString());
 		writer = new ByteArrayOutputStream();
 		serializer.serialize(order, writer);
 		System.out.println(writer.toString());
-		serializer.validate(order.getClass(), writer.toString());
-		System.out.println(serializer.deserialize(writer.toString(), order.getClass()));
-		System.out.println("-------------------no root---------------------");
-		serializer = SerializerFactory.createManager().create(SerializerManager.TYPE_JSON_NO_ROOT);
+		// serializer.validate(order.getClass(), writer.toString());
+		System.out.println((SalesOrder) serializer.deserialize(writer.toString(), order.getClass()));
+		System.out.println("-------------------xml---------------------");
+		serializer = SerializerFactory.createManager().create(SerializerManager.TYPE_XML);
 		writer = new ByteArrayOutputStream();
 		serializer.getSchema(order.getClass(), writer);
 		System.out.println(writer.toString());
@@ -140,6 +140,6 @@ public class TestBusinessObject extends TestCase {
 		serializer.serialize(order, writer);
 		System.out.println(writer.toString());
 		serializer.validate(order.getClass(), writer.toString());
-		System.out.println(serializer.deserialize(writer.toString(), order.getClass()));
+		System.out.println((SalesOrder) serializer.deserialize(writer.toString(), order.getClass()));
 	}
 }

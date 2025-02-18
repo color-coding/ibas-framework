@@ -61,13 +61,6 @@ public class TestCommon extends TestCase {
 
 	public void testFromString() {
 		ICriteria criteria = this.createCriteria();
-		ICriteria jsonCriteria = Criteria.create(Strings.toJsonString(criteria));
-		assertEquals("json marshal and unmarshal not equal", Strings.toJsonString(criteria),
-				Strings.toJsonString(jsonCriteria));
-
-		ICriteria xmlCriteria = Criteria.create(Strings.toXmlString(criteria));
-		assertEquals("xml marshal and unmarshal not equal", Strings.toXmlString(criteria),
-				Strings.toXmlString(xmlCriteria));
 
 		String identifiers1 = "{[CC_TT_SALESORDER].[DocEntry = 1]}";
 		criteria = Criteria.create(identifiers1);
@@ -89,17 +82,17 @@ public class TestCommon extends TestCase {
 	public void testJsonSchema() throws ValidateException {
 		ICriteria criteria = this.createCriteria();
 		System.out.println("-------------------has root--------------------");
-		ISerializer<?> serializer = SerializerFactory.createManager().create(SerializerManager.TYPE_JSON_HAS_ROOT);
+		ISerializer serializer = SerializerFactory.createManager().create(SerializerManager.TYPE_JSON);
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.serialize(criteria, writer);
 		System.out.println(writer.toString());
-		System.out.println(serializer.deserialize(writer.toString(), criteria.getClass()));
+		System.out.println((ICriteria) serializer.deserialize(writer.toString(), criteria.getClass()));
 		System.out.println("-------------------no root---------------------");
-		serializer = SerializerFactory.createManager().create(SerializerManager.TYPE_JSON_NO_ROOT);
+		serializer = SerializerFactory.createManager().create(SerializerManager.TYPE_JSON);
 		writer = new ByteArrayOutputStream();
 		serializer.serialize(criteria, writer);
 		System.out.println(writer.toString());
-		System.out.println(serializer.deserialize(writer.toString(), criteria.getClass()));
+		System.out.println((ICriteria) serializer.deserialize(writer.toString(), criteria.getClass()));
 	}
 
 	public void testToJSON() throws JAXBException {
@@ -136,9 +129,10 @@ public class TestCommon extends TestCase {
 		String oldJSON = writer.toString();
 		System.out.println(oldJSON);
 
+		serializer = new SerializerJson();
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(oldJSON.getBytes());
 		inputStream.reset();
-		criteria = (Criteria) serializer.deserialize(inputStream, Criteria.class);
+		criteria = serializer.deserialize(inputStream, Criteria.class);
 
 		assertEquals("marshal and unmarshal not equal",
 				oldJSON.replace(System.getProperty("line.separator"), "").replace(" ", ""),

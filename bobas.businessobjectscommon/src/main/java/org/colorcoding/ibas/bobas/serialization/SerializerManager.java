@@ -13,11 +13,11 @@ public class SerializerManager {
 	 */
 	public final static String TYPE_JSON = SerializerFactory.TYPE_JSON;
 
-	public final ISerializer<?> create() {
+	public final ISerializer create() {
 		return this.create(null);
 	}
 
-	public ISerializer<?> create(String sign) {
+	public ISerializer create(String sign) {
 		if (TYPE_XML.equalsIgnoreCase(sign) || sign == null || sign.isEmpty()) {
 			// 默认使用xml方式
 			return new SerializerXml();

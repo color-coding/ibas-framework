@@ -42,7 +42,7 @@ import org.xml.sax.SAXException;
  * 
  * 继承实现时，注意序列化和反序列化监听
  */
-public class SerializerXml extends Serializer<Schema> {
+public class SerializerXml extends Serializer {
 
 	@Override
 	public void serialize(Object object, OutputStream outputStream, boolean formated, Class<?>... types) {
@@ -63,17 +63,17 @@ public class SerializerXml extends Serializer<Schema> {
 	}
 
 	@Override
-	public Object deserialize(InputSource inputSource, Class<?>... types) throws SerializationException {
+	@SuppressWarnings("unchecked")
+	public <T> T deserialize(InputSource inputSource, Class<?>... types) throws SerializationException {
 		try {
 			JAXBContext context = JAXBContext.newInstance(types);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
-			return unmarshaller.unmarshal(inputSource);
+			return (T) unmarshaller.unmarshal(inputSource);
 		} catch (JAXBException e) {
 			throw new SerializationException(e);
 		}
 	}
 
-	@Override
 	public void validate(Schema schema, InputStream data) throws ValidateException {
 		try {
 			Validator validator = schema.newValidator();
@@ -85,6 +85,10 @@ public class SerializerXml extends Serializer<Schema> {
 	}
 
 	@Override
+	public void validate(Class<?> type, InputStream data) throws ValidateException {
+		this.validate(this.getSchema(type), data);
+	}
+
 	public Schema getSchema(Class<?> type) throws SerializationException {
 		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 			this.getSchema(type, outputStream);
@@ -120,8 +124,8 @@ public class SerializerXml extends Serializer<Schema> {
 			transformer.setOutputProperty(OutputKeys.METHOD, "xml");
 			transformer.setOutputProperty(OutputKeys.ENCODING, XML_FILE_ENCODING);
 			transformer.setOutputProperty(OutputKeys.INDENT, XML_FILE_INDENT);
-			boolean formatted = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_FORMATTED_OUTPUT, false);
-			if (formatted) {
+
+			if (MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_FORMATTED_OUTPUT, false)) {
 				transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 			}
 			transformer.transform(new DOMSource(document), new StreamResult(outputStream));
@@ -181,20 +185,12 @@ class SchemaWriter {
 		String typeName = this.knownTypes.get(element.getType().getName());
 		if (typeName != null) {
 			// 已知类型
-			// type="xs:string"
 			dom.setAttribute("name", element.getName());
 			dom.setAttribute("minOccurs", "0");
 			dom.setAttribute("nillable", "true");
 			dom.setAttribute("type", typeName);
 		} else if (element.getType().isEnum()) {
 			// 枚举类型
-			// <xs:simpleType>
-			// <xs:restriction base="xs:string">
-			// <xs:enumeration value="Audi"/>
-			// <xs:enumeration value="Golf"/>
-			// <xs:enumeration value="BMW"/>
-			// </xs:restriction>
-			// </xs:simpleType>
 			dom.setAttribute("name", element.getName());
 			dom.setAttribute("minOccurs", "0");
 			dom.setAttribute("nillable", "true");
@@ -237,13 +233,15 @@ class SchemaWriter {
 			domItem.setAttribute("name", element.getName());
 			domItem.setAttribute("minOccurs", "0");
 			domItem.setAttribute("maxOccurs", "unbounded");
-			org.w3c.dom.Element domItemType = this.document.createElement("xs:complexType");
-			org.w3c.dom.Element domItemSequence = this.document.createElement("xs:sequence");
-			for (Element item : element.getChilds()) {
-				this.write(domItemSequence, item);
+			if (!element.getChilds().isEmpty()) {
+				org.w3c.dom.Element domItemType = this.document.createElement("xs:complexType");
+				org.w3c.dom.Element domItemSequence = this.document.createElement("xs:sequence");
+				for (Element item : element.getChilds()) {
+					this.write(domItemSequence, item);
+				}
+				domItemType.appendChild(domItemSequence);
+				domItem.appendChild(domItemType);
 			}
-			domItemType.appendChild(domItemSequence);
-			domItem.appendChild(domItemType);
 			domSequence.appendChild(domItem);
 			domType.appendChild(domSequence);
 			dom.appendChild(domType);
@@ -251,13 +249,15 @@ class SchemaWriter {
 			dom.setAttribute("name", element.getName());
 			dom.setAttribute("minOccurs", "0");
 			dom.setAttribute("maxOccurs", "unbounded");
-			org.w3c.dom.Element domType = this.document.createElement("xs:complexType");
-			org.w3c.dom.Element domSequence = this.document.createElement("xs:sequence");
-			for (Element item : element.getChilds()) {
-				this.write(domSequence, item);
+			if (!element.getChilds().isEmpty()) {
+				org.w3c.dom.Element domType = this.document.createElement("xs:complexType");
+				org.w3c.dom.Element domSequence = this.document.createElement("xs:sequence");
+				for (Element item : element.getChilds()) {
+					this.write(domSequence, item);
+				}
+				domType.appendChild(domSequence);
+				dom.appendChild(domType);
 			}
-			domType.appendChild(domSequence);
-			dom.appendChild(domType);
 		}
 		domParent.appendChild(dom);
 	}

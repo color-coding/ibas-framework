@@ -1,20 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE DomainModel>
 <Domain Name="TrainingTesting" ShortName="TT">
-  <Model Name="BONumbering" Description="业务对象序号" ModelType="Unspecified" Mapped="${Company}_SYS_ONNM">
-    <Property Name="ObjectCode" Description="对象编码" DataType="Alphanumeric" DataSubType="Default" EditSize="30" Mapped="ObjectCode" PrimaryKey="Yes"/>
-    <Property Name="DocumentSubType" Description="凭证子类型" DataType="Alphanumeric" DataSubType="Default" EditSize="2" Mapped="DocSubType" PrimaryKey="Yes"/>
-    <Property Name="AutoKey" Description="自动序号" DataType="Numeric" DataSubType="Default" EditSize="8" Mapped="AutoKey"/>
-    <Property Name="DefaultSeries" Description="默认序列" DataType="Numeric" DataSubType="Default" EditSize="6" Mapped="DefSeries"/>
-  </Model>
-  <Model Name="BOSeriesNumbering" Description="业务对象系列序号" ModelType="Unspecified" Mapped="${Company}_SYS_NNM1">
-    <Property Name="ObjectCode" Description="对象编码" DataType="Alphanumeric" DataSubType="Default" EditSize="30" Mapped="ObjectCode" PrimaryKey="Yes"/>
-    <Property Name="Series" Description="序列" DataType="Numeric" DataSubType="Default" EditSize="6" Mapped="Series" PrimaryKey="Yes"/>
-    <Property Name="SeriesName" Description="序列名称" DataType="Alphanumeric" DataSubType="Default" EditSize="8" Mapped="SeriesName"/>
-    <Property Name="NextNumber" Description="下一个序号" DataType="Numeric" DataSubType="Default" EditSize="8" Mapped="NextNum"/>
-    <Property Name="Locked" Description="已锁定" DataType="Alphanumeric" DataSubType="Default" EditSize="1" DeclaredType="emYesNo" Mapped="Locked"/>
-    <Property Name="Template" Description="模板" DataType="Alphanumeric" DataSubType="Default" EditSize="20" Mapped="Template"/>
-  </Model>
   <Model Name="Materials" Description="物料主数据" ModelType="Simple" Mapped="CC_TT_OITM">
     <Property Name="ItemCode" Description="物料编号" DataType="Alphanumeric" DataSubType="Default" EditSize="20" Mapped="ItemCode" PrimaryKey="Yes" UniqueKey="Yes"/>
     <Property Name="ItemDescription" Description="物料描述" DataType="Alphanumeric" DataSubType="Default" EditSize="100" Mapped="ItemName"/>

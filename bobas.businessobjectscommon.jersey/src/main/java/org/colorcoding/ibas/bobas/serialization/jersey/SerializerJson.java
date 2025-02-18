@@ -23,7 +23,6 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -32,9 +31,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
 
-public class SerializerJson extends Serializer<JsonSchema> {
+public class SerializerJson extends Serializer {
 
 	private boolean includeJsonRoot;
 
@@ -85,7 +83,8 @@ public class SerializerJson extends Serializer<JsonSchema> {
 	}
 
 	@Override
-	public Object deserialize(InputStream ipnInputStream, Class<?>... types) throws SerializationException {
+	@SuppressWarnings("unchecked")
+	public <T> T deserialize(InputStream ipnInputStream, Class<?>... types) throws SerializationException {
 		try {
 			ObjectMapper objectMapper = JsonMapper.builder().enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME)
 					// .enable(SerializationFeature.WRAP_ROOT_VALUE)
@@ -100,46 +99,34 @@ public class SerializerJson extends Serializer<JsonSchema> {
 			objectMapper.registerModule(new JaxbAnnotationModule());
 			objectMapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector(TypeFactory.defaultInstance()));
 
-			return objectMapper.readValue(ipnInputStream, types[0]);
+			return (T) objectMapper.readValue(ipnInputStream, types[0]);
 		} catch (IOException e) {
 			throw new SerializationException(e);
 		}
 	}
 
 	@Override
-	public Object deserialize(InputSource inputSource, Class<?>... types) throws SerializationException {
+	public <T> T deserialize(InputSource inputSource, Class<?>... types) throws SerializationException {
 		return this.deserialize(inputSource.getByteStream(), types);
 	}
 
 	@Override
 	public void getSchema(Class<?> type, OutputStream outputStream) throws SerializationException {
-		try {
-			JsonFactory jsonFactory = new JsonFactory();
-			JsonGenerator jsonGenerator = jsonFactory.createGenerator(outputStream);
-
+		JsonFactory jsonFactory = new JsonFactory();
+		try (JsonGenerator jsonGenerator = jsonFactory.createGenerator(outputStream)) {
 			SchemaWriter schemaWriter = new SchemaWriter();
 			schemaWriter.jsonGenerator = jsonGenerator;
 			schemaWriter.element = new Analyzer().analyse(type);
 			schemaWriter.write();
 
 			jsonGenerator.flush();
-			jsonGenerator.close();
 		} catch (IOException e) {
 			throw new SerializationException(e);
 		}
 	}
 
 	@Override
-	public JsonSchema getSchema(Class<?> type) throws SerializationException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void validate(JsonSchema schema, InputStream data) throws ValidateException {
-		throw new UnsupportedOperationException();
-	}
-
-	public void validate(JsonSchema schema, JsonNode data) throws ValidateException {
+	public void validate(Class<?> type, InputStream data) throws ValidateException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -168,7 +155,6 @@ class SchemaWriter {
 		this.knownTypes.put("java.lang.String", "string");
 		this.knownTypes.put("java.lang.Character", "string");
 		this.knownTypes.put("java.util.Date", "string");
-		this.knownTypes.put("org.colorcoding.ibas.bobas.data.Decimal", "number");
 	}
 
 	public JsonGenerator jsonGenerator;
@@ -181,16 +167,9 @@ class SchemaWriter {
 		this.jsonGenerator.writeStringField("type", "object");
 		this.jsonGenerator.writeFieldName("properties");
 		this.jsonGenerator.writeStartObject();
-		this.jsonGenerator.writeFieldName(this.element.getName());
-		this.jsonGenerator.writeStartObject();
-		this.jsonGenerator.writeStringField("type", "object");
-		this.jsonGenerator.writeFieldName("properties");
-		this.jsonGenerator.writeStartObject();
 		for (Element item : this.element.getChilds()) {
 			this.write(this.jsonGenerator, item);
 		}
-		this.jsonGenerator.writeEndObject();
-		this.jsonGenerator.writeEndObject();
 		this.jsonGenerator.writeEndObject();
 		this.jsonGenerator.writeEndObject();
 	}

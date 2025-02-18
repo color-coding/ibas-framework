@@ -120,7 +120,7 @@ public class TestCore extends TestCase {
 		orderItem.setItemCode("A00002");
 		orderItem.setQuantity(BigDecimal.valueOf(10));
 		orderItem.setPrice(BigDecimal.valueOf(199.99));
-		ISerializer<?> serializer = new SerializerXml();
+		ISerializer serializer = new SerializerXml();
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.serialize(order, writer);
 		System.out.println(writer.toString());

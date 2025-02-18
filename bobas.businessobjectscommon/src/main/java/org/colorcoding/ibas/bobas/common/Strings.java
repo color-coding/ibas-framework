@@ -257,7 +257,7 @@ public class Strings {
 
 	public static String toJsonString(Object data) {
 		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
-			ISerializer<?> serializer = SerializerFactory.createManager().create(SerializerFactory.TYPE_JSON);
+			ISerializer serializer = SerializerFactory.createManager().create(SerializerFactory.TYPE_JSON);
 			serializer.serialize(data, writer);
 			return writer.toString();
 		} catch (IOException e) {
@@ -267,7 +267,7 @@ public class Strings {
 
 	public static String toXmlString(Object data) {
 		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
-			ISerializer<?> serializer = SerializerFactory.createManager().create(SerializerFactory.TYPE_XML);
+			ISerializer serializer = SerializerFactory.createManager().create(SerializerFactory.TYPE_XML);
 			serializer.serialize(data, writer);
 			return writer.toString();
 		} catch (IOException e) {

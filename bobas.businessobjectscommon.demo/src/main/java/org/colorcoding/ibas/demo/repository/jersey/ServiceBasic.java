@@ -13,26 +13,24 @@ import javax.ws.rs.core.MediaType;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.Criteria;
+import org.colorcoding.ibas.bobas.common.DateTimes;
+import org.colorcoding.ibas.bobas.common.Decimals;
 import org.colorcoding.ibas.bobas.common.IChildCriteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ISort;
-import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.common.SortType;
-import org.colorcoding.ibas.bobas.common.SqlQuery;
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.data.DataTable;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
-import org.colorcoding.ibas.bobas.data.measurement.Time;
-import org.colorcoding.ibas.bobas.data.measurement.emTimeUnit;
+import org.colorcoding.ibas.bobas.db.SqlStatement;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.mapping.DbFieldType;
-import org.colorcoding.ibas.bobas.repository.BORepository4DbReadonly;
-import org.colorcoding.ibas.bobas.repository.IBORepository4DbReadonly;
-import org.colorcoding.ibas.bobas.test.bo.ISalesOrderItem;
-import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
+import org.colorcoding.ibas.bobas.test.demo.SalesOrder;
+import org.colorcoding.ibas.bobas.test.demo.SalesOrderItem;
+import org.colorcoding.ibas.bobas.test.repository.BORepositoryTest;
 
 @Path("")
 public class ServiceBasic {
@@ -62,7 +60,7 @@ public class ServiceBasic {
 		System.out.println(System.getProperty("java.ext.dirs").replace(";", "\n"));
 		System.out.println("user.dir");
 		System.out.println(System.getProperty("user.dir").replace(";", "\n"));
-		System.out.println(criteria.toString("xml"));
+		System.out.println(Strings.toJsonString(criteria));
 		System.out.println(I18N.prop("msg_bobas_operation_successful"));
 		return "ok.";
 	}
@@ -117,40 +115,39 @@ public class ServiceBasic {
 	@Path("fetchSalesOrder")
 	public OperationResult<SalesOrder> fetchSalesOrder(Criteria criteria, @QueryParam("token") String token) {
 		System.out.println(String.format("fetch by %s.", token));
-		System.out.println(criteria.toString("xml"));
+		System.out.println(Strings.toXmlString(criteria));
 
 		OperationResult<SalesOrder> operationResult = new OperationResult<SalesOrder>();
 		SalesOrder order = new SalesOrder();
 		order.setDocEntry(1);
 		order.setCustomerCode("C00001");
-		order.setDeliveryDate(DateTime.getToday());
+		order.setDeliveryDate(DateTimes.today());
 		order.setDocumentStatus(emDocumentStatus.RELEASED);
 		order.setDocumentTotal(new BigDecimal("99.99"));
-		order.setCycle(new Time(1.05, emTimeUnit.HOUR));
 
-		order.getUserFields().register("U_OrderType", DbFieldType.ALPHANUMERIC);
-		order.getUserFields().register("U_OrderId", DbFieldType.NUMERIC);
-		order.getUserFields().register("U_OrderDate", DbFieldType.DATE);
-		order.getUserFields().register("U_OrderTotal", DbFieldType.DECIMAL);
+		order.getUserFields().register("U_OrderType", String.class);
+		order.getUserFields().register("U_OrderId", Integer.class);
+		order.getUserFields().register("U_OrderDate", DateTime.class);
+		order.getUserFields().register("U_OrderTotal", BigDecimal.class);
 		order.getUserFields().get("U_OrderType").setValue("S0000");
 		order.getUserFields().get("U_OrderId").setValue(5768);
-		order.getUserFields().get("U_OrderDate").setValue(DateTime.getToday());
+		order.getUserFields().get("U_OrderDate").setValue(DateTimes.today());
 		order.getUserFields().get("U_OrderTotal").setValue(new BigDecimal("999.888"));
 		order.setCanceled(emYesNo.YES);
 		order.setDocumentStatus(emDocumentStatus.CLOSED);
 		order.setStatus(emBOStatus.CLOSED);
-		ISalesOrderItem orderItem = order.getSalesOrderItems().create();
+		SalesOrderItem orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00001");
 		orderItem.setQuantity(new BigDecimal(10));
 		orderItem.setPrice(BigDecimal.valueOf(99.99));
 		orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00002");
-		orderItem.setQuantity(10);
-		orderItem.setPrice(199.99);
+		orderItem.setQuantity(Decimals.valueOf(10));
+		orderItem.setPrice(Decimals.valueOf(199.99));
 		orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00002");
-		orderItem.setQuantity(10);
-		orderItem.setPrice(199.99);
+		orderItem.setQuantity(Decimals.valueOf(10));
+		orderItem.setPrice(Decimals.valueOf(199.99));
 
 		// order.setDocumentUser(new User());
 		// 此处json序列化存在问题，可能是jersey导致
@@ -165,7 +162,7 @@ public class ServiceBasic {
 	@Path("saveSalesOrder")
 	public String saveSalesOrder(SalesOrder bo, @QueryParam("token") String token) {
 		System.out.println(String.format("save by %s.", token));
-		System.out.println(bo.toString("xml"));
+		System.out.println(Strings.toXmlString(bo));
 		return "ok";
 	}
 
@@ -177,10 +174,10 @@ public class ServiceBasic {
 		OperationResult<DataTable> operationResult = new OperationResult<DataTable>();
 		try {
 			System.out.println(String.format("query by %s.", token));
-			IBORepository4DbReadonly boRepository = new BORepository4DbReadonly("Master");
-			ISqlQuery sqlQuery = new SqlQuery();
-			sqlQuery.setQueryString("select * FROM CC_TT_ORDR");
-			operationResult.copy(boRepository.query(sqlQuery));
+			BORepositoryTest boRepository = new BORepositoryTest();
+			SqlStatement sqlQuery = new SqlStatement();
+			sqlQuery.setContent("select * FROM CC_TT_ORDR");
+			// operationResult.copy(boRepository.query(sqlQuery));
 		} catch (Exception e) {
 			operationResult.setError(e);
 		}

@@ -11,10 +11,8 @@ import org.xml.sax.SAXException;
  * 序列化者
  * 
  * @author Niuren.Zhu
- *
- * @param <S> schema类型
  */
-public interface ISerializer<S> {
+public interface ISerializer {
 
 	/**
 	 * 深度克隆对象
@@ -50,38 +48,11 @@ public interface ISerializer<S> {
 	/**
 	 * 获取schema
 	 * 
-	 * @param type 目标类型
-	 * @return
-	 * @throws SerializationException
-	 */
-	S getSchema(Class<?> type) throws SerializationException;
-
-	/**
-	 * 获取schema
-	 * 
 	 * @param type         目标类型
 	 * @param outputStream 输出目标
 	 * @throws SerializationException
 	 */
 	void getSchema(Class<?> type, OutputStream outputStream) throws SerializationException;
-
-	/**
-	 * 验证数据
-	 * 
-	 * @param schema 数据架构
-	 * @param data   数据
-	 * @throws SAXException
-	 */
-	void validate(S schema, InputStream data) throws ValidateException;
-
-	/**
-	 * 验证数据
-	 * 
-	 * @param schema 数据架构
-	 * @param data   数据
-	 * @throws SAXException
-	 */
-	void validate(S schema, String data) throws ValidateException;
 
 	/**
 	 * 验证数据
@@ -108,7 +79,7 @@ public interface ISerializer<S> {
 	 * @param types 其他已知类型
 	 * @return 新对象实例
 	 */
-	Object deserialize(String data, Class<?>... types) throws SerializationException;
+	<T> T deserialize(String data, Class<?>... types) throws SerializationException;
 
 	/**
 	 * 反序列化
@@ -117,7 +88,7 @@ public interface ISerializer<S> {
 	 * @param types       其他已知类型
 	 * @return 新对象实例
 	 */
-	Object deserialize(InputStream inputStream, Class<?>... types) throws SerializationException;
+	<T> T deserialize(InputStream inputStream, Class<?>... types) throws SerializationException;
 
 	/**
 	 * 反序列化
@@ -126,5 +97,5 @@ public interface ISerializer<S> {
 	 * @param types       其他已知类型
 	 * @return 新对象实例
 	 */
-	Object deserialize(InputSource inputSource, Class<?>... types) throws SerializationException;
+	<T> T deserialize(InputSource inputSource, Class<?>... types) throws SerializationException;
 }
