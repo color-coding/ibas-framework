@@ -13,7 +13,7 @@ import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
-import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
+import org.colorcoding.ibas.bobas.serialization.SerializationFactory;
 import org.colorcoding.ibas.bobas.serialization.ValidateException;
 import org.colorcoding.ibas.bobas.serialization.jersey.SerializerJson;
 import org.colorcoding.ibas.bobas.serialization.jersey.SerializerManager;
@@ -50,12 +50,12 @@ public class TestBusinessObject extends TestCase {
 		orderItem.setQuantity(Decimals.valueOf(10));
 		orderItem.setPrice(Decimals.valueOf(199.99));
 
-		ISerializer serializer = SerializerFactory.createManager().create("json");
+		ISerializer serializer = SerializationFactory.createManager().create("json");
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.serialize(order, writer, true);
 		System.out.println(writer.toString());
 		order = serializer.deserialize(writer.toString(), order.getClass());
-		serializer = SerializerFactory.createManager().create("xml");
+		serializer = SerializationFactory.createManager().create("xml");
 		writer = new ByteArrayOutputStream();
 		serializer.serialize(order, writer, true);
 		System.out.println(writer.toString());
@@ -122,7 +122,7 @@ public class TestBusinessObject extends TestCase {
 		orderItem.setPrice(Decimals.valueOf(199.99));
 
 		System.out.println("-------------------json--------------------");
-		ISerializer serializer = SerializerFactory.createManager().create(SerializerManager.TYPE_JSON);
+		ISerializer serializer = SerializationFactory.createManager().create(SerializerManager.TYPE_JSON);
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.getSchema(order.getClass(), writer);
 		System.out.println(writer.toString());
@@ -132,7 +132,7 @@ public class TestBusinessObject extends TestCase {
 		// serializer.validate(order.getClass(), writer.toString());
 		System.out.println((SalesOrder) serializer.deserialize(writer.toString(), order.getClass()));
 		System.out.println("-------------------xml---------------------");
-		serializer = SerializerFactory.createManager().create(SerializerManager.TYPE_XML);
+		serializer = SerializationFactory.createManager().create(SerializerManager.TYPE_XML);
 		writer = new ByteArrayOutputStream();
 		serializer.getSchema(order.getClass(), writer);
 		System.out.println(writer.toString());

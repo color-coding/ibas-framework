@@ -23,14 +23,14 @@ import org.colorcoding.ibas.bobas.logging.Logger;
  */
 public class Configuration {
 
-	private volatile static IConfigurationManager instance;
+	private volatile static ConfigurationManager instance;
 
 	/**
 	 * 创建实例，使用默认位置配置
 	 * 
 	 * @return
 	 */
-	public static IConfigurationManager create() {
+	public static ConfigurationManager create() {
 		if (instance == null) {
 			synchronized (Configuration.class) {
 				if (instance == null) {
@@ -65,7 +65,7 @@ public class Configuration {
 	 * @param configFile 配置文件路径
 	 * @return
 	 */
-	public static IConfigurationManager create(String configFile) throws Exception {
+	public static ConfigurationManager create(String configFile) throws Exception {
 		synchronized (Configuration.class) {
 			ConfigurationManagerFile manager = new ConfigurationManagerFile();
 			manager.setConfigFile(configFile);
@@ -185,7 +185,6 @@ public class Configuration {
 	 * 配置项目-工作目录
 	 */
 	public final static String CONFIG_ITEM_WORK_FOLDER = "WorkFolder";
-	private volatile static String workFolder = null;
 
 	/**
 	 * 获取工作目录
@@ -193,19 +192,17 @@ public class Configuration {
 	 * @return
 	 */
 	public static String getWorkFolder() {
-		if (workFolder == null) {
-			String path = getConfigValue(CONFIG_ITEM_WORK_FOLDER);
-			if (path == null || path.isEmpty()) {
-				// 没有配置工作目录
-				path = getStartupFolder();
-			}
-			File folder = new File(path);
-			if (!folder.exists()) {
-				folder.mkdirs();
-			}
-			workFolder = folder.getPath();
+		String path = getConfigValue(CONFIG_ITEM_WORK_FOLDER);
+		// 没有配置工作目录
+		if (Strings.isNullOrEmpty(path)) {
+			path = getStartupFolder();
+			create().addConfigValue(CONFIG_ITEM_WORK_FOLDER, path);
 		}
-		return workFolder;
+		File folder = new File(path);
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
+		return folder.getPath();
 	}
 
 	/**

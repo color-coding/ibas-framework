@@ -2,6 +2,7 @@ package org.colorcoding.ibas.bobas.serialization.jersey.test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import javax.xml.bind.JAXBException;
 
@@ -20,7 +21,7 @@ import org.colorcoding.ibas.bobas.data.IDataTableColumn;
 import org.colorcoding.ibas.bobas.data.IDataTableRow;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
-import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
+import org.colorcoding.ibas.bobas.serialization.SerializationFactory;
 import org.colorcoding.ibas.bobas.serialization.ValidateException;
 import org.colorcoding.ibas.bobas.serialization.jersey.SerializerJson;
 import org.colorcoding.ibas.bobas.serialization.jersey.SerializerManager;
@@ -82,13 +83,13 @@ public class TestCommon extends TestCase {
 	public void testJsonSchema() throws ValidateException {
 		ICriteria criteria = this.createCriteria();
 		System.out.println("-------------------has root--------------------");
-		ISerializer serializer = SerializerFactory.createManager().create(SerializerManager.TYPE_JSON);
+		ISerializer serializer = SerializationFactory.createManager().create(SerializerManager.TYPE_JSON);
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.serialize(criteria, writer);
 		System.out.println(writer.toString());
 		System.out.println((ICriteria) serializer.deserialize(writer.toString(), criteria.getClass()));
 		System.out.println("-------------------no root---------------------");
-		serializer = SerializerFactory.createManager().create(SerializerManager.TYPE_JSON);
+		serializer = SerializationFactory.createManager().create(SerializerManager.TYPE_JSON);
 		writer = new ByteArrayOutputStream();
 		serializer.serialize(criteria, writer);
 		System.out.println(writer.toString());
@@ -140,8 +141,9 @@ public class TestCommon extends TestCase {
 
 	}
 
-	public void testOperationRuslut() {
+	public void testOperationRuslut() throws IOException {
 		OperationResult<DataTable> operationResult = new OperationResult<>();
+		operationResult.setResultCode(1);
 		DataTable dataTable = new DataTable();
 		IDataTableColumn column = dataTable.getColumns().create();
 		column.setName("Test");
@@ -155,9 +157,17 @@ public class TestCommon extends TestCase {
 		serializer.setIncludeJsonRoot(true);
 		serializer.serialize(operationResult, writer, OperationResult.class, DataTable.class);
 		System.out.println(writer.toString());
+		operationResult = serializer.deserialize(writer.toString(), OperationResult.class, DataTable.class);
+		System.out.println(operationResult);
+		writer.close();
+
+		writer = new ByteArrayOutputStream();
 		serializer = new SerializerJson();
 		serializer.setIncludeJsonRoot(false);
-		Object data = serializer.deserialize(writer.toString(), OperationResult.class, DataTable.class);
-		System.out.println(data);
+		serializer.serialize(operationResult, writer, OperationResult.class, DataTable.class);
+		System.out.println(writer.toString());
+		operationResult = serializer.deserialize(writer.toString(), OperationResult.class, DataTable.class);
+		System.out.println(operationResult);
+		writer.close();
 	}
 }

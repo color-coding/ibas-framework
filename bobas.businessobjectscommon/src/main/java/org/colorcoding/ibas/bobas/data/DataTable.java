@@ -50,7 +50,7 @@ public class DataTable extends Serializable implements IDataTable {
 
 	@XmlElementWrapper(name = "Columns")
 	@XmlElement(name = "Column", type = DataTableColumn.class, required = true)
-	private IDataTableColumns columns;
+	private DataTableColumns columns;
 
 	@Override
 	public IDataTableColumns getColumns() {
@@ -62,7 +62,7 @@ public class DataTable extends Serializable implements IDataTable {
 
 	@XmlElementWrapper(name = "Rows")
 	@XmlElement(name = "Row", type = DataTableRow.class, required = true)
-	private IDataTableRows rows;
+	private DataTableRows rows;
 
 	@Override
 	public IDataTableRows getRows() {

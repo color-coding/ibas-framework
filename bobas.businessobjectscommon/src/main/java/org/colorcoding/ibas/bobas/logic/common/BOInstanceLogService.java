@@ -21,7 +21,7 @@ import org.colorcoding.ibas.bobas.logic.BusinessLogic;
 import org.colorcoding.ibas.bobas.logic.BusinessLogicException;
 import org.colorcoding.ibas.bobas.logic.LogicContract;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
-import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
+import org.colorcoding.ibas.bobas.serialization.SerializationFactory;
 
 @LogicContract(IBOInstanceLogContract.class)
 public class BOInstanceLogService extends BusinessLogic<IBOInstanceLogContract, BOLogst> {
@@ -100,7 +100,7 @@ public class BOInstanceLogService extends BusinessLogic<IBOInstanceLogContract, 
 		boLogst.setModifyUser(this.getUser().getId());
 		boLogst.setTransationId(this.getTransaction().getId());
 
-		ISerializer serializer = SerializerFactory.createManager().create(SerializerFactory.TYPE_JSON);
+		ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_JSON);
 		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
 			serializer.serialize(contract.getHost(), writer);
 			boLogst.setContent(writer.toString());
@@ -121,7 +121,7 @@ public class BOInstanceLogService extends BusinessLogic<IBOInstanceLogContract, 
 				boLogst.setModifyUser(this.getUser().getId());
 				boLogst.setTransationId(this.getTransaction().getId());
 
-				ISerializer serializer = SerializerFactory.createManager().create(SerializerFactory.TYPE_JSON);
+				ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_JSON);
 				try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
 					serializer.serialize(contract.getHost(), writer);
 					boLogst.setContent(writer.toString());

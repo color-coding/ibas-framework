@@ -9,7 +9,7 @@ import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
  * @author Niuren.Zhu
  *
  */
-public class SerializerFactory {
+public class SerializationFactory {
 
 	/**
 	 * 输出字符串类型，XML
@@ -20,14 +20,14 @@ public class SerializerFactory {
 	 */
 	public final static String TYPE_JSON = "json";
 
-	private SerializerFactory() {
+	private SerializationFactory() {
 	}
 
 	private volatile static SerializerManager instance;
 
 	public synchronized static SerializerManager createManager() {
 		if (instance == null) {
-			synchronized (SerializerFactory.class) {
+			synchronized (SerializationFactory.class) {
 				if (instance == null) {
 					_SerializerFactory factory = new _SerializerFactory();
 					instance = factory.create();

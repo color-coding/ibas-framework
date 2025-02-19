@@ -28,8 +28,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 public class SerializerJson extends Serializer {
@@ -44,6 +42,16 @@ public class SerializerJson extends Serializer {
 		this.includeJsonRoot = includeJsonRoot;
 	}
 
+	private boolean orderProperties;
+
+	protected final boolean isOrderProperties() {
+		return orderProperties;
+	}
+
+	protected final void setOrderProperties(boolean orderProperties) {
+		this.orderProperties = orderProperties;
+	}
+
 	@Override
 	public void serialize(Object object, OutputStream outputStream, boolean formated, Class<?>... types) {
 		try {
@@ -56,25 +64,21 @@ public class SerializerJson extends Serializer {
 			ObjectMapper objectMapper = JsonMapper.builder()
 					// 数组外属性名称
 					.enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME)
-					// 属性排序
-					// .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
 					// 含头对象名称
-					// .enable(SerializationFeature.WRAP_ROOT_VALUE)
-					.enable(formated ? SerializationFeature.INDENT_OUTPUT : null)
+					.configure(SerializationFeature.WRAP_ROOT_VALUE, this.isIncludeJsonRoot())
+					// 属性排序
+					.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, this.isOrderProperties())
+					// 格式化输出
+					.configure(SerializationFeature.INDENT_OUTPUT, formated)
+					// 忽略空值
 					.serializationInclusion(JsonInclude.Include.NON_NULL)
-					.serializationInclusion(JsonInclude.Include.NON_EMPTY).build();
-
-			SimpleModule module = new SimpleModule();
-			module.setSerializerModifier(new AllTypesSerializerModifier());
-			objectMapper.registerModule(module);
-
+					.serializationInclusion(JsonInclude.Include.NON_EMPTY)
+					// 构建
+					.build();
+			// 注册自定义内容
+			objectMapper.registerModule(new SimpleModule().setSerializerModifier(new AllTypesSerializerModifier()));
+			// 注册对JAXB注解支持
 			objectMapper.registerModule(new JaxbAnnotationModule());
-
-			objectMapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector(TypeFactory.defaultInstance()));
-
-			// objectMapper.setSerializerFactory(
-			// objectMapper.getSerializerFactory().withSerializerModifier(new
-			// TypePropertySerializerModifier()));
 
 			objectMapper.writeValue(outputStream, object);
 		} catch (IOException e) {
@@ -86,18 +90,27 @@ public class SerializerJson extends Serializer {
 	@SuppressWarnings("unchecked")
 	public <T> T deserialize(InputStream ipnInputStream, Class<?>... types) throws SerializationException {
 		try {
-			ObjectMapper objectMapper = JsonMapper.builder().enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME)
-					// .enable(SerializationFeature.WRAP_ROOT_VALUE)
+			ObjectMapper objectMapper = JsonMapper.builder()
+					// 数组外属性名称
+					.enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME)
+					// 含头对象名称
+					.configure(SerializationFeature.WRAP_ROOT_VALUE, this.isIncludeJsonRoot())
+					// 属性排序
+					.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, this.isOrderProperties())
+					// 日期判断时区
+					.configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE, false)
+					// 不存在属性报错
 					.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-					.disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE).build();
+					// 构建
+					.build();
+
 			if (MyConfiguration.isDebugMode()) {
 				// 报错提示jackson位置
 				objectMapper.configure(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION.mappedFeature(), true);
 			}
 
-			// objectMapper.enableDefaultTyping(DefaultTyping.OBJECT_AND_NON_CONCRETE);
+			// 注册对JAXB注解支持
 			objectMapper.registerModule(new JaxbAnnotationModule());
-			objectMapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector(TypeFactory.defaultInstance()));
 
 			return (T) objectMapper.readValue(ipnInputStream, types[0]);
 		} catch (IOException e) {
