@@ -306,6 +306,11 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 					for (IBusinessLogic<?> tmpLogic : tmpLogics) {
 						if (tmpLogic instanceof BusinessLogic<?, ?>) {
 							BusinessLogic<?, ?> logic = (BusinessLogic<?, ?>) tmpLogic;
+							logic.setRoot(bo);
+							// 跳过已赋值的
+							if (logic.getParent() != null) {
+								continue;
+							}
 							logic.setParent(bo);
 						}
 					}
@@ -318,6 +323,11 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 						for (IBusinessLogic<?> tmpLogic : tmpLogics) {
 							if (tmpLogic instanceof BusinessLogic<?, ?>) {
 								BusinessLogic<?, ?> logic = (BusinessLogic<?, ?>) tmpLogic;
+								logic.setRoot(bo);
+								// 跳过已赋值的
+								if (logic.getParent() != null) {
+									continue;
+								}
 								logic.setParent(bo);
 							}
 						}
