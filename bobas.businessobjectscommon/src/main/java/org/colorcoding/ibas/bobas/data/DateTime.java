@@ -8,7 +8,6 @@ import java.util.Date;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.common.DateTimes;
 
 /**
  * 日期类型
@@ -17,6 +16,19 @@ import org.colorcoding.ibas.bobas.common.DateTimes;
 public class DateTime extends Date implements Serializable {
 
 	private static final long serialVersionUID = 9197442988053540497L;
+
+	/**
+	 * 日期格式，默认yyyy-MM-dd
+	 */
+	public static String FORMAT_DATE = "yyyy-MM-dd";
+	/**
+	 * 时间格式，默HH:mm:ss.SSS
+	 */
+	public static String FORMAT_TIME = "HH:mm:ss.SSS";
+	/**
+	 * 日期时间格式，默认yyyy-MM-dd'T'HH:mm:ss
+	 */
+	public static String FORMAT_DATETIME = String.format("%s'T'%s", FORMAT_DATE, FORMAT_TIME);
 
 	public DateTime() {
 		super();
@@ -27,7 +39,7 @@ public class DateTime extends Date implements Serializable {
 	}
 
 	public String toString() {
-		return this.toString(DateTimes.FORMAT_DATE);
+		return this.toString(FORMAT_DATETIME);
 	}
 
 	/**

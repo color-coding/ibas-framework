@@ -172,9 +172,8 @@ public class ServiceBasic {
 	@Path("querySalesOrder")
 	public OperationResult<DataTable> querySalesOrder(@QueryParam("token") String token) {
 		OperationResult<DataTable> operationResult = new OperationResult<DataTable>();
-		try {
+		try (BORepositoryTest boRepository = new BORepositoryTest()) {
 			System.out.println(String.format("query by %s.", token));
-			BORepositoryTest boRepository = new BORepositoryTest();
 			SqlStatement sqlQuery = new SqlStatement();
 			sqlQuery.setContent("select * FROM CC_TT_ORDR");
 			// operationResult.copy(boRepository.query(sqlQuery));

@@ -15,6 +15,19 @@ public class DateTimes {
 	}
 
 	/**
+	 * 日期格式，默认yyyy-MM-dd
+	 */
+	public static String FORMAT_DATE = DateTime.FORMAT_DATE;
+	/**
+	 * 时间格式，默HH:mm:ss.SSS
+	 */
+	public static String FORMAT_TIME = DateTime.FORMAT_TIME;
+	/**
+	 * 日期时间格式，默认yyyy-MM-dd'T'HH:mm:ss
+	 */
+	public static String FORMAT_DATETIME = DateTime.FORMAT_DATETIME;
+
+	/**
 	 * 最小日期
 	 */
 	public static final DateTime VALUE_MIN = valueOf(1900, 1, 1);
@@ -57,26 +70,13 @@ public class DateTimes {
 	}
 
 	/**
-	 * 日期格式，默认yyyy-MM-dd
-	 */
-	public static String FORMAT_DATE = "yyyy-MM-dd";
-	/**
-	 * 时间格式，默HH:mm:ss.SSS
-	 */
-	public static String FORMAT_TIME = "HH:mm:ss.SSS";
-	/**
-	 * 日期时间格式，默认yyyy-MM-dd'T'HH:mm:ss
-	 */
-	public static String FORMAT_DATETIME = "yyyy-MM-dd'T'HH:mm:ss";
-
-	/**
 	 * 转换值
 	 * 
 	 * @param value 日期的字符串
 	 * @return 日期
 	 */
 	public static DateTime valueOf(String value) {
-		return valueOf(value, FORMAT_DATE);
+		return valueOf(value, DateTime.FORMAT_DATE);
 	}
 
 	/**

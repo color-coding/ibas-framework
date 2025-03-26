@@ -134,131 +134,132 @@ public class SerializerXml extends Serializer {
 		}
 	}
 
-}
+	class SchemaWriter {
 
-class SchemaWriter {
-
-	public SchemaWriter() {
-		this.knownTypes = new HashMap<>();
-		this.knownTypes.put("integer", "xs:int");
-		this.knownTypes.put("long", "xs:long");
-		this.knownTypes.put("short", "xs:short");
-		this.knownTypes.put("float", "xs:float");
-		this.knownTypes.put("double", "xs:double");
-		this.knownTypes.put("boolean", "xs:boolean");
-		this.knownTypes.put("java.lang.Integer", "xs:int");
-		this.knownTypes.put("java.lang.Long", "xs:long");
-		this.knownTypes.put("java.lang.Short", "xs:short");
-		this.knownTypes.put("java.math.BigInteger", "xs:integer");
-		this.knownTypes.put("java.lang.Float", "xs:float");
-		this.knownTypes.put("java.lang.Double", "xs:double");
-		this.knownTypes.put("java.math.BigDecimal", "xs:decimal");
-		this.knownTypes.put("java.lang.String", "xs:string");
-		this.knownTypes.put("java.lang.Character", "xs:string");
-		this.knownTypes.put("java.lang.Boolean", "xs:boolean");
-		this.knownTypes.put("java.util.Date", "xs:dateTime");
-	}
-
-	public Document document;
-	public ElementRoot element;
-	private Map<String, String> knownTypes;
-
-	public void write() {
-		if (this.element.getNamespace() != null) {
-			document.getDocumentElement().setAttribute("targetNamespace", this.element.getNamespace());
+		public SchemaWriter() {
+			this.knownTypes = new HashMap<>();
+			this.knownTypes.put("int", "xs:int");
+			this.knownTypes.put("integer", "xs:int");
+			this.knownTypes.put("long", "xs:long");
+			this.knownTypes.put("short", "xs:short");
+			this.knownTypes.put("float", "xs:float");
+			this.knownTypes.put("double", "xs:double");
+			this.knownTypes.put("boolean", "xs:boolean");
+			this.knownTypes.put("java.lang.Integer", "xs:int");
+			this.knownTypes.put("java.lang.Long", "xs:long");
+			this.knownTypes.put("java.lang.Short", "xs:short");
+			this.knownTypes.put("java.math.BigInteger", "xs:integer");
+			this.knownTypes.put("java.lang.Float", "xs:float");
+			this.knownTypes.put("java.lang.Double", "xs:double");
+			this.knownTypes.put("java.math.BigDecimal", "xs:decimal");
+			this.knownTypes.put("java.lang.String", "xs:string");
+			this.knownTypes.put("java.lang.Character", "xs:string");
+			this.knownTypes.put("java.lang.Boolean", "xs:boolean");
+			this.knownTypes.put("java.util.Date", "xs:dateTime");
 		}
-		org.w3c.dom.Element dom = this.document.createElement("xs:element");
-		dom.setAttribute("name", this.element.getName());
-		org.w3c.dom.Element domType = this.document.createElement("xs:complexType");
-		org.w3c.dom.Element domSequence = this.document.createElement("xs:sequence");
-		for (Element item : this.element.getChilds()) {
-			this.write(domSequence, item);
-		}
-		domType.appendChild(domSequence);
-		dom.appendChild(domType);
-		this.document.getDocumentElement().appendChild(dom);
-	}
 
-	private void write(org.w3c.dom.Element domParent, Element element) {
-		org.w3c.dom.Element dom = this.document.createElement("xs:element");
-		// 获取元素类型
-		String typeName = this.knownTypes.get(element.getType().getName());
-		if (typeName != null) {
-			// 已知类型
-			dom.setAttribute("name", element.getName());
-			dom.setAttribute("minOccurs", "0");
-			dom.setAttribute("nillable", "true");
-			dom.setAttribute("type", typeName);
-		} else if (element.getType().isEnum()) {
-			// 枚举类型
-			dom.setAttribute("name", element.getName());
-			dom.setAttribute("minOccurs", "0");
-			dom.setAttribute("nillable", "true");
-			org.w3c.dom.Element domType = this.document.createElement("xs:simpleType");
-			org.w3c.dom.Element domRestriction = this.document.createElement("xs:restriction");
-			domRestriction.setAttribute("base", "xs:string");
-			for (Object enumItem : element.getType().getEnumConstants()) {
-				if (enumItem instanceof Enum<?>) {
-					// 枚举值（比对枚举索引）
-					Enum<?> itemValue = (Enum<?>) enumItem;
-					org.w3c.dom.Element domEnumeration = this.document.createElement("xs:enumeration");
-					domEnumeration.setAttribute("value", itemValue.name());
-					domRestriction.appendChild(domEnumeration);
-				}
+		public Document document;
+		public ElementRoot element;
+		private Map<String, String> knownTypes;
+
+		public void write() {
+			if (this.element.getNamespace() != null) {
+				document.getDocumentElement().setAttribute("targetNamespace", this.element.getNamespace());
 			}
-			domType.appendChild(domRestriction);
-			dom.appendChild(domType);
-		} else if (element.getType() == DateTime.class) {
-			// 日期类型
-			dom.setAttribute("name", element.getName());
-			dom.setAttribute("minOccurs", "0");
-			dom.setAttribute("nillable", "true");
-			org.w3c.dom.Element domType = this.document.createElement("xs:simpleType");
-			org.w3c.dom.Element domRestriction = this.document.createElement("xs:restriction");
-			domRestriction.setAttribute("base", "xs:string");
-			org.w3c.dom.Element domEnumeration = this.document.createElement("xs:pattern");
-			// 格式：2000-01-01 or 2000-01-01T00:00:00
-			domEnumeration.setAttribute("value",
-					"|[0-9]{4}-[0-1][0-9]-[0-3][0-9]|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9]");
-			domRestriction.appendChild(domEnumeration);
-			domType.appendChild(domRestriction);
-			dom.appendChild(domType);
-		} else if (element.isCollection()) {
-			dom.setAttribute("name", element.getWrapper());
-			dom.setAttribute("minOccurs", "0");
-			dom.setAttribute("maxOccurs", "unbounded");
+			org.w3c.dom.Element dom = this.document.createElement("xs:element");
+			dom.setAttribute("name", this.element.getName());
 			org.w3c.dom.Element domType = this.document.createElement("xs:complexType");
 			org.w3c.dom.Element domSequence = this.document.createElement("xs:sequence");
-			org.w3c.dom.Element domItem = this.document.createElement("xs:element");
-			domItem.setAttribute("name", element.getName());
-			domItem.setAttribute("minOccurs", "0");
-			domItem.setAttribute("maxOccurs", "unbounded");
-			if (!element.getChilds().isEmpty()) {
-				org.w3c.dom.Element domItemType = this.document.createElement("xs:complexType");
-				org.w3c.dom.Element domItemSequence = this.document.createElement("xs:sequence");
-				for (Element item : element.getChilds()) {
-					this.write(domItemSequence, item);
-				}
-				domItemType.appendChild(domItemSequence);
-				domItem.appendChild(domItemType);
+			for (Element item : this.element.getChilds()) {
+				this.write(domSequence, item);
 			}
-			domSequence.appendChild(domItem);
 			domType.appendChild(domSequence);
 			dom.appendChild(domType);
-		} else {
-			dom.setAttribute("name", element.getName());
-			dom.setAttribute("minOccurs", "0");
-			dom.setAttribute("maxOccurs", "unbounded");
-			if (!element.getChilds().isEmpty()) {
+			this.document.getDocumentElement().appendChild(dom);
+		}
+
+		private void write(org.w3c.dom.Element domParent, Element element) {
+			org.w3c.dom.Element dom = this.document.createElement("xs:element");
+			// 获取元素类型
+			String typeName = this.knownTypes.get(element.getType().getName());
+			if (typeName != null) {
+				// 已知类型
+				dom.setAttribute("name", element.getName());
+				dom.setAttribute("minOccurs", "0");
+				dom.setAttribute("nillable", "true");
+				dom.setAttribute("type", typeName);
+			} else if (element.getType().isEnum()) {
+				// 枚举类型
+				dom.setAttribute("name", element.getName());
+				dom.setAttribute("minOccurs", "0");
+				dom.setAttribute("nillable", "true");
+				org.w3c.dom.Element domType = this.document.createElement("xs:simpleType");
+				org.w3c.dom.Element domRestriction = this.document.createElement("xs:restriction");
+				domRestriction.setAttribute("base", "xs:string");
+				for (Object enumItem : element.getType().getEnumConstants()) {
+					if (enumItem instanceof Enum<?>) {
+						// 枚举值（比对枚举索引）
+						Enum<?> itemValue = (Enum<?>) enumItem;
+						org.w3c.dom.Element domEnumeration = this.document.createElement("xs:enumeration");
+						domEnumeration.setAttribute("value", itemValue.name());
+						domRestriction.appendChild(domEnumeration);
+					}
+				}
+				domType.appendChild(domRestriction);
+				dom.appendChild(domType);
+			} else if (element.getType() == DateTime.class) {
+				// 日期类型
+				dom.setAttribute("name", element.getName());
+				dom.setAttribute("minOccurs", "0");
+				dom.setAttribute("nillable", "true");
+				org.w3c.dom.Element domType = this.document.createElement("xs:simpleType");
+				org.w3c.dom.Element domRestriction = this.document.createElement("xs:restriction");
+				domRestriction.setAttribute("base", "xs:string");
+				org.w3c.dom.Element domEnumeration = this.document.createElement("xs:pattern");
+				// 格式：2000-01-01 or 2000-01-01T00:00:00
+				domEnumeration.setAttribute("value",
+						"|[0-9]{4}-[0-1][0-9]-[0-3][0-9]|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9]");
+				domRestriction.appendChild(domEnumeration);
+				domType.appendChild(domRestriction);
+				dom.appendChild(domType);
+			} else if (element.isCollection()) {
+				dom.setAttribute("name", element.getWrapper());
+				dom.setAttribute("minOccurs", "0");
+				dom.setAttribute("maxOccurs", "unbounded");
 				org.w3c.dom.Element domType = this.document.createElement("xs:complexType");
 				org.w3c.dom.Element domSequence = this.document.createElement("xs:sequence");
-				for (Element item : element.getChilds()) {
-					this.write(domSequence, item);
+				org.w3c.dom.Element domItem = this.document.createElement("xs:element");
+				domItem.setAttribute("name", element.getName());
+				domItem.setAttribute("minOccurs", "0");
+				domItem.setAttribute("maxOccurs", "unbounded");
+				if (!element.getChilds().isEmpty()) {
+					org.w3c.dom.Element domItemType = this.document.createElement("xs:complexType");
+					org.w3c.dom.Element domItemSequence = this.document.createElement("xs:sequence");
+					for (Element item : element.getChilds()) {
+						this.write(domItemSequence, item);
+					}
+					domItemType.appendChild(domItemSequence);
+					domItem.appendChild(domItemType);
 				}
+				domSequence.appendChild(domItem);
 				domType.appendChild(domSequence);
 				dom.appendChild(domType);
+			} else {
+				dom.setAttribute("name", element.getName());
+				dom.setAttribute("minOccurs", "0");
+				dom.setAttribute("maxOccurs", "unbounded");
+				if (!element.getChilds().isEmpty()) {
+					org.w3c.dom.Element domType = this.document.createElement("xs:complexType");
+					org.w3c.dom.Element domSequence = this.document.createElement("xs:sequence");
+					for (Element item : element.getChilds()) {
+						this.write(domSequence, item);
+					}
+					domType.appendChild(domSequence);
+					dom.appendChild(domType);
+				}
 			}
+			domParent.appendChild(dom);
 		}
-		domParent.appendChild(dom);
 	}
+
 }

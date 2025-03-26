@@ -16,7 +16,6 @@
 	</organization>
 	<properties>
 		<jersey.version>2.46</jersey.version>
-		<jackson.version>2.18.0</jackson.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -36,23 +35,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-json-jackson</artifactId>
+			<artifactId>jersey-media-moxy</artifactId>
 			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.module</groupId>
-			<artifactId>jackson-module-jaxb-annotations</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.module</groupId>
-			<artifactId>jackson-module-jsonSchema</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.datatype</groupId>
-    <artifactId>jackson-datatype-jsr310</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
+		</dependency>	
 	</dependencies>
 </project>

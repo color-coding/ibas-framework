@@ -35,7 +35,8 @@ public class Configuration {
 			synchronized (Configuration.class) {
 				if (instance == null) {
 					String folder = getStartupFolder();
-					if (folder.endsWith("target" + File.separator + "test-classes")) {
+					if (folder.endsWith("target" + File.separator + "test-classes")
+							|| folder.endsWith("target" + File.separator + "classes")) {
 						// 测试脚本 target\test-classes
 						folder = (new File(folder)).getParentFile().getParentFile().getPath();
 					}

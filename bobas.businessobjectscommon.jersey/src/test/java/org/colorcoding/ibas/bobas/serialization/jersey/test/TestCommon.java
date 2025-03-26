@@ -82,18 +82,16 @@ public class TestCommon extends TestCase {
 
 	public void testJsonSchema() throws ValidateException {
 		ICriteria criteria = this.createCriteria();
-		System.out.println("-------------------has root--------------------");
+		System.out.println("-------------------no root---------------------");
 		ISerializer serializer = SerializationFactory.createManager().create(SerializerManager.TYPE_JSON);
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.serialize(criteria, writer);
 		System.out.println(writer.toString());
 		System.out.println((ICriteria) serializer.deserialize(writer.toString(), criteria.getClass()));
-		System.out.println("-------------------no root---------------------");
-		serializer = SerializationFactory.createManager().create(SerializerManager.TYPE_JSON);
+		System.out.println("-------------------schema---------------------");
 		writer = new ByteArrayOutputStream();
-		serializer.serialize(criteria, writer);
+		serializer.getSchema(Criteria.class, writer);
 		System.out.println(writer.toString());
-		System.out.println((ICriteria) serializer.deserialize(writer.toString(), criteria.getClass()));
 	}
 
 	public void testToJSON() throws JAXBException {
