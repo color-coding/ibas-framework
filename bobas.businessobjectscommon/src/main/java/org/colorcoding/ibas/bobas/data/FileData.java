@@ -59,22 +59,6 @@ public class FileData extends Serializable {
 		this.location = location;
 	}
 
-	private String originalName;
-
-	/**
-	 * 原始文件名称
-	 * 
-	 * @return
-	 */
-	@XmlElement(name = "OriginalName")
-	public String getOriginalName() {
-		return originalName;
-	}
-
-	public void setOriginalName(String originalName) {
-		this.originalName = originalName;
-	}
-
 	/**
 	 * 获取文件字节数组
 	 * 

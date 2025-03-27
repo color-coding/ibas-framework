@@ -199,8 +199,8 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("{criteria: ");
-		if (this.getBusinessObject() != null && !this.getBusinessObject().isEmpty()) {
-			stringBuilder.append(this.getBusinessObject());
+		if (!Strings.isNullOrEmpty(this.businessObject)) {
+			stringBuilder.append(this.businessObject);
 			stringBuilder.append(", ");
 		}
 		stringBuilder.append("result|");

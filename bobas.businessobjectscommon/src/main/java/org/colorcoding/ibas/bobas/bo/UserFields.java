@@ -132,8 +132,9 @@ class UserFields implements IUserFields {
 		if (this.indexOf(name) < 0) {
 			UserFieldInfo<P> uFieldInfo = UserFieldsManager.createUserField(name, valueType);
 			this.parent.userFields.put(uFieldInfo, null);
-			UserFieldsManager.registerUserField(this.parent.getClass(), uFieldInfo);
 			this.initialize();
+			// 注册全局
+			UserFieldsManager.registerUserField(this.parent.getClass(), uFieldInfo);
 		}
 		return this.get(name);
 	}

@@ -15,7 +15,7 @@
 		<url>https://colorcoding.org</url>
 	</organization>
 	<properties>
-		<jersey.version>2.46</jersey.version>
+		<jersey.version>3.0.14</jersey.version>
 	</properties>
 	<dependencies>
 		<dependency>

@@ -3,7 +3,6 @@ package org.colorcoding.ibas.bobas.common;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
@@ -13,7 +12,6 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
  */
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "ChildCriteria", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
-@XmlRootElement(name = "ChildCriteria", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public class ChildCriteria extends Criteria implements IChildCriteria {
 
 	private static final long serialVersionUID = -4641570686942910575L;
@@ -34,7 +32,6 @@ public class ChildCriteria extends Criteria implements IChildCriteria {
 	@XmlElement(name = "Entry")
 	private boolean entry = false;
 
-	@XmlElement(name = "Entry")
 	public final boolean isEntry() {
 		return entry;
 	}

@@ -4,11 +4,13 @@ import java.lang.annotation.Annotation;
 import java.math.BigDecimal;
 
 import org.colorcoding.ibas.bobas.common.Booleans;
+import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.common.Decimals;
 import org.colorcoding.ibas.bobas.common.Enums;
 import org.colorcoding.ibas.bobas.common.Field;
 import org.colorcoding.ibas.bobas.common.Numbers;
 import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.db.DbField;
 
 final class PropertyInfo<P> implements IPropertyInfo<P> {
@@ -63,10 +65,16 @@ final class PropertyInfo<P> implements IPropertyInfo<P> {
 				return (P) Numbers.defaultValue(this.getValueType());
 			} else if (this.getValueType() == Long.class) {
 				return (P) Numbers.defaultValue(this.getValueType());
+			} else if (this.getValueType() == Double.class) {
+				return (P) Numbers.defaultValue(this.getValueType());
+			} else if (this.getValueType() == Float.class) {
+				return (P) Numbers.defaultValue(this.getValueType());
 			} else if (this.getValueType().isEnum()) {
 				return (P) Enums.defaultValue(this.getValueType());
 			} else if (this.getValueType() == Boolean.class) {
 				return (P) Booleans.defaultValue();
+			} else if (this.getValueType() == DateTime.class) {
+				return (P) DateTimes.defaultValue();
 			}
 		}
 		return this.defaultValue;
@@ -78,7 +86,6 @@ final class PropertyInfo<P> implements IPropertyInfo<P> {
 
 	private boolean primaryKey = Booleans.VALUE_FALSE;
 
-
 	public boolean isPrimaryKey() {
 		return this.primaryKey;
 	}
@@ -88,7 +95,6 @@ final class PropertyInfo<P> implements IPropertyInfo<P> {
 	}
 
 	private boolean uniqueKey = Booleans.VALUE_FALSE;
-
 
 	public boolean isUniqueKey() {
 		return this.uniqueKey;
@@ -131,7 +137,6 @@ final class PropertyInfo<P> implements IPropertyInfo<P> {
 		}
 	}
 
-
 	@SuppressWarnings("unchecked")
 	public final <A extends Annotation> A getAnnotation(Class<A> type) {
 		if (this.annotations == null) {
@@ -144,7 +149,6 @@ final class PropertyInfo<P> implements IPropertyInfo<P> {
 		}
 		return null;
 	}
-
 
 	public final String toString() {
 		return String.format("{property: %s}", this.getName());

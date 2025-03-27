@@ -90,11 +90,11 @@ public class TestCommon extends TestCase {
 		System.out.println((ICriteria) serializer.deserialize(writer.toString(), criteria.getClass()));
 		System.out.println("-------------------schema---------------------");
 		writer = new ByteArrayOutputStream();
-		serializer.getSchema(Criteria.class, writer);
+		serializer.schema(Criteria.class, writer);
 		System.out.println(writer.toString());
 	}
 
-	public void testToJSON() throws JAXBException {
+	public void testJson() throws JAXBException {
 		ICriteria criteria = new Criteria();
 		criteria.setResultCount(100);
 		// ("DocStatus" = 'P' OR "DocStatus" = 'F')

@@ -29,7 +29,7 @@ public class TestBusinessObject extends TestCase {
 		order.setCustomerCode("C00001");
 		order.setDeliveryDate(DateTimes.today());
 		order.setDocumentStatus(emDocumentStatus.RELEASED);
-		order.setDocumentTotal(new BigDecimal("99.99"));
+		order.setDocumentTotal(Decimals.valueOf("99.99"));
 
 		order.getUserFields().register("U_OrderType", String.class);
 		order.getUserFields().register("U_OrderId", Integer.class);
@@ -39,11 +39,11 @@ public class TestBusinessObject extends TestCase {
 		order.getUserFields().get("U_OrderType").setValue("S0000");
 		order.getUserFields().get("U_OrderId").setValue(5768);
 		order.getUserFields().get("U_OrderDate").setValue(DateTimes.today());
-		order.getUserFields().get("U_OrderTotal").setValue(new BigDecimal("999.888"));
+		order.getUserFields().get("U_OrderTotal").setValue(Decimals.valueOf("999.888"));
 
 		SalesOrderItem orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00001");
-		orderItem.setQuantity(new BigDecimal(10));
+		orderItem.setQuantity(Decimals.valueOf(10));
 		orderItem.setPrice(BigDecimal.valueOf(99.99));
 		orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00002");
@@ -100,7 +100,7 @@ public class TestBusinessObject extends TestCase {
 		order.setCustomerCode("C00001");
 		order.setDeliveryDate(DateTimes.today());
 		order.setDocumentStatus(emDocumentStatus.RELEASED);
-		order.setDocumentTotal(new BigDecimal("99.99"));
+		order.setDocumentTotal(Decimals.valueOf("99.99"));
 
 		order.getUserFields().register("U_OrderType", String.class);
 		order.getUserFields().register("U_OrderId", Integer.class);
@@ -110,11 +110,11 @@ public class TestBusinessObject extends TestCase {
 		order.getUserFields().get("U_OrderType").setValue("S0000");
 		order.getUserFields().get("U_OrderId").setValue(5768);
 		order.getUserFields().get("U_OrderDate").setValue(DateTimes.today());
-		order.getUserFields().get("U_OrderTotal").setValue(new BigDecimal("999.888"));
+		order.getUserFields().get("U_OrderTotal").setValue(Decimals.valueOf("999.888"));
 
 		SalesOrderItem orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00001");
-		orderItem.setQuantity(new BigDecimal(10));
+		orderItem.setQuantity(Decimals.valueOf(10));
 		orderItem.setPrice(BigDecimal.valueOf(99.99));
 		orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00002");
@@ -124,7 +124,7 @@ public class TestBusinessObject extends TestCase {
 		System.out.println("-------------------json--------------------");
 		ISerializer serializer = SerializationFactory.createManager().create(SerializerManager.TYPE_JSON);
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
-		serializer.getSchema(order.getClass(), writer);
+		serializer.schema(order.getClass(), writer);
 		System.out.println(writer.toString());
 		writer = new ByteArrayOutputStream();
 		serializer.serialize(order, writer);
@@ -134,7 +134,7 @@ public class TestBusinessObject extends TestCase {
 		System.out.println("-------------------xml---------------------");
 		serializer = SerializationFactory.createManager().create(SerializerManager.TYPE_XML);
 		writer = new ByteArrayOutputStream();
-		serializer.getSchema(order.getClass(), writer);
+		serializer.schema(order.getClass(), writer);
 		System.out.println(writer.toString());
 		writer = new ByteArrayOutputStream();
 		serializer.serialize(order, writer);

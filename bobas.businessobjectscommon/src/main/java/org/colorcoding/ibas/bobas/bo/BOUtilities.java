@@ -190,7 +190,9 @@ public class BOUtilities {
 	/**
 	 * 获取对象的属性值
 	 * 
-	 * 支持Item.Code，并返回数组
+	 * 支持Items.Code，并返回数组
+	 * 
+	 * 支持Items[0].Code
 	 * 
 	 * @param <P>          值类型
 	 * @param bo           对象
@@ -225,9 +227,27 @@ public class BOUtilities {
 					}
 				}
 				return (P) cValues.toArray();
+			} else if (value instanceof IBusinessObject) {
+				return propertyValue((IBusinessObject) value, propertyName.split("\\.")[1]);
 			} else {
 				return (P) value;
 			}
+		} else if (Strings.indexOf(propertyName, "[") > 1
+				&& Strings.indexOf(propertyName, "]") == propertyName.length() - 1) {
+			// 数组索引
+			String property = propertyName.split("\\[")[0];
+			Object value = propertyValue(bo, property);
+			if (value instanceof List) {
+				value = ((List<?>) value).toArray();
+			}
+			if (value != null && value.getClass().isArray()) {
+				Integer index = Integer
+						.valueOf(Strings.substring(propertyName, property.length() + 1, propertyName.length() - 1));
+				if (Array.getLength(value) > index) {
+					return (P) Array.get(value, index);
+				}
+			}
+			return null;
 		}
 		return propertyValue(bo, propertyInfo(bo, propertyName));
 	}

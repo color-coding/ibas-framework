@@ -52,7 +52,7 @@ public interface ISerializer {
 	 * @param outputStream 输出目标
 	 * @throws SerializationException
 	 */
-	void getSchema(Class<?> type, OutputStream outputStream) throws SerializationException;
+	void schema(Class<?> type, OutputStream outputStream) throws SerializationException;
 
 	/**
 	 * 验证数据

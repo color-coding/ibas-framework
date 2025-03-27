@@ -48,7 +48,7 @@ public class Decimals {
 	}
 
 	/**
-	 * 转换值
+	 * 转换值（保留小数点后9位）
 	 * 
 	 * @param value 值
 	 * @return
@@ -61,7 +61,32 @@ public class Decimals {
 		} else if (Double.compare(value, -1d) == 0) {
 			return VALUE_MINUS_ONE;
 		}
-		return new BigDecimal(value);
+		BigDecimal decimal = new BigDecimal(value);
+		if (decimal.scale() > DECIMAL_PLACES_RUNNING) {
+			return decimal.setScale(DECIMAL_PLACES_RUNNING, ROUNDING_MODE_DEFAULT);
+		}
+		return decimal;
+	}
+
+	/**
+	 * 转换值（保留小数点后9位）
+	 * 
+	 * @param value 值
+	 * @return
+	 */
+	public static BigDecimal valueOf(float value) {
+		if (Float.compare(value, 0f) == 0) {
+			return VALUE_ZERO;
+		} else if (Double.compare(value, 1f) == 0) {
+			return VALUE_ONE;
+		} else if (Double.compare(value, -1f) == 0) {
+			return VALUE_MINUS_ONE;
+		}
+		BigDecimal decimal = new BigDecimal(value);
+		if (decimal.scale() > DECIMAL_PLACES_RUNNING) {
+			return decimal.setScale(DECIMAL_PLACES_RUNNING, ROUNDING_MODE_DEFAULT);
+		}
+		return decimal;
 	}
 
 	/**
