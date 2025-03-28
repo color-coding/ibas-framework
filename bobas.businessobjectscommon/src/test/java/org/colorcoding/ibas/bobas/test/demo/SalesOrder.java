@@ -7,9 +7,12 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.bo.BusinessObjectUnit;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
+import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
 import org.colorcoding.ibas.bobas.bo.IBOUserFields;
+import org.colorcoding.ibas.bobas.common.Decimals;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
@@ -17,10 +20,17 @@ import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.db.DbField;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.rule.IBusinessRule;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleDocumentStatus;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMaxLength;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMinValue;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleRequired;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleRequiredElements;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleSumElements;
 
 @BusinessObjectUnit(code = "CC_TT_SALESORDER")
 @XmlRootElement(name = "SalesOrder", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
-public class SalesOrder extends Order implements IBOUserFields, IBODocument {
+public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBOTagCanceled, IApprovalData {
 	/**
 	 * 序列化版本标记
 	 */
@@ -1143,4 +1153,25 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument {
 
 	}
 
+	@Override
+	protected IBusinessRule[] registerRules() {
+		// 注册的业务规则
+		return new IBusinessRule[] {
+				// 要求有值
+				new BusinessRuleRequired(PROPERTY_CUSTOMERCODE),
+				// 不能超过长度
+				new BusinessRuleMaxLength(20, PROPERTY_CUSTOMERCODE),
+				// 要求有元素
+				new BusinessRuleRequiredElements(PROPERTY_SALESORDERITEMS),
+				// 使用集合元素状态
+				new BusinessRuleDocumentStatus(PROPERTY_DOCUMENTSTATUS, PROPERTY_SALESORDERITEMS,
+						SalesOrderItem.PROPERTY_LINESTATUS),
+				// 计算集合元素总计
+				new BusinessRuleSumElements(PROPERTY_DOCUMENTTOTAL, PROPERTY_SALESORDERITEMS,
+						SalesOrderItem.PROPERTY_LINETOTAL),
+				// 不能低于0
+				new BusinessRuleMinValue<BigDecimal>(Decimals.VALUE_ZERO, PROPERTY_DOCUMENTTOTAL)
+
+		};
+	}
 }

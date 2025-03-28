@@ -10,7 +10,7 @@ import org.colorcoding.ibas.bobas.data.emApprovalStatus;
  * @author Niuren.Zhu
  *
  */
-public interface IApprovalProcess extends IBusinessObject {
+public interface IProcessData extends IBusinessObject {
 
 	/**
 	 * 获取-名称
@@ -27,6 +27,13 @@ public interface IApprovalProcess extends IBusinessObject {
 	emApprovalStatus getStatus();
 
 	/**
+	 * 设置-状态
+	 * 
+	 * @param value
+	 */
+	void setStatus(emApprovalStatus value);
+
+	/**
 	 * 获取-开始时间
 	 * 
 	 * @return
@@ -34,11 +41,25 @@ public interface IApprovalProcess extends IBusinessObject {
 	DateTime getStartedTime();
 
 	/**
+	 * 设置-开始时间
+	 * 
+	 * @param value
+	 */
+	void setStartedTime(DateTime value);
+
+	/**
 	 * 获取-结束时间
 	 * 
 	 * @return
 	 */
 	DateTime getFinishedTime();
+
+	/**
+	 * 设置-结束时间
+	 * 
+	 * @param value
+	 */
+	void setFinishedTime(DateTime value);
 
 	/**
 	 * 获取审批数据

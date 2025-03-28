@@ -55,7 +55,7 @@ public class ApprovalDataJudgmentLink extends BOJudgmentLink {
 			} else {
 				// 与对象属性值比较
 				IPropertyValueOperator valueOperator = this.createPropertyValueOperator(item.getConditionValueMode());
-				valueOperator.setPropertyName(item.getConditionValue());
+				valueOperator.setPropertyName(item.getPropertyName());
 				jItem.setRightOperter(valueOperator);
 			}
 			// 设置括号

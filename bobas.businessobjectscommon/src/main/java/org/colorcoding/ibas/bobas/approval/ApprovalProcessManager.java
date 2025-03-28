@@ -28,7 +28,7 @@ public abstract class ApprovalProcessManager {
 	 * @param boCode 业务对象编码
 	 * @return
 	 */
-	public abstract <T extends IApprovalProcess> Iterator<ApprovalProcess<T>> createApprovalProcess(String boCode);
+	public abstract <T extends IProcessData> Iterator<ApprovalProcess<T>> createApprovalProcess(String boCode);
 
 	/**
 	 * 创建审批流程
@@ -36,7 +36,7 @@ public abstract class ApprovalProcessManager {
 	 * @param processData 流程数据
 	 * @return
 	 */
-	public abstract <T extends IApprovalProcess> ApprovalProcess<T> createApprovalProcess(IApprovalProcess processData);
+	public abstract <T extends IProcessData> ApprovalProcess<T> createApprovalProcess(IProcessData processData);
 
 	/**
 	 * 加载审批流程数据
@@ -44,6 +44,6 @@ public abstract class ApprovalProcessManager {
 	 * @param apData 待审批数据
 	 * @return
 	 */
-	public abstract <T extends IApprovalProcess> T loadProcessData(IApprovalData apData);
+	public abstract <T extends IProcessData> T loadProcessData(IApprovalData apData);
 
 }

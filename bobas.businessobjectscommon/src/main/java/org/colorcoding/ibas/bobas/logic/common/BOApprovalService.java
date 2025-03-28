@@ -6,7 +6,8 @@ import org.colorcoding.ibas.bobas.approval.ApprovalFactory;
 import org.colorcoding.ibas.bobas.approval.ApprovalProcess;
 import org.colorcoding.ibas.bobas.approval.ApprovalProcessManager;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
-import org.colorcoding.ibas.bobas.approval.IApprovalProcess;
+import org.colorcoding.ibas.bobas.approval.IProcessData;
+import org.colorcoding.ibas.bobas.core.ITrackable;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.logging.Logger;
 import org.colorcoding.ibas.bobas.logging.LoggingLevel;
@@ -15,7 +16,7 @@ import org.colorcoding.ibas.bobas.logic.BusinessLogicException;
 import org.colorcoding.ibas.bobas.logic.LogicContract;
 
 @LogicContract(IBOApprovalContract.class)
-public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IApprovalProcess> {
+public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProcessData> {
 
 	@Override
 	protected boolean checkDataStatus(Object data) {
@@ -52,8 +53,8 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IAppro
 	}
 
 	@Override
-	protected IApprovalProcess fetchBeAffected(IBOApprovalContract contract) {
-		IApprovalProcess processData = null;
+	protected IProcessData fetchBeAffected(IBOApprovalContract contract) {
+		IProcessData processData = null;
 		// 非新建则尝试加载
 		if (!contract.getHost().isNew()) {
 			processData = this.getProcessManager().loadProcessData(contract.getHost());
@@ -61,7 +62,7 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IAppro
 		// 没有已存在的流程数据，则根据尝试创建
 		if (processData == null) {
 			ApprovalProcess<?> process = null;
-			Iterator<ApprovalProcess<IApprovalProcess>> processes = this.getProcessManager()
+			Iterator<ApprovalProcess<IProcessData>> processes = this.getProcessManager()
 					.createApprovalProcess(contract.getHost().getObjectCode());
 			while (processes != null && processes.hasNext()) {
 				process = processes.next();
@@ -77,7 +78,7 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IAppro
 		// 未能形成审批流程
 		if (processData == null) {
 			// 重置数据状态
-			if (contract.getHost().getApprovalStatus() != emApprovalStatus.UNAFFECTED && contract.getHost().isNew()) {
+			if (contract.getHost().getApprovalStatus() != emApprovalStatus.UNAFFECTED) {
 				contract.getHost().setApprovalStatus(emApprovalStatus.UNAFFECTED);
 			}
 		}
@@ -97,7 +98,18 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IAppro
 
 	@Override
 	protected void revoke(IBOApprovalContract contract) {
-
+		if (contract.getHost() instanceof ITrackable) {
+			ITrackable trackable = (ITrackable) contract.getHost();
+			// 检查用户是否可以删除
+			if (trackable.isDeleted()) {
+				ApprovalProcess<?> process = this.getProcessManager().createApprovalProcess(this.getBeAffected());
+				try {
+					process.checkToSave(this.getUser());
+				} catch (Exception e) {
+					throw new BusinessLogicException(e);
+				}
+			}
+		}
 	}
 
 }

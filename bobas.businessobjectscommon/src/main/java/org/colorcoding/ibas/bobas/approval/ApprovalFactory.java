@@ -35,18 +35,18 @@ public class ApprovalFactory {
 			return new ApprovalProcessManager() {
 
 				@Override
-				public <T extends IApprovalProcess> Iterator<ApprovalProcess<T>> createApprovalProcess(String boCode) {
+				public <T extends IProcessData> Iterator<ApprovalProcess<T>> createApprovalProcess(String boCode) {
 					return null;
 				}
 
 				@Override
-				public <T extends IApprovalProcess> ApprovalProcess<T> createApprovalProcess(
-						IApprovalProcess processData) {
+				public <T extends IProcessData> ApprovalProcess<T> createApprovalProcess(
+						IProcessData processData) {
 					return null;
 				}
 
 				@Override
-				public <T extends IApprovalProcess> T loadProcessData(IApprovalData apData) {
+				public <T extends IProcessData> T loadProcessData(IApprovalData apData) {
 					return null;
 				}
 

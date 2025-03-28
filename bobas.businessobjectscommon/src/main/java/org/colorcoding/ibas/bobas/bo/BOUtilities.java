@@ -263,6 +263,14 @@ public class BOUtilities {
 		}
 		Object data = null;
 		for (IPropertyInfo<?> property : bo.properties()) {
+			if (property.getValueType() == null) {
+				continue;
+			}
+			if (!IBusinessObject.class.isAssignableFrom(property.getValueType())
+					&& !IBusinessObjects.class.isAssignableFrom(property.getValueType())
+					&& !property.getValueType().isArray()) {
+				continue;
+			}
 			data = bo.getProperty(property);
 			if (data == null) {
 				continue;
@@ -289,6 +297,7 @@ public class BOUtilities {
 				}
 			}
 		}
+
 	}
 
 	/**

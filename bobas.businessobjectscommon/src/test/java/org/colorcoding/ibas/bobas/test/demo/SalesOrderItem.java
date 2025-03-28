@@ -8,7 +8,9 @@ import javax.xml.bind.annotation.XmlElement;
 
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
+import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
 import org.colorcoding.ibas.bobas.bo.IBOUserFields;
+import org.colorcoding.ibas.bobas.common.Decimals;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
@@ -16,13 +18,19 @@ import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.db.DbField;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.rule.IBusinessRule;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMaxLength;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMinValue;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMultiplicativeDeductionEx;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleRequired;
 
 /**
  * 获取-销售订单-行
  * 
  */
 @XmlAccessorType(XmlAccessType.NONE)
-public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IBODocumentLine, IBOUserFields {
+public class SalesOrderItem extends BusinessObject<SalesOrderItem>
+		implements IBODocumentLine, IBOTagCanceled, IBOUserFields {
 
 	/**
 	 * 序列化版本标记
@@ -918,5 +926,23 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IB
 	@Override
 	protected void initialize() {
 		super.initialize();
+	}
+
+	@Override
+	protected IBusinessRule[] registerRules() {
+		// 注册的业务规则
+		return new IBusinessRule[] {
+				// 要求有值
+				new BusinessRuleRequired(PROPERTY_ITEMCODE),
+				// 不能超过长度
+				new BusinessRuleMaxLength(20, PROPERTY_ITEMCODE),
+				// 不能低于0
+				new BusinessRuleMinValue<BigDecimal>(Decimals.VALUE_ZERO, PROPERTY_QUANTITY, PROPERTY_PRICE),
+				// 推导 总计 = 数量 * 价格
+				new BusinessRuleMultiplicativeDeductionEx(PROPERTY_PRICE, PROPERTY_QUANTITY, PROPERTY_LINETOTAL),
+				// 不能低于0
+				new BusinessRuleMinValue<BigDecimal>(Decimals.VALUE_ZERO, PROPERTY_LINETOTAL)
+
+		};
 	}
 }

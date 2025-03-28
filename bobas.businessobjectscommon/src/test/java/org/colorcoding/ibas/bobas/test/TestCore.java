@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import org.colorcoding.ibas.bobas.bo.BOFactory;
 import org.colorcoding.ibas.bobas.bo.BOUtilities;
@@ -73,6 +74,20 @@ public class TestCore extends TestCase {
 		Order salesOrder2 = salesOrder.clone();
 		assertTrue("Object Instance faild. ", salesOrder2 != salesOrder);
 
+		// 测试子项状态变化，父项状态
+		salesOrder.markOld();
+		salesOrder.getSalesOrderItems().create();
+		assertEquals("Property [isDirty] faild. ", salesOrder.isDirty(), true);
+		salesOrder.markOld();
+		BOUtilities.traverse(salesOrder, c -> c.markOld());
+		salesOrder.getSalesOrderItems().get(0).setItemCode(UUID.randomUUID().toString());
+		assertEquals("Property [isDirty] faild. ", salesOrder.getSalesOrderItems().get(0).isDirty(), true);
+		assertEquals("Property [isDirty] faild. ", salesOrder.isDirty(), true);
+		salesOrder.markOld();
+		BOUtilities.traverse(salesOrder, c -> c.markNew());
+		salesOrder.getSalesOrderItems().deleteAll();
+		assertEquals("Property [isDirty] faild. ", salesOrder.isDirty(), true);
+
 		// 输出对象属性及默认值
 		System.out.println(Strings.format("%s:", SalesOrder.class.getName()));
 		for (IPropertyInfo<?> item : BOFactory.propertyInfos(SalesOrder.class)) {
@@ -95,7 +110,7 @@ public class TestCore extends TestCase {
 		// 测试对象路径取值
 		SalesOrderItem orderItem = salesOrder.getSalesOrderItems().create();
 		orderItem.setItemCode("A00001");
-		orderItem.setQuantity(new BigDecimal(10));
+		orderItem.setQuantity(Decimals.valueOf(10));
 		orderItem.setPrice(Decimals.valueOf(99.99));
 		orderItem = salesOrder.getSalesOrderItems().create();
 		orderItem.setItemCode("A00002");
@@ -110,6 +125,7 @@ public class TestCore extends TestCase {
 		propertyPath = "SalesOrderItems[1].ItemCode";
 		System.out.println(propertyPath);
 		System.out.println(Strings.valueOf(BOUtilities.propertyValue(salesOrder, propertyPath)));
+
 	}
 
 	public void testUserFields() {
@@ -167,6 +183,7 @@ public class TestCore extends TestCase {
 		orderItem.setItemCode("A00002");
 		orderItem.setQuantity(BigDecimal.valueOf(10));
 		orderItem.setPrice(Decimals.valueOf(199.99123456789));
+
 		ISerializer serializer = new SerializerXml();
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.serialize(order, writer);

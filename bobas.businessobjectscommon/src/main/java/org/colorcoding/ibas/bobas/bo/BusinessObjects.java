@@ -50,7 +50,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 						BusinessObjects.this.onItemPropertyChanged(evt);
 					}
 				}
-			} else if (evt.getSource() == BusinessObjects.this && evt.getPropertyName().equals("Size")) {
+			} else if (evt.getSource() == BusinessObjects.this && evt.getPropertyName().equals(PROPERTY_NAME_SIZE)) {
 				if (BusinessObjects.this.parent != null && !BusinessObjects.this.parent.isLoading()) {
 					// 集合自身的属性改变事件
 					if (BusinessObjects.this.getParent() instanceof Trackable) {
@@ -63,6 +63,8 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 
 		}
 	};
+
+	private static final String PROPERTY_NAME_SIZE = "size";
 
 	public BusinessObjects() {
 		this.setChangeItemStatus(true);
@@ -110,8 +112,11 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 
 	@Override
 	public final boolean add(E item) {
+		int oldSize = this.size();
 		boolean result = super.add(item);
 		if (result) {
+			this.propertyListener
+					.propertyChange(new PropertyChangeEvent(this, PROPERTY_NAME_SIZE, oldSize, this.size()));
 			this.afterAddItem(item);
 		}
 		return result;
@@ -195,8 +200,11 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 	}
 
 	public final boolean remove(E item) {
+		int oldSize = this.size();
 		boolean result = super.remove(item);
 		if (result) {
+			this.propertyListener
+					.propertyChange(new PropertyChangeEvent(this, PROPERTY_NAME_SIZE, oldSize, this.size()));
 			this.afterRemoveItem(item);
 		}
 		return result;
