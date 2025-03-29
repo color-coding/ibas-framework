@@ -34,7 +34,8 @@
                     IN transaction_type nvarchar(1),                   --业务类型（Add:A-添加, Update:U-更新, Delete:D-删除）
                     IN num_of_cols_in_key integer,                     --主键个数
                     IN list_of_key_cols_tab_del nvarchar(255),         --主键名称
-                    IN list_of_cols_val_tab_del nvarchar(255)          --主键值
+                    IN list_of_cols_val_tab_del nvarchar(255),         --主键值
+                    IN user integer                                    --用户标识
                 )
                 LANGUAGE SQLSCRIPT AS
                 BEGIN

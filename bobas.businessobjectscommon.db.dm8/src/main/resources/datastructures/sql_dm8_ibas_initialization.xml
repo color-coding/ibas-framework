@@ -33,7 +33,8 @@
                     transaction_type IN nchar(1),                --业务类型（Add:A-添加, Update:U-更新, Delete:D-删除）
                     num_of_cols_in_key IN int,                   --主键个数
                     list_of_key_cols_tab_del IN nvarchar(255),   --主键名称
-                    list_of_cols_val_tab_del IN nvarchar(255)    --主键值
+                    list_of_cols_val_tab_del IN nvarchar(255),   --主键值
+                    user IN int                                  --用户标识
                 ) AS
                     error_code int;                            --返回值(0 无错误)
                     error_message nvarchar(200);               --返回的消息
