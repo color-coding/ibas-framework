@@ -16,7 +16,7 @@ public interface IBusinessObjects<E extends IBusinessObject, P extends IBusiness
 	 * 
 	 * @return 元素类型
 	 */
-	Class<E> getElementType();
+	Class<?> getElementType();
 
 	/**
 	 * 创建新的元素实例

@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 
 import org.colorcoding.ibas.bobas.i18n.I18N;
 
@@ -13,22 +15,18 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
  * @author Niuren.Zhu
  *
  */
-class PropertyInfoManager {
+public class PropertyInfoManager {
 
 	private PropertyInfoManager() {
 	}
 
-	public static final String BO_PROPERTY_NAMING_RULES_UPPER = "PROPERTY_%s";
+	static final String BO_PROPERTY_NAMING_RULES_UPPER = "PROPERTY_%s";
 
-	public static final String BO_PROPERTY_NAMING_RULES_CAMEL = "%sProperty";
+	static final String BO_PROPERTY_NAMING_RULES_CAMEL = "%sProperty";
 
-	public static class PropertyInfoList extends ArrayList<IPropertyInfo<?>> {
+	private static class PropertyInfoList extends ArrayList<IPropertyInfo<?>> {
 
 		private static final long serialVersionUID = -6320914335175298868L;
-
-		public PropertyInfoList() {
-			super();
-		}
 
 		public PropertyInfoList(int initialCapacity) {
 			super(initialCapacity);
@@ -47,7 +45,7 @@ class PropertyInfoManager {
 	private volatile static Map<Class<?>, PropertyInfoList> PROPERTY_INFOS = new HashMap<Class<?>, PropertyInfoList>(
 			256);
 
-	protected static <P> PropertyInfo<P> createProperty(String name, Class<P> type) {
+	static <P> PropertyInfo<P> createProperty(String name, Class<P> type) {
 		PropertyInfo<P> property = new PropertyInfo<P>(name, type);
 		return property;
 	}
@@ -58,7 +56,7 @@ class PropertyInfoManager {
 	 * @param objectType 所属类型
 	 * @param property   属性
 	 */
-	public static <P> IPropertyInfo<P> registerProperty(Class<?> objectType, PropertyInfo<P> property) {
+	static <P> IPropertyInfo<P> registerProperty(Class<?> objectType, PropertyInfo<P> property) {
 		synchronized (PROPERTY_INFOS) {
 			PropertyInfoList propertys = PROPERTY_INFOS.get(objectType);
 			if (propertys != null) {
@@ -75,6 +73,8 @@ class PropertyInfoManager {
 				property.setIndex(propertys.size() - 1);
 				PROPERTY_INFOS.put(objectType, propertys);
 			}
+			// 触发属性注册通知
+			firePropertyInfoRegistered(objectType, property);
 		}
 		// 获取属性的注释
 		try {
@@ -106,7 +106,7 @@ class PropertyInfoManager {
 	 * @param type       属性类型
 	 * @return
 	 */
-	public static <P> IPropertyInfo<P> registerProperty(Class<?> objectType, String name, Class<P> type) {
+	static <P> IPropertyInfo<P> registerProperty(Class<?> objectType, String name, Class<P> type) {
 		return registerProperty(objectType, createProperty(name, type));
 	}
 
@@ -119,8 +119,7 @@ class PropertyInfoManager {
 	 * @param defaultValue 属性默认值
 	 * @return
 	 */
-	public static <P> IPropertyInfo<P> registerProperty(Class<?> objectType, String name, Class<P> type,
-			P defaultValue) {
+	static <P> IPropertyInfo<P> registerProperty(Class<?> objectType, String name, Class<P> type, P defaultValue) {
 		PropertyInfo<P> property = createProperty(name, type);
 		property.setDefaultValue(defaultValue);
 		return registerProperty(objectType, property);
@@ -132,7 +131,7 @@ class PropertyInfoManager {
 	 * @param objectType 获取的对象类型
 	 * @return
 	 */
-	public static IPropertyInfo<?>[] recursePropertyInfos(Class<?> objectType) {
+	static IPropertyInfo<?>[] recursePropertyInfos(Class<?> objectType) {
 		if (objectType == null) {
 			return new IPropertyInfo<?>[] {};
 		}
@@ -165,7 +164,7 @@ class PropertyInfoManager {
 	 * @return 类型的属性列表
 	 * @throws IllegalArgumentException
 	 */
-	public static PropertyInfoList getPropertyInfoList(Class<?> objectType) {
+	static PropertyInfoList getPropertyInfoList(Class<?> objectType) {
 		synchronized (PROPERTY_INFOS) {
 			PropertyInfoList propertyInfoList = PROPERTY_INFOS.get(objectType);
 			if (propertyInfoList != null) {
@@ -187,29 +186,41 @@ class PropertyInfoManager {
 	}
 
 	/**
-	 * 注册类型的属性
-	 * 
-	 * @param objectType 类型
-	 * @return 是否注册成功
-	 * @throws ClassNotFoundException
-	 */
-	public static void registerClass(Class<?> objectType) throws ClassNotFoundException {
-		Class.forName(objectType.getName());
-	}
-
-	/**
 	 * 初始化对象字段
 	 * 
 	 * @param objectType 对象类型
 	 * @return
 	 */
-	public static Map<IPropertyInfo<?>, Object> initFields(Class<?> objectType) {
+	static Map<IPropertyInfo<?>, Object> initFields(Class<?> objectType) {
 		PropertyInfoList propertyInfoList = getPropertyInfoList(objectType);
 		Map<IPropertyInfo<?>, Object> fieldsMap = new HashMap<>(propertyInfoList.size(), 1);
 		for (IPropertyInfo<?> propertyInfo : propertyInfoList) {
 			fieldsMap.put(propertyInfo, null);
 		}
 		return fieldsMap;
+	}
+
+	private static ArrayList<PropertyInfoRegisterListener> listeners = new ArrayList<>(4);
+
+	public static void registerListener(PropertyInfoRegisterListener listener) {
+		// 要求有值
+		Objects.requireNonNull(listener);
+		// 监听
+		listeners.add(listener);
+		// 通知已创建的
+		for (Entry<Class<?>, PropertyInfoList> infoEntry : PROPERTY_INFOS.entrySet()) {
+			for (IPropertyInfo<?> propertyInfo : infoEntry.getValue()) {
+				listener.onRegistered(infoEntry.getKey(), propertyInfo);
+			}
+		}
+	}
+
+	private static void firePropertyInfoRegistered(Class<?> clazz, IPropertyInfo<?> propertyInfo) {
+		for (PropertyInfoRegisterListener listener : listeners) {
+			if (listener != null) {
+				listener.onRegistered(clazz, propertyInfo);
+			}
+		}
 	}
 
 }

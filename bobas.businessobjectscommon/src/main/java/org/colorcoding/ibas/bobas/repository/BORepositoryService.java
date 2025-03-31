@@ -43,7 +43,7 @@ public class BORepositoryService extends BORepository4DB {
 	 * @return
 	 */
 	@Override
-	protected <T extends IBusinessObject> IOperationResult<T> fetch(Class<?> boType, ICriteria criteria) {
+	protected <T extends IBusinessObject> OperationResult<T> fetch(Class<?> boType, ICriteria criteria) {
 		if (criteria != null) {
 			// 有子项的查询结果后，再筛选父项
 			IChildCriteria cCriteria = criteria.getChildCriterias().firstOrDefault(c -> c.isEntry());
@@ -109,7 +109,7 @@ public class BORepositoryService extends BORepository4DB {
 							condition.setBracketClose(condition.getBracketClose() + 1);
 						}
 						// 查询父项，并填充子项
-						IOperationResult<T> opRsltParent = this.fetch(boType, nCriteria);
+						OperationResult<T> opRsltParent = this.fetch(boType, nCriteria);
 						if (opRsltParent.getError() != null) {
 							throw opRsltParent.getError();
 						}
@@ -169,11 +169,11 @@ public class BORepositoryService extends BORepository4DB {
 	 * @return
 	 */
 	@Override
-	protected <T extends IBusinessObject> IOperationResult<T> save(T bo) {
+	protected <T extends IBusinessObject> OperationResult<T> save(T bo) {
 		try {
 			boolean mine = this.beginTransaction();
 			try {
-				IOperationResult<T> operationResult = super.save(bo);
+				OperationResult<T> operationResult = super.save(bo);
 				if (operationResult.getError() != null) {
 					throw operationResult.getError();
 				}

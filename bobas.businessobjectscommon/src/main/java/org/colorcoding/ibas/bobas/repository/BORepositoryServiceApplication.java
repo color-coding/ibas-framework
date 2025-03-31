@@ -40,18 +40,40 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 	 * @param token
 	 * @throws InvalidAuthorizationException
 	 */
-	public final void setCurrentUser(String token) throws InvalidAuthorizationException {
-		if (this.getCurrentUser() != null && Strings.equalsIgnoreCase(this.getCurrentUser().getToken(), token)) {
-			// 与当前的口令相同，不做处理
+	final void setCurrentUser(String token) throws InvalidAuthorizationException {
+		if (Strings.isNullOrEmpty(token)) {
+			throw new InvalidAuthorizationException(I18N.prop("msg_bobas_no_user_match_the_token"));
+		}
+		IUser user = this.getCurrentUser();
+		// 与当前的口令相同，不做处理
+		if (user != null && Strings.equalsIgnoreCase(user.getToken(), token)) {
 			return;
 		}
 		IOrganizationManager orgManager = OrganizationFactory.createManager();
-		IUser user = orgManager.getUser(token);
+		user = orgManager.getUser(token);
+		// 没有用户匹配次口令
 		if (user == null) {
-			// 没有用户匹配次口令
 			throw new InvalidAuthorizationException(I18N.prop("msg_bobas_no_user_match_the_token"));
 		}
 		this.setCurrentUser(user);
+	}
+
+	/**
+	 * 获取当前用户token
+	 * 
+	 * @return
+	 * @throws RepositoryException
+	 */
+	public final String getUserToken() {
+		IUser user = this.getCurrentUser();
+		if (user == null) {
+			return Strings.VALUE_EMPTY;
+		}
+		return user.getToken();
+	}
+
+	public final void setUserToken(String token) throws InvalidAuthorizationException {
+		this.setCurrentUser(token);
 	}
 
 	/**
@@ -62,7 +84,7 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 	 * @param token 用户口令
 	 * @return
 	 */
-	protected final <T extends IBusinessObject> IOperationResult<T> save(T bo, String token) {
+	protected final <T extends IBusinessObject> OperationResult<T> save(T bo, String token) {
 		try {
 			this.setCurrentUser(token);
 			return this.save(bo);
@@ -76,12 +98,12 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 	 * 
 	 * @param <T>
 	 * @param criteria 条件
-	 * @param boType   数据类型
 	 * @param token    用户口令
+	 * @param boType   数据类型
 	 * @return
 	 */
-	protected final <T extends IBusinessObject> IOperationResult<T> fetch(ICriteria criteria, Class<?> boType,
-			String token) {
+	protected final <T extends IBusinessObject> OperationResult<T> fetch(ICriteria criteria, String token,
+			Class<?> boType) {
 		try {
 			this.setCurrentUser(token);
 			return this.fetch(boType, criteria);
@@ -100,7 +122,7 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 	}
 
 	@Override
-	protected <T extends IBusinessObject> IOperationResult<T> fetch(Class<?> boType, ICriteria criteria) {
+	protected <T extends IBusinessObject> OperationResult<T> fetch(Class<?> boType, ICriteria criteria) {
 		try {
 			if (criteria == null) {
 				criteria = new Criteria();
@@ -200,7 +222,7 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 	}
 
 	@Override
-	protected <T extends IBusinessObject> IOperationResult<T> save(T bo) {
+	protected <T extends IBusinessObject> OperationResult<T> save(T bo) {
 		try {
 			// 数据保存权限
 			if (bo instanceof IDataOwnership) {

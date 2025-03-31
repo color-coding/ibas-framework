@@ -18,6 +18,8 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.FieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
+import org.colorcoding.ibas.bobas.core.PropertyInfoManager;
+import org.colorcoding.ibas.bobas.core.PropertyInfoRegisterListener;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logging.Logger;
@@ -30,14 +32,31 @@ public class BOFactory {
 	private BOFactory() {
 	}
 
+	static {
+		// 初始化变量
+		MAP_BO2CODE = new HashMap<Class<?>, String>(256);
+		MAP_CODE2BO = new HashMap<String, Class<?>>(256);
+		// 注册属性注册监听
+		PropertyInfoManager.registerListener(new PropertyInfoRegisterListener() {
+
+			@Override
+			public void onRegistered(Class<?> clazz, IPropertyInfo<?> propertyInfo) {
+				if (MAP_BO2CODE.containsKey(clazz)) {
+					return;
+				}
+				register(clazz);
+			}
+		});
+	}
+
 	/**
 	 * 业务对象的编码字典
 	 */
-	private volatile static Map<Class<?>, String> MAP_BO2CODE = new HashMap<Class<?>, String>(256);
+	private volatile static Map<Class<?>, String> MAP_BO2CODE;
 	/**
 	 * 业务编码的对象字典
 	 */
-	private volatile static Map<String, Class<?>> MAP_CODE2BO = new HashMap<String, Class<?>>(256);
+	private volatile static Map<String, Class<?>> MAP_CODE2BO;
 
 	/**
 	 * 注册对象
@@ -133,7 +152,7 @@ public class BOFactory {
 	}
 
 	public static ClassLoader getClassLoader() {
-		return Thread.currentThread().getContextClassLoader();
+		return BOFactory.class.getClassLoader();
 	}
 
 	public static Class<?>[] loadClasses(String packageName) {

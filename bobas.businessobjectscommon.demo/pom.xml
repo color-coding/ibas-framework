@@ -19,6 +19,12 @@
 	</properties>
 	<dependencies>
 		<dependency>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<version>4.0.4</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.colorcoding.ibas</groupId>
 			<artifactId>bobas.businessobjectscommon.jersey</artifactId>
 			<version>${project.version}</version>
@@ -41,6 +47,11 @@
 		<dependency>
 			<groupId>org.colorcoding.ibas</groupId>
 			<artifactId>bobas.businessobjectscommon.db.hana</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.colorcoding.ibas</groupId>
+			<artifactId>bobas.businessobjectscommon.db.sqlite</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

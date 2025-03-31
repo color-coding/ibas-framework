@@ -98,7 +98,7 @@ public abstract class BORepository implements AutoCloseable {
 		this.currentUser = currentUser;
 	}
 
-	protected <T extends IBusinessObject> IOperationResult<T> fetch(Class<?> boType, ICriteria criteria) {
+	protected <T extends IBusinessObject> OperationResult<T> fetch(Class<?> boType, ICriteria criteria) {
 		try {
 			Objects.requireNonNull(boType);
 			boolean mine = this.beginTransaction();
@@ -130,7 +130,7 @@ public abstract class BORepository implements AutoCloseable {
 		}
 	}
 
-	protected <T extends IBusinessObject> IOperationResult<T> save(T bo) {
+	protected <T extends IBusinessObject> OperationResult<T> save(T bo) {
 		try {
 			Objects.requireNonNull(bo);
 			boolean mine = this.beginTransaction();
