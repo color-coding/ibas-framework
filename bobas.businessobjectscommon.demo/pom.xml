@@ -31,26 +31,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.colorcoding.ibas</groupId>
-			<artifactId>bobas.businessobjectscommon.db.mssql</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.colorcoding.ibas</groupId>
-			<artifactId>bobas.businessobjectscommon.db.mysql</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.colorcoding.ibas</groupId>
-			<artifactId>bobas.businessobjectscommon.db.pgsql</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.colorcoding.ibas</groupId>
-			<artifactId>bobas.businessobjectscommon.db.hana</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.colorcoding.ibas</groupId>
 			<artifactId>bobas.businessobjectscommon.db.sqlite</artifactId>
 			<version>${project.version}</version>
 		</dependency>

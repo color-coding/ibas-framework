@@ -7,12 +7,8 @@ import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
-import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.organization.IOrganizationManager;
-import org.colorcoding.ibas.bobas.organization.IUser;
-import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
 import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
 import org.colorcoding.ibas.bobas.ownership.IDataOwnership;
 import org.colorcoding.ibas.bobas.ownership.IOwnershipJudger;
@@ -35,48 +31,6 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 	public final static String OPERATION_INFORMATION_DATA_OWNERSHIP_TAG = "DATA_OWNERSHIP_JUDGE";
 
 	/**
-	 * 设置当前用户
-	 * 
-	 * @param token
-	 * @throws InvalidAuthorizationException
-	 */
-	final void setCurrentUser(String token) throws InvalidAuthorizationException {
-		if (Strings.isNullOrEmpty(token)) {
-			throw new InvalidAuthorizationException(I18N.prop("msg_bobas_no_user_match_the_token"));
-		}
-		IUser user = this.getCurrentUser();
-		// 与当前的口令相同，不做处理
-		if (user != null && Strings.equalsIgnoreCase(user.getToken(), token)) {
-			return;
-		}
-		IOrganizationManager orgManager = OrganizationFactory.createManager();
-		user = orgManager.getUser(token);
-		// 没有用户匹配次口令
-		if (user == null) {
-			throw new InvalidAuthorizationException(I18N.prop("msg_bobas_no_user_match_the_token"));
-		}
-		this.setCurrentUser(user);
-	}
-
-	/**
-	 * 获取当前用户token
-	 * 
-	 * @return
-	 * @throws RepositoryException
-	 */
-	public final String getUserToken() {
-		IUser user = this.getCurrentUser();
-		if (user == null) {
-			return Strings.VALUE_EMPTY;
-		}
-		return user.getToken();
-	}
-
-	public final void setUserToken(String token) throws InvalidAuthorizationException {
-		this.setCurrentUser(token);
-	}
-
-	/**
 	 * 保存数据
 	 * 
 	 * @param <T>
@@ -86,7 +40,7 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 	 */
 	protected final <T extends IBusinessObject> OperationResult<T> save(T bo, String token) {
 		try {
-			this.setCurrentUser(token);
+			this.setUserToken(token);
 			return this.save(bo);
 		} catch (Exception e) {
 			return new OperationResult<>(e);
@@ -105,7 +59,7 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 	protected final <T extends IBusinessObject> OperationResult<T> fetch(ICriteria criteria, String token,
 			Class<?> boType) {
 		try {
-			this.setCurrentUser(token);
+			this.setUserToken(token);
 			return this.fetch(boType, criteria);
 		} catch (Exception e) {
 			return new OperationResult<>(e);
@@ -121,6 +75,16 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 		return this.ownershipJudger;
 	}
 
+	/**
+	 * 查询数据
+	 * 
+	 * 增加数据权限过滤
+	 * 
+	 * @param <T>      对象类型
+	 * @param boType   对象类型
+	 * @param criteria 查询条件
+	 * @return
+	 */
 	@Override
 	protected <T extends IBusinessObject> OperationResult<T> fetch(Class<?> boType, ICriteria criteria) {
 		try {
@@ -221,6 +185,15 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 		}
 	}
 
+	/**
+	 * 保存数据
+	 * 
+	 * 增加数据权限检查
+	 * 
+	 * @param <T> 对象类型
+	 * @param bo  待保存对象
+	 * @return
+	 */
 	@Override
 	protected <T extends IBusinessObject> OperationResult<T> save(T bo) {
 		try {

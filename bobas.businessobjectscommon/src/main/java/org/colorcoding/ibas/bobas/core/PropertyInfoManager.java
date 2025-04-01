@@ -72,6 +72,8 @@ public class PropertyInfoManager {
 				propertys.add(property);
 				property.setIndex(propertys.size() - 1);
 				PROPERTY_INFOS.put(objectType, propertys);
+				// 触发对象注册通知
+				firePropertyInfoRegistered(objectType);
 			}
 			// 触发属性注册通知
 			firePropertyInfoRegistered(objectType, property);
@@ -209,8 +211,17 @@ public class PropertyInfoManager {
 		listeners.add(listener);
 		// 通知已创建的
 		for (Entry<Class<?>, PropertyInfoList> infoEntry : PROPERTY_INFOS.entrySet()) {
+			listener.onRegistered(infoEntry.getKey());
 			for (IPropertyInfo<?> propertyInfo : infoEntry.getValue()) {
 				listener.onRegistered(infoEntry.getKey(), propertyInfo);
+			}
+		}
+	}
+
+	private static void firePropertyInfoRegistered(Class<?> clazz) {
+		for (PropertyInfoRegisterListener listener : listeners) {
+			if (listener != null) {
+				listener.onRegistered(clazz);
 			}
 		}
 	}

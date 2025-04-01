@@ -108,6 +108,10 @@ public class MyConfiguration extends Configuration {
 	 */
 	public final static String CONFIG_ITEM_I18N_PATH = "I18nFolder";
 	/**
+	 * 配置项目-文件仓库目录
+	 */
+	public final static String CONFIG_ITEM_FILE_REPOSITORY_FOLDER = "FileRepositoryFolder";
+	/**
 	 * 配置项目-语言编码
 	 */
 	public final static String CONFIG_ITEM_LANGUAGE_CODE = "LanguageCode";

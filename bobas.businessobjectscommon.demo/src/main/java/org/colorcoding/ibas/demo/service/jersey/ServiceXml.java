@@ -17,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 import org.colorcoding.ibas.bobas.bo.BOFactory;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.OperationResult;
+import org.colorcoding.ibas.bobas.logging.Logger;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializerXml;
 import org.colorcoding.ibas.demo.MyConfiguration;
@@ -37,6 +38,11 @@ public class ServiceXml extends BORepositoryTrainingTesting {
 	@Consumes(MediaType.APPLICATION_XML)
 	public void schema(@QueryParam("boCode") String boCode, @Context HttpServletResponse response) {
 		try {
+			// 获取对象类并加载
+			for (Class<?> item : BOFactory.loadClasses("org.colorcoding.ibas.demo.bo")) {
+				Class.forName(item.getName());
+			}
+			// 通过Code获取对象类型
 			Class<?> boClass = BOFactory.classOf(boCode);
 			ISerializer serializer = new SerializerXml();
 			try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
@@ -45,7 +51,8 @@ public class ServiceXml extends BORepositoryTrainingTesting {
 				response.getOutputStream().flush();
 			}
 		} catch (Exception e) {
-			throw new WebApplicationException(e.getMessage(), 500);
+			Logger.log(e);
+			throw new WebApplicationException(e);
 		}
 	}
 

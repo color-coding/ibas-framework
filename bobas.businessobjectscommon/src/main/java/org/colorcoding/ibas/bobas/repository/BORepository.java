@@ -11,10 +11,8 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logging.Logger;
 import org.colorcoding.ibas.bobas.logic.BusinessLogicsManager;
 import org.colorcoding.ibas.bobas.logic.IBusinessLogicChain;
-import org.colorcoding.ibas.bobas.organization.IUser;
-import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
 
-public abstract class BORepository implements AutoCloseable {
+public abstract class BORepository extends Repository implements AutoCloseable {
 
 	private boolean skipLogics;
 
@@ -83,19 +81,6 @@ public abstract class BORepository implements AutoCloseable {
 			this.transaction.close();
 			this.transaction = null;
 		}
-	}
-
-	private IUser currentUser;
-
-	public final IUser getCurrentUser() {
-		if (this.currentUser == null) {
-			return OrganizationFactory.UNKNOWN_USER;
-		}
-		return currentUser;
-	}
-
-	void setCurrentUser(IUser currentUser) {
-		this.currentUser = currentUser;
 	}
 
 	protected <T extends IBusinessObject> OperationResult<T> fetch(Class<?> boType, ICriteria criteria) {

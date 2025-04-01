@@ -5,6 +5,13 @@ package org.colorcoding.ibas.bobas.core;
  */
 public interface PropertyInfoRegisterListener {
 	/**
+	 * 对象信息注册
+	 * 
+	 * @param clazz 对象
+	 */
+	void onRegistered(Class<?> clazz);
+
+	/**
 	 * 属性信息注册
 	 * 
 	 * @param clazz        对象
