@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.demo;
 
+import org.colorcoding.ibas.bobas.common.Strings;
+
 /**
  * 我的配置项
  */
@@ -46,6 +48,9 @@ public class MyConfiguration extends org.colorcoding.ibas.bobas.MyConfiguration 
 	 * @return
 	 */
 	public static String optToken(String authorization, String token) {
+		if (Strings.isNullOrEmpty(authorization)) {
+			return token;
+		}
 		return authorization;
 	}
 

@@ -18,8 +18,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			Class.forName("org.sqlite.JDBC");
 			File file = new File(dbName);
 			if (file.getParentFile() == null || !file.getParentFile().isDirectory()) {
-				file = new File(
-						MyConfiguration.getDataFolder() + File.separator + "db" + File.separator + file.getName());
+				file = new File(MyConfiguration.getDataFolder(), file.getName());
 				if (!file.getParentFile().exists()) {
 					file.getParentFile().mkdirs();
 				}

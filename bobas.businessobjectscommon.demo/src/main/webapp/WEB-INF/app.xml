@@ -2,6 +2,8 @@
 <!DOCTYPE configuration>
 <ns2:configuration xmlns:ns2="http://colorcoding.org/ibas/bobas/configuration">
     <appSettings>
+        <!-- 配置项目-公司标记 -->
+        <add key="Company" value="CC" />
         <!-- 配置项目-是否开启调试模式 -->
         <add key="DebugMode" value="true"  />
         <!-- 配置项目-数据库类型 -->
@@ -11,9 +13,9 @@
         <!-- 配置项目-数据库名称 -->
         <add key="MasterDbName" value="ibas_demo" />
         <!-- 配置项目-数据库用户名称 -->
-        <add key="MasterDbUserID" value="" />
+        <add key="MasterDbUserID" value="none" />
         <!-- 配置项目-数据库用户密码 -->
-        <add key="MasterDbUserPassword" value="" />
+        <add key="MasterDbUserPassword" value="****" />
         <!-- 配置项目-是否格式化输出 -->
         <add key="FormattedOutput" value="true"  />
         <!-- 配置项目-序列化管理方式 -->
