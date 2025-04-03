@@ -26,7 +26,7 @@
     </init-param>
     <init-param>
       <param-name>jersey.config.server.provider.classnames</param-name>
-      <param-value>org.glassfish.jersey.media.multipart.MultiPartFeature</param-value>
+      <param-value>org.glassfish.jersey.media.multipart.MultiPartFeature,org.colorcoding.ibas.bobas.jersey.JsonConfig</param-value>
     </init-param>
     <load-on-startup>2</load-on-startup>
   </servlet>

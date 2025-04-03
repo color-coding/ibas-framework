@@ -139,24 +139,35 @@ public class AppInitListener implements ServletContextListener {
 			if (exitCode != 0) {
 				return;
 			}
-			// 初始数据
-			dsFile = new File(pomFile.getParent(), "initialization");
-			if (!dsFile.exists() || !dsFile.isDirectory()) {
+			// 初始数据，需要先编译demo项目（使用其jar包）
+			pomFile = new File(MyConfiguration.getWorkFolder(), "classes" + File.separator + "pom.demo.xml");
+			if (!pomFile.isFile() || !pomFile.exists()) {
 				return;
 			}
-			for (File item : dsFile.listFiles(c -> c.getName().endsWith(".xml"))) {
-				exitCode = this
-						.runCommand(
-								Strings.concat("java",
-										Strings.format(" -cp \"%s:%s\"", tsFile.getParent(),
-												MyConfiguration.getWorkFolder() + File.separator + "classes"),
-										Strings.format(" -jar \"%s\" init", tsFile.getPath()),
-										Strings.format(" \"-data=%s\"", item),
-										Strings.format(" \"-config=%s\"", cgFile.getPath())),
-								MyConfiguration.getDataFolder());
-				if (exitCode != 0) {
-					return;
-				}
+			exitCode = this.runCommand(
+					Strings.concat("mvn", " -f", Strings.format(" \"%s\"", pomFile.getPath()),
+							" dependency:copy-dependencies"),
+					MyConfiguration.getTempFolder(), new KeyText("TMPDIR", MyConfiguration.getTempFolder()));
+			if (exitCode != 0) {
+				return;
+			} else {
+				Logger.log("command: get demo jar to [%s]. ",
+						MyConfiguration.getTempFolder() + File.separator + "ibas_demo");
+			}
+			dsFile = new File(MyConfiguration.getTempFolder(),
+					"ibas_demo" + File.separator + "bobas.businessobjectscommon.demo-0.2.0.jar");
+			if (!dsFile.exists() || !dsFile.isFile()) {
+				return;
+			}
+			exitCode = this.runCommand(
+					Strings.concat("java", Strings.format(" -cp \"%s\"", tsFile.getParent()),
+							Strings.format(" -jar \"%s\" init", tsFile.getPath()),
+							Strings.format(" \"-data=%s\"", dsFile.getPath()),
+							Strings.format(" \"-config=%s\"", cgFile.getPath()),
+							Strings.format(" \"-classes=%s\"", dsFile.getParent() + File.separator)),
+					MyConfiguration.getWorkFolder(), new KeyText("user.dir", MyConfiguration.getWorkFolder()));
+			if (exitCode != 0) {
+				return;
 			}
 		} catch (IOException | InterruptedException e) {
 			Logger.log(e);
