@@ -475,26 +475,29 @@ public class BORepository4DbReadonly extends BORepositoryBase implements IBORepo
 						// 集合类型
 						IBusinessObjects<?, ?> listField = (IBusinessObjects<?, ?>) fieldData.getValue();
 						Class<?> childBoType = listField.getElementType();
+						IChildCriteria tmpCriteria = null;
+						if (criteria != null) {
+							tmpCriteria = criteria.getChildCriterias().getCriteria(fieldData.getName());
+							// 跳过此项加载
+							if (tmpCriteria != null && tmpCriteria.isNoChilds()) {
+								continue;
+							}
+						}
 						ICriteria childCriteria = listField.getElementCriteria();
 						if (childCriteria != null) {
-							// 获取到了子项查询
-							IChildCriteria tmpCriteria = null;
-							if (criteria != null) {
-								// 添加子查询条件
-								tmpCriteria = criteria.getChildCriterias().getCriteria(fieldData.getName());
-								if (tmpCriteria != null) {
-									// 设置了此属性的查询
-									ICondition tmpCondition = tmpCriteria.getConditions().firstOrDefault();
-									if (tmpCondition != null) {
-										// 强制使用“与”关系
-										if (tmpCondition.getRelationship() != ConditionRelationship.AND) {
-											tmpCondition.setRelationship(ConditionRelationship.AND);
-										}
+							// 添加子查询条件
+							if (tmpCriteria != null) {
+								// 设置了此属性的查询
+								ICondition tmpCondition = tmpCriteria.getConditions().firstOrDefault();
+								if (tmpCondition != null) {
+									// 强制使用“与”关系
+									if (tmpCondition.getRelationship() != ConditionRelationship.AND) {
+										tmpCondition.setRelationship(ConditionRelationship.AND);
 									}
-									childCriteria = childCriteria.copyFrom(tmpCriteria);
-									if (tmpCriteria.getResultCount() > 0) {
-										childCriteria.setResultCount(tmpCriteria.getResultCount());
-									}
+								}
+								childCriteria = childCriteria.copyFrom(tmpCriteria);
+								if (tmpCriteria.getResultCount() > 0) {
+									childCriteria.setResultCount(tmpCriteria.getResultCount());
 								}
 							}
 							ISqlQuery childSqlQuery = adapter.parseSqlQuery(childCriteria, childBoType);
