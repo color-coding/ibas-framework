@@ -16,7 +16,10 @@ import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.db.DbField;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.logic.IBusinessLogicContract;
+import org.colorcoding.ibas.bobas.logic.IBusinessLogicsHost;
 import org.colorcoding.ibas.demo.MyConfiguration;
+import org.colorcoding.ibas.demo.logic.IMaterialsInventoryQuantityContract;
 
 /**
  * 仓库日记账
@@ -26,7 +29,8 @@ import org.colorcoding.ibas.demo.MyConfiguration;
 @XmlType(name = MaterialsJournal.BUSINESS_OBJECT_NAME, namespace = MyConfiguration.NAMESPACE_BO)
 @XmlRootElement(name = MaterialsJournal.BUSINESS_OBJECT_NAME, namespace = MyConfiguration.NAMESPACE_BO)
 @BusinessObjectUnit(code = MaterialsJournal.BUSINESS_OBJECT_CODE)
-public class MaterialsJournal extends BusinessObject<MaterialsJournal> implements IMaterialsJournal {
+public class MaterialsJournal extends BusinessObject<MaterialsJournal>
+		implements IMaterialsJournal, IBusinessLogicsHost {
 
 	/**
 	 * 序列化版本标记
@@ -962,4 +966,29 @@ public class MaterialsJournal extends BusinessObject<MaterialsJournal> implement
 
 	}
 
+	@Override
+	public IBusinessLogicContract[] getContracts() {
+		return new IBusinessLogicContract[] {
+				// 物料库存数量逻辑
+				new IMaterialsInventoryQuantityContract() {
+
+					@Override
+					public String getIdentifiers() {
+						return MaterialsJournal.this.getIdentifiers();
+					}
+
+					@Override
+					public String getItemCode() {
+						return MaterialsJournal.this.getItemCode();
+					}
+
+					@Override
+					public BigDecimal getQuantity() {
+						return MaterialsJournal.this.getQuantity();
+					}
+
+				}
+
+		};
+	}
 }

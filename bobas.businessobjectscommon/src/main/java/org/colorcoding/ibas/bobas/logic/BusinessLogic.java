@@ -88,6 +88,21 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 		this.host = host;
 	}
 
+	private Object root;
+
+	/**
+	 * 获取-契约数据所属根项
+	 * 
+	 * @return
+	 */
+	protected final Object getRoot() {
+		return root;
+	}
+
+	final void setRoot(Object root) {
+		this.root = root;
+	}
+
 	private Object parent;
 
 	/**
@@ -208,6 +223,11 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 	 */
 	@Override
 	public final void forward() {
+		// 检查根项数据状态
+		if (this.getRoot() != null && !this.checkDataStatus(this.getRoot())) {
+			// 数据状态不通过，跳过正向逻辑执行
+			return;
+		}
 		// 检查父项数据状态
 		if (this.getParent() != null && !this.checkDataStatus(this.getParent())) {
 			// 数据状态不通过，跳过正向逻辑执行
@@ -269,6 +289,11 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 	 */
 	@Override
 	public final void reverse() {
+		// 检查根项数据状态
+		if (this.getRoot() != null && !this.checkDataStatus(this.getRoot())) {
+			// 数据状态不通过，跳过正向逻辑执行
+			return;
+		}
 		// 检查父项数据状态
 		if (this.getParent() != null && !this.checkDataStatus(this.getParent())) {
 			// 数据状态不通过，跳过正向逻辑执行

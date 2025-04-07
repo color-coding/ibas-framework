@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Test Services | Xml</title>
     <script type="text/javascript" src="./3rdparty/jquery.js"></script>
     <script>
-        var getRootUrl = function() {
+        var getRootUrl = function () {
             var tmp = window.location.href;
-            return tmp.substring(0,tmp.indexOf('/test'));
+            return tmp.substring(0, tmp.indexOf('/test'));
         };
-        var getWADL = function() {
-            var url = getRootUrl()  + '/services/jersey/application.wadl';
+        var getWADL = function () {
+            var url = getRootUrl() + '/services/jersey/application.wadl';
             $.ajax({
-                type: 'get',
+                type: 'GET',
                 contentType: "application/xml",
                 url: url,
                 success: function (data, status) {
@@ -65,25 +66,35 @@
                 $("#rsltMsg").html("unkown.");
             }
         }
-        var token = '';
+        var token = '1q2w3e';
         var testCreateMaterials = function () {
-            var bo = ttborep.bo.Materials.createNew();
-            showResult(bo);
-            return bo;
+            var url = address + '/schema?boCode=CC_TT_MATERIALS&token=' + token;
+            var criteria = {};
+            $.ajax({
+                type: 'GET',
+                contentType: "application/xml",
+                url: url,
+                success: function (data, status) {
+                    showResult(data);
+                },
+                error: function (err) {
+                    showErrors(err);
+                }
+            });
         }
         var testFetchMaterials = function () {
             var url = address + '/fetchMaterials?token=' + token;
             var criteria = {};
             $.ajax({
                 type: 'POST',
-                contentType: "application/x-www-form-urlencoded",
+                contentType: "application/xml",
                 url: url,
                 data: criteria,
                 success: function (data, status) {
-                   showResult(data);
+                    showResult(data);
                 },
                 error: function (err) {
-                   showErrors(err);
+                    showErrors(err);
                 }
             });
         }
@@ -92,36 +103,46 @@
             var data = testCreateMaterials();
             $.ajax({
                 type: 'POST',
-                contentType: "application/x-www-form-urlencoded",
+                contentType: "application/xml",
                 url: url,
                 data: data,
                 success: function (data, status) {
-                   showResult(data);
+                    showResult(data);
                 },
                 error: function (err) {
-                   showErrors(err);
+                    showErrors(err);
                 }
             });
         };
 
         var testCreateSalesOrder = function () {
-            var bo = ttborep.bo.SalesOrder.createNew();
-            showResult(bo);
-            return bo;
+            var url = address + '/schema?boCode=CC_TT_SALESORDER&token=' + token;
+            var criteria = {};
+            $.ajax({
+                type: 'GET',
+                contentType: "application/xml",
+                url: url,
+                success: function (data, status) {
+                    showResult(data);
+                },
+                error: function (err) {
+                    showErrors(err);
+                }
+            });
         }
         var testFetchSalesOrder = function () {
             var url = address + '/fetchSalesOrder?token=' + token;
             var criteria = {};
             $.ajax({
                 type: 'POST',
-                contentType: "application/x-www-form-urlencoded",
+                contentType: "application/xml",
                 url: url,
                 data: criteria,
                 success: function (data, status) {
-                   showResult(data);
+                    showResult(data);
                 },
                 error: function (err) {
-                   showErrors(err);
+                    showErrors(err);
                 }
             });
         }
@@ -130,23 +151,24 @@
             var data = testCreateSalesOrder();
             $.ajax({
                 type: 'POST',
-                contentType: "application/x-www-form-urlencoded",
+                contentType: "application/xml",
                 url: url,
                 data: data,
                 success: function (data, status) {
-                   showResult(data);
+                    showResult(data);
                 },
                 error: function (err) {
-                   showErrors(err);
+                    showErrors(err);
                 }
             });
         };
 
     </script>
 </head>
+
 <body>
     <label>test data services | xml</label>
-    <a href=""><label style="color:blue" onclick="getWADL();" >   [WADL]</label></a>
+    <a href=""><label style="color:blue" onclick="getWADL();"> [WADL]</label></a>
     <br />
     <div>
         <table>
@@ -191,7 +213,8 @@
         <label>count:</label>
         <label id="rsltCount"></label>
         <br />
-        <label id="rsltValues" ></label>
+        <label id="rsltValues"></label>
     </div>
 </body>
+
 </html>

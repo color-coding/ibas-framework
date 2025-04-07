@@ -71,8 +71,6 @@
     <Property Name="DocumentCurrency" Description="单据货币" DataType="Alphanumeric" DataSubType="Default" EditSize="8" Mapped="DocCur"/>
     <Property Name="DocumentRate" Description="单据交换率" DataType="Decimal" DataSubType="Rate" EditSize="8" Mapped="DocRate"/>
     <Property Name="DocumentTotal" Description="单据总计" DataType="Decimal" DataSubType="Sum" EditSize="8" Mapped="DocTotal"/>
-    <Property Name="Cycle" Description="周期" DataType="Decimal" DataSubType="Sum" EditSize="8" Mapped="Cycle"/>
-    <Property Name="CycleUnit" Description="周期单位" DataType="Alphanumeric" DataSubType="Default" EditSize="100" Mapped="CycleUnit"/>
   </Model>
   <Model Name="SalesOrderItem" Description="销售订单-行" ModelType="DocumentLine" Mapped="CC_TT_RDR1">
     <Property Name="DocEntry" Description="编码" DataType="Numeric" DataSubType="Default" EditSize="8" Mapped="DocEntry" PrimaryKey="Yes"/>

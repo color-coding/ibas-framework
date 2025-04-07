@@ -11,8 +11,8 @@ import java.lang.annotation.Target;
  * @author Niuren.Zhu
  *
  */
-@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface LogicContract {
 
 	/**

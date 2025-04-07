@@ -53,7 +53,7 @@ public class BOInstanceLogService extends BusinessLogic<IBOInstanceLogContract, 
 				}
 				if (!Booleans.equals(enabled, true)) {
 					Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
-							Strings.format("isLogst%s", boTag.getObjectCode()), "false");
+							Strings.format("isLogst|%s", boTag.getObjectCode()), "false");
 					return false;
 				}
 			}

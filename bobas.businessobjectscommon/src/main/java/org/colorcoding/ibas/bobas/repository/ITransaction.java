@@ -56,4 +56,5 @@ public interface ITransaction extends AutoCloseable {
 	 * @return
 	 */
 	<T extends IBusinessObject> T[] save(T[] bos) throws RepositoryException;
+
 }

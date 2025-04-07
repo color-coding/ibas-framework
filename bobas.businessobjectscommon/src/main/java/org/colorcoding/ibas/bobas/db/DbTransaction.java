@@ -1,7 +1,6 @@
 package org.colorcoding.ibas.bobas.db;
 
 import java.lang.reflect.Array;
-import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.BOFactory;
@@ -35,10 +35,12 @@ import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logging.Logger;
+import org.colorcoding.ibas.bobas.organization.IUser;
+import org.colorcoding.ibas.bobas.repository.IUserGeter;
 import org.colorcoding.ibas.bobas.repository.RepositoryException;
 import org.colorcoding.ibas.bobas.repository.Transaction;
 
-public class DbTransaction extends Transaction {
+public abstract class DbTransaction extends Transaction implements IUserGeter {
 
 	public DbTransaction(Connection connection) {
 		Objects.requireNonNull(connection);
@@ -205,9 +207,6 @@ public class DbTransaction extends Transaction {
 				List<T> datas = null;
 				try (ResultSet resultSet = statement.executeQuery();) {
 					datas = this.getAdapter().parsingDatas(boType, resultSet);
-				} catch (SQLException e) {
-					Logger.log("error: %s", sql);
-					throw e;
 				}
 				// 加载子对象
 				if (!datas.isEmpty() && !criteria.isNoChilds()) {
@@ -251,7 +250,16 @@ public class DbTransaction extends Transaction {
 										if (propertyInfo.getName().equalsIgnoreCase(item.getPropertyPath())) {
 											cCriteria.copyFrom(item);
 											onlyHasChilds = item.isOnlyHasChilds();
+											// 设置不加载子项
+											if (item.isNoChilds()) {
+												cCriteria = null;
+												break;
+											}
 										}
+									}
+									// 查询无效则跳过
+									if (cCriteria == null || cCriteria.getConditions().isEmpty()) {
+										continue;
 									}
 									for (IBusinessObject item : this.fetch(cDatas.getElementType(), cCriteria)) {
 										cDatas.add(item);
@@ -266,6 +274,9 @@ public class DbTransaction extends Transaction {
 					}
 				}
 				return datas.where(c -> c.isDeleted() == false).toArray((T[]) Array.newInstance(boType, 0));
+			} catch (SQLException e) {
+				Logger.log("error: %s", sql);
+				throw e;
 			}
 		} catch (Exception e) {
 			throw new RepositoryException(e);
@@ -459,7 +470,7 @@ public class DbTransaction extends Transaction {
 							dbField = null;
 							data = null;
 							propertyInfos = null;
-						} catch (BatchUpdateException e) {
+						} catch (SQLException e) {
 							Logger.log(Strings.format("error: %s", sql));
 							return e;
 						} catch (Exception e) {
@@ -546,7 +557,12 @@ public class DbTransaction extends Transaction {
 								statement.setString(5, valuesBuilder.toString());
 								// 操作用户
 								if (!DbTransaction.this.getAdapter().isNoUserTansactionSP()) {
-									statement.setInt(6, -1);
+									IUser user = DbTransaction.this.getUser();
+									if (user != null) {
+										statement.setInt(6, user.getId());
+									} else {
+										statement.setInt(6, -1);
+									}
 								}
 
 								// 运行语句，非0则抛异常
@@ -647,10 +663,10 @@ public class DbTransaction extends Transaction {
 						maxValue = this.getAdapter().setProperties(maxValue, resultSet,
 								new IPropertyInfo<?>[] { maxValue.getKeyField() });
 					}
-				} catch (SQLException e) {
-					Logger.log("error: %s", sql);
-					throw e;
 				}
+			} catch (SQLException e) {
+				Logger.log("error: %s", sql);
+				throw e;
 			}
 			return maxValue;
 		} catch (Exception e) {
@@ -672,13 +688,16 @@ public class DbTransaction extends Transaction {
 			try (Statement statement = this.connection.createStatement()) {
 				try (ResultSet resultSet = statement.executeQuery(sqlStatement.getContent())) {
 					return this.getAdapter().parsingDatas(resultSet);
-				} catch (SQLException e) {
-					Logger.log("error: %s", sqlStatement.getContent());
-					throw e;
 				}
+			} catch (SQLException e) {
+				Logger.log("error: %s", sqlStatement.getContent());
+				throw e;
 			}
 		} catch (Exception e) {
 			throw new RepositoryException(e);
 		}
 	}
+
+	@Override
+	public abstract Supplier<IUser> supplier();
 }

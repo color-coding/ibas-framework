@@ -26,11 +26,11 @@ public abstract class BORepository extends Repository implements AutoCloseable {
 
 	private volatile ITransaction transaction;
 
-	public final synchronized ITransaction getTransaction() {
+	public synchronized ITransaction getTransaction() throws RepositoryException {
 		return transaction;
 	}
 
-	public final synchronized void setTransaction(ITransaction transaction) {
+	public synchronized void setTransaction(ITransaction transaction) throws RepositoryException {
 		this.transaction = transaction;
 	}
 
@@ -42,11 +42,13 @@ public abstract class BORepository extends Repository implements AutoCloseable {
 	}
 
 	public synchronized boolean beginTransaction() throws RepositoryException {
+		if (this.transaction == null) {
+			this.initTransaction();
+		}
 		if (this.inTransaction()) {
 			return false;
 		}
 		try {
-			this.transaction = this.startTransaction();
 			return this.transaction.beginTransaction();
 		} catch (Exception e) {
 			throw new RepositoryException(e);
@@ -57,7 +59,6 @@ public abstract class BORepository extends Repository implements AutoCloseable {
 		if (this.inTransaction()) {
 			try {
 				this.transaction.rollback();
-				this.transaction = null;
 			} catch (Exception e) {
 				throw new RepositoryException(e);
 			}
@@ -68,18 +69,9 @@ public abstract class BORepository extends Repository implements AutoCloseable {
 		if (this.inTransaction()) {
 			try {
 				this.transaction.commit();
-				this.transaction = null;
 			} catch (Exception e) {
 				throw new RepositoryException(e);
 			}
-		}
-	}
-
-	@Override
-	public synchronized void close() throws Exception {
-		if (this.transaction != null) {
-			this.transaction.close();
-			this.transaction = null;
 		}
 	}
 
@@ -186,5 +178,7 @@ public abstract class BORepository extends Repository implements AutoCloseable {
 		}
 	}
 
-	protected abstract ITransaction startTransaction() throws RepositoryException;
+	public abstract void close() throws Exception;
+
+	abstract void initTransaction() throws RepositoryException;
 }

@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.BusinessObjectUnit;
 import org.colorcoding.ibas.bobas.common.DateTimes;
+import org.colorcoding.ibas.bobas.common.Decimals;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
@@ -20,6 +21,13 @@ import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.db.DbField;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.rule.IBusinessRule;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleDocumentStatus;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMaxLength;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMinValue;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleRequired;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleRequiredElements;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleSumElements;
 import org.colorcoding.ibas.demo.MyConfiguration;
 
 /**
@@ -1236,68 +1244,6 @@ public class SalesOrder extends BusinessObject<SalesOrder> implements ISalesOrde
 	}
 
 	/**
-	 * 属性名称-周期
-	 */
-	private static final String PROPERTY_CYCLE_NAME = "Cycle";
-
-	/**
-	 * 周期 属性
-	 */
-	@DbField(name = "Cycle", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME)
-	public static final IPropertyInfo<BigDecimal> PROPERTY_CYCLE = registerProperty(PROPERTY_CYCLE_NAME,
-			BigDecimal.class, MY_CLASS);
-
-	/**
-	 * 获取-周期
-	 * 
-	 * @return 值
-	 */
-	@XmlElement(name = PROPERTY_CYCLE_NAME)
-	public final BigDecimal getCycle() {
-		return this.getProperty(PROPERTY_CYCLE);
-	}
-
-	/**
-	 * 设置-周期
-	 * 
-	 * @param value 值
-	 */
-	public final void setCycle(BigDecimal value) {
-		this.setProperty(PROPERTY_CYCLE, value);
-	}
-
-	/**
-	 * 属性名称-周期单位
-	 */
-	private static final String PROPERTY_CYCLEUNIT_NAME = "CycleUnit";
-
-	/**
-	 * 周期单位 属性
-	 */
-	@DbField(name = "CycleUnit", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME)
-	public static final IPropertyInfo<String> PROPERTY_CYCLEUNIT = registerProperty(PROPERTY_CYCLEUNIT_NAME,
-			String.class, MY_CLASS);
-
-	/**
-	 * 获取-周期单位
-	 * 
-	 * @return 值
-	 */
-	@XmlElement(name = PROPERTY_CYCLEUNIT_NAME)
-	public final String getCycleUnit() {
-		return this.getProperty(PROPERTY_CYCLEUNIT);
-	}
-
-	/**
-	 * 设置-周期单位
-	 * 
-	 * @param value 值
-	 */
-	public final void setCycleUnit(String value) {
-		this.setProperty(PROPERTY_CYCLEUNIT, value);
-	}
-
-	/**
 	 * 属性名称-销售订单-行
 	 */
 	private static final String PROPERTY_SALESORDERITEMS_NAME = "SalesOrderItems";
@@ -1351,4 +1297,25 @@ public class SalesOrder extends BusinessObject<SalesOrder> implements ISalesOrde
 		this.getSalesOrderItems().forEach(c -> c.setLineStatus(emDocumentStatus.RELEASED));
 	}
 
+	@Override
+	protected IBusinessRule[] registerRules() {
+		// 注册的业务规则
+		return new IBusinessRule[] {
+				// 要求有值
+				new BusinessRuleRequired(PROPERTY_CUSTOMERCODE),
+				// 不能超过长度
+				new BusinessRuleMaxLength(20, PROPERTY_CUSTOMERCODE),
+				// 要求有元素
+				new BusinessRuleRequiredElements(PROPERTY_SALESORDERITEMS),
+				// 使用集合元素状态
+				new BusinessRuleDocumentStatus(PROPERTY_DOCUMENTSTATUS, PROPERTY_SALESORDERITEMS,
+						SalesOrderItem.PROPERTY_LINESTATUS),
+				// 计算集合元素总计
+				new BusinessRuleSumElements(PROPERTY_DOCUMENTTOTAL, PROPERTY_SALESORDERITEMS,
+						SalesOrderItem.PROPERTY_LINETOTAL),
+				// 不能低于0
+				new BusinessRuleMinValue<BigDecimal>(Decimals.VALUE_ZERO, PROPERTY_DOCUMENTTOTAL)
+
+		};
+	}
 }

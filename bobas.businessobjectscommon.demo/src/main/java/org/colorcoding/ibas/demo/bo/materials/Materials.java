@@ -10,12 +10,16 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.BusinessObjectUnit;
+import org.colorcoding.ibas.bobas.common.Decimals;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.db.DbField;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.rule.IBusinessRule;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMinValue;
+import org.colorcoding.ibas.bobas.rule.common.BusinessRuleRequired;
 import org.colorcoding.ibas.demo.MyConfiguration;
 
 /**
@@ -928,7 +932,19 @@ public class Materials extends BusinessObject<Materials> implements IMaterials {
 	protected void initialize() {
 		super.initialize();// 基类初始化，不可去除
 		this.setObjectCode(BUSINESS_OBJECT_CODE);
+		this.setActivated(emYesNo.YES);
+	}
 
+	@Override
+	protected IBusinessRule[] registerRules() {
+		// 注册的业务规则
+		return new IBusinessRule[] {
+				// 要求有值
+				new BusinessRuleRequired(PROPERTY_ITEMCODE),
+				// 不能低于0
+				new BusinessRuleMinValue<BigDecimal>(Decimals.VALUE_ZERO, PROPERTY_ONHAND)
+
+		};
 	}
 
 }

@@ -26,6 +26,10 @@ public class Repository {
 		return currentUser;
 	}
 
+	final void setCurrentUser(IUser user) {
+		this.currentUser = user;
+	}
+
 	/**
 	 * 获取当前用户token
 	 * 
@@ -60,7 +64,7 @@ public class Repository {
 		if (user == null) {
 			throw new InvalidAuthorizationException(I18N.prop("msg_bobas_no_user_match_the_token"));
 		}
-		this.currentUser = user;
+		this.setCurrentUser(user);
 	}
 
 }

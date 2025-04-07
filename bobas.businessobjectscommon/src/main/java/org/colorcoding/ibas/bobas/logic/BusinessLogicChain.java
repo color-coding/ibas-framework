@@ -284,6 +284,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 		// 先子项，再自身（注意：避免嵌套后无限循环寻找契约）
 		if (data instanceof BusinessObject) {
 			Object cData;
+			BusinessLogic<?, ?> logic;
 			BusinessObject<?> boData = (BusinessObject<?>) data;
 			for (IPropertyInfo<?> propertyInfo : boData.properties()) {
 				if (IBusinessObject.class.isAssignableFrom(propertyInfo.getValueType())) {
@@ -291,7 +292,12 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 					if (cData instanceof IBusinessObject) {
 						for (IBusinessLogic<?> item : this.analyzeContracts((IBusinessObject) cData)) {
 							if (item instanceof BusinessLogic) {
-								((BusinessLogic<?, ?>) item).setParent(data);
+								logic = (BusinessLogic<?, ?>) item;
+								logic.setRoot(data);
+								if (logic.getParent() == null) {
+									// 仅未赋值的
+									logic.setParent(data);
+								}
 							}
 							logics.add(item);
 						}
@@ -302,7 +308,12 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 						for (IBusinessObject item : ((IBusinessObjects<?, ?>) cData)) {
 							for (IBusinessLogic<?> sItem : this.analyzeContracts(item)) {
 								if (sItem instanceof BusinessLogic) {
-									((BusinessLogic<?, ?>) sItem).setParent(data);
+									logic = (BusinessLogic<?, ?>) sItem;
+									logic.setRoot(data);
+									if (logic.getParent() == null) {
+										// 仅未赋值的
+										logic.setParent(data);
+									}
 								}
 								logics.add(sItem);
 							}
