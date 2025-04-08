@@ -9,7 +9,7 @@ import java.util.UUID;
 
 import org.colorcoding.ibas.bobas.bo.BOFactory;
 import org.colorcoding.ibas.bobas.bo.BOUtilities;
-import org.colorcoding.ibas.bobas.bo.BusinessObjects;
+import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
 import org.colorcoding.ibas.bobas.bo.IUserField;
 import org.colorcoding.ibas.bobas.bo.IUserFields;
 import org.colorcoding.ibas.bobas.common.DateTimes;
@@ -93,7 +93,7 @@ public class TestCore extends TestCase {
 		for (IPropertyInfo<?> item : BOFactory.propertyInfos(SalesOrder.class)) {
 			System.out.println(Strings.format("  %s: %s %s", item.getName(), item.getValueType().getSimpleName(),
 					item.getDefaultValue()));
-			if (BusinessObjects.class.isAssignableFrom(item.getValueType())) {
+			if (IBusinessObjects.class.isAssignableFrom(item.getValueType())) {
 				Type genericType = item.getValueType().getGenericSuperclass();
 				if (genericType instanceof ParameterizedType) {
 					ParameterizedType pt = (ParameterizedType) genericType;

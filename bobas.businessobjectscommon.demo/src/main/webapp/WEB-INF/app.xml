@@ -11,7 +11,7 @@
         <!-- 配置项目-数据库地址 -->
         <add key="MasterDbServer" value="ibas-db-sqlite" />
         <!-- 配置项目-数据库名称 -->
-        <add key="MasterDbName" value="ibas_demo" />
+        <add key="MasterDbName" value="ibas_demo_v2" />
         <!-- 配置项目-数据库用户名称 -->
         <add key="MasterDbUserID" value="none" />
         <!-- 配置项目-数据库用户密码 -->
@@ -20,5 +20,7 @@
         <add key="FormattedOutput" value="true"  />
         <!-- 配置项目-序列化管理方式 -->
         <add key="SerializationWay" value="jersey" />
+        <!-- 配置项目-组织方式 -->
+        <add key="OrganizationWay" value="demo" />
     </appSettings>
 </ns2:configuration>

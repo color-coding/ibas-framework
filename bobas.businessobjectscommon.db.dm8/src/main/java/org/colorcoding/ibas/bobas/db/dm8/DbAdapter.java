@@ -9,6 +9,7 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
 import org.colorcoding.ibas.bobas.db.IDbTableLock;
+import org.colorcoding.ibas.bobas.logging.Logger;
 
 public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 
@@ -21,6 +22,9 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			}
 			Class.forName("dm.jdbc.driver.DmDriver");
 			String dbURL = String.format("jdbc:dm://%s?schema=\"\"%s\"\"", server, dbName);
+			if (MyConfiguration.isDebugMode()) {
+				Logger.log(Strings.format("db adapter: %s", dbURL));
+			}
 			return DriverManager.getConnection(dbURL, userName, userPwd);
 		} catch (Exception e) {
 			// 接数据库失败

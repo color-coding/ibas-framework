@@ -5,8 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.logging.Logger;
 
 public class DbFactory {
+
+	private static final String MSG_CONNECTION_USER_CONNECTED = "connection: user [%s] connected [%s|%s].";
 
 	private DbFactory() {
 	}
@@ -47,6 +50,7 @@ public class DbFactory {
 			throws Exception {
 		DbAdapter adapter = createAdapter(type);
 		Connection connection = adapter.createConnection(server, dbName, userName, userPwd);
+		Logger.log(MSG_CONNECTION_USER_CONNECTED, userName, server, dbName);
 		if (connection != null && !this.adapters.containsKey(connection.getClass().getName())) {
 			// 记录此数据库链接的解释器
 			this.adapters.put(connection.getClass().getName(), adapter);

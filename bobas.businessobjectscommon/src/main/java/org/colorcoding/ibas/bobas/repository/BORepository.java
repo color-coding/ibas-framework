@@ -12,7 +12,7 @@ import org.colorcoding.ibas.bobas.logging.Logger;
 import org.colorcoding.ibas.bobas.logic.BusinessLogicsManager;
 import org.colorcoding.ibas.bobas.logic.IBusinessLogicChain;
 
-public abstract class BORepository extends Repository implements AutoCloseable {
+public abstract class BORepository extends Repository {
 
 	private boolean skipLogics;
 
@@ -48,30 +48,18 @@ public abstract class BORepository extends Repository implements AutoCloseable {
 		if (this.inTransaction()) {
 			return false;
 		}
-		try {
-			return this.transaction.beginTransaction();
-		} catch (Exception e) {
-			throw new RepositoryException(e);
-		}
+		return this.transaction.beginTransaction();
 	}
 
 	public synchronized void rollbackTransaction() throws RepositoryException {
 		if (this.inTransaction()) {
-			try {
-				this.transaction.rollback();
-			} catch (Exception e) {
-				throw new RepositoryException(e);
-			}
+			this.transaction.rollback();
 		}
 	}
 
 	public synchronized void commitTransaction() throws RepositoryException {
 		if (this.inTransaction()) {
-			try {
-				this.transaction.commit();
-			} catch (Exception e) {
-				throw new RepositoryException(e);
-			}
+			this.transaction.commit();
 		}
 	}
 
@@ -178,7 +166,16 @@ public abstract class BORepository extends Repository implements AutoCloseable {
 		}
 	}
 
-	public abstract void close() throws Exception;
+	@Override
+	protected void finalize() throws Throwable {
+		this.close();
+		super.finalize();
+	}
+
+	@Override
+	public void close() throws Exception {
+		this.transaction = null;
+	}
 
 	abstract void initTransaction() throws RepositoryException;
 }

@@ -6,8 +6,10 @@ import java.sql.DriverManager;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ICriteria;
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
 import org.colorcoding.ibas.bobas.db.IDbTableLock;
+import org.colorcoding.ibas.bobas.logging.Logger;
 
 public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 
@@ -16,6 +18,9 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		try {
 			Class.forName("org.postgresql.Driver");
 			String dbURL = String.format("jdbc:postgresql://%s/%s", server, dbName);
+			if (MyConfiguration.isDebugMode()) {
+				Logger.log(Strings.format("db adapter: %s", dbURL));
+			}
 			return DriverManager.getConnection(dbURL, userName, userPwd);
 		} catch (Exception e) {
 			// 接数据库失败

@@ -8,6 +8,7 @@ import org.colorcoding.ibas.bobas.db.DbFactory;
 import org.colorcoding.ibas.bobas.db.DbTransaction;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.organization.IUser;
+import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
 
 public class BORepository4DB extends BORepository {
 
@@ -90,7 +91,7 @@ public class BORepository4DB extends BORepository {
 				this.getTransaction().close();
 			}
 		}
-		this.setTransaction(null);
+		super.close();
 	}
 
 	@Override
@@ -101,10 +102,12 @@ public class BORepository4DB extends BORepository {
 			Supplier<IUser> supplier = ((DbTransaction) transaction).supplier();
 			if (supplier != null) {
 				IUser user = supplier.get();
-				try {
-					this.setUserToken(user.getToken());
-				} catch (Exception e) {
-					throw new RepositoryException(e);
+				if (user != OrganizationFactory.UNKNOWN_USER) {
+					try {
+						this.setUserToken(user.getToken());
+					} catch (Exception e) {
+						throw new RepositoryException(e);
+					}
 				}
 			}
 		}

@@ -24,6 +24,7 @@ import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMinValue;
 import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMultiplicativeDeductionEx;
 import org.colorcoding.ibas.bobas.rule.common.BusinessRuleRequired;
 import org.colorcoding.ibas.demo.MyConfiguration;
+import org.colorcoding.ibas.demo.logic.IMaterialsCheckContract;
 import org.colorcoding.ibas.demo.logic.IMaterialsJournalContract;
 
 /**
@@ -990,6 +991,29 @@ public class SalesOrderItem extends BusinessObject<SalesOrderItem> implements IS
 	@Override
 	public IBusinessLogicContract[] getContracts() {
 		return new IBusinessLogicContract[] {
+				// 注册物料检查企业
+				new IMaterialsCheckContract() {
+
+					@Override
+					public String getIdentifiers() {
+						return SalesOrderItem.this.getIdentifiers();
+					}
+
+					@Override
+					public void setItemDescription(String value) {
+						SalesOrderItem.this.setItemDescription(value);
+					}
+
+					@Override
+					public String getItemDescription() {
+						return SalesOrderItem.this.getItemDescription();
+					}
+
+					@Override
+					public String getItemCode() {
+						return SalesOrderItem.this.getItemCode();
+					}
+				},
 				// 注册物料仓库库存契约
 				new IMaterialsJournalContract() {
 

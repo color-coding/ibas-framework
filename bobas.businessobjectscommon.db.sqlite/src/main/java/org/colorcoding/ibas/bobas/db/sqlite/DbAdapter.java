@@ -7,8 +7,10 @@ import java.sql.DriverManager;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.common.ICriteria;
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.IFieldedObject;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.logging.Logger;
 
 public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 
@@ -25,6 +27,9 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			}
 			String dbURL = String.format("jdbc:sqlite:%s?date_string_format=%s", file.getAbsolutePath(),
 					DateTimes.FORMAT_DATE);
+			if (MyConfiguration.isDebugMode()) {
+				Logger.log(Strings.format("db adapter: %s", dbURL));
+			}
 			return DriverManager.getConnection(dbURL, userName, userPwd);
 		} catch (Exception e) {
 			// 接数据库失败

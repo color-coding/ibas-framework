@@ -54,11 +54,10 @@ public class BORepositoryService extends BORepository4DB {
 					IPropertyInfo<?> propertyInfo = BOFactory.propertyInfos(boType)
 							.firstOrDefault(c -> c.getName().equalsIgnoreCase(cCriteria.getPropertyPath()));
 					if (propertyInfo == null) {
-						throw new RepositoryException(
-								I18N.prop("msg_bobas_not_found_bo_property", cCriteria.getPropertyPath()));
+						throw new Exception(I18N.prop("msg_bobas_not_found_bo_property", cCriteria.getPropertyPath()));
 					}
 					if (!IBusinessObjects.class.isAssignableFrom(propertyInfo.getValueType())) {
-						throw new RepositoryException(I18N.prop("msg_bobas_invalid_argument", propertyInfo.getName()));
+						throw new Exception(I18N.prop("msg_bobas_invalid_argument", propertyInfo.getName()));
 					}
 					Class<?> subType = null;
 					IBusinessObjects<IBusinessObject, IBusinessObject> tmpObjects = BOFactory
@@ -69,7 +68,7 @@ public class BORepositoryService extends BORepository4DB {
 					if (subType == null || !(IBODocumentLine.class.isAssignableFrom(subType)
 							|| IBOSimpleLine.class.isAssignableFrom(subType)
 							|| IBOMasterDataLine.class.isAssignableFrom(subType))) {
-						throw new RepositoryException(I18N.prop("msg_bobas_invalid_argument", propertyInfo.getName()));
+						throw new Exception(I18N.prop("msg_bobas_invalid_argument", propertyInfo.getName()));
 					}
 					// 新建主项查询，不再查子项
 					ICriteria nCriteria = criteria.clone();
@@ -78,78 +77,57 @@ public class BORepositoryService extends BORepository4DB {
 					ICondition condition = null;
 					int count = criteria.getConditions().size();
 
-					boolean mine = this.beginTransaction();
-					try {
-						IOperationResult<IBusinessObject> opRsltChilds = this.fetch(subType, cCriteria);
-						if (opRsltChilds.getError() != null) {
-							throw opRsltChilds.getError();
-						}
-						for (IBusinessObject item : opRsltChilds.getResultObjects()) {
-							if (item instanceof IBODocumentLine) {
-								condition = nCriteria.getConditions().create();
-								condition.setAlias(IBODocument.MASTER_PRIMARY_KEY_NAME);
-								condition.setValue(((IBODocumentLine) item).getDocEntry());
-							} else if (item instanceof IBOSimpleLine) {
-								condition = nCriteria.getConditions().create();
-								condition.setAlias(IBOSimple.MASTER_PRIMARY_KEY_NAME);
-								condition.setValue(((IBOSimpleLine) item).getObjectKey());
-							} else if (item instanceof IBOMasterDataLine) {
-								condition = nCriteria.getConditions().create();
-								condition.setAlias(IBOMasterData.MASTER_PRIMARY_KEY_NAME);
-								condition.setValue(((IBOMasterDataLine) item).getCode());
-							}
-							if (nCriteria.getConditions().size() > (count + 2)) {
-								condition.setRelationship(ConditionRelationship.OR);
-							}
+					IOperationResult<IBusinessObject> opRsltChilds = this.fetch(subType, cCriteria);
+					if (opRsltChilds.getError() != null) {
+						throw opRsltChilds.getError();
+					}
+					for (IBusinessObject item : opRsltChilds.getResultObjects()) {
+						if (item instanceof IBODocumentLine) {
+							condition = nCriteria.getConditions().create();
+							condition.setAlias(IBODocument.MASTER_PRIMARY_KEY_NAME);
+							condition.setValue(((IBODocumentLine) item).getDocEntry());
+						} else if (item instanceof IBOSimpleLine) {
+							condition = nCriteria.getConditions().create();
+							condition.setAlias(IBOSimple.MASTER_PRIMARY_KEY_NAME);
+							condition.setValue(((IBOSimpleLine) item).getObjectKey());
+						} else if (item instanceof IBOMasterDataLine) {
+							condition = nCriteria.getConditions().create();
+							condition.setAlias(IBOMasterData.MASTER_PRIMARY_KEY_NAME);
+							condition.setValue(((IBOMasterDataLine) item).getCode());
 						}
 						if (nCriteria.getConditions().size() > (count + 2)) {
-							condition = nCriteria.getConditions().get(count);
-							condition.setBracketOpen(condition.getBracketOpen() + 1);
-							condition = nCriteria.getConditions().lastOrDefault();
-							condition.setBracketClose(condition.getBracketClose() + 1);
+							condition.setRelationship(ConditionRelationship.OR);
 						}
-						// 查询父项，并填充子项
-						OperationResult<T> opRsltParent = this.fetch(boType, nCriteria);
-						if (opRsltParent.getError() != null) {
-							throw opRsltParent.getError();
-						}
-						IBusinessObject cData = null;
-						BOJudgmentLinkCondition judgmentLink = null;
-						for (T data : opRsltParent.getResultObjects()) {
-							tmpObjects = ((FieldedObject) data).getProperty(propertyInfo);
-							if (tmpObjects instanceof IBusinessObjects<?, ?>) {
-								judgmentLink = new BOJudgmentLinkCondition();
-								judgmentLink.parsingConditions(tmpObjects.getElementCriteria().getConditions());
-								for (int i = 0; i < opRsltChilds.getResultObjects().size(); i++) {
-									try {
-										cData = opRsltChilds.getResultObjects().get(i);
-										if (cData == null || !judgmentLink.judge(cData)) {
-											continue;
-										}
-										tmpObjects.add(cData);
-										opRsltChilds.getResultObjects().set(i, null);
-									} catch (Exception e) {
-										throw new RepositoryException(e);
-									}
-								}
-							}
-						}
-						if (mine == true) {
-							synchronized (this) {
-								this.commitTransaction();
-								this.close();
-							}
-						}
-						return opRsltParent;
-					} catch (Exception e) {
-						if (mine == true) {
-							synchronized (this) {
-								this.rollbackTransaction();
-								this.close();
-							}
-						}
-						throw e;
 					}
+					if (nCriteria.getConditions().size() > (count + 2)) {
+						condition = nCriteria.getConditions().get(count);
+						condition.setBracketOpen(condition.getBracketOpen() + 1);
+						condition = nCriteria.getConditions().lastOrDefault();
+						condition.setBracketClose(condition.getBracketClose() + 1);
+					}
+					// 查询父项，并填充子项
+					OperationResult<T> opRsltParent = this.fetch(boType, nCriteria);
+					if (opRsltParent.getError() != null) {
+						throw opRsltParent.getError();
+					}
+					IBusinessObject cData = null;
+					BOJudgmentLinkCondition judgmentLink = null;
+					for (T data : opRsltParent.getResultObjects()) {
+						tmpObjects = ((FieldedObject) data).getProperty(propertyInfo);
+						if (tmpObjects instanceof IBusinessObjects<?, ?>) {
+							judgmentLink = new BOJudgmentLinkCondition();
+							judgmentLink.parsingConditions(tmpObjects.getElementCriteria().getConditions());
+							for (int i = 0; i < opRsltChilds.getResultObjects().size(); i++) {
+								cData = opRsltChilds.getResultObjects().get(i);
+								if (cData == null || !judgmentLink.judge(cData)) {
+									continue;
+								}
+								tmpObjects.add(cData);
+								opRsltChilds.getResultObjects().set(i, null);
+							}
+						}
+					}
+					return opRsltParent;
 				} catch (Exception e) {
 					return new OperationResult<>(e);
 				}
@@ -181,10 +159,14 @@ public class BORepositoryService extends BORepository4DB {
 				if (mine == true) {
 					synchronized (this) {
 						this.commitTransaction();
-						this.close();
 						mine = false;
+						try {
+							// 获取新实例后，关闭连接
+							return this.fetch(bo.getClass(), bo.getCriteria());
+						} finally {
+							this.close();
+						}
 					}
-					return this.fetch(bo.getClass(), bo.getCriteria());
 				}
 				// 非自建事务，不获取新对象实例
 				return operationResult;

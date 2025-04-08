@@ -200,6 +200,9 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 			// 查询方法，不主动开启事务
 			criteria = this.getAdapter().convert(criteria, boType);
 			String sql = this.getAdapter().parsingSelect(boType, criteria);
+			if (MyConfiguration.isDebugMode()) {
+				Logger.log(Strings.format("db sql: %s", sql));
+			}
 			try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
 				// 填充参数
 				this.fillingParameters(statement, criteria.getConditions(), 1);
@@ -213,7 +216,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 					Object propertyValue = null;
 					ICriteria cCriteria = null;
 					for (IPropertyInfo<?> propertyInfo : BOFactory.propertyInfos(boType)) {
-						if (BusinessObject.class.isAssignableFrom(propertyInfo.getValueType())) {
+						if (IBusinessObject.class.isAssignableFrom(propertyInfo.getValueType())) {
 							BusinessObject<?> cData = null;
 							for (T data : datas) {
 								propertyValue = ((BusinessObject<?>) data).getProperty(propertyInfo);
@@ -231,7 +234,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 									}
 								}
 							}
-						} else if (BusinessObjects.class.isAssignableFrom(propertyInfo.getValueType())) {
+						} else if (IBusinessObjects.class.isAssignableFrom(propertyInfo.getValueType())) {
 							boolean onlyHasChilds = false;
 							BusinessObjects<IBusinessObject, ?> cDatas = null;
 							for (T data : datas) {
@@ -274,9 +277,6 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 					}
 				}
 				return datas.where(c -> c.isDeleted() == false).toArray((T[]) Array.newInstance(boType, 0));
-			} catch (SQLException e) {
-				Logger.log("error: %s", sql);
-				throw e;
 			}
 		} catch (Exception e) {
 			throw new RepositoryException(e);
@@ -346,12 +346,12 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 					}
 					// 分析待处理子项
 					for (IPropertyInfo<?> propertyInfo : BOFactory.propertyInfos(boType)) {
-						if (BusinessObject.class.isAssignableFrom(propertyInfo.getValueType())) {
+						if (IBusinessObject.class.isAssignableFrom(propertyInfo.getValueType())) {
 							cData = boData.getProperty(propertyInfo);
 							if (cData instanceof IBusinessObject) {
 								boChilds.add((IBusinessObject) cData);
 							}
-						} else if (BusinessObjects.class.isAssignableFrom(propertyInfo.getValueType())) {
+						} else if (IBusinessObjects.class.isAssignableFrom(propertyInfo.getValueType())) {
 							cData = boData.getProperty(propertyInfo);
 							if (cData instanceof IBusinessObjects) {
 								boChilds.addAll((IBusinessObjects<?, ?>) cData);
@@ -381,6 +381,9 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 						}
 						if (Strings.isNullOrEmpty(sql)) {
 							return new SQLException("no sql statement.");
+						}
+						if (MyConfiguration.isDebugMode()) {
+							Logger.log(Strings.format("db sql: %s", sql));
 						}
 						try (PreparedStatement statement = DbTransaction.this.connection.prepareStatement(sql)) {
 							int count = 0;
@@ -470,9 +473,6 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 							dbField = null;
 							data = null;
 							propertyInfos = null;
-						} catch (SQLException e) {
-							Logger.log(Strings.format("error: %s", sql));
-							return e;
 						} catch (Exception e) {
 							return e;
 						}
@@ -654,6 +654,9 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 			}
 			criteria = this.getAdapter().convert(criteria, maxValue.getType());
 			String sql = this.getAdapter().parsingMaxValue(maxValue, criteria.getConditions());
+			if (MyConfiguration.isDebugMode()) {
+				Logger.log(Strings.format("db sql: %s", sql));
+			}
 			try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
 				// 填充参数
 				this.fillingParameters(statement, criteria.getConditions(), 1);
@@ -664,9 +667,6 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 								new IPropertyInfo<?>[] { maxValue.getKeyField() });
 					}
 				}
-			} catch (SQLException e) {
-				Logger.log("error: %s", sql);
-				throw e;
 			}
 			return maxValue;
 		} catch (Exception e) {
@@ -689,9 +689,6 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 				try (ResultSet resultSet = statement.executeQuery(sqlStatement.getContent())) {
 					return this.getAdapter().parsingDatas(resultSet);
 				}
-			} catch (SQLException e) {
-				Logger.log("error: %s", sqlStatement.getContent());
-				throw e;
 			}
 		} catch (Exception e) {
 			throw new RepositoryException(e);

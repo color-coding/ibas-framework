@@ -6,12 +6,16 @@ package org.colorcoding.ibas.bobas.organization;
  * @author Niuren.Zhu
  *
  */
-public interface IOrganizationManager {
+public abstract class OrganizationManager {
+
+	public static IUser UNKNOWN_USER = OrganizationFactory.UNKNOWN_USER;
+
+	public static IUser SYSTEM_USER = OrganizationFactory.SYSTEM_USER;
 
 	/**
 	 * 初始化
 	 */
-	void initialize();
+	public abstract void initialize();
 
 	/**
 	 * 获取用户
@@ -19,7 +23,7 @@ public interface IOrganizationManager {
 	 * @param token 用户的口令
 	 * @return 未找到应返回null
 	 */
-	IUser getUser(String token);
+	public abstract IUser getUser(String token);
 
 	/**
 	 * 获取用户
@@ -27,7 +31,7 @@ public interface IOrganizationManager {
 	 * @param id 用户ID
 	 * @return 未找到返回UnknownUser
 	 */
-	IUser getUser(int id);
+	public abstract IUser getUser(int id);
 
 	/**
 	 * 注册用户
@@ -35,6 +39,6 @@ public interface IOrganizationManager {
 	 * @param user
 	 * @return 返回注册用户
 	 */
-	IUser register(IUser user);
+	public abstract IUser register(IUser user);
 
 }

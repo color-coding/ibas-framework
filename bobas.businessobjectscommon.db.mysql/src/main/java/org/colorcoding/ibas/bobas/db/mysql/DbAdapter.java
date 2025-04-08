@@ -9,6 +9,7 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
 import org.colorcoding.ibas.bobas.db.IDbTableLock;
+import org.colorcoding.ibas.bobas.logging.Logger;
 
 public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 
@@ -23,6 +24,9 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			String dbURL = String.format(
 					"jdbc:mysql://%s/%s?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=%s",
 					server, dbName, java.net.URLEncoder.encode(timeZone, "UTF-8"));
+			if (MyConfiguration.isDebugMode()) {
+				Logger.log(Strings.format("db adapter: %s", dbURL));
+			}
 			Connection connection = DriverManager.getConnection(dbURL, userName, userPwd);
 			connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 			return connection;

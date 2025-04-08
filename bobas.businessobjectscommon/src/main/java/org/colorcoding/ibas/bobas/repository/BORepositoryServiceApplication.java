@@ -11,8 +11,8 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logging.Logger;
 import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
 import org.colorcoding.ibas.bobas.ownership.IDataOwnership;
-import org.colorcoding.ibas.bobas.ownership.IOwnershipJudger;
 import org.colorcoding.ibas.bobas.ownership.OwnershipFactory;
+import org.colorcoding.ibas.bobas.ownership.OwnershipJudger;
 import org.colorcoding.ibas.bobas.ownership.UnauthorizedException;
 
 public class BORepositoryServiceApplication extends BORepositoryService {
@@ -66,9 +66,9 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 		}
 	}
 
-	private IOwnershipJudger ownershipJudger = null;
+	private OwnershipJudger ownershipJudger = null;
 
-	private final IOwnershipJudger getOwnershipJudger() {
+	private final OwnershipJudger getOwnershipJudger() {
 		if (this.ownershipJudger == null) {
 			this.ownershipJudger = OwnershipFactory.createJudger();
 		}
@@ -91,7 +91,7 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 			if (criteria == null) {
 				criteria = new Criteria();
 			}
-			IOwnershipJudger ownershipJudger = this.getOwnershipJudger();
+			OwnershipJudger ownershipJudger = this.getOwnershipJudger();
 			// 系统用户不受权限控制
 			if (this.getCurrentUser() == OrganizationFactory.SYSTEM_USER) {
 				ownershipJudger = null;
@@ -199,7 +199,7 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 		try {
 			// 数据保存权限
 			if (bo instanceof IDataOwnership) {
-				IOwnershipJudger ownershipJudger = this.getOwnershipJudger();
+				OwnershipJudger ownershipJudger = this.getOwnershipJudger();
 				// 系统用户不受权限控制
 				if (this.getCurrentUser() == OrganizationFactory.SYSTEM_USER) {
 					ownershipJudger = null;
@@ -215,6 +215,12 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 			return new OperationResult<>(e);
 		}
 		return super.save(bo);
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		this.ownershipJudger = null;
+		super.finalize();
 	}
 
 }

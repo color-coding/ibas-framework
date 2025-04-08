@@ -17,9 +17,9 @@ public class OwnershipFactory {
 	private OwnershipFactory() {
 	}
 
-	private volatile static IOwnershipJudger instance;
+	private volatile static OwnershipJudger instance;
 
-	public synchronized static IOwnershipJudger createJudger() {
+	public synchronized static OwnershipJudger createJudger() {
 		if (instance == null) {
 			synchronized (OwnershipFactory.class) {
 				if (instance == null) {
@@ -59,15 +59,15 @@ public class OwnershipFactory {
 		return instance;
 	}
 
-	private static class _OwnershipFactory extends ConfigurableFactory<IOwnershipJudger> {
+	private static class _OwnershipFactory extends ConfigurableFactory<OwnershipJudger> {
 
-		public synchronized IOwnershipJudger createJudger() {
+		public synchronized OwnershipJudger createJudger() {
 			return this.create(MyConfiguration.CONFIG_ITEM_OWNERSHIP_WAY, "OwnershipJudger");
 		}
 
 		@Override
-		protected IOwnershipJudger createDefault(String typeName) {
-			return new IOwnershipJudger() {
+		protected OwnershipJudger createDefault(String typeName) {
+			return new OwnershipJudger() {
 
 				@Override
 				public boolean canRead(IDataOwnership bo, IUser user) {

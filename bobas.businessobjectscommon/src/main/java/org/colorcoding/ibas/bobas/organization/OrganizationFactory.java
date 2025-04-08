@@ -44,7 +44,7 @@ public class OrganizationFactory {
 
 		@Override
 		public String toString() {
-			return "{UNKNOWN_USER}";
+			return "{user: UNKNOWN_USER}";
 		}
 
 	};
@@ -69,15 +69,8 @@ public class OrganizationFactory {
 		}
 
 		@Override
-		public void checkAuthorization(String token) throws InvalidAuthorizationException {
-			if (!this.getToken().equals(token)) {
-				throw new InvalidAuthorizationException();
-			}
-		}
-
-		@Override
 		public String toString() {
-			return "{SYSTEM_USER}";
+			return "{user: SYSTEM_USER}";
 		}
 
 	};
@@ -85,13 +78,14 @@ public class OrganizationFactory {
 	private OrganizationFactory() {
 	}
 
-	private volatile static IOrganizationManager instance;
+	private volatile static OrganizationManager instance;
 
-	public synchronized static IOrganizationManager createManager() {
+	public synchronized static OrganizationManager createManager() {
 		if (instance == null) {
 			synchronized (OrganizationFactory.class) {
 				if (instance == null) {
 					instance = new _OrganizationFactory().create();
+					instance.initialize();
 					try {
 						Daemon.register(new IDaemonTask() {
 							@Override
@@ -102,7 +96,7 @@ public class OrganizationFactory {
 								}
 								// 刷新组织
 								try {
-									IOrganizationManager orgManager = new _OrganizationFactory().create();
+									OrganizationManager orgManager = new _OrganizationFactory().create();
 									orgManager.initialize();
 									instance = orgManager;
 								} catch (Exception e) {
@@ -135,11 +129,11 @@ public class OrganizationFactory {
 		return instance;
 	}
 
-	private static class _OrganizationFactory extends ConfigurableFactory<IOrganizationManager> {
+	private static class _OrganizationFactory extends ConfigurableFactory<OrganizationManager> {
 
 		@Override
-		protected IOrganizationManager createDefault(String typeName) {
-			return new IOrganizationManager() {
+		protected OrganizationManager createDefault(String typeName) {
+			return new OrganizationManager() {
 				@Override
 				public IUser getUser(String token) {
 					if (token != null) {
@@ -205,7 +199,7 @@ public class OrganizationFactory {
 			};
 		}
 
-		public synchronized IOrganizationManager create() {
+		public synchronized OrganizationManager create() {
 			return this.create(MyConfiguration.CONFIG_ITEM_ORGANIZATION_WAY, "OrganizationManager");
 		}
 	}

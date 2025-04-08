@@ -9,7 +9,7 @@
         <!-- 配置项目-数据库地址 -->
         <add key="DbServer" value="ibas-db-mssql" />
         <!-- 配置项目-数据库名称 -->
-        <add key="DbName" value="ibas_demo" />
+        <add key="DbName" value="ibas_demo_v2" />
         <!-- 配置项目-数据库用户名称 -->
         <add key="DbUserID" value="sa" />
         <!-- 配置项目-数据库用户密码 -->

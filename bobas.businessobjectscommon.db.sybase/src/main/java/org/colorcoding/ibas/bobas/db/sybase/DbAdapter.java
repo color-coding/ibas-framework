@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.logging.Logger;
 
 public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 
@@ -17,6 +18,9 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 				server = String.format("%s:2638", server);
 			}
 			String dbURL = String.format("jdbc:sybase:Tds:%s?ServiceName=%s", server, dbName);
+			if (MyConfiguration.isDebugMode()) {
+				Logger.log(Strings.format("db adapter: %s", dbURL));
+			}
 			return DriverManager.getConnection(dbURL, userName, userPwd);
 		} catch (Exception e) {
 			// 接数据库失败

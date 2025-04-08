@@ -4,6 +4,7 @@ import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.logic.BusinessLogic;
 import org.colorcoding.ibas.bobas.logic.BusinessLogicException;
 import org.colorcoding.ibas.bobas.logic.LogicContract;
@@ -11,11 +12,11 @@ import org.colorcoding.ibas.demo.bo.materials.IMaterials;
 import org.colorcoding.ibas.demo.bo.materials.Materials;
 import org.colorcoding.ibas.demo.repository.BORepositoryTrainingTesting;
 
-@LogicContract(IMaterialsInventoryQuantityContract.class)
-public class MaterialsInventoryQuantityLogic extends BusinessLogic<IMaterialsInventoryQuantityContract, IMaterials> {
+@LogicContract(IMaterialsCheckContract.class)
+public class MaterialsCheckLogic extends BusinessLogic<IMaterialsCheckContract, IMaterials> {
 
 	@Override
-	protected IMaterials fetchBeAffected(IMaterialsInventoryQuantityContract contract) {
+	protected IMaterials fetchBeAffected(IMaterialsCheckContract contract) {
 		ICriteria criteria = Criteria.create();
 		ICondition condition = criteria.getConditions().create();
 		condition.setAlias(Materials.PROPERTY_ITEMCODE.getName());
@@ -42,15 +43,14 @@ public class MaterialsInventoryQuantityLogic extends BusinessLogic<IMaterialsInv
 	}
 
 	@Override
-	protected void impact(IMaterialsInventoryQuantityContract contract) {
-		// 增加订购数量
-		this.getBeAffected().setOnHand(this.getBeAffected().getOnHand().add(contract.getQuantity()));
+	protected void impact(IMaterialsCheckContract contract) {
+		if (Strings.isNullOrEmpty(contract.getItemDescription())) {
+			contract.setItemDescription(this.getBeAffected().getItemDescription());
+		}
 	}
 
 	@Override
-	protected void revoke(IMaterialsInventoryQuantityContract contract) {
-		// 减小订购数量
-		this.getBeAffected().setOnHand(this.getBeAffected().getOnHand().subtract(contract.getQuantity()));
+	protected void revoke(IMaterialsCheckContract contract) {
 	}
 
 }

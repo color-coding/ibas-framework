@@ -2,15 +2,15 @@ package org.colorcoding.ibas.bobas.repository;
 
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.organization.IOrganizationManager;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
 import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
+import org.colorcoding.ibas.bobas.organization.OrganizationManager;
 
 /**
  * 仓库
  */
-public class Repository {
+public class Repository implements AutoCloseable {
 
 	private IUser currentUser;
 
@@ -58,13 +58,22 @@ public class Repository {
 		if (user != null && Strings.equalsIgnoreCase(user.getToken(), token)) {
 			return;
 		}
-		IOrganizationManager orgManager = OrganizationFactory.createManager();
+		OrganizationManager orgManager = OrganizationFactory.createManager();
 		user = orgManager.getUser(token);
 		// 没有用户匹配次口令
-		if (user == null) {
+		if (user == null || user == OrganizationFactory.UNKNOWN_USER) {
 			throw new InvalidAuthorizationException(I18N.prop("msg_bobas_no_user_match_the_token"));
 		}
 		this.setCurrentUser(user);
 	}
 
+	@Override
+	protected void finalize() throws Throwable {
+		this.currentUser = null;
+		super.finalize();
+	}
+
+	@Override
+	public void close() throws Exception {
+	}
 }

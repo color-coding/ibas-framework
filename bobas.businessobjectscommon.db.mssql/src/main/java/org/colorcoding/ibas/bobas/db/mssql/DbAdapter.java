@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.logging.Logger;
 
 public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 
@@ -18,6 +19,9 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 			String dbURL = String.format("jdbc:sqlserver://%s;DatabaseName=%s;ApplicationName=%s", server, dbName,
 					application);
+			if (MyConfiguration.isDebugMode()) {
+				Logger.log(Strings.format("db adapter: %s", dbURL));
+			}
 			return DriverManager.getConnection(dbURL, userName, userPwd);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
