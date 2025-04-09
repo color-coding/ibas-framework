@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.rule;
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 业务规则管理员
@@ -26,16 +27,16 @@ public class BusinessRulesManager {
 		return instance;
 	}
 
-	private volatile HashMap<Class<?>, IBusinessRules> rules;
+	private volatile Map<Class<?>, IBusinessRules> rules;
 
 	/**
 	 * 配置项
 	 */
-	protected final HashMap<Class<?>, IBusinessRules> getRules() {
+	protected final Map<Class<?>, IBusinessRules> getRules() {
 		if (rules == null) {
 			synchronized (this) {
 				if (rules == null) {
-					rules = new HashMap<Class<?>, IBusinessRules>(256);
+					rules = new ConcurrentHashMap<Class<?>, IBusinessRules>(256);
 				}
 			}
 		}

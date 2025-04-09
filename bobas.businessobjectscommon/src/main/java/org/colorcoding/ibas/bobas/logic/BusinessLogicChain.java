@@ -22,7 +22,10 @@ import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.repository.ITransaction;
 import org.colorcoding.ibas.bobas.repository.RepositoryException;
 
-public class BusinessLogicChain implements IBusinessLogicChain {
+/**
+ * 业务逻辑链
+ */
+class BusinessLogicChain implements IBusinessLogicChain {
 
 	public BusinessLogicChain(ITransaction transaction) {
 		this.setTransaction(transaction);
@@ -31,12 +34,22 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 
 	private String id;
 
-	public synchronized final String getId() {
+	public final String getId() {
 		return id;
 	}
 
-	public synchronized final void setId() {
+	private final void setId() {
 		this.id = Strings.format("%s_%s", this.getTransaction().getId(), this.hashCode());
+	}
+
+	private Object root;
+
+	public final Object getRoot() {
+		return root;
+	}
+
+	private final void setRoot(Object root) {
+		this.root = root;
 	}
 
 	private IBusinessObject trigger;
@@ -89,7 +102,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 	/**
 	 * 执行正向逻辑
 	 */
-	protected final void forwardLogics() {
+	private final void forwardLogics() {
 		// 执行正向逻辑
 		for (IBusinessLogic<?> logic : this.getTriggerLogics()) {
 			if (logic == null) {
@@ -103,7 +116,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 	/**
 	 * 执行反向逻辑
 	 */
-	protected final void reverseLogics() {
+	private final void reverseLogics() {
 		// 执行反向逻辑
 		for (IBusinessLogic<?> logic : this.getTriggerCopyLogics()) {
 			if (logic == null) {
@@ -136,8 +149,9 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 		Logger.log(LoggingLevel.INFO, "logics chain [%s]: logics done at [%s].", this.hashCode(),
 				DateTimes.toString(DateTimes.now(), DateTimes.FORMAT_TIME));
 		// 保存逻辑影响对象
-		ArrayList<IBusinessObject> beAffecteds = new ArrayList<>();
-		for (IBusinessLogic<?> logic : this.getLogics()) {
+		IBusinessLogic<?>[] logics = this.getLogics();
+		ArrayList<IBusinessObject> beAffecteds = new ArrayList<>(logics.length);
+		for (IBusinessLogic<?> logic : logics) {
 			if (logic == null) {
 				continue;
 			}
@@ -189,8 +203,10 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 					// 没有被修改，则跳过
 					continue;
 				}
-				try (IBusinessLogicChain logicChain = BusinessLogicsManager.create().createChain(this.getTransaction(),
-						this.getUser())) {
+				try (BusinessLogicChain logicChain = BusinessLogicsManager.create()
+						.createChain(this.getTransaction())) {
+					logicChain.setUser(this.getUser());
+					logicChain.setRoot(this.getTrigger());
 					logicChain.setTrigger(item);
 					if (item.isNew() == false) {
 						// 非新建，则查询副本
@@ -218,40 +234,29 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 		}
 	}
 
-	protected IBusinessLogic<?>[] analyzeContracts(IBusinessObject data) {
+	protected BusinessLogic<?, ?>[] analyzeContracts(IBusinessObject data) {
 		/**
 		 * 分析并创建契约服务
 		 */
-		Function<IBusinessLogicContract, IBusinessLogic<?>> analyzer = new Function<IBusinessLogicContract, IBusinessLogic<?>>() {
+		Function<IBusinessLogicContract, BusinessLogic<?, ?>> analyzer = new Function<IBusinessLogicContract, BusinessLogic<?, ?>>() {
 
 			@Override
-			public IBusinessLogic<?> apply(IBusinessLogicContract contract) {
+			public BusinessLogic<?, ?> apply(IBusinessLogicContract contract) {
 				Class<?> tmpClass = contract.getClass();
 				// 开始检查契约
 				while (tmpClass != null) {
 					for (Class<?> item : tmpClass.getInterfaces()) {
-						boolean exists = false;
-						for (Class<?> subItem : item.getInterfaces()) {
-							if (subItem.equals(IBusinessLogicContract.class)) {
-								// 业务逻辑契约的扩展类型
-								exists = true;
-								break;
-							}
+						if (!IBusinessLogicContract.class.isAssignableFrom(IBusinessLogicContract.class)) {
+							continue;
 						}
-						if (exists) {
-							// 存在契约，创建契约对应的逻辑实例
-							BusinessLogic<?, ?> logic = BusinessLogicsManager.create().createLogic(item);
-							if (logic == null) {
-								throw new BusinessLogicException(
-										I18N.prop("msg_bobas_not_found_bo_logic", item.getName()));
-							}
-							logic.setTransaction(BusinessLogicChain.this.getTransaction());
-							logic.setLogicChain(BusinessLogicChain.this);
-							logic.setContract(contract);
-							logic.setHost(data);
-
-							return logic;
+						// 存在契约，创建契约对应的逻辑实例
+						BusinessLogic<?, ?> logic = BusinessLogicsManager.create().createLogic(item);
+						if (logic == null) {
+							throw new BusinessLogicException(I18N.prop("msg_bobas_not_found_bo_logic", item.getName()));
 						}
+						logic.setLogicChain(BusinessLogicChain.this);
+						logic.setContract(contract);
+						return logic;
 					}
 					// 检查基类的契约
 					tmpClass = tmpClass.getSuperclass();
@@ -262,42 +267,55 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 				return null;
 			}
 		};
-
+		BusinessLogic<?, ?> logic;
 		ArrayList<IBusinessLogic<?>> logics = new ArrayList<>(16);
 		// 仅业务对象增加默认逻辑
 		if (data instanceof IBusinessObject) {
 			// 主键编号
 			if (data.isSavable() && data.isNew()) {
-				logics.add(analyzer.apply(new BOKeysContract(data)));
+				logic = analyzer.apply(new BOKeysContract(data));
+				logic.setHost(data);
+				logics.add(logic);
 			}
 			// 业务逻辑执行
-			logics.add(analyzer.apply(new BORulesContract(data)));
+			logic = analyzer.apply(new BORulesContract(data));
+			logic.setHost(data);
+			logics.add(logic);
 			// 数据标记
 			if (data.isSavable() && !data.isDeleted() && data.isDirty() && data instanceof IBOStorageTag) {
-				logics.add(analyzer.apply(new BOStorageTagContract((IBOStorageTag) data)));
+				logic = analyzer.apply(new BOStorageTagContract((IBOStorageTag) data));
+				logic.setHost(data);
+				logics.add(logic);
 			}
 			// 审批流程（仅触发对象）
-			if (data.isSavable() && data == this.getTrigger() && data.isDirty() && data instanceof IApprovalData) {
-				logics.add(analyzer.apply(new BOApprovalContract((IApprovalData) data)));
+			if (data.isSavable() && data instanceof IApprovalData) {
+				if (data == this.getTrigger() && this.getTrigger().isDirty()) {
+					logic = analyzer.apply(new BOApprovalContract((IApprovalData) data));
+					logic.setHost(data);
+					logics.add(logic);
+				} else if (data == this.getTriggerCopy() && this.getTrigger().isDirty()) {
+					logic = analyzer.apply(new BOApprovalContract((IApprovalData) data));
+					logic.setHost(data);
+					logics.add(logic);
+				}
 			}
 		}
 		// 先子项，再自身（注意：避免嵌套后无限循环寻找契约）
 		if (data instanceof BusinessObject) {
 			Object cData;
-			BusinessLogic<?, ?> logic;
 			BusinessObject<?> boData = (BusinessObject<?>) data;
 			for (IPropertyInfo<?> propertyInfo : boData.properties()) {
+				// 跳过值类型
+				if (BOUtilities.isValueType(propertyInfo)) {
+					continue;
+				}
 				if (IBusinessObject.class.isAssignableFrom(propertyInfo.getValueType())) {
 					cData = BOUtilities.propertyValue(boData, propertyInfo);
 					if (cData instanceof IBusinessObject) {
-						for (IBusinessLogic<?> item : this.analyzeContracts((IBusinessObject) cData)) {
-							if (item instanceof BusinessLogic) {
-								logic = (BusinessLogic<?, ?>) item;
-								logic.setRoot(data);
-								if (logic.getParent() == null) {
-									// 仅未赋值的
-									logic.setParent(data);
-								}
+						for (BusinessLogic<?, ?> item : this.analyzeContracts((IBusinessObject) cData)) {
+							if (item.getParent() == null) {
+								// 仅未赋值的
+								item.setParent(data);
 							}
 							logics.add(item);
 						}
@@ -306,14 +324,10 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 					cData = BOUtilities.propertyValue(boData, propertyInfo);
 					if (cData instanceof IBusinessObjects) {
 						for (IBusinessObject item : ((IBusinessObjects<?, ?>) cData)) {
-							for (IBusinessLogic<?> sItem : this.analyzeContracts(item)) {
-								if (sItem instanceof BusinessLogic) {
-									logic = (BusinessLogic<?, ?>) sItem;
-									logic.setRoot(data);
-									if (logic.getParent() == null) {
-										// 仅未赋值的
-										logic.setParent(data);
-									}
+							for (BusinessLogic<?, ?> sItem : this.analyzeContracts(item)) {
+								if (sItem.getParent() == null) {
+									// 仅未赋值的
+									sItem.setParent(data);
 								}
 								logics.add(sItem);
 							}
@@ -329,7 +343,9 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 			IBusinessLogicContract[] hostContracts = ((IBusinessLogicsHost) data).getContracts();
 			if (hostContracts != null) {
 				for (IBusinessLogicContract item : hostContracts) {
-					logics.add(analyzer.apply(item));
+					logic = analyzer.apply(item);
+					logic.setHost(data);
+					logics.add(logic);
 				}
 			}
 			hostContracts = null;
@@ -337,15 +353,25 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 		// 仅业务对象增加默认逻辑
 		if (data instanceof IBusinessObject) {
 			// 数据日志（仅触发对象）
-			if (data.isSavable() && data == this.getTrigger() && data.isDirty() && data instanceof IBOStorageTag) {
-				logics.add(analyzer.apply(new BOInstanceLogContract((IBOStorageTag) data)));
+			if (data.isSavable() && data instanceof IBOStorageTag) {
+				if (data == this.getTrigger() && this.getTrigger().isDirty()) {
+					logic = analyzer.apply(new BOInstanceLogContract((IBOStorageTag) data));
+					logic.setHost(data);
+					logics.add(logic);
+				} else if (data == this.getTriggerCopy() && this.getTrigger().isDirty()
+						&& this.getTrigger().isDeleted()) {
+					// 仅对象删除时，触发反向逻辑
+					logic = analyzer.apply(new BOInstanceLogContract((IBOStorageTag) data));
+					logic.setHost(data);
+					logics.add(logic);
+				}
 			}
 		}
 		// 返回并剔除无效的
-		return logics.where(c -> c != null).toArray(new IBusinessLogic<?>[] {});
+		return logics.where(c -> c != null).toArray(new BusinessLogic<?, ?>[] {});
 	}
 
-	private IBusinessLogic<?>[] triggerLogics;
+	private BusinessLogic<?, ?>[] triggerLogics;
 
 	/**
 	 * 触发者的业务逻辑
@@ -361,7 +387,7 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 		return this.triggerLogics;
 	}
 
-	private IBusinessLogic<?>[] triggerCopyLogics;
+	private BusinessLogic<?, ?>[] triggerCopyLogics;
 
 	/**
 	 * 触发者副本的业务逻辑
@@ -383,7 +409,9 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 	 * @return
 	 */
 	protected final IBusinessLogic<?>[] getLogics() {
-		ArrayList<IBusinessLogic<?>> logics = new ArrayList<>(16);
+		ArrayList<IBusinessLogic<?>> logics = new ArrayList<>(
+				(this.triggerCopyLogics != null ? this.triggerCopyLogics.length : 0)
+						+ (this.triggerLogics != null ? this.triggerLogics.length : 0));
 		if (this.triggerCopyLogics != null) {
 			for (int i = 0; i < this.triggerCopyLogics.length; i++) {
 				// for (int i = this.triggerCopyLogics.length - 1; i >= 0; i--) {
@@ -401,6 +429,11 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 
 	@Override
 	public void close() throws Exception {
+		this.root = null;
+		this.user = null;
+		this.trigger = null;
+		this.triggerCopy = null;
+		this.transaction = null;
 		this.triggerLogics = null;
 		this.triggerCopyLogics = null;
 	}

@@ -28,7 +28,7 @@ public class BORepositoryTrainingTesting extends BORepositoryServiceApplication
 	 * @return 操作结果
 	 */
 	public OperationResult<Materials> fetchMaterials(ICriteria criteria, String token) {
-		return super.fetch(criteria, token, Materials.class);
+		return super.fetch(Materials.class, criteria, token);
 	}
 
 	/**
@@ -71,7 +71,7 @@ public class BORepositoryTrainingTesting extends BORepositoryServiceApplication
 	 * @return 操作结果
 	 */
 	public OperationResult<SalesOrder> fetchSalesOrder(ICriteria criteria, String token) {
-		return super.fetch(criteria, token, SalesOrder.class);
+		return super.fetch(SalesOrder.class, criteria, token);
 	}
 
 	/**
@@ -114,7 +114,7 @@ public class BORepositoryTrainingTesting extends BORepositoryServiceApplication
 	 * @return 操作结果
 	 */
 	public OperationResult<User> fetchUser(ICriteria criteria, String token) {
-		return super.fetch(criteria, token, User.class);
+		return super.fetch(User.class, criteria, token);
 	}
 
 	/**
@@ -157,7 +157,7 @@ public class BORepositoryTrainingTesting extends BORepositoryServiceApplication
 	 * @return 操作结果
 	 */
 	public OperationResult<MaterialsJournal> fetchMaterialsJournal(ICriteria criteria, String token) {
-		return super.fetch(criteria, token, MaterialsJournal.class);
+		return super.fetch(MaterialsJournal.class, criteria, token);
 	}
 
 	/**

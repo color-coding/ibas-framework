@@ -88,19 +88,13 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 		this.host = host;
 	}
 
-	private Object root;
-
 	/**
-	 * 获取-契约数据所属根项
+	 * 获取-契约链触发对象
 	 * 
 	 * @return
 	 */
-	protected final Object getRoot() {
-		return root;
-	}
-
-	final void setRoot(Object root) {
-		this.root = root;
+	protected final Object getTrigger() {
+		return this.getLogicChain().getTrigger();
 	}
 
 	private Object parent;
@@ -118,7 +112,14 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 		this.parent = parent;
 	}
 
-	private ITransaction transaction;
+	/**
+	 * 获取-契约数据所属根项
+	 * 
+	 * @return
+	 */
+	protected final Object getRoot() {
+		return this.getLogicChain().getRoot();
+	}
 
 	/**
 	 * 获取-事务
@@ -126,11 +127,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 	 * @return
 	 */
 	protected final ITransaction getTransaction() {
-		return this.transaction;
-	}
-
-	final void setTransaction(ITransaction transaction) {
-		this.transaction = transaction;
+		return this.getLogicChain().getTransaction();
 	}
 
 	private T beAffected;

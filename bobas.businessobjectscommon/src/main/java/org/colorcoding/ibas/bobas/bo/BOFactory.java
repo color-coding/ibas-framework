@@ -7,10 +7,10 @@ import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -34,8 +34,8 @@ public class BOFactory {
 
 	static {
 		// 初始化变量
-		MAP_BO2CODE = new HashMap<Class<?>, String>(256);
-		MAP_CODE2BO = new HashMap<String, Class<?>>(256);
+		MAP_BO2CODE = new ConcurrentHashMap<Class<?>, String>(256);
+		MAP_CODE2BO = new ConcurrentHashMap<String, Class<?>>(256);
 		// 注册属性注册监听
 		PropertyInfoManager.registerListener(new PropertyInfoRegisterListener() {
 
@@ -135,7 +135,7 @@ public class BOFactory {
 		}
 	}
 
-	private static Map<Class<?>, List<IPropertyInfo<?>>> boProperties = new HashMap<>();
+	private static Map<Class<?>, List<IPropertyInfo<?>>> boProperties = new ConcurrentHashMap<>();
 
 	/**
 	 * 获取对象的所有属性

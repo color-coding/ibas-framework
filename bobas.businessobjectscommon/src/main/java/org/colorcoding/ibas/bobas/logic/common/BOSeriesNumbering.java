@@ -1,5 +1,11 @@
 package org.colorcoding.ibas.bobas.logic.common;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBOCustomKey;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
@@ -12,6 +18,9 @@ import org.colorcoding.ibas.bobas.db.IDbTableLock;
  * 业务对象序列编号方式
  * 
  */
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlType(name = "BOSeriesNumbering", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
+@XmlRootElement(name = "BOSeriesNumbering", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
 public class BOSeriesNumbering extends BusinessObject<BOSeriesNumbering> implements IDbTableLock, IBOCustomKey {
 
 	private static final long serialVersionUID = 1L;

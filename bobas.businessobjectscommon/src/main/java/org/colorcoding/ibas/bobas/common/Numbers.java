@@ -11,39 +11,39 @@ public class Numbers {
 	/**
 	 * 整型：1
 	 */
-	public final static int INTEGER_VALUE_ONE = 1;
+	public final static Integer INTEGER_VALUE_ONE = Integer.valueOf(1);
 
 	/**
 	 * 整型：0
 	 */
-	public final static int INTEGER_VALUE_ZERO = 0;
+	public final static Integer INTEGER_VALUE_ZERO = Integer.valueOf(0);
 
 	/**
 	 * 整型：-1
 	 */
-	public final static int INTEGER_VALUE_MINUS_ONE = -1;
+	public final static Integer INTEGER_VALUE_MINUS_ONE = Integer.valueOf(-1);
 
 	/**
 	 * 短整型：1
 	 */
-	public final static short SHORT_VALUE_ONE = 1;
+	public final static Short SHORT_VALUE_ONE = Short.valueOf((short) 1);
 
 	/**
 	 * 短整型：0
 	 */
-	public final static short SHORT_VALUE_ZERO = 0;
+	public final static Short SHORT_VALUE_ZERO = Short.valueOf((short) 0);
 	/**
 	 * 长整型：0
 	 */
-	public final static long LONG_VALUE_ZERO = 0;
+	public final static Long LONG_VALUE_ZERO = Long.valueOf(0l);
 	/**
 	 * 双精度型：0
 	 */
-	public final static double DOUBLE_VALUE_ZERO = 0;
+	public final static Double DOUBLE_VALUE_ZERO = Double.valueOf(0d);
 	/**
 	 * 浮点型：0
 	 */
-	public final static float FLOAT_VALUE_ZERO = 0;
+	public final static Float FLOAT_VALUE_ZERO = Float.valueOf(0f);
 
 	/**
 	 * 类型默认值

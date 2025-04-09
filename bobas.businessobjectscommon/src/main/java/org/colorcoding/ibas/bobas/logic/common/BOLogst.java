@@ -1,5 +1,11 @@
 package org.colorcoding.ibas.bobas.logic.common;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
+import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBOCustomKey;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
@@ -11,6 +17,9 @@ import org.colorcoding.ibas.bobas.db.DbFieldType;
  * 业务对象日志
  * 
  */
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlType(name = BOLogst.BUSINESS_OBJECT_NAME, namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
+@XmlRootElement(name = BOLogst.BUSINESS_OBJECT_NAME, namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
 public class BOLogst extends BusinessObject<BOLogst> implements IBOCustomKey {
 
 	/**

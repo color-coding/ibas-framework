@@ -5,8 +5,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.BOFactory;
@@ -291,6 +291,7 @@ public abstract class DbAdapter {
 		} else {
 			criteria = criteria.clone();
 		}
+		Object tmpValue;
 		DbField dbField;
 		for (IPropertyInfo<?> propertyInfo : propertyInfos) {
 			for (ICondition condition : criteria.getConditions()) {
@@ -301,6 +302,13 @@ public abstract class DbAdapter {
 						condition.setAlias(dbField.name());
 					}
 					condition.setAliasDataType(DbFieldType.valueOf(propertyInfo.getValueType()));
+					// 枚举类型的转值
+					if (propertyInfo.getValueType().isEnum()) {
+						tmpValue = Enums.valueOf(propertyInfo.getValueType(), condition.getValue());
+						if (tmpValue != null) {
+							condition.setValue(Enums.annotationValue(tmpValue));
+						}
+					}
 				}
 				if (Strings.equalsIgnoreCase(condition.getComparedAlias(), propertyInfo.getName())) {
 					// 属性名称转数据库字段
@@ -378,7 +386,7 @@ public abstract class DbAdapter {
 		return this.parsingSelect(boType, criteria, IDbTableLock.class.isAssignableFrom(boType));
 	}
 
-	private Map<Class<?>, String> tables = new HashMap<>();
+	private Map<Class<?>, String> tables = new ConcurrentHashMap<>(256);
 
 	public String table(Class<?> boType) {
 		try {
@@ -418,7 +426,7 @@ public abstract class DbAdapter {
 		stringBuilder.append(this.identifier());
 		if (IDbTableLock.class.isAssignableFrom(boType)) {
 			stringBuilder.append(" ");
-			stringBuilder.append("WITH (UPDLOCK)");
+			stringBuilder.append("WITH (ROWLOCK, UPDLOCK)");
 		}
 		if (criteria.getConditions().size() > 0) {
 			stringBuilder.append(" ");
@@ -642,6 +650,9 @@ public abstract class DbAdapter {
 			stringBuilder.append("=");
 			stringBuilder.append(" ");
 			stringBuilder.append("?");
+		}
+		if (stringBuilder.length() == 0) {
+			throw new RuntimeException(I18N.prop("msg_bobas_bo_not_found_primarykeys", boData.toString()));
 		}
 		return stringBuilder.toString();
 	}

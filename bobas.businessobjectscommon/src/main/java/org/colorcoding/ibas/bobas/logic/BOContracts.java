@@ -35,11 +35,11 @@ class BOContract<T> implements IBusinessLogicContract {
 
 	private T host;
 
-	public synchronized final T getHost() {
+	public final T getHost() {
 		return host;
 	}
 
-	private synchronized final void setHost(T host) {
+	private final void setHost(T host) {
 		this.host = host;
 	}
 

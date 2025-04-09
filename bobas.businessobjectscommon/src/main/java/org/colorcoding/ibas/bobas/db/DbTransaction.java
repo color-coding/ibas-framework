@@ -22,10 +22,12 @@ import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.Criteria;
+import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.common.Enums;
 import org.colorcoding.ibas.bobas.common.IChildCriteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
+import org.colorcoding.ibas.bobas.common.Numbers;
 import org.colorcoding.ibas.bobas.common.Result;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.FieldedObject;
@@ -51,11 +53,11 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 
 	private boolean replacementUpdate;
 
-	public synchronized final boolean isReplacementUpdate() {
+	public final boolean isReplacementUpdate() {
 		return replacementUpdate;
 	}
 
-	public synchronized final void setReplacementUpdate(boolean replacementUpdate) {
+	public final void setReplacementUpdate(boolean replacementUpdate) {
 		this.replacementUpdate = replacementUpdate;
 	}
 
@@ -216,6 +218,10 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 					Object propertyValue = null;
 					ICriteria cCriteria = null;
 					for (IPropertyInfo<?> propertyInfo : BOFactory.propertyInfos(boType)) {
+						// 跳过值类型
+						if (BOUtilities.isValueType(propertyInfo)) {
+							continue;
+						}
 						if (IBusinessObject.class.isAssignableFrom(propertyInfo.getValueType())) {
 							BusinessObject<?> cData = null;
 							for (T data : datas) {
@@ -346,6 +352,10 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 					}
 					// 分析待处理子项
 					for (IPropertyInfo<?> propertyInfo : BOFactory.propertyInfos(boType)) {
+						// 跳过值类型
+						if (BOUtilities.isValueType(propertyInfo)) {
+							continue;
+						}
 						if (IBusinessObject.class.isAssignableFrom(propertyInfo.getValueType())) {
 							cData = boData.getProperty(propertyInfo);
 							if (cData instanceof IBusinessObject) {
@@ -368,13 +378,14 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 					@Override
 					public Exception apply(TransactionType type, List<BusinessObject<?>> datas) {
 						String sql = null;
+						BusinessObject<?> tpltData = datas.get(0);
 						try {
 							if (type == TransactionType.ADD) {
-								sql = DbTransaction.this.getAdapter().parsingInsert(datas.get(0));
+								sql = DbTransaction.this.getAdapter().parsingInsert(tpltData);
 							} else if (type == TransactionType.DELETE) {
-								sql = DbTransaction.this.getAdapter().parsingDelete(datas.get(0));
+								sql = DbTransaction.this.getAdapter().parsingDelete(tpltData);
 							} else if (type == TransactionType.UPDATE) {
-								sql = DbTransaction.this.getAdapter().parsingUpdate(datas.get(0));
+								sql = DbTransaction.this.getAdapter().parsingUpdate(tpltData);
 							}
 						} catch (Exception e) {
 							return e;
@@ -388,57 +399,68 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 						try (PreparedStatement statement = DbTransaction.this.connection.prepareStatement(sql)) {
 							int count = 0;
 							int index = 0;
+							Object value;
 							DbField dbField;
 							BusinessObject<?> data;
-							List<IPropertyInfo<?>> propertyInfos;
+							List<IPropertyInfo<?>> propertyInfos = tpltData.properties();
 							for (int i = 0; i < datas.size(); i++) {
 								index = 1;
 								data = datas.get(i);
 								propertyInfos = data.properties();
 
 								if (type == TransactionType.DELETE) {
+									// 设置主键条件值
 									for (IPropertyInfo<?> propertyInfo : propertyInfos.where(c -> c.isPrimaryKey())) {
 										dbField = propertyInfo.getAnnotation(DbField.class);
 										if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
 											continue;
 										}
+										value = data.getProperty(propertyInfo);
 										if (propertyInfo.getValueType().isEnum()) {
-											statement.setObject(index,
-													Enums.annotationValue(data.getProperty(propertyInfo)),
+											statement.setObject(index, Enums.annotationValue(value),
 													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type()));
 										} else {
-											statement.setObject(index, data.getProperty(propertyInfo),
+											statement.setObject(index, value,
 													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type()));
 										}
 										index += 1;
 									}
 								} else if (type == TransactionType.UPDATE) {
+									// 设置更新值
 									for (IPropertyInfo<?> propertyInfo : propertyInfos.where(c -> !c.isPrimaryKey())) {
 										dbField = propertyInfo.getAnnotation(DbField.class);
 										if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
 											continue;
 										}
+										value = data.getProperty(propertyInfo);
+										if (!propertyInfo.isPrimaryKey() && (value == DateTimes.VALUE_MIN
+												|| value == Strings.VALUE_EMPTY || value == Numbers.SHORT_VALUE_ZERO
+												|| value == Numbers.DOUBLE_VALUE_ZERO
+												|| value == Numbers.FLOAT_VALUE_ZERO)) {
+											// 默认值时存空
+											value = null;
+										}
 										if (propertyInfo.getValueType().isEnum()) {
-											statement.setObject(index,
-													Enums.annotationValue(data.getProperty(propertyInfo)),
+											statement.setObject(index, Enums.annotationValue(value),
 													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type()));
 										} else {
-											statement.setObject(index, data.getProperty(propertyInfo),
+											statement.setObject(index, value,
 													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type()));
 										}
 										index += 1;
 									}
+									// 设置主键条件值
 									for (IPropertyInfo<?> propertyInfo : propertyInfos.where(c -> c.isPrimaryKey())) {
 										dbField = propertyInfo.getAnnotation(DbField.class);
 										if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
 											continue;
 										}
+										value = data.getProperty(propertyInfo);
 										if (propertyInfo.getValueType().isEnum()) {
-											statement.setObject(index,
-													Enums.annotationValue(data.getProperty(propertyInfo)),
+											statement.setObject(index, Enums.annotationValue(value),
 													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type()));
 										} else {
-											statement.setObject(index, data.getProperty(propertyInfo),
+											statement.setObject(index, value,
 													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type()));
 										}
 										index += 1;
@@ -449,12 +471,19 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 										if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
 											continue;
 										}
+										value = data.getProperty(propertyInfo);
+										if (!propertyInfo.isPrimaryKey() && (value == DateTimes.VALUE_MIN
+												|| value == Strings.VALUE_EMPTY || value == Numbers.SHORT_VALUE_ZERO
+												|| value == Numbers.DOUBLE_VALUE_ZERO
+												|| value == Numbers.FLOAT_VALUE_ZERO)) {
+											// 默认值时存空
+											value = null;
+										}
 										if (propertyInfo.getValueType().isEnum()) {
-											statement.setObject(index,
-													Enums.annotationValue(data.getProperty(propertyInfo)),
+											statement.setObject(index, Enums.annotationValue(value),
 													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type()));
 										} else {
-											statement.setObject(index, data.getProperty(propertyInfo),
+											statement.setObject(index, value,
 													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type()));
 										}
 										index += 1;
@@ -686,6 +715,8 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 			Objects.requireNonNull(sqlStatement);
 			// 查询，不使用预编译方式
 			try (Statement statement = this.connection.createStatement()) {
+				Logger.log(Strings.format("db sql: run by user [%s].\n%s", this.getUser().getId(),
+						sqlStatement.getContent()));
 				try (ResultSet resultSet = statement.executeQuery(sqlStatement.getContent())) {
 					return this.getAdapter().parsingDatas(resultSet);
 				}

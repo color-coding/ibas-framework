@@ -66,29 +66,15 @@ public abstract class BORepository extends Repository {
 	protected <T extends IBusinessObject> OperationResult<T> fetch(Class<?> boType, ICriteria criteria) {
 		try {
 			Objects.requireNonNull(boType);
-			boolean mine = this.beginTransaction();
-			try {
-				OperationResult<T> operationResult = new OperationResult<T>();
-				for (IBusinessObject item : this.getTransaction().fetch(boType, criteria)) {
-					operationResult.addResultObjects(item);
-				}
-				if (mine == true) {
-					synchronized (this) {
-						this.commitTransaction();
-						this.close();
-						mine = false;
-					}
-				}
-				return operationResult;
-			} catch (Exception e) {
-				if (mine == true) {
-					synchronized (this) {
-						this.rollbackTransaction();
-						this.close();
-					}
-				}
-				throw e;
+			// 未打开事务，则创建
+			if (this.transaction == null) {
+				this.initTransaction();
 			}
+			OperationResult<T> operationResult = new OperationResult<T>();
+			for (IBusinessObject item : this.getTransaction().fetch(boType, criteria)) {
+				operationResult.addResultObjects(item);
+			}
+			return operationResult;
 		} catch (Exception e) {
 			Logger.log(e);
 			return new OperationResult<>(e);

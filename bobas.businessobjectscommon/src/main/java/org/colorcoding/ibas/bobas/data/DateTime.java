@@ -6,12 +6,14 @@ import java.util.Calendar;
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 
 /**
  * 日期类型
  */
+@XmlJavaTypeAdapter(DateTimeSerializer.class)
 @XmlType(name = "DateTime", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class DateTime extends Date implements Serializable {
 

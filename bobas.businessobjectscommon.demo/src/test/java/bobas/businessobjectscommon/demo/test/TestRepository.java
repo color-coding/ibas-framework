@@ -5,6 +5,7 @@ import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.common.Decimals;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.logic.common.BOInstanceLogService;
 import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
 import org.colorcoding.ibas.demo.bo.materials.IMaterials;
 import org.colorcoding.ibas.demo.bo.materials.Materials;
@@ -87,6 +88,9 @@ public class TestRepository extends TestCase {
 	}
 
 	public void testAutoClose() throws Exception {
+		// 打开日志
+		BOInstanceLogService.BO_LOGST_SETTING.put(User.BUSINESS_OBJECT_CODE, true);
+
 		try (BORepositoryTrainingTesting boRepository = new BORepositoryTrainingTesting()) {
 			boRepository.setUserToken(OrganizationFactory.SYSTEM_USER.getToken());
 

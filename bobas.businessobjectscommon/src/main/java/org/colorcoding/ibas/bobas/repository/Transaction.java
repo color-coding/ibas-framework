@@ -18,11 +18,11 @@ public abstract class Transaction implements ITransaction {
 
 	private String id;
 
-	public synchronized final String getId() {
+	public final String getId() {
 		return id;
 	}
 
-	private synchronized final void setId(String id) {
+	private final void setId(String id) {
 		this.id = id;
 	}
 

@@ -8,7 +8,7 @@ import org.colorcoding.ibas.bobas.test.demo.SalesOrder;
 public class BORepositoryTest extends BORepositoryServiceApplication {
 
 	public OperationResult<SalesOrder> fetchSalesOrder(ICriteria criteria, String token) {
-		return new OperationResult<>(super.fetch(criteria, token, SalesOrder.class));
+		return new OperationResult<>(super.fetch(SalesOrder.class, criteria, token));
 	}
 
 	public OperationResult<SalesOrder> saveSalesOrder(SalesOrder bo, String token) {

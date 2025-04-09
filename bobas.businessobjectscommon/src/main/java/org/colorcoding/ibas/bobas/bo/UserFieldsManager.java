@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.FieldedObject;
@@ -16,7 +17,8 @@ public class UserFieldsManager {
 	private UserFieldsManager() {
 	}
 
-	private volatile static Map<Class<?>, UserFieldInfoList> USER_FIELDS = new HashMap<Class<?>, UserFieldInfoList>(64);
+	private volatile static Map<Class<?>, UserFieldInfoList> USER_FIELDS = new ConcurrentHashMap<Class<?>, UserFieldInfoList>(
+			64);
 
 	public static class UserFieldInfoList extends ArrayList<IPropertyInfo<?>> {
 

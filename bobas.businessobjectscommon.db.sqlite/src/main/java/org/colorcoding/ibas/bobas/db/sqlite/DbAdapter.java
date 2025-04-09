@@ -6,10 +6,12 @@ import java.sql.DriverManager;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.DateTimes;
+import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.IFieldedObject;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.db.MaxValue;
 import org.colorcoding.ibas.bobas.logging.Logger;
 
 public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
@@ -107,12 +109,6 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		stringBuilder.append(this.identifier());
 		stringBuilder.append(this.table(boType));
 		stringBuilder.append(this.identifier());
-		/*
-		 * 不支持锁表
-		 * 
-		 * if (IDbTableLock.class.isAssignableFrom(boType)) { stringBuilder.append(" ");
-		 * stringBuilder.append("WITH (UPDLOCK)"); }
-		 */
 		if (criteria.getConditions().size() > 0) {
 			stringBuilder.append(" ");
 			stringBuilder.append(this.where());
@@ -131,6 +127,29 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			stringBuilder.append(" ");
 			stringBuilder.append(this.parsingOrder(criteria.getSorts()));
 		}
+		return stringBuilder.toString();
+	}
+
+	public String parsingMaxValue(MaxValue maxValue, Iterable<ICondition> conditions) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("SELECT");
+		stringBuilder.append(" ");
+		stringBuilder.append("Max");
+		stringBuilder.append("(");
+		stringBuilder.append(this.identifier());
+		stringBuilder.append(maxValue.getKeyField().getName());
+		stringBuilder.append(this.identifier());
+		stringBuilder.append(")");
+		stringBuilder.append(" ");
+		stringBuilder.append("FROM");
+		stringBuilder.append(" ");
+		stringBuilder.append(this.identifier());
+		stringBuilder.append(this.table(maxValue.getType()));
+		stringBuilder.append(this.identifier());
+		stringBuilder.append(" ");
+		stringBuilder.append(this.where());
+		stringBuilder.append(" ");
+		stringBuilder.append(this.parsingWhere(conditions));
 		return stringBuilder.toString();
 	}
 

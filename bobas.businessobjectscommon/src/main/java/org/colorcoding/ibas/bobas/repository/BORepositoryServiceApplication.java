@@ -56,8 +56,23 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 	 * @param boType   数据类型
 	 * @return
 	 */
+	@Deprecated
 	protected final <T extends IBusinessObject> OperationResult<T> fetch(ICriteria criteria, String token,
 			Class<?> boType) {
+		return this.fetch(boType, criteria, token);
+	}
+
+	/**
+	 * 查询数据
+	 * 
+	 * @param <T>
+	 * @param boType   数据类型
+	 * @param criteria 条件
+	 * @param token    用户口令
+	 * @return
+	 */
+	protected final <T extends IBusinessObject> OperationResult<T> fetch(Class<?> boType, ICriteria criteria,
+			String token) {
 		try {
 			this.setUserToken(token);
 			return this.fetch(boType, criteria);

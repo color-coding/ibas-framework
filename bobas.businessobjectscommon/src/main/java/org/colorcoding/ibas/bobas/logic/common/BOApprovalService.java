@@ -98,8 +98,8 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 
 	@Override
 	protected void revoke(IBOApprovalContract contract) {
-		if (contract.getHost() instanceof ITrackable) {
-			ITrackable trackable = (ITrackable) contract.getHost();
+		if (this.getTrigger() instanceof ITrackable) {
+			ITrackable trackable = (ITrackable) this.getTrigger();
 			// 检查用户是否可以删除
 			if (trackable.isDeleted()) {
 				ApprovalProcess<?> process = this.getProcessManager().createApprovalProcess(this.getBeAffected());

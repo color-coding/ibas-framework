@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.logic;
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.colorcoding.ibas.bobas.bo.BOFactory;
 import org.colorcoding.ibas.bobas.organization.IUser;
@@ -15,7 +16,7 @@ import org.colorcoding.ibas.bobas.repository.ITransaction;
 public class BusinessLogicsManager {
 
 	private BusinessLogicsManager() {
-		this.logicClasses = new HashMap<>(128);
+		this.logicClasses = new ConcurrentHashMap<>(256);
 	}
 
 	private volatile static BusinessLogicsManager instance;
@@ -31,7 +32,7 @@ public class BusinessLogicsManager {
 		return instance;
 	}
 
-	public synchronized IBusinessLogicChain createChain(ITransaction transaction) {
+	synchronized BusinessLogicChain createChain(ITransaction transaction) {
 		return new BusinessLogicChain(transaction);
 	}
 
@@ -41,7 +42,7 @@ public class BusinessLogicsManager {
 		return logicChain;
 	}
 
-	private HashMap<Class<?>, Class<?>> logicClasses;
+	private Map<Class<?>, Class<?>> logicClasses;
 
 	public synchronized BusinessLogic<?, ?> createLogic(Class<?> contract) {
 		Class<?> logicClass = this.logicClasses.get(contract);

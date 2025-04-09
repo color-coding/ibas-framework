@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.colorcoding.ibas.bobas.i18n.I18N;
 
@@ -42,7 +43,7 @@ public class PropertyInfoManager {
 		}
 	}
 
-	private volatile static Map<Class<?>, PropertyInfoList> PROPERTY_INFOS = new HashMap<Class<?>, PropertyInfoList>(
+	private volatile static Map<Class<?>, PropertyInfoList> PROPERTY_INFOS = new ConcurrentHashMap<Class<?>, PropertyInfoList>(
 			256);
 
 	static <P> PropertyInfo<P> createProperty(String name, Class<P> type) {

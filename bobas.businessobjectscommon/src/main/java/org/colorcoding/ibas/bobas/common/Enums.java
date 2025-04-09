@@ -1,8 +1,8 @@
 package org.colorcoding.ibas.bobas.common;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.KeyValue;
@@ -12,7 +12,7 @@ public class Enums {
 	private Enums() {
 	}
 
-	private static Map<Class<?>, Enum<?>> DEFAULT_VALUES = new HashMap<>(32);
+	private static Map<Class<?>, Enum<?>> DEFAULT_VALUES = new ConcurrentHashMap<>(128);
 
 	/**
 	 * 类型默认值
@@ -74,15 +74,21 @@ public class Enums {
 		if (!type.isEnum()) {
 			return null;
 		}
+		Enum<?> itemValue;
 		for (Object enumItem : type.getEnumConstants()) {
 			if (value.equalsIgnoreCase(enumItem.toString())) {
 				// 枚举的字符串
 				return (T) enumItem;
 			}
-			String dbValue = annotationValue(enumItem);
-			if (value.equalsIgnoreCase(dbValue)) {
+			if (value.equalsIgnoreCase(annotationValue(enumItem))) {
 				// 枚举的dbValue
 				return (T) enumItem;
+			}
+			if (Numbers.isNumeric(value) && enumItem instanceof Enum<?>) {
+				itemValue = (Enum<?>) enumItem;
+				if (itemValue.ordinal() == Integer.valueOf(value)) {
+					return (T) enumItem;
+				}
 			}
 		}
 		return null;
@@ -101,10 +107,11 @@ public class Enums {
 		if (type == null || !type.isEnum()) {
 			return null;
 		}
+		Enum<?> itemValue;
 		for (Object enumItem : type.getEnumConstants()) {
 			if (enumItem instanceof Enum<?>) {
 				// 枚举值（比对枚举索引）
-				Enum<?> itemValue = (Enum<?>) enumItem;
+				itemValue = (Enum<?>) enumItem;
 				if (itemValue.ordinal() == value) {
 					return (T) enumItem;
 				}

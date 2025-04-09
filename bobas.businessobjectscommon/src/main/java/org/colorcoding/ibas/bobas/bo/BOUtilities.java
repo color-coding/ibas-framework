@@ -1,7 +1,9 @@
 package org.colorcoding.ibas.bobas.bo;
 
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -12,6 +14,7 @@ import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.FieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
+import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.expression.BOJudgmentLinkCondition;
 import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
@@ -110,6 +113,74 @@ public class BOUtilities {
 			return ((IBusinessObject) data).isSavable();
 		}
 		return false;
+	}
+
+	/**
+	 * 是否值类型
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static boolean isValueType(Class<?> type) {
+		if (type == null) {
+			return false;
+		}
+		if (type.isPrimitive()) {
+			return true;
+		}
+		if (type.isEnum()) {
+			return true;
+		}
+		if (type == String.class) {
+			return true;
+		}
+		if (type == BigDecimal.class) {
+			return true;
+		}
+		if (type == Integer.class) {
+			return true;
+		}
+		if (type == Short.class) {
+			return true;
+		}
+		if (type == DateTime.class) {
+			return true;
+		}
+		if (type == Long.class) {
+			return true;
+		}
+		if (type == Double.class) {
+			return true;
+		}
+		if (type == Float.class) {
+			return true;
+		}
+		if (type == Boolean.class) {
+			return true;
+		}
+		if (Date.class.isAssignableFrom(type)) {
+			return true;
+		}
+		if (Number.class.isAssignableFrom(type)) {
+			return true;
+		}
+		if (Comparable.class.isAssignableFrom(type)) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 是否值类型
+	 * 
+	 * @param property
+	 * @return
+	 */
+	public static boolean isValueType(IPropertyInfo<?> property) {
+		if (property == null) {
+			return false;
+		}
+		return isValueType(property.getValueType());
 	}
 
 	/**

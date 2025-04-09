@@ -10,9 +10,11 @@ import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
+import org.colorcoding.ibas.bobas.logic.common.BOInstanceLogService;
 import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
 import org.colorcoding.ibas.demo.bo.materials.IMaterials;
 import org.colorcoding.ibas.demo.bo.materials.Materials;
+import org.colorcoding.ibas.demo.bo.materialsjournal.MaterialsJournal;
 import org.colorcoding.ibas.demo.bo.salesorder.ISalesOrderItem;
 import org.colorcoding.ibas.demo.bo.salesorder.SalesOrder;
 import org.colorcoding.ibas.demo.repository.BORepositoryTrainingTesting;
@@ -22,6 +24,11 @@ import junit.framework.TestCase;
 public class TestMultitask extends TestCase {
 
 	public void testSaveBO() throws Exception {
+		// 打开日志
+		BOInstanceLogService.BO_LOGST_SETTING.put(SalesOrder.BUSINESS_OBJECT_CODE, true);
+		BOInstanceLogService.BO_LOGST_SETTING.put(Materials.BUSINESS_OBJECT_CODE, true);
+		BOInstanceLogService.BO_LOGST_SETTING.put(MaterialsJournal.BUSINESS_OBJECT_CODE, true);
+
 		try (BORepositoryTrainingTesting boRepository = new BORepositoryTrainingTesting()) {
 			boRepository.setUserToken(OrganizationFactory.SYSTEM_USER.getToken());
 			// 检查物料是否存在
@@ -126,7 +133,7 @@ public class TestMultitask extends TestCase {
 			condition = criteria.getConditions().create();
 			condition.setBracketClose(1);
 			condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
-			condition.setValue(emDocumentStatus.RELEASED);
+			condition.setValue(emDocumentStatus.RELEASED.ordinal());
 			condition.setRelationship(ConditionRelationship.OR);
 			// (CardCode != ''')
 			condition = criteria.getConditions().create();
