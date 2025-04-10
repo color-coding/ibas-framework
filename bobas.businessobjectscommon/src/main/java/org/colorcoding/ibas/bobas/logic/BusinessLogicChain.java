@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.logic;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -42,9 +43,19 @@ class BusinessLogicChain implements IBusinessLogicChain {
 		this.id = Strings.format("%s_%s", this.getTransaction().getId(), this.hashCode());
 	}
 
+	private BusinessLogicChain parentChain;
+
+	protected BusinessLogicChain getParentChain() {
+		return parentChain;
+	}
+
+	private void setParentChain(BusinessLogicChain parentChain) {
+		this.parentChain = parentChain;
+	}
+
 	private Object root;
 
-	public final Object getRoot() {
+	protected final Object getRoot() {
 		return root;
 	}
 
@@ -74,6 +85,16 @@ class BusinessLogicChain implements IBusinessLogicChain {
 
 	@Override
 	public final <T extends IBusinessObject> void setTriggerCopy(T trigger) {
+		// 副本版本更高，不能被覆盖逻辑
+		if (!this.getTrigger().isNew() && this.getTrigger() instanceof IBOStorageTag
+				&& trigger instanceof IBOStorageTag) {
+			IBOStorageTag hostTag = (IBOStorageTag) this.getTrigger();
+			IBOStorageTag copyTag = (IBOStorageTag) trigger;
+			if (copyTag.getLogInst() > hostTag.getLogInst()) {
+				throw new BusinessLogicException(
+						I18N.prop("msg_bobas_bo_copy_is_more_newer", this.getTrigger().toString()));
+			}
+		}
 		this.triggerCopy = trigger;
 
 	}
@@ -146,11 +167,9 @@ class BusinessLogicChain implements IBusinessLogicChain {
 			// 非删除，则执行正向逻辑
 			this.forwardLogics();
 		}
-		Logger.log(LoggingLevel.INFO, "logics chain [%s]: logics done at [%s].", this.hashCode(),
-				DateTimes.toString(DateTimes.now(), DateTimes.FORMAT_TIME));
 		// 保存逻辑影响对象
-		IBusinessLogic<?>[] logics = this.getLogics();
-		ArrayList<IBusinessObject> beAffecteds = new ArrayList<>(logics.length);
+		List<IBusinessLogic<?>> logics = this.getLogics();
+		ArrayList<IBusinessObject> beAffecteds = new ArrayList<>(logics.size());
 		for (IBusinessLogic<?> logic : logics) {
 			if (logic == null) {
 				continue;
@@ -205,6 +224,7 @@ class BusinessLogicChain implements IBusinessLogicChain {
 				}
 				try (BusinessLogicChain logicChain = BusinessLogicsManager.create()
 						.createChain(this.getTransaction())) {
+					logicChain.setParentChain(this);
 					logicChain.setUser(this.getUser());
 					logicChain.setRoot(this.getTrigger());
 					logicChain.setTrigger(item);
@@ -218,6 +238,10 @@ class BusinessLogicChain implements IBusinessLogicChain {
 						tmpDatas = this.getTransaction().fetch(item.getClass(), criteria);
 						if (tmpDatas == null || tmpDatas.length != 1) {
 							throw new RepositoryException(I18N.prop("msg_bobas_fetch_bo_copy_faild", item));
+						}
+						if (BOUtilities.isNewer(tmpDatas[0], item)) {
+							throw new RepositoryException(
+									I18N.prop("msg_bobas_bo_copy_is_more_newer", item.toString()));
 						}
 						logicChain.setTriggerCopy(tmpDatas[0]);
 					}
@@ -408,23 +432,20 @@ class BusinessLogicChain implements IBusinessLogicChain {
 	 * 
 	 * @return
 	 */
-	protected final IBusinessLogic<?>[] getLogics() {
-		ArrayList<IBusinessLogic<?>> logics = new ArrayList<>(
-				(this.triggerCopyLogics != null ? this.triggerCopyLogics.length : 0)
-						+ (this.triggerLogics != null ? this.triggerLogics.length : 0));
-		if (this.triggerCopyLogics != null) {
-			for (int i = 0; i < this.triggerCopyLogics.length; i++) {
-				// for (int i = this.triggerCopyLogics.length - 1; i >= 0; i--) {
-				logics.add(this.triggerCopyLogics[i]);
-			}
+	protected final List<IBusinessLogic<?>> getLogics() {
+		int aCount = this.triggerLogics != null ? this.triggerLogics.length : 0;
+		int bCount = this.triggerCopyLogics != null ? this.triggerCopyLogics.length : 0;
+		List<IBusinessLogic<?>> logics = new ArrayList<>(aCount + bCount);
+
+		for (int i = 0; i < bCount; i++) {
+			// for (int i = bCount - 1; i >= 0; i--) {
+			logics.add(this.triggerCopyLogics[i]);
 		}
-		if (this.triggerLogics != null) {
-			for (int i = 0; i < this.triggerLogics.length; i++) {
-				// for (int i = this.triggerLogics.length - 1; i >= 0; i--) {
-				logics.add(this.triggerLogics[i]);
-			}
+		for (int i = 0; i < aCount; i++) {
+			// for (int i = aCount - 1; i >= 0; i--) {
+			logics.add(this.triggerLogics[i]);
 		}
-		return logics.toArray(new IBusinessLogic<?>[] {});
+		return logics;
 	}
 
 	@Override

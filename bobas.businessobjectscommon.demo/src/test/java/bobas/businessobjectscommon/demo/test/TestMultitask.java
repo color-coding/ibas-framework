@@ -1,8 +1,11 @@
 package bobas.businessobjectscommon.demo.test;
 
+import java.util.Random;
+
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.Criteria;
+import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.common.Decimals;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
@@ -23,11 +26,11 @@ import junit.framework.TestCase;
 
 public class TestMultitask extends TestCase {
 
-	public void testSaveBO() throws Exception {
+	public static Random random = new Random();
+
+	public void testSaveMaterials() throws Exception {
 		// 打开日志
-		BOInstanceLogService.BO_LOGST_SETTING.put(SalesOrder.BUSINESS_OBJECT_CODE, true);
 		BOInstanceLogService.BO_LOGST_SETTING.put(Materials.BUSINESS_OBJECT_CODE, true);
-		BOInstanceLogService.BO_LOGST_SETTING.put(MaterialsJournal.BUSINESS_OBJECT_CODE, true);
 
 		try (BORepositoryTrainingTesting boRepository = new BORepositoryTrainingTesting()) {
 			boRepository.setUserToken(OrganizationFactory.SYSTEM_USER.getToken());
@@ -49,6 +52,15 @@ public class TestMultitask extends TestCase {
 				if (opRsltMM.getError() != null) {
 					throw opRsltMM.getError();
 				}
+			} else {
+				materials = opRsltMM.getResultObjects().firstOrDefault();
+				if (random.nextBoolean()) {
+					materials.setRemarks(DateTimes.now().toString());
+					opRsltMM = boRepository.saveMaterials(materials);
+					if (opRsltMM.getError() != null) {
+						throw opRsltMM.getError();
+					}
+				}
 			}
 
 			materials = new Materials();
@@ -63,6 +75,15 @@ public class TestMultitask extends TestCase {
 				opRsltMM = boRepository.saveMaterials(materials);
 				if (opRsltMM.getError() != null) {
 					throw opRsltMM.getError();
+				}
+			} else {
+				materials = opRsltMM.getResultObjects().firstOrDefault();
+				if (random.nextBoolean()) {
+					materials.setRemarks(DateTimes.now().toString());
+					opRsltMM = boRepository.saveMaterials(materials);
+					if (opRsltMM.getError() != null) {
+						throw opRsltMM.getError();
+					}
 				}
 			}
 
@@ -79,7 +100,26 @@ public class TestMultitask extends TestCase {
 				if (opRsltMM.getError() != null) {
 					throw opRsltMM.getError();
 				}
+			} else {
+				materials = opRsltMM.getResultObjects().firstOrDefault();
+				if (random.nextBoolean()) {
+					materials.setRemarks(DateTimes.now().toString());
+					opRsltMM = boRepository.saveMaterials(materials);
+					if (opRsltMM.getError() != null) {
+						throw opRsltMM.getError();
+					}
+				}
 			}
+		}
+	}
+
+	public void testSaveOrders() throws Exception {
+		// 打开日志
+		BOInstanceLogService.BO_LOGST_SETTING.put(SalesOrder.BUSINESS_OBJECT_CODE, true);
+		BOInstanceLogService.BO_LOGST_SETTING.put(MaterialsJournal.BUSINESS_OBJECT_CODE, true);
+
+		try (BORepositoryTrainingTesting boRepository = new BORepositoryTrainingTesting()) {
+			boRepository.setUserToken(OrganizationFactory.SYSTEM_USER.getToken());
 
 			// 创建订单
 			SalesOrder order = new SalesOrder();
@@ -120,7 +160,7 @@ public class TestMultitask extends TestCase {
 		}
 	}
 
-	public void testFetchBO() throws Exception {
+	public void testFetchOrders() throws Exception {
 		try (BORepositoryTrainingTesting boRepository = new BORepositoryTrainingTesting()) {
 			boRepository.setUserToken(OrganizationFactory.SYSTEM_USER.getToken());
 			ICriteria criteria = new Criteria();
@@ -165,45 +205,54 @@ public class TestMultitask extends TestCase {
 
 	static boolean FLAG_STOP = false;
 
-	public void testExtremeTask() {
-		try {
-			for (int i = 0; i < 10; i++) {
-				Thread ts = new Thread() {
-					@Override
-					public void run() {
-						TestMultitask test = new TestMultitask();
-						while (!FLAG_STOP) {
-							try {
-								test.testSaveBO();
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
+	public void testExtremeTask() throws InterruptedException {
+		Thread thread;
+		TestMultitask test = new TestMultitask();
+		int cpuCount = Runtime.getRuntime().availableProcessors();
+		for (int i = 0; i < cpuCount; i++) {
+			thread = new Thread() {
+				@Override
+				public void run() {
+					while (!FLAG_STOP) {
+						try {
+							test.testSaveMaterials();
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
 					}
-				};
-				ts.start();
-				Thread tf = new Thread() {
-					@Override
-					public void run() {
-						TestMultitask test = new TestMultitask();
-						while (!FLAG_STOP) {
-							try {
-								test.testFetchBO();
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
+				}
+			};
+			thread.start();
+			thread = new Thread() {
+				@Override
+				public void run() {
+					while (!FLAG_STOP) {
+						try {
+							test.testSaveOrders();
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
 					}
-				};
-				tf.start();
-			}
-			Thread.sleep(180000);
-			FLAG_STOP = true;
-			System.gc();
-			System.out.println("all done.");
-			Thread.sleep(600000);// 继续等待，资源释放
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+				}
+			};
+			thread.start();
+			thread = new Thread() {
+				@Override
+				public void run() {
+					while (!FLAG_STOP) {
+						try {
+							test.testFetchOrders();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			};
+			thread.start();
 		}
+		Thread.sleep(300000);
+		FLAG_STOP = true;
+		System.out.println("all done.");
+		Thread.sleep(600000);// 继续等待，资源释放
 	}
 }

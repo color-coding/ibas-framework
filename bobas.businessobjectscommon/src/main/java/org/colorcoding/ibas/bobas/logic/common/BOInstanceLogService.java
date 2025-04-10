@@ -24,11 +24,8 @@ public class BOInstanceLogService extends BusinessLogic<IBOInstanceLogContract, 
 
 	public static final Map<String, Boolean> BO_LOGST_SETTING;
 
-	private static final ISerializer SERIALIZER;
-
 	static {
 		BO_LOGST_SETTING = new ConcurrentHashMap<>(64);
-		SERIALIZER = SerializationFactory.createManager().create(SerializationFactory.TYPE_JSON);
 	}
 
 	@Override
@@ -82,8 +79,9 @@ public class BOInstanceLogService extends BusinessLogic<IBOInstanceLogContract, 
 		boLogst.setModifyUser(this.getUser().getId());
 		boLogst.setTransationId(this.getTransaction().getId());
 
+		ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_JSON);
 		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
-			SERIALIZER.serialize(contract.getHost(), writer, false);
+			serializer.serialize(contract.getHost(), writer, false);
 			boLogst.setContent(writer.toString());
 		} catch (IOException e) {
 			Logger.log(e);
@@ -105,8 +103,9 @@ public class BOInstanceLogService extends BusinessLogic<IBOInstanceLogContract, 
 				// 负数表示删除
 				boLogst.setLogInst(-(int) boLogst.getLogInst());
 
+				ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_JSON);
 				try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
-					SERIALIZER.serialize(contract.getHost(), writer, false);
+					serializer.serialize(contract.getHost(), writer, false);
 					boLogst.setContent(writer.toString());
 				} catch (IOException e) {
 					Logger.log(e);

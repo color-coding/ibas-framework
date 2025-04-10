@@ -147,7 +147,9 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 				IBOTagDeleted tagBO = (IBOTagDeleted) this;
 				if (tagBO.getReferenced() == emYesNo.YES) {
 					// 被引用的数据，不允许删除
-					tagBO.setDeleted(emYesNo.YES);
+					if (tagBO.getDeleted() != emYesNo.YES) {
+						tagBO.setDeleted(emYesNo.YES);
+					}
 					done = false;
 				}
 			}

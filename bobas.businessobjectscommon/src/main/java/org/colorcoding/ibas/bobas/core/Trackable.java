@@ -107,8 +107,10 @@ public abstract class Trackable extends Bindable implements ITrackable {
 	}
 
 	public void markDeleted() {
-		this.setDirty(true);
-		this.setDeleted(true);
+		if (!this.isDeleted()) {
+			this.setDirty(true);
+			this.setDeleted(true);
+		}
 	}
 
 	public void clearDeleted() {

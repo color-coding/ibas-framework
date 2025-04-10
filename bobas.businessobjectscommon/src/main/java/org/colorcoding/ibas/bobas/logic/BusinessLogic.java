@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.logic;
 
+import java.util.Iterator;
 import java.util.Objects;
 
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
@@ -220,11 +221,6 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 	 */
 	@Override
 	public final void forward() {
-		// 检查根项数据状态
-		if (this.getRoot() != null && !this.checkDataStatus(this.getRoot())) {
-			// 数据状态不通过，跳过正向逻辑执行
-			return;
-		}
 		// 检查父项数据状态
 		if (this.getParent() != null && !this.checkDataStatus(this.getParent())) {
 			// 数据状态不通过，跳过正向逻辑执行
@@ -286,11 +282,6 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 	 */
 	@Override
 	public final void reverse() {
-		// 检查根项数据状态
-		if (this.getRoot() != null && !this.checkDataStatus(this.getRoot())) {
-			// 数据状态不通过，跳过正向逻辑执行
-			return;
-		}
 		// 检查父项数据状态
 		if (this.getParent() != null && !this.checkDataStatus(this.getParent())) {
 			// 数据状态不通过，跳过正向逻辑执行
@@ -358,25 +349,74 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 		Objects.requireNonNull(criteria);
 		Objects.requireNonNull(this.getLogicChain());
 
-		List<B> results = new ArrayList<>();
-		for (IBusinessLogic<?> logic : this.getLogicChain().getLogics()) {
-			if (boType.isInstance(logic.getBeAffected())) {
-				results.add((B) logic.getBeAffected());
-			} else if (logic.getBeAffected() instanceof IBusinessObjectGroup) {
-				for (Object item : (IBusinessObjectGroup) logic.getBeAffected()) {
-					if (boType.isInstance(item)) {
-						results.add((B) item);
+		// 不返回全部，则只第一条
+		if (all == false) {
+			criteria = criteria.clone();
+			criteria.setResultCount(1);
+		}
+
+		// 业务逻辑被影响数据迭代器（不一次取出）
+		Iterator<B> iterator = new Iterator<B>() {
+			// 先查父项被影响数据
+			Iterator<IBusinessLogic<?>> parentLogics = BusinessLogic.this.getLogicChain().getParentChain() != null
+					? BusinessLogic.this.getLogicChain().getParentChain().getLogics().iterator()
+					: null;
+			// 再查自身被影响数据
+			Iterator<IBusinessLogic<?>> myLogics = BusinessLogic.this.getLogicChain().getLogics().iterator();
+			// 数据迭代器
+			Iterator<B> current = null;
+
+			@Override
+			public boolean hasNext() {
+				if (this.current != null && this.current.hasNext()) {
+					return true;
+				}
+				if (this.parentLogics != null && this.parentLogics.hasNext()) {
+					return true;
+				}
+				if (this.myLogics != null && this.myLogics.hasNext()) {
+					return true;
+				}
+				return false;
+			}
+
+			@Override
+			public B next() {
+				if (this.current != null && this.current.hasNext()) {
+					return this.current.next();
+				}
+				this.current = null;
+				IBusinessLogic<?> logic = null;
+				// 先使用父项逻辑
+				if (this.parentLogics != null && this.parentLogics.hasNext()) {
+					logic = this.parentLogics.next();
+				}
+				// 再使用自身逻辑
+				if (logic == null) {
+					if (this.myLogics != null && this.myLogics.hasNext()) {
+						logic = this.myLogics.next();
 					}
 				}
+				if (logic != null) {
+					List<B> results = new ArrayList<>(4);
+					if (boType.isInstance(logic.getBeAffected())) {
+						results.add((B) logic.getBeAffected());
+					} else if (logic.getBeAffected() instanceof IBusinessObjectGroup) {
+						for (Object item : (IBusinessObjectGroup) logic.getBeAffected()) {
+							if (boType.isInstance(item)) {
+								results.add((B) item);
+							}
+						}
+					}
+					this.current = results.iterator();
+					return this.next();
+				}
+				return null;
 			}
-		}
+		};
+
 		try {
-			if (all == false) {
-				// 不返回全部，则只第一条
-				criteria = criteria.clone();
-				criteria.setResultCount(1);
-			}
-			return BOUtilities.fetch(results, criteria);
+			return BOUtilities.fetch(iterator, criteria);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
