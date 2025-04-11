@@ -19,6 +19,8 @@ import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logging.Logger;
 import org.colorcoding.ibas.bobas.logging.LoggingLevel;
+import org.colorcoding.ibas.bobas.logic.common.BONumbering;
+import org.colorcoding.ibas.bobas.logic.common.BOSeriesNumbering;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.repository.ITransaction;
 import org.colorcoding.ibas.bobas.repository.RepositoryException;
@@ -228,7 +230,10 @@ class BusinessLogicChain implements IBusinessLogicChain {
 					logicChain.setUser(this.getUser());
 					logicChain.setRoot(this.getTrigger());
 					logicChain.setTrigger(item);
-					if (item.isNew() == false) {
+					if (item instanceof BONumbering || item instanceof BOSeriesNumbering) {
+						// 提高性能，编号不查询副本
+						logicChain.setTriggerCopy(null);
+					} else if (item.isNew() == false) {
 						// 非新建，则查询副本
 						criteria = item.getCriteria();
 						if (criteria == null || criteria.getConditions().isEmpty()) {

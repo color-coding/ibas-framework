@@ -125,7 +125,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			stringBuilder.append(" ");
 			stringBuilder.append(criteria.getResultCount());
 		}
-		if (IDbTableLock.class.isAssignableFrom(boType)) {
+		if (withLock) {
 			stringBuilder.append(" ");
 			stringBuilder.append("FOR UPDATE");
 		}

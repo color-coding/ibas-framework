@@ -250,6 +250,12 @@ public abstract class DbAdapter {
 		return dataTable;
 	}
 
+	/**
+	 * 返回sql类型
+	 * 
+	 * @param type 数据字段类型
+	 * @return
+	 */
 	public int sqlTypeOf(DbFieldType type) {
 		if (type == DbFieldType.ALPHANUMERIC) {
 			return java.sql.Types.VARCHAR;
@@ -355,15 +361,33 @@ public abstract class DbAdapter {
 		return "WHERE";
 	}
 
+	/**
+	 * 语句-事务通知存储过程
+	 * 
+	 * @return
+	 */
 	public final String sp_transaction_notification() {
 		return this.parsingStoredProcedure(Strings.format("%s_SP_TRANSACTION_NOTIFICATION", this.getCompanyId()),
 				new String[this.isNoUserTansactionSP() ? 5 : 6]);
 	}
 
+	/**
+	 * 语句-查询
+	 * 
+	 * @param boType 对象类型
+	 * @return
+	 */
 	public final String parsingSelect(Class<?> boType) {
 		return this.parsingSelect(boType, new Criteria());
 	}
 
+	/**
+	 * 语句-查询
+	 * 
+	 * @param boType     对象类型
+	 * @param conditions 查询条件
+	 * @return
+	 */
 	public final String parsingSelect(Class<?> boType, Iterable<ICondition> conditions) {
 		ICriteria criteria = new Criteria();
 		if (conditions != null) {
@@ -374,6 +398,13 @@ public abstract class DbAdapter {
 		return this.parsingSelect(boType, criteria);
 	}
 
+	/**
+	 * 语句-查询
+	 * 
+	 * @param boType   对象类型
+	 * @param criteria 查询条件
+	 * @return
+	 */
 	public final String parsingSelect(Class<?> boType, ICriteria criteria) {
 		if (SPValues.class.isAssignableFrom(boType)) {
 			// 存储过程赋值对象
@@ -388,6 +419,12 @@ public abstract class DbAdapter {
 
 	private Map<Class<?>, String> tables = new ConcurrentHashMap<>(256);
 
+	/**
+	 * 返回对象类型对应的表
+	 * 
+	 * @param boType 对象类型
+	 * @return
+	 */
 	public String table(Class<?> boType) {
 		try {
 			if (this.tables.containsKey(boType)) {
@@ -407,6 +444,14 @@ public abstract class DbAdapter {
 		}
 	}
 
+	/**
+	 * 语句-查询
+	 * 
+	 * @param boType   对象类型
+	 * @param criteria 查询条件
+	 * @param withLock 是否带锁
+	 * @return
+	 */
 	public String parsingSelect(Class<?> boType, ICriteria criteria, boolean withLock) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("SELECT");
@@ -424,7 +469,7 @@ public abstract class DbAdapter {
 		stringBuilder.append(this.identifier());
 		stringBuilder.append(this.table(boType));
 		stringBuilder.append(this.identifier());
-		if (IDbTableLock.class.isAssignableFrom(boType)) {
+		if (withLock) {
 			stringBuilder.append(" ");
 			stringBuilder.append("WITH (ROWLOCK, UPDLOCK)");
 		}
@@ -443,6 +488,13 @@ public abstract class DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * 语句-转换类型
+	 * 
+	 * @param type  目标类型
+	 * @param alias 转换字段
+	 * @return
+	 */
 	public String castAs(DbFieldType type, String alias) {
 		StringBuilder stringBuilder = new StringBuilder();
 		if (type == DbFieldType.ALPHANUMERIC) {
@@ -500,6 +552,12 @@ public abstract class DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * 语句-排序
+	 * 
+	 * @param type
+	 * @return
+	 */
 	public String parsing(SortType type) {
 		if (type == SortType.ASCENDING) {
 			return "ASC";
@@ -509,6 +567,12 @@ public abstract class DbAdapter {
 		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", type.toString()));
 	}
 
+	/**
+	 * 语句-条件关系
+	 * 
+	 * @param value
+	 * @return
+	 */
 	public String parsing(ConditionRelationship value) {
 		if (value == ConditionRelationship.AND) {
 			return "AND";
@@ -518,6 +582,12 @@ public abstract class DbAdapter {
 		return Strings.VALUE_EMPTY;
 	}
 
+	/**
+	 * 语句-条件操作
+	 * 
+	 * @param value
+	 * @return
+	 */
 	public String parsing(ConditionOperation value) {
 		if (value == ConditionOperation.EQUAL) {
 			return "=";
@@ -547,6 +617,12 @@ public abstract class DbAdapter {
 		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
 	}
 
+	/**
+	 * 语句-条件
+	 * 
+	 * @param value
+	 * @return
+	 */
 	public String parsingWhere(Iterable<ICondition> conditions) {
 		if (conditions == null) {
 			return Strings.VALUE_EMPTY;
@@ -612,6 +688,12 @@ public abstract class DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * 语句-排序
+	 * 
+	 * @param value
+	 * @return
+	 */
 	public String parsingOrder(Iterable<ISort> sorts) {
 		if (sorts == null) {
 			return Strings.VALUE_EMPTY;
@@ -630,6 +712,12 @@ public abstract class DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * 语句-条件
+	 * 
+	 * @param value
+	 * @return
+	 */
 	public String parsingWhere(IFieldedObject boData) {
 		DbField dbField = null;
 		StringBuilder stringBuilder = new StringBuilder();
@@ -657,6 +745,12 @@ public abstract class DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * 语句-删除
+	 * 
+	 * @param value
+	 * @return
+	 */
 	public String parsingDelete(IFieldedObject boData) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("DELETE");
@@ -671,6 +765,12 @@ public abstract class DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * 语句-更新
+	 * 
+	 * @param boData
+	 * @return
+	 */
 	public String parsingUpdate(IFieldedObject boData) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("UPDATE");
@@ -709,6 +809,12 @@ public abstract class DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * 语句-插入
+	 * 
+	 * @param value
+	 * @return
+	 */
 	public String parsingInsert(IFieldedObject boData) {
 		StringBuilder fieldsBuilder = new StringBuilder();
 		StringBuilder valuesBuilder = new StringBuilder();
@@ -757,6 +863,12 @@ public abstract class DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * 语句-运行存储过程
+	 * 
+	 * @param value
+	 * @return
+	 */
 	public String parsingStoredProcedure(String spName, String... args) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("EXEC");
@@ -785,6 +897,12 @@ public abstract class DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * 语句-获取最大值
+	 * 
+	 * @param value
+	 * @return
+	 */
 	public String parsingMaxValue(MaxValue maxValue, Iterable<ICondition> conditions) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("SELECT");

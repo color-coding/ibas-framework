@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE Domain>
-<Domain>
+<Domain Name="System" ShortName="SYS">
   <Model Name="BOLogst" Description="业务对象日志" ModelType="Unspecified" Mapped="${Company}_SYS_BOLOGST">
     <Property Name="BOCode" Description="类型" DataType="Alphanumeric" DataSubType="Default" EditSize="30" Mapped="BOCode" UniqueKey="Yes"/>
     <Property Name="BOKeys" Description="主键值" DataType="Alphanumeric" DataSubType="Default" EditSize="100" Mapped="BOKeys" UniqueKey="Yes"/>

@@ -408,8 +408,10 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 							}
 						}
 					}
-					this.current = results.iterator();
-					return this.next();
+					if (!results.isEmpty()) {
+						this.current = results.iterator();
+						return this.next();
+					}
 				}
 				return null;
 			}

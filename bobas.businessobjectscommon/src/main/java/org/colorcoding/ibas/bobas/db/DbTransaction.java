@@ -201,7 +201,10 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 			Objects.requireNonNull(boType);
 			// 查询方法，不主动开启事务
 			criteria = this.getAdapter().convert(criteria, boType);
-			String sql = this.getAdapter().parsingSelect(boType, criteria);
+			String sql = this.inTransaction()
+					// 事务中，则查询对象加锁
+					? this.getAdapter().parsingSelect(boType, criteria, true)
+					: this.getAdapter().parsingSelect(boType, criteria);
 			if (MyConfiguration.isDebugMode()) {
 				Logger.log(Strings.format("db sql: %s", sql));
 			}
@@ -296,17 +299,19 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 			if (bos.length == 0) {
 				return (T[]) bos;
 			}
+			Object cData = null;
+			Class<?> boType = null;
+			Exception sqlResult = null;
+			BusinessObject<?> boData = null;
+			BiFunction<TransactionType, List<BusinessObject<?>>, Exception> sqlExecuter = null;
+			List<IBusinessObject> boChilds = new ArrayList<>();
+			List<BusinessObject<?>> boDatas = new ArrayList<>();
+			Map<Class<?>, List<BusinessObject<?>>> boDeletes = new HashMap<>(bos.length, 1);
+			Map<Class<?>, List<BusinessObject<?>>> boUpdates = new HashMap<>(bos.length, 1);
+			Map<Class<?>, List<BusinessObject<?>>> boInserts = new HashMap<>(bos.length, 1);
+
 			boolean mine = this.beginTransaction();
 			try {
-				Object cData = null;
-				Class<?> boType = null;
-				BusinessObject<?> boData = null;
-				List<IBusinessObject> boChilds = new ArrayList<>();
-				List<BusinessObject<?>> boDatas = new ArrayList<>();
-				Map<Class<?>, List<BusinessObject<?>>> boDeletes = new HashMap<>(bos.length, 1);
-				Map<Class<?>, List<BusinessObject<?>>> boUpdates = new HashMap<>(bos.length, 1);
-				Map<Class<?>, List<BusinessObject<?>>> boInserts = new HashMap<>(bos.length, 1);
-
 				// 分析数据，形成待处理集合
 				for (IBusinessObject bo : bos) {
 					if (!BOUtilities.isBusinessObject(bo)) {
@@ -374,7 +379,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 				boData = null;
 				// 分配执行语句的方法
 				int batchCount = this.getAdapter().getBatchCount();
-				BiFunction<TransactionType, List<BusinessObject<?>>, Exception> sqlExecuter = new BiFunction<TransactionType, List<BusinessObject<?>>, Exception>() {
+				sqlExecuter = new BiFunction<TransactionType, List<BusinessObject<?>>, Exception>() {
 					@Override
 					public Exception apply(TransactionType type, List<BusinessObject<?>> datas) {
 						String sql = null;
@@ -396,17 +401,16 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 						if (MyConfiguration.isDebugMode()) {
 							Logger.log(Strings.format("db sql: %s", sql));
 						}
+						Object value;
+						DbField dbField;
+						BusinessObject<?> data;
+						List<IPropertyInfo<?>> propertyInfos = tpltData.properties();
 						try (PreparedStatement statement = DbTransaction.this.connection.prepareStatement(sql)) {
 							int count = 0;
 							int index = 0;
-							Object value;
-							DbField dbField;
-							BusinessObject<?> data;
-							List<IPropertyInfo<?>> propertyInfos = tpltData.properties();
 							for (int i = 0; i < datas.size(); i++) {
 								index = 1;
 								data = datas.get(i);
-								propertyInfos = data.properties();
 
 								if (type == TransactionType.DELETE) {
 									// 设置主键条件值
@@ -499,42 +503,49 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 							if (count > 0) {
 								statement.executeBatch();
 							}
-							dbField = null;
-							data = null;
-							propertyInfos = null;
 						} catch (Exception e) {
 							return e;
+						} finally {
+							sql = null;
+							data = null;
+							tpltData = null;
+							value = null;
+							dbField = null;
+							propertyInfos = null;
 						}
 						return null;
 					}
 				};
 				// 处理删除内容
-				Exception result;
 				for (List<BusinessObject<?>> datas : boDeletes.values()) {
 					if (datas.size() > 0) {
-						result = sqlExecuter.apply(TransactionType.DELETE, datas);
-						if (result instanceof Exception) {
-							throw result;
+						sqlResult = sqlExecuter.apply(TransactionType.DELETE, datas);
+						if (sqlResult instanceof Exception) {
+							throw sqlResult;
 						}
 					}
 				}
 				// 处理更新内容
 				for (List<BusinessObject<?>> datas : boUpdates.values()) {
 					if (datas.size() > 0) {
-						result = sqlExecuter.apply(TransactionType.UPDATE, datas);
-						if (result instanceof Exception) {
-							throw result;
+						sqlResult = sqlExecuter.apply(TransactionType.UPDATE, datas);
+						if (sqlResult instanceof Exception) {
+							throw sqlResult;
 						}
 					}
 				}
 				// 处理新建内容
 				for (List<BusinessObject<?>> datas : boInserts.values()) {
 					if (datas.size() > 0) {
-						result = sqlExecuter.apply(TransactionType.ADD, datas);
-						if (result instanceof Exception) {
-							throw result;
+						sqlResult = sqlExecuter.apply(TransactionType.ADD, datas);
+						if (sqlResult instanceof Exception) {
+							throw sqlResult;
 						}
 					}
+				}
+				// 处理子项
+				if (!boChilds.isEmpty()) {
+					this.save(boChilds.toArray(new IBusinessObject[] {}));
 				}
 				// 处理事务存储过程
 				sqlExecuter = new BiFunction<TransactionType, List<BusinessObject<?>>, Exception>() {
@@ -606,31 +617,20 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 									}
 								}
 							}
+						} catch (Exception e) {
+							return e;
+						} finally {
 							dbField = null;
 							data = null;
 							fieldsBuilder = null;
 							valuesBuilder = null;
-						} catch (Exception e) {
-							return e;
 						}
 						return null;
 					}
 				};
-				result = sqlExecuter.apply(null, boDatas);
-				if (result instanceof Exception) {
-					throw result;
-				}
-				cData = null;
-				boType = null;
-				boData = null;
-				boDeletes = null;
-				boUpdates = null;
-				boInserts = null;
-				boDatas = null;
-				sqlExecuter = null;
-				// 处理子项
-				if (!boChilds.isEmpty()) {
-					this.save(boChilds.toArray(new IBusinessObject[] {}));
+				sqlResult = sqlExecuter.apply(null, boDatas);
+				if (sqlResult instanceof Exception) {
+					throw sqlResult;
 				}
 				if (mine == true) {
 					this.commit();
@@ -658,6 +658,17 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 					mine = false;
 				}
 				throw e;
+			} finally {
+				cData = null;
+				boType = null;
+				boData = null;
+				boDatas = null;
+				boChilds = null;
+				boDeletes = null;
+				boUpdates = null;
+				boInserts = null;
+				sqlResult = null;
+				sqlExecuter = null;
 			}
 		} catch (Exception e) {
 			throw new RepositoryException(e);

@@ -1,5 +1,7 @@
 package bobas.businessobjectscommon.demo.test;
 
+import java.util.Random;
+
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.common.Decimals;
@@ -51,10 +53,13 @@ public class TestRepository extends TestCase {
 			item.setItemCode(materials.getItemCode());
 			item.setQuantity(Decimals.valueOf(10));
 			item.setPrice(Decimals.valueOf(99));
-			item = salesOrder.getSalesOrderItems().create();
-			item.setItemCode(materials.getItemCode());
-			item.setQuantity(Decimals.valueOf(12));
-			item.setPrice(Decimals.valueOf(199));
+			Random random = new Random();
+			for (int i = 0; i < 300; i++) {
+				item = salesOrder.getSalesOrderItems().create();
+				item.setItemCode(materials.getItemCode());
+				item.setQuantity(Decimals.valueOf(random.nextInt(199)));
+				item.setPrice(Decimals.valueOf(random.nextDouble() * 10));
+			}
 			IOperationResult<ISalesOrder> opRsltOD = boRepository.saveSalesOrder(salesOrder);
 			if (opRsltOD.getError() != null) {
 				throw opRsltOD.getError();
@@ -83,7 +88,6 @@ public class TestRepository extends TestCase {
 			}
 			salesOrder = opRsltOD.getResultObjects().firstOrDefault();
 			assertNull("rollback salesOrder.", salesOrder);
-
 		}
 	}
 
