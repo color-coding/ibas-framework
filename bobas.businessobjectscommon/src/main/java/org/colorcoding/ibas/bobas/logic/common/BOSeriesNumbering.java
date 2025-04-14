@@ -12,6 +12,7 @@ import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.db.DbField;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.db.IDbTableUpdate;
 
 /**
  * 业务对象序列编号方式
@@ -20,7 +21,7 @@ import org.colorcoding.ibas.bobas.db.DbFieldType;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "BOSeriesNumbering", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
 @XmlRootElement(name = "BOSeriesNumbering", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
-public class BOSeriesNumbering extends BusinessObject<BOSeriesNumbering> implements IBOCustomKey {
+public class BOSeriesNumbering extends BusinessObject<BOSeriesNumbering> implements IBOCustomKey, IDbTableUpdate {
 
 	private static final long serialVersionUID = 1L;
 

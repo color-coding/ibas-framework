@@ -341,7 +341,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 							boInserts.get(boType).add(boData);
 						} else {
 							// 更新
-							if (this.isReplacementUpdate()) {
+							if (this.isReplacementUpdate() && !(boData instanceof IDbTableUpdate)) {
 								// 替换更新：删除后新建
 								boDeletes.get(boType).add(boData);
 								boInserts.get(boType).add(boData);
@@ -735,6 +735,13 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 		} catch (Exception e) {
 			throw new RepositoryException(e);
 		}
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		this.connection = null;
+		this.adapter = null;
+		super.finalize();
 	}
 
 	@Override

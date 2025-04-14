@@ -14,6 +14,7 @@ import org.colorcoding.ibas.bobas.data.IKeyValue;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.db.DbField;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.db.IDbTableUpdate;
 
 /**
  * 业务对象编号
@@ -22,7 +23,7 @@ import org.colorcoding.ibas.bobas.db.DbFieldType;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "BONumbering", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
 @XmlRootElement(name = "BONumbering", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
-public class BONumbering extends BusinessObject<BONumbering> implements IBOCustomKey {
+public class BONumbering extends BusinessObject<BONumbering> implements IBOCustomKey, IDbTableUpdate {
 
 	private static final long serialVersionUID = 1L;
 

@@ -12,6 +12,7 @@ import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.db.DbField;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.db.IDbTableUpdate;
 
 /**
  * 业务对象日志
@@ -20,7 +21,7 @@ import org.colorcoding.ibas.bobas.db.DbFieldType;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = BOLogst.BUSINESS_OBJECT_NAME, namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
 @XmlRootElement(name = BOLogst.BUSINESS_OBJECT_NAME, namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
-public class BOLogst extends BusinessObject<BOLogst> implements IBOCustomKey {
+public class BOLogst extends BusinessObject<BOLogst> implements IBOCustomKey, IDbTableUpdate {
 
 	/**
 	 * 序列化版本标记

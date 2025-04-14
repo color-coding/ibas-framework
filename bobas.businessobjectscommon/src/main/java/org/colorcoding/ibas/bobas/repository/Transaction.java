@@ -77,4 +77,10 @@ public abstract class Transaction implements ITransaction {
 			throw new RepositoryException(e);
 		}
 	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		this.cacheDatas = null;
+		super.finalize();
+	}
 }

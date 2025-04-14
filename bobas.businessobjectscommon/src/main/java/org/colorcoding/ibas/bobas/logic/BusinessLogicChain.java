@@ -19,6 +19,7 @@ import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logging.Logger;
 import org.colorcoding.ibas.bobas.logging.LoggingLevel;
+import org.colorcoding.ibas.bobas.logic.common.BOLogst;
 import org.colorcoding.ibas.bobas.logic.common.BONumbering;
 import org.colorcoding.ibas.bobas.logic.common.BOSeriesNumbering;
 import org.colorcoding.ibas.bobas.organization.IUser;
@@ -230,25 +231,31 @@ class BusinessLogicChain implements IBusinessLogicChain {
 					logicChain.setUser(this.getUser());
 					logicChain.setRoot(this.getTrigger());
 					logicChain.setTrigger(item);
-					if (item instanceof BONumbering || item instanceof BOSeriesNumbering) {
-						// 提高性能，编号不查询副本
-						logicChain.setTriggerCopy(null);
-					} else if (item.isNew() == false) {
-						// 非新建，则查询副本
-						criteria = item.getCriteria();
-						if (criteria == null || criteria.getConditions().isEmpty()) {
-							throw new RepositoryException(I18N.prop("msg_bobas_invaild_criteria"));
+					if (item.isNew() == false) {
+						if (item instanceof BONumbering || item instanceof BOSeriesNumbering
+								|| item instanceof BOLogst) {
+							// 提高性能，编号不查询副本
+							logicChain.setTriggerCopy(null);
+						} else if (item.isDirty() == false) {
+							// 主体未被修改，使用主体
+							logicChain.setTriggerCopy(item);
+						} else {
+							// 主体被修改，则查询副本
+							criteria = item.getCriteria();
+							if (criteria == null || criteria.getConditions().isEmpty()) {
+								throw new RepositoryException(I18N.prop("msg_bobas_invaild_criteria"));
+							}
+							criteria.setResultCount(1);
+							tmpDatas = this.getTransaction().fetch(item.getClass(), criteria);
+							if (tmpDatas == null || tmpDatas.length != 1) {
+								throw new RepositoryException(I18N.prop("msg_bobas_fetch_bo_copy_faild", item));
+							}
+							if (BOUtilities.isNewer(tmpDatas[0], item)) {
+								throw new RepositoryException(
+										I18N.prop("msg_bobas_bo_copy_is_more_newer", item.toString()));
+							}
+							logicChain.setTriggerCopy(tmpDatas[0]);
 						}
-						criteria.setResultCount(1);
-						tmpDatas = this.getTransaction().fetch(item.getClass(), criteria);
-						if (tmpDatas == null || tmpDatas.length != 1) {
-							throw new RepositoryException(I18N.prop("msg_bobas_fetch_bo_copy_faild", item));
-						}
-						if (BOUtilities.isNewer(tmpDatas[0], item)) {
-							throw new RepositoryException(
-									I18N.prop("msg_bobas_bo_copy_is_more_newer", item.toString()));
-						}
-						logicChain.setTriggerCopy(tmpDatas[0]);
 					}
 					logicChain.execute();
 				}
