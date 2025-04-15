@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.data;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -112,11 +113,9 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 	@Override
 	public boolean addAll(E[] c) {
 		if (c != null) {
-			for (E item : c) {
-				this.add(item);
-			}
+			return this.addAll(Arrays.asList(c));
 		}
-		return true;
+		return false;
 	}
 
 	@Override
@@ -125,8 +124,9 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 			for (E item : c) {
 				this.add(item);
 			}
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	@Override

@@ -44,6 +44,9 @@ public class MaterialsJournalContractLogic extends BusinessLogic<IMaterialsJourn
 		if (journal == null) {
 			// 数据仓库中不存在，创建新的
 			journal = new MaterialsJournal();
+			journal.setBaseDocumentType(contract.getDocumentType());
+			journal.setBaseDocumentEntry(contract.getDocumentEntry());
+			journal.setBaseDocumentLineId(contract.getDocumentLineId());
 		}
 		return journal;
 	}

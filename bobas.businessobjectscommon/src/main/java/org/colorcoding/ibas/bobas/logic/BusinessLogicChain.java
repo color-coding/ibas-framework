@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.logic;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -270,7 +271,7 @@ class BusinessLogicChain implements IBusinessLogicChain {
 		}
 	}
 
-	protected BusinessLogic<?, ?>[] analyzeContracts(IBusinessObject data) {
+	protected Collection<BusinessLogic<?, ?>> analyzeContracts(IBusinessObject data) {
 		/**
 		 * 分析并创建契约服务
 		 */
@@ -282,7 +283,7 @@ class BusinessLogicChain implements IBusinessLogicChain {
 				// 开始检查契约
 				while (tmpClass != null) {
 					for (Class<?> item : tmpClass.getInterfaces()) {
-						if (!IBusinessLogicContract.class.isAssignableFrom(IBusinessLogicContract.class)) {
+						if (!IBusinessLogicContract.class.isAssignableFrom(tmpClass)) {
 							continue;
 						}
 						// 存在契约，创建契约对应的逻辑实例
@@ -296,15 +297,17 @@ class BusinessLogicChain implements IBusinessLogicChain {
 					}
 					// 检查基类的契约
 					tmpClass = tmpClass.getSuperclass();
-					if (tmpClass.equals(BusinessObject.class)) {
-						tmpClass = null;
+					if (tmpClass != null) {
+						if (tmpClass.equals(IBusinessLogicContract.class) || !tmpClass.isInterface()) {
+							tmpClass = null;
+						}
 					}
 				}
 				return null;
 			}
 		};
 		BusinessLogic<?, ?> logic;
-		ArrayList<IBusinessLogic<?>> logics = new ArrayList<>(16);
+		ArrayList<BusinessLogic<?, ?>> logics = new ArrayList<>(16);
 		// 仅业务对象增加默认逻辑
 		if (data instanceof IBusinessObject) {
 			// 主键编号
@@ -338,6 +341,7 @@ class BusinessLogicChain implements IBusinessLogicChain {
 		}
 		// 先子项，再自身（注意：避免嵌套后无限循环寻找契约）
 		if (data instanceof BusinessObject) {
+			int count;
 			Object cData;
 			BusinessObject<?> boData = (BusinessObject<?>) data;
 			for (IPropertyInfo<?> propertyInfo : boData.properties()) {
@@ -348,24 +352,26 @@ class BusinessLogicChain implements IBusinessLogicChain {
 				if (IBusinessObject.class.isAssignableFrom(propertyInfo.getValueType())) {
 					cData = BOUtilities.propertyValue(boData, propertyInfo);
 					if (cData instanceof IBusinessObject) {
-						for (BusinessLogic<?, ?> item : this.analyzeContracts((IBusinessObject) cData)) {
-							if (item.getParent() == null) {
-								// 仅未赋值的
-								item.setParent(data);
+						count = logics.size();
+						logics.addAll(this.analyzeContracts((IBusinessObject) cData));
+						for (int i = count - 1; i < logics.size(); i++) {
+							logic = logics.get(i);
+							if (logic.getParent() == null) {
+								logic.setParent(boData);
 							}
-							logics.add(item);
 						}
 					}
 				} else if (IBusinessObjects.class.isAssignableFrom(propertyInfo.getValueType())) {
 					cData = BOUtilities.propertyValue(boData, propertyInfo);
 					if (cData instanceof IBusinessObjects) {
 						for (IBusinessObject item : ((IBusinessObjects<?, ?>) cData)) {
-							for (BusinessLogic<?, ?> sItem : this.analyzeContracts(item)) {
-								if (sItem.getParent() == null) {
-									// 仅未赋值的
-									sItem.setParent(data);
+							count = logics.size();
+							logics.addAll(this.analyzeContracts(item));
+							for (int i = count - 1; i < logics.size(); i++) {
+								logic = logics.get(i);
+								if (logic.getParent() == null) {
+									logic.setParent(boData);
 								}
-								logics.add(sItem);
 							}
 						}
 					}
@@ -380,6 +386,9 @@ class BusinessLogicChain implements IBusinessLogicChain {
 			if (hostContracts != null) {
 				for (IBusinessLogicContract item : hostContracts) {
 					logic = analyzer.apply(item);
+					if (logic == null) {
+						continue;
+					}
 					logic.setHost(data);
 					logics.add(logic);
 				}
@@ -404,37 +413,37 @@ class BusinessLogicChain implements IBusinessLogicChain {
 			}
 		}
 		// 返回并剔除无效的
-		return logics.where(c -> c != null).toArray(new BusinessLogic<?, ?>[] {});
+		return logics.where(c -> c != null);
 	}
 
-	private BusinessLogic<?, ?>[] triggerLogics;
+	private Collection<BusinessLogic<?, ?>> triggerLogics;
 
 	/**
 	 * 触发者的业务逻辑
 	 * 
 	 * @return
 	 */
-	protected final synchronized IBusinessLogic<?>[] getTriggerLogics() {
+	protected final synchronized Collection<BusinessLogic<?, ?>> getTriggerLogics() {
 		if (this.triggerLogics == null) {
 			this.triggerLogics = this.analyzeContracts(this.getTrigger());
 			Logger.log(LoggingLevel.INFO, "logics chain [%s]: trigger [%s] has [%s] contracts.", this.hashCode(),
-					this.getTrigger(), this.triggerLogics.length);
+					this.getTrigger(), this.triggerLogics.size());
 		}
 		return this.triggerLogics;
 	}
 
-	private BusinessLogic<?, ?>[] triggerCopyLogics;
+	private Collection<BusinessLogic<?, ?>> triggerCopyLogics;
 
 	/**
 	 * 触发者副本的业务逻辑
 	 * 
 	 * @return
 	 */
-	protected final synchronized IBusinessLogic<?>[] getTriggerCopyLogics() {
+	protected final synchronized Collection<BusinessLogic<?, ?>> getTriggerCopyLogics() {
 		if (this.triggerCopyLogics == null) {
 			this.triggerCopyLogics = this.analyzeContracts(this.getTriggerCopy());
 			Logger.log(LoggingLevel.INFO, "logics chain [%s]: trigger's copy [%s] has [%s] contracts.", this.hashCode(),
-					this.getTriggerCopy(), this.triggerCopyLogics.length);
+					this.getTriggerCopy(), this.triggerCopyLogics.size());
 		}
 		return this.triggerCopyLogics;
 	}
@@ -445,18 +454,17 @@ class BusinessLogicChain implements IBusinessLogicChain {
 	 * @return
 	 */
 	protected final List<IBusinessLogic<?>> getLogics() {
-		int aCount = this.triggerLogics != null ? this.triggerLogics.length : 0;
-		int bCount = this.triggerCopyLogics != null ? this.triggerCopyLogics.length : 0;
+		int aCount = this.triggerLogics != null ? this.triggerLogics.size() : 0;
+		int bCount = this.triggerCopyLogics != null ? this.triggerCopyLogics.size() : 0;
 		List<IBusinessLogic<?>> logics = new ArrayList<>(aCount + bCount);
 
-		for (int i = 0; i < bCount; i++) {
-			// for (int i = bCount - 1; i >= 0; i--) {
-			logics.add(this.triggerCopyLogics[i]);
+		if (this.triggerLogics != null) {
+			logics.addAll(this.triggerLogics);
 		}
-		for (int i = 0; i < aCount; i++) {
-			// for (int i = aCount - 1; i >= 0; i--) {
-			logics.add(this.triggerLogics[i]);
+		if (this.triggerCopyLogics != null) {
+			logics.addAll(this.triggerCopyLogics);
 		}
+
 		return logics;
 	}
 

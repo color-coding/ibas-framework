@@ -7,6 +7,7 @@ import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.common.Decimals;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.logic.common.BOInstanceLogService;
 import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
 import org.colorcoding.ibas.demo.bo.materials.IMaterials;
@@ -24,6 +25,8 @@ public class TestRepository extends TestCase {
 
 	public void testTransaction() throws Exception {
 		try (BORepositoryTrainingTesting boRepository = new BORepositoryTrainingTesting()) {
+			// 是否执行业务逻辑
+			// boRepository.skipLogics();
 			boRepository.setUserToken(OrganizationFactory.SYSTEM_USER.getToken());
 			// 打开事务
 			boRepository.beginTransaction();
@@ -54,13 +57,15 @@ public class TestRepository extends TestCase {
 			item.setQuantity(Decimals.valueOf(10));
 			item.setPrice(Decimals.valueOf(99));
 			Random random = new Random();
-			for (int i = 0; i < 300; i++) {
+			for (int i = 0; i < 1999; i++) {
 				item = salesOrder.getSalesOrderItems().create();
 				item.setItemCode(materials.getItemCode());
 				item.setQuantity(Decimals.valueOf(random.nextInt(199)));
 				item.setPrice(Decimals.valueOf(random.nextDouble() * 10));
 			}
+			DateTime beginTime = DateTimes.now();
 			IOperationResult<ISalesOrder> opRsltOD = boRepository.saveSalesOrder(salesOrder);
+			DateTime endTime = DateTimes.now();
 			if (opRsltOD.getError() != null) {
 				throw opRsltOD.getError();
 			}
@@ -71,7 +76,9 @@ public class TestRepository extends TestCase {
 			salesOrder = opRsltOD.getResultObjects().firstOrDefault();
 			assertNotNull("not saved salesOrder.", salesOrder);
 			System.out.println();
-			System.out.println(Strings.format("+++++++++++++ new bo: %s +++++++++++++", salesOrder.toString()));
+			System.out.println(
+					Strings.format("+++++++++++++ new bo: %s ,line %s time %s +++++++++++++", salesOrder.toString(),
+							salesOrder.getSalesOrderItems().size(), endTime.getTime() - beginTime.getTime()));
 			System.out.println();
 
 			// 回滚事务，重新查询应查不到

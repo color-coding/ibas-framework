@@ -22,6 +22,7 @@ import org.colorcoding.ibas.bobas.logging.Logger;
 import org.colorcoding.ibas.bobas.logging.LoggingLevel;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.repository.ITransaction;
+import org.colorcoding.ibas.bobas.repository.Transaction;
 
 /**
  * 业务逻辑基类
@@ -250,6 +251,12 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 		if (this.beAffected == null) {
 			// 加载被影响的数据
 			this.beAffected = this.fetchBeAffected(this.getContract());
+			// 自动缓存数据
+			if (BOUtilities.isBusinessObject(this.beAffected)) {
+				if (this.getTransaction() instanceof Transaction) {
+					((Transaction) this.getTransaction()).cache(this.beAffected);
+				}
+			}
 		}
 		if (this.beAffected instanceof IBusinessObject) {
 			IBusinessObject bo = (IBusinessObject) this.beAffected;
@@ -317,13 +324,19 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 		if (this.beAffected == null) {
 			// 加载被影响的数据
 			this.beAffected = this.fetchBeAffected(this.getContract());
+			// 自动缓存数据
+			if (BOUtilities.isBusinessObject(this.beAffected)) {
+				if (this.getTransaction() instanceof Transaction) {
+					((Transaction) this.getTransaction()).cache(this.beAffected);
+				}
+			}
 		}
 		// 执行撤销逻辑
 		this.revoke(this.getContract());
 	}
 
 	/**
-	 * 逻辑链中查询被影响对象（仅第一个）
+	 * 查询被影响对象（优先使用缓存方式）
 	 * 
 	 * @param <B>
 	 * @param boType
@@ -331,7 +344,11 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 	 * @return
 	 */
 	protected final <B> B fetchBeAffected(Class<B> boType, ICriteria criteria) {
-		return this.fetchBeAffected(boType, criteria, false).firstOrDefault();
+		if (this.getTransaction() instanceof Transaction) {
+			return this.fetchBeAffectedInCaches(boType, criteria, false).firstOrDefault();
+		} else {
+			return this.fetchBeAffectedInLogics(boType, criteria, false).firstOrDefault();
+		}
 	}
 
 	/**
@@ -344,7 +361,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	protected final <B> List<B> fetchBeAffected(Class<B> boType, ICriteria criteria, boolean all) {
+	protected final <B> List<B> fetchBeAffectedInLogics(Class<B> boType, ICriteria criteria, boolean all) {
 		Objects.requireNonNull(boType);
 		Objects.requireNonNull(criteria);
 		Objects.requireNonNull(this.getLogicChain());
@@ -371,10 +388,10 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 				if (this.current != null && this.current.hasNext()) {
 					return true;
 				}
-				if (this.parentLogics != null && this.parentLogics.hasNext()) {
+				if (this.myLogics != null && this.myLogics.hasNext()) {
 					return true;
 				}
-				if (this.myLogics != null && this.myLogics.hasNext()) {
+				if (this.parentLogics != null && this.parentLogics.hasNext()) {
 					return true;
 				}
 				return false;
@@ -387,28 +404,36 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 				}
 				this.current = null;
 				IBusinessLogic<?> logic = null;
-				// 先使用父项逻辑
-				if (this.parentLogics != null && this.parentLogics.hasNext()) {
-					logic = this.parentLogics.next();
-				}
-				// 再使用自身逻辑
+				// 先使用自身逻辑
 				if (logic == null) {
 					if (this.myLogics != null && this.myLogics.hasNext()) {
 						logic = this.myLogics.next();
 					}
 				}
+				// 再使用父项逻辑
+				if (logic == null) {
+					if (this.parentLogics != null && this.parentLogics.hasNext()) {
+						logic = this.parentLogics.next();
+					}
+				}
 				if (logic != null) {
-					List<B> results = new ArrayList<>(4);
+					List<B> results = null;
 					if (boType.isInstance(logic.getBeAffected())) {
+						if (results == null) {
+							results = new ArrayList<>(1);
+						}
 						results.add((B) logic.getBeAffected());
 					} else if (logic.getBeAffected() instanceof IBusinessObjectGroup) {
+						if (results == null) {
+							results = new ArrayList<>();
+						}
 						for (Object item : (IBusinessObjectGroup) logic.getBeAffected()) {
 							if (boType.isInstance(item)) {
 								results.add((B) item);
 							}
 						}
 					}
-					if (!results.isEmpty()) {
+					if (results != null && !results.isEmpty()) {
 						this.current = results.iterator();
 						return this.next();
 					}
@@ -416,12 +441,38 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 				return null;
 			}
 		};
-
 		try {
 			return BOUtilities.fetch(iterator, criteria);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	/**
+	 * 缓存中查询被影响对象
+	 * 
+	 * @param <B>
+	 * @param boType
+	 * @param criteria
+	 * @param all      返回全部
+	 * @return
+	 */
+	protected final <B> List<B> fetchBeAffectedInCaches(Class<B> boType, ICriteria criteria, boolean all) {
+		List<B> results = new ArrayList<>();
+		try {
+			// 不返回全部，则只第一条
+			if (all == false) {
+				criteria = criteria.clone();
+				criteria.setResultCount(1);
+			}
+			if (this.getTransaction() instanceof Transaction) {
+				Transaction transaction = (Transaction) this.getTransaction();
+				results.addAll(transaction.fetchInCache(boType, criteria));
+			}
+		} catch (Exception e) {
+			throw new BusinessLogicException(e);
+		}
+		return results;
 	}
 
 	/**

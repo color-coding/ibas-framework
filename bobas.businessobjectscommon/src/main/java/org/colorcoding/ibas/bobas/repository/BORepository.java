@@ -16,11 +16,11 @@ public abstract class BORepository extends Repository {
 
 	private boolean skipLogics;
 
-	public final boolean isSkipLogics() {
+	protected final boolean isSkipLogics() {
 		return skipLogics;
 	}
 
-	public final void setSkipLogics(boolean skipLogics) {
+	protected final void setSkipLogics(boolean skipLogics) {
 		this.skipLogics = skipLogics;
 	}
 

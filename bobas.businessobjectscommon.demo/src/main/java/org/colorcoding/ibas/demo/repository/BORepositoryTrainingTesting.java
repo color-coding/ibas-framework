@@ -19,6 +19,10 @@ import org.colorcoding.ibas.demo.bo.user.User;
 public class BORepositoryTrainingTesting extends BORepositoryServiceApplication
 		implements IBORepositoryTrainingTestingSvc, IBORepositoryTrainingTestingApp {
 
+	public void skipLogics() {
+		super.setSkipLogics(true);
+	}
+
 	// --------------------------------------------------------------------------------------------//
 	/**
 	 * 查询-物料主数据
