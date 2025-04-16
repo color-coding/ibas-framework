@@ -323,13 +323,6 @@ public abstract class DbAdapter {
 						condition.setComparedAlias(dbField.name());
 					}
 				}
-				// like，改为字符串比较
-				if (condition.getOperation() == ConditionOperation.CONTAIN
-						|| condition.getOperation() == ConditionOperation.NOT_CONTAIN
-						|| condition.getOperation() == ConditionOperation.START
-						|| condition.getOperation() == ConditionOperation.END) {
-					condition.setAliasDataType(DbFieldType.ALPHANUMERIC);
-				}
 			}
 			for (ISort sort : criteria.getSorts()) {
 				if (Strings.equalsIgnoreCase(sort.getAlias(), propertyInfo.getName())) {
@@ -754,6 +747,8 @@ public abstract class DbAdapter {
 	public String parsingDelete(IFieldedObject boData) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("DELETE");
+		stringBuilder.append(" ");
+		stringBuilder.append(" FROM");
 		stringBuilder.append(" ");
 		stringBuilder.append(this.identifier());
 		stringBuilder.append(this.table(boData.getClass()));

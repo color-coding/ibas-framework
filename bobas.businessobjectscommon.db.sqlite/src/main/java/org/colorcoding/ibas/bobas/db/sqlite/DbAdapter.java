@@ -9,7 +9,6 @@ import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
-import org.colorcoding.ibas.bobas.core.IFieldedObject;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
 import org.colorcoding.ibas.bobas.db.MaxValue;
 import org.colorcoding.ibas.bobas.logging.Logger;
@@ -115,17 +114,17 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			stringBuilder.append(" ");
 			stringBuilder.append(this.parsingWhere(criteria.getConditions()));
 		}
-		if (criteria.getResultCount() > 0) {
-			stringBuilder.append(" ");
-			stringBuilder.append("LIMIT");
-			stringBuilder.append(" ");
-			stringBuilder.append(criteria.getResultCount());
-		}
 		if (criteria.getSorts().size() > 0) {
 			stringBuilder.append(" ");
 			stringBuilder.append("ORDER BY");
 			stringBuilder.append(" ");
 			stringBuilder.append(this.parsingOrder(criteria.getSorts()));
+		}
+		if (criteria.getResultCount() > 0) {
+			stringBuilder.append(" ");
+			stringBuilder.append("LIMIT");
+			stringBuilder.append(" ");
+			stringBuilder.append(criteria.getResultCount());
 		}
 		return stringBuilder.toString();
 	}
@@ -172,33 +171,20 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			int count = stringBuilder.length();
 			for (String arg : args) {
 				if (stringBuilder.length() > count) {
-					stringBuilder.append(" ");
-					stringBuilder.append("AND");
-					stringBuilder.append(" ");
+					stringBuilder.append(this.separation());
 				}
-				stringBuilder.append(arg);
-				stringBuilder.append(" ");
-				stringBuilder.append("=");
-				stringBuilder.append(" ");
-				stringBuilder.append("?");
+				if (Strings.isNullOrEmpty(arg)) {
+					stringBuilder.append("?");
+				} else {
+					stringBuilder.append(arg);
+					stringBuilder.append(" ");
+					stringBuilder.append("=");
+					stringBuilder.append(" ");
+					stringBuilder.append("?");
+				}
 			}
 		}
 		return stringBuilder.toString();
 	}
 
-	public String parsingDelete(IFieldedObject boData) {
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("DELETE");
-		stringBuilder.append(" ");
-		stringBuilder.append("FROM");
-		stringBuilder.append(" ");
-		stringBuilder.append(this.identifier());
-		stringBuilder.append(this.table(boData.getClass()));
-		stringBuilder.append(this.identifier());
-		stringBuilder.append(" ");
-		stringBuilder.append(this.where());
-		stringBuilder.append(" ");
-		stringBuilder.append(this.parsingWhere(boData));
-		return stringBuilder.toString();
-	}
 }

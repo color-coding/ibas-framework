@@ -114,7 +114,8 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			stringBuilder.append(" ");
 			stringBuilder.append(this.parsingWhere(criteria.getConditions()));
 		}
-		if (withLock) {
+		// 锁不能排序一起出现
+		if (withLock && criteria.getSorts().isEmpty()) {
 			stringBuilder.append(" ");
 			stringBuilder.append("FOR UPDATE");
 		}

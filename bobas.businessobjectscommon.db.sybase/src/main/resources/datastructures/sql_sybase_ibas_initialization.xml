@@ -33,7 +33,7 @@
                     IN num_of_cols_in_key int,                   --主键个数
                     IN list_of_key_cols_tab_del nvarchar(255),   --主键名称
                     IN list_of_cols_val_tab_del nvarchar(255),   --主键值
-                    IN user int                                  --用户标识
+                    IN user_id int                               --用户标识
                 )
                 RESULT ("Code" int, "Message" nvarchar(200))
                 BEGIN

@@ -40,5 +40,23 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.colorcoding.ibas</groupId>
+			<artifactId>bobas.businessobjectscommon.db.mysql</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.colorcoding.ibas</groupId>
+			<artifactId>bobas.businessobjectscommon.db.pgsql</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.colorcoding.ibas</groupId>
+			<artifactId>bobas.businessobjectscommon.db.hana</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>

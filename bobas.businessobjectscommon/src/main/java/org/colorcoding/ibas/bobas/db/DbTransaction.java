@@ -201,8 +201,8 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 			Objects.requireNonNull(boType);
 			// 查询方法，不主动开启事务
 			criteria = this.getAdapter().convert(criteria, boType);
-			String sql = this.inTransaction()
-					// 事务中，则查询对象加锁
+			String sql = this.inTransaction() && IDbTableLock.class.isAssignableFrom(boType)
+					// 事务中且锁表对象，则查询对象加锁
 					? this.getAdapter().parsingSelect(boType, criteria, true)
 					: this.getAdapter().parsingSelect(boType, criteria);
 			if (MyConfiguration.isDebugMode()) {

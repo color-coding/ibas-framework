@@ -35,7 +35,7 @@
                     IN num_of_cols_in_key integer,                     --主键个数
                     IN list_of_key_cols_tab_del nvarchar(255),         --主键名称
                     IN list_of_cols_val_tab_del nvarchar(255),         --主键值
-                    IN user integer                                    --用户标识
+                    IN user_id integer                                 --用户标识
                 )
                 LANGUAGE SQLSCRIPT AS
                 BEGIN

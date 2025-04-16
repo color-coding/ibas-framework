@@ -175,12 +175,18 @@ public class TestMultitask extends TestCase {
 			condition.setAlias(SalesOrder.PROPERTY_DOCUMENTSTATUS.getName());
 			condition.setValue(emDocumentStatus.RELEASED.ordinal());
 			condition.setRelationship(ConditionRelationship.OR);
-			// (CardCode != ''')
+			// (CardCode != ''C')
 			condition = criteria.getConditions().create();
 			condition.setAlias(SalesOrder.PROPERTY_CUSTOMERCODE.getName());
 			condition.setValue("'C");
 			condition.setOperation(ConditionOperation.NOT_EQUAL);
 			condition.setRelationship(ConditionRelationship.AND);
+			// (DocEntry like '%A%')
+			condition = criteria.getConditions().create();
+			condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+			condition.setValue("A");
+			condition.setOperation(ConditionOperation.CONTAIN);
+			condition.setRelationship(ConditionRelationship.OR);
 			// ORDER BY "DocEntry" DESC, "CardCode" ASC
 			ISort sort = criteria.getSorts().create();
 			sort.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());

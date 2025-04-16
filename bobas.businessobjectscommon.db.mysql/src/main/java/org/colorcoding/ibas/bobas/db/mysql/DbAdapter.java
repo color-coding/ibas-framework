@@ -27,7 +27,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 					"jdbc:mysql://%s/%s?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=%s",
 					server, dbName, java.net.URLEncoder.encode(timeZone, "UTF-8"));
 			if (MyConfiguration.isDebugMode()) {
-				Logger.log(Strings.format("db adapter: %s", dbURL));
+				Logger.log(Strings.format("db adapter: %s", java.net.URLDecoder.decode(dbURL, "UTF-8")));
 			}
 			Connection connection = DriverManager.getConnection(dbURL, userName, userPwd);
 			connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
@@ -118,13 +118,8 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			stringBuilder.append(" ");
 			stringBuilder.append(this.parsingWhere(criteria.getConditions()));
 		}
-		if (criteria.getResultCount() > 0) {
-			stringBuilder.append(" ");
-			stringBuilder.append("LIMIT");
-			stringBuilder.append(" ");
-			stringBuilder.append(criteria.getResultCount());
-		}
-		if (withLock) {
+		// 锁不能排序一起出现
+		if (withLock && criteria.getSorts().isEmpty()) {
 			stringBuilder.append(" ");
 			stringBuilder.append("FOR UPDATE");
 		}
@@ -133,6 +128,12 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			stringBuilder.append("ORDER BY");
 			stringBuilder.append(" ");
 			stringBuilder.append(this.parsingOrder(criteria.getSorts()));
+		}
+		if (criteria.getResultCount() > 0) {
+			stringBuilder.append(" ");
+			stringBuilder.append("LIMIT");
+			stringBuilder.append(" ");
+			stringBuilder.append(criteria.getResultCount());
 		}
 		return stringBuilder.toString();
 	}
