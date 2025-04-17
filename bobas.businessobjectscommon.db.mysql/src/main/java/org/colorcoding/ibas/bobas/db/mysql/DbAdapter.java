@@ -9,7 +9,6 @@ import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
-import org.colorcoding.ibas.bobas.db.IDbTableLock;
 import org.colorcoding.ibas.bobas.db.MaxValue;
 import org.colorcoding.ibas.bobas.logging.Logger;
 
@@ -118,12 +117,12 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			stringBuilder.append(" ");
 			stringBuilder.append(this.parsingWhere(criteria.getConditions()));
 		}
-		// 锁不能排序一起出现
-		if (withLock && criteria.getSorts().isEmpty()) {
+		if (withLock) {
 			stringBuilder.append(" ");
 			stringBuilder.append("FOR UPDATE");
 		}
-		if (criteria.getSorts().size() > 0) {
+		// 如果加锁，则不能排序
+		if (withLock == false && criteria.getSorts().size() > 0) {
 			stringBuilder.append(" ");
 			stringBuilder.append("ORDER BY");
 			stringBuilder.append(" ");
@@ -158,10 +157,6 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		stringBuilder.append(this.where());
 		stringBuilder.append(" ");
 		stringBuilder.append(this.parsingWhere(conditions));
-		if (maxValue instanceof IDbTableLock) {
-			stringBuilder.append(" ");
-			stringBuilder.append("FOR UPDATE");
-		}
 		return stringBuilder.toString();
 	}
 

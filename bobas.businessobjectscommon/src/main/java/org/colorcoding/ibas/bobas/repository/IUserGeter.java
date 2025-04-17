@@ -14,7 +14,7 @@ public interface IUserGeter {
 	 * 
 	 * @return
 	 */
-	Supplier<IUser> supplier();
+	Supplier<IUser> userSupplier();
 
 	/**
 	 * 获取用户
@@ -22,8 +22,8 @@ public interface IUserGeter {
 	 * @return
 	 */
 	default IUser getUser() {
-		if (this.supplier() != null) {
-			return this.supplier().get();
+		if (this.userSupplier() != null) {
+			return this.userSupplier().get();
 		}
 		throw new RuntimeException("not support.");
 	}

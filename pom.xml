@@ -6,7 +6,7 @@
   <version>0.2.0</version>
   <packaging>pom</packaging>
   <name>bobas.businessobjectscommon.parent</name>
-  <url>https://colorcoding.org/bobas</url>
+  <url>https://colorcoding.org/ibas/bobas</url>
   <organization>
     <name>Color-Coding Studio</name>
     <url>https://colorcoding.org</url>
@@ -27,7 +27,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.7.0</version>
+        <version>3.14.0</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
@@ -37,28 +37,26 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>3.0.2</version>
+        <version>3.4.2</version>
         <configuration>
         </configuration>
       </plugin>
-      <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.0.1</version>
+        <version>3.3.1</version>
         <configuration>
-          <attach>true</attach>
+          <attach>false</attach>
         </configuration>
         <executions>
           <execution>
             <phase>compile</phase>
-              <goals>
-                <goal>jar</goal>
-              </goals>
+            <goals>
+              <goal>jar</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
-      -->
     </plugins>
   </build>
   <repositories>
@@ -77,7 +75,7 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.13.2</version>
-	  <scope>test</scope>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

@@ -52,7 +52,7 @@ public class BORepository4DB extends BORepository {
 			this.setTransaction(new DbTransaction(
 					DbFactory.create().createConnection(dbType, dbServer, dbName, dbUser, dbPassword)) {
 				@Override
-				public Supplier<IUser> supplier() {
+				public Supplier<IUser> userSupplier() {
 					return new Supplier<IUser>() {
 						@Override
 						public IUser get() {
@@ -99,7 +99,7 @@ public class BORepository4DB extends BORepository {
 		super.setTransaction(transaction);
 		this.myConnection = false;
 		if (transaction instanceof DbTransaction) {
-			Supplier<IUser> supplier = ((DbTransaction) transaction).supplier();
+			Supplier<IUser> supplier = ((DbTransaction) transaction).userSupplier();
 			if (supplier != null) {
 				IUser user = supplier.get();
 				if (user != OrganizationFactory.UNKNOWN_USER) {

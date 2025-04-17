@@ -472,7 +472,8 @@ public abstract class DbAdapter {
 			stringBuilder.append(" ");
 			stringBuilder.append(this.parsingWhere(criteria.getConditions()));
 		}
-		if (criteria.getSorts().size() > 0) {
+		// 如果加锁，则不能排序
+		if (withLock == false && criteria.getSorts().size() > 0) {
 			stringBuilder.append(" ");
 			stringBuilder.append("ORDER BY");
 			stringBuilder.append(" ");
@@ -748,7 +749,7 @@ public abstract class DbAdapter {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("DELETE");
 		stringBuilder.append(" ");
-		stringBuilder.append(" FROM");
+		stringBuilder.append("FROM");
 		stringBuilder.append(" ");
 		stringBuilder.append(this.identifier());
 		stringBuilder.append(this.table(boData.getClass()));

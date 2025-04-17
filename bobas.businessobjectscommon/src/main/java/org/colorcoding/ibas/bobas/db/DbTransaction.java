@@ -201,7 +201,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 			Objects.requireNonNull(boType);
 			// 查询方法，不主动开启事务
 			criteria = this.getAdapter().convert(criteria, boType);
-			String sql = this.inTransaction() && IDbTableLock.class.isAssignableFrom(boType)
+			String sql = this.inTransaction()
 					// 事务中且锁表对象，则查询对象加锁
 					? this.getAdapter().parsingSelect(boType, criteria, true)
 					: this.getAdapter().parsingSelect(boType, criteria);
@@ -303,12 +303,12 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 			Class<?> boType = null;
 			Exception sqlResult = null;
 			BusinessObject<?> boData = null;
+			List<IBusinessObject> boChilds = null;
+			List<BusinessObject<?>> boDatas = null;
 			BiFunction<TransactionType, List<BusinessObject<?>>, Exception> sqlExecuter = null;
-			List<IBusinessObject> boChilds = new ArrayList<>();
-			List<BusinessObject<?>> boDatas = new ArrayList<>();
-			Map<Class<?>, List<BusinessObject<?>>> boDeletes = new HashMap<>(bos.length, 1);
-			Map<Class<?>, List<BusinessObject<?>>> boUpdates = new HashMap<>(bos.length, 1);
-			Map<Class<?>, List<BusinessObject<?>>> boInserts = new HashMap<>(bos.length, 1);
+			Map<Class<?>, List<BusinessObject<?>>> boDeletes = new HashMap<>(4, 1);
+			Map<Class<?>, List<BusinessObject<?>>> boUpdates = new HashMap<>(4, 1);
+			Map<Class<?>, List<BusinessObject<?>>> boInserts = new HashMap<>(4, 1);
 
 			boolean mine = this.beginTransaction();
 			try {
@@ -323,13 +323,13 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 					boData = (BusinessObject<?>) bo;
 					boType = boData.getClass();
 					if (!boDeletes.containsKey(boType)) {
-						boDeletes.put(boType, new ArrayList<>());
+						boDeletes.put(boType, new ArrayList<>(bos.length));
 					}
 					if (!boUpdates.containsKey(boType)) {
-						boUpdates.put(boType, new ArrayList<>());
+						boUpdates.put(boType, new ArrayList<>(bos.length));
 					}
 					if (!boInserts.containsKey(boType)) {
-						boInserts.put(boType, new ArrayList<>());
+						boInserts.put(boType, new ArrayList<>(bos.length));
 					}
 					// 分析待处理方式（按类型分组）
 					if (bo.isSavable() && bo.isDirty()) {
@@ -352,6 +352,9 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 						}
 						// 业务主对象
 						if (boType.getAnnotation(BusinessObjectUnit.class) != null) {
+							if (boDatas == null) {
+								boDatas = new ArrayList<>(bos.length);
+							}
 							boDatas.add(boData);
 						}
 					}
@@ -364,11 +367,17 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 						if (IBusinessObject.class.isAssignableFrom(propertyInfo.getValueType())) {
 							cData = boData.getProperty(propertyInfo);
 							if (cData instanceof IBusinessObject) {
+								if (boChilds == null) {
+									boChilds = new ArrayList<>();
+								}
 								boChilds.add((IBusinessObject) cData);
 							}
 						} else if (IBusinessObjects.class.isAssignableFrom(propertyInfo.getValueType())) {
 							cData = boData.getProperty(propertyInfo);
 							if (cData instanceof IBusinessObjects) {
+								if (boChilds == null) {
+									boChilds = new ArrayList<>(((IBusinessObjects<?, ?>) cData).size());
+								}
 								boChilds.addAll((IBusinessObjects<?, ?>) cData);
 							}
 						}
@@ -544,7 +553,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 					}
 				}
 				// 处理子项
-				if (!boChilds.isEmpty()) {
+				if (boChilds != null && !boChilds.isEmpty()) {
 					this.save(boChilds.toArray(new IBusinessObject[] {}));
 				}
 				// 处理事务存储过程
@@ -628,9 +637,12 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 						return null;
 					}
 				};
-				sqlResult = sqlExecuter.apply(null, boDatas);
-				if (sqlResult instanceof Exception) {
-					throw sqlResult;
+				// 执行存储过程通知
+				if (boDatas != null && !boDatas.isEmpty()) {
+					sqlResult = sqlExecuter.apply(null, boDatas);
+					if (sqlResult instanceof Exception) {
+						throw sqlResult;
+					}
 				}
 				if (mine == true) {
 					this.commit();
@@ -745,5 +757,5 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 	}
 
 	@Override
-	public abstract Supplier<IUser> supplier();
+	public abstract Supplier<IUser> userSupplier();
 }
