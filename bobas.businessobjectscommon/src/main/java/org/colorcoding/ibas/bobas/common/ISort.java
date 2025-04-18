@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.common;
 
+import org.colorcoding.ibas.bobas.core.IPropertyInfo;
+
 /**
  * 查询排序
  * 
@@ -18,6 +20,13 @@ public interface ISort {
 	 * @param value
 	 */
 	void setAlias(String value);
+
+	/**
+	 * 设置-排序的字段（属性）
+	 * 
+	 * @param value 名
+	 */
+	void setAlias(IPropertyInfo<?> property);
 
 	/**
 	 * 获取-排序方式

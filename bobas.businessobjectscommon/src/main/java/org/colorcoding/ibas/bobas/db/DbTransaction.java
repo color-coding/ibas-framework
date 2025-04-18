@@ -74,7 +74,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 
 	protected final DbAdapter getAdapter() throws Exception {
 		if (this.adapter == null) {
-			this.adapter = DbFactory.create().createAdapter(this.connection.getClass().getName());
+			this.adapter = DbFactory.create().createAdapter(this.getConnection().getClass().getName());
 		}
 		if (this.adapter == null) {
 			throw new Exception("not found db adapter.");
@@ -208,7 +208,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 			if (MyConfiguration.isDebugMode()) {
 				Logger.log(Strings.format("db sql: %s", sql));
 			}
-			try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
+			try (PreparedStatement statement = this.getConnection().prepareStatement(sql)) {
 				// 填充参数
 				this.fillingParameters(statement, criteria.getConditions(), 1);
 				// 运行查询
@@ -285,7 +285,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 						}
 					}
 				}
-				return datas.where(c -> c.isDeleted() == false).toArray((T[]) Array.newInstance(boType, 0));
+				return datas.where(c -> c.isDeleted() == false).toArray((T[]) Array.newInstance(boType, datas.size()));
 			}
 		} catch (Exception e) {
 			throw new RepositoryException(e);
@@ -414,7 +414,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 						DbField dbField;
 						BusinessObject<?> data;
 						List<IPropertyInfo<?>> propertyInfos = tpltData.properties();
-						try (PreparedStatement statement = DbTransaction.this.connection.prepareStatement(sql)) {
+						try (PreparedStatement statement = DbTransaction.this.getConnection().prepareStatement(sql)) {
 							int count = 0;
 							int index = 0;
 							for (int i = 0; i < datas.size(); i++) {
@@ -565,7 +565,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 						BusinessObject<?> data;
 						StringBuilder fieldsBuilder;
 						StringBuilder valuesBuilder;
-						try (PreparedStatement statement = DbTransaction.this.connection
+						try (PreparedStatement statement = DbTransaction.this.getConnection()
 								.prepareStatement(DbTransaction.this.getAdapter().sp_transaction_notification())) {
 							for (int i = 0; i < datas.size(); i++) {
 								data = (BusinessObject<?>) datas.get(i);
@@ -709,7 +709,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 			if (MyConfiguration.isDebugMode()) {
 				Logger.log(Strings.format("db sql: %s", sql));
 			}
-			try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
+			try (PreparedStatement statement = this.getConnection().prepareStatement(sql)) {
 				// 填充参数
 				this.fillingParameters(statement, criteria.getConditions(), 1);
 				// 运行查询
@@ -737,11 +737,80 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 		try {
 			Objects.requireNonNull(sqlStatement);
 			// 查询，不使用预编译方式
-			try (Statement statement = this.connection.createStatement()) {
+			try (Statement statement = this.getConnection().createStatement()) {
 				Logger.log(Strings.format("db sql: run by user [%s].\n%s", this.getUser().getId(),
 						sqlStatement.getContent()));
 				try (ResultSet resultSet = statement.executeQuery(sqlStatement.getContent())) {
 					return this.getAdapter().parsingDatas(resultSet);
+				}
+			}
+		} catch (Exception e) {
+			throw new RepositoryException(e);
+		}
+	}
+
+	/**
+	 * 查询
+	 * 
+	 * @param <T>          返回类型
+	 * @param boType       返回类型
+	 * @param sqlStatement 语句
+	 * @return
+	 * @throws RepositoryException
+	 */
+	@SuppressWarnings("unchecked")
+	public final <T extends IBusinessObject> T[] fetch(Class<?> boType, ISqlStatement sqlStatement)
+			throws RepositoryException {
+		try {
+			Objects.requireNonNull(sqlStatement);
+			// 查询，不使用预编译方式
+			try (Statement statement = this.getConnection().createStatement()) {
+				try (ResultSet resultSet = statement.executeQuery(sqlStatement.getContent())) {
+					// 运行查询
+					List<T> datas = this.getAdapter().parsingDatas(boType, resultSet);
+					// 加载子对象
+					if (!datas.isEmpty()) {
+						Object propertyValue = null;
+						ICriteria cCriteria = null;
+						for (IPropertyInfo<?> propertyInfo : BOFactory.propertyInfos(boType)) {
+							// 跳过值类型
+							if (BOUtilities.isValueType(propertyInfo)) {
+								continue;
+							}
+							if (IBusinessObject.class.isAssignableFrom(propertyInfo.getValueType())) {
+								BusinessObject<?> cData = null;
+								for (T data : datas) {
+									propertyValue = ((BusinessObject<?>) data).getProperty(propertyInfo);
+									if (BOUtilities.isBusinessObject(propertyValue)) {
+										cData = (BusinessObject<?>) propertyValue;
+										cCriteria = cData.getCriteria();
+										if (cCriteria == null || cCriteria.getConditions().isEmpty()) {
+											continue;
+										}
+										for (IBusinessObject item : this.fetch(cData.getClass(), cCriteria)) {
+											cData.setProperty(propertyInfo, item);
+										}
+									}
+								}
+							} else if (IBusinessObjects.class.isAssignableFrom(propertyInfo.getValueType())) {
+								BusinessObjects<IBusinessObject, ?> cDatas = null;
+								for (T data : datas) {
+									propertyValue = ((BusinessObject<?>) data).getProperty(propertyInfo);
+									if (BOUtilities.isBusinessObjects(propertyValue)) {
+										cDatas = (BusinessObjects<IBusinessObject, ?>) propertyValue;
+										cCriteria = cDatas.getElementCriteria();
+										if (cCriteria == null || cCriteria.getConditions().isEmpty()) {
+											continue;
+										}
+										for (IBusinessObject item : this.fetch(cDatas.getElementType(), cCriteria)) {
+											cDatas.add(item);
+										}
+									}
+								}
+							}
+						}
+					}
+					return datas.toArray((T[]) Array.newInstance(boType, datas.size()));
 				}
 			}
 		} catch (Exception e) {

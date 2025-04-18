@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.core.Serializable;
 
 /**
@@ -45,6 +46,11 @@ public class Sort extends Serializable implements ISort, Cloneable {
 		this.alias = value;
 	}
 
+	@Override
+	public void setAlias(IPropertyInfo<?> property) {
+		this.setAlias(property.getName());
+	}
+
 	@XmlElement(name = "SortType")
 	private SortType sortType = SortType.ASCENDING;
 
@@ -80,4 +86,5 @@ public class Sort extends Serializable implements ISort, Cloneable {
 		stringBuilder.append("}");
 		return stringBuilder.toString();
 	}
+
 }

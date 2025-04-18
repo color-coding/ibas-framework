@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.common;
 
+import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
 
 /**
@@ -22,6 +23,13 @@ public interface ICondition {
 	 * @param value 名
 	 */
 	void setAlias(String value);
+
+	/**
+	 * 设置-条件字段（属性）
+	 * 
+	 * @param value 名
+	 */
+	void setAlias(IPropertyInfo<?> property);
 
 	/**
 	 * 获取-几个闭括号"）"
@@ -64,6 +72,13 @@ public interface ICondition {
 	 * @param value 名
 	 */
 	void setComparedAlias(String value);
+
+	/**
+	 * 设置-比较的字段（属性）
+	 * 
+	 * @param value 名
+	 */
+	void setComparedAlias(IPropertyInfo<?> property);
 
 	/**
 	 * 获取-比较的值

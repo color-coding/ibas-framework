@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.core.Serializable;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
 
@@ -45,6 +46,11 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 	@Override
 	public final void setAlias(String value) {
 		this.alias = value;
+	}
+
+	@Override
+	public void setAlias(IPropertyInfo<?> property) {
+		this.setAlias(property.getName());
 	}
 
 	@XmlElement(name = "BracketClose")
@@ -93,6 +99,11 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 	@Override
 	public final void setComparedAlias(String value) {
 		this.comparedAlias = value;
+	}
+
+	@Override
+	public void setComparedAlias(IPropertyInfo<?> property) {
+		this.setComparedAlias(property.getName());
 	}
 
 	@XmlElement(name = "Value")
@@ -163,8 +174,7 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		this.relationship = value;
 	}
 
-	// 运行过程值，序列化不用输出
-	@XmlTransient
+	@XmlTransient // 运行过程值，序列化不用输出
 	private DbFieldType aliasDataType = null;
 
 	@Override
@@ -203,4 +213,5 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		stringBuilder.append("}");
 		return stringBuilder.toString();
 	}
+
 }
