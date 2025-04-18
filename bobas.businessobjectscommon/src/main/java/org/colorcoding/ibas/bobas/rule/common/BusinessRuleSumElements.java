@@ -3,8 +3,8 @@ package org.colorcoding.ibas.bobas.rule.common;
 import java.math.BigDecimal;
 import java.util.function.Predicate;
 
+import org.colorcoding.ibas.bobas.common.Decimals;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleCollection;
 
@@ -75,13 +75,13 @@ public class BusinessRuleSumElements extends BusinessRuleCollection {
 
 	@Override
 	protected void execute(BusinessRuleContext context) throws Exception {
-		BigDecimal result = Decimal.ZERO;
+		BigDecimal result = Decimals.VALUE_ZERO;
 		Object[] values = context.getInputValues().get(this.getSumming());
 		if (values != null) {
 			for (int i = 0; i < values.length; i++) {
 				Object value = values[i];
 				if (value instanceof BigDecimal) {
-					result = Decimal.add(result, (BigDecimal) value);
+					result = Decimals.add(result, (BigDecimal) value);
 				}
 			}
 		}

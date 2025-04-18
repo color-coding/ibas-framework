@@ -1,53 +1,51 @@
 package org.colorcoding.ibas.bobas.expression;
 
-import org.colorcoding.ibas.bobas.core.fields.IFieldData;
-import org.colorcoding.ibas.bobas.core.fields.IManagedFields;
-import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.bo.BOUtilities;
+import org.colorcoding.ibas.bobas.core.FieldedObject;
+import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 
 /**
- * 数据库字段值操作
+ * 对象属性值操作
  * 
  * @author Niuren.Zhu
  *
  */
 public class FieldValueOperator implements IPropertyValueOperator {
 
-	protected IManagedFields value;
-	protected IFieldData field = null;
+	protected FieldedObject dataObject;
+	protected IPropertyInfo<?> property;
 
-	protected IFieldData getField() {
-		if (this.field == null) {
-			this.field = this.value.getField(this.getPropertyName());
+	public IPropertyInfo<?> getProperty() {
+		if (this.property == null) {
+			this.property = this.dataObject.properties()
+					.firstOrDefault(c -> c.getName().equalsIgnoreCase(this.getPropertyName()));
 		}
-		if (this.field == null) {
-			throw new JudgmentLinkException(I18N.prop("msg_bobas_not_found_bo_field", this.getPropertyName()));
+		if (this.property == null) {
+			throw new ExpressionException("not found property.");
 		}
-		return this.field;
+		return this.property;
 	}
 
 	@Override
 	public void setValue(Object value) {
-		if (value != null && !(value instanceof IManagedFields)) {
-			throw new JudgmentLinkException(I18N.prop("msg_bobas_invaild_bo_type"));
+		if (!BOUtilities.isBusinessObject(value)) {
+			throw new ExpressionException("unrecognized object.");
 		}
-		this.value = (IManagedFields) value;
-		this.field = null;
+		this.dataObject = (FieldedObject) value;
+		this.property = null;
 	}
 
 	@Override
 	public Object getValue() {
-		if (this.value == null) {
+		if (this.dataObject == null) {
 			return null;
 		}
-		return this.getField().getValue();
+		return this.dataObject.getProperty(this.getProperty());
 	}
 
 	@Override
 	public Class<?> getValueClass() {
-		if (this.value == null) {
-			return null;
-		}
-		return this.getField().getValueType();
+		return this.getProperty().getValueType();
 	}
 
 	private String propertyName;
@@ -55,6 +53,7 @@ public class FieldValueOperator implements IPropertyValueOperator {
 	@Override
 	public void setPropertyName(String value) {
 		this.propertyName = value;
+		this.property = null;
 	}
 
 	@Override

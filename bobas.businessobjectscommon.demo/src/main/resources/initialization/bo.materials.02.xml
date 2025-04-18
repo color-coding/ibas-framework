@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE Materials>
+<ns:Materials xmlns:ns="http://colorcoding.org/ibas/demo/bo">
+	<ItemCode>C00001</ItemCode>
+	<ItemDescription>华硕Intel AMX主板</ItemDescription>
+	<InventoryUoM>张</InventoryUoM>
+</ns:Materials>

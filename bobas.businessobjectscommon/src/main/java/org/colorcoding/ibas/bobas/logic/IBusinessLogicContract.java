@@ -7,6 +7,7 @@ package org.colorcoding.ibas.bobas.logic;
  *
  */
 public interface IBusinessLogicContract {
+
 	/**
 	 * 标记
 	 * 

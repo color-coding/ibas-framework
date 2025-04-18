@@ -7,7 +7,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
 import org.colorcoding.ibas.bobas.data.DataConvert;
-import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.data.KeyText;
+import org.colorcoding.ibas.bobas.logging.Logger;
 
 /**
  * 配置项管理员
@@ -15,25 +16,22 @@ import org.colorcoding.ibas.bobas.message.Logger;
  */
 
 @XmlAccessorType(XmlAccessType.NONE)
-public abstract class ConfigurationManager implements IConfigurationManager {
+public abstract class ConfigurationManager {
 
-	private HashMap<String, IConfigurationElement> elementsMap = new HashMap<String, IConfigurationElement>();
+	private HashMap<String, KeyText> elementsMap = new HashMap<String, KeyText>(128);
 
-	@Override
-	public Collection<IConfigurationElement> getElements() {
+	public Collection<KeyText> getElements() {
 		return this.elementsMap.values();
 	}
 
-	@Override
 	public String getConfigValue(String key) {
-		IConfigurationElement element = this.elementsMap.get(key);
+		KeyText element = this.elementsMap.get(key);
 		if (element != null) {
-			return element.getValue();
+			return element.getText();
 		}
 		return null;
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
 	public <P> P getConfigValue(String key, P defaultValue) {
 		String valueString = this.getConfigValue(key);
@@ -53,20 +51,19 @@ public abstract class ConfigurationManager implements IConfigurationManager {
 		}
 	}
 
-	@Override
 	public void addConfigValue(String key, String value) {
-		IConfigurationElement element = this.elementsMap.get(key);
+		KeyText element = this.elementsMap.get(key);
 		// 值是空是删除配置项
 		if (key == null && element != null) {
 			this.elementsMap.remove(key);
 			return;
 		}
 		if (element == null) {
-			element = new ConfigurationElement();
+			element = new KeyText();
 			element.setKey(key);
 			this.elementsMap.put(element.getKey(), element);
 		}
-		element.setValue(value);
+		element.setText(value);
 	}
 
 	private String configSign;
@@ -79,4 +76,5 @@ public abstract class ConfigurationManager implements IConfigurationManager {
 		this.configSign = configSign;
 	}
 
+	public abstract void update();
 }

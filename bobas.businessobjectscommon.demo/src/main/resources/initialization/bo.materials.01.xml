@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE Materials>
+<ns:Materials xmlns:ns="http://colorcoding.org/ibas/demo/bo">
+	<ItemCode>P10001</ItemCode>
+	<ItemDescription>PC - P4 2.4G, DDR 512M, 400G HD</ItemDescription>
+	<InventoryUoM>台</InventoryUoM>
+</ns:Materials>

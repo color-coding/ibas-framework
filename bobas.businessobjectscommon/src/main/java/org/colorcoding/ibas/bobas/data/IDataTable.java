@@ -45,11 +45,4 @@ public interface IDataTable {
 	 * @return
 	 */
 	IDataTableRows getRows();
-
-	/**
-	 * 格式化字符串输出
-	 * 
-	 * @return
-	 */
-	String toString(String type);
 }

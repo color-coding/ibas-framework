@@ -7,7 +7,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.serialization.Serializable;
+import org.colorcoding.ibas.bobas.core.IPropertyInfo;
+import org.colorcoding.ibas.bobas.core.Serializable;
 
 /**
  * 查询排序
@@ -29,13 +30,13 @@ public class Sort extends Serializable implements ISort, Cloneable {
 		this.setSortType(sortType);
 	}
 
-	private String alias = "";
+	@XmlElement(name = "Alias")
+	private String alias;
 
 	@Override
-	@XmlElement(name = "Alias")
 	public final String getAlias() {
 		if (this.alias == null) {
-			this.alias = "";
+			this.alias = Strings.VALUE_EMPTY;
 		}
 		return this.alias;
 	}
@@ -45,10 +46,15 @@ public class Sort extends Serializable implements ISort, Cloneable {
 		this.alias = value;
 	}
 
+	@Override
+	public void setAlias(IPropertyInfo<?> property) {
+		this.setAlias(property.getName());
+	}
+
+	@XmlElement(name = "SortType")
 	private SortType sortType = SortType.ASCENDING;
 
 	@Override
-	@XmlElement(name = "SortType")
 	public final SortType getSortType() {
 		if (this.sortType == null) {
 			this.sortType = SortType.ASCENDING;
@@ -80,4 +86,5 @@ public class Sort extends Serializable implements ISort, Cloneable {
 		stringBuilder.append("}");
 		return stringBuilder.toString();
 	}
+
 }

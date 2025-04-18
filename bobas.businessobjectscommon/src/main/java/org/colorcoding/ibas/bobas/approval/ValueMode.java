@@ -23,19 +23,4 @@ public enum ValueMode {
 	 * sql脚本取值
 	 */
 	SQL_SCRIPT;
-
-	public static ValueMode valueOf(int value) {
-		return values()[value];
-	}
-
-	public static ValueMode valueOf(String value, boolean ignoreCase) {
-		if (ignoreCase) {
-			for (Object item : ValueMode.class.getEnumConstants()) {
-				if (item.toString().equalsIgnoreCase(value)) {
-					return (ValueMode) item;
-				}
-			}
-		}
-		return ValueMode.valueOf(value);
-	}
 }

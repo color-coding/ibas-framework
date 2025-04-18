@@ -1,5 +1,8 @@
 package org.colorcoding.ibas.bobas.common;
 
+import org.colorcoding.ibas.bobas.core.IPropertyInfo;
+import org.colorcoding.ibas.bobas.db.DbFieldType;
+
 /**
  * 查询条件
  * 
@@ -20,6 +23,13 @@ public interface ICondition {
 	 * @param value 名
 	 */
 	void setAlias(String value);
+
+	/**
+	 * 设置-条件字段（属性）
+	 * 
+	 * @param value 名
+	 */
+	void setAlias(IPropertyInfo<?> property);
 
 	/**
 	 * 获取-几个闭括号"）"
@@ -64,6 +74,13 @@ public interface ICondition {
 	void setComparedAlias(String value);
 
 	/**
+	 * 设置-比较的字段（属性）
+	 * 
+	 * @param value 名
+	 */
+	void setComparedAlias(IPropertyInfo<?> property);
+
+	/**
 	 * 获取-比较的值
 	 * 
 	 * @return 值
@@ -75,14 +92,14 @@ public interface ICondition {
 	 * 
 	 * @param value 值
 	 */
-	void setValue(String value);
+	void setValue(Object value);
 
 	/**
 	 * 设置-比较的值
 	 * 
 	 * @param value 值
 	 */
-	void setValue(Object value);
+	void setValue(String value);
 
 	/**
 	 * 获取-比较方法
@@ -117,28 +134,14 @@ public interface ICondition {
 	 * 
 	 * @return
 	 */
-	ConditionAliasDataType getAliasDataType();
+	DbFieldType getAliasDataType();
 
 	/**
 	 * 设置-条件字段类型的字段
 	 * 
 	 * @param value
 	 */
-	void setAliasDataType(ConditionAliasDataType value);
-
-	/**
-	 * 获取-备注
-	 * 
-	 * @return
-	 */
-	String getRemarks();
-
-	/**
-	 * 设置-备注
-	 * 
-	 * @param value
-	 */
-	void setRemarks(String value);
+	void setAliasDataType(DbFieldType value);
 
 	/**
 	 * 克隆

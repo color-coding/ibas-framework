@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE Materials>
+<ns:Materials xmlns:ns="http://colorcoding.org/ibas/demo/bo">
+	<ItemCode>C00007</ItemCode>
+	<ItemDescription>希捷400GB IDE 硬盘</ItemDescription>
+	<InventoryUoM>个</InventoryUoM>
+</ns:Materials>

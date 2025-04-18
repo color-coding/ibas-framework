@@ -5,47 +5,69 @@ import java.beans.PropertyChangeListener;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.SortType;
-import org.colorcoding.ibas.bobas.core.BusinessObjectsBase;
-import org.colorcoding.ibas.bobas.core.IBindableBase;
-import org.colorcoding.ibas.bobas.core.IPropertyInfo;
-import org.colorcoding.ibas.bobas.core.ITrackStatusOperator;
-import org.colorcoding.ibas.bobas.message.Logger;
-import org.colorcoding.ibas.bobas.message.MessageLevel;
-import org.colorcoding.ibas.bobas.rule.BusinessRuleCollection;
-import org.colorcoding.ibas.bobas.rule.BusinessRuleException;
-import org.colorcoding.ibas.bobas.rule.BusinessRulesFactory;
-import org.colorcoding.ibas.bobas.rule.IBusinessRule;
-import org.colorcoding.ibas.bobas.rule.IBusinessRules;
+import org.colorcoding.ibas.bobas.core.IBindable;
+import org.colorcoding.ibas.bobas.core.Trackable;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 
 /**
  * 业务对象集合
- * 
- * @author Niuren.Zhu
  *
  * @param <E> 元素类型
  * @param <P> 父项类型
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "BusinessObjects", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
-public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusinessObject>
-		extends BusinessObjectsBase<E> implements IBusinessObjects<E, P> {
+public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusinessObject> extends ArrayList<E>
+		implements IBusinessObjects<E, P> {
 
 	private static final long serialVersionUID = 7360645136974073845L;
-	private PropertyChangeListener propertyListener = new _PropertyChangeListener<>(this);
+
+	private PropertyChangeListener propertyListener = new PropertyChangeListener() {
+
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			if (evt.getSource() == BusinessObjects.this.getParent()) {
+				// 父项属性改变
+				BusinessObjects.this.onParentPropertyChanged(evt);
+			} else if (evt.getSource() == BusinessObjects.this && evt.getPropertyName().equals(PROPERTY_NAME_SIZE)) {
+				if (BusinessObjects.this.parent != null && !BusinessObjects.this.parent.isLoading()) {
+					// 集合自身的属性改变事件
+					if (BusinessObjects.this.getParent() instanceof Trackable) {
+						// 改变父项的状态跟踪
+						Trackable trackable = (Trackable) BusinessObjects.this.getParent();
+						trackable.markDirty();
+					}
+				}
+			} else if (BusinessObjects.this.contains(evt.getSource())) {
+				// 此集合中的子项的属性改变
+				if (evt.getPropertyName() != null && evt.getPropertyName().equals("isDirty")
+						&& evt.getNewValue().equals(true)) {
+					// 元素状态为Dirty时修改父项状态
+					if (BusinessObjects.this.getParent() instanceof Trackable) {
+						// 改变父项的状态跟踪
+						Trackable trackable = (Trackable) BusinessObjects.this.getParent();
+						trackable.markDirty();
+					}
+				} else {
+					if (BusinessObjects.this.getParent() != null && !BusinessObjects.this.getParent().isLoading()) {
+						BusinessObjects.this.onItemPropertyChanged(evt);
+					}
+				}
+			}
+
+		}
+	};
+
+	private static final String PROPERTY_NAME_SIZE = "size";
 
 	public BusinessObjects() {
 		this.setChangeItemStatus(true);
-		// 监听自身改变事件
-		this.registerListener(this.propertyListener);
 	}
 
 	public BusinessObjects(P parent) {
@@ -75,32 +97,36 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 	}
 
 	protected final void setParent(P parent) {
-		if (this.parent instanceof IBindableBase) {
+		if (this.parent instanceof IBindable) {
 			// 移出监听属性改变
-			IBindableBase bindable = (IBindableBase) this.parent;
+			IBindable bindable = (IBindable) this.parent;
 			bindable.removeListener(this.propertyListener);
 		}
 		this.parent = parent;
-		if (this.parent instanceof IBindableBase) {
+		if (this.parent instanceof IBindable) {
 			// 监听属性改变
-			IBindableBase bindable = (IBindableBase) this.parent;
+			IBindable bindable = (IBindable) this.parent;
 			bindable.registerListener(this.propertyListener);
 		}
 	}
 
 	@Override
 	public final boolean add(E item) {
-		return super.add(item);
+		int oldSize = this.size();
+		boolean result = super.add(item);
+		if (result) {
+			this.propertyListener
+					.propertyChange(new PropertyChangeEvent(this, PROPERTY_NAME_SIZE, oldSize, this.size()));
+			this.afterAddItem(item);
+		}
+		return result;
 	}
 
-	@Override
 	protected void afterAddItem(E item) {
-		// 调用基类方法
-		super.afterAddItem(item);
 		// 额外逻辑
-		if (item instanceof IBindableBase) {
+		if (item instanceof IBindable) {
 			// 监听属性改变
-			IBindableBase bindable = (IBindableBase) item;
+			IBindable bindable = (IBindable) item;
 			bindable.registerListener(this.propertyListener);
 		}
 		// 修正子项编号
@@ -170,6 +196,52 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 				IBODocumentLine parent = (IBODocumentLine) this.getParent();
 				child.setLineStatus(parent.getLineStatus());
 			}
+		}
+	}
+
+	public final boolean remove(E item) {
+		int oldSize = this.size();
+		boolean result = super.remove(item);
+		if (result) {
+			this.propertyListener
+					.propertyChange(new PropertyChangeEvent(this, PROPERTY_NAME_SIZE, oldSize, this.size()));
+			this.afterRemoveItem(item);
+		}
+		return result;
+	}
+
+	protected void afterRemoveItem(E item) {
+		// 额外逻辑
+		if (item instanceof IBindable) {
+			// 移出监听属性改变
+			IBindable bindable = (IBindable) item;
+			bindable.removeListener(this.propertyListener);
+		}
+	}
+
+	@Override
+	public final void delete(E item) {
+		if (this.contains(item)) {
+			// 集合中的元素
+			if (item.isNew()) {
+				this.remove(item);
+			} else {
+				item.delete();
+				this.afterRemoveItem(item);
+			}
+		}
+	}
+
+	@Override
+	public final void delete(int index) {
+		E item = this.get(index);
+		this.delete(item);
+	}
+
+	@Override
+	public final void deleteAll() {
+		for (int i = this.size() - 1; i >= 0; i--) {
+			this.delete(i);
 		}
 	}
 
@@ -366,18 +438,6 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 	}
 
 	@Override
-	protected void afterRemoveItem(E item) {
-		// 调用基类方法
-		super.afterRemoveItem(item);
-		// 额外逻辑
-		if (item instanceof IBindableBase) {
-			// 移出监听属性改变
-			IBindableBase bindable = (IBindableBase) item;
-			bindable.removeListener(this.propertyListener);
-		}
-	}
-
-	@Override
 	public ICriteria getElementCriteria() {
 		if (this.getParent() == null) {
 			return null;
@@ -420,129 +480,4 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		return criteria;
 	}
 
-	@Override
-	public final void delete(E item) {
-		if (this.contains(item)) {
-			// 集合中的元素
-			if (item.isNew()) {
-				this.remove(item);
-			} else {
-				item.delete();
-			}
-		}
-	}
-
-	@Override
-	public final void delete(int index) {
-		E item = this.get(index);
-		this.delete(item);
-	}
-
-	@Override
-	public final void deleteAll() {
-		for (int i = this.size() - 1; i >= 0; i--) {
-			this.delete(i);
-		}
-	}
-
-	private class _PropertyChangeListener<E1 extends IBusinessObject, P1 extends IBusinessObject>
-			implements PropertyChangeListener {
-
-		public _PropertyChangeListener(BusinessObjects<E1, P1> source) {
-			this.source = source;
-		}
-
-		private BusinessObjects<E1, P1> source;
-
-		@Override
-		public void propertyChange(PropertyChangeEvent evt) {
-			if (evt == null || evt.getPropertyName() == null || evt.getPropertyName().isEmpty()) {
-				return;
-			}
-			if (evt.getSource() == this.source.getParent()) {
-				// 父项属性改变
-				this.source.onParentPropertyChanged(evt);
-			} else if (this.source.contains(evt.getSource())) {
-				// 此集合中的子项的属性改变
-				if (evt.getPropertyName() != null && evt.getPropertyName().equals("isDirty")
-						&& evt.getNewValue().equals(true)) {
-					// 元素状态为Dirty时修改父项状态
-					if (this.source.getParent() instanceof ITrackStatusOperator) {
-						// 改变父项的状态跟踪
-						ITrackStatusOperator statusOperator = (ITrackStatusOperator) this.source.getParent();
-						statusOperator.markDirty();
-					}
-				} else {
-					if (this.source.getParent() != null && !this.source.getParent().isLoading()) {
-						this.source.onItemPropertyChanged(evt);
-					}
-				}
-				// 集合数量发生变化，运行集合业务规则
-				if (evt.getPropertyName().equals("isDeleted")) {
-					this.runRules(null);
-				} else {
-					this.runRules(evt.getPropertyName());
-				}
-			} else if (evt.getSource() == this.source && evt.getPropertyName().equals(PROPERTY_NAME_SIZE)) {
-				if (this.source.parent != null && !this.source.parent.isLoading()) {
-					// 集合自身的属性改变事件
-					if (this.source.getParent() instanceof ITrackStatusOperator) {
-						// 改变父项的状态跟踪
-						ITrackStatusOperator statusOperator = (ITrackStatusOperator) this.source.getParent();
-						statusOperator.markDirty();
-					}
-				}
-				// 集合数量发生变化，运行集合业务规则
-				this.runRules(null);
-			}
-		}
-
-		private volatile IBusinessRules myRules = null;
-
-		public synchronized void runRules(String property) {
-			if (!MyConfiguration.isLiveRules()) {
-				return;
-			}
-			if (this.source.getParent() == null) {
-				return;
-			}
-			if (this.source.getParent().isLoading()) {
-				return;
-			}
-			Class<?> parentClass = this.source.getParent().getClass();
-			if (this.myRules == null && parentClass != null) {
-				this.myRules = BusinessRulesFactory.create().createManager().getRules(parentClass);
-			}
-			if (this.myRules == null) {
-				return;
-			}
-			for (IBusinessRule rule : this.myRules) {
-				if (!(rule instanceof BusinessRuleCollection)) {
-					continue;
-				}
-				BusinessRuleCollection collectionRule = (BusinessRuleCollection) rule;
-				if (!collectionRule.getCollection().getValueType().equals(this.source.getClass())) {
-					continue;
-				}
-				if (property != null) {
-					// 提供了属性名称，则只执行此属性相关规则
-					boolean done = false;
-					for (IPropertyInfo<?> item : rule.getInputProperties()) {
-						if (item.getName().equals(property)) {
-							done = true;
-							break;
-						}
-					}
-					if (!done) {
-						continue;
-					}
-				}
-				try {
-					collectionRule.execute(this.source.getParent());
-				} catch (BusinessRuleException e) {
-					Logger.log(MessageLevel.DEBUG, e);
-				}
-			}
-		}
-	}
 }

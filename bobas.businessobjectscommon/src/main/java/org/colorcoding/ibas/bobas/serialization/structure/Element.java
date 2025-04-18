@@ -3,7 +3,8 @@ package org.colorcoding.ibas.bobas.serialization.structure;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 
-import org.colorcoding.ibas.bobas.serialization.Serializable;
+import org.colorcoding.ibas.bobas.bo.BOFactory;
+import org.colorcoding.ibas.bobas.core.Serializable;
 
 /**
  * 元素
@@ -63,7 +64,7 @@ public abstract class Element extends Serializable implements Comparable<Element
 	}
 
 	public final void setTypeName(String type) throws ClassNotFoundException {
-		this.setType(Class.forName(type));
+		this.setType(BOFactory.loadClass(type));
 	}
 
 	private Element parent;

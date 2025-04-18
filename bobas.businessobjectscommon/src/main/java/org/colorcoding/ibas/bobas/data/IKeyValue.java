@@ -36,6 +36,14 @@ public interface IKeyValue {
 	void setValue(Object value);
 
 	/**
+	 * 获取-值
+	 * 
+	 * @param <T> 目标类型
+	 * @return
+	 */
+	<T> T asValue();
+
+	/**
 	 * 输出字符串
 	 * 
 	 * @return

@@ -22,19 +22,14 @@
         </Step>
     </Action>
     <Action Name="create stored procedures ${Company}_SP_TRANSACTION_NOTIFICATION">
-        <Step Name="check and drop exists return type">
-            <Script><![CDATA[
-                DROP TYPE IF EXISTS "RESULT_TYPE_${Company}_SP_TRANSACTION_NOTIFICATION";
-            ]]></Script>
-        </Step>
-        <Step Name="create return type">
-            <Script><![CDATA[
-                CREATE TYPE "RESULT_TYPE_${Company}_SP_TRANSACTION_NOTIFICATION" AS("Code" integer,"Message" varchar(200));
-            ]]></Script>
-        </Step>
         <Step Name="check stored procedures exists">
             <Script><![CDATA[                
                 SELECT count(0) FROM "information_schema"."routines" WHERE "routine_catalog" = '${DbName}' AND "routine_type" = 'FUNCTION' AND "routine_name" = '${Company}_SP_TRANSACTION_NOTIFICATION';
+            ]]></Script>
+        </Step>
+        <Step Name="create return type" RunOnValue="0">
+            <Script><![CDATA[
+                CREATE TYPE "RESULT_TYPE_${Company}_SP_TRANSACTION_NOTIFICATION" AS("Code" integer,"Message" varchar(200));
             ]]></Script>
         </Step>
         <Step Name="create stored procedures" RunOnValue="0">
@@ -44,7 +39,8 @@
                     transaction_type character,                                /*业务类型（Add:A-添加, Update:U-更新, Delete:D-删除）*/
                     num_of_cols_in_key integer,                                /*主键个数*/
                     list_of_key_cols_tab_del character varying,                /*主键名称*/
-                    list_of_cols_val_tab_del character varying                 /*主键值*/
+                    list_of_cols_val_tab_del character varying,                /*主键值*/
+                    user_id integer                                            /*用户标识*/
                 ) RETURNS SETOF "RESULT_TYPE_${Company}_SP_TRANSACTION_NOTIFICATION" AS $_$
                 DECLARE
                     error_code  integer;                                       /*返回值(0 无错误)*/

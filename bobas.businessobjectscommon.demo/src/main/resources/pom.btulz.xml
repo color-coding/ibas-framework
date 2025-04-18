@@ -1,0 +1,37 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.colorcoding.ibas</groupId>
+	<version>0.2.0</version>
+	<artifactId>bobas.demo</artifactId>
+	<name>bobas.businessobjectscommon.demo</name>
+	<url>https://colorcoding.org/ibas/demo</url>
+	<organization>
+		<name>Color-Coding Studio</name>
+		<url>https://colorcoding.org</url>
+	</organization>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<configuration>
+					<excludeTransitive>false</excludeTransitive>
+					<!-- 需要版本号，加载要求了版本 -->
+					<stripVersion>false</stripVersion>
+					<outputDirectory>${env.TMPDIR}/ibas_tools/</outputDirectory>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>org.colorcoding.tools</groupId>
+			<artifactId>btulz.transforms.bobas</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+	</dependencies>
+</project>

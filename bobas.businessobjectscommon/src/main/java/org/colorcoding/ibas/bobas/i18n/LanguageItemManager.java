@@ -22,8 +22,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.message.Logger;
-import org.colorcoding.ibas.bobas.message.MessageLevel;
+import org.colorcoding.ibas.bobas.logging.Logger;
+import org.colorcoding.ibas.bobas.logging.LoggingLevel;
 
 /**
  * 默认语言项目管理员
@@ -31,9 +31,8 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
  * @author Niuren.Zhu
  *
  */
-public class LanguageItemManager implements ILanguageItemManager {
-	protected static final String MSG_I18N_READ_FILE_DATA = "i18n: read file's data [%s].";
-	protected static final String MSG_I18N_RESOURCES_FOLDER = "i18n: use folder [%s].";
+public class LanguageItemManager {
+
 	private String languageCode;
 
 	public String getLanguageCode() {
@@ -53,21 +52,20 @@ public class LanguageItemManager implements ILanguageItemManager {
 		this.languageCode = languageCode;
 	}
 
-	private Map<String, ILanguageItem> languageItems;
+	private Map<String, LanguageItem> languageItems;
 
 	/**
 	 * 存储多语言资源
 	 */
-	protected Map<String, ILanguageItem> getLanguageItems() {
+	protected Map<String, LanguageItem> getLanguageItems() {
 		if (languageItems == null) {
-			languageItems = new HashMap<String, ILanguageItem>();
+			languageItems = new HashMap<String, LanguageItem>();
 		}
 		return languageItems;
 	}
 
-	@Override
 	public String getContent(String key, Object... args) {
-		ILanguageItem languageItem = this.getLanguageItems().get(key);
+		LanguageItem languageItem = this.getLanguageItems().get(key);
 		if (languageItem != null) {
 			if (args.length == 0) {
 				return languageItem.getContent(this.getLanguageCode());
@@ -109,7 +107,7 @@ public class LanguageItemManager implements ILanguageItemManager {
 				}
 			}
 			workFolder = new File(path).getPath();
-			Logger.log(MessageLevel.DEBUG, MSG_I18N_RESOURCES_FOLDER, workFolder);
+			Logger.log(LoggingLevel.DEBUG, "i18n: use folder [%s].", workFolder);
 		}
 		return workFolder;
 	}
@@ -149,15 +147,15 @@ public class LanguageItemManager implements ILanguageItemManager {
 				}
 				try (InputStream inputStream = jarFile.getInputStream(jarEntry)) {
 					try (Reader reader = new InputStreamReader(inputStream, "UTF-8")) {
-						List<ILanguageItem> languageItems = this.loadFileContent(reader);
-						for (ILanguageItem item : languageItems) {
+						List<LanguageItem> languageItems = this.loadFileContent(reader);
+						for (LanguageItem item : languageItems) {
 							this.getLanguageItems().put(item.getKey(), item);
 						}
 						if (languageItems.size() > 0) {
-							Logger.log(MessageLevel.DEBUG, MSG_I18N_READ_FILE_DATA, file.toString());
+							Logger.log(LoggingLevel.DEBUG, "i18n: read file's data [%s].", file.toString());
 						}
 					} catch (UnsupportedEncodingException e) {
-						Logger.log(MessageLevel.DEBUG, e);
+						Logger.log(LoggingLevel.DEBUG, e);
 					}
 				}
 			}
@@ -177,7 +175,7 @@ public class LanguageItemManager implements ILanguageItemManager {
 		if (file.exists()) {
 			if (file.isFile()) {
 				// 添加新的语言内容
-				for (ILanguageItem item : this.loadFileContent(file.getPath())) {
+				for (LanguageItem item : this.loadFileContent(file.getPath())) {
 					this.getLanguageItems().put(item.getKey(), item);
 				}
 			} else {
@@ -203,7 +201,6 @@ public class LanguageItemManager implements ILanguageItemManager {
 		}
 	}
 
-	@Override
 	public void readResources() {
 		// 加载jar包中语言
 		try {
@@ -222,11 +219,11 @@ public class LanguageItemManager implements ILanguageItemManager {
 		this.readResources(this.getWorkFolder(), this.getLanguageCode());// 使用语言
 	}
 
-	protected List<ILanguageItem> loadFileContent(String file) {
+	protected List<LanguageItem> loadFileContent(String file) {
 		try (InputStream stream = new FileInputStream(file)) {
 			try (Reader reader = new InputStreamReader(stream, "UTF-8")) {
-				List<ILanguageItem> languageItems = this.loadFileContent(reader);
-				Logger.log(MSG_I18N_READ_FILE_DATA, file);
+				List<LanguageItem> languageItems = this.loadFileContent(reader);
+				Logger.log("i18n: read file's data [%s].", file);
 				return languageItems;
 			} catch (IOException e) {
 				Logger.log(e);
@@ -237,8 +234,8 @@ public class LanguageItemManager implements ILanguageItemManager {
 		return new ArrayList<>();
 	}
 
-	protected List<ILanguageItem> loadFileContent(Reader reader) {
-		ArrayList<ILanguageItem> languageItems = new ArrayList<>();
+	protected List<LanguageItem> loadFileContent(Reader reader) {
+		ArrayList<LanguageItem> languageItems = new ArrayList<>();
 		try {
 			Properties props = new Properties();
 			props.load(reader);
@@ -253,7 +250,7 @@ public class LanguageItemManager implements ILanguageItemManager {
 				if (property == null || property.isEmpty())
 					continue;
 				// 判断是否存在含有key 的 item
-				ILanguageItem item = new LanguageItem();
+				LanguageItem item = new LanguageItem();
 				item.setKey(key);
 				item.addContent(this.getLanguageCode(), property);
 				languageItems.add(item);

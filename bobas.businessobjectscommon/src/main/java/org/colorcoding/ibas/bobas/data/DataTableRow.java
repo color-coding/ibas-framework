@@ -6,8 +6,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.serialization.Serializable;
+import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.core.Serializable;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "DataTableRow", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
@@ -37,7 +37,7 @@ public class DataTableRow extends Serializable implements IDataTableRow {
 		for (int i = 0; i < this.values.length; i++) {
 			Object value = this.values[i];
 			if (value != null) {
-				values[i] = DataConvert.toString(value);
+				values[i] = Strings.valueOf(value);
 			} else {
 				values[i] = new String();
 			}
@@ -66,10 +66,6 @@ public class DataTableRow extends Serializable implements IDataTableRow {
 	@Override
 	public void setValue(int col, Object value) {
 		IDataTableColumn column = this.getColumns().get(col);
-		if (!column.getDataType().isInstance(value) && value != null) {
-			// 值与列定义的类型不符
-			throw new RuntimeException(I18N.prop("msg_bobas_data_table_data_type_was_not_column_definition"));
-		}
 		if (column.getDataType() != String.class && String.class.isInstance(value)) {
 			this.values[col] = column.getDataType().cast(value);
 		} else {

@@ -1,7 +1,6 @@
 package org.colorcoding.ibas.bobas.logic;
 
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
-import org.colorcoding.ibas.bobas.core.IBORepository;
 
 /**
  * 业务逻辑链
@@ -9,63 +8,30 @@ import org.colorcoding.ibas.bobas.core.IBORepository;
  * @author Niuren.Zhu
  *
  */
-public interface IBusinessLogicChain {
+public interface IBusinessLogicChain extends AutoCloseable {
 	/**
-	 * 设置-组标记
-	 * 
-	 * @param value
-	 */
-	void setGroup(String value);
-
-	/**
-	 * 获取-组标记
-	 * 
-	 * @param value
-	 */
-	String getGroup();
-
-	/**
-	 * 获取-触发逻辑链对象
+	 * 获取-触发对象
 	 * 
 	 * @return
 	 */
-	IBusinessObject getTrigger();
+	<T extends IBusinessObject> T getTrigger();
 
 	/**
-	 * 设置-触发逻辑链对象
+	 * 设置-触发对象
 	 * 
-	 * @param bo
+	 * @param trigger
 	 */
-	void setTrigger(IBusinessObject trigger);
+	<T extends IBusinessObject> void setTrigger(T trigger);
 
 	/**
-	 * 使用触发者作为已存在副本
+	 * 设置-触发对象副本
 	 * 
-	 * @param bo
+	 * @param trigger
 	 */
-	void setTriggerCopy();
+	<T extends IBusinessObject> void setTriggerCopy(T trigger);
 
 	/**
-	 * 使用业务对象仓库
-	 * 
-	 * @param boRepository 仓库
+	 * 执行逻辑
 	 */
-	void useRepository(IBORepository boRepository);
-
-	/**
-	 * 正向执行逻辑
-	 * 
-	 */
-	void forwardLogics();
-
-	/**
-	 * 反向执行逻辑
-	 * 
-	 */
-	void reverseLogics();
-
-	/**
-	 * 提交逻辑
-	 */
-	void commit();
+	void execute();
 }
