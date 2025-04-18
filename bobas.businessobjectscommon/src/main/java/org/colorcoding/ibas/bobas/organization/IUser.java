@@ -27,11 +27,16 @@ public interface IUser {
 	/**
 	 * 检查授权
 	 * 
-	 * @param authorizationCode
-	 *            授权码
-	 * @throws InvalidAuthorizationException
-	 *             不通过报错
+	 * @param authorizationCode 授权码
+	 * @throws InvalidAuthorizationException 不通过报错
 	 */
-	void checkAuthorization(String authorizationCode) throws InvalidAuthorizationException;
+	default void checkAuthorization(String authorizationCode) throws InvalidAuthorizationException {
+		if (authorizationCode != null) {
+			if (authorizationCode.equals(this.getToken())) {
+				return;
+			}
+		}
+		throw new InvalidAuthorizationException();
+	}
 
 }

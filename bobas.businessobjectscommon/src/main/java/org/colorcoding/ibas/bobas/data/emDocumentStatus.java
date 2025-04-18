@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.data;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.mapping.Value;
+import org.colorcoding.ibas.bobas.common.Value;
 
 /**
  * 单据状态
@@ -11,7 +11,7 @@ import org.colorcoding.ibas.bobas.mapping.Value;
  * @author Niuren.Zhu
  *
  */
-@XmlType(name = "emDocumentStatus", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public enum emDocumentStatus {
 	/**
 	 * 计划
@@ -33,19 +33,4 @@ public enum emDocumentStatus {
 	 */
 	@Value("C")
 	CLOSED;
-
-	public static emDocumentStatus valueOf(int value) {
-		return values()[value];
-	}
-
-	public static emDocumentStatus valueOf(String value, boolean ignoreCase) {
-		if (ignoreCase) {
-			for (Object item : emDocumentStatus.class.getEnumConstants()) {
-				if (item.toString().equalsIgnoreCase(value)) {
-					return (emDocumentStatus) item;
-				}
-			}
-		}
-		return emDocumentStatus.valueOf(value);
-	}
 }

@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.expression;
 
-import org.colorcoding.ibas.bobas.data.DataConvert;
+import org.colorcoding.ibas.bobas.common.Strings;
 
 /**
  * 字符串值表达式比较
@@ -26,7 +26,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 
 	@Override
 	public final void setLeftValue(Object value) {
-		this.setLeftValue(DataConvert.toString(value));
+		this.setLeftValue(Strings.valueOf(value));
 	}
 
 	public final void setLeftValue(String value) {
@@ -42,7 +42,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 
 	@Override
 	public final void setRightValue(Object value) {
-		this.setRightValue(DataConvert.toString(value));
+		this.setRightValue(Strings.valueOf(value));
 	}
 
 	public final void setRightValue(String value) {
@@ -50,7 +50,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 	}
 
 	@Override
-	public boolean result() throws NotSupportOperationException {
+	public boolean result() throws ExpressionException {
 		// 开始与
 		if (this.getOperation() == JudmentOperation.BEGIN_WITH) {
 			if (this.getLeftValue() == null || this.getRightValue() == null) {

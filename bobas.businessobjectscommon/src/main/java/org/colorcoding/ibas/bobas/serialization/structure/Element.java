@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.serialization.structure;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 
-import org.colorcoding.ibas.bobas.serialization.Serializable;
+import org.colorcoding.ibas.bobas.core.Serializable;
 
 /**
  * 元素

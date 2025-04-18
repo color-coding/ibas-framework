@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.common;
 
-import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
+import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 
 /**
  * 
@@ -96,14 +96,6 @@ public interface ICriteria {
 	ICriteria clone();
 
 	/**
-	 * 转换为字符串
-	 * 
-	 * @param type
-	 * @return
-	 */
-	String toString(String type);
-
-	/**
 	 * 计算下一结果集的查询条件
 	 * 
 	 * 注意BO多主键情况下，请自行修正。
@@ -111,7 +103,7 @@ public interface ICriteria {
 	 * @param lastBO 起始业务对象
 	 * @return 查询
 	 */
-	ICriteria next(IBusinessObjectBase lastBO);
+	ICriteria next(IBusinessObject lastBO);
 
 	/**
 	 * 计算上一个结果集的查询条件
@@ -121,7 +113,7 @@ public interface ICriteria {
 	 * @param firstBO 起始业务对象
 	 * @return 查询
 	 */
-	ICriteria previous(IBusinessObjectBase firstBO);
+	ICriteria previous(IBusinessObject firstBO);
 
 	/**
 	 * 复制查询条件
@@ -130,11 +122,4 @@ public interface ICriteria {
 	 * @return 查询
 	 */
 	ICriteria copyFrom(ICriteria criteria);
-
-	/**
-	 * 检查查询
-	 * 
-	 * @param type
-	 */
-	void check(Class<?> type);
 }

@@ -7,8 +7,8 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
-import org.colorcoding.ibas.bobas.message.Logger;
-import org.colorcoding.ibas.bobas.message.MessageLevel;
+import org.colorcoding.ibas.bobas.logging.Logger;
+import org.colorcoding.ibas.bobas.logging.LoggingLevel;
 
 /**
  * 业务规则集合
@@ -17,8 +17,6 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
  *
  */
 class BusinessRules implements IBusinessRules {
-
-	protected static final String MSG_RULES_EXECUTING = "rules: start executing %s rules.";
 
 	private volatile boolean initialized;
 
@@ -101,7 +99,7 @@ class BusinessRules implements IBusinessRules {
 		}
 		if (!doRules.isEmpty()) {
 			if (MyConfiguration.isDebugMode()) {
-				Logger.log(MessageLevel.DEBUG, MSG_RULES_EXECUTING, bo);
+				Logger.log(LoggingLevel.DEBUG, "rules: start executing %s rules.", bo);
 			}
 			StringBuilder builder = new StringBuilder();
 			for (IPropertyInfo<?> propertyInfo : properties) {

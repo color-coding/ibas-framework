@@ -1,14 +1,11 @@
 package org.colorcoding.ibas.bobas.logic;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.colorcoding.ibas.bobas.bo.IBusinessObject;
-import org.colorcoding.ibas.bobas.core.BOFactory;
-import org.colorcoding.ibas.bobas.data.ArrayList;
-import org.colorcoding.ibas.bobas.mapping.LogicContract;
+import org.colorcoding.ibas.bobas.bo.BOFactory;
+import org.colorcoding.ibas.bobas.organization.IUser;
+import org.colorcoding.ibas.bobas.repository.ITransaction;
 
 /**
  * 业务逻辑管理员
@@ -16,86 +13,42 @@ import org.colorcoding.ibas.bobas.mapping.LogicContract;
  * @author Niuren.Zhu
  *
  */
-public class BusinessLogicsManager implements IBusinessLogicsManager {
+public class BusinessLogicsManager {
 
-	@Override
-	public synchronized IBusinessLogicChain createChain() {
-		IBusinessLogicChain logicChain = new BusinessLogicChain(this);
-		this.getLogicChains().add(logicChain);
+	private BusinessLogicsManager() {
+		this.logicClasses = new ConcurrentHashMap<>(256);
+	}
+
+	private volatile static BusinessLogicsManager instance;
+
+	public synchronized static BusinessLogicsManager create() {
+		if (instance == null) {
+			synchronized (BusinessLogicsManager.class) {
+				if (instance == null) {
+					instance = new BusinessLogicsManager();
+				}
+			}
+		}
+		return instance;
+	}
+
+	synchronized BusinessLogicChain createChain(ITransaction transaction) {
+		return new BusinessLogicChain(transaction);
+	}
+
+	public synchronized IBusinessLogicChain createChain(ITransaction transaction, IUser user) {
+		BusinessLogicChain logicChain = new BusinessLogicChain(transaction);
+		logicChain.setUser(user);
 		return logicChain;
 	}
 
-	@Override
-	public synchronized IBusinessLogicChain getChain(IBusinessObject host) {
-		if (host == null) {
-			return null;
-		}
-		for (int i = this.getLogicChains().size() - 1; i >= 0; i--) {
-			IBusinessLogicChain logicChain = this.getLogicChains().get(i);
-			if (logicChain == null) {
-				continue;
-			}
-			if (logicChain.getTrigger() != host) {
-				continue;
-			}
-			return logicChain;
-		}
-		return null;
-	}
+	private Map<Class<?>, Class<?>> logicClasses;
 
-	@Override
-	public synchronized void closeChains(String transId) {
-		if (transId == null) {
-			return;
-		}
-
-		for (int i = this.getLogicChains().size() - 1; i >= 0; i--) {
-			IBusinessLogicChain logicChain = this.getLogicChains().get(i);
-			if (logicChain == null) {
-				continue;
-			}
-			if (!transId.equals(logicChain.getGroup())) {
-				continue;
-			}
-			this.getLogicChains().remove(i);
-		}
-	}
-
-	private volatile List<IBusinessLogicChain> logicChains;
-
-	protected List<IBusinessLogicChain> getLogicChains() {
-		if (logicClasses == null) {
-			synchronized (this) {
-				if (this.logicChains == null) {
-					this.logicChains = new Vector<>();
-				}
-			}
-		}
-		return this.logicChains;
-	}
-
-	private volatile HashMap<Class<?>, Class<?>> logicClasses;
-
-	protected HashMap<Class<?>, Class<?>> getLogicClasses() {
-		if (logicClasses == null) {
-			synchronized (this) {
-				if (logicClasses == null) {
-					logicClasses = new HashMap<>();
-				}
-			}
-		}
-		return logicClasses;
-	}
-
-	@Override
-	public IBusinessLogic<?> createLogic(Class<?> contract) {
-		if (contract == null) {
-			return null;
-		}
-		Class<?> logicClass = this.getLogicClasses().get(contract);
+	public synchronized BusinessLogic<?, ?> createLogic(Class<?> contract) {
+		Class<?> logicClass = this.logicClasses.get(contract);
 		if (logicClass == null) {
 			// 优先从契约接口所在命名空间查询
-			Class<?>[] packClass = BOFactory.create().loadClasses(contract.getPackage().getName());
+			Class<?>[] packClass = BOFactory.loadClasses(contract.getPackage().getName());
 			for (Class<?> item : packClass) {
 				// 检查是否标记契约
 				LogicContract annotation = item.getAnnotation(LogicContract.class);
@@ -105,7 +58,7 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 					while (tmpClass != null) {
 						if (tmpClass.equals(BusinessLogic.class)) {
 							// 有效的业务逻辑类
-							this.getLogicClasses().put(annotation.value(), item);
+							this.logicClasses.put(annotation.value(), item);
 							if (logicClass == null && contract.equals(annotation.value())) {
 								logicClass = item;
 							}
@@ -116,20 +69,14 @@ public class BusinessLogicsManager implements IBusinessLogicsManager {
 				}
 			}
 		}
-		if (logicClass != null) {
-			// 创建实例
+		if (logicClass != null && BusinessLogic.class.isAssignableFrom(logicClass)) {
 			try {
-				return (IBusinessLogic<?>) logicClass.newInstance();
+				return (BusinessLogic<?, ?>) logicClass.newInstance();
 			} catch (Exception e) {
-				throw new NotFoundBusinessLogicException(e);
+				throw new BusinessLogicException(e);
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public Iterator<IBusinessLogicChain> iterator() {
-		return new ArrayList<>(this.getLogicChains()).iterator();
 	}
 
 }

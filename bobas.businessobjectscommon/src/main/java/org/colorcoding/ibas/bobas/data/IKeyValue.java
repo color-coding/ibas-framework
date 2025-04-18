@@ -6,7 +6,7 @@ package org.colorcoding.ibas.bobas.data;
  * @author Niuren.Zhu
  *
  */
-public interface IKeyValue {
+public interface IKeyValue<T> {
 	/**
 	 * 获取-键
 	 * 
@@ -26,14 +26,14 @@ public interface IKeyValue {
 	 * 
 	 * @return
 	 */
-	Object getValue();
+	T getValue();
 
 	/**
 	 * 设置-值
 	 * 
 	 * @param value
 	 */
-	void setValue(Object value);
+	void setValue(T value);
 
 	/**
 	 * 输出字符串

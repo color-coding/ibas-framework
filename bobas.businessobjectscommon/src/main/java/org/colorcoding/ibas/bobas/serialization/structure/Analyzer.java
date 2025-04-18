@@ -28,7 +28,6 @@ public class Analyzer {
 	public Analyzer() {
 		this.setRecursion(true);
 		this.getPrimitiveTypes().add(BigDecimal.class);
-		this.getPrimitiveTypes().add(BigDecimal.class);
 		this.getPrimitiveTypes().add(BigInteger.class);
 		this.getPrimitiveTypes().add(Date.class);
 		this.getPrimitiveTypes().add(DateTime.class);
@@ -93,6 +92,19 @@ public class Analyzer {
 	}
 
 	protected void analyse(Element parent, Class<?> type) {
+		// 避免嵌套，发现父项的父项有一样类型的则不再处理
+		Element grandpa = parent;
+		while (grandpa.getParent() != null) {
+			grandpa = grandpa.getParent();
+			if (grandpa.getType() == type) {
+				parent = null;
+				break;
+			}
+		}
+		if (parent == null) {
+			return;
+		}
+		// 开始本层分析
 		if (type.isPrimitive()) {
 			// 基本类型不做处理
 			return;

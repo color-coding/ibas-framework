@@ -7,14 +7,12 @@ import java.util.function.Predicate;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
-import org.colorcoding.ibas.bobas.core.IManagedProperties;
+import org.colorcoding.ibas.bobas.core.IFieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
-import org.colorcoding.ibas.bobas.core.ITrackStatus;
-import org.colorcoding.ibas.bobas.core.TrackableBase;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.message.Logger;
-import org.colorcoding.ibas.bobas.message.MessageLevel;
+import org.colorcoding.ibas.bobas.logging.Logger;
+import org.colorcoding.ibas.bobas.logging.LoggingLevel;
 
 /**
  * 集合业务规则
@@ -83,8 +81,8 @@ public abstract class BusinessRuleCollection extends BusinessRule {
 		try {
 			BusinessRuleContext context = new BusinessRuleContext(bo);
 			// 赋值输入属性
-			if (bo instanceof IManagedProperties) {
-				IManagedProperties boProperties = (IManagedProperties) bo;
+			if (bo instanceof IFieldedObject) {
+				IFieldedObject boProperties = (IFieldedObject) bo;
 				Object tmp = boProperties.getProperty(this.getCollection());
 				if (tmp instanceof Collection) {
 					@SuppressWarnings("unchecked")
@@ -93,9 +91,9 @@ public abstract class BusinessRuleCollection extends BusinessRule {
 					for (IPropertyInfo<?> propertyInfo : this.getInputProperties()) {
 						ArrayList<Object> values = new ArrayList<>(collection.size());
 						for (Object item : collection) {
-							if (item instanceof ITrackStatus) {
+							if (item instanceof IFieldedObject) {
 								// 删除的对象跳过
-								ITrackStatus trackStatus = (ITrackStatus) item;
+								IFieldedObject trackStatus = (IFieldedObject) item;
 								if (trackStatus.isDeleted()) {
 									continue;
 								}
@@ -104,8 +102,8 @@ public abstract class BusinessRuleCollection extends BusinessRule {
 								// 过滤不符合条件的对象
 								continue;
 							}
-							if (item instanceof IManagedProperties) {
-								IManagedProperties itemProperties = (IManagedProperties) item;
+							if (item instanceof IFieldedObject) {
+								IFieldedObject itemProperties = (IFieldedObject) item;
 								values.add(itemProperties.getProperty(propertyInfo));
 							}
 						}
@@ -115,17 +113,16 @@ public abstract class BusinessRuleCollection extends BusinessRule {
 			}
 			// 执行规则
 			if (MyConfiguration.isDebugMode()) {
-				Logger.log(MessageLevel.DEBUG, MSG_RULES_EXECUTING, this.getClass().getName(), this.getName());
+				Logger.log(LoggingLevel.DEBUG, "rules: executing rule [%s - %s].", this.getClass().getName(),
+						this.getName());
 			}
 			this.execute(context);
 			// 赋值输出属性
-			if (bo instanceof IManagedProperties) {
-				TrackableBase trackable = null;
-				IManagedProperties boProperties = (IManagedProperties) bo;
-				if (this.isAffectedInSilent() && !bo.isLoading() && bo instanceof TrackableBase) {
+			if (bo instanceof IFieldedObject) {
+				IFieldedObject boProperties = (IFieldedObject) bo;
+				if (this.isAffectedInSilent() && !bo.isLoading()) {
 					// 静默模式，不触发属性改变事件
-					trackable = (TrackableBase) bo;
-					trackable.setLoading(true);
+					boProperties.setLoading(true);
 				}
 				for (IPropertyInfo<?> propertyInfo : this.getAffectedProperties()) {
 					@SuppressWarnings("unchecked")
@@ -135,10 +132,8 @@ public abstract class BusinessRuleCollection extends BusinessRule {
 						boProperties.setProperty(property, value);
 					}
 				}
-				if (trackable != null) {
-					// 取消静默模式
-					trackable.setLoading(false);
-				}
+				// 取消静默模式
+				boProperties.setLoading(false);
 			}
 		} catch (Exception e) {
 			throw new BusinessRuleException(I18N.prop("msg_bobas_bo_executing_business_rule_faild", bo, this.getName()),

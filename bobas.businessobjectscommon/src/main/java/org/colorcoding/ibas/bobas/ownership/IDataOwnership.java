@@ -22,8 +22,7 @@ public interface IDataOwnership {
 	/**
 	 * 设置-数据所有者
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setDataOwner(Integer value);
 
@@ -37,8 +36,7 @@ public interface IDataOwnership {
 	/**
 	 * 设置-数据所属组织
 	 * 
-	 * @param value
-	 *            值
+	 * @param value 值
 	 */
 	void setOrganization(String value);
 }

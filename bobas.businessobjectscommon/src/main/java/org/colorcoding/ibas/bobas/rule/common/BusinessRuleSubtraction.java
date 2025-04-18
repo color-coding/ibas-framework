@@ -2,9 +2,9 @@ package org.colorcoding.ibas.bobas.rule.common;
 
 import java.math.BigDecimal;
 
+import org.colorcoding.ibas.bobas.common.Decimals;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
@@ -87,14 +87,14 @@ public class BusinessRuleSubtraction extends BusinessRuleCommon {
 	protected void execute(BusinessRuleContext context) throws Exception {
 		BigDecimal result = (BigDecimal) context.getInputValues().get(this.getSubtrahend());
 		if (result == null) {
-			result = Decimal.ZERO;
+			result = Decimals.VALUE_ZERO;
 		}
 		for (IPropertyInfo<BigDecimal> item : this.getSubtractors()) {
 			BigDecimal subtractor = (BigDecimal) context.getInputValues().get(item);
 			if (subtractor == null) {
 				continue;
 			}
-			result = Decimal.subtract(result, subtractor);
+			result = Decimals.subtract(result, subtractor);
 		}
 		context.getOutputValues().put(this.getResult(), result);
 	}

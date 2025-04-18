@@ -2,7 +2,7 @@ package org.colorcoding.ibas.bobas.approval;
 
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICriteria;
-import org.colorcoding.ibas.bobas.core.TrackableBase;
+import org.colorcoding.ibas.bobas.core.Trackable;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 
 /**
@@ -11,15 +11,12 @@ import org.colorcoding.ibas.bobas.data.emApprovalStatus;
  * @author Niuren.Zhu
  *
  */
-public class ApprovalDataProxy extends TrackableBase implements IApprovalData {
+public class ApprovalDataProxy extends Trackable implements IApprovalData {
+
+	private static final long serialVersionUID = 1L;
 
 	public ApprovalDataProxy() {
 		this.setSavable(false);
-		this.markOld();
-	}
-
-	@Override
-	public void markOld(boolean recursive) {
 		this.markOld();
 	}
 

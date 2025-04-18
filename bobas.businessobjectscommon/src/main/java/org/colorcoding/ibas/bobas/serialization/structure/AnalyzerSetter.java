@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
-import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.logging.Logger;
 
 /**
  * 结构分析者，通过Set方法
