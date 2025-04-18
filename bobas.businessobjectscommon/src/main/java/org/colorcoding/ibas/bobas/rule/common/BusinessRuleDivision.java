@@ -2,8 +2,8 @@ package org.colorcoding.ibas.bobas.rule.common;
 
 import java.math.BigDecimal;
 
+import org.colorcoding.ibas.bobas.common.Decimals;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
@@ -28,7 +28,7 @@ public class BusinessRuleDivision extends BusinessRuleCommon {
 	 */
 	public BusinessRuleDivision(IPropertyInfo<BigDecimal> result, IPropertyInfo<BigDecimal> dividend,
 			IPropertyInfo<BigDecimal> divisor) {
-		this(result, dividend, divisor, Decimal.DECIMAL_PLACES_RUNNING);
+		this(result, dividend, divisor, Decimals.DECIMAL_PLACES_RUNNING);
 	}
 
 	/**
@@ -99,20 +99,20 @@ public class BusinessRuleDivision extends BusinessRuleCommon {
 	protected void execute(BusinessRuleContext context) throws Exception {
 		BigDecimal dividend = (BigDecimal) context.getInputValues().get(this.getDividend());
 		if (dividend == null) {
-			dividend = Decimal.ZERO;
+			dividend = Decimals.VALUE_ZERO;
 		}
 		BigDecimal divisor = (BigDecimal) context.getInputValues().get(this.getDivisor());
-		if (divisor == null || Decimal.isZero(divisor)) {
+		if (divisor == null || Decimals.isZero(divisor)) {
 			// 除数为0，直接退出
 			return;
 		}
-		BigDecimal result = Decimal.divide(dividend, divisor);
+		BigDecimal result = Decimals.divide(dividend, divisor);
 		// 截取精度
-		result = Decimal.round(result, this.getScale());
+		result = Decimals.round(result, this.getScale());
 		BigDecimal oResult = (BigDecimal) context.getInputValues().get(this.getResult());
 		if (oResult != null) {
-			BigDecimal tOld = Decimal.round(oResult, this.getScale());
-			BigDecimal tNew = Decimal.round(result, this.getScale());
+			BigDecimal tOld = Decimals.round(oResult, this.getScale());
+			BigDecimal tNew = Decimals.round(result, this.getScale());
 			if (tOld.compareTo(tNew) == 0) {
 				// 存储精度内保持一致，则退出
 				return;

@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.colorcoding.ibas</groupId>
 		<artifactId>bobas.businessobjectscommon.parent</artifactId>
-		<version>0.1.2</version>
+		<version>0.2.0</version>
 	</parent>
 	<organization>
 		<name>Color-Coding Studio</name>
@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.3.8</version>
+			<version>42.7.5</version>
 		</dependency>
 	</dependencies>
 </project>

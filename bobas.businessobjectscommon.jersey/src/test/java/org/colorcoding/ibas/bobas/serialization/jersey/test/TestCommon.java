@@ -2,14 +2,9 @@ package org.colorcoding.ibas.bobas.serialization.jersey.test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
@@ -20,17 +15,18 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.common.SortType;
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.data.DataTable;
 import org.colorcoding.ibas.bobas.data.IDataTableColumn;
 import org.colorcoding.ibas.bobas.data.IDataTableRow;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
-import org.colorcoding.ibas.bobas.serialization.SerializerFactory;
+import org.colorcoding.ibas.bobas.serialization.SerializationFactory;
 import org.colorcoding.ibas.bobas.serialization.ValidateException;
-import org.colorcoding.ibas.bobas.serialization.jersey.SerializerJsonNoRoot;
+import org.colorcoding.ibas.bobas.serialization.jersey.SerializerJson;
 import org.colorcoding.ibas.bobas.serialization.jersey.SerializerManager;
-import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
-import org.colorcoding.ibas.bobas.test.bo.SalesOrderItem;
+import org.colorcoding.ibas.bobas.test.demo.SalesOrder;
+import org.colorcoding.ibas.bobas.test.demo.SalesOrderItem;
 
 import junit.framework.TestCase;
 
@@ -66,11 +62,6 @@ public class TestCommon extends TestCase {
 
 	public void testFromString() {
 		ICriteria criteria = this.createCriteria();
-		ICriteria jsonCriteria = Criteria.create(criteria.toString("json"));
-		assertEquals("json marshal and unmarshal not equal", criteria.toString("json"), jsonCriteria.toString("json"));
-
-		ICriteria xmlCriteria = Criteria.create(criteria.toString("xml"));
-		assertEquals("xml marshal and unmarshal not equal", criteria.toString("xml"), xmlCriteria.toString("xml"));
 
 		String identifiers1 = "{[CC_TT_SALESORDER].[DocEntry = 1]}";
 		criteria = Criteria.create(identifiers1);
@@ -91,22 +82,19 @@ public class TestCommon extends TestCase {
 
 	public void testJsonSchema() throws ValidateException {
 		ICriteria criteria = this.createCriteria();
-		System.out.println("-------------------has root--------------------");
-		ISerializer<?> serializer = SerializerFactory.create().createManager()
-				.create(SerializerManager.TYPE_JSON_HAS_ROOT);
+		System.out.println("-------------------no root---------------------");
+		ISerializer serializer = SerializationFactory.createManager().create(SerializerManager.TYPE_JSON);
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
 		serializer.serialize(criteria, writer);
 		System.out.println(writer.toString());
-		System.out.println(serializer.deserialize(writer.toString(), criteria.getClass()));
-		System.out.println("-------------------no root---------------------");
-		serializer = SerializerFactory.create().createManager().create(SerializerManager.TYPE_JSON_NO_ROOT);
+		System.out.println((ICriteria) serializer.deserialize(writer.toString(), criteria.getClass()));
+		System.out.println("-------------------schema---------------------");
 		writer = new ByteArrayOutputStream();
-		serializer.serialize(criteria, writer);
+		serializer.schema(Criteria.class, writer);
 		System.out.println(writer.toString());
-		System.out.println(serializer.deserialize(writer.toString(), criteria.getClass()));
 	}
 
-	public void testToJSON() throws JAXBException {
+	public void testJson() throws JAXBException {
 		ICriteria criteria = new Criteria();
 		criteria.setResultCount(100);
 		// ("DocStatus" = 'P' OR "DocStatus" = 'F')
@@ -133,36 +121,27 @@ public class TestCommon extends TestCase {
 		condition.setOperation(ConditionOperation.CONTAIN);
 		condition.setValue("T000");
 
-		// 设置系统默认工厂
-		System.setProperty("javax.xml.bind.context.factory", "org.eclipse.persistence.jaxb.JAXBContextFactory");
-		Map<String, Object> properties = new HashMap<String, Object>(2);
-		properties.put("eclipselink.media-type", "application/json");
-		// json数组不要前缀类型
-		properties.put("eclipselink.json.wrapper-as-array-name", true);
-		// properties.put("eclipselink.json.include-root", true);
-		// properties.put("eclipselink.json.attribute-prefix", "@");
-		JAXBContext jc = JAXBContext.newInstance(new Class[] { Criteria.class }, properties);
+		SerializerJson serializer = new SerializerJson();
 
-		StringWriter writer = new StringWriter();
-		Marshaller marshaller = jc.createMarshaller();
-		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-		marshaller.marshal(criteria, writer);
+		ByteArrayOutputStream writer = new ByteArrayOutputStream();
+		serializer.serialize(criteria, writer);
 		String oldJSON = writer.toString();
 		System.out.println(oldJSON);
 
-		Unmarshaller unmarshaller = jc.createUnmarshaller();
+		serializer = new SerializerJson();
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(oldJSON.getBytes());
 		inputStream.reset();
-		criteria = (Criteria) unmarshaller.unmarshal(inputStream);
+		criteria = serializer.deserialize(inputStream, Criteria.class);
 
 		assertEquals("marshal and unmarshal not equal",
 				oldJSON.replace(System.getProperty("line.separator"), "").replace(" ", ""),
-				criteria.toString("json").replace(System.getProperty("line.separator"), "").replace(" ", ""));
+				Strings.toJsonString(criteria).replace(System.getProperty("line.separator"), "").replace(" ", ""));
 
 	}
 
-	public void testOperationRuslut() {
+	public void testOperationRuslut() throws IOException {
 		OperationResult<DataTable> operationResult = new OperationResult<>();
+		operationResult.setResultCode(1);
 		DataTable dataTable = new DataTable();
 		IDataTableColumn column = dataTable.getColumns().create();
 		column.setName("Test");
@@ -172,11 +151,21 @@ public class TestCommon extends TestCase {
 		operationResult.getResultObjects().add(dataTable);
 
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();
-		ISerializer<?> serializer = new SerializerJsonNoRoot();
+		SerializerJson serializer = new SerializerJson();
+		serializer.setIncludeJsonRoot(true);
 		serializer.serialize(operationResult, writer, OperationResult.class, DataTable.class);
 		System.out.println(writer.toString());
-		serializer = new SerializerJsonNoRoot();
-		Object data = serializer.deserialize(writer.toString(), OperationResult.class, DataTable.class);
-		System.out.println(data);
+		operationResult = serializer.deserialize(writer.toString(), OperationResult.class, DataTable.class);
+		System.out.println(operationResult);
+		writer.close();
+
+		writer = new ByteArrayOutputStream();
+		serializer = new SerializerJson();
+		serializer.setIncludeJsonRoot(false);
+		serializer.serialize(operationResult, writer, OperationResult.class, DataTable.class);
+		System.out.println(writer.toString());
+		operationResult = serializer.deserialize(writer.toString(), OperationResult.class, DataTable.class);
+		System.out.println(operationResult);
+		writer.close();
 	}
 }

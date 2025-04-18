@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.data;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.mapping.Value;
+import org.colorcoding.ibas.bobas.common.Value;
 
 /**
  * 条件-操作
@@ -11,7 +11,7 @@ import org.colorcoding.ibas.bobas.mapping.Value;
  * @author Niuren.Zhu
  *
  */
-@XmlType(name = "emConditionOperation", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public enum emConditionOperation {
 
 	/**
@@ -85,20 +85,5 @@ public enum emConditionOperation {
 	 */
 	@Value("NC")
 	NOT_CONTAIN;
-
-	public static emConditionOperation valueOf(int value) {
-		return values()[value];
-	}
-
-	public static emConditionOperation valueOf(String value, boolean ignoreCase) {
-		if (ignoreCase) {
-			for (Object item : emConditionOperation.class.getEnumConstants()) {
-				if (item.toString().equalsIgnoreCase(value)) {
-					return (emConditionOperation) item;
-				}
-			}
-		}
-		return emConditionOperation.valueOf(value);
-	}
 
 }

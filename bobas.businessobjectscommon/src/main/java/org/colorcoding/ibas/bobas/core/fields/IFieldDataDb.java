@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.core.fields;
 
-import org.colorcoding.ibas.bobas.mapping.DbFieldType;
+import org.colorcoding.ibas.bobas.db.DbFieldType;
 
 public interface IFieldDataDb extends IFieldData {
 	/**
@@ -12,11 +12,6 @@ public interface IFieldDataDb extends IFieldData {
 	 * 数据库表名称
 	 */
 	String getDbTable();
-
-	/**
-	 * 数据库字段索引
-	 */
-	int getDbIndex();
 
 	/**
 	 * 字段类型

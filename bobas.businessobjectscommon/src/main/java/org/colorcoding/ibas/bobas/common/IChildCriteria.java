@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.common;
 
+import org.colorcoding.ibas.bobas.core.IPropertyInfo;
+
 /**
  * 子项查询
  * 
@@ -23,7 +25,30 @@ public interface IChildCriteria extends ICriteria {
 	void setPropertyPath(String value);
 
 	/**
-	 * 获取-是否父要求结果 如果子项没有结果，则父项也不返回结果
+	 * 设置-属性路径
+	 * 
+	 * @param value
+	 */
+	void setPropertyPath(IPropertyInfo<?> property);
+
+	/**
+	 * 获取-是否入口
+	 * 
+	 * 先查子项，再根据子项查父项
+	 * 
+	 * @return
+	 */
+	boolean isEntry();
+
+	/**
+	 * 设置-是否入口
+	 */
+	void setEntry(boolean value);
+
+	/**
+	 * 获取-是否父要求结果
+	 * 
+	 * 如果子项没有结果，则父项也不返回结果
 	 * 
 	 * @return
 	 */

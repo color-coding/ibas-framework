@@ -1,14 +1,6 @@
 package org.colorcoding.ibas.bobas.bo;
 
-import org.colorcoding.ibas.bobas.mapping.DbFieldType;
-
-/**
- * 用户字段集合
- * 
- * @author Niuren.Zhu
- *
- */
-public interface IUserFields extends Iterable<IUserField> {
+public interface IUserFields extends Iterable<IUserField<?>> {
 
 	/**
 	 * 获取用户字段
@@ -16,7 +8,7 @@ public interface IUserFields extends Iterable<IUserField> {
 	 * @param name 名称
 	 * @return
 	 */
-	IUserField get(String name);
+	<P> IUserField<P> get(String name);
 
 	/**
 	 * 获取用户字段
@@ -24,30 +16,7 @@ public interface IUserFields extends Iterable<IUserField> {
 	 * @param index 索引
 	 * @return
 	 */
-	IUserField get(int index);
-
-	/**
-	 * 注册用户字段
-	 * 
-	 * @param name 名称
-	 * @param type 值类型
-	 * @return
-	 */
-	IUserField register(String name, DbFieldType valueType);
-
-	/**
-	 * 注册用户字段
-	 * 
-	 * @param name 名称
-	 * @param type 值类型
-	 * @return
-	 */
-	IUserField register(String name, Class<?> valueType);
-
-	/**
-	 * 注册用户字段到全局
-	 */
-	void register();
+	<P> IUserField<P> get(int index);
 
 	/**
 	 * 用户字段长度
@@ -62,5 +31,22 @@ public interface IUserFields extends Iterable<IUserField> {
 	 * @param item 对象
 	 * @return
 	 */
-	int indexOf(IUserField item);
+	int indexOf(IUserField<?> item);
+
+	/**
+	 * 获取索引
+	 * 
+	 * @param name
+	 * @return
+	 */
+	int indexOf(String name);
+
+	/**
+	 * 注册用户字段
+	 * 
+	 * @param name 名称
+	 * @param type 值类型
+	 * @return
+	 */
+	<P> IUserField<P> register(String name, Class<P> valueType);
 }

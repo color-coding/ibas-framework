@@ -7,12 +7,13 @@ package org.colorcoding.ibas.bobas.i18n;
  *
  */
 public class I18N {
+
 	private I18N() {
 	}
 
-	private volatile static ILanguageItemManager instance;
+	private volatile static LanguageItemManager instance;
 
-	public static ILanguageItemManager getInstance() {
+	public static LanguageItemManager getInstance() {
 		if (instance == null) {
 			synchronized (I18N.class) {
 				if (instance == null) {
@@ -27,10 +28,8 @@ public class I18N {
 	/**
 	 * 获取key所对应的值
 	 * 
-	 * @param key
-	 *            需要翻译的文本
-	 * @param args
-	 *            有效值
+	 * @param key  需要翻译的文本
+	 * @param args 有效值
 	 * @return 返回key所对应的值
 	 */
 	public static String prop(String key, Object... args) {

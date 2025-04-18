@@ -17,6 +17,13 @@ public class Sorts extends ArrayList<ISort> implements ISorts {
 
 	private static final long serialVersionUID = 3748654397825099641L;
 
+	public Sorts() {
+	}
+
+	public Sorts(int size) {
+		super(size);
+	}
+
 	@Override
 	public ISort create() {
 		Sort sort = new Sort();

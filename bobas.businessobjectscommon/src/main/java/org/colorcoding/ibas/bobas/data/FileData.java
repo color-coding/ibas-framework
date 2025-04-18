@@ -1,20 +1,16 @@
 package org.colorcoding.ibas.bobas.data;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.serialization.Serializable;
+import org.colorcoding.ibas.bobas.core.Serializable;
 
 /**
  * 文件数据
@@ -28,6 +24,20 @@ import org.colorcoding.ibas.bobas.serialization.Serializable;
 public class FileData extends Serializable {
 
 	private static final long serialVersionUID = 8583908279754401069L;
+
+	public FileData() {
+	}
+
+	public FileData(FileItem fileItem) {
+		this(new File(fileItem.getPath()));
+	}
+
+	public FileData(File file) {
+		this();
+		this.location = file.getPath();
+		this.fileName = file.getName();
+		this.originalName = file.getName();
+	}
 
 	private String fileName;
 
@@ -61,22 +71,6 @@ public class FileData extends Serializable {
 		this.location = location;
 	}
 
-	private InputStream stream;
-
-	/**
-	 * 文件流
-	 * 
-	 * @return
-	 */
-	@XmlTransient
-	public InputStream getStream() {
-		return stream;
-	}
-
-	public void setStream(InputStream stream) {
-		this.stream = stream;
-	}
-
 	private String originalName;
 
 	/**
@@ -93,35 +87,19 @@ public class FileData extends Serializable {
 		this.originalName = originalName;
 	}
 
+	private InputStream stream;
+
 	/**
-	 * 获取文件字节数组
+	 * 文件流
 	 * 
 	 * @return
-	 * @throws IOException
 	 */
-	public byte[] getFileBytes() throws IOException {
-		File file = new File(this.getLocation());
-		long fileSize = file.length();
-		if (fileSize > Integer.MAX_VALUE) {
-			throw new IOException(I18N.prop("msg_bobas_invalid_data"));
-		}
-		try (FileInputStream inputStream = new FileInputStream(file)) {
-			byte[] buffer = new byte[(int) fileSize];
-			int offset = 0;
-			int numRead = 0;
-			while (offset < buffer.length
-					&& (numRead = inputStream.read(buffer, offset, buffer.length - offset)) >= 0) {
-				offset += numRead;
-			}
-			return buffer;
-		}
+	public InputStream getStream() {
+		return stream;
 	}
 
-	@Override
-	public void finalize() {
-		if (this.stream != null) {
-			this.stream = null;
-		}
+	public void setStream(InputStream stream) {
+		this.stream = stream;
 	}
 
 	@Override

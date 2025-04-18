@@ -5,12 +5,11 @@ import java.util.Map;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
-import org.colorcoding.ibas.bobas.core.IManagedProperties;
+import org.colorcoding.ibas.bobas.core.IFieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
-import org.colorcoding.ibas.bobas.core.TrackableBase;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.message.Logger;
-import org.colorcoding.ibas.bobas.message.MessageLevel;
+import org.colorcoding.ibas.bobas.logging.Logger;
+import org.colorcoding.ibas.bobas.logging.LoggingLevel;
 
 /**
  * 普通业务规则
@@ -37,38 +36,43 @@ public abstract class BusinessRuleCommon extends BusinessRule {
 			context.setSource(bo);
 			context.setTrigger(trigger);
 			// 赋值输入属性
-			if (bo instanceof IManagedProperties) {
-				IManagedProperties boProperties = (IManagedProperties) bo;
+			if (bo instanceof IFieldedObject) {
+				IFieldedObject fieldedObject = (IFieldedObject) bo;
 				for (IPropertyInfo<?> propertyInfo : this.getInputProperties()) {
-					Object value = boProperties.getProperty(propertyInfo);
-					context.getInputValues().put(propertyInfo, value);
+					if (propertyInfo == null) {
+						continue;
+					}
+					context.getInputValues().put(propertyInfo, fieldedObject.getProperty(propertyInfo));
 				}
 			}
 			// 执行规则
 			if (MyConfiguration.isDebugMode()) {
-				Logger.log(MessageLevel.DEBUG, MSG_RULES_EXECUTING, this.getClass().getName(), this.getName());
+				Logger.log(LoggingLevel.DEBUG, "rules: executing rule [%s - %s].", this.getClass().getName(),
+						this.getName());
 			}
 			this.execute(context);
 			// 赋值输出属性
-			if (bo instanceof IManagedProperties) {
-				TrackableBase trackable = null;
-				IManagedProperties boProperties = (IManagedProperties) bo;
-				if (this.isAffectedInSilent() && !bo.isLoading() && bo instanceof TrackableBase) {
+			if (bo instanceof IFieldedObject) {
+				IFieldedObject fieldedObject = (IFieldedObject) bo;
+				boolean mine = false;
+				if (this.isAffectedInSilent() && !bo.isLoading()) {
 					// 静默模式，不触发属性改变事件
-					trackable = (TrackableBase) bo;
-					trackable.setLoading(true);
+					fieldedObject.setLoading(true);
+					mine = true;
 				}
+				Object value;
 				for (IPropertyInfo<?> propertyInfo : this.getAffectedProperties()) {
-					@SuppressWarnings("unchecked")
-					IPropertyInfo<Object> property = (IPropertyInfo<Object>) propertyInfo;
-					Object value = context.getOutputValues().get(propertyInfo);
+					if (propertyInfo == null) {
+						continue;
+					}
+					value = context.getOutputValues().get(propertyInfo);
 					if (value != null) {
-						boProperties.setProperty(property, value);
+						fieldedObject.setProperty(propertyInfo, value);
 					}
 				}
-				if (trackable != null) {
-					// 取消静默模式
-					trackable.setLoading(false);
+				// 取消静默模式
+				if (mine == true) {
+					fieldedObject.setLoading(false);
 				}
 			}
 		} catch (Exception e) {
@@ -125,7 +129,7 @@ public abstract class BusinessRuleCommon extends BusinessRule {
 
 		public final Map<IPropertyInfo<?>, Object> getInputValues() {
 			if (this.inputValues == null) {
-				this.inputValues = new HashMap<>(3);
+				this.inputValues = new HashMap<>(4);
 			}
 			return this.inputValues;
 		}
@@ -134,7 +138,7 @@ public abstract class BusinessRuleCommon extends BusinessRule {
 
 		public final Map<IPropertyInfo<?>, Object> getOutputValues() {
 			if (this.outputValues == null) {
-				this.outputValues = new HashMap<>(1);
+				this.outputValues = new HashMap<>();
 			}
 			return this.outputValues;
 		}

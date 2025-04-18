@@ -11,9 +11,9 @@ public interface IJudgmentExpression extends IExpression {
 	 * 表达式结果
 	 * 
 	 * @return true，成立；false，不成立
-	 * @throws NotSupportOperationException
+	 * @throws ExpressionException
 	 */
-	boolean result() throws NotSupportOperationException;
+	boolean result() throws ExpressionException;
 
 	/**
 	 * 获取表达式-左值

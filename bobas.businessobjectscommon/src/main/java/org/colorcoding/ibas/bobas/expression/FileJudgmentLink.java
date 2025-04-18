@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.ICondition;
-import org.colorcoding.ibas.bobas.core.fields.NotSupportTypeException;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 
@@ -50,7 +49,7 @@ public class FileJudgmentLink extends JudgmentLink {
 			@Override
 			public void setValue(Object value) {
 				if (!(value instanceof File)) {
-					throw new NotSupportTypeException();
+					throw new ExpressionException();
 				}
 				this.setValue((File) value);
 			}
@@ -129,7 +128,7 @@ public class FileJudgmentLink extends JudgmentLink {
 			jLinkItems.add(jItem);
 		}
 		if (jLinkItems.isEmpty()) {
-			throw new JudgmentLinkException(I18N.prop("msg_bobas_invaild_judgment_link_conditions"));
+			throw new ExpressionException(I18N.prop("msg_bobas_invaild_judgment_link_conditions"));
 		}
 		super.setJudgmentItems(jLinkItems.toArray(new JudgmentLinkItem[] {}));
 	}

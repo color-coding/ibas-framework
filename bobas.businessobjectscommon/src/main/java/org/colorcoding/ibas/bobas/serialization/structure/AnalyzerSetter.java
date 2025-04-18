@@ -5,8 +5,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.colorcoding.ibas.bobas.bo.BOFactory;
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
-import org.colorcoding.ibas.bobas.message.Logger;
 
 /**
  * 结构分析者，通过Set方法
@@ -61,12 +61,7 @@ public class AnalyzerSetter extends Analyzer {
 		}
 		if (IBusinessObjects.class.isAssignableFrom(type)) {
 			if (type.getName().endsWith("s")) {
-				String name = type.getName().substring(0, type.getName().length() - 1);
-				try {
-					type = Class.forName(name);
-				} catch (ClassNotFoundException e) {
-					Logger.log(e);
-				}
+				type = BOFactory.loadClass(type.getName().substring(0, type.getName().length() - 1));
 			}
 		}
 		return new ElementMethod(this.namedElement(method), type);

@@ -5,8 +5,7 @@ package org.colorcoding.ibas.bobas.expression;
  * 
  * @author Niuren.Zhu
  *
- * @param <T>
- *            比较的值类型
+ * @param <T> 比较的值类型
  */
 public abstract class JudgmentExpression<T> implements IJudgmentExpression {
 
@@ -33,9 +32,9 @@ public abstract class JudgmentExpression<T> implements IJudgmentExpression {
 	}
 
 	@Override
-	public boolean result() throws NotSupportOperationException {
+	public boolean result() throws ExpressionException {
 		// 不支持的计算
-		throw new NotSupportOperationException();
+		throw new ExpressionException("not support.");
 	}
 
 	@Override

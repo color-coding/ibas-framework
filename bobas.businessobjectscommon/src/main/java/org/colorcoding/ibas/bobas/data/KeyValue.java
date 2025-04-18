@@ -5,7 +5,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.serialization.Serializable;
+import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.core.Serializable;
 
 /**
  * 键值
@@ -19,10 +20,8 @@ public class KeyValue extends Serializable implements IKeyValue {
 
 	private static final long serialVersionUID = 5102847294361392265L;
 
-	private final static String EMPTY = "";
-
 	public KeyValue() {
-		this.key = EMPTY;
+		this.key = Strings.VALUE_EMPTY;
 	}
 
 	public KeyValue(String key, Object value) {
@@ -38,7 +37,7 @@ public class KeyValue extends Serializable implements IKeyValue {
 
 	public final String getKey() {
 		if (this.key == null) {
-			this.key = EMPTY;
+			this.key = Strings.VALUE_EMPTY;
 		}
 		return key;
 	}
@@ -61,7 +60,11 @@ public class KeyValue extends Serializable implements IKeyValue {
 		this.value = value;
 	}
 
-	@Override
+	@SuppressWarnings("unchecked")
+	public final <T> T asValue() {
+		return (T) value;
+	}
+
 	public String toString() {
 		return String.format("{key value: %s %s}", this.getKey(), this.getValue());
 	}

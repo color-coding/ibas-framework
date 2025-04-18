@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.expression;
 
-import org.colorcoding.ibas.bobas.db.DataConvert;
+import org.colorcoding.ibas.bobas.common.Enums;
+import org.colorcoding.ibas.bobas.common.Strings;
 
 public class JudgmentExpressionEnum extends JudgmentExpression<Object> {
 
@@ -29,13 +30,13 @@ public class JudgmentExpressionEnum extends JudgmentExpression<Object> {
 	}
 
 	@Override
-	public boolean result() throws NotSupportOperationException {
+	public boolean result() throws ExpressionException {
 		// 等
 		if (this.getOperation() == JudmentOperation.EQUAL) {
-			String tmpLeft = DataConvert.toString(this.getLeftValue());
-			String tmpLeftDb = DataConvert.toDbValue(this.getLeftValue());
-			String tmpRight = DataConvert.toString(this.getRightValue());
-			String tmpRightDb = DataConvert.toDbValue(this.getRightValue());
+			String tmpLeft = Strings.valueOf(this.getLeftValue());
+			String tmpLeftDb = Enums.annotationValue(this.getLeftValue());
+			String tmpRight = Strings.valueOf(this.getRightValue());
+			String tmpRightDb = Enums.annotationValue(this.getRightValue());
 			if (tmpLeft != null && tmpLeft.equals(tmpRight)) {
 				return true;
 			}
@@ -46,10 +47,10 @@ public class JudgmentExpressionEnum extends JudgmentExpression<Object> {
 		}
 		// 不等
 		else if (this.getOperation() == JudmentOperation.NOT_EQUAL) {
-			String tmpLeft = DataConvert.toString(this.getLeftValue());
-			String tmpLeftDb = DataConvert.toDbValue(this.getLeftValue());
-			String tmpRight = DataConvert.toString(this.getRightValue());
-			String tmpRightDb = DataConvert.toDbValue(this.getRightValue());
+			String tmpLeft = Strings.valueOf(this.getLeftValue());
+			String tmpLeftDb = Enums.annotationValue(this.getLeftValue());
+			String tmpRight = Strings.valueOf(this.getRightValue());
+			String tmpRightDb = Enums.annotationValue(this.getRightValue());
 			if (tmpLeft != null && tmpLeft.equals(tmpRight)) {
 				return false;
 			}

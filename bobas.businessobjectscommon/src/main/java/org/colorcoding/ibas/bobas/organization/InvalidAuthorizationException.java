@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.organization;
 
-public class InvalidAuthorizationException extends OrganizationException {
+public class InvalidAuthorizationException extends Exception {
 
 	private static final long serialVersionUID = -2013118631823755958L;
 

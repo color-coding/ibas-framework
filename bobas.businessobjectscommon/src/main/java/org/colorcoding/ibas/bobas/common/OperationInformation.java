@@ -37,10 +37,10 @@ public class OperationInformation implements IOperationInformation {
 	}
 
 	// 名称
+	@XmlElement(name = "Name")
 	private String name;
 
 	@Override
-	@XmlElement(name = "Name")
 	public final String getName() {
 		return this.name;
 	}
@@ -50,10 +50,10 @@ public class OperationInformation implements IOperationInformation {
 	}
 
 	// 内容
+	@XmlElement(name = "Content")
 	private String content;
 
 	@Override
-	@XmlElement(name = "Content")
 	public final String getContent() {
 		return this.content;
 	}
@@ -63,10 +63,10 @@ public class OperationInformation implements IOperationInformation {
 	}
 
 	// 标签
+	@XmlElement(name = "Tag")
 	private String tag;
 
 	@Override
-	@XmlElement(name = "Tag")
 	public final String getTag() {
 		return this.tag;
 	}

@@ -1,19 +1,9 @@
 package org.colorcoding.ibas.bobas.expression;
 
-import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.message.Logger;
-import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 public abstract class JudgmentLink {
-
-	protected static final String MSG_JUDGMENT_EXPRESSION = "judgment: expression %s = [%s]";
-	protected static final String MSG_JUDGMENT_RELATION = "judgment: relation %s = [%s]";
-	protected static final String MSG_JUDGMENT_LINK_INFO = "judgment: judgment item count [%s].";
-	protected static final String MSG_JUDGMENT_ENTRY_SUB_JUDGMENT = "judgment: entry sub judgment [%s].";
-	protected static final String MSG_JUDGMENT_NOT_FOUND_PROPERTY = "judgment: not found [%s]'s property [%s].";
-	protected static final String MSG_JUDGMENT_PROPERTY_NULL = "judgment: [%s].[%s] value is null.";
 
 	private JudgmentLinkItem[] judgmentItems;
 
@@ -72,8 +62,7 @@ public abstract class JudgmentLink {
 	/**
 	 * 判断对象是否满足条件
 	 * 
-	 * @param object
-	 *            对象
+	 * @param object 对象
 	 * @return true,满足;false,不满足
 	 * @throws JudmentOperationException
 	 */
@@ -98,30 +87,12 @@ public abstract class JudgmentLink {
 		return this.judge(0, this.getJudgmentItems());
 	}
 
-	protected void log(JudgmentLinkItem[] judgmentItems) {
-		if (judgmentItems == null) {
-			return;
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(String.format(MSG_JUDGMENT_LINK_INFO, judgmentItems.length));
-		String line = System.getProperty("line.seperator", "\n");
-		for (JudgmentLinkItem jItem : judgmentItems) {
-			stringBuilder.append(line);
-			stringBuilder.append("    ");
-			stringBuilder.append(jItem.toString());
-		}
-		Logger.log(MessageLevel.DEBUG, stringBuilder.toString());
-	}
-
 	/**
 	 * 获取括号内的判断条件
 	 * 
-	 * @param bracket
-	 *            括号
-	 * @param judgmentItems
-	 *            条件
-	 * @param startIndex
-	 *            开始的索引
+	 * @param bracket       括号
+	 * @param judgmentItems 条件
+	 * @param startIndex    开始的索引
 	 * @return
 	 */
 	private JudgmentLinkItem[] getJudgmentItems(int startIndex, JudgmentLinkItem[] judgmentItems) {
@@ -149,7 +120,7 @@ public abstract class JudgmentLink {
 		}
 		if (!done) {
 			// 未标记完成，存在不匹配的括号
-			throw new JudgmentLinkException(I18N.prop("msg_bobas_invaild_judgment_link_bracket", bracket));
+			throw new ExpressionException(I18N.prop("msg_bobas_invaild_judgment_link_bracket", bracket));
 		}
 		JudgmentLinkItem[] jItems = currentJudgmentItems.toArray(new JudgmentLinkItem[] {});
 		return jItems;
@@ -158,17 +129,12 @@ public abstract class JudgmentLink {
 	/**
 	 * 判断条件是否成立
 	 * 
-	 * @param bracket
-	 *            当前括号数
-	 * @param judgmentItems
-	 *            当前判断条件
+	 * @param bracket       当前括号数
+	 * @param judgmentItems 当前判断条件
 	 * @return true,满足;false,不满足
 	 * @throws JudmentOperationException
 	 */
 	protected boolean judge(int bracket, JudgmentLinkItem[] judgmentItems) throws JudmentOperationException {
-		if (MyConfiguration.isDebugMode()) {
-			this.log(judgmentItems);
-		}
 		boolean currentValue = false;// 当前的结果
 		ExpressionFactory factory = ExpressionFactory.create();
 		IJudgmentExpression rootJudExp = null;
@@ -194,9 +160,6 @@ public abstract class JudgmentLink {
 				currentJudExp.setOperation(jItem.getOperation());
 				currentJudExp.setRightValue(jItem.getRightOperter().getValue());
 				currentValue = currentJudExp.result();
-				if (MyConfiguration.isDebugMode()) {
-					Logger.log(MessageLevel.DEBUG, MSG_JUDGMENT_EXPRESSION, currentJudExp.toString(), currentValue);
-				}
 			}
 			if (rootJudExp == null) {
 				// 第一个表达式
@@ -209,9 +172,6 @@ public abstract class JudgmentLink {
 				rootJudExp.setRightValue(currentValue);
 			}
 			currentValue = rootJudExp.result();
-			if (MyConfiguration.isDebugMode()) {
-				Logger.log(MessageLevel.DEBUG, MSG_JUDGMENT_RELATION, rootJudExp.toString(), currentValue);
-			}
 			rootJudExp.setLeftValue(currentValue);// 结果左移
 			if (!rootJudExp.result()) {
 				// 表达式不成立

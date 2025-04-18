@@ -1,13 +1,14 @@
 package org.colorcoding.ibas.bobas.approval;
 
 import org.colorcoding.ibas.bobas.common.ICriteria;
-import org.colorcoding.ibas.bobas.core.ITrackStatus;
+import org.colorcoding.ibas.bobas.core.ITrackable;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 
 /**
  * 审批的数据
  */
-public interface IApprovalData extends ITrackStatus {
+public interface IApprovalData extends ITrackable {
+
 	/**
 	 * 获取-数据类型
 	 * 
@@ -35,6 +36,13 @@ public interface IApprovalData extends ITrackStatus {
 	 * @param value
 	 */
 	void setApprovalStatus(emApprovalStatus value);
+
+	/**
+	 * 获取-实例号
+	 * 
+	 * @return
+	 */
+	Integer getLogInst();
 
 	/**
 	 * 获取识别码

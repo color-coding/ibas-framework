@@ -8,11 +8,12 @@ import java.nio.file.Paths;
 
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.data.FileData;
+import org.colorcoding.ibas.bobas.data.FileItem;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 
 public class FileRepositoryService extends org.colorcoding.ibas.bobas.repository.FileRepositoryService {
 
-	public OperationResult<FileData> save(FormDataBodyPart bodyPart, String token) {
+	public OperationResult<FileItem> save(FormDataBodyPart bodyPart, String token) {
 		try {
 			FileData fileData = new FileData();
 			fileData.setStream(bodyPart.getValueAs(InputStream.class));
@@ -25,6 +26,10 @@ public class FileRepositoryService extends org.colorcoding.ibas.bobas.repository
 
 	protected String getContentType(FileData fileData) {
 		return this.getContentType(fileData.getLocation());
+	}
+
+	protected String getContentType(FileItem fileItem) {
+		return this.getContentType(fileItem.getPath());
 	}
 
 	protected String getContentType(String filePath) {

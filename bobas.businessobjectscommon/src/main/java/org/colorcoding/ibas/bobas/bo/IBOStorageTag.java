@@ -3,6 +3,13 @@ package org.colorcoding.ibas.bobas.bo;
 import org.colorcoding.ibas.bobas.data.DateTime;
 
 public interface IBOStorageTag {
+
+	/**
+	 * 是否为新建
+	 * 
+	 */
+	boolean isNew();
+
 	/**
 	 * 获取-获取对象编号
 	 * 

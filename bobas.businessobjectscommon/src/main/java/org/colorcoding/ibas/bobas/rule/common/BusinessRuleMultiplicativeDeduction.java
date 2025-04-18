@@ -2,8 +2,8 @@ package org.colorcoding.ibas.bobas.rule.common;
 
 import java.math.BigDecimal;
 
+import org.colorcoding.ibas.bobas.common.Decimals;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
@@ -28,7 +28,7 @@ public class BusinessRuleMultiplicativeDeduction extends BusinessRuleCommon {
 	 */
 	public BusinessRuleMultiplicativeDeduction(IPropertyInfo<BigDecimal> multiplicand,
 			IPropertyInfo<BigDecimal> multiplier, IPropertyInfo<BigDecimal> result) {
-		this(multiplicand, multiplier, result, Decimal.DECIMAL_PLACES_RUNNING);
+		this(multiplicand, multiplier, result, Decimals.DECIMAL_PLACES_RUNNING);
 	}
 
 	/**
@@ -100,28 +100,28 @@ public class BusinessRuleMultiplicativeDeduction extends BusinessRuleCommon {
 	protected void execute(BusinessRuleContext context) throws Exception {
 		BigDecimal multiplicand = (BigDecimal) context.getInputValues().get(this.getMultiplicand());
 		if (multiplicand == null) {
-			multiplicand = Decimal.ZERO;
+			multiplicand = Decimals.VALUE_ZERO;
 		}
 		BigDecimal multiplier = (BigDecimal) context.getInputValues().get(this.getMultiplier());
 		if (multiplier == null) {
-			multiplier = Decimal.ZERO;
+			multiplier = Decimals.VALUE_ZERO;
 		}
 		BigDecimal result = (BigDecimal) context.getInputValues().get(this.getResult());
 		if (result == null) {
-			result = Decimal.ZERO;
+			result = Decimals.VALUE_ZERO;
 		}
-		if (Decimal.isZero(multiplicand)) {
-			context.getOutputValues().put(this.getResult(), BigDecimal.ZERO);
+		if (Decimals.isZero(multiplicand)) {
+			context.getOutputValues().put(this.getResult(), Decimals.VALUE_ZERO);
 			return;
 		}
-		if (!Decimal.isZero(multiplier) && Decimal.isZero(result)) {
+		if (!Decimals.isZero(multiplier) && Decimals.isZero(result)) {
 			// 结果 = 乘数 * 被乘数
-			result = Decimal.multiply(multiplicand, multiplier);
-			context.getOutputValues().put(this.getResult(), Decimal.round(result, this.getScale()));
-		} else if (!Decimal.isZero(multiplicand) && !Decimal.isZero(result)) {
+			result = Decimals.multiply(multiplicand, multiplier);
+			context.getOutputValues().put(this.getResult(), Decimals.round(result, this.getScale()));
+		} else if (!Decimals.isZero(multiplicand) && !Decimals.isZero(result)) {
 			// 乘数 = 结果 / 被乘数
-			multiplier = Decimal.divide(result, multiplicand);
-			context.getOutputValues().put(this.getMultiplier(), Decimal.round(multiplier, this.getScale()));
+			multiplier = Decimals.divide(result, multiplicand);
+			context.getOutputValues().put(this.getMultiplier(), Decimals.round(multiplier, this.getScale()));
 		}
 	}
 

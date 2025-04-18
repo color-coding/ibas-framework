@@ -20,6 +20,13 @@ public class Conditions extends ArrayList<ICondition> implements IConditions {
 
 	private static final long serialVersionUID = 5496591915962628897L;
 
+	public Conditions() {
+	}
+
+	public Conditions(int size) {
+		super(size);
+	}
+
 	public void Add(ICondition item) {
 		super.add(item);
 	}

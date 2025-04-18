@@ -31,6 +31,10 @@ public class OperationResult<P> extends OperationMessage implements IOperationRe
 		super();
 	}
 
+	public OperationResult(int resultSize) {
+		this.resultObjects = new ArrayList<P>(resultSize);
+	}
+
 	public OperationResult(int resultCode, String message) {
 		super(resultCode, message);
 	}
@@ -44,11 +48,11 @@ public class OperationResult<P> extends OperationMessage implements IOperationRe
 		this.copy(result);
 	}
 
+	@XmlElement(name = "ResultObject")
+	@XmlElementWrapper(name = "ResultObjects")
 	private ArrayList<P> resultObjects = null;
 
 	@Override
-	@XmlElementWrapper(name = "ResultObjects")
-	@XmlElement(name = "ResultObject")
 	public final ArrayList<P> getResultObjects() {
 		if (this.resultObjects == null) {
 			this.resultObjects = new ArrayList<P>();
@@ -62,7 +66,7 @@ public class OperationResult<P> extends OperationMessage implements IOperationRe
 				if (this.resultObjects == null) {
 					this.resultObjects = new ArrayList<>((Collection<P>) values);
 				} else {
-					this.getResultObjects().addAll((Collection<P>) values);
+					this.getResultObjects().addAll(values);
 				}
 			} else {
 				this.getResultObjects().addAll(values);
@@ -91,11 +95,11 @@ public class OperationResult<P> extends OperationMessage implements IOperationRe
 		return this;
 	}
 
+	@XmlElementWrapper(name = "Informations")
+	@XmlElement(name = "Information", type = OperationInformation.class)
 	private ArrayList<IOperationInformation> informations = null;
 
 	@Override
-	@XmlElementWrapper(name = "Informations")
-	@XmlElement(name = "Information", type = OperationInformation.class)
 	public final ArrayList<IOperationInformation> getInformations() {
 		if (this.informations == null) {
 			this.informations = new ArrayList<IOperationInformation>();
@@ -130,6 +134,9 @@ public class OperationResult<P> extends OperationMessage implements IOperationRe
 	@Override
 	public OperationResult<P> copy(IOperationResult<?> content) {
 		if (content != null) {
+			this.resultObjects = new ArrayList<>(content.getResultObjects().size());
+			this.informations = new ArrayList<>(content.getInformations().size());
+
 			super.copy(content);
 			this.addResultObjects(content.getResultObjects());
 			this.addInformations(content.getInformations());

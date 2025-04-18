@@ -4,19 +4,19 @@
     <appSettings>
         <!-- 配置项目-是否开启调试模式 -->
         <add key="DebugMode" value="true"  />
-        <!-- 配置项目-实时运行业务规则 -->
-        <add key="LiveBizRules" value="true"  />
         <!-- 配置项目-数据库类型 -->
         <add key="DbType" value="MSSQL" />
         <!-- 配置项目-数据库地址 -->
         <add key="DbServer" value="ibas-db-mssql" />
         <!-- 配置项目-数据库名称 -->
-        <add key="DbName" value="ibas_demo" />
+        <add key="DbName" value="ibas_demo_v2" />
         <!-- 配置项目-数据库用户名称 -->
         <add key="DbUserID" value="sa" />
         <!-- 配置项目-数据库用户密码 -->
         <add key="DbUserPassword" value="1q2w3e" />
         <!-- 配置项目-是否格式化输出 -->
         <add key="FormattedOutput" value="true"  />
+        <!-- 配置项目-序列化管理方式 -->
+        <add key="SerializationWay" value="jersey" />
     </appSettings>
 </ns2:configuration>

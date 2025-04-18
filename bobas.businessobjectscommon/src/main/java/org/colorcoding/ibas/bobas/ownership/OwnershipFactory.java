@@ -1,57 +1,46 @@
 package org.colorcoding.ibas.bobas.ownership;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.bo.BusinessObjectUnit;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
-import org.colorcoding.ibas.bobas.core.IDaemonTask;
-import org.colorcoding.ibas.bobas.mapping.BusinessObjectUnit;
 import org.colorcoding.ibas.bobas.organization.IUser;
+import org.colorcoding.ibas.bobas.task.Daemon;
+import org.colorcoding.ibas.bobas.task.IDaemonTask;
 
 /**
  * 所有权管理员工厂
  */
-public class OwnershipFactory extends ConfigurableFactory<IOwnershipJudger> {
+public class OwnershipFactory {
 
 	private OwnershipFactory() {
 	}
 
-	private volatile static OwnershipFactory instance;
+	private volatile static OwnershipJudger instance;
 
-	public synchronized static OwnershipFactory create() {
+	public synchronized static OwnershipJudger createJudger() {
 		if (instance == null) {
 			synchronized (OwnershipFactory.class) {
 				if (instance == null) {
-					instance = new OwnershipFactory();
-					// 注册释放任务
-					instance.register(new IDaemonTask() {
+					instance = new Factory().create();
+
+					// 注册清理任务
+					Daemon.register(new IDaemonTask() {
 
 						@Override
 						public void run() {
-							if (instance.ownershipJudger == null) {
-								// 未初始化，不做处理
+							if (instance == null) {
 								return;
 							}
-							instance.ownershipJudger = null;
+							instance = null;
 						}
-
-						@Override
-						public boolean isActivated() {
-							if (this.getInterval() <= 0) {
-								return false;
-							}
-							return true;
-						}
-
-						private String name = "ownership cleanner";
 
 						@Override
 						public String getName() {
-							return this.name;
+							return "ownership cleanner";
 						}
 
-						private long interval = MyConfiguration.getConfigValue(
-								MyConfiguration.CONFIG_ITEM_OWNERSHIP_JUDGER_EXPIRY_VALUE,
-								MyConfiguration.isDebugMode() ? 60 : 300);
+						private long interval = MyConfiguration.isDebugMode() ? 600 : 1800;
 
 						@Override
 						public long getInterval() {
@@ -64,45 +53,42 @@ public class OwnershipFactory extends ConfigurableFactory<IOwnershipJudger> {
 		return instance;
 	}
 
-	private IOwnershipJudger ownershipJudger = null;
+	private static class Factory extends ConfigurableFactory<OwnershipJudger> {
 
-	public synchronized IOwnershipJudger createJudger() {
-		if (this.ownershipJudger == null) {
-			this.ownershipJudger = this.create(MyConfiguration.CONFIG_ITEM_OWNERSHIP_WAY, "OwnershipJudger");
+		public synchronized OwnershipJudger create() {
+			return this.create(MyConfiguration.CONFIG_ITEM_OWNERSHIP_WAY, OwnershipJudger.class.getSimpleName());
 		}
-		return ownershipJudger;
+
+		@Override
+		protected OwnershipJudger createDefault(String typeName) {
+			return new OwnershipJudger() {
+
+				@Override
+				public boolean canRead(IDataOwnership bo, IUser user) {
+					return true;
+				}
+
+				@Override
+				public boolean canSave(IDataOwnership bo, IUser user) {
+					return true;
+				}
+
+				@Override
+				public boolean canRead(IDataOwnership bo, IUser user, boolean throwError) throws UnauthorizedException {
+					return this.canRead(bo, user);
+				}
+
+				@Override
+				public boolean canSave(IDataOwnership bo, IUser user, boolean throwError) throws UnauthorizedException {
+					return this.canSave(bo, user);
+				}
+
+				@Override
+				public ICriteria filterCriteria(BusinessObjectUnit boUnit, IUser user) {
+					return null;
+				}
+
+			};
+		}
 	}
-
-	@Override
-	protected IOwnershipJudger createDefault(String typeName) {
-		return new IOwnershipJudger() {
-
-			@Override
-			public boolean canRead(IDataOwnership bo, IUser user) {
-				return true;
-			}
-
-			@Override
-			public boolean canSave(IDataOwnership bo, IUser user) {
-				return true;
-			}
-
-			@Override
-			public boolean canRead(IDataOwnership bo, IUser user, boolean throwError) throws UnauthorizedException {
-				return this.canRead(bo, user);
-			}
-
-			@Override
-			public boolean canSave(IDataOwnership bo, IUser user, boolean throwError) throws UnauthorizedException {
-				return this.canSave(bo, user);
-			}
-
-			@Override
-			public ICriteria filterCriteria(BusinessObjectUnit boUnit, IUser user) {
-				return null;
-			}
-
-		};
-	}
-
 }

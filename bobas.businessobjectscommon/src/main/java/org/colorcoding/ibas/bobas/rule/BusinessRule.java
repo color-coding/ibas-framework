@@ -14,8 +14,6 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
  */
 public abstract class BusinessRule implements IBusinessRule {
 
-	protected static final String MSG_RULES_EXECUTING = "rules: executing rule [%s - %s].";
-
 	private String name;
 
 	public final String getName() {

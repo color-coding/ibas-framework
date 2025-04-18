@@ -4,48 +4,35 @@ import java.util.Iterator;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
-import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.List;
 
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "LanguageItem", namespace = MyConfiguration.NAMESPACE_BOBAS_I18N)
-@XmlRootElement(name = "LanguageItem", namespace = MyConfiguration.NAMESPACE_BOBAS_I18N)
-public class LanguageItem implements ILanguageItem {
+public class LanguageItem {
 
 	private String key;
 
-	@Override
-	@XmlElement(name = "Key")
 	public String getKey() {
 		return key;
 	}
 
-	@Override
 	public void setKey(String key) {
 		this.key = key;
 	}
 
-	private List<ILanguageItemContent> languageItemContents;
+	private List<LanguageItemContent> languageItemContents;
 
-	@XmlElementWrapper(name = "LanguageItemContents")
-	@XmlElement(name = "LanguageItemContent", type = LanguageItemContent.class)
-	protected List<ILanguageItemContent> getLanguageItemContents() {
+	protected List<LanguageItemContent> getLanguageItemContents() {
 		if (languageItemContents == null) {
-			languageItemContents = new ArrayList<ILanguageItemContent>();
+			languageItemContents = new ArrayList<LanguageItemContent>();
 		}
 		return languageItemContents;
 	}
 
-	@Override
 	public String getContent(String langcode) {
 		if (langcode != null && !langcode.isEmpty()) {
-			for (ILanguageItemContent item : this.getLanguageItemContents()) {
+			for (LanguageItemContent item : this.getLanguageItemContents()) {
 				if (langcode.equals(item.getLanguageCode())) {
 					return item.getContent();
 				}
@@ -60,7 +47,7 @@ public class LanguageItem implements ILanguageItem {
 	 * @return
 	 */
 	public String getContent() {
-		ILanguageItemContent content = this.getLanguageItemContents().firstOrDefault();
+		LanguageItemContent content = this.getLanguageItemContents().firstOrDefault();
 		if (content != null) {
 			return content.getContent();
 		}
@@ -73,15 +60,14 @@ public class LanguageItem implements ILanguageItem {
 	 * @param langcode
 	 * @param content
 	 */
-	@Override
 	public void addContent(String langcode, String content) {
 		if (langcode == null || langcode.isEmpty())
 			return;
 		if (content == null || langcode.isEmpty())
 			return;
 		// 添加或者更新值
-		ILanguageItemContent itemContent = null;
-		for (ILanguageItemContent item : this.getLanguageItemContents()) {
+		LanguageItemContent itemContent = null;
+		for (LanguageItemContent item : this.getLanguageItemContents()) {
 			if (langcode.equals(item.getLanguageCode())) {
 				itemContent = item;
 				break;
@@ -94,8 +80,7 @@ public class LanguageItem implements ILanguageItem {
 		}
 	}
 
-	@Override
-	public Iterator<ILanguageItemContent> iterator() {
+	public Iterator<LanguageItemContent> iterator() {
 		return this.getLanguageItemContents().iterator();
 	}
 

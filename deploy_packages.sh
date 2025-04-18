@@ -13,14 +13,14 @@ echo '              <password>密码</password>                          '
 echo '          </server>                                              '
 echo '*****************************************************************'
 # 设置参数变量
-cd `dirname $0`
+cd $(dirname $0)
 WORK_FOLDER=${PWD}
 # 仓库根地址
 ROOT_URL=http://maven.colorcoding.org/repository/
 # 仓库名称
 REPOSITORY=$1
 # 设置默认仓库名称
-if [ "${REPOSITORY}" = "" ];then REPOSITORY=maven-releases; fi;
+if [ "${REPOSITORY}" = "" ]; then REPOSITORY=maven-releases; fi
 # 使用的仓库信息
 REPOSITORY_ID=ibas-maven
 REPOSITORY_URL=${ROOT_URL}${REPOSITORY}
@@ -29,13 +29,12 @@ echo --检查maven运行环境
 mvn -v >/dev/null
 if [ $? -ne 0 ]; then
   echo 请检查MAVEN是否正常
-  exit 1;
+  exit 1
 fi
 
 echo --发布地址：${REPOSITORY_URL}
 # 发布父项
-if [ -e ${WORK_FOLDER}/pom.xml ]
-then
+if [ -e ${WORK_FOLDER}/pom.xml ]; then
   mvn deploy:deploy-file \
     -Dfile=${WORK_FOLDER}/pom.xml \
     -DpomFile=${WORK_FOLDER}/pom.xml \
@@ -44,19 +43,29 @@ then
     -Dpackaging=pom
 fi
 # 发布子项
-while read line
-do
-  if [ -e ${WORK_FOLDER}/${line}/pom.xml ]
-  then
-    for PACKAGE in `find release -name "${line}-*.jar"`
-    do
-      mvn deploy:deploy-file \
-        -Dfile=${PACKAGE} \
-        -DpomFile=${WORK_FOLDER}/${line}/pom.xml \
-        -Durl=${REPOSITORY_URL} \
-        -DrepositoryId=${REPOSITORY_ID} \
-        -Dpackaging=jar
+while read line; do
+  if [ -e ${WORK_FOLDER}/${line}/pom.xml ]; then
+    for PACKAGE in $(find release -name "${line}-*.jar"); do
+      case "$PACKAGE" in
+      *"-sources.jar")
+        mvn deploy:deploy-file \
+          -Dclassifier=sources \
+          -Dfile=${PACKAGE} \
+          -DpomFile=${WORK_FOLDER}/${line}/pom.xml \
+          -Durl=${REPOSITORY_URL} \
+          -DrepositoryId=${REPOSITORY_ID} \
+          -Dpackaging=jar
+        ;;
+      *)
+        mvn deploy:deploy-file \
+          -Dfile=${PACKAGE} \
+          -DpomFile=${WORK_FOLDER}/${line}/pom.xml \
+          -Durl=${REPOSITORY_URL} \
+          -DrepositoryId=${REPOSITORY_ID} \
+          -Dpackaging=jar
+        ;;
+      esac
     done
   fi
-done < ${WORK_FOLDER}/compile_order.txt | sed 's/\r//g'
+done <${WORK_FOLDER}/compile_order.txt | sed 's/\r//g'
 echo --操作完成

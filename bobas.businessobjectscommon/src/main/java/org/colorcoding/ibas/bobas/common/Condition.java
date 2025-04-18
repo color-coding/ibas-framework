@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.common;
 
+import java.math.BigDecimal;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -8,8 +10,10 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.db.DataConvert;
-import org.colorcoding.ibas.bobas.serialization.Serializable;
+import org.colorcoding.ibas.bobas.core.IPropertyInfo;
+import org.colorcoding.ibas.bobas.core.Serializable;
+import org.colorcoding.ibas.bobas.data.DateTime;
+import org.colorcoding.ibas.bobas.db.DbFieldType;
 
 /**
  * 查询条件
@@ -22,7 +26,6 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 	private static final long serialVersionUID = 3151721602767228504L;
 
 	public Condition() {
-
 	}
 
 	public Condition(String alias, ConditionOperation operation, Object value) {
@@ -32,13 +35,13 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		this.setValue(value);
 	}
 
-	private String alias = "";
+	@XmlElement(name = "Alias")
+	private String alias;
 
 	@Override
-	@XmlElement(name = "Alias")
 	public final String getAlias() {
 		if (this.alias == null) {
-			this.alias = "";
+			this.alias = Strings.VALUE_EMPTY;
 		}
 		return this.alias;
 	}
@@ -48,10 +51,15 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		this.alias = value;
 	}
 
+	@Override
+	public void setAlias(IPropertyInfo<?> property) {
+		this.setAlias(property.getName());
+	}
+
+	@XmlElement(name = "BracketClose")
 	private int bracketClose = 0;
 
 	@Override
-	@XmlElement(name = "BracketClose")
 	public final int getBracketClose() {
 		if (this.bracketClose < 0) {
 			this.bracketClose = 0;
@@ -64,10 +72,10 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		this.bracketClose = value;
 	}
 
+	@XmlElement(name = "BracketOpen")
 	private int bracketOpen = 0;
 
 	@Override
-	@XmlElement(name = "BracketOpen")
 	public final int getBracketOpen() {
 		if (this.bracketOpen < 0) {
 			this.bracketOpen = 0;
@@ -80,13 +88,13 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		this.bracketOpen = value;
 	}
 
-	private String comparedAlias = "";
+	@XmlElement(name = "ComparedAlias")
+	private String comparedAlias;
 
 	@Override
-	@XmlElement(name = "ComparedAlias")
 	public final String getComparedAlias() {
 		if (this.comparedAlias == null) {
-			this.comparedAlias = "";
+			this.comparedAlias = Strings.VALUE_EMPTY;
 		}
 		return this.comparedAlias;
 	}
@@ -96,15 +104,34 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		this.comparedAlias = value;
 	}
 
-	private String value = "";
+	@Override
+	public void setComparedAlias(IPropertyInfo<?> property) {
+		this.setComparedAlias(property.getName());
+	}
+
+	@XmlElement(name = "Value")
+	private String value;
 
 	@Override
-	@XmlElement(name = "Value")
 	public final String getValue() {
 		if (this.value == null) {
-			this.value = "";
+			this.value = Strings.VALUE_EMPTY;
 		}
 		return this.value;
+	}
+
+	@Override
+	public final void setValue(Object value) {
+		this.setValue(Strings.valueOf(value));
+		if (value != null) {
+			if (value instanceof BigDecimal) {
+				this.aliasDataType = DbFieldType.DECIMAL;
+			} else if (value instanceof Integer || value instanceof Short) {
+				this.aliasDataType = DbFieldType.NUMERIC;
+			} else if (value instanceof DateTime) {
+				this.aliasDataType = DbFieldType.DATE;
+			}
+		}
 	}
 
 	@Override
@@ -117,7 +144,7 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 			} else if (this.getOperation() == ConditionOperation.NOT_EQUAL) {
 				this.setOperation(ConditionOperation.NOT_NULL);
 			}
-		} else if (this.value != null && !this.value.isEmpty()) {
+		} else if (!Strings.isNullOrEmpty(this.value)) {
 			// 非null时，自动改变计算方式
 			if (this.getOperation() == ConditionOperation.IS_NULL) {
 				this.setOperation(ConditionOperation.EQUAL);
@@ -127,22 +154,10 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		}
 	}
 
-	@Override
-	public final void setValue(Object value) {
-		this.setValue(this.toValue(value));
-	}
-
-	protected String toValue(Object value) {
-		if (value == null) {
-			return null;
-		}
-		return DataConvert.toDbValue(value);
-	}
-
+	@XmlElement(name = "Operation")
 	private ConditionOperation operation = ConditionOperation.EQUAL;
 
 	@Override
-	@XmlElement(name = "Operation")
 	public final ConditionOperation getOperation() {
 		if (this.operation == null) {
 			this.operation = ConditionOperation.EQUAL;
@@ -155,10 +170,10 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		this.operation = value;
 	}
 
+	@XmlElement(name = "Relationship")
 	private ConditionRelationship relationship = ConditionRelationship.AND;
 
 	@Override
-	@XmlElement(name = "Relationship")
 	public final ConditionRelationship getRelationship() {
 		if (this.relationship == null) {
 			this.relationship = ConditionRelationship.AND;
@@ -171,38 +186,20 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		this.relationship = value;
 	}
 
-	private ConditionAliasDataType aliasDataType = null;
+	@XmlTransient // 运行过程值，序列化不用输出
+	private DbFieldType aliasDataType = null;
 
-	// @XmlElement(name = "AliasDataType")
-	// 运行过程值，序列化不用输出
 	@Override
-	@XmlTransient
-	public ConditionAliasDataType getAliasDataType() {
+	public DbFieldType getAliasDataType() {
 		if (this.aliasDataType == null) {
-			this.aliasDataType = ConditionAliasDataType.ALPHANUMERIC;
+			this.aliasDataType = DbFieldType.ALPHANUMERIC;
 		}
 		return this.aliasDataType;
 	}
 
 	@Override
-	public void setAliasDataType(ConditionAliasDataType value) {
+	public void setAliasDataType(DbFieldType value) {
 		this.aliasDataType = value;
-	}
-
-	private String remarks = "";
-
-	@Override
-	@XmlElement(name = "Remarks")
-	public final String getRemarks() {
-		if (this.remarks == null) {
-			this.remarks = "";
-		}
-		return this.remarks;
-	}
-
-	@Override
-	public final void setRemarks(String value) {
-		this.remarks = value;
 	}
 
 	@Override
@@ -228,4 +225,5 @@ public class Condition extends Serializable implements ICondition, Cloneable {
 		stringBuilder.append("}");
 		return stringBuilder.toString();
 	}
+
 }

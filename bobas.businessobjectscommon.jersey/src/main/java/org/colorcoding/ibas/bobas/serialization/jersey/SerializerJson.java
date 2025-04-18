@@ -1,12 +1,17 @@
 package org.colorcoding.ibas.bobas.serialization.jersey;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonWriter;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -24,41 +29,30 @@ import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.MediaType;
 import org.xml.sax.InputSource;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
+public class SerializerJson extends Serializer {
 
-/**
- * JSON序列化，包含ROOT
- * 
- * @author Niuren.Zhu
- *
- */
-public class SerializerJson extends Serializer<JsonSchema> {
-
-	@Override
-	public void getSchema(Class<?> type, OutputStream outputStream) throws SerializationException {
-		try {
-			JsonFactory jsonFactory = new JsonFactory();
-			JsonGenerator jsonGenerator = jsonFactory.createGenerator(outputStream);
-
-			SchemaWriter schemaWriter = new SchemaWriter();
-			schemaWriter.jsonGenerator = jsonGenerator;
-			schemaWriter.element = new Analyzer().analyse(type);
-			schemaWriter.write();
-
-			jsonGenerator.flush();
-			jsonGenerator.close();
-		} catch (IOException e) {
-			throw new SerializationException(e);
-		}
+	public SerializerJson() {
+		this.setIncludeJsonRoot(false);
 	}
 
-	@Override
-	public JsonSchema getSchema(Class<?> type) throws SerializationException {
-		throw new UnsupportedOperationException();
+	private boolean includeJsonRoot;
+
+	public final boolean isIncludeJsonRoot() {
+		return includeJsonRoot;
+	}
+
+	public final void setIncludeJsonRoot(boolean includeJsonRoot) {
+		this.includeJsonRoot = includeJsonRoot;
+	}
+
+	private boolean orderProperties;
+
+	protected final boolean isOrderProperties() {
+		return orderProperties;
+	}
+
+	protected final void setOrderProperties(boolean orderProperties) {
+		this.orderProperties = orderProperties;
 	}
 
 	private JAXBContext context;
@@ -88,7 +82,9 @@ public class SerializerJson extends Serializer<JsonSchema> {
 			JAXBContext context = createJAXBContextJson(knownTypes);
 			Marshaller marshaller = context.createMarshaller();
 			marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
+			marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, this.isIncludeJsonRoot());
 			marshaller.setProperty(MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
+			marshaller.setProperty(MarshallerProperties.JSON_TYPE_COMPATIBILITY, true);
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);
 			marshaller.marshal(object, outputStream);
 		} catch (JAXBException e) {
@@ -96,131 +92,199 @@ public class SerializerJson extends Serializer<JsonSchema> {
 		}
 	}
 
+	private Unmarshaller createUnmarshaller(Class<?>... types) throws JAXBException {
+		JAXBContext context = createJAXBContextJson(types);
+		Unmarshaller unmarshaller = context.createUnmarshaller();
+		unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
+		unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, this.isIncludeJsonRoot());
+		unmarshaller.setProperty(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
+		unmarshaller.setProperty(UnmarshallerProperties.JSON_TYPE_COMPATIBILITY, true);
+		return unmarshaller;
+	}
+
 	@Override
-	public Object deserialize(InputSource inputSource, Class<?>... types) throws SerializationException {
+	@SuppressWarnings("unchecked")
+	public <T> T deserialize(InputStream ipnInputStream, Class<?>... types) throws SerializationException {
 		try {
-			JAXBContext context = createJAXBContextJson(types);
-			Unmarshaller unmarshaller = context.createUnmarshaller();
-			unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
-			unmarshaller.setProperty(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
-			return unmarshaller.unmarshal(inputSource);
+			Unmarshaller unmarshaller = this.createUnmarshaller(types);
+			Object object = unmarshaller.unmarshal(ipnInputStream);
+			if (object instanceof JAXBElement) {
+				// 因为不包括头，此处返回的是这个玩意儿
+				return ((JAXBElement<T>) object).getValue();
+			} else {
+				return (T) object;
+			}
 		} catch (JAXBException e) {
 			throw new SerializationException(e);
 		}
 	}
 
 	@Override
-	public void validate(JsonSchema schema, InputStream data) throws ValidateException {
-		throw new UnsupportedOperationException();
-	}
-
-	public void validate(JsonSchema schema, JsonNode data) throws ValidateException {
-		throw new UnsupportedOperationException();
-	}
-
-}
-
-class SchemaWriter {
-
-	public static final String SCHEMA_VERSION = "http://json-schema.org/schema#";
-
-	public SchemaWriter() {
-		this.knownTypes = new HashMap<>();
-		this.knownTypes.put("integer", "integer");
-		this.knownTypes.put("long", "integer");
-		this.knownTypes.put("short", "integer");
-		this.knownTypes.put("float", "number");
-		this.knownTypes.put("double", "number");
-		this.knownTypes.put("boolean", "boolean");
-		this.knownTypes.put("java.lang.Integer", "integer");
-		this.knownTypes.put("java.lang.Long", "integer");
-		this.knownTypes.put("java.lang.Short", "integer");
-		this.knownTypes.put("java.math.BigInteger", "integer");
-		this.knownTypes.put("java.lang.Float", "number");
-		this.knownTypes.put("java.lang.Double", "number");
-		this.knownTypes.put("java.math.BigDecimal", "number");
-		this.knownTypes.put("java.lang.Boolean", "boolean");
-		this.knownTypes.put("java.lang.String", "string");
-		this.knownTypes.put("java.lang.Character", "string");
-		this.knownTypes.put("java.util.Date", "string");
-		this.knownTypes.put("org.colorcoding.ibas.bobas.data.Decimal", "number");
-	}
-
-	public JsonGenerator jsonGenerator;
-	public ElementRoot element;
-	protected Map<String, String> knownTypes;
-
-	public void write() throws JsonGenerationException, IOException {
-		this.jsonGenerator.writeStartObject();
-		this.jsonGenerator.writeStringField("$schema", SCHEMA_VERSION);
-		this.jsonGenerator.writeStringField("type", "object");
-		this.jsonGenerator.writeFieldName("properties");
-		this.jsonGenerator.writeStartObject();
-		this.jsonGenerator.writeFieldName(this.element.getName());
-		this.jsonGenerator.writeStartObject();
-		this.jsonGenerator.writeStringField("type", "object");
-		this.jsonGenerator.writeFieldName("properties");
-		this.jsonGenerator.writeStartObject();
-		for (Element item : this.element.getChilds()) {
-			this.write(this.jsonGenerator, item);
-		}
-		this.jsonGenerator.writeEndObject();
-		this.jsonGenerator.writeEndObject();
-		this.jsonGenerator.writeEndObject();
-		this.jsonGenerator.writeEndObject();
-	}
-
-	protected void write(JsonGenerator jsonGenerator, Element element) throws JsonGenerationException, IOException {
-		if (element.isCollection()) {
-			jsonGenerator.writeFieldName(element.getWrapper());
-			jsonGenerator.writeStartObject();
-			jsonGenerator.writeStringField("type", "array");
-			jsonGenerator.writeFieldName("items");
-			jsonGenerator.writeStartObject();
-			jsonGenerator.writeStringField("type", "object");
-			jsonGenerator.writeFieldName("properties");
-			jsonGenerator.writeStartObject();
-			for (Element item : element.getChilds()) {
-				this.write(jsonGenerator, item);
+	@SuppressWarnings("unchecked")
+	public <T> T deserialize(InputSource inputSource, Class<?>... types) throws SerializationException {
+		try {
+			Unmarshaller unmarshaller = this.createUnmarshaller(types);
+			Object object = unmarshaller.unmarshal(inputSource);
+			if (object instanceof JAXBElement) {
+				// 因为不包括头，此处返回的是这个玩意儿
+				return ((JAXBElement<T>) object).getValue();
+			} else {
+				return (T) object;
 			}
-			jsonGenerator.writeEndObject();
-			jsonGenerator.writeEndObject();
-			jsonGenerator.writeEndObject();
-		} else {
-			jsonGenerator.writeFieldName(element.getName());
-			jsonGenerator.writeStartObject();
-			String typeName = this.knownTypes.get(element.getType().getName());
-			if (typeName != null) {
-				// 已知类型
-				jsonGenerator.writeStringField("type", typeName);
-			} else if (element.getType().isEnum()) {
-				// 枚举类型
-				jsonGenerator.writeStringField("type", "string");
-				jsonGenerator.writeArrayFieldStart("enum");
-				for (Object enumItem : element.getType().getEnumConstants()) {
-					if (enumItem instanceof Enum<?>) {
-						// 枚举值（比对枚举索引）
-						Enum<?> itemValue = (Enum<?>) enumItem;
-						jsonGenerator.writeString(itemValue.name());
+		} catch (JAXBException e) {
+			throw new SerializationException(e);
+		}
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T deserialize(Reader reader, Class<?>... types) throws SerializationException {
+		try {
+			Unmarshaller unmarshaller = this.createUnmarshaller(types);
+			Object object = unmarshaller.unmarshal(reader);
+			if (object instanceof JAXBElement) {
+				// 因为不包括头，此处返回的是这个玩意儿
+				return ((JAXBElement<T>) object).getValue();
+			} else {
+				return (T) object;
+			}
+		} catch (JAXBException e) {
+			throw new SerializationException(e);
+		}
+	}
+
+	@Override
+	public void schema(Class<?> type, OutputStream outputStream) throws SerializationException {
+
+		SchemaWriter schemaWriter = new SchemaWriter();
+		schemaWriter.isIncludeJsonRoot = this.isIncludeJsonRoot();
+		schemaWriter.jsonGenerator = Json.createObjectBuilder();
+		schemaWriter.element = new Analyzer().analyse(type);
+		schemaWriter.write();
+
+		try (JsonWriter jsonWriter = Json.createWriter(outputStream)) {
+			jsonWriter.write(schemaWriter.jsonGenerator.build());
+		}
+	}
+
+	@Override
+	public void validate(Class<?> type, InputStream data) throws ValidateException {
+		throw new UnsupportedOperationException();
+	}
+
+	class SchemaWriter {
+
+		public static final String SCHEMA_VERSION = "http://json-schema.org/draft-07/schema#";
+
+		public SchemaWriter() {
+			this.knownTypes = new HashMap<>();
+			this.knownTypes.put("int", "integer");
+			this.knownTypes.put("integer", "integer");
+			this.knownTypes.put("long", "integer");
+			this.knownTypes.put("short", "integer");
+			this.knownTypes.put("float", "number");
+			this.knownTypes.put("double", "number");
+			this.knownTypes.put("boolean", "boolean");
+			this.knownTypes.put("java.lang.Integer", "integer");
+			this.knownTypes.put("java.lang.Long", "integer");
+			this.knownTypes.put("java.lang.Short", "integer");
+			this.knownTypes.put("java.math.BigInteger", "integer");
+			this.knownTypes.put("java.lang.Float", "number");
+			this.knownTypes.put("java.lang.Double", "number");
+			this.knownTypes.put("java.math.BigDecimal", "number");
+			this.knownTypes.put("java.lang.Boolean", "boolean");
+			this.knownTypes.put("java.lang.String", "string");
+			this.knownTypes.put("java.lang.Character", "string");
+			this.knownTypes.put("java.util.Date", "string");
+		}
+
+		public JsonObjectBuilder jsonGenerator;
+		public ElementRoot element;
+		public boolean isIncludeJsonRoot;
+
+		protected Map<String, String> knownTypes;
+
+		public void write() {
+			this.jsonGenerator.add("$schema", SCHEMA_VERSION);
+			this.jsonGenerator.add("type", "object");
+			JsonObjectBuilder objectBuilder = this.jsonGenerator;
+			// 包含头
+			if (this.isIncludeJsonRoot) {
+				JsonObjectBuilder headerBuilder = Json.createObjectBuilder();
+				headerBuilder.add("type", "string");
+				headerBuilder.add("pattern", this.element.getType().getSimpleName());
+				JsonObjectBuilder propertiesBuilder = Json.createObjectBuilder();
+				propertiesBuilder.add("type", headerBuilder);
+				objectBuilder = propertiesBuilder;
+			}
+
+			if (!this.element.getChilds().isEmpty()) {
+				JsonObjectBuilder propertiesBuilder = Json.createObjectBuilder();
+				for (Element item : this.element.getChilds()) {
+					this.write(propertiesBuilder, item);
+				}
+				objectBuilder.add("properties", propertiesBuilder);
+			}
+			if (objectBuilder != this.jsonGenerator) {
+				this.jsonGenerator.add("properties", objectBuilder);
+			}
+
+		}
+
+		protected void write(JsonObjectBuilder objectBuilder, Element element) {
+			if (element.isCollection()) {
+				JsonObjectBuilder elementBuilder = Json.createObjectBuilder();
+				elementBuilder.add("type", "array");
+				JsonObjectBuilder itemsBuilder = Json.createObjectBuilder();
+				itemsBuilder.add("type", "object");
+
+				if (!element.getChilds().isEmpty()) {
+					JsonObjectBuilder propertiesBuilder = Json.createObjectBuilder();
+					for (Element item : element.getChilds()) {
+						this.write(propertiesBuilder, item);
+					}
+					itemsBuilder.add("properties", propertiesBuilder);
+				}
+
+				elementBuilder.add("items", itemsBuilder);
+				objectBuilder.add(element.getWrapper(), elementBuilder);
+			} else {
+				JsonObjectBuilder elementBuilder = Json.createObjectBuilder();
+				String typeName = this.knownTypes.get(element.getType().getName());
+				if (typeName != null) {
+					// 已知类型
+					elementBuilder.add("type", typeName);
+				} else if (element.getType().isEnum()) {
+					// 枚举类型
+					elementBuilder.add("type", "string");
+					JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+					for (Object enumItem : element.getType().getEnumConstants()) {
+						if (enumItem instanceof Enum<?>) {
+							// 枚举值（比对枚举索引）
+							Enum<?> itemValue = (Enum<?>) enumItem;
+							arrayBuilder.add(itemValue.name());
+						}
+					}
+					elementBuilder.add("enum", arrayBuilder);
+				} else if (element.getType().equals(DateTime.class)) {
+					// 日期类型
+					elementBuilder.add("type", "string");
+					// 格式：2000-01-01 or 2000-01-01T00:00:00
+					elementBuilder.add("pattern",
+							"^|[0-9]{4}-[0-1][0-9]-[0-3][0-9]|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9]$");
+				} else {
+					elementBuilder.add("type", "object");
+					if (!element.getChilds().isEmpty()) {
+						JsonObjectBuilder propertiesBuilder = Json.createObjectBuilder();
+						for (Element item : element.getChilds()) {
+							this.write(propertiesBuilder, item);
+						}
+						elementBuilder.add("properties", propertiesBuilder);
 					}
 				}
-				jsonGenerator.writeEndArray();
-			} else if (element.getType().equals(DateTime.class)) {
-				// 日期类型
-				jsonGenerator.writeStringField("type", "string");
-				// 格式：2000-01-01 or 2000-01-01T00:00:00
-				jsonGenerator.writeStringField("pattern",
-						"^|[0-9]{4}-[0-1][0-9]-[0-3][0-9]|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9]$");
-			} else {
-				jsonGenerator.writeStringField("type", "object");
-				jsonGenerator.writeFieldName("properties");
-				jsonGenerator.writeStartObject();
-				for (Element item : element.getChilds()) {
-					this.write(jsonGenerator, item);
-				}
-				jsonGenerator.writeEndObject();
+				objectBuilder.add(element.getName(), elementBuilder);
 			}
-			jsonGenerator.writeEndObject();
 		}
 	}
+
 }

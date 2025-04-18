@@ -2,8 +2,8 @@ package org.colorcoding.ibas.bobas.rule.common;
 
 import java.math.BigDecimal;
 
+import org.colorcoding.ibas.bobas.common.Decimals;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
-import org.colorcoding.ibas.bobas.data.Decimal;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
@@ -75,27 +75,27 @@ public class BusinessRuleAdditiveDeduction extends BusinessRuleCommon {
 	protected void execute(BusinessRuleContext context) throws Exception {
 		BigDecimal augend = (BigDecimal) context.getInputValues().get(this.getAugend());
 		if (augend == null) {
-			augend = Decimal.ZERO;
+			augend = Decimals.VALUE_ZERO;
 		}
 		BigDecimal addend = (BigDecimal) context.getInputValues().get(this.getAddend());
 		if (addend == null) {
-			addend = Decimal.ZERO;
+			addend = Decimals.VALUE_ZERO;
 		}
 		BigDecimal result = (BigDecimal) context.getInputValues().get(this.getResult());
 		if (result == null) {
-			result = Decimal.ZERO;
+			result = Decimals.VALUE_ZERO;
 		}
-		if (Decimal.isZero(augend)) {
+		if (Decimals.isZero(augend)) {
 			context.getOutputValues().put(this.getResult(), addend);
 			return;
 		}
-		if (!Decimal.isZero(addend) && Decimal.isZero(result)) {
+		if (!Decimals.isZero(addend) && Decimals.isZero(result)) {
 			// 结果 = 加数 + 被加数
-			result = Decimal.add(addend, augend);
+			result = Decimals.add(addend, augend);
 			context.getOutputValues().put(this.getResult(), result);
-		} else if (Decimal.isZero(addend) && !Decimal.isZero(result)) {
+		} else if (Decimals.isZero(addend) && !Decimals.isZero(result)) {
 			// 加数 = 结果 - 被加数
-			addend = Decimal.subtract(result, augend);
+			addend = Decimals.subtract(result, augend);
 			context.getOutputValues().put(this.getAddend(), addend);
 		}
 	}

@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.ownership;
 
-public class UnauthorizedException extends OwnershipException {
+public class UnauthorizedException extends Exception {
 
 	private static final long serialVersionUID = -6197956381582100910L;
 

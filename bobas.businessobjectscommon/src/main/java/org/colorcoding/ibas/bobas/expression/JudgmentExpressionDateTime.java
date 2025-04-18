@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.expression;
 
+import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.data.DateTime;
 
 /**
@@ -18,7 +19,7 @@ public class JudgmentExpressionDateTime extends JudgmentExpression<DateTime> {
 	}
 
 	@Override
-	public boolean result() throws NotSupportOperationException {
+	public boolean result() throws ExpressionException {
 		// 等于
 		if (this.getOperation() == JudmentOperation.EQUAL) {
 			// 左值为空
@@ -131,7 +132,7 @@ public class JudgmentExpressionDateTime extends JudgmentExpression<DateTime> {
 	}
 
 	public final void setLeftValue(String value) {
-		this.setLeftValue(DateTime.valueOf(value));
+		this.setLeftValue(DateTimes.valueOf(value));
 	}
 
 	public final void setLeftValue(DateTime value) {
@@ -155,7 +156,7 @@ public class JudgmentExpressionDateTime extends JudgmentExpression<DateTime> {
 	}
 
 	public final void setRightValue(String value) {
-		this.setRightValue(DateTime.valueOf(value));
+		this.setRightValue(DateTimes.valueOf(value));
 	}
 
 	public final void setRightValue(DateTime value) {

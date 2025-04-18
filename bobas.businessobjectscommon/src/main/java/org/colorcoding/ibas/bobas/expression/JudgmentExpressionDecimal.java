@@ -2,7 +2,7 @@ package org.colorcoding.ibas.bobas.expression;
 
 import java.math.BigDecimal;
 
-import org.colorcoding.ibas.bobas.data.Decimal;
+import org.colorcoding.ibas.bobas.common.Decimals;
 
 /**
  * 十进制数值表达式比较
@@ -42,19 +42,19 @@ public class JudgmentExpressionDecimal extends JudgmentExpressionComparable<BigD
 	}
 
 	public final void setLeftValue(String value) {
-		this.setLeftValue(Decimal.valueOf(value));
+		this.setLeftValue(Decimals.valueOf(value));
 	}
 
 	public final void setLeftValue(double value) {
-		this.setLeftValue(Decimal.valueOf(value));
+		this.setLeftValue(Decimals.valueOf(value));
 	}
 
 	public final void setLeftValue(int value) {
-		this.setLeftValue(Decimal.valueOf(value));
+		this.setLeftValue(Decimals.valueOf(value));
 	}
 
 	public final void setLeftValue(long value) {
-		this.setLeftValue(Decimal.valueOf(value));
+		this.setLeftValue(Decimals.valueOf(value));
 	}
 
 	public final void setLeftValue(BigDecimal value) {
@@ -86,19 +86,19 @@ public class JudgmentExpressionDecimal extends JudgmentExpressionComparable<BigD
 	}
 
 	public final void setRightValue(String value) {
-		this.setRightValue(Decimal.valueOf(value));
+		this.setRightValue(Decimals.valueOf(value));
 	}
 
 	public final void setRightValue(double value) {
-		this.setRightValue(Decimal.valueOf(value));
+		this.setRightValue(Decimals.valueOf(value));
 	}
 
 	public final void setRightValue(int value) {
-		this.setRightValue(Decimal.valueOf(value));
+		this.setRightValue(Decimals.valueOf(value));
 	}
 
 	public final void setRightValue(long value) {
-		this.setRightValue(Decimal.valueOf(value));
+		this.setRightValue(Decimals.valueOf(value));
 	}
 
 	public final void setRightValue(BigDecimal value) {

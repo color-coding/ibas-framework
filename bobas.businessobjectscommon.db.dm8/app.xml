@@ -2,19 +2,19 @@
 <!DOCTYPE configuration>
 <ns2:configuration xmlns:ns2="http://colorcoding.org/ibas/bobas/configuration">
     <appSettings>
+        <!-- 配置项目-公司标记 -->
+        <add key="Company" value="CC" />
+        <!-- 配置项目-是否开启调试模式 -->
         <add key="DebugMode" value="true" />
-        <add key="MessageLevel" value="INFO" />
-        <add key="LiveBizRules" value="true" />
+        <!-- 配置项目-数据库类型 -->
         <add key="MasterDbType" value="DM8" />
+        <!-- 配置项目-数据库地址 -->
         <add key="MasterDbServer" value="ibas-db-dm8" />
-        <add key="MasterDbName" value="ibas_demo" />
+        <!-- 配置项目-数据库名称 -->
+        <add key="MasterDbName" value="ibas_demo_v2" />
+        <!-- 配置项目-数据库用户名称 -->
         <add key="MasterDbUserID" value="SYSDBA" />
+        <!-- 配置项目-数据库用户密码 -->
         <add key="MasterDbUserPassword" value="SYSDBA" />
-        <add key="EnabledReadonlyRepository" value="false" />
-        <add key="ReadonlyDbType" value="MSSQL" />
-        <add key="ReadonlyDbServer" value="ibas-db-dm8" />
-        <add key="ReadonlyDbName" value="ibas_demo" />
-        <add key="ReadonlyDbUserID" value="SYSDBA" />
-        <add key="ReadonlyDbUserPassword" value="SYSDBA" />
     </appSettings>
 </ns2:configuration>

@@ -8,13 +8,13 @@ import org.colorcoding.ibas.bobas.bo.IBusinessObject;
  * @author Niuren.Zhu
  *
  */
-public interface IBusinessLogic<B extends IBusinessObject> {
+public interface IBusinessLogic<T extends IBusinessObject> {
 	/**
 	 * 被影响的对象
 	 * 
 	 * @return
 	 */
-	B getBeAffected();
+	T getBeAffected();
 
 	/**
 	 * 正向执行逻辑

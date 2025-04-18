@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.expression;
 
+import java.util.Iterator;
+
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.data.ArrayList;
@@ -19,12 +21,19 @@ public class BOJudgmentLinkCondition extends BOJudgmentLink {
 	 */
 	public void parsingConditions(Iterable<ICondition> conditions) {
 		// 判断无条件
-		if (conditions == null || conditions.toString().equals("[]")) {
+		if (conditions == null) {
 			return;
 		}
+		Iterator<ICondition> iterator = conditions.iterator();
+		if (!iterator.hasNext()) {
+			return;
+		}
+		ICondition item;
+		JudgmentLinkItem jItem;
 		ArrayList<JudgmentLinkItem> jLinkItems = new ArrayList<JudgmentLinkItem>();
-		for (ICondition item : conditions) {
-			JudgmentLinkItem jItem = new JudgmentLinkItem();
+		while (iterator.hasNext()) {
+			item = (ICondition) iterator.next();
+			jItem = new JudgmentLinkItem();
 			jItem.setOpenBracket(item.getBracketOpen());
 			jItem.setCloseBracket(item.getBracketClose());
 			if (item.getRelationship() == ConditionRelationship.NONE) {
@@ -52,7 +61,7 @@ public class BOJudgmentLinkCondition extends BOJudgmentLink {
 			jLinkItems.add(jItem);
 		}
 		if (jLinkItems.isEmpty()) {
-			throw new JudgmentLinkException(I18N.prop("msg_bobas_invaild_judgment_link_conditions"));
+			throw new ExpressionException(I18N.prop("msg_bobas_invaild_judgment_link_conditions"));
 		}
 		super.setJudgmentItems(jLinkItems.toArray(new JudgmentLinkItem[] {}));
 	}

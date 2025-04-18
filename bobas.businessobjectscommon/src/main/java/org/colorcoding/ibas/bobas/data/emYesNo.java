@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.data;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.mapping.Value;
+import org.colorcoding.ibas.bobas.common.Value;
 
 /**
  * 是否
@@ -11,7 +11,7 @@ import org.colorcoding.ibas.bobas.mapping.Value;
  * @author Niuren.Zhu
  *
  */
-@XmlType(name = "emYesNo", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public enum emYesNo {
 	/**
 	 * 否
@@ -24,18 +24,4 @@ public enum emYesNo {
 	@Value("Y")
 	YES;
 
-	public static emYesNo valueOf(int value) {
-		return values()[value];
-	}
-
-	public static emYesNo valueOf(String value, boolean ignoreCase) {
-		if (ignoreCase) {
-			for (Object item : emYesNo.class.getEnumConstants()) {
-				if (item.toString().equalsIgnoreCase(value)) {
-					return (emYesNo) item;
-				}
-			}
-		}
-		return emYesNo.valueOf(value);
-	}
 }

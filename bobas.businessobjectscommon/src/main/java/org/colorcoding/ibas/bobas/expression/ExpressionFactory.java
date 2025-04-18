@@ -2,7 +2,6 @@ package org.colorcoding.ibas.bobas.expression;
 
 import java.math.BigDecimal;
 
-import org.colorcoding.ibas.bobas.common.IConditions;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 
@@ -52,27 +51,4 @@ public class ExpressionFactory {
 		throw new JudmentOperationException(I18N.prop("msg_bobas_not_support_type_expression", type.getName()));
 	}
 
-	/**
-	 * 创建业务对象判断链
-	 * 
-	 * @param conditions 条件
-	 * @return
-	 */
-	public JudgmentLink createBOJudgmentLink(IConditions conditions) {
-		BOJudgmentLinkCondition judgmentLinks = new BOJudgmentLinkCondition();
-		judgmentLinks.parsingConditions(conditions);
-		return judgmentLinks;
-	}
-
-	/**
-	 * 创建文件判断链
-	 * 
-	 * @param conditions 条件
-	 * @return
-	 */
-	public JudgmentLink createFileJudgmentLink(IConditions conditions) {
-		FileJudgmentLink judgmentLinks = new FileJudgmentLink();
-		judgmentLinks.parsingConditions(conditions);
-		return judgmentLinks;
-	}
 }

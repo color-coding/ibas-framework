@@ -20,6 +20,13 @@ public final class ChildCriterias extends ArrayList<IChildCriteria> implements I
 
 	private static final long serialVersionUID = -2702445645664575985L;
 
+	public ChildCriterias() {
+	}
+
+	public ChildCriterias(int size) {
+		super(size);
+	}
+
 	@Override
 	public IChildCriteria create() {
 		ChildCriteria childCriteria = new ChildCriteria();

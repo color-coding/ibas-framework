@@ -1,261 +1,473 @@
 package org.colorcoding.ibas.bobas.logic;
 
-import java.lang.reflect.Method;
-import java.util.Iterator;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 
+import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.approval.IApprovalData;
+import org.colorcoding.ibas.bobas.bo.BOUtilities;
+import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
-import org.colorcoding.ibas.bobas.common.IChildCriteria;
+import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.common.ICriteria;
-import org.colorcoding.ibas.bobas.common.IOperationResult;
-import org.colorcoding.ibas.bobas.core.BORepositoryBase;
-import org.colorcoding.ibas.bobas.core.IBORepository;
-import org.colorcoding.ibas.bobas.core.fields.IFieldData;
-import org.colorcoding.ibas.bobas.core.fields.IManagedFields;
+import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
-import org.colorcoding.ibas.bobas.data.List;
-import org.colorcoding.ibas.bobas.expression.ExpressionFactory;
-import org.colorcoding.ibas.bobas.expression.JudgmentLink;
-import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
+import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.message.Logger;
-import org.colorcoding.ibas.bobas.message.MessageLevel;
-import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
+import org.colorcoding.ibas.bobas.logging.Logger;
+import org.colorcoding.ibas.bobas.logging.LoggingLevel;
+import org.colorcoding.ibas.bobas.logic.common.BOLogst;
+import org.colorcoding.ibas.bobas.logic.common.BONumbering;
+import org.colorcoding.ibas.bobas.logic.common.BOSeriesNumbering;
+import org.colorcoding.ibas.bobas.organization.IUser;
+import org.colorcoding.ibas.bobas.period.IPeriodData;
+import org.colorcoding.ibas.bobas.repository.ITransaction;
+import org.colorcoding.ibas.bobas.repository.RepositoryException;
 
 /**
  * 业务逻辑链
- * 
- * @author Niuren.Zhu
- *
  */
-public class BusinessLogicChain implements IBusinessLogicChain {
+class BusinessLogicChain implements IBusinessLogicChain {
 
-	protected static final String MSG_TRIGGER_EXISTING_CONTRACT = "logics chain [%s]: trigger [%s] has [%s] contracts.";
-	protected static final String MSG_TRIGGER_COPY_EXISTING_CONTRACT = "logics chain [%s]: trigger's copy [%s] has [%s] contracts.";
-	protected static final String MSG_LOGICS_RUNNING_LOGIC_COMMIT = "logics chain [%s]: commit logic [%s].";
-	protected static final String MSG_LOGICS_RUNNING_LOGIC_FORWARD = "logics chain [%s]: forward logic [%s].";
-	protected static final String MSG_LOGICS_RUNNING_LOGIC_REVERSE = "logics chain [%s]: reverse logic [%s].";
-	/**
-	 * 业务对象代理
-	 */
-	protected static final IBusinessObject BO_PROXY_EMPTY = new IBusinessObjectProxy() {
-
-		private static final long serialVersionUID = -1L;
-
-		@Override
-		public boolean isValid() {
-			return false;
-		}
-
-		@Override
-		public boolean isSavable() {
-			return false;
-		}
-
-		@Override
-		public boolean isNew() {
-			return false;
-		}
-
-		@Override
-		public boolean isLoading() {
-			return false;
-		}
-
-		@Override
-		public boolean isDirty() {
-			return false;
-		}
-
-		@Override
-		public boolean isDeleted() {
-			return false;
-		}
-
-		@Override
-		public boolean isBusy() {
-			return false;
-		}
-
-		@Override
-		public String toString(String type) {
-			return this.toString();
-		}
-
-		@Override
-		public String toString() {
-			return "{empty proxy}";
-		}
-
-		@Override
-		public ICriteria getCriteria() {
-			return null;
-		}
-
-		@Override
-		public String getIdentifiers() {
-			return this.toString();
-		}
-
-		@Override
-		public void delete() {
-		}
-
-		@Override
-		public void undelete() {
-		}
-	};
-
-	public BusinessLogicChain(IBusinessLogicsManager manager) {
-		this.setLogicsManager(manager);
-	}
-
-	private IBusinessLogicsManager logicsManager;
-
-	protected final IBusinessLogicsManager getLogicsManager() {
-		return logicsManager;
-	}
-
-	private final void setLogicsManager(IBusinessLogicsManager logicsManager) {
-		this.logicsManager = logicsManager;
+	public BusinessLogicChain(ITransaction transaction) {
+		this.setTransaction(transaction);
+		this.setId();
 	}
 
 	private String id;
 
-	@Override
-	public final void setGroup(String value) {
-		this.id = value;
+	public final String getId() {
+		return id;
 	}
 
-	@Override
-	public final String getGroup() {
-		return this.id;
+	private final void setId() {
+		this.id = Strings.format("%s_%s", this.getTransaction().getId(), this.hashCode());
+	}
+
+	private BusinessLogicChain parentChain;
+
+	protected BusinessLogicChain getParentChain() {
+		return parentChain;
+	}
+
+	private void setParentChain(BusinessLogicChain parentChain) {
+		this.parentChain = parentChain;
+	}
+
+	private Object root;
+
+	protected final Object getRoot() {
+		return root;
+	}
+
+	private final void setRoot(Object root) {
+		this.root = root;
 	}
 
 	private IBusinessObject trigger;
 
 	@Override
-	public final IBusinessObject getTrigger() {
-		return this.trigger;
+	@SuppressWarnings("unchecked")
+	public final <T extends IBusinessObject> T getTrigger() {
+		return (T) this.trigger;
 	}
 
 	@Override
-	public final void setTrigger(IBusinessObject bo) {
-		this.trigger = bo;
-		if (this.trigger != null && this.trigger.isNew()) {
-			// 新建对象，则副本置为无效值
-			this.setTriggerCopy(BO_PROXY_EMPTY);
-		}
-	}
-
-	private IBORepository repository;
-
-	protected final IBORepository getRepository() {
-		return this.repository;
-	}
-
-	protected final void setRepository(IBORepository boRepository) {
-		this.repository = boRepository;
-	}
-
-	@Override
-	public final void useRepository(IBORepository boRepository) {
-		if (this.repository != null) {
-			throw new RuntimeException(I18N.prop("msg_bobas_not_supported"));
-		}
-		// 使用仓库副本并使用系统用户
-		if (boRepository instanceof BORepositoryBase) {
-			try {
-				boRepository = (IBORepository) ((BORepositoryBase) boRepository).clone();
-				boRepository.setCurrentUser(OrganizationFactory.SYSTEM_USER);
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		}
-		this.setRepository(boRepository);
+	public final <T extends IBusinessObject> void setTrigger(T trigger) {
+		this.trigger = trigger;
 	}
 
 	private IBusinessObject triggerCopy;
 
-	/**
-	 * 获取触发者副本
-	 * 
-	 * @return
-	 */
-	protected final IBusinessObject getTriggerCopy() {
-		if (this.triggerCopy == null) {
-			this.setTriggerCopy(this.fetchTriggerCopy());
-		}
-		return this.triggerCopy;
+	@SuppressWarnings("unchecked")
+	protected final <T extends IBusinessObject> T getTriggerCopy() {
+		return (T) this.triggerCopy;
 	}
 
-	private final void setTriggerCopy(IBusinessObject bo) {
-		this.triggerCopy = bo;
-	}
-
-	public final void setTriggerCopy() {
-		if (this.triggerCopy == null) {
-			this.triggerCopy = this.trigger;
-		}
-	}
-
-	/**
-	 * 查询触发者副本
-	 * 
-	 * @return
-	 */
-	protected IBusinessObject fetchTriggerCopy() {
-		IBusinessObject trigger = this.getTrigger();
-		BusinessLogicsRepository repository = new BusinessLogicsRepository();
-		repository.setRepository(this.getRepository());
-		IOperationResult<? extends IBusinessObject> operationResult = repository.fetchData(trigger.getCriteria(),
-				trigger.getClass());
-		if (operationResult.getError() != null) {
-			throw new BusinessLogicException(operationResult.getError());
-		}
-		IBusinessObject copy = operationResult.getResultObjects().firstOrDefault();
-		if (trigger instanceof IBOStorageTag && copy instanceof IBOStorageTag) {
-			IBOStorageTag hostTag = (IBOStorageTag) trigger;
-			IBOStorageTag copyTag = (IBOStorageTag) copy;
+	@Override
+	public final <T extends IBusinessObject> void setTriggerCopy(T trigger) {
+		// 副本版本更高，不能被覆盖逻辑
+		if (!this.getTrigger().isNew() && this.getTrigger() instanceof IBOStorageTag
+				&& trigger instanceof IBOStorageTag) {
+			IBOStorageTag hostTag = (IBOStorageTag) this.getTrigger();
+			IBOStorageTag copyTag = (IBOStorageTag) trigger;
 			if (copyTag.getLogInst() > hostTag.getLogInst()) {
-				// 副本版本更高，不能被覆盖逻辑
-				throw new BusinessLogicException(I18N.prop("msg_bobas_bo_copy_is_more_newer", trigger.toString()));
+				throw new BusinessLogicException(
+						I18N.prop("msg_bobas_bo_copy_is_more_newer", this.getTrigger().toString()));
 			}
 		}
-		return copy;
+		this.triggerCopy = trigger;
+
 	}
 
-	private IBusinessLogic<?>[] triggerLogics;
+	private ITransaction transaction;
+
+	protected final ITransaction getTransaction() {
+		return this.transaction;
+	}
+
+	final void setTransaction(ITransaction transaction) {
+		Objects.requireNonNull(transaction);
+		this.transaction = transaction;
+	}
+
+	private IUser user;
+
+	protected final IUser getUser() {
+		return user;
+	}
+
+	final void setUser(IUser user) {
+		this.user = user;
+	}
+
+	/**
+	 * 执行正向逻辑
+	 */
+	private final void forwardLogics() {
+		// 执行正向逻辑
+		for (IBusinessLogic<?> logic : this.getTriggerLogics()) {
+			if (logic == null) {
+				continue;
+			}
+			Logger.log(LoggingLevel.INFO, "logics chain [%s]: forward logic [%s].", this.hashCode(), logic.toString());
+			logic.forward();
+		}
+	}
+
+	/**
+	 * 执行反向逻辑
+	 */
+	private final void reverseLogics() {
+		// 执行反向逻辑
+		for (IBusinessLogic<?> logic : this.getTriggerCopyLogics()) {
+			if (logic == null) {
+				continue;
+			}
+			Logger.log(LoggingLevel.INFO, "logics chain [%s]: reverse logic [%s].", this.hashCode(), logic.toString());
+			logic.reverse();
+		}
+	}
+
+	/**
+	 * 执行逻辑
+	 */
+	@Override
+	public final void execute() {
+		// 执行当前逻辑，再执行被影响对象逻辑，最后保存触发对象
+		Objects.requireNonNull(this.getTransaction());
+		// 执行逻辑，先反向，再正向
+		DateTime startTime = DateTimes.now();
+		Logger.log(LoggingLevel.INFO, "logics chain [%s]: starts at [%s].", this.hashCode(),
+				DateTimes.toString(startTime, DateTimes.FORMAT_TIME));
+		if (!this.getTrigger().isNew() && this.getTriggerCopy() != null) {
+			// 非新建，则先反向逻辑
+			this.reverseLogics();
+		}
+		if (!this.getTrigger().isDeleted()) {
+			// 非删除，则执行正向逻辑
+			this.forwardLogics();
+		}
+		// 保存逻辑影响对象
+		List<IBusinessLogic<?>> logics = this.getLogics();
+		ArrayList<IBusinessObject> beAffecteds = new ArrayList<>(logics.size());
+		for (IBusinessLogic<?> logic : logics) {
+			if (logic == null) {
+				continue;
+			}
+			if (logic.getBeAffected() == null) {
+				// 空对象
+				continue;
+			}
+			if (logic.getBeAffected() == BOUtilities.VALUE_EMPTY) {
+				// 代理对象
+				continue;
+			}
+			// 无效状态数据
+			if (logic.getBeAffected().isNew() && logic.getBeAffected().isDeleted()) {
+				continue;
+			}
+			// 对象集合
+			if (logic.getBeAffected() instanceof IBusinessObjectGroup) {
+				for (IBusinessObject item : (IBusinessObjectGroup) logic.getBeAffected()) {
+					if (item == null) {
+						// 空对象
+						continue;
+					}
+					if (item == BOUtilities.VALUE_EMPTY) {
+						// 代理对象
+						continue;
+					}
+					if (beAffecteds.contains(item)) {
+						// 重复的被影响对象，位置后移
+						beAffecteds.remove(item);
+					}
+					beAffecteds.add(item);
+				}
+				continue;
+			}
+			// 重复的被影响对象，位置后移
+			if (beAffecteds.contains(logic.getBeAffected())) {
+				beAffecteds.remove(logic.getBeAffected());
+			}
+			beAffecteds.add(logic.getBeAffected());
+		}
+		try {
+			// 保存触发对象
+			this.getTransaction().save(new IBusinessObject[] { this.getTrigger() });
+			// 执行被影响的对象的逻辑
+			ICriteria criteria;
+			IBusinessObject[] tmpDatas;
+			for (IBusinessObject item : beAffecteds) {
+				if (item.isDirty() == false) {
+					// 没有被修改，则跳过
+					continue;
+				}
+				try (BusinessLogicChain logicChain = BusinessLogicsManager.create()
+						.createChain(this.getTransaction())) {
+					logicChain.setParentChain(this);
+					logicChain.setUser(this.getUser());
+					logicChain.setRoot(this.getTrigger());
+					logicChain.setTrigger(item);
+					if (item.isNew() == false) {
+						if (item instanceof BONumbering || item instanceof BOSeriesNumbering
+								|| item instanceof BOLogst) {
+							// 提高性能，编号不查询副本
+							logicChain.setTriggerCopy(null);
+						} else if (item.isDirty() == false) {
+							// 主体未被修改，使用主体
+							logicChain.setTriggerCopy(item);
+						} else {
+							// 主体被修改，则查询副本
+							criteria = item.getCriteria();
+							if (criteria == null || criteria.getConditions().isEmpty()) {
+								throw new RepositoryException(I18N.prop("msg_bobas_invaild_criteria"));
+							}
+							criteria.setResultCount(1);
+							tmpDatas = this.getTransaction().fetch(item.getClass(), criteria);
+							if (tmpDatas == null || tmpDatas.length != 1) {
+								throw new RepositoryException(I18N.prop("msg_bobas_fetch_bo_copy_faild", item));
+							}
+							if (BOUtilities.isNewer(tmpDatas[0], item)) {
+								throw new RepositoryException(
+										I18N.prop("msg_bobas_bo_copy_is_more_newer", item.toString()));
+							}
+							logicChain.setTriggerCopy(tmpDatas[0]);
+						}
+					}
+					logicChain.execute();
+				}
+			}
+			DateTime endTime = DateTimes.now();
+			Logger.log(LoggingLevel.INFO, "logics chain [%s]: ends at [%s].", this.hashCode(),
+					DateTimes.toString(endTime, DateTimes.FORMAT_TIME));
+			startTime = null;
+			endTime = null;
+		} catch (Exception e) {
+			throw new BusinessLogicException(e);
+		}
+	}
+
+	protected Collection<BusinessLogic<?, ?>> analyzeContracts(IBusinessObject data) {
+		/**
+		 * 分析并创建契约服务
+		 */
+		Function<IBusinessLogicContract, BusinessLogic<?, ?>> analyzer = new Function<IBusinessLogicContract, BusinessLogic<?, ?>>() {
+
+			@Override
+			public BusinessLogic<?, ?> apply(IBusinessLogicContract contract) {
+				Class<?> tmpClass = contract.getClass();
+				// 开始检查契约
+				while (tmpClass != null) {
+					for (Class<?> item : tmpClass.getInterfaces()) {
+						if (!IBusinessLogicContract.class.isAssignableFrom(tmpClass)) {
+							continue;
+						}
+						// 存在契约，创建契约对应的逻辑实例
+						BusinessLogic<?, ?> logic = BusinessLogicsManager.create().createLogic(item);
+						if (logic == null) {
+							throw new BusinessLogicException(I18N.prop("msg_bobas_not_found_bo_logic", item.getName()));
+						}
+						logic.setLogicChain(BusinessLogicChain.this);
+						logic.setContract(contract);
+						return logic;
+					}
+					// 检查基类的契约
+					tmpClass = tmpClass.getSuperclass();
+					if (tmpClass != null) {
+						if (tmpClass.equals(IBusinessLogicContract.class) || !tmpClass.isInterface()) {
+							tmpClass = null;
+						}
+					}
+				}
+				return null;
+			}
+		};
+		BusinessLogic<?, ?> logic;
+		ArrayList<BusinessLogic<?, ?>> logics = new ArrayList<>(16);
+		// 仅业务对象增加默认逻辑
+		if (data instanceof IBusinessObject) {
+			// 主键编号
+			if (data.isSavable() && data.isNew()) {
+				logic = analyzer.apply(new BOKeysContract(data));
+				logic.setHost(data);
+				logics.add(logic);
+			}
+			// 期间数据
+			if (!data.isDeleted() && data.isDirty() && data instanceof IPeriodData) {
+				logic = analyzer.apply(new BOPeriodContract((IPeriodData) data));
+				logic.setHost(data);
+				logics.add(logic);
+			}
+			// 业务逻辑执行
+			logic = analyzer.apply(new BORulesContract(data));
+			logic.setHost(data);
+			logics.add(logic);
+			// 数据标记
+			if (data.isSavable() && !data.isDeleted() && data.isDirty() && data instanceof IBOStorageTag) {
+				logic = analyzer.apply(new BOStorageTagContract((IBOStorageTag) data));
+				logic.setHost(data);
+				logics.add(logic);
+			}
+			// 审批流程（仅触发对象）
+			if (data.isSavable() && data instanceof IApprovalData) {
+				if (data == this.getTrigger() && this.getTrigger().isDirty()) {
+					logic = analyzer.apply(new BOApprovalContract((IApprovalData) data));
+					logic.setHost(data);
+					logics.add(logic);
+				} else if (data == this.getTriggerCopy() && this.getTrigger().isDirty()) {
+					logic = analyzer.apply(new BOApprovalContract((IApprovalData) data));
+					logic.setHost(data);
+					logics.add(logic);
+				}
+			}
+		}
+		// 先子项，再自身（注意：避免嵌套后无限循环寻找契约）
+		if (data instanceof BusinessObject) {
+			int count;
+			Object cData;
+			BusinessObject<?> boData = (BusinessObject<?>) data;
+			for (IPropertyInfo<?> propertyInfo : boData.properties()) {
+				// 跳过值类型
+				if (BOUtilities.isValueType(propertyInfo)) {
+					continue;
+				}
+				if (propertyInfo.getValueType() == null) {
+					continue;
+				}
+				if (IBusinessObject.class.isAssignableFrom(propertyInfo.getValueType())) {
+					cData = BOUtilities.propertyValue(boData, propertyInfo);
+					if (cData instanceof IBusinessObject) {
+						count = logics.size();
+						logics.addAll(this.analyzeContracts((IBusinessObject) cData));
+						for (int i = count - 1; i < logics.size(); i++) {
+							logic = logics.get(i);
+							if (logic.getParent() == null) {
+								logic.setParent(boData);
+							}
+						}
+					}
+				} else if (IBusinessObjects.class.isAssignableFrom(propertyInfo.getValueType())) {
+					cData = BOUtilities.propertyValue(boData, propertyInfo);
+					if (cData instanceof IBusinessObjects) {
+						for (IBusinessObject item : ((IBusinessObjects<?, ?>) cData)) {
+							count = logics.size();
+							logics.addAll(this.analyzeContracts(item));
+							for (int i = count - 1; i < logics.size(); i++) {
+								logic = logics.get(i);
+								if (logic.getParent() == null) {
+									logic.setParent(boData);
+								}
+							}
+						}
+					}
+				}
+			}
+			cData = null;
+			boData = null;
+		}
+		// 获取自身契约
+		if (data instanceof IBusinessLogicsHost) {
+			IBusinessLogicContract[] hostContracts = ((IBusinessLogicsHost) data).getContracts();
+			if (hostContracts != null) {
+				for (IBusinessLogicContract item : hostContracts) {
+					logic = analyzer.apply(item);
+					if (logic == null) {
+						continue;
+					}
+					logic.setHost(data);
+					logics.add(logic);
+				}
+			}
+			hostContracts = null;
+		}
+		// 仅业务对象增加默认逻辑
+		if (data instanceof IBusinessObject) {
+			// 数据日志（仅触发对象）
+			if (data.isSavable() && data instanceof IBOStorageTag) {
+				if (MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_LOGST_BEFORE_UPDATE, false)) {
+					// “更新、新建”后记录对象日志
+					if (data == this.getTrigger() && this.getTrigger().isDirty()) {
+						logic = analyzer.apply(new BOInstanceLogContract((IBOStorageTag) data));
+						logic.setHost(data);
+						logics.add(logic);
+					} else if (data == this.getTriggerCopy() && this.getTrigger().isDirty()
+							&& this.getTrigger().isDeleted()) {
+						// 仅对象删除时，触发反向逻辑
+						logic = analyzer.apply(new BOInstanceLogContract((IBOStorageTag) data));
+						logic.setHost(data);
+						logics.add(logic);
+					}
+				} else {
+					// “更新”前记录对象日志
+					if (data == this.getTriggerCopy() && !this.getTrigger().isDirty()) {
+						// 仅对象删除时，触发反向逻辑
+						logic = analyzer.apply(new BOInstanceLogContract((IBOStorageTag) data));
+						logic.setHost(data);
+						logics.add(logic);
+					}
+				}
+			}
+		}
+		// 返回并剔除无效的
+		return logics.where(c -> c != null);
+	}
+
+	private Collection<BusinessLogic<?, ?>> triggerLogics;
 
 	/**
 	 * 触发者的业务逻辑
 	 * 
 	 * @return
 	 */
-	protected final IBusinessLogic<?>[] getTriggerLogics() {
+	protected final synchronized Collection<BusinessLogic<?, ?>> getTriggerLogics() {
 		if (this.triggerLogics == null) {
 			this.triggerLogics = this.analyzeContracts(this.getTrigger());
-			Logger.log(MessageLevel.INFO, MSG_TRIGGER_EXISTING_CONTRACT, this.hashCode(), this.getTrigger(),
-					this.triggerLogics.length);
+			Logger.log(LoggingLevel.INFO, "logics chain [%s]: trigger [%s] has [%s] contracts.", this.hashCode(),
+					this.getTrigger(), this.triggerLogics.size());
 		}
-		return triggerLogics;
+		return this.triggerLogics;
 	}
 
-	private IBusinessLogic<?>[] triggerCopyLogics;
+	private Collection<BusinessLogic<?, ?>> triggerCopyLogics;
 
 	/**
 	 * 触发者副本的业务逻辑
 	 * 
 	 * @return
 	 */
-	protected final IBusinessLogic<?>[] getTriggerCopyLogics() {
+	protected final synchronized Collection<BusinessLogic<?, ?>> getTriggerCopyLogics() {
 		if (this.triggerCopyLogics == null) {
 			this.triggerCopyLogics = this.analyzeContracts(this.getTriggerCopy());
-			Logger.log(MessageLevel.INFO, MSG_TRIGGER_COPY_EXISTING_CONTRACT, this.hashCode(), this.getTriggerCopy(),
-					this.triggerCopyLogics.length);
+			Logger.log(LoggingLevel.INFO, "logics chain [%s]: trigger's copy [%s] has [%s] contracts.", this.hashCode(),
+					this.getTriggerCopy(), this.triggerCopyLogics.size());
 		}
-		return triggerCopyLogics;
+		return this.triggerCopyLogics;
 	}
 
 	/**
@@ -263,332 +475,30 @@ public class BusinessLogicChain implements IBusinessLogicChain {
 	 * 
 	 * @return
 	 */
-	protected final Iterator<IBusinessLogic<?>> getAllLogics() {
-		ArrayList<IBusinessLogic<?>> logics = new ArrayList<>(10);
-		if (this.triggerCopyLogics != null) {
-			for (int i = this.triggerCopyLogics.length - 1; i >= 0; i--) {
-				// for (int i = 0; i < this.triggerCopyLogics.length; i++) {
-				logics.add(this.triggerCopyLogics[i]);
-			}
-		}
+	protected final List<IBusinessLogic<?>> getLogics() {
+		int aCount = this.triggerLogics != null ? this.triggerLogics.size() : 0;
+		int bCount = this.triggerCopyLogics != null ? this.triggerCopyLogics.size() : 0;
+		List<IBusinessLogic<?>> logics = new ArrayList<>(aCount + bCount);
+
 		if (this.triggerLogics != null) {
-			for (int i = 0; i < this.triggerLogics.length; i++) {
-				logics.add(this.triggerLogics[i]);
-			}
+			logics.addAll(this.triggerLogics);
 		}
-		return logics.iterator();
-	}
+		if (this.triggerCopyLogics != null) {
+			logics.addAll(this.triggerCopyLogics);
+		}
 
-	private static final IBusinessLogic<?>[] NO_BUSINESS_LOGICS = new IBusinessLogic[] {};
-
-	/**
-	 * 分析数据，获取契约
-	 * 
-	 * @param bo 数据
-	 * @return 具有的契约
-	 */
-	protected IBusinessLogic<?>[] analyzeContracts(Object bo) {
-		if (bo == null || bo instanceof IBusinessObjectProxy) {
-			return NO_BUSINESS_LOGICS;
-		}
-		ArrayList<IBusinessLogic<?>> contracts = new ArrayList<>();
-		// 先子项，再自身
-		// 注意：避免嵌套后无限循环寻找契约
-		if (bo instanceof IManagedFields) {
-			IManagedFields boFields = (IManagedFields) bo;
-			for (IFieldData item : boFields.getFields()) {
-				if (item == null || item.getValue() == null) {
-					continue;
-				}
-				if (item.getValue() instanceof IBusinessObject) {
-					IBusinessLogic<?>[] tmpLogics = this.analyzeContracts((IBusinessObject) item.getValue());
-					// 记录父项
-					for (IBusinessLogic<?> tmpLogic : tmpLogics) {
-						if (tmpLogic instanceof BusinessLogic<?, ?>) {
-							BusinessLogic<?, ?> logic = (BusinessLogic<?, ?>) tmpLogic;
-							logic.setRoot(bo);
-							// 跳过已赋值的
-							if (logic.getParent() != null) {
-								continue;
-							}
-							logic.setParent(bo);
-						}
-					}
-					contracts.addAll(tmpLogics);
-				} else if (item.getValue() instanceof IBusinessObjects<?, ?>) {
-					IBusinessObjects<?, ?> bos = (IBusinessObjects<?, ?>) item.getValue();
-					for (IBusinessObject boItem : bos) {
-						IBusinessLogic<?>[] tmpLogics = this.analyzeContracts(boItem);
-						// 记录父项
-						for (IBusinessLogic<?> tmpLogic : tmpLogics) {
-							if (tmpLogic instanceof BusinessLogic<?, ?>) {
-								BusinessLogic<?, ?> logic = (BusinessLogic<?, ?>) tmpLogic;
-								logic.setRoot(bo);
-								// 跳过已赋值的
-								if (logic.getParent() != null) {
-									continue;
-								}
-								logic.setParent(bo);
-							}
-						}
-						contracts.addAll(tmpLogics);
-					}
-				}
-			}
-		}
-		// 分析数据有哪些契约
-		if (bo instanceof IBusinessLogicsHost) {
-			IBusinessLogicsHost boHost = (IBusinessLogicsHost) bo;
-			IBusinessLogicContract[] hostContracts = boHost.getContracts();
-			if (hostContracts != null) {
-				for (IBusinessLogicContract contract : hostContracts) {
-					Class<?> tmpClass = contract.getClass();// 开始检查契约
-					while (tmpClass != null) {
-						for (Class<?> item : tmpClass.getInterfaces()) {
-							boolean exists = false;
-							for (Class<?> subItem : item.getInterfaces()) {
-								if (subItem.equals(IBusinessLogicContract.class)) {
-									// 业务逻辑契约的扩展类型
-									exists = true;
-									break;
-								}
-							}
-							if (exists) {
-								// 存在契约，创建契约对应的逻辑实例
-								IBusinessLogic<?> logic = logicsManager.createLogic(item);
-								if (logic == null) {
-									throw new NotFoundBusinessLogicException(item.getName());
-								}
-								if (logic instanceof BusinessLogic<?, ?>) {
-									BusinessLogic<?, ?> aLogic = (BusinessLogic<?, ?>) logic;
-									aLogic.setContract(contract);
-									aLogic.setHost(boHost);
-									aLogic.setRepository(this.getRepository());
-									aLogic.setLogicChain(this);
-								}
-								contracts.add(logic);
-							}
-						}
-						// 检查基类的契约
-						tmpClass = tmpClass.getSuperclass();
-					}
-				}
-			}
-		}
-		return contracts.toArray(new IBusinessLogic<?>[] {});
-	}
-
-	/**
-	 * 逻辑链中查询被影响对象（仅第一个）
-	 * 
-	 * @param <B>
-	 * @param criteria
-	 * @param type
-	 * @return
-	 */
-	public final <B> B fetchBeAffected(ICriteria criteria, Class<B> type) {
-		return this.fetchBeAffected(criteria, type, false).firstOrDefault();
-	}
-
-	/**
-	 * 逻辑链中查询被影响对象
-	 * 
-	 * @param <B>
-	 * @param criteria
-	 * @param type
-	 * @param all      返回全部
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public <B> List<B> fetchBeAffected(ICriteria criteria, Class<B> type, boolean all) {
-		// 查询被影响对象，从整个事务缓存中查询
-		IBusinessLogic<?> logic;
-		Iterator<IBusinessLogic<?>> logics;
-		List<B> results = new ArrayList<>();
-		for (IBusinessLogicChain chainItem : this.getLogicsManager()) {
-			if (!chainItem.getGroup().equals(this.getGroup())) {
-				// 事务ID一致
-				continue;
-			}
-			if (chainItem instanceof BusinessLogicChain) {
-				logics = ((BusinessLogicChain) chainItem).getAllLogics();
-				while (logics.hasNext()) {
-					logic = logics.next();
-					if (logic == null) {
-						// 无效值
-						continue;
-					}
-					if (logic.getBeAffected() == null) {
-						// 无效值
-						continue;
-					}
-					if (logic.getBeAffected() instanceof IBusinessObjectProxy) {
-						// 无效值
-						continue;
-					}
-					if (type.isInstance(logic.getBeAffected())) {
-						// 类型对象
-						if (this.judge(logic.getBeAffected(), criteria)) {
-							// 值比较通过
-							results.add((B) logic.getBeAffected());
-							if (all == false) {
-								break;
-							}
-						}
-					} else if (logic.getBeAffected() instanceof IBusinessObjectGroup) {
-						// 对象集合
-						IBusinessObjectGroup iterable = (IBusinessObjectGroup) logic.getBeAffected();
-						for (Object item : iterable) {
-							if (type.isInstance(item)) {
-								if (this.judge(item, criteria)) {
-									// 值比较通过
-									results.add((B) item);
-									if (all == false) {
-										break;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		return results;
-	}
-
-	private boolean judge(Object data, ICriteria criteria) {
-		try {
-			JudgmentLink judgmentLink = ExpressionFactory.create().createBOJudgmentLink(criteria.getConditions());
-			if (judgmentLink.judge(data)) {
-				boolean pass = true;
-				if (!criteria.getChildCriterias().isEmpty()) {
-					// 存在子项查询
-					for (IChildCriteria child : criteria.getChildCriterias()) {
-						try {
-							Method method = data.getClass().getMethod("get" + child.getPropertyPath());
-							if (method == null) {
-								// 对象没有带比较的属性
-								pass = false;
-							}
-							Object pData = method.invoke(data);
-							if (pData == null) {
-								// 属性没有值，不能进行比较
-								pass = false;
-							}
-							if (pData instanceof Iterable) {
-								for (Object pDataItem : (Iterable<?>) pData) {
-									pass = this.judge(pDataItem, child);
-									if (!pass) {
-										// 比较不通过，后续不在处理
-										break;
-									}
-								}
-							} else {
-								pass = this.judge(pData, child);
-							}
-							if (!pass) {
-								// 比较不通过，后续不在处理
-								break;
-							}
-						} catch (Exception e) {
-							Logger.log(e);
-						}
-					}
-					return pass;
-				}
-				return pass;
-			}
-		} catch (JudmentOperationException e) {
-			Logger.log(e);
-		}
-		return false;
+		return logics;
 	}
 
 	@Override
-	public void forwardLogics() {
-		// 执行正向逻辑
-		for (IBusinessLogic<?> logic : this.getTriggerLogics()) {
-			if (logic == null) {
-				// 无效值
-				continue;
-			}
-			Logger.log(MessageLevel.INFO, MSG_LOGICS_RUNNING_LOGIC_FORWARD, this.hashCode(), logic.toString());
-			logic.forward();
-		}
-	}
-
-	@Override
-	public void reverseLogics() {
-		// 执行反向逻辑
-		for (IBusinessLogic<?> logic : this.getTriggerCopyLogics()) {
-			if (logic == null) {
-				// 无效值
-				continue;
-			}
-			Logger.log(MessageLevel.INFO, MSG_LOGICS_RUNNING_LOGIC_REVERSE, this.hashCode(), logic.toString());
-			logic.reverse();
-		}
-	}
-
-	@Override
-	public void commit() {
-		// 提交所有逻辑
-		ArrayList<IBusinessObject> beAffecteds = new ArrayList<>();
-		Iterator<IBusinessLogic<?>> logics = this.getAllLogics();
-		while (logics.hasNext()) {
-			IBusinessLogic<?> logic = logics.next();
-			if (logic == null) {
-				// 无效值
-				continue;
-			}
-			if (logic.getBeAffected() == null) {
-				// 空对象
-				continue;
-			}
-			if (logic.getBeAffected() instanceof IBusinessObjectProxy) {
-				// 代理对象
-				continue;
-			}
-			if (logic.getBeAffected().isNew() && logic.getBeAffected().isDeleted()) {
-				// 无效状态数据
-				continue;
-			}
-			if (logic.getBeAffected() instanceof IBusinessObjectGroup) {
-				// 对象集合
-				for (IBusinessObject item : (IBusinessObjectGroup) logic.getBeAffected()) {
-					if (beAffecteds.contains(item)) {
-						// 重复的被影响对象，位置后移
-						beAffecteds.remove(item);
-					}
-					Logger.log(MessageLevel.DEBUG, MSG_LOGICS_RUNNING_LOGIC_COMMIT, this.hashCode(), item.toString());
-					beAffecteds.add(item);
-				}
-			} else {
-				if (beAffecteds.contains(logic.getBeAffected())) {
-					// 重复的被影响对象，位置后移
-					beAffecteds.remove(logic.getBeAffected());
-				}
-				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_RUNNING_LOGIC_COMMIT, this.hashCode(),
-						logic.getBeAffected().toString());
-				beAffecteds.add(logic.getBeAffected());
-			}
-
-		}
-		IOperationResult<?> operationResult;
-		BusinessLogicsRepository logicRepository = new BusinessLogicsRepository();
-		logicRepository.setRepository(this.getRepository());
-		for (IBusinessObject item : beAffecteds) {
-			operationResult = logicRepository.saveData(item);
-			if (operationResult.getError() != null) {
-				if (operationResult.getError() instanceof BusinessLogicException) {
-					throw (BusinessLogicException) operationResult.getError();
-				} else {
-					throw new BusinessLogicException(operationResult.getError());
-				}
-			}
-		}
-		logicRepository.setRepository(null);// 移出监听
-		logicRepository = null;
+	public void close() throws Exception {
+		this.root = null;
+		this.user = null;
+		this.trigger = null;
+		this.triggerCopy = null;
+		this.transaction = null;
+		this.triggerLogics = null;
+		this.triggerCopyLogics = null;
 	}
 
 }

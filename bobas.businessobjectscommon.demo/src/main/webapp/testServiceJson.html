@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Test Services | Json</title>
     <script type="text/javascript" src="./3rdparty/jquery.js"></script>
     <script>
-        var getRootUrl = function() {
+        var getRootUrl = function () {
             var tmp = window.location.href;
-            return tmp.substring(0,tmp.indexOf('/test'));
+            return tmp.substring(0, tmp.indexOf('/test'));
         };
-        var getWADL = function() {
-            var url = getRootUrl()  + '/services/jersey/application.wadl';
+        var getWADL = function () {
+            var url = getRootUrl() + '/services/jersey/application.wadl';
             $.ajax({
-                type: 'get',
+                type: 'GET',
                 contentType: "application/xml",
                 url: url,
                 success: function (data, status) {
@@ -65,11 +66,52 @@
                 $("#rsltMsg").html("unkown.");
             }
         }
-        var token = '';
+        var generateFromSchema = function (schema) {
+            // 处理对象类型
+            if (schema.type === 'object') {
+                const obj = {};
+                if (schema.properties) {
+                    Object.entries(schema.properties).forEach(([key, value]) => {
+                        obj[key] = generateFromSchema(value);
+                    });
+                }
+                return obj;
+            }
+            // 处理数组类型
+            if (schema.type === 'array') {
+                if (schema.items) {
+                    return [generateFromSchema(schema.items)];
+                }
+                return [];
+            }
+            // 处理基础类型（带默认值）
+            if (schema.default !== undefined) {
+                return schema.default;
+            }
+            // 返回类型默认值
+            const typeDefaults = {
+                string: '',
+                number: 0,
+                boolean: false,
+                null: null
+            };
+            return typeDefaults[schema.type] ?? null;
+        }
+        var token = '1q2w3e';
         var testCreateMaterials = function () {
-            var bo = ttborep.bo.Materials.createNew();
-            showResult(bo);
-            return bo;
+            var url = address + '/schema?boCode=CC_TT_MATERIALS&token=' + token;
+            var criteria = {};
+            $.ajax({
+                type: 'GET',
+                contentType: "application/json",
+                url: url,
+                success: function (data, status) {
+                    showResult(generateFromSchema(JSON.parse(data)));
+                },
+                error: function (err) {
+                    showErrors(err);
+                }
+            });
         }
         var testFetchMaterials = function () {
             var url = address + '/fetchMaterials?token=' + token;
@@ -80,10 +122,10 @@
                 url: url,
                 data: JSON.stringify(criteria),
                 success: function (data, status) {
-                   showResult(data);
+                    showResult(data);
                 },
                 error: function (err) {
-                   showErrors(err);
+                    showErrors(err);
                 }
             });
         }
@@ -96,32 +138,42 @@
                 url: url,
                 data: JSON.stringify(data),
                 success: function (data, status) {
-                   showResult(data);
+                    showResult(data);
                 },
                 error: function (err) {
-                   showErrors(err);
+                    showErrors(err);
                 }
             });
         };
 
         var testCreateSalesOrder = function () {
-            var bo = ttborep.bo.SalesOrder.createNew();
-            showResult(bo);
-            return bo;
+            var url = address + '/schema?boCode=CC_TT_SALESORDER&token=' + token;
+            var criteria = {};
+            $.ajax({
+                type: 'GET',
+                contentType: "application/json",
+                url: url,
+                success: function (data, status) {
+                    showResult(generateFromSchema(JSON.parse(data)));
+                },
+                error: function (err) {
+                    showErrors(err);
+                }
+            });
         }
         var testFetchSalesOrder = function () {
             var url = address + '/fetchSalesOrder?token=' + token;
-            var criteria = {"ResultCount":"20"};
+            var criteria = { "ResultCount": "20" };
             $.ajax({
                 type: 'POST',
                 contentType: "application/json",
                 url: url,
                 data: JSON.stringify(criteria),
                 success: function (data, status) {
-                   showResult(data);
+                    showResult(data);
                 },
                 error: function (err) {
-                   showErrors(err);
+                    showErrors(err);
                 }
             });
         }
@@ -134,19 +186,20 @@
                 url: url,
                 data: JSON.stringify(data),
                 success: function (data, status) {
-                   showResult(data);
+                    showResult(data);
                 },
                 error: function (err) {
-                   showErrors(err);
+                    showErrors(err);
                 }
             });
         };
 
     </script>
 </head>
+
 <body>
     <label>test data services | json</label>
-    <a href=""><label style="color:blue" onclick="getWADL();" >   [WADL]</label></a>
+    <a href=""><label style="color:blue" onclick="getWADL();"> [WADL]</label></a>
     <br />
     <div>
         <table>
@@ -177,7 +230,7 @@
                 <td>
                     <input type="button" value="save" onclick="testSaveSalesOrder();" />
                 </td>
-            </tr>         
+            </tr>
         </table>
     </div>
     <br />
@@ -191,7 +244,8 @@
         <label>count:</label>
         <label id="rsltCount"></label>
         <br />
-        <label id="rsltValues" ></label>
+        <label id="rsltValues"></label>
     </div>
 </body>
+
 </html>

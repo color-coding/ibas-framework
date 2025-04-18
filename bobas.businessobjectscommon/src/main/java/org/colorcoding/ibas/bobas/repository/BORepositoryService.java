@@ -1,406 +1,213 @@
 package org.colorcoding.ibas.bobas.repository;
 
-import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.bo.BOFactory;
+import org.colorcoding.ibas.bobas.bo.BOUtilities;
+import org.colorcoding.ibas.bobas.bo.IBODocument;
+import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
+import org.colorcoding.ibas.bobas.bo.IBOMasterData;
+import org.colorcoding.ibas.bobas.bo.IBOMasterDataLine;
+import org.colorcoding.ibas.bobas.bo.IBOSimple;
+import org.colorcoding.ibas.bobas.bo.IBOSimpleLine;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
-import org.colorcoding.ibas.bobas.common.Criteria;
+import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
+import org.colorcoding.ibas.bobas.common.ConditionRelationship;
+import org.colorcoding.ibas.bobas.common.IChildCriteria;
+import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
-import org.colorcoding.ibas.bobas.common.ISqlQuery;
 import org.colorcoding.ibas.bobas.common.OperationResult;
-import org.colorcoding.ibas.bobas.core.IBORepository;
-import org.colorcoding.ibas.bobas.core.IBORepositoryReadonly;
-import org.colorcoding.ibas.bobas.core.ITrackStatus;
-import org.colorcoding.ibas.bobas.core.RepositoryException;
-import org.colorcoding.ibas.bobas.db.DbException;
-import org.colorcoding.ibas.bobas.db.IBOAdapter;
+import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.core.FieldedObject;
+import org.colorcoding.ibas.bobas.core.IPropertyInfo;
+import org.colorcoding.ibas.bobas.data.List;
+import org.colorcoding.ibas.bobas.expression.BOJudgmentLinkCondition;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.message.Logger;
-import org.colorcoding.ibas.bobas.message.MessageLevel;
-import org.colorcoding.ibas.bobas.organization.IOrganizationManager;
-import org.colorcoding.ibas.bobas.organization.IUser;
-import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
 
 /**
- * 业务仓库服务
+ * 业务对象仓库
  * 
- * 
- * @author niuren.zhu
+ * @author Niuren.Zhu
  *
  */
-public class BORepositoryService implements IBORepositoryService {
-	protected static final String MSG_REPOSITORY_FETCHING_IN_DB = "repository: fetching [%s] in db repository.";
-	protected static final String MSG_REPOSITORY_CHANGED_USER = "repository: changed user [%s].";
-	protected static final String MSG_REPOSITORY_REPLACED_BE_DELETED_BO = "repository: replaced be deleted bo [%s].";
-	protected static final String MSG_REPOSITORY_NOT_FOUND_BE_DELETED_BO = "repository: not found be deleted bo [%s].";
-	protected static final String MSG_REPOSITORY_CANNOT_BE_OPENED = "repository: cannot be opened.";
-	protected static final String MSG_TRANSACTION_SP_VALUES = "transaction: sp [%s] [%s] [%s - %s]";
-
-	public BORepositoryService() {
-		// 是否通知事务
-		this.setPostTransaction(
-				!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_DISABLED_POST_TRANSACTION, false));
-	}
+public class BORepositoryService extends BORepository4DB {
 
 	/**
 	 * 主库标记
 	 */
 	public final static String MASTER_REPOSITORY_SIGN = "Master";
-	private IBORepository repository = null;
 
-	@Override
-	public final IBORepository getRepository() {
-		if (this.repository == null) {
-			this.setRepository(new BORepository4Db(MASTER_REPOSITORY_SIGN));
-		}
-		return this.repository;
+	public BORepositoryService(String sign) {
+		super(sign);
 	}
 
-	@Override
-	public final void setRepository(IBORepository repository) {
-		this.repository = repository;
-		if (this.repository != null) {
-			// 同步用户信息
-			if (this.currentUser != null) {
-				this.repository.setCurrentUser(this.currentUser);
-			} else {
-				if (this.repository.getCurrentUser() != null
-						&& this.repository.getCurrentUser() != OrganizationFactory.UNKNOWN_USER) {
-					this.setCurrentUser(this.repository.getCurrentUser());
-				}
-			}
-		}
-	}
-
-	@Override
-	public void connectRepository(String type, String server, String name, String user, String password)
-			throws RepositoryException {
-		try {
-			IBORepository4Db dbRepository = new BORepository4Db();
-			dbRepository.connectDb(type, server, name, user, password);
-			this.setRepository(dbRepository);
-		} catch (DbException e) {
-			throw new RepositoryException(e);
-		}
-	}
-
-	@Override
-	public final void connectRepository(String server, String name, String user, String password)
-			throws RepositoryException {
-		this.connectRepository(null, server, name, user, password);
-	}
-
-	protected boolean openRepository() throws RepositoryException {
-		try {
-			if (this.getRepository() instanceof IBORepository4Db) {
-				return ((IBORepository4Db) this.getRepository()).openDbConnection();
-			}
-			return false;
-		} catch (DbException e) {
-			throw new RepositoryException(e);
-		}
-	}
-
-	protected void closeRepository() throws RepositoryException {
-		try {
-			if (this.repository instanceof IBORepository4Db) {
-				((IBORepository4Db) this.getRepository()).closeDbConnection();
-			}
-		} catch (DbException e) {
-			throw new RepositoryException(e);
-		}
-	}
-
-	public boolean inTransaction() {
-		if (this.repository == null) {
-			// 未初始化主仓库，则不存在事务
-			return false;
-		}
-		return this.getRepository().inTransaction();
-	}
-
-	public boolean beginTransaction() throws RepositoryException {
-		return this.getRepository().beginTransaction();
-	}
-
-	public void rollbackTransaction() throws RepositoryException {
-		this.getRepository().rollbackTransaction();
-	}
-
-	public void commitTransaction() throws RepositoryException {
-		this.getRepository().commitTransaction();
-	}
-
-	public void dispose() throws RepositoryException {
-		if (this.repository != null) {
-			this.repository.dispose();
-			this.repository = null;
-		}
-	}
-
-	private boolean postTransaction;
-
-	/**
-	 * 是否通知事务
-	 * 
-	 * @return
-	 */
-	public final boolean isPostTransaction() {
-		return postTransaction;
-	}
-
-	public final void setPostTransaction(boolean value) {
-		this.postTransaction = value;
-	}
-
-	private IUser currentUser = null;
-
-	/**
-	 * 当前用户
-	 * 
-	 * @return
-	 */
-	public final IUser getCurrentUser() {
-		if (this.currentUser == null) {
-			// 未设置用户则为未知用户
-			this.currentUser = OrganizationFactory.UNKNOWN_USER;
-		}
-		return this.currentUser;
+	public BORepositoryService() {
+		this(MASTER_REPOSITORY_SIGN);
 	}
 
 	/**
-	 * 设置当前用户
+	 * 查询数据
 	 * 
-	 * @param user
-	 */
-	protected final void setCurrentUser(IUser user) {
-		if (this.currentUser == user) {
-			// 相同用户，不切换
-			return;
-		}
-		this.currentUser = user;
-		if (this.repository != null) {
-			this.getRepository().setCurrentUser(this.getCurrentUser());
-		}
-		Logger.log(MSG_REPOSITORY_CHANGED_USER, this.getCurrentUser());
-		this.onCurrentUserChanged();
-	}
-
-	/**
-	 * 设置当前用户
+	 * 可基于子项结果再查父项
 	 * 
-	 * @param token 用户口令
-	 * @throws InvalidTokenException
-	 */
-	protected final void setCurrentUser(String token) throws InvalidTokenException {
-		if (this.currentUser != null && this.currentUser.getToken() != null
-				&& this.currentUser.getToken().equals(token)) {
-			// 与当前的口令相同，不做处理
-			return;
-		}
-		IOrganizationManager orgManager = OrganizationFactory.create().createManager();
-		IUser user = orgManager.getUser(token);
-		if (user == null) {
-			// 没有用户匹配次口令
-			throw new InvalidTokenException(I18N.prop("msg_bobas_no_user_match_the_token"));
-		}
-		this.setCurrentUser(user);
-	}
-
-	/**
-	 * 当前用户变化
-	 */
-	protected void onCurrentUserChanged() {
-
-	}
-
-	/**
-	 * 查询业务对象
-	 * 
-	 * @param boRepository 使用的仓库
-	 * 
-	 * @param criteria     查询条件
-	 * 
-	 * @param token        口令
-	 * 
-	 * @return 查询的结果
-	 */
-	<P extends IBusinessObject> IOperationResult<P> fetch(IBORepositoryReadonly boRepository, ICriteria criteria,
-			Class<P> boType) {
-		if (criteria == null) {
-			criteria = new Criteria();
-		}
-		if (criteria.isNoChilds()) {
-			// 不加载子项
-			return boRepository.fetch(criteria, boType);
-		} else {
-			// 加载子项
-			return boRepository.fetchEx(criteria, boType);
-		}
-	}
-
-	/**
-	 * 查询业务对象 根据配置是否启用缓存
-	 * 
+	 * @param <T>      对象类型
+	 * @param boType   对象类型
 	 * @param criteria 查询条件
-	 * 
-	 * @param token    口令
-	 * 
-	 * @return 查询的结果
+	 * @return
 	 */
-	protected final <P extends IBusinessObject> OperationResult<P> fetch(ICriteria criteria, String token,
-			Class<P> boType) {
-		try {
-			// 解析并设置当前用户
-			this.setCurrentUser(token);
-		} catch (Exception e) {
-			Logger.log(e);
-			return new OperationResult<P>(e);
-		}
-		return (OperationResult<P>) this.fetch(criteria, boType);
-	}
+	@Override
+	protected <T extends IBusinessObject> OperationResult<T> fetch(Class<?> boType, ICriteria criteria) {
+		if (criteria != null) {
+			// 有子项的查询结果后，再筛选父项
+			IChildCriteria cCriteria = criteria.getChildCriterias().firstOrDefault(c -> c.isEntry());
+			if (cCriteria != null && !Strings.isNullOrEmpty(cCriteria.getPropertyPath())) {
+				try {
+					IPropertyInfo<?> propertyInfo = BOFactory.propertyInfos(boType)
+							.firstOrDefault(c -> c.getName().equalsIgnoreCase(cCriteria.getPropertyPath()));
+					if (propertyInfo == null) {
+						throw new Exception(I18N.prop("msg_bobas_not_found_bo_property", cCriteria.getPropertyPath()));
+					}
+					if (propertyInfo.getValueType() == null
+							|| !IBusinessObjects.class.isAssignableFrom(propertyInfo.getValueType())) {
+						throw new Exception(I18N.prop("msg_bobas_invalid_argument", propertyInfo.getName()));
+					}
+					Class<?> subType = null;
+					Object tmpObject = BOFactory.newInstance(boType);
+					if (tmpObject instanceof IBusinessObject) {
+						tmpObject = BOUtilities.propertyValue((IBusinessObject) tmpObject, propertyInfo);
+						if (tmpObject instanceof IBusinessObjects<?, ?>) {
+							subType = ((IBusinessObjects<?, ?>) tmpObject).getElementType();
+						}
+					}
+					if (subType == null || !IBusinessObject.class.isAssignableFrom(subType)) {
+						throw new Exception(I18N.prop("msg_bobas_invalid_argument", propertyInfo.getName()));
+					}
+					// 新建主项查询，不再查子项
+					ICriteria nCriteria = criteria.clone();
+					nCriteria.setNoChilds(true);
+					nCriteria.getChildCriterias().clear();
+					ICondition condition = null;
+					int count = criteria.getConditions().size();
 
-	<P extends IBusinessObject> IOperationResult<P> fetch(ICriteria criteria, Class<P> boType) {
-		return this.fetch(this.getRepository(), criteria, boType);
-	}
-
-	/**
-	 * 保存业务对象
-	 * 
-	 * @param boRepository 业务对象仓库
-	 * 
-	 * @param bo           业务对象
-	 * @return 注意删除时返回null
-	 * @throws Exception
-	 */
-	<P extends IBusinessObject> P save(IBORepository boRepository, P bo) throws Exception {
-		boolean myDbTrans = false;
-		boolean myOpened = false;
-		try {
-			TransactionType type = null;
-			if (bo.isSavable() && bo.isDirty()) {
-				if (bo.isNew() && !bo.isDeleted()) {
-					type = TransactionType.BEFORE_ADD;
-				} else if (bo.isDeleted()) {
-					type = TransactionType.BEFORE_DELETE;
-				} else {
-					type = TransactionType.BEFORE_UPDATE;
+					IOperationResult<IBusinessObject> opRsltChilds = this.fetch(subType, cCriteria);
+					if (opRsltChilds.getError() != null) {
+						throw opRsltChilds.getError();
+					}
+					for (IBusinessObject item : opRsltChilds.getResultObjects()) {
+						if (item instanceof IBODocumentLine) {
+							condition = nCriteria.getConditions().create();
+							condition.setAlias(IBODocument.MASTER_PRIMARY_KEY_NAME);
+							condition.setValue(((IBODocumentLine) item).getDocEntry());
+						} else if (item instanceof IBOSimpleLine) {
+							condition = nCriteria.getConditions().create();
+							condition.setAlias(IBOSimple.MASTER_PRIMARY_KEY_NAME);
+							condition.setValue(((IBOSimpleLine) item).getObjectKey());
+						} else if (item instanceof IBOMasterDataLine) {
+							condition = nCriteria.getConditions().create();
+							condition.setAlias(IBOMasterData.MASTER_PRIMARY_KEY_NAME);
+							condition.setValue(((IBOMasterDataLine) item).getCode());
+						} else {
+							int index = nCriteria.getConditions().size();
+							// 设置父项主键
+							IPropertyInfo<?> cKey = null;
+							List<IPropertyInfo<?>> cKeys = BOFactory.propertyInfos(subType)
+									.where(c -> c.isPrimaryKey());
+							for (IPropertyInfo<?> pItem : BOFactory.propertyInfos(boType)
+									.where(c -> c.isPrimaryKey())) {
+								cKey = cKeys.firstOrDefault(c -> Strings.equals(pItem.getName(), c.getName()));
+								if (cKey == null) {
+									throw new Exception(I18N.prop("msg_bobas_invalid_argument", pItem.getName()));
+								}
+								condition = nCriteria.getConditions().create();
+								condition.setAlias(pItem);
+								condition.setValue(BOUtilities.propertyValue(item, cKey));
+							}
+							if (nCriteria.getConditions().size() > (index + 2)) {
+								condition = nCriteria.getConditions().get(index);
+								condition.setBracketOpen(condition.getBracketOpen() + 1);
+								condition = nCriteria.getConditions().lastOrDefault();
+								condition.setBracketClose(condition.getBracketClose() + 1);
+							}
+							// 置为添加的首个
+							condition = nCriteria.getConditions().get(index);
+						}
+						if (nCriteria.getConditions().size() > (count + 1)) {
+							condition.setRelationship(ConditionRelationship.OR);
+						}
+					}
+					if (nCriteria.getConditions().size() > (count + 2)) {
+						condition = nCriteria.getConditions().get(count);
+						condition.setBracketOpen(condition.getBracketOpen() + 1);
+						condition = nCriteria.getConditions().lastOrDefault();
+						condition.setBracketClose(condition.getBracketClose() + 1);
+					}
+					// 查询父项，并填充子项
+					OperationResult<T> opRsltParent = this.fetch(boType, nCriteria);
+					if (opRsltParent.getError() != null) {
+						throw opRsltParent.getError();
+					}
+					IBusinessObject cData = null;
+					BOJudgmentLinkCondition judgmentLink = null;
+					IBusinessObjects<IBusinessObject, IBusinessObject> tmpObjects = null;
+					for (T data : opRsltParent.getResultObjects()) {
+						tmpObjects = ((FieldedObject) data).getProperty(propertyInfo);
+						if (tmpObjects instanceof IBusinessObjects<?, ?>) {
+							judgmentLink = new BOJudgmentLinkCondition();
+							judgmentLink.parsingConditions(tmpObjects.getElementCriteria().getConditions());
+							for (int i = 0; i < opRsltChilds.getResultObjects().size(); i++) {
+								cData = opRsltChilds.getResultObjects().get(i);
+								if (cData == null || !judgmentLink.judge(cData)) {
+									continue;
+								}
+								tmpObjects.add(cData);
+								opRsltChilds.getResultObjects().set(i, null);
+							}
+						}
+					}
+					return opRsltParent;
+				} catch (Exception e) {
+					return new OperationResult<>(e);
 				}
 			}
-			myOpened = this.openRepository();// 打开仓库
-			myDbTrans = this.beginTransaction(); // 打开事务
-			this.fireTransaction(type, bo);
-			IOperationResult<P> operationResult = boRepository.saveEx(bo); // 保存BO
-			// 其他
-			if (operationResult.getError() != null) {
-				throw operationResult.getError();
-			}
-			// 成功保存
-			bo = operationResult.getResultObjects().firstOrDefault();
-			if (type == TransactionType.BEFORE_ADD) {
-				type = TransactionType.ADD;
-			} else if (type == TransactionType.BEFORE_UPDATE) {
-				type = TransactionType.UPDATE;
-			} else if (type == TransactionType.BEFORE_DELETE) {
-				type = TransactionType.DELETE;
-			}
-			this.fireTransaction(type, bo);
-			if (myDbTrans) {
-				this.commitTransaction();// 结束事务
-			}
-			if (type == TransactionType.DELETE) {
-				// 删除操作，不返回实例
-				bo = null;
-			}
-			return bo;
-		} catch (Throwable e) {
-			if (myDbTrans) {
-				this.rollbackTransaction();// 自己打开的事务自己关闭
-			}
-			if (!(e instanceof Exception)) {
-				throw new Exception(e);
-			}
-			throw e;
-		} finally {
-			if (myOpened) {
-				this.closeRepository();// 自己打开的连接，自己关闭
-			}
 		}
-	}
-
-	<P extends IBusinessObject> P save(P bo) throws Exception {
-		return this.save(this.getRepository(), bo);
+		// 父项查询，再查子项
+		return super.fetch(boType, criteria);
 	}
 
 	/**
-	 * 触发事务
+	 * 保存数据
 	 * 
-	 * @param type    类型
-	 * @param trigger 触发对象
-	 * @throws TransactionException
+	 * 自建事务，重新获取对象实例
+	 * 
+	 * @param <T> 对象类型
+	 * @param bo  待保存对象
+	 * @return
 	 */
-	protected void fireTransaction(TransactionType type, IBusinessObject trigger) throws TransactionException {
-		if (type != null && this.getRepository() instanceof IBORepository4Db) {
-			// 数据库仓库
-			IBORepository4Db dbRepository = (IBORepository4Db) this.getRepository();
+	@Override
+	protected <T extends IBusinessObject> OperationResult<T> save(T bo) {
+		try {
+			boolean mine = this.beginTransaction();
 			try {
-				if (type == TransactionType.BEFORE_ADD) {
-					DbKeysManager keysManager = new DbKeysManager();
-					keysManager.setDbConnection(dbRepository.getDbConnection());
-					keysManager.setAdapter(dbRepository.getBOAdapter());
-					// 获取并更新系列号
-					keysManager.useSeriesKey(trigger);
-				} else {
-					IBOAdapter adapter = dbRepository.getBOAdapter();
-					ISqlQuery sqlQuery = adapter.parseTransactionNotification(type, trigger);
-					IOperationResult<TransactionMessage> spOpRslt = dbRepository.fetch(sqlQuery,
-							TransactionMessage.class);
-					if (spOpRslt.getError() != null) {
-						throw spOpRslt.getError();
-					}
-					TransactionMessage message = spOpRslt.getResultObjects().firstOrDefault();
-					if (message == null) {
-						throw new TransactionException(I18N.prop("msg_bobas_invaild_bo_transaction_message"));
-					}
-					if (message.getCode() != 0) {
-						Logger.log(MessageLevel.DEBUG, MSG_TRANSACTION_SP_VALUES, type.toString(), trigger.toString(),
-								message.getCode(), message.getMessage());
-						throw new TransactionException(message.getMessage());
-					}
+				OperationResult<T> operationResult = super.save(bo);
+				if (operationResult.getError() != null) {
+					throw operationResult.getError();
 				}
-			} catch (TransactionException e) {
-				throw e;
+				// 自建事务，提交；并重新获取对象实例
+				if (mine == true) {
+					this.commitTransaction();
+					mine = false;
+					// 获取新实例后，关闭连接
+					return this.fetch(bo.getClass(), bo.getCriteria());
+				}
+				// 非自建事务，不获取新对象实例
+				return operationResult;
 			} catch (Exception e) {
-				throw new TransactionException(e);
-			}
-		}
-
-	}
-
-	/**
-	 * 保存业务对象
-	 * 
-	 * @param bo    业务对象
-	 * 
-	 * @param token 口令
-	 * 
-	 * @return 查询的结果
-	 */
-	protected final <P extends IBusinessObject> OperationResult<P> save(P bo, String token) {
-		OperationResult<P> operationResult = new OperationResult<P>();
-		try {
-			if (bo instanceof ITrackStatus) {
-				ITrackStatus status = (ITrackStatus) bo;
-				if (status.isDeleted() && status.isNew() && status.isSavable()) {
-					throw new RepositoryException(I18N.prop("msg_bobas_not_allow_delete_new_bo"));
+				if (mine == true) {
+					this.rollbackTransaction();
 				}
+				throw e;
 			}
-			this.setCurrentUser(token);// 解析并设置当前用户
-			operationResult.addResultObjects(this.save(bo));
 		} catch (Exception e) {
-			operationResult.setError(e);
-			Logger.log(e);
+			return new OperationResult<>(e);
 		}
-		return operationResult;
 	}
-
 }

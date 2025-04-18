@@ -57,37 +57,37 @@ public interface IApprovalProcessStep {
 	 * 批准
 	 * 
 	 * @param judgment 意见
-	 * @throws UnlogicalException
+	 * @throws ApprovalException
 	 */
-	void approve(String judgment) throws UnlogicalException;
+	void approve(String judgment) throws ApprovalException;
 
 	/**
 	 * 拒绝
 	 * 
 	 * @param judgment 意见
-	 * @throws UnlogicalException
+	 * @throws ApprovalException
 	 */
-	void reject(String judgment) throws UnlogicalException;
+	void reject(String judgment) throws ApprovalException;
 
 	/**
 	 * 退回
 	 * 
 	 * @param judgment 意见
-	 * @throws UnlogicalException
+	 * @throws ApprovalException
 	 */
-	void retreat(String judgment) throws UnlogicalException;
+	void retreat(String judgment) throws ApprovalException;
 
 	/**
 	 * 重置为进行中
 	 * 
-	 * @throws UnlogicalException
+	 * @throws ApprovalException
 	 */
-	void reset() throws UnlogicalException;
+	void reset() throws ApprovalException;
 
 	/**
 	 * 跳过
 	 * 
-	 * @throws UnlogicalException
+	 * @throws ApprovalException
 	 */
-	void skip() throws UnlogicalException;
+	void skip() throws ApprovalException;
 }

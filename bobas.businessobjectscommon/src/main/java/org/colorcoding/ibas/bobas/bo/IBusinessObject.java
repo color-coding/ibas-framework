@@ -1,8 +1,28 @@
 package org.colorcoding.ibas.bobas.bo;
 
-import org.colorcoding.ibas.bobas.core.IBusinessObjectBase;
+import org.colorcoding.ibas.bobas.common.ICriteria;
+import org.colorcoding.ibas.bobas.core.ITrackable;
 
-public interface IBusinessObject extends IBusinessObjectBase {
+public interface IBusinessObject extends Cloneable, ITrackable {
+
+	/**
+	 * 是否忙
+	 * 
+	 */
+	boolean isBusy();
+
+	/**
+	 * 是否有效
+	 * 
+	 */
+	boolean isValid();
+
+	/**
+	 * 获取对象查询条件
+	 * 
+	 * @return 当前的查询条件
+	 */
+	ICriteria getCriteria();
 
 	/**
 	 * 对象识别码
