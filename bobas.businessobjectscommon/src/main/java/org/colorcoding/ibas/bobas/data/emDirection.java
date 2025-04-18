@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.data;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.mapping.Value;
+import org.colorcoding.ibas.bobas.common.Value;
 
 /**
  * 方向
@@ -11,7 +11,7 @@ import org.colorcoding.ibas.bobas.mapping.Value;
  * @author Niuren.Zhu
  *
  */
-@XmlType(name = "emDirection", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public enum emDirection {
 	/**
 	 * 入
@@ -23,19 +23,4 @@ public enum emDirection {
 	 */
 	@Value("O")
 	OUT;
-
-	public static emDirection valueOf(int value) {
-		return values()[value];
-	}
-
-	public static emDirection valueOf(String value, boolean ignoreCase) {
-		if (ignoreCase) {
-			for (Object item : emDirection.class.getEnumConstants()) {
-				if (item.toString().equalsIgnoreCase(value)) {
-					return (emDirection) item;
-				}
-			}
-		}
-		return emDirection.valueOf(value);
-	}
 }

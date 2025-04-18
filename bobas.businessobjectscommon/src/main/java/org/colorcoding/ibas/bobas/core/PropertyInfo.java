@@ -1,20 +1,26 @@
 package org.colorcoding.ibas.bobas.core;
 
 import java.lang.annotation.Annotation;
+import java.math.BigDecimal;
 
-import org.colorcoding.ibas.bobas.data.ArrayList;
-import org.colorcoding.ibas.bobas.data.List;
+import org.colorcoding.ibas.bobas.common.Booleans;
+import org.colorcoding.ibas.bobas.common.DateTimes;
+import org.colorcoding.ibas.bobas.common.Decimals;
+import org.colorcoding.ibas.bobas.common.Enums;
+import org.colorcoding.ibas.bobas.common.Field;
+import org.colorcoding.ibas.bobas.common.Numbers;
+import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.data.DateTime;
+import org.colorcoding.ibas.bobas.db.DbField;
 
-public final class PropertyInfo<P> implements IPropertyInfo<P> {
-
-	public final static String DEFALUT_NAME = "";
+final class PropertyInfo<P> implements IPropertyInfo<P> {
 
 	public PropertyInfo(String name, Class<P> type) {
 		this.setName(name);
 		this.setValueType(type);
 	}
 
-	private String name = DEFALUT_NAME;
+	private String name = Strings.VALUE_EMPTY;
 
 	public final String getName() {
 		return this.name;
@@ -46,7 +52,31 @@ public final class PropertyInfo<P> implements IPropertyInfo<P> {
 
 	private P defaultValue;
 
+	@SuppressWarnings("unchecked")
 	public final P getDefaultValue() {
+		if (this.defaultValue == null) {
+			if (this.getValueType() == String.class) {
+				return (P) Strings.defaultValue();
+			} else if (this.getValueType() == BigDecimal.class) {
+				return (P) Decimals.defaultValue();
+			} else if (this.getValueType() == Integer.class) {
+				return (P) Numbers.defaultValue(this.getValueType());
+			} else if (this.getValueType() == Short.class) {
+				return (P) Numbers.defaultValue(this.getValueType());
+			} else if (this.getValueType() == Long.class) {
+				return (P) Numbers.defaultValue(this.getValueType());
+			} else if (this.getValueType() == Double.class) {
+				return (P) Numbers.defaultValue(this.getValueType());
+			} else if (this.getValueType() == Float.class) {
+				return (P) Numbers.defaultValue(this.getValueType());
+			} else if (this.getValueType().isEnum()) {
+				return (P) Enums.defaultValue(this.getValueType());
+			} else if (this.getValueType() == Boolean.class) {
+				return (P) Booleans.defaultValue();
+			} else if (this.getValueType() == DateTime.class) {
+				return (P) DateTimes.defaultValue();
+			}
+		}
 		return this.defaultValue;
 	}
 
@@ -54,7 +84,58 @@ public final class PropertyInfo<P> implements IPropertyInfo<P> {
 		this.defaultValue = value;
 	}
 
-	private List<Annotation> annotations = null;
+	private boolean primaryKey = Booleans.VALUE_FALSE;
+
+	public boolean isPrimaryKey() {
+		return this.primaryKey;
+	}
+
+	public void setPrimaryKey(boolean value) {
+		this.primaryKey = value;
+	}
+
+	private boolean uniqueKey = Booleans.VALUE_FALSE;
+
+	public boolean isUniqueKey() {
+		return this.uniqueKey;
+	}
+
+	public void setUniqueKey(boolean value) {
+		this.uniqueKey = value;
+	}
+
+	private Annotation[] annotations = null;
+
+	protected Annotation[] getAnnotations() {
+		return annotations;
+	}
+
+	void setAnnotations(Annotation[] annotations) {
+		this.annotations = annotations;
+		if (this.annotations != null) {
+			for (Annotation annotation : this.annotations) {
+				if (annotation.annotationType().equals(Field.class)) {
+					Field field = (Field) annotation;
+					if (field.primaryKey() == true) {
+						this.primaryKey = true;
+					}
+					if (field.uniqueKey() == true) {
+						this.uniqueKey = true;
+					}
+					break;
+				} else if (annotation.annotationType().equals(DbField.class)) {
+					DbField field = (DbField) annotation;
+					if (field.primaryKey() == true) {
+						this.primaryKey = true;
+					}
+					if (field.uniqueKey() == true) {
+						this.uniqueKey = true;
+					}
+					break;
+				}
+			}
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	public final <A extends Annotation> A getAnnotation(Class<A> type) {
@@ -69,30 +150,8 @@ public final class PropertyInfo<P> implements IPropertyInfo<P> {
 		return null;
 	}
 
-	public final void addAnnotation(Annotation item) {
-		if (item == null) {
-			return;
-		}
-		if (this.annotations == null) {
-			this.annotations = new ArrayList<Annotation>();
-		}
-		this.annotations.add(item);
-	}
-
-	public final void addAnnotation(Annotation[] items) {
-		if (items == null || items.length == 0) {
-			return;
-		}
-		if (this.annotations == null) {
-			this.annotations = new ArrayList<Annotation>(items.length);
-		}
-		for (Annotation item : items) {
-			this.annotations.add(item);
-		}
-	}
-
-	@Override
 	public final String toString() {
-		return String.format("{property info: %s}", this.getName());
+		return String.format("{property: %s}", this.getName());
 	}
+
 }

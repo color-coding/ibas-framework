@@ -17,7 +17,7 @@ public abstract class JudgmentExpressionComparable<T extends Comparable<T>> exte
 	}
 
 	@Override
-	public boolean result() throws NotSupportOperationException {
+	public boolean result() throws ExpressionException {
 		// 等于
 		if (this.getOperation() == JudmentOperation.EQUAL) {
 			// 左值为空

@@ -22,30 +22,13 @@
     <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
     <init-param>
       <param-name>jersey.config.server.provider.packages</param-name>
-      <param-value>org.colorcoding.ibas.demo.repository.jersey</param-value>
+      <param-value>org.colorcoding.ibas.demo.service.jersey</param-value>
     </init-param>
     <init-param>
       <param-name>jersey.config.server.provider.classnames</param-name>
-      <param-value>org.glassfish.jersey.media.multipart.MultiPartFeature</param-value>
+      <param-value>org.glassfish.jersey.media.multipart.MultiPartFeature,org.colorcoding.ibas.bobas.jersey.JsonConfig</param-value>
     </init-param>
     <load-on-startup>2</load-on-startup>
-  </servlet>
-  <servlet>
-    <servlet-name>bobas.demo.monitor</servlet-name>
-    <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-    <init-param>
-      <param-name>jersey.config.server.provider.packages</param-name>
-      <param-value>org.colorcoding.ibas.bobas.diagnosis</param-value>
-    </init-param>
-    <load-on-startup>3</load-on-startup>
-  </servlet>
-  <servlet>
-    <servlet-name>bobas.demo.cxf</servlet-name>
-    <servlet-class>org.colorcoding.ibas.bobas.cxf.CXFServlet</servlet-class>
-    <init-param>
-      <param-name>ibas.config.server.provider.packages</param-name>
-      <param-value>org.colorcoding.ibas.demo.repository.cxf</param-value>
-    </init-param>
   </servlet>
   <servlet-mapping>
     <servlet-name>default</servlet-name>
@@ -54,14 +37,6 @@
   <servlet-mapping>
     <servlet-name>bobas.demo.jersey</servlet-name>
     <url-pattern>/services/jersey/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>bobas.demo.cxf</servlet-name>
-    <url-pattern>/services/cxf/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>bobas.demo.monitor</servlet-name>
-    <url-pattern>/services/monitor/*</url-pattern>
   </servlet-mapping>
   <filter>
     <filter-name>CorsFilter</filter-name>

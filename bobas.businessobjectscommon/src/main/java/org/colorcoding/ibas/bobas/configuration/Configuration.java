@@ -10,9 +10,10 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.colorcoding.ibas.bobas.data.DataConvert;
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.data.IKeyText;
-import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.data.KeyText;
+import org.colorcoding.ibas.bobas.logging.Logger;
 
 /**
  * 配置
@@ -22,22 +23,20 @@ import org.colorcoding.ibas.bobas.message.Logger;
  */
 public class Configuration {
 
-	protected static final String MSG_CONFIG_READ_FILE_DATA = "config: read file's data [%s].";
-	protected static final String MSG_CONFIG_READ_FILE_DATA_FAILD = "config: read file's data [%s] faild.";
-
-	private volatile static IConfigurationManager instance;
+	private volatile static ConfigurationManager instance;
 
 	/**
 	 * 创建实例，使用默认位置配置
 	 * 
 	 * @return
 	 */
-	public static IConfigurationManager create() {
+	public static ConfigurationManager create() {
 		if (instance == null) {
 			synchronized (Configuration.class) {
 				if (instance == null) {
 					String folder = getStartupFolder();
-					if (folder.endsWith("target" + File.separator + "test-classes")) {
+					if (folder.endsWith("target" + File.separator + "test-classes")
+							|| folder.endsWith("target" + File.separator + "classes")) {
 						// 测试脚本 target\test-classes
 						folder = (new File(folder)).getParentFile().getParentFile().getPath();
 					}
@@ -49,11 +48,11 @@ public class Configuration {
 					}
 					if (instance == null) {
 						// 读取配置文件失败
-						System.err.println(String.format(MSG_CONFIG_READ_FILE_DATA_FAILD, configFile));
+						System.err.println(String.format("config: read file's data [%s] faild.", configFile));
 						instance = new ConfigurationManagerFile(configFile);
 					} else {
 						// 读取配置文件成功
-						Logger.log(MSG_CONFIG_READ_FILE_DATA, configFile);
+						Logger.log("config: read file's data [%s].", configFile);
 					}
 				}
 			}
@@ -67,7 +66,7 @@ public class Configuration {
 	 * @param configFile 配置文件路径
 	 * @return
 	 */
-	public static IConfigurationManager create(String configFile) throws Exception {
+	public static ConfigurationManager create(String configFile) throws Exception {
 		synchronized (Configuration.class) {
 			ConfigurationManagerFile manager = new ConfigurationManagerFile();
 			manager.setConfigFile(configFile);
@@ -187,7 +186,6 @@ public class Configuration {
 	 * 配置项目-工作目录
 	 */
 	public final static String CONFIG_ITEM_WORK_FOLDER = "WorkFolder";
-	private volatile static String workFolder = null;
 
 	/**
 	 * 获取工作目录
@@ -195,19 +193,17 @@ public class Configuration {
 	 * @return
 	 */
 	public static String getWorkFolder() {
-		if (workFolder == null) {
-			String path = getConfigValue(CONFIG_ITEM_WORK_FOLDER);
-			if (path == null || path.isEmpty()) {
-				// 没有配置工作目录
-				path = getStartupFolder();
-			}
-			File folder = new File(path);
-			if (!folder.exists()) {
-				folder.mkdirs();
-			}
-			workFolder = folder.getPath();
+		String path = getConfigValue(CONFIG_ITEM_WORK_FOLDER);
+		// 没有配置工作目录
+		if (Strings.isNullOrEmpty(path)) {
+			path = getStartupFolder();
+			create().addConfigValue(CONFIG_ITEM_WORK_FOLDER, path);
 		}
-		return workFolder;
+		File folder = new File(path);
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
+		return folder.getPath();
 	}
 
 	/**
@@ -216,8 +212,7 @@ public class Configuration {
 	 * @return
 	 */
 	public static String getTempFolder() {
-		File folder = DataConvert.isNullOrEmpty(System.getProperty("java.io.tmpdir"))
-				? new File(getWorkFolder(), "temp")
+		File folder = Strings.isNullOrEmpty(System.getProperty("java.io.tmpdir")) ? new File(getWorkFolder(), "temp")
 				: new File(System.getProperty("java.io.tmpdir"));
 		if (!folder.exists()) {
 			folder.mkdirs();
@@ -269,44 +264,14 @@ public class Configuration {
 	public static String applyVariables(String variable) {
 		String value = applyVariables(variable, new Iterator<IKeyText>() {
 
-			private Iterator<IConfigurationElement> iterator = create().getElements().iterator();
+			private Iterator<KeyText> iterator = create().getElements().iterator();
 
-			@Override
 			public boolean hasNext() {
 				return iterator.hasNext();
 			}
 
-			@Override
 			public IKeyText next() {
-				IConfigurationElement next = iterator.next();
-				return new IKeyText() {
-
-					@Override
-					public void setText(String value) {
-						next.setValue(value);
-					}
-
-					@Override
-					public void setKey(String value) {
-						next.setKey(value);
-					}
-
-					@Override
-					public String getText() {
-						return next.getValue();
-					}
-
-					@Override
-					public String getKey() {
-						return next.getKey();
-					}
-
-					@Override
-					public String toString() {
-						return String.format("{key text: %s %s}", this.getKey(), this.getText());
-					}
-
-				};
+				return iterator.next();
 			}
 
 		});

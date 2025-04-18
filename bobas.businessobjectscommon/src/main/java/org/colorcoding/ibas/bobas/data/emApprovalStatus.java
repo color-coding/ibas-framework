@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.data;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.mapping.Value;
+import org.colorcoding.ibas.bobas.common.Value;
 
 /**
  * 审批状态
@@ -11,7 +11,7 @@ import org.colorcoding.ibas.bobas.mapping.Value;
  * @author Niuren.Zhu
  *
  */
-@XmlType(name = "emApprovalStatus", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public enum emApprovalStatus {
 
 	/**
@@ -48,18 +48,4 @@ public enum emApprovalStatus {
 	@Value("C")
 	CANCELLED;
 
-	public static emApprovalStatus valueOf(int value) {
-		return values()[value];
-	}
-
-	public static emApprovalStatus valueOf(String value, boolean ignoreCase) {
-		if (ignoreCase) {
-			for (Object item : emApprovalStatus.class.getEnumConstants()) {
-				if (item.toString().equalsIgnoreCase(value)) {
-					return (emApprovalStatus) item;
-				}
-			}
-		}
-		return emApprovalStatus.valueOf(value);
-	}
 }

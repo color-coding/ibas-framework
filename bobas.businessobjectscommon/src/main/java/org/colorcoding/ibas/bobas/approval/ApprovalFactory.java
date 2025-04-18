@@ -1,9 +1,10 @@
 package org.colorcoding.ibas.bobas.approval;
 
+import java.util.Iterator;
+
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
-import org.colorcoding.ibas.bobas.core.IBORepository;
-import org.colorcoding.ibas.bobas.data.emApprovalStatus;
+import org.colorcoding.ibas.bobas.repository.ITransaction;
 
 /**
  * 审批工厂
@@ -11,50 +12,44 @@ import org.colorcoding.ibas.bobas.data.emApprovalStatus;
  * @author Niuren.Zhu
  *
  */
-public class ApprovalFactory extends ConfigurableFactory<IApprovalProcessManager> {
+public class ApprovalFactory {
 
 	private ApprovalFactory() {
 	}
 
-	private volatile static ApprovalFactory instance;
+	public synchronized static ApprovalProcessManager createManager(ITransaction transaction) {
+		return new Factory().create(transaction);
+	}
 
-	public synchronized static ApprovalFactory create() {
-		if (instance == null) {
-			synchronized (ApprovalFactory.class) {
-				if (instance == null) {
-					instance = new ApprovalFactory();
-				}
-			}
+	private static class Factory extends ConfigurableFactory<ApprovalProcessManager> {
+
+		public ApprovalProcessManager create(ITransaction transaction) {
+			ApprovalProcessManager manager = this.create(MyConfiguration.CONFIG_ITEM_APPROVAL_WAY,
+					ApprovalProcessManager.class.getSimpleName());
+			manager.setTransaction(transaction);
+			return manager;
 		}
-		return instance;
-	}
 
-	/**
-	 * 创建流程管理员实例
-	 * 
-	 * @return
-	 * @throws ApprovalException
-	 */
-	public synchronized IApprovalProcessManager createManager() {
-		return this.create(MyConfiguration.CONFIG_ITEM_APPROVAL_WAY, "ApprovalProcessManager");
-	}
+		@Override
+		protected ApprovalProcessManager createDefault(String typeName) {
+			return new ApprovalProcessManager() {
 
-	@Override
-	protected IApprovalProcessManager createDefault(String typeName) {
-		return new IApprovalProcessManager() {
-			@Override
-			public void useRepository(IBORepository boRepository) {
-			}
-
-			@Override
-			public IApprovalProcess checkProcess(IApprovalData data) {
-				if (data.getApprovalStatus() != emApprovalStatus.UNAFFECTED) {
-					// 重置数据状态
-					data.setApprovalStatus(emApprovalStatus.UNAFFECTED);
+				@Override
+				public IProcessData loadProcessData(IApprovalData apData) {
+					return null;
 				}
-				return null;
-			}
-		};
-	}
 
+				@Override
+				protected ApprovalProcess<IProcessData> createApprovalProcess(IProcessData data) {
+					return null;
+				}
+
+				@Override
+				protected Iterator<ApprovalProcess<IProcessData>> createApprovalProcess(String boCode) {
+					return null;
+				}
+
+			};
+		}
+	}
 }

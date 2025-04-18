@@ -1,157 +1,83 @@
 package org.colorcoding.ibas.bobas.approval;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
-import org.colorcoding.ibas.bobas.bo.IBODocument;
-import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
-import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
-import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
-import org.colorcoding.ibas.bobas.core.IBORepository;
-import org.colorcoding.ibas.bobas.data.emApprovalStatus;
-import org.colorcoding.ibas.bobas.data.emDocumentStatus;
-import org.colorcoding.ibas.bobas.data.emYesNo;
-import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.logging.Logger;
+import org.colorcoding.ibas.bobas.repository.ITransaction;
 
 /**
- * 默认流程管理员
+ * 流程管理员（基类）
  * 
  * @author Niuren.Zhu
  *
  */
-public abstract class ApprovalProcessManager implements IApprovalProcessManager {
+public abstract class ApprovalProcessManager {
 
-	protected static final String MSG_APPROVAL_PROCESS_STARTED = "approval process: data [%s]'s approval process was started, name [%s].";
+	private ITransaction transaction;
 
-	private IBORepository repository;
-
-	private final IBORepository getRepository() {
-		return this.repository;
+	protected final ITransaction getTransaction() {
+		return this.transaction;
 	}
 
-	private final void setRepository(IBORepository boRepository) {
-		this.repository = boRepository;
+	final void setTransaction(ITransaction transaction) {
+		this.transaction = transaction;
 	}
 
-	@Override
-	public final void useRepository(IBORepository boRepository) {
-		if (this.repository != null) {
-			throw new RuntimeException(I18N.prop("msg_bobas_not_supported"));
+	/**
+	 * 开始审批流程
+	 * 
+	 * @param apData 待审批数据
+	 * @return
+	 */
+	public <T extends IProcessData> ApprovalProcess<T> startProcess(IApprovalData apData) throws ApprovalException {
+		ApprovalProcess<T> process;
+		Iterator<ApprovalProcess<T>> processes = this.createApprovalProcess(apData.getObjectCode());
+		while (processes != null && processes.hasNext()) {
+			process = processes.next();
+			process.setTransaction(this.getTransaction());
+			if (process.start(apData)) {
+				// 审批流程开始
+				Logger.log("approval process: data [%s]'s approval process was started, name [%s].",
+						apData.getIdentifiers(), process.getName());
+				return process;
+			}
 		}
-		this.setRepository(boRepository);
-		this.myProcesses = new ArrayList<>();
+		return null;
 	}
 
-	private List<IApprovalProcess> myProcesses;
-
-	@Override
-	public IApprovalProcess checkProcess(IApprovalData data) {
-		if (data == null) {
-			return null;
-		}
-		for (IApprovalProcess item : this.myProcesses) {
-			if (item.getApprovalData() == data) {
-				return item;
-			}
-		}
-		// 已保存的，仅看处理过的（没匹配的保存后又进行匹配）
-		if (data.isDirty() == false) {
-			return null;
-		}
-		IApprovalProcess process = null;
-		if (!data.isNew()) {
-			// 不是新建查看是否存在审批
-			process = this.loadApprovalProcess(data.getIdentifiers());
-			if (process != null) {
-				process.setRepository(this.getRepository());
-				process.setApprovalData(data);
-			}
-		}
-		// 创建审批流程并尝试开始
-		if (process == null && this.checkDataStatus(data)) {
-			Iterator<IApprovalProcess> processes = this.createApprovalProcess(data.getObjectCode());
-			while (processes != null && processes.hasNext()) {
-				process = processes.next();
-				process.setRepository(this.getRepository());
-				if (process.start(data)) {
-					Logger.log(MSG_APPROVAL_PROCESS_STARTED, data, process.getName());
-					// 审批流程开始
-					break;
-				} else {
-					process = null;
-				}
-			}
-		}
-		if (process == null) {
-			// 没有符合的审批流程
-			if (data.getApprovalStatus() != emApprovalStatus.UNAFFECTED && data.isNew()) {
-				// 重置数据状态
-				data.setApprovalStatus(emApprovalStatus.UNAFFECTED);
-			}
-		} else {
-			this.myProcesses.add(process);
-		}
+	/**
+	 * 开始审批流程
+	 * 
+	 * @param processData 流程数据
+	 * @return
+	 */
+	public <T extends IProcessData> ApprovalProcess<T> startProcess(T processData) throws ApprovalException {
+		ApprovalProcess<T> process = this.createApprovalProcess(processData);
+		process.setTransaction(this.getTransaction());
 		return process;
 	}
 
 	/**
-	 * 检查数据状态，是否进行审批流程
+	 * 加载审批流程数据
 	 * 
-	 * @param data
+	 * @param apData 待审批数据
 	 * @return
 	 */
-	protected boolean checkDataStatus(IApprovalData data) {
-		if (data.isDeleted()) {
-			return false;
-		}
-		if (data instanceof IBODocument) {
-			// 单据类型
-			IBODocument docData = (IBODocument) data;
-			if (docData.getDocumentStatus() == emDocumentStatus.PLANNED) {
-				// 计划状态
-				return false;
-			}
-		}
-		if (data instanceof IBODocumentLine) {
-			// 单据行
-			IBODocumentLine lineData = (IBODocumentLine) data;
-			if (lineData.getLineStatus() == emDocumentStatus.PLANNED) {
-				// 计划状态
-				return false;
-			}
-		}
-		if (data instanceof IBOTagDeleted) {
-			// 引用数据，已标记删除的，不影响业务逻辑
-			IBOTagDeleted tagDeleted = (IBOTagDeleted) data;
-			if (tagDeleted.getDeleted() == emYesNo.YES) {
-				return false;
-			}
-		}
-		if (data instanceof IBOTagCanceled) {
-			// 引用数据，已标记取消的，不影响业务逻辑
-			IBOTagCanceled tagCanceled = (IBOTagCanceled) data;
-			if (tagCanceled.getCanceled() == emYesNo.YES) {
-				return false;
-			}
-		}
-		return true;
-	}
+	public abstract IProcessData loadProcessData(IApprovalData apData) throws ApprovalException;
 
 	/**
-	 * 创建审批流程
+	 * 创建审批流程实例
 	 * 
-	 * @param boCode 业务对象编码
 	 * @return
 	 */
-	protected abstract Iterator<IApprovalProcess> createApprovalProcess(String boCode);
+	protected abstract <T extends IProcessData> ApprovalProcess<T> createApprovalProcess(T processData);
 
 	/**
-	 * 加载审批流程
+	 * 创建对象的审批流程实例
 	 * 
-	 * @param boKey 业务对象标记
+	 * @param boCode 对象类型
 	 * @return
 	 */
-	protected abstract IApprovalProcess loadApprovalProcess(String boKey);
+	protected abstract <T extends IProcessData> Iterator<ApprovalProcess<T>> createApprovalProcess(String boCode);
+
 }

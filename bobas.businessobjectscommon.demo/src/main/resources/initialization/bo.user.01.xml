@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE User>
+<ns:User xmlns:ns="http://colorcoding.org/ibas/demo/bo">
+	<UserCode>admin</UserCode>
+	<UserName>管理员</UserName>
+	<UserPassword>1q2w3e</UserPassword>
+	<Activated>YES</Activated>
+	<SupperUser>YES</SupperUser>
+</ns:User>

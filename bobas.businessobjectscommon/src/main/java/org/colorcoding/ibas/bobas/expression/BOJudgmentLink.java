@@ -3,15 +3,14 @@ package org.colorcoding.ibas.bobas.expression;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.bo.BOUtilities;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
-import org.colorcoding.ibas.bobas.core.fields.IFieldData;
-import org.colorcoding.ibas.bobas.core.fields.IManagedFields;
+import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
-import org.colorcoding.ibas.bobas.data.DataConvert;
-import org.colorcoding.ibas.bobas.message.Logger;
-import org.colorcoding.ibas.bobas.message.MessageLevel;
+import org.colorcoding.ibas.bobas.logging.Logger;
+import org.colorcoding.ibas.bobas.logging.LoggingLevel;
 
 /**
  * 业务对象的判断链
@@ -49,13 +48,9 @@ public class BOJudgmentLink extends JudgmentLink {
 			if (item.getLeftOperter() instanceof IPropertyValueOperator) {
 				IPropertyValueOperator propertyOperator = (IPropertyValueOperator) item.getLeftOperter();
 				propertyOperator.setValue(bo);
-				if (!DataConvert.isNullOrEmpty(propertyOperator.getPropertyName())
+				if (!Strings.isNullOrEmpty(propertyOperator.getPropertyName())
 						&& propertyOperator.getPropertyName().indexOf(".") > 0
 						&& item.getLeftOperter() instanceof FieldValueOperator) {
-					// 存在子属性的判断
-					if (MyConfiguration.isDebugMode()) {
-						Logger.log(MessageLevel.DEBUG, MSG_JUDGMENT_ENTRY_SUB_JUDGMENT, item.toString());
-					}
 					try {
 						// 比较子判断
 						boolean result = this.judge(bo, item);
@@ -95,45 +90,45 @@ public class BOJudgmentLink extends JudgmentLink {
 
 	private List<IBusinessObject> getValues(IBusinessObject bo, String[] propertys) {
 		ArrayList<IBusinessObject> values = new ArrayList<>();
-		if (!(bo instanceof IManagedFields)) {
+		if (!BOUtilities.isBusinessObject(bo)) {
 			// 不能识别的对象
 			return values;
 		}
+		String property = null;
 		if (propertys.length == 1) {
 			// 最后一个属性
-			String property = propertys[0];
-			IFieldData fieldData = ((IManagedFields) bo).getField(property);
-			if (fieldData == null) {
+			property = propertys[0];
+			IPropertyInfo<?> propertyInfo = BOUtilities.propertyInfo(bo, property);
+			if (propertyInfo == null) {
 				// 未找到属性
-				Logger.log(MessageLevel.WARN, MSG_JUDGMENT_NOT_FOUND_PROPERTY, bo, property);
+				Logger.log(LoggingLevel.WARN, "not found %s property %s.", bo, property);
 			} else {
 				values.add(bo);
 			}
 			return values;
 		}
 		// 获取属性路径的值
-		String property = null;
 		for (int i = 0; i < propertys.length - 1; i++) {
 			property = propertys[i];
-			IFieldData fieldData = ((IManagedFields) bo).getField(property);
-			if (fieldData == null) {
+			IPropertyInfo<?> propertyInfo = BOUtilities.propertyInfo(bo, property);
+			if (propertyInfo == null) {
 				// 未找到属性
-				Logger.log(MessageLevel.WARN, MSG_JUDGMENT_NOT_FOUND_PROPERTY, bo, property);
+				Logger.log(LoggingLevel.WARN, "not found %s property %s.", bo, property);
 				break;
 			}
 			String[] lasts = new String[propertys.length - i - 1];
 			for (int j = 0; j < lasts.length; j++) {
 				lasts[j] = propertys[i + j + 1];
 			}
-			if (fieldData.getValue() instanceof IBusinessObjects<?, ?>) {
+			if (BOUtilities.propertyValue(bo, property) instanceof IBusinessObjects<?, ?>) {
 				// 值是业务对象列表
-				IBusinessObjects<?, ?> boList = (IBusinessObjects<?, ?>) fieldData.getValue();
+				IBusinessObjects<?, ?> boList = BOUtilities.propertyValue(bo, property);
 				for (IBusinessObject item : boList) {
 					values.addAll(this.getValues(item, lasts));
 				}
-			} else if (fieldData.getValue() instanceof IBusinessObject) {
+			} else if (BOUtilities.propertyValue(bo, property) instanceof IBusinessObject) {
 				// 值是对象
-				values.add((IBusinessObject) fieldData.getValue());
+				values.add(BOUtilities.propertyValue(bo, property));
 			}
 		}
 		return values;

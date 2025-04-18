@@ -48,4 +48,10 @@ public interface IFieldData {
 	 */
 	boolean isOriginal();
 
+	/**
+	 * 是否修改过
+	 * 
+	 * @return
+	 */
+	boolean isDirty();
 }

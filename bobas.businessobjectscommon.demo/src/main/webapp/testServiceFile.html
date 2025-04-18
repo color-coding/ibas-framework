@@ -7,7 +7,7 @@
 <body>
 	<div>
 		<h1>Upload File</h1>
-		<form action="services/jersey/files/upload" method="post"
+		<form action="services/jersey/files/upload?token=1q2w3e" method="post"
 			enctype="multipart/form-data">
 			<p>
 				select file : <input type="file" name="file" size="50" />
@@ -21,7 +21,7 @@
 </body>
 <script>
 	var download = function() {
-		window.open("services/jersey/files/download?token=*");
+		window.open("services/jersey/files/download?token=1q2w3e");
 	}
 </script>
 </html>

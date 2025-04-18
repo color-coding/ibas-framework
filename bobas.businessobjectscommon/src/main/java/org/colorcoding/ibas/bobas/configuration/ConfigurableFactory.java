@@ -1,34 +1,26 @@
 package org.colorcoding.ibas.bobas.configuration;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.core.BOFactory;
-import org.colorcoding.ibas.bobas.core.Daemon;
-import org.colorcoding.ibas.bobas.core.IDaemonTask;
-import org.colorcoding.ibas.bobas.core.InvalidDaemonTaskException;
+import org.colorcoding.ibas.bobas.bo.BOFactory;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.message.Logger;
-import org.colorcoding.ibas.bobas.message.MessageLevel;
+import org.colorcoding.ibas.bobas.logging.Logger;
+import org.colorcoding.ibas.bobas.logging.LoggingLevel;
 
 /**
  * 可配置工厂
  * 
  * @author Niuren.Zhu
  *
- * @param <T>
- *            工厂创建的类型
+ * @param <T> 工厂创建的类型
  */
 public abstract class ConfigurableFactory<T> {
-
-	protected static final String MSG_CONFIG_COMBINED_CLASS_NAME = "configurable factory: combined class name [%s].";
-	protected static final String MSG_CONFIG_NOT_CONFIGURATION_USING_DEFALUT = "configurable factory: not configured [%s], using defalut [%s].";
 
 	/**
 	 * 获取类型
 	 * 
-	 * @param names
-	 *            名称，任意值包含“.”，则不在补子类命名空间
+	 * @param names 名称，任意值包含“.”，则不在补子类命名空间
 	 * @return 类型，未找到为null
-	 * @throws BOFactoryException
+	 * @throws ClassNotFoundException
 	 */
 	@SuppressWarnings("unchecked")
 	protected Class<T> classOf(String... names) throws ClassNotFoundException {
@@ -63,15 +55,15 @@ public abstract class ConfigurableFactory<T> {
 		}
 		// 获取类类型
 		String fullName = stringBuilder.toString();
-		Logger.log(MessageLevel.DEBUG, MSG_CONFIG_COMBINED_CLASS_NAME, fullName);
-		return (Class<T>) BOFactory.create().loadClass(fullName);
+		Logger.log(LoggingLevel.INFO, "configurable factory: combined class name [%s].", fullName);
+		// 使用BO类加载器
+		return (Class<T>) BOFactory.loadClass(fullName);
 	}
 
 	/**
 	 * 获取类型实例
 	 * 
-	 * @param names
-	 *            名称
+	 * @param names 名称
 	 * @return 类型实例
 	 * @throws ClassNotFoundException
 	 * @throws IllegalAccessException
@@ -89,20 +81,16 @@ public abstract class ConfigurableFactory<T> {
 	/**
 	 * 创建实例
 	 * 
-	 * @param configKey
-	 *            配置项，提供命名空间
-	 * @param typeName
-	 *            类名
+	 * @param configKey 配置项，提供命名空间
+	 * @param typeName  类名
 	 * @return
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 * @throws BOFactoryException
 	 */
 	protected T create(String configKey, String typeName) {
 		String configValue = MyConfiguration.getConfigValue(configKey, "").toLowerCase();
 		if (configValue == null || configValue.isEmpty()) {
 			// 没有配置，则使用默认
-			Logger.log(MessageLevel.WARN, MSG_CONFIG_NOT_CONFIGURATION_USING_DEFALUT, configKey, typeName);
+			Logger.log(LoggingLevel.WARN, "configurable factory: not configured [%s], using defalut [%s].", configKey,
+					typeName);
 			return this.createDefault(typeName);
 		}
 		// 使用配置的实例
@@ -122,21 +110,4 @@ public abstract class ConfigurableFactory<T> {
 	 */
 	protected abstract T createDefault(String typeName);
 
-	/**
-	 * 注册后台任务
-	 * 
-	 * @param task
-	 * @return 是否成功
-	 */
-	protected boolean register(IDaemonTask task) {
-		if (task == null) {
-			return false;
-		}
-		try {
-			Daemon.register(task);
-		} catch (InvalidDaemonTaskException e) {
-			throw new RuntimeException(e);
-		}
-		return true;
-	}
 }

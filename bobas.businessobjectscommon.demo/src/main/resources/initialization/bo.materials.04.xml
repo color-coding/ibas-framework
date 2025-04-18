@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE Materials>
+<ns:Materials xmlns:ns="http://colorcoding.org/ibas/demo/bo">
+	<ItemCode>C00011</ItemCode>
+	<ItemDescription>DDR2 800 1GB 内存</ItemDescription>
+	<InventoryUoM>条</InventoryUoM>
+</ns:Materials>

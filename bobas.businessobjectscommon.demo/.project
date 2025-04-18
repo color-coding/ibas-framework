@@ -4,7 +4,6 @@
     <comment></comment>
     <projects>
         <project>bobas.businessobjectscommon</project>
-        <project>bobas.businessobjectscommon.cxf</project>
         <project>bobas.businessobjectscommon.jersey</project>
     </projects>
     <buildSpec>

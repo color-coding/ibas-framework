@@ -1,7 +1,7 @@
 package org.colorcoding.ibas.bobas.approval;
 
 /**
- * 审批步骤
+ * 审批步骤（多人）
  * 
  * @author Niuren.Zhu
  *
