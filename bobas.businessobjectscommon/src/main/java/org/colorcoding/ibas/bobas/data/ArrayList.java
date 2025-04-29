@@ -95,7 +95,7 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 	public List<E> where(Predicate<? super E> filter) {
 		Objects.requireNonNull(filter);
 		List<E> results = new ArrayList<E>();
-		for (int i = this.size() - 1; i >= 0; i--) {
+		for (int i = 0; i < this.size(); i++) {
 			E item = this.get(i);
 			if (item == null)
 				continue;
