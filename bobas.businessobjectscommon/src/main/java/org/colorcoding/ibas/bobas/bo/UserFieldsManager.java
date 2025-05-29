@@ -28,10 +28,12 @@ public abstract class UserFieldsManager {
 		synchronized (USER_FIELDS) {
 			UserFieldInfoList propertys = USER_FIELDS.get(objectType);
 			if (propertys != null) {
-				if (propertys.add(property)) {
-					property.setIndex(propertys.size() - 1);
-				} else {
-					return (UserFieldInfo<P>) propertys.firstOrDefault(c -> c.getName().equals(property.getName()));
+				synchronized (propertys) {
+					if (propertys.add(property)) {
+						property.setIndex(propertys.size() - 1);
+					} else {
+						return (UserFieldInfo<P>) propertys.firstOrDefault(c -> c.getName().equals(property.getName()));
+					}
 				}
 			} else {
 				propertys = new UserFieldInfoList();
@@ -114,6 +116,8 @@ public abstract class UserFieldsManager {
 			return BigDecimal.class;
 		} else if (type == DbFieldType.NUMERIC) {
 			return Integer.class;
+		} else if (type == DbFieldType.MEMO) {
+			return String.class;
 		}
 		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", type.toString()));
 	}

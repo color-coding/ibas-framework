@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.approval.IApprovalData;
 import org.colorcoding.ibas.bobas.bo.BOUtilities;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
@@ -410,27 +409,11 @@ class BusinessLogicChain implements IBusinessLogicChain {
 		if (data instanceof IBusinessObject) {
 			// 数据日志（仅触发对象）
 			if (data.isSavable() && data instanceof IBOStorageTag) {
-				if (MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_BO_LOGST_BEFORE_UPDATE, false)) {
-					// “更新、新建”后记录对象日志
-					if (data == this.getTrigger() && this.getTrigger().isDirty()) {
-						logic = analyzer.apply(new BOInstanceLogContract((IBOStorageTag) data));
-						logic.setHost(data);
-						logics.add(logic);
-					} else if (data == this.getTriggerCopy() && this.getTrigger().isDirty()
-							&& this.getTrigger().isDeleted()) {
-						// 仅对象删除时，触发反向逻辑
-						logic = analyzer.apply(new BOInstanceLogContract((IBOStorageTag) data));
-						logic.setHost(data);
-						logics.add(logic);
-					}
-				} else {
-					// “更新”前记录对象日志
-					if (data == this.getTriggerCopy() && !this.getTrigger().isDirty()) {
-						// 仅对象删除时，触发反向逻辑
-						logic = analyzer.apply(new BOInstanceLogContract((IBOStorageTag) data));
-						logic.setHost(data);
-						logics.add(logic);
-					}
+				// “更新”前记录对象日志
+				if (data == this.getTriggerCopy() && !this.getTriggerCopy().isDirty()) {
+					logic = analyzer.apply(new BOInstanceLogContract((IBOStorageTag) data));
+					logic.setHost(data);
+					logics.add(logic);
 				}
 			}
 		}

@@ -11,6 +11,8 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logging.Logger;
 import org.colorcoding.ibas.bobas.logic.BusinessLogicsManager;
 import org.colorcoding.ibas.bobas.logic.IBusinessLogicChain;
+import org.colorcoding.ibas.bobas.serialization.ISerializer;
+import org.colorcoding.ibas.bobas.serialization.SerializerManager;
 
 /**
  * 业务对象仓库（查询、保存）
@@ -115,7 +117,9 @@ public abstract class BORepository extends Repository {
 					}
 					// 如果是删除数据，则使用数据库副本
 					if (bo.isDeleted()) {
-						bo = BOUtilities.clone(boCopy);
+						// 完全克隆，不重置状态
+						ISerializer serializer = new SerializerManager().create();
+						bo = serializer.clone(boCopy);
 						bo.delete();
 					}
 				}
