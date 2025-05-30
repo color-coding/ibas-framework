@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -24,6 +25,7 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 
 	public FieldedObject() {
 		this.setLoading(true);
+		// 初始化对象属性
 		this.fields = PropertyInfoManager.initFields(this.getClass());
 		// 初始化被修改属性
 		this.modifiedProperties = new HashSet<IPropertyInfo<?>>();
@@ -68,13 +70,33 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	protected transient Set<IPropertyInfo<?>> modifiedProperties = null;
 
 	/**
-	 * 属性
+	 * 对象的属性（全部）
 	 * 
 	 * @return
 	 */
 	@Override
 	public List<IPropertyInfo<?>> properties() {
-		List<IPropertyInfo<?>> propertyInfos = new ArrayList<>(this.fields.keySet());
+		return this.properties(null);
+	}
+
+	/**
+	 * 对象的属性
+	 * 
+	 * @param filter 过滤条件
+	 * @return
+	 */
+	@Override
+	public List<IPropertyInfo<?>> properties(Predicate<IPropertyInfo<?>> filter) {
+		ArrayList<IPropertyInfo<?>> propertyInfos = new ArrayList<>(this.fields.size());
+		for (IPropertyInfo<?> propertyInfo : this.fields.keySet()) {
+			if (filter == null || filter.test(propertyInfo)) {
+				propertyInfos.add(propertyInfo);
+			}
+		}
+		// 符合条件的小于总量，则回收空间
+		if (propertyInfos.size() < this.fields.size()) {
+			propertyInfos.trimToSize();
+		}
 		// 属性排序
 		propertyInfos.sort(new Comparator<IPropertyInfo<?>>() {
 
@@ -135,8 +157,13 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 			throw new IllegalArgumentException(
 					Strings.format("[%s] not exists property [%s].", this.getClass().getName(), property.getName()));
 		}
-		if (this.isLoading()) {
-			this.fields.put(property, value);
+		// 加载状态时，非主键不触发属性改变事件
+		if (this.isLoading() && !property.isPrimaryKey()) {
+			if (property.getDefaultValue() == value) {
+				this.fields.put(property, null);
+			} else {
+				this.fields.put(property, value);
+			}
 		} else {
 			P oldValue = (P) this.fields.get(property);
 			if (oldValue != value) {
@@ -151,11 +178,6 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	}
 
 	@Override
-	protected void firePropertyChange(String name, Object oldValue, Object newValue) {
-		super.firePropertyChange(name, oldValue, newValue);
-	}
-
-	@Override
 	public void markOld() {
 		super.markOld();
 		if (this.modifiedProperties != null) {
@@ -166,13 +188,19 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	@Override
 	public boolean isModified(IPropertyInfo<?> propertyInfo) {
 		if (this.modifiedProperties != null) {
-			for (IPropertyInfo<?> item : this.modifiedProperties) {
-				if (item.equals(propertyInfo)) {
-					return true;
-				}
-			}
+			return this.modifiedProperties.contains(propertyInfo);
 		}
 		return false;
+	}
+
+	@Override
+	protected void beforeUnmarshal(Object parent) {
+		this.setLoading(true);
+	}
+
+	@Override
+	protected void afterUnmarshal(Object parent) {
+		this.setLoading(false);
 	}
 
 	@Override

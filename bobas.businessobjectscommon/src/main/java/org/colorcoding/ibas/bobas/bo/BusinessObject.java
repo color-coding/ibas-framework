@@ -367,13 +367,13 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 		Objects.requireNonNull(property);
 		if (Strings.isWith(property.getName(), IBOUserFields.USER_FIELD_PREFIX_SIGN, null)) {
 			if (this.userFields != null) {
+				if (!this.userFields.containsKey(property)) {
+					throw new IllegalArgumentException(Strings.format("[%s] not exists property [%s].",
+							this.getClass().getName(), property.getName()));
+				}
 				if (this.isLoading()) {
 					this.userFields.put(property, value);
 				} else {
-					if (!this.userFields.containsKey(property)) {
-						throw new IllegalArgumentException(Strings.format("[%s] not exists property [%s].",
-								this.getClass().getName(), property.getName()));
-					}
 					P oldValue = (P) this.userFields.get(property);
 					if (oldValue != value) {
 						this.userFields.put(property, value);
@@ -412,7 +412,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 		for (Entry<IPropertyInfo<?>, Object> entry : this.userFields.entrySet()) {
 			proxyField = new UserFieldProxy();
 			proxyField.setName(entry.getKey().getName());
-			proxyField.setValueType(entry.getKey().getValueType().getSimpleName());
+			proxyField.setValueType(entry.getKey().getValueType());
 			proxyField.setValue(entry.getValue());
 			proxyFields[i] = proxyField;
 			i += 1;

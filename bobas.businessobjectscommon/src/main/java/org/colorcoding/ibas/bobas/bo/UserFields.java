@@ -129,7 +129,8 @@ class UserFields implements IUserFields {
 	@Override
 	public <P> IUserField<P> register(String name, Class<P> valueType) {
 		if (this.indexOf(name) < 0) {
-			UserFieldInfo<P> uFieldInfo = UserFieldsFactory.createUserField(name, valueType);
+			IPropertyInfo<?> uFieldInfo = UserFieldsFactory.createManager().registerUserField(this.parent.getClass(),
+					name, valueType);
 			this.parent.userFields.put(uFieldInfo, null);
 			this.initialize();
 		}

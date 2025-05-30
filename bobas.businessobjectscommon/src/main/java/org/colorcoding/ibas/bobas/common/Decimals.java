@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.common;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 
 public class Decimals {
@@ -23,15 +24,28 @@ public class Decimals {
 	 */
 	public static RoundingMode ROUNDING_MODE_DEFAULT = RoundingMode.HALF_UP;
 
+	private static final BigDecimal zeroThroughTen[] = { BigDecimal.valueOf(0, DECIMAL_PLACES_STORAGE),
+			new BigDecimal(BigInteger.ONE, DECIMAL_PLACES_STORAGE),
+			new BigDecimal(BigInteger.valueOf(2), DECIMAL_PLACES_STORAGE),
+			new BigDecimal(BigInteger.valueOf(3), DECIMAL_PLACES_STORAGE),
+			new BigDecimal(BigInteger.valueOf(4), DECIMAL_PLACES_STORAGE),
+			new BigDecimal(BigInteger.valueOf(5), DECIMAL_PLACES_STORAGE),
+			new BigDecimal(BigInteger.valueOf(6), DECIMAL_PLACES_STORAGE),
+			new BigDecimal(BigInteger.valueOf(7), DECIMAL_PLACES_STORAGE),
+			new BigDecimal(BigInteger.valueOf(8), DECIMAL_PLACES_STORAGE),
+			new BigDecimal(BigInteger.valueOf(9), DECIMAL_PLACES_STORAGE),
+			new BigDecimal(BigInteger.TEN, DECIMAL_PLACES_STORAGE),
+
+	};
 	/**
 	 * 数值-1
 	 */
-	public final static BigDecimal VALUE_ONE = BigDecimal.ONE;
+	public final static BigDecimal VALUE_ONE = zeroThroughTen[1];
 
 	/**
 	 * 数值-0
 	 */
-	public final static BigDecimal VALUE_ZERO = BigDecimal.ZERO;
+	public final static BigDecimal VALUE_ZERO = zeroThroughTen[0];
 
 	/**
 	 * 数值--1
@@ -54,10 +68,8 @@ public class Decimals {
 	 * @return
 	 */
 	public static BigDecimal valueOf(double value) {
-		if (Double.compare(value, 0d) == 0) {
-			return VALUE_ZERO;
-		} else if (Double.compare(value, 1d) == 0) {
-			return VALUE_ONE;
+		if (value >= 0 && value < zeroThroughTen.length) {
+			return zeroThroughTen[(int) value];
 		} else if (Double.compare(value, -1d) == 0) {
 			return VALUE_MINUS_ONE;
 		}
@@ -75,11 +87,9 @@ public class Decimals {
 	 * @return
 	 */
 	public static BigDecimal valueOf(float value) {
-		if (Float.compare(value, 0f) == 0) {
-			return VALUE_ZERO;
-		} else if (Double.compare(value, 1f) == 0) {
-			return VALUE_ONE;
-		} else if (Double.compare(value, -1f) == 0) {
+		if (value >= 0 && value < zeroThroughTen.length) {
+			return zeroThroughTen[(int) value];
+		} else if (Float.compare(value, -1f) == 0) {
 			return VALUE_MINUS_ONE;
 		}
 		BigDecimal decimal = new BigDecimal(value);
@@ -96,10 +106,8 @@ public class Decimals {
 	 * @return
 	 */
 	public static BigDecimal valueOf(long value) {
-		if (Long.compare(value, 0l) == 0) {
-			return VALUE_ZERO;
-		} else if (Long.compare(value, 1l) == 0) {
-			return VALUE_ONE;
+		if (value >= 0 && value < zeroThroughTen.length) {
+			return zeroThroughTen[(int) value];
 		} else if (Long.compare(value, -1l) == 0) {
 			return VALUE_MINUS_ONE;
 		}
@@ -113,10 +121,8 @@ public class Decimals {
 	 * @return
 	 */
 	public static BigDecimal valueOf(int value) {
-		if (Integer.compare(value, 0) == 0) {
-			return VALUE_ZERO;
-		} else if (Integer.compare(value, 1) == 0) {
-			return VALUE_ONE;
+		if (value >= 0 && value < zeroThroughTen.length) {
+			return zeroThroughTen[value];
 		} else if (Integer.compare(value, -1) == 0) {
 			return VALUE_MINUS_ONE;
 		}
@@ -130,7 +136,11 @@ public class Decimals {
 	 * @return
 	 */
 	public static BigDecimal valueOf(short value) {
-		return valueOf((int) value);
+		if (value >= 0 && value < zeroThroughTen.length) {
+			return zeroThroughTen[(int) value];
+		} else {
+			return valueOf((int) value);
+		}
 	}
 
 	/**
