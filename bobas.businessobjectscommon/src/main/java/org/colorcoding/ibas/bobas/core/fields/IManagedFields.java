@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.core.fields;
 
+import java.util.Objects;
 import java.util.function.Predicate;
 
 import org.colorcoding.ibas.bobas.common.Strings;
@@ -26,11 +27,12 @@ public interface IManagedFields {
 		if (this instanceof IFieldedObject) {
 			IFieldedObject fieldedObject = (IFieldedObject) this;
 			List<IPropertyInfo<?>> properties = fieldedObject.properties();
-			List<IFieldData> fields = new ArrayList<>(properties.size());
-			for (IPropertyInfo<?> property : properties) {
+			IFieldData[] fields = new IFieldData[properties.size()];
+			for (int i = 0; i < properties.size(); i++) {
+				IPropertyInfo<?> property = properties.get(i);
 				DbField dbField = property.getAnnotation(DbField.class);
 				if (dbField == null) {
-					fields.add(new IFieldData() {
+					fields[i] = new IFieldData() {
 
 						@Override
 						public boolean setValue(Object value) {
@@ -45,7 +47,7 @@ public interface IManagedFields {
 
 						@Override
 						public boolean isSavable() {
-							return property.getAnnotation(DbField.class) != null;
+							return false;
 						}
 
 						@Override
@@ -83,9 +85,9 @@ public interface IManagedFields {
 							return String.format("{field: %s, %s}", this.getName(), this.getValue());
 						}
 
-					});
+					};
 				} else {
-					fields.add(new IFieldDataDb() {
+					fields[i] = new IFieldDataDb() {
 
 						@Override
 						public boolean setValue(Object value) {
@@ -100,7 +102,7 @@ public interface IManagedFields {
 
 						@Override
 						public boolean isSavable() {
-							return property.getAnnotation(DbField.class) != null;
+							return true;
 						}
 
 						@Override
@@ -152,10 +154,10 @@ public interface IManagedFields {
 						public String toString() {
 							return String.format("{field: %s, %s}", this.getName(), this.getValue());
 						}
-					});
+					};
 				}
 			}
-			return fields.toArray(new IFieldData[] {});
+			return fields;
 		}
 		return new IFieldData[] {};
 	}
@@ -166,9 +168,14 @@ public interface IManagedFields {
 	 * @return 字段
 	 */
 	default IFieldData[] getFields(Predicate<? super IFieldData> filter) {
+		Objects.requireNonNull(filter);
 		List<IFieldData> fields = new ArrayList<>();
-		fields.addAll(this.getFields());
-		return fields.where(filter).toArray(new IFieldData[] {});
+		for (IFieldData item : this.getFields()) {
+			if (filter.test(item)) {
+				fields.add(item);
+			}
+		}
+		return fields.toArray(new IFieldData[] {});
 	}
 
 	/**
@@ -199,7 +206,7 @@ public interface IManagedFields {
 
 						@Override
 						public boolean isSavable() {
-							return property.getAnnotation(DbField.class) != null;
+							return false;
 						}
 
 						@Override
@@ -253,7 +260,7 @@ public interface IManagedFields {
 
 						@Override
 						public boolean isSavable() {
-							return property.getAnnotation(DbField.class) != null;
+							return true;
 						}
 
 						@Override

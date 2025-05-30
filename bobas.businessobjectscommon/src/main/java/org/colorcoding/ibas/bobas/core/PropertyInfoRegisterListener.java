@@ -11,12 +11,4 @@ public interface PropertyInfoRegisterListener {
 	 */
 	void onRegistered(Class<?> clazz);
 
-	/**
-	 * 属性信息注册
-	 * 
-	 * @param clazz        对象
-	 * @param propertyInfo 属性
-	 */
-	void onRegistered(Class<?> clazz, IPropertyInfo<?> propertyInfo);
-
 }

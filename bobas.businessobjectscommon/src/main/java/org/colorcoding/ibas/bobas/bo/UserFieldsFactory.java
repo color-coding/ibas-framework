@@ -3,7 +3,9 @@ package org.colorcoding.ibas.bobas.bo;
 import java.lang.annotation.Annotation;
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.Booleans;
@@ -19,9 +21,6 @@ import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.db.DbField;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
-import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.task.Daemon;
-import org.colorcoding.ibas.bobas.task.IDaemonTask;
 
 public class UserFieldsFactory {
 
@@ -36,7 +35,7 @@ public class UserFieldsFactory {
 	 */
 	static Map<IPropertyInfo<?>, Object> initFields(Class<?> objectType) {
 		List<IPropertyInfo<?>> infoList = createManager().getUserFieldInfoList(objectType);
-		if (infoList == null) {
+		if (infoList == null || infoList.isEmpty()) {
 			return null;
 		}
 		Map<IPropertyInfo<?>, Object> fieldsMap = new HashMap<>(infoList.size(), 1);
@@ -59,35 +58,6 @@ public class UserFieldsFactory {
 				if (instance == null) {
 					instance = new Factory().create();
 					instance.initialize();
-					// 注册清理任务
-					Daemon.register(new IDaemonTask() {
-						@Override
-						public void run() {
-							if (instance == null) {
-								return;
-							}
-							try {
-								UserFieldsManager manager = new Factory().create();
-								manager.initialize();
-								instance = manager;
-							} catch (Exception e) {
-								instance = null;
-								Logger.log(e);
-							}
-						}
-
-						@Override
-						public String getName() {
-							return "user fields cleanner";
-						}
-
-						private long interval = MyConfiguration.isDebugMode() ? 180 : 3600;
-
-						@Override
-						public long getInterval() {
-							return this.interval;
-						}
-					});
 				}
 			}
 		}
@@ -117,21 +87,28 @@ class UserFieldInfoList extends ArrayList<IPropertyInfo<?>> {
 
 	private static final long serialVersionUID = -6320914335175298868L;
 
-	public UserFieldInfoList() {
-		super();
-	}
-
 	public UserFieldInfoList(int initialCapacity) {
 		super(initialCapacity);
+		this.keys = new HashSet<String>(initialCapacity);
 	}
 
+	private Set<String> keys;
+
 	public synchronized boolean add(IPropertyInfo<?> e) {
+		if (this.keys.contains(e.getName())) {
+			return false;
+		}
+		this.keys.add(e.getName());
+		return super.add(e);
+	}
+
+	public synchronized IPropertyInfo<?> get(String name) {
 		for (IPropertyInfo<?> item : this) {
-			if (item.getName().equals(e.getName())) {
-				return false;
+			if (Strings.equals(item.getName(), name)) {
+				return item;
 			}
 		}
-		return super.add(e);
+		throw new ArrayIndexOutOfBoundsException(Strings.format("not found %s.", name));
 	}
 }
 

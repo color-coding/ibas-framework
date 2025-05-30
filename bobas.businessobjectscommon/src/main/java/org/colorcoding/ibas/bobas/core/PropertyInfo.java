@@ -104,13 +104,28 @@ final class PropertyInfo<P> implements IPropertyInfo<P> {
 		this.uniqueKey = value;
 	}
 
+	volatile Runnable resolver = null;
+
 	private Annotation[] annotations = null;
 
 	protected Annotation[] getAnnotations() {
+		if (this.resolver != null) {
+			synchronized (this) {
+				if (this.resolver != null) {
+					this.resolver = null;
+					this.resolver.run();
+				}
+			}
+		}
 		return annotations;
 	}
 
 	void setAnnotations(Annotation[] annotations) {
+		if (this.resolver != null) {
+			synchronized (this) {
+				this.resolver = null;
+			}
+		}
 		this.annotations = annotations;
 		if (this.annotations != null) {
 			for (Annotation annotation : this.annotations) {
@@ -139,6 +154,14 @@ final class PropertyInfo<P> implements IPropertyInfo<P> {
 
 	@SuppressWarnings("unchecked")
 	public final <A extends Annotation> A getAnnotation(Class<A> type) {
+		if (this.resolver != null) {
+			synchronized (this) {
+				if (this.resolver != null) {
+					this.resolver.run();
+					this.resolver = null;
+				}
+			}
+		}
 		if (this.annotations == null) {
 			return null;
 		}

@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -83,6 +84,24 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 				return Integer.compare(o1.getIndex(), o2.getIndex());
 			}
 		});
+		return propertyInfos;
+	}
+
+	/**
+	 * 对象的属性
+	 * 
+	 * @param filter 过滤条件
+	 * @return
+	 */
+	@Override
+	public List<IPropertyInfo<?>> properties(Predicate<IPropertyInfo<?>> filter) {
+		Objects.requireNonNull(filter);
+		List<IPropertyInfo<?>> propertyInfos = new ArrayList<>();
+		for (IPropertyInfo<?> propertyInfo : this.fields.keySet()) {
+			if (filter.test(propertyInfo)) {
+				propertyInfos.add(propertyInfo);
+			}
+		}
 		return propertyInfos;
 	}
 
