@@ -120,7 +120,12 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 	 * @return
 	 */
 	protected final Object getRoot() {
-		return this.getLogicChain().getRoot();
+		Object root = this.getLogicChain().getRoot();
+		if (root == null) {
+			// 如果是根，则使用触发对象
+			root = this.getLogicChain().getTrigger();
+		}
+		return root;
 	}
 
 	/**

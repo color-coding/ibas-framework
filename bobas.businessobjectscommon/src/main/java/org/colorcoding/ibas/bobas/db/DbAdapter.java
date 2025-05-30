@@ -536,7 +536,7 @@ public abstract class DbAdapter {
 		return this.parsingSelect(boType, criteria, IDbTableLock.class.isAssignableFrom(boType));
 	}
 
-	private Map<Class<?>, String> tables = new ConcurrentHashMap<>(256);
+	private Map<Class<?>, String> tables = new ConcurrentHashMap<>(128);
 
 	/**
 	 * 返回对象类型对应的表

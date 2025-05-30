@@ -1,14 +1,25 @@
 package org.colorcoding.ibas.bobas.core;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.logging.Logger;
+import org.colorcoding.ibas.bobas.logging.LoggingLevel;
 
 /**
  * 属性管理员
@@ -25,22 +36,81 @@ public class PropertyInfoManager {
 
 	static final String BO_PROPERTY_NAMING_RULES_CAMEL = "%sProperty";
 
-	private static class PropertyInfoList extends ArrayList<IPropertyInfo<?>> {
+	private static class PropertyInfoList extends ArrayList<PropertyInfo<?>> {
+
+		public static final PropertyInfoList EMPTY = new PropertyInfoList(0);
 
 		private static final long serialVersionUID = -6320914335175298868L;
 
 		public PropertyInfoList(int initialCapacity) {
 			super(initialCapacity);
+			this.keys = new HashSet<String>(initialCapacity);
 		}
 
-		public synchronized boolean add(IPropertyInfo<?> e) {
-			for (IPropertyInfo<?> item : this) {
-				if (item.getName().equals(e.getName())) {
-					return false;
+		private Set<String> keys;
+
+		public synchronized boolean add(PropertyInfo<?> e) {
+			if (this.keys == null) {
+				// 被清理，则重建
+				this.keys = new HashSet<String>(this.size());
+				for (IPropertyInfo<?> item : this) {
+					this.keys.add(item.getName());
 				}
 			}
+			if (this.keys.contains(e.getName())) {
+				return false;
+			}
+			this.keys.add(e.getName());
 			return super.add(e);
 		}
+
+		public synchronized void recycling() {
+			if (this.keys == null) {
+				return;
+			}
+			this.keys = null;
+			this.trimToSize();
+		}
+
+		private boolean resolved = false;
+
+		public synchronized void resolving(Class<?> belong) {
+			if (belong == null) {
+				return;
+			}
+			if (this.resolved) {
+				return;
+			}
+			Field field;
+			Field[] fields = belong.getFields();
+			if (fields != null && fields.length > 0) {
+				for (PropertyInfo<?> property : this) {
+					for (int i = 0; i < fields.length; i++) {
+						field = fields[i];
+						if (field == null) {
+							continue;
+						}
+						if (!Modifier.isStatic(field.getModifiers())) {
+							continue;
+						}
+						if (!Modifier.isPublic(field.getModifiers())) {
+							continue;
+						}
+						if (!Modifier.isFinal(field.getModifiers())) {
+							continue;
+						}
+						if (Strings.equalsIgnoreCase(field.getName(),
+								Strings.format(BO_PROPERTY_NAMING_RULES_UPPER, property.getName().toUpperCase()))
+								|| Strings.equalsIgnoreCase(field.getName(), Strings
+										.format(BO_PROPERTY_NAMING_RULES_CAMEL, property.getName().toUpperCase()))) {
+							property.setAnnotations(field.getAnnotations());
+						}
+					}
+				}
+
+			}
+		}
+
 	}
 
 	private volatile static Map<Class<?>, PropertyInfoList> PROPERTY_INFOS = new ConcurrentHashMap<Class<?>, PropertyInfoList>(
@@ -59,44 +129,31 @@ public class PropertyInfoManager {
 	 */
 	static <P> IPropertyInfo<P> registerProperty(Class<?> objectType, PropertyInfo<P> property) {
 		synchronized (PROPERTY_INFOS) {
-			PropertyInfoList propertys = PROPERTY_INFOS.get(objectType);
-			if (propertys != null) {
+			if (PROPERTY_INFOS.containsKey(objectType)) {
+				PropertyInfoList propertys = PROPERTY_INFOS.get(objectType);
 				propertys.add(property);
 				property.setIndex(propertys.size() - 1);
-			} else {
-				propertys = new PropertyInfoList(32);
-				// 获取父类的属性定义
-				for (IPropertyInfo<?> item : recursePropertyInfos(objectType.getSuperclass())) {
-					propertys.add(item);
+				if (property.getIndex() > 0) {
+					// 优化内存消耗，使用上一个
+					property.resolver = propertys.get(property.getIndex() - 1).resolver;
+				} else {
+					property.resolver = () -> {
+						propertys.resolving(objectType);
+					};
 				}
+			} else {
+				// 获取父类的属性定义
+				PropertyInfoList propertys = recursePropertyInfos(objectType.getSuperclass());
+				PROPERTY_INFOS.put(objectType, propertys);
 				// 添加当前属性
 				propertys.add(property);
 				property.setIndex(propertys.size() - 1);
-				PROPERTY_INFOS.put(objectType, propertys);
+				property.resolver = () -> {
+					propertys.resolving(objectType);
+				};
 				// 触发对象注册通知
 				firePropertyInfoRegistered(objectType);
 			}
-			// 触发属性注册通知
-			firePropertyInfoRegistered(objectType, property);
-		}
-		// 获取属性的注释
-		try {
-			Field pField = objectType
-					.getField(String.format(BO_PROPERTY_NAMING_RULES_UPPER, property.getName().toUpperCase()));
-			if (pField != null) {
-				property.setAnnotations(pField.getAnnotations());
-			}
-		} catch (NoSuchFieldException e) {
-			try {
-				Field pField = objectType.getField(String.format(BO_PROPERTY_NAMING_RULES_CAMEL, property.getName()));
-				if (pField != null) {
-					property.setAnnotations(pField.getAnnotations());
-				}
-			} catch (Exception e2) {
-				e2.printStackTrace();
-			}
-		} catch (Exception e1) {
-			e1.printStackTrace();
 		}
 		return property;
 	}
@@ -134,30 +191,18 @@ public class PropertyInfoManager {
 	 * @param objectType 获取的对象类型
 	 * @return
 	 */
-	static IPropertyInfo<?>[] recursePropertyInfos(Class<?> objectType) {
+	static PropertyInfoList recursePropertyInfos(Class<?> objectType) {
+		PropertyInfoList propertys = new PropertyInfoList(32);
 		if (objectType == null) {
-			return new IPropertyInfo<?>[] {};
+			return propertys;
 		}
 		if (objectType == FieldedObject.class) {
-			return new IPropertyInfo<?>[] {};
+			return propertys;
 		}
-		PropertyInfoList propertys = new PropertyInfoList(32);
-		// 获取当前类的属性
-		try {
-			for (IPropertyInfo<?> item : getPropertyInfoList(objectType)) {
-				propertys.add(item);
-			}
-		} catch (Exception e) {
-			// 此项没有注册
+		if (PROPERTY_INFOS.containsKey(objectType)) {
+			propertys.addAll(PROPERTY_INFOS.get(objectType));
 		}
-		// 获取父类的属性
-		Class<?> parent = objectType.getSuperclass();
-		if (parent != null) {
-			for (IPropertyInfo<?> item : recursePropertyInfos(parent)) {
-				propertys.add(item);
-			}
-		}
-		return propertys.toArray(new IPropertyInfo<?>[] {});
+		return propertys;
 	}
 
 	/**
@@ -177,10 +222,11 @@ public class PropertyInfoManager {
 				Class<?> superClass = objectType.getSuperclass();
 				while (superClass != null) {
 					if (superClass == FieldedObject.class) {
-						return new PropertyInfoList(0);
+						return PropertyInfoList.EMPTY;
 					}
-					if (PROPERTY_INFOS.containsKey(superClass))
+					if (PROPERTY_INFOS.containsKey(superClass)) {
 						return PROPERTY_INFOS.get(superClass);
+					}
 					superClass = superClass.getSuperclass();
 				}
 			}
@@ -196,11 +242,16 @@ public class PropertyInfoManager {
 	 */
 	static Map<IPropertyInfo<?>, Object> initFields(Class<?> objectType) {
 		PropertyInfoList propertyInfoList = getPropertyInfoList(objectType);
-		Map<IPropertyInfo<?>, Object> fieldsMap = new HashMap<>(propertyInfoList.size(), 1);
-		for (IPropertyInfo<?> propertyInfo : propertyInfoList) {
-			fieldsMap.put(propertyInfo, null);
+		synchronized (propertyInfoList) {
+			propertyInfoList.resolving(objectType);
+			propertyInfoList.recycling();
+
+			Map<IPropertyInfo<?>, Object> fieldsMap = new HashMap<>(propertyInfoList.size(), 1);
+			for (IPropertyInfo<?> propertyInfo : propertyInfoList) {
+				fieldsMap.put(propertyInfo, null);
+			}
+			return fieldsMap;
 		}
-		return fieldsMap;
 	}
 
 	private static ArrayList<PropertyInfoRegisterListener> listeners = new ArrayList<>(4);
@@ -213,9 +264,6 @@ public class PropertyInfoManager {
 		// 通知已创建的
 		for (Entry<Class<?>, PropertyInfoList> infoEntry : PROPERTY_INFOS.entrySet()) {
 			listener.onRegistered(infoEntry.getKey());
-			for (IPropertyInfo<?> propertyInfo : infoEntry.getValue()) {
-				listener.onRegistered(infoEntry.getKey(), propertyInfo);
-			}
 		}
 	}
 
@@ -227,12 +275,38 @@ public class PropertyInfoManager {
 		}
 	}
 
-	private static void firePropertyInfoRegistered(Class<?> clazz, IPropertyInfo<?> propertyInfo) {
-		for (PropertyInfoRegisterListener listener : listeners) {
-			if (listener != null) {
-				listener.onRegistered(clazz, propertyInfo);
+	public static Function<Class<?>, Collection<IPropertyInfo<?>>> createFetcher() {
+		return new Function<Class<?>, Collection<IPropertyInfo<?>>>() {
+			@Override
+			public List<IPropertyInfo<?>> apply(Class<?> objectType) {
+				if (!PROPERTY_INFOS.containsKey(objectType)) {
+					// 不包含，可能类还未加载
+					if (FieldedObject.class.isAssignableFrom(objectType)) {
+						try {
+							// 使用加载业务对象的类加载器
+							Class.forName(objectType.getName(), true, objectType.getClassLoader());
+						} catch (ClassNotFoundException e) {
+							Logger.log(LoggingLevel.FATAL, e);
+							StringBuilder builder = new StringBuilder();
+							builder.append("Class not found. Classpath:");
+							ClassLoader cl = ClassLoader.getSystemClassLoader();
+							URL[] urls = ((URLClassLoader) cl).getURLs();
+							for (URL url : urls) {
+								builder.append(url.getFile());
+							}
+							Logger.log(LoggingLevel.FATAL, builder.toString());
+						}
+					}
+				}
+				PropertyInfoList propertyInfoList = PROPERTY_INFOS.get(objectType);
+				if (propertyInfoList == null) {
+					return new ArrayList<IPropertyInfo<?>>(0);
+				}
+				synchronized (propertyInfoList) {
+					propertyInfoList.recycling();
+					return new ArrayList<IPropertyInfo<?>>(propertyInfoList);
+				}
 			}
-		}
+		};
 	}
-
 }

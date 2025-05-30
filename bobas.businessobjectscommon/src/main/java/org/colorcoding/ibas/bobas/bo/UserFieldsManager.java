@@ -32,14 +32,13 @@ public abstract class UserFieldsManager {
 					if (propertys.add(property)) {
 						property.setIndex(propertys.size() - 1);
 					} else {
-						return (UserFieldInfo<P>) propertys.firstOrDefault(c -> c.getName().equals(property.getName()));
+						return (UserFieldInfo<P>) propertys.get(property.getName());
 					}
 				}
 			} else {
-				propertys = new UserFieldInfoList();
+				USER_FIELDS.put(objectType, propertys = new UserFieldInfoList(8));
 				propertys.add(property);
 				property.setIndex(propertys.size() - 1);
-				USER_FIELDS.put(objectType, propertys);
 			}
 		}
 		return property;

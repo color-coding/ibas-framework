@@ -7,6 +7,7 @@ import java.lang.reflect.Modifier;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -43,23 +44,7 @@ public class BOFactory {
 		PropertyInfoManager.registerListener(new PropertyInfoRegisterListener() {
 
 			@Override
-			public void onRegistered(Class<?> clazz, IPropertyInfo<?> propertyInfo) {
-				BO_PROPERTIES.get(clazz).add(propertyInfo);
-			}
-
-			@Override
 			public void onRegistered(Class<?> clazz) {
-				if (!BO_PROPERTIES.containsKey(clazz)) {
-					List<IPropertyInfo<?>> propertyInfos = new ArrayList<IPropertyInfo<?>>(32);
-					Class<?> superClass = clazz.getSuperclass();
-					while (superClass != null && superClass != BusinessObject.class) {
-						if (BO_PROPERTIES.containsKey(superClass)) {
-							propertyInfos.addAll(BO_PROPERTIES.get(superClass));
-						}
-						superClass = superClass.getSuperclass();
-					}
-					BO_PROPERTIES.put(clazz, propertyInfos);
-				}
 				if (!MAP_BO2CODE.containsKey(clazz)) {
 					register(clazz);
 				}
@@ -167,19 +152,32 @@ public class BOFactory {
 					return BO_PROPERTIES.get(item);
 				}
 			}
-		} else if (Modifier.isPublic(type.getModifiers())) {
-			Object data = newInstance(type);
-			if (data instanceof FieldedObject) {
-				BO_PROPERTIES.put(type, ((FieldedObject) data).properties());
+		} else {
+			// 从管理员处获取
+			Collection<IPropertyInfo<?>> collection = PropertyInfoManager.createFetcher().apply(type);
+			if (collection != null && !collection.isEmpty()) {
+				BO_PROPERTIES.put(type, new ArrayList<IPropertyInfo<?>>(collection));
 				return propertyInfos(type);
 			}
-		} else if (FieldedObject.class.isAssignableFrom(type)) {
-			Class<?> supper = type.getSuperclass();
-			while (supper != null && supper != FieldedObject.class) {
-				if (BO_PROPERTIES.containsKey(supper)) {
-					return BO_PROPERTIES.get(supper);
+			// 获取父项的
+			List<IPropertyInfo<?>> propertyInfos = null;
+			Class<?> superClass = type.getSuperclass();
+			while (superClass != null && superClass != BusinessObject.class
+					&& !Modifier.isAbstract(type.getModifiers())) {
+				propertyInfos = propertyInfos(superClass);
+				if (propertyInfos != null && !propertyInfos.isEmpty()) {
+					BO_PROPERTIES.put(type, new ArrayList<IPropertyInfo<?>>(propertyInfos));
+					return propertyInfos(type);
 				}
-				supper = supper.getSuperclass();
+				superClass = superClass.getSuperclass();
+			}
+			// 获取实例的
+			if (Modifier.isPublic(type.getModifiers()) && !Modifier.isAbstract(type.getModifiers())) {
+				Object data = newInstance(type);
+				if (data instanceof FieldedObject) {
+					BO_PROPERTIES.put(type, new ArrayList<IPropertyInfo<?>>(((FieldedObject) data).properties()));
+					return propertyInfos(type);
+				}
 			}
 		}
 		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", type.toString()));

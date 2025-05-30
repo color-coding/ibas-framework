@@ -31,7 +31,7 @@
 		<dependency>
 			<groupId>org.colorcoding.tools</groupId>
 			<artifactId>btulz.transforms.bobas</artifactId>
-			<version>0.1.0</version>
+			<version>0.2.0</version>
 		</dependency>
 	</dependencies>
 </project>

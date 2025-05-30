@@ -6,7 +6,7 @@
     <Description>基于MSSQL的结构映射说明</Description>
     <Integrated>true</Integrated>
     <DriverName>com.microsoft.sqlserver.jdbc.SQLServerDriver</DriverName>
-    <DbUrl>jdbc:sqlserver://${DbServer}:${DbPort};DatabaseName=master</DbUrl>
+    <DbUrl>jdbc:sqlserver://${DbServer}:${DbPort};DatabaseName=master;encrypt=false</DbUrl>
     <DbUser>${DbUser}</DbUser>
     <DbPassword>${DbPassword}</DbPassword>
     <Action Name="create db" Isolated="true">
@@ -21,7 +21,7 @@
             ]]></Script>
         </Step>
     </Action>
-    <Action Name="create stored procedures ${Company}_SP_TRANSACTION_NOTIFICATION" Isolated="true" DbUrl="jdbc:sqlserver://${DbServer}:${DbPort};DatabaseName=${DbName}">
+    <Action Name="create stored procedures ${Company}_SP_TRANSACTION_NOTIFICATION" Isolated="true" DbUrl="jdbc:sqlserver://${DbServer}:${DbPort};DatabaseName=${DbName};encrypt=false">
         <Step Name="check stored procedures exists">
             <Script><![CDATA[
                 SELECT COUNT(0) FROM sys.sysobjects WHERE name = '${Company}_SP_TRANSACTION_NOTIFICATION' AND type = 'P';
