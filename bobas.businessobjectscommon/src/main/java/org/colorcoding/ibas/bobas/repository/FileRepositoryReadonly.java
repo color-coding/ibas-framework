@@ -1,15 +1,20 @@
 package org.colorcoding.ibas.bobas.repository;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.common.Conditions;
+import org.colorcoding.ibas.bobas.common.ConditionOperation;
+import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
-import org.colorcoding.ibas.bobas.common.IConditions;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
+import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.OperationResult;
+import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.FileData;
 import org.colorcoding.ibas.bobas.data.emYesNo;
@@ -80,29 +85,61 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
 		if (criteria == null || criteria.getConditions().isEmpty()) {
 			throw new Exception(I18N.prop("msg_bobas_invaild_criteria"));
 		}
+		List<ICondition> conditions;
 		String workFolder = this.getRepositoryFolder();
+
+		// 包含子文件夹
 		boolean include = false;
-		IConditions conditions = new Conditions();
-		for (ICondition condition : criteria.clone().getConditions()) {
-			if (CRITERIA_CONDITION_ALIAS_FOLDER.equals(condition.getAlias())) {
-				// 文件夹条件
-				if (condition.getAlias() == null || condition.getAlias().isEmpty())
-					continue;
-				workFolder = workFolder + File.separator + condition.getValue();
-			} else if (CRITERIA_CONDITION_ALIAS_INCLUDE_SUBFOLDER.equals(condition.getAlias())) {
-				// 包含子文件夹
-				if (condition.getAlias() == null || condition.getAlias().isEmpty())
-					continue;
-				emYesNo value = emYesNo.NO;
-				if (condition.getValue().length() > 1)
-					value = emYesNo.valueOf(condition.getValue());
-				else {
-					value = (emYesNo) DataConvert.toEnumValue(emYesNo.class, condition.getValue());
-				}
-				include = value == emYesNo.YES ? true : false;
-			} else {
-				conditions.add(condition);
+		conditions = criteria.getConditions()
+				.where(c -> CRITERIA_CONDITION_ALIAS_INCLUDE_SUBFOLDER.equals(c.getAlias()));
+		for (ICondition condition : conditions) {
+			emYesNo value = emYesNo.NO;
+			if (condition.getValue().length() > 1)
+				value = emYesNo.valueOf(condition.getValue());
+			else {
+				value = (emYesNo) DataConvert.toEnumValue(emYesNo.class, condition.getValue());
 			}
+			include = value == emYesNo.YES ? true : false;
+			condition.setOperation(ConditionOperation.NONE);
+		}
+		// 是否指定工作目录
+		conditions = criteria.getConditions().where(c -> CRITERIA_CONDITION_ALIAS_FOLDER.equals(c.getAlias()));
+		for (ICondition condition : conditions) {
+			if (condition.getValue() != null) {
+				// 修正路径符
+				condition.setValue(condition.getValue().replace("\\", File.separator));
+				if (!condition.getValue().endsWith(File.separator)) {
+					condition.setValue(condition.getValue() + File.separator);
+				}
+			}
+		}
+		if (conditions.size() == 1) {
+			for (ICondition condition : conditions) {
+				if (condition.getOperation() == ConditionOperation.EQUAL) {
+					// 指定查询文件夹，则更改工作目录
+					workFolder = new File(workFolder, condition.getValue()).getPath();
+					condition.setOperation(ConditionOperation.NONE);
+				}
+			}
+		} else {
+			for (ICondition condition : conditions) {
+				if (include) {
+					if (condition.getOperation() == ConditionOperation.EQUAL) {
+						condition.setOperation(ConditionOperation.START);
+					}
+				}
+			}
+		}
+
+		Criteria nCriteria = new Criteria();
+		for (ICondition condition : criteria.getConditions()) {
+			if (condition.getOperation() == ConditionOperation.NONE) {
+				continue;
+			}
+			nCriteria.getConditions().add(condition);
+		}
+		for (ISort sort : criteria.getSorts()) {
+			nCriteria.getSorts().add(sort);
 		}
 		// 检查文件夹内文件是否符合条件
 		File folder = new File(workFolder);
@@ -111,7 +148,7 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
 					I18N.prop("msg_bobas_not_found_folder", workFolder.replace(this.getRepositoryFolder(), ".")));
 		}
 		// 查询符合条件的文件
-		List<File> files = this.searchFiles(folder, include, conditions);
+		List<File> files = this.searchFiles(folder, include, nCriteria);
 		// 输出文件数据
 		ArrayList<FileData> nFileDatas = new ArrayList<>();
 		for (File file : files) {
@@ -129,35 +166,83 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
 	/**
 	 * 查询文件
 	 * 
-	 * @param folder     目录
-	 * @param include    是否包含子目录
-	 * @param conditions 条件
+	 * @param folder   目录
+	 * @param include  是否包含子目录
+	 * @param criteria 条件
 	 * @return 符合条件的文件数组
 	 */
-	private List<File> searchFiles(File folder, boolean include, IConditions conditions) {
+	private List<File> searchFiles(File folder, boolean include, ICriteria criteria) {
+		FileJudgmentLink judgmentLinks = new FileJudgmentLink();
+		judgmentLinks.setMaskFolder(this.getRepositoryFolder());
+		judgmentLinks.parsingConditions(criteria.getConditions());
+
 		ArrayList<File> files = new ArrayList<>();
-		FileJudgmentLink judgmentLinks = null;
-		File[] folderFiles = folder.listFiles();
-		if (folderFiles != null) {
-			for (File file : folderFiles) {
+		Consumer<File> searcher = new Consumer<File>() {
+			@Override
+			public void accept(File file) {
 				if (file.isDirectory() && include) {
-					files.addAll(this.searchFiles(file, include, conditions));
-				} else if (file.isFile()) {
-					if (judgmentLinks == null) {
-						judgmentLinks = new FileJudgmentLink();
-						judgmentLinks.parsingConditions(conditions);
+					File[] folderFiles = file.listFiles();
+					// 文件排序
+					if (!criteria.getSorts().isEmpty()) {
+						for (ISort sort : criteria.getSorts()) {
+							if (CRITERIA_CONDITION_ALIAS_FILE_NAME.equalsIgnoreCase(sort.getAlias())) {
+								if (sort.getSortType() == SortType.ASCENDING) {
+									Arrays.sort(folderFiles, new Comparator<File>() {
+										@Override
+										public int compare(File o1, File o2) {
+											return o1.getName().compareTo(o2.getName());
+										}
+									});
+								} else if (sort.getSortType() == SortType.DESCENDING) {
+									Arrays.sort(folderFiles, new Comparator<File>() {
+										@Override
+										public int compare(File o1, File o2) {
+											return o2.getName().compareTo(o1.getName());
+										}
+									});
+								}
+							} else if (CRITERIA_CONDITION_ALIAS_MODIFIED_TIME.equalsIgnoreCase(sort.getAlias())) {
+								if (sort.getSortType() == SortType.ASCENDING) {
+									Arrays.sort(folderFiles, new Comparator<File>() {
+										@Override
+										public int compare(File o1, File o2) {
+											return Long.compare(o1.lastModified(), o2.lastModified());
+										}
+									});
+								} else if (sort.getSortType() == SortType.DESCENDING) {
+									Arrays.sort(folderFiles, new Comparator<File>() {
+										@Override
+										public int compare(File o1, File o2) {
+											return Long.compare(o2.lastModified(), o1.lastModified());
+										}
+									});
+								}
+							}
+						}
 					}
+					for (File item : folderFiles) {
+						this.accept(item);
+					}
+				} else if (file.isFile()) {
 					try {
-						boolean match = judgmentLinks.judge(file);
-						if (match) {
+						if (judgmentLinks.judge(file)) {
 							files.add(file);
+						}
+						if (criteria.getResultCount() > 0 && files.size() >= criteria.getResultCount()) {
+							return;
 						}
 					} catch (JudmentOperationException e) {
 						Logger.log(e);
 					}
 				}
 			}
-
+		};
+		if (folder.isDirectory()) {
+			for (File item : folder.listFiles()) {
+				searcher.accept(item);
+			}
+		} else {
+			searcher.accept(folder);
 		}
 		return files;
 	}

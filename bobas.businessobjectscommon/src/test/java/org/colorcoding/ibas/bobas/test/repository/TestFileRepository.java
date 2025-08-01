@@ -10,6 +10,8 @@ import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
+import org.colorcoding.ibas.bobas.common.ISort;
+import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.FileData;
 import org.colorcoding.ibas.bobas.data.emYesNo;
@@ -71,6 +73,40 @@ public class TestFileRepository extends TestCase {
 		assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
 		for (FileData fileData : operationResult.getResultObjects()) {
 			System.out.println(fileData.toString());
+		}
+	}
+
+	public void testSearchFiles() {
+		FileRepository fileRepository = new FileRepository();
+		fileRepository.setRepositoryFolder(System.getProperty("user.dir"));
+
+		Criteria criteria = new Criteria();
+		criteria.setResultCount(30);
+		ICondition condition = criteria.getConditions().create();
+		condition.setAlias(FileRepository.CRITERIA_CONDITION_ALIAS_INCLUDE_SUBFOLDER);
+		condition.setValue(emYesNo.YES);
+		condition = criteria.getConditions().create();
+		condition.setAlias(FileRepository.CRITERIA_CONDITION_ALIAS_FILE_NAME);
+		condition.setValue("Params.properties");
+		ISort sort = criteria.getSorts().create();
+		sort.setAlias(FileRepository.CRITERIA_CONDITION_ALIAS_MODIFIED_TIME);
+		sort.setSortType(SortType.DESCENDING);
+		File file = null;
+		System.out.println("**************************");
+		for (FileData item : fileRepository.fetch(criteria).getResultObjects()) {
+			file = new File(item.getLocation());
+			System.out.println(String.format("%s ,%s", file.getParentFile().getName(),
+					DateTime.valueOf(file.lastModified()).toString(DateTime.FORMAT_DATETIME)));
+		}
+		condition = criteria.getConditions().create();
+		condition.setAlias(FileRepository.CRITERIA_CONDITION_ALIAS_MODIFIED_TIME);
+		condition.setOperation(ConditionOperation.LESS_THAN);
+		condition.setValue(file.lastModified());
+		System.out.println("**************************");
+		for (FileData item : fileRepository.fetch(criteria).getResultObjects()) {
+			file = new File(item.getLocation());
+			System.out.println(String.format("%s ,%s", file.getParentFile().getName(),
+					DateTime.valueOf(file.lastModified()).toString(DateTime.FORMAT_DATETIME)));
 		}
 	}
 }
