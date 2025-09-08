@@ -27,7 +27,7 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
 
 	private IBORepository repository;
 
-	private final IBORepository getRepository() {
+	protected final IBORepository getRepository() {
 		return this.repository;
 	}
 
