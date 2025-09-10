@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.repository;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -117,7 +118,7 @@ public class FileRepositoryReadonly implements IFileRepositoryReadonly {
 			for (ICondition condition : conditions) {
 				if (condition.getOperation() == ConditionOperation.EQUAL) {
 					// 指定查询文件夹，则更改工作目录
-					workFolder = new File(workFolder, condition.getValue()).getPath();
+					workFolder = Paths.get(workFolder, condition.getValue()).normalize().toFile().getPath();
 					condition.setOperation(ConditionOperation.NONE);
 				}
 			}

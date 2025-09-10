@@ -220,7 +220,7 @@ public class BORepository4File extends BORepository4FileReadonly implements IBOR
 
 	private boolean deleteBOFile(IBusinessObjectBase bo) throws Exception {
 		BOFile boFile = this.getBOFile(bo);
-		File file = new File(this.getRepositoryFolder() + File.separator + boFile.getFilePath());
+		File file = new File(this.getRepositoryFolder(), boFile.getFilePath());
 		if (file.exists()) {
 			Logger.log(MSG_REPOSITORY_DELETED_DATA_FILE, file.getPath());
 			return file.delete();

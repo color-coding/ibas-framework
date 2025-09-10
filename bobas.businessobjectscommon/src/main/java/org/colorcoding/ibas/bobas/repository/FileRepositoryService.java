@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.repository;
 
 import java.io.File;
+import java.nio.file.Paths;
 
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
@@ -149,7 +150,7 @@ public class FileRepositoryService implements IFileRepositoryService {
 		stringBuilder.append(this.getRepository().getRepositoryFolder());
 		stringBuilder.append(File.separator);
 		stringBuilder.append(fileName);
-		File file = new File(stringBuilder.toString());
+		File file = Paths.get(stringBuilder.toString()).normalize().toFile();
 		if (file.exists() && file.isFile()) {
 			FileData fileData = new FileData();
 			fileData.setFileName(file.getName());
