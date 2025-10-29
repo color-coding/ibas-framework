@@ -1,7 +1,6 @@
 package org.colorcoding.ibas.bobas.data;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -13,6 +12,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.DateTimes;
+import org.colorcoding.ibas.bobas.common.Files;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.Serializable;
 
@@ -126,13 +126,7 @@ public class FileItem extends Serializable {
 	 * @throws IOException
 	 */
 	public void writeTo(OutputStream outputStream) throws IOException {
-		try (FileInputStream inputStream = new FileInputStream(new File(this.getPath()))) {
-			byte[] buffer = new byte[4096];
-			int bytesRead;
-			while ((bytesRead = inputStream.read(buffer)) != -1) {
-				outputStream.write(buffer, 0, bytesRead);
-			}
-		}
+		Files.writeTo(Files.valueOf(this.getPath()), outputStream);
 	}
 
 	@Override

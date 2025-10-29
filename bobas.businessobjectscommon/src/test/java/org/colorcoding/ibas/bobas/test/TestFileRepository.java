@@ -9,6 +9,9 @@ import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
+import org.colorcoding.ibas.bobas.common.ISort;
+import org.colorcoding.ibas.bobas.common.SortType;
+import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.FileItem;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.repository.FileRepository;
@@ -60,6 +63,41 @@ public class TestFileRepository extends TestCase {
 			assertEquals(operationResult.getMessage(), operationResult.getResultCode(), 0);
 			for (FileItem fileItem : operationResult.getResultObjects()) {
 				System.out.println(fileItem.toString());
+			}
+		}
+	}
+
+	public void testSearchFiles() {
+		try (FileRepository fileRepository = new FileRepository()) {
+			fileRepository.setRepositoryFolder(System.getProperty("user.dir"));
+
+			Criteria criteria = new Criteria();
+			criteria.setResultCount(30);
+			ICondition condition = criteria.getConditions().create();
+			condition.setAlias(FileRepository.CONDITION_ALIAS_INCLUDE_SUBFOLDER);
+			condition.setValue(emYesNo.YES);
+			condition = criteria.getConditions().create();
+			condition.setAlias(FileRepository.CONDITION_ALIAS_FILE_NAME);
+			condition.setValue("locale.bobas.properties");
+			ISort sort = criteria.getSorts().create();
+			sort.setAlias(FileRepository.CONDITION_ALIAS_MODIFIED_TIME);
+			sort.setSortType(SortType.DESCENDING);
+			File file = null;
+			System.out.println("**************************");
+			for (FileItem item : fileRepository.fetch(criteria).getResultObjects()) {
+				file = new File(item.getPath());
+				System.out.println(String.format("%s ,%s", file.getParentFile().getPath(),
+						DateTimes.valueOf(file.lastModified()).toString(DateTime.FORMAT_DATETIME)));
+			}
+			condition = criteria.getConditions().create();
+			condition.setAlias(FileRepository.CONDITION_ALIAS_MODIFIED_TIME);
+			condition.setOperation(ConditionOperation.LESS_THAN);
+			condition.setValue(file.lastModified());
+			System.out.println("**************************");
+			for (FileItem item : fileRepository.fetch(criteria).getResultObjects()) {
+				file = new File(item.getPath());
+				System.out.println(String.format("%s ,%s", file.getParentFile().getPath(),
+						DateTimes.valueOf(file.lastModified()).toString(DateTime.FORMAT_DATETIME)));
 			}
 		}
 	}

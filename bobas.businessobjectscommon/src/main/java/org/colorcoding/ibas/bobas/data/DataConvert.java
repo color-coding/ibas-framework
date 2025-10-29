@@ -156,4 +156,19 @@ public class DataConvert {
 		}
 		throw new ClassCastException(I18N.prop("msg_bobas_not_support_convert_to_type", value));
 	}
+
+	@Deprecated
+	public static final String STRING_VALUE_ZERO = Strings.VALUE_ZERO;
+	@Deprecated
+	public static final String STRING_VALUE_EMPTY = Strings.VALUE_EMPTY;
+
+	@Deprecated
+	public static boolean isNumeric(String value) {
+		return Strings.isNullOrEmpty(value);
+	}
+
+	@Deprecated
+	public static boolean isNullOrEmpty(String value) {
+		return Strings.isNullOrEmpty(value);
+	}
 }
