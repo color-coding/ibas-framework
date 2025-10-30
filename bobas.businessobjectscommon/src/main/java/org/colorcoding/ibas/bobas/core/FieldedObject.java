@@ -15,8 +15,8 @@ import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.fields.IManagedFields;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.List;
-import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.logging.LoggingLevel;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class FieldedObject extends Trackable implements IFieldedObject, IManagedFields {
@@ -131,7 +131,7 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 			for (IPropertyInfo<?> item : this.fields.keySet()) {
 				// 存在同名属性，但实例不同
 				if (Strings.equalsIgnoreCase(item.getName(), property.getName())) {
-					Logger.log(LoggingLevel.WARN,
+					Logger.log(MessageLevel.WARN,
 							"has same property [%s], but instances are different. this:[%s] and caller:[%s].",
 							property.getName(), item.hashCode(), property.hashCode());
 					break;

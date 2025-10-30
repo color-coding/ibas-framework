@@ -10,8 +10,8 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
 import org.colorcoding.ibas.bobas.db.MaxValue;
-import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.logging.LoggingLevel;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 
@@ -21,7 +21,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			Class.forName("org.postgresql.Driver");
 			String dbURL = String.format("jdbc:postgresql://%s/%s?prepareThreshold=5", server, dbName);
 			if (MyConfiguration.isDebugMode()) {
-				Logger.log(LoggingLevel.DEBUG, Strings.format("db adapter: %s", dbURL));
+				Logger.log(MessageLevel.DEBUG, Strings.format("db adapter: %s", dbURL));
 			}
 			return DriverManager.getConnection(dbURL, userName, userPwd);
 		} catch (Exception e) {

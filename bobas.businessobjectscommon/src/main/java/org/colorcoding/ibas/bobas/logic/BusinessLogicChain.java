@@ -18,11 +18,11 @@ import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.logging.LoggingLevel;
 import org.colorcoding.ibas.bobas.logic.common.BOLogst;
 import org.colorcoding.ibas.bobas.logic.common.BONumbering;
 import org.colorcoding.ibas.bobas.logic.common.BOSeriesNumbering;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.period.IPeriodData;
 import org.colorcoding.ibas.bobas.repository.ITransaction;
@@ -134,7 +134,7 @@ class BusinessLogicChain implements IBusinessLogicChain {
 			if (logic == null) {
 				continue;
 			}
-			Logger.log(LoggingLevel.INFO, "logics chain [%s]: forward logic [%s].", this.hashCode(), logic.toString());
+			Logger.log(MessageLevel.INFO, "logics chain [%s]: forward logic [%s].", this.hashCode(), logic.toString());
 			logic.forward();
 		}
 	}
@@ -148,7 +148,7 @@ class BusinessLogicChain implements IBusinessLogicChain {
 			if (logic == null) {
 				continue;
 			}
-			Logger.log(LoggingLevel.INFO, "logics chain [%s]: reverse logic [%s].", this.hashCode(), logic.toString());
+			Logger.log(MessageLevel.INFO, "logics chain [%s]: reverse logic [%s].", this.hashCode(), logic.toString());
 			logic.reverse();
 		}
 	}
@@ -162,7 +162,7 @@ class BusinessLogicChain implements IBusinessLogicChain {
 		Objects.requireNonNull(this.getTransaction());
 		// 执行逻辑，先反向，再正向
 		DateTime startTime = DateTimes.now();
-		Logger.log(LoggingLevel.INFO, "logics chain [%s]: starts at [%s].", this.hashCode(),
+		Logger.log(MessageLevel.INFO, "logics chain [%s]: starts at [%s].", this.hashCode(),
 				DateTimes.toString(startTime, DateTimes.FORMAT_TIME));
 		if (!this.getTrigger().isNew() && this.getTriggerCopy() != null) {
 			// 非新建，则先反向逻辑
@@ -263,7 +263,7 @@ class BusinessLogicChain implements IBusinessLogicChain {
 				}
 			}
 			DateTime endTime = DateTimes.now();
-			Logger.log(LoggingLevel.INFO, "logics chain [%s]: ends at [%s].", this.hashCode(),
+			Logger.log(MessageLevel.INFO, "logics chain [%s]: ends at [%s].", this.hashCode(),
 					DateTimes.toString(endTime, DateTimes.FORMAT_TIME));
 			startTime = null;
 			endTime = null;
@@ -431,7 +431,7 @@ class BusinessLogicChain implements IBusinessLogicChain {
 	protected final synchronized Collection<BusinessLogic<?, ?>> getTriggerLogics() {
 		if (this.triggerLogics == null) {
 			this.triggerLogics = this.analyzeContracts(this.getTrigger());
-			Logger.log(LoggingLevel.INFO, "logics chain [%s]: trigger [%s] has [%s] contracts.", this.hashCode(),
+			Logger.log(MessageLevel.INFO, "logics chain [%s]: trigger [%s] has [%s] contracts.", this.hashCode(),
 					this.getTrigger(), this.triggerLogics.size());
 		}
 		return this.triggerLogics;
@@ -447,7 +447,7 @@ class BusinessLogicChain implements IBusinessLogicChain {
 	protected final synchronized Collection<BusinessLogic<?, ?>> getTriggerCopyLogics() {
 		if (this.triggerCopyLogics == null) {
 			this.triggerCopyLogics = this.analyzeContracts(this.getTriggerCopy());
-			Logger.log(LoggingLevel.INFO, "logics chain [%s]: trigger's copy [%s] has [%s] contracts.", this.hashCode(),
+			Logger.log(MessageLevel.INFO, "logics chain [%s]: trigger's copy [%s] has [%s] contracts.", this.hashCode(),
 					this.getTriggerCopy(), this.triggerCopyLogics.size());
 		}
 		return this.triggerCopyLogics;

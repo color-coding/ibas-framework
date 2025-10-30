@@ -18,8 +18,8 @@ import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
-import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.logging.LoggingLevel;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.repository.ITransaction;
 import org.colorcoding.ibas.bobas.repository.Transaction;
@@ -161,7 +161,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 			// 标记删除的数据无效
 			ITrackable status = (ITrackable) data;
 			if (status.isDeleted()) {
-				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "isDeleted",
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "isDeleted",
 						status.isDeleted());
 				return false;
 			}
@@ -170,7 +170,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 			// 引用数据，已标记删除的，不影响业务逻辑
 			IBOTagDeleted refData = (IBOTagDeleted) data;
 			if (refData.getDeleted() == emYesNo.YES) {
-				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "Deleted",
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "Deleted",
 						refData.getDeleted());
 				return false;
 			}
@@ -179,7 +179,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 			// 引用数据，已标记取消的，不影响业务逻辑
 			IBOTagCanceled refData = (IBOTagCanceled) data;
 			if (refData.getCanceled() == emYesNo.YES) {
-				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "Canceled",
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "Canceled",
 						refData.getCanceled());
 				return false;
 			}
@@ -192,7 +192,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 					|| apData.getApprovalStatus() == emApprovalStatus.REJECTED
 					|| apData.getApprovalStatus() == emApprovalStatus.RETURNED) {
 				// 审批中，取消，拒绝，退回
-				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
 						"ApprovalStatus", apData.getApprovalStatus());
 				return false;
 			}
@@ -202,7 +202,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 			IBODocument docData = (IBODocument) data;
 			if (docData.getDocumentStatus() == emDocumentStatus.PLANNED) {
 				// 计划状态
-				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
 						"DocumentStatus", docData.getDocumentStatus());
 				return false;
 			}
@@ -212,7 +212,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 			IBODocumentLine lineData = (IBODocumentLine) data;
 			if (lineData.getLineStatus() == emDocumentStatus.PLANNED) {
 				// 计划状态
-				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "LineStatus",
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "LineStatus",
 						lineData.getLineStatus());
 				return false;
 			}
@@ -244,11 +244,11 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 		}
 		// 执行正向逻辑
 		this.forwardCount++;
-		Logger.log(this.forwardCount > 1 ? LoggingLevel.WARN : LoggingLevel.DEBUG,
+		Logger.log(this.forwardCount > 1 ? MessageLevel.WARN : MessageLevel.DEBUG,
 				"logics: forward logic [%s], %sth time.", this.getClass().getName(), this.forwardCount);
 		if (this.forwardCount > 1) {
 			if (!this.onRepeatedImpact(this.forwardCount)) {
-				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
 						"forwardCount", this.forwardCount);
 				return;
 			}
@@ -327,11 +327,11 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 			return;
 		}
 		this.reverseCount++;
-		Logger.log(this.reverseCount > 1 ? LoggingLevel.WARN : LoggingLevel.DEBUG,
+		Logger.log(this.reverseCount > 1 ? MessageLevel.WARN : MessageLevel.DEBUG,
 				"logics: reverse logic [%s], %sth time.", this.getClass().getName(), this.reverseCount);
 		if (this.reverseCount > 1) {
 			if (!this.onRepeatedRevoke(this.reverseCount)) {
-				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
 						"reverseCount", this.reverseCount);
 				return;
 			}

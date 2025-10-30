@@ -11,8 +11,8 @@ import org.colorcoding.ibas.bobas.core.IFieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.logging.LoggingLevel;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 /**
  * 集合业务规则
@@ -114,7 +114,7 @@ public abstract class BusinessRuleCollection extends BusinessRule {
 			}
 			// 执行规则
 			if (MyConfiguration.isDebugMode()) {
-				Logger.log(LoggingLevel.DEBUG, "rules: executing rule [%s - %s].", this.getClass().getName(),
+				Logger.log(MessageLevel.DEBUG, "rules: executing rule [%s - %s].", this.getClass().getName(),
 						this.getName());
 			}
 			this.execute(context);

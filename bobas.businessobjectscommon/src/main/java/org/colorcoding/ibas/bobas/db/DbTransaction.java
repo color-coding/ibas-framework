@@ -36,8 +36,8 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.logging.LoggingLevel;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.repository.IUserGeter;
 import org.colorcoding.ibas.bobas.repository.RepositoryException;
@@ -214,7 +214,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 					? this.getAdapter().parsingSelect(boType, criteria, true)
 					: this.getAdapter().parsingSelect(boType, criteria);
 			if (MyConfiguration.isDebugMode()) {
-				Logger.log(LoggingLevel.DEBUG, Strings.format("db sql: %s", sql));
+				Logger.log(MessageLevel.DEBUG, Strings.format("db sql: %s", sql));
 			}
 			List<T> datas = null;
 			try (PreparedStatement statement = this.getConnection().prepareStatement(sql)) {
@@ -450,7 +450,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 							return new SQLException("no sql statement.");
 						}
 						if (MyConfiguration.isDebugMode()) {
-							Logger.log(LoggingLevel.DEBUG, Strings.format("db sql: %s", sql));
+							Logger.log(MessageLevel.DEBUG, Strings.format("db sql: %s", sql));
 						}
 						Object value;
 						DbField dbField;
@@ -760,7 +760,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 			criteria = this.getAdapter().convert(criteria, maxValue.getType());
 			String sql = this.getAdapter().parsingMaxValue(maxValue, criteria.getConditions());
 			if (MyConfiguration.isDebugMode()) {
-				Logger.log(LoggingLevel.DEBUG, Strings.format("db sql: %s", sql));
+				Logger.log(MessageLevel.DEBUG, Strings.format("db sql: %s", sql));
 			}
 			try (PreparedStatement statement = this.getConnection().prepareStatement(sql)) {
 				// 填充参数
@@ -821,7 +821,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 			// 运行查询，不使用预编译方式
 			String sql = this.getAdapter().parsing(sqlStatement);
 			if (MyConfiguration.isDebugMode()) {
-				Logger.log(LoggingLevel.DEBUG, Strings.format("db sql: %s", sql));
+				Logger.log(MessageLevel.DEBUG, Strings.format("db sql: %s", sql));
 			}
 			try (Statement statement = this.getConnection().createStatement()) {
 				try (ResultSet resultSet = statement.executeQuery(sql)) {

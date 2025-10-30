@@ -19,10 +19,10 @@ import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.fields.IFieldData;
 import org.colorcoding.ibas.bobas.core.fields.IManagedFields;
-import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.logging.LoggingLevel;
 import org.colorcoding.ibas.bobas.logic.BusinessLogic;
 import org.colorcoding.ibas.bobas.logic.LogicContract;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializationFactory;
 
@@ -40,7 +40,7 @@ public class BOInstanceLogService extends BusinessLogic<IBOInstanceLogContract, 
 		if (data instanceof IBusinessObject && data == this.getHost()) {
 			IBusinessObject boData = (IBusinessObject) data;
 			if (boData.isSavable() == false) {
-				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "isSavable",
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "isSavable",
 						"false");
 				return false;
 			}
@@ -59,7 +59,7 @@ public class BOInstanceLogService extends BusinessLogic<IBOInstanceLogContract, 
 					BO_LOGST_SETTING.put(boTag.getObjectCode(), enabled);
 				}
 				if (!Booleans.equals(enabled, true)) {
-					Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
+					Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
 							Strings.format("isLogst|%s", boTag.getObjectCode()), "false");
 					return false;
 				}

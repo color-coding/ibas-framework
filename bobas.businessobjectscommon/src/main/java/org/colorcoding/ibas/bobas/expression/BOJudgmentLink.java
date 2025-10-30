@@ -9,8 +9,8 @@ import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
-import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.logging.LoggingLevel;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 /**
  * 业务对象的判断链
@@ -101,7 +101,7 @@ public class BOJudgmentLink extends JudgmentLink {
 			IPropertyInfo<?> propertyInfo = BOUtilities.propertyInfo(bo, property);
 			if (propertyInfo == null) {
 				// 未找到属性
-				Logger.log(LoggingLevel.WARN, "not found %s property %s.", bo, property);
+				Logger.log(MessageLevel.WARN, "not found %s property %s.", bo, property);
 			} else {
 				values.add(bo);
 			}
@@ -113,7 +113,7 @@ public class BOJudgmentLink extends JudgmentLink {
 			IPropertyInfo<?> propertyInfo = BOUtilities.propertyInfo(bo, property);
 			if (propertyInfo == null) {
 				// 未找到属性
-				Logger.log(LoggingLevel.WARN, "not found %s property %s.", bo, property);
+				Logger.log(MessageLevel.WARN, "not found %s property %s.", bo, property);
 				break;
 			}
 			String[] lasts = new String[propertys.length - i - 1];

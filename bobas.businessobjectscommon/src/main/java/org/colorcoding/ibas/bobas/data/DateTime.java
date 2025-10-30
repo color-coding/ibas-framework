@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.common.DateTimes;
 
 /**
  * 日期类型
@@ -31,6 +32,32 @@ public class DateTime extends Date implements Serializable {
 	 * 日期时间格式，默认yyyy-MM-dd'T'HH:mm:ss
 	 */
 	public static String FORMAT_DATETIME = String.format("%s'T'%s", FORMAT_DATE, FORMAT_TIME);
+
+	/**
+	 * 当前时间
+	 */
+	@Deprecated
+	public static DateTime getNow() {
+		return DateTimes.now();
+	}
+
+	/**
+	 * 当天
+	 */
+	@Deprecated
+	public static DateTime getToday() {
+		return DateTimes.today();
+	}
+
+	/**
+	 * 转换值
+	 * 
+	 * @param value 日期值
+	 * @return 日期
+	 */
+	public static DateTime valueOf(long value) {
+		return new DateTime(value);
+	}
 
 	public DateTime() {
 		super();
@@ -61,6 +88,12 @@ public class DateTime extends Date implements Serializable {
 		return dateFormat.format(this);
 	}
 
+	/**
+	 * 日期增加天数
+	 * 
+	 * @param days
+	 * @return
+	 */
 	public DateTime addDays(int days) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(this);
@@ -68,6 +101,12 @@ public class DateTime extends Date implements Serializable {
 		return new DateTime(calendar.getTimeInMillis());
 	}
 
+	/**
+	 * 日期增加月数
+	 * 
+	 * @param months
+	 * @return
+	 */
 	public DateTime addMonths(int months) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(this);
@@ -75,6 +114,12 @@ public class DateTime extends Date implements Serializable {
 		return new DateTime(calendar.getTimeInMillis());
 	}
 
+	/**
+	 * 日期增加年数
+	 * 
+	 * @param years
+	 * @return
+	 */
 	public DateTime addYears(int years) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(this);

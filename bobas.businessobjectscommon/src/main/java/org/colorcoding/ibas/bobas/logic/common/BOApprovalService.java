@@ -13,11 +13,11 @@ import org.colorcoding.ibas.bobas.core.ITrackable;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
-import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.logging.LoggingLevel;
 import org.colorcoding.ibas.bobas.logic.BusinessLogic;
 import org.colorcoding.ibas.bobas.logic.BusinessLogicException;
 import org.colorcoding.ibas.bobas.logic.LogicContract;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 @LogicContract(IBOApprovalContract.class)
 public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProcessData> {
@@ -28,7 +28,7 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 			if (data instanceof IApprovalData) {
 				IApprovalData apData = (IApprovalData) data;
 				if (!apData.isSavable()) {
-					Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
+					Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
 							"isSavable", "false");
 					return false;
 				}
@@ -37,7 +37,7 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 					// 标记删除的数据无效
 					ITrackable status = (ITrackable) data;
 					if (status.isDeleted()) {
-						Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
+						Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
 								"isDeleted", status.isDeleted());
 						return false;
 					}
@@ -46,7 +46,7 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 					// 引用数据，已标记删除的，不影响业务逻辑
 					IBOTagDeleted refData = (IBOTagDeleted) data;
 					if (refData.getDeleted() == emYesNo.YES) {
-						Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
+						Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
 								"Deleted", refData.getDeleted());
 						return false;
 					}
@@ -55,7 +55,7 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 					// 引用数据，已标记取消的，不影响业务逻辑
 					IBOTagCanceled refData = (IBOTagCanceled) data;
 					if (refData.getCanceled() == emYesNo.YES) {
-						Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
+						Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
 								"Canceled", refData.getCanceled());
 						return false;
 					}
@@ -65,7 +65,7 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 					IBODocument docData = (IBODocument) data;
 					if (docData.getDocumentStatus() == emDocumentStatus.PLANNED) {
 						// 计划状态
-						Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
+						Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
 								"DocumentStatus", docData.getDocumentStatus());
 						return false;
 					}
@@ -75,14 +75,14 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 					IBODocumentLine lineData = (IBODocumentLine) data;
 					if (lineData.getLineStatus() == emDocumentStatus.PLANNED) {
 						// 计划状态
-						Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
+						Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
 								"LineStatus", lineData.getLineStatus());
 						return false;
 					}
 				}
 				return true;
 			} else {
-				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
 						"isApprovalData", "false");
 				return false;
 			}

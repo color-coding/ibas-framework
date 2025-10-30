@@ -25,7 +25,7 @@ import org.colorcoding.ibas.bobas.core.PropertyInfoRegisterListener;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.logging.Logger;
+import org.colorcoding.ibas.bobas.message.Logger;
 
 /**
  * 业务对象工厂

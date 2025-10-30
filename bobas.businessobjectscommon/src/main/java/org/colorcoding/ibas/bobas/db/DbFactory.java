@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.colorcoding.ibas.bobas.bo.BOFactory;
 import org.colorcoding.ibas.bobas.common.Strings;
-import org.colorcoding.ibas.bobas.logging.Logger;
+import org.colorcoding.ibas.bobas.message.Logger;
 
 public class DbFactory {
 

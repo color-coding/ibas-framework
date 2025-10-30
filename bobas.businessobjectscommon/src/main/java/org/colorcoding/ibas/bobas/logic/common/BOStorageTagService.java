@@ -5,10 +5,10 @@ import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.common.Strings;
-import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.logging.LoggingLevel;
 import org.colorcoding.ibas.bobas.logic.BusinessLogic;
 import org.colorcoding.ibas.bobas.logic.LogicContract;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.ownership.IDataOwnership;
 
 @LogicContract(IBOStorageTagContract.class)
@@ -18,7 +18,7 @@ public class BOStorageTagService extends BusinessLogic<IBOStorageTagContract, IB
 	protected boolean checkDataStatus(Object data) {
 		if (data == this.getHost()) {
 			if (!(data instanceof IBOStorageTag)) {
-				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
 						"isStorageTag", "false");
 				return false;
 			}

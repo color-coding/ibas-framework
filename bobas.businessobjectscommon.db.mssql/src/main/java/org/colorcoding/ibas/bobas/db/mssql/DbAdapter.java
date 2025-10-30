@@ -6,8 +6,8 @@ import java.sql.DriverManager;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
-import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.logging.LoggingLevel;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 
@@ -23,7 +23,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 					"jdbc:sqlserver://%s;DatabaseName=%s;encrypt=false;ApplicationName=%s;useBulkCopyForBatchInsert=true",
 					server, dbName, application);
 			if (MyConfiguration.isDebugMode()) {
-				Logger.log(LoggingLevel.DEBUG, Strings.format("db adapter: %s", dbURL));
+				Logger.log(MessageLevel.DEBUG, Strings.format("db adapter: %s", dbURL));
 			}
 			return DriverManager.getConnection(dbURL, userName, userPwd);
 		} catch (Exception e) {

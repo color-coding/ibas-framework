@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.bobas.logging;
+package org.colorcoding.ibas.bobas.message;
 
 /**
  * 消息记录者，到控制台
@@ -19,7 +19,7 @@ public class MessageRecorder {
 		if (message == null) {
 			return;
 		}
-		if (message.getLevel() == LoggingLevel.ERROR) {
+		if (message.getLevel() == MessageLevel.ERROR) {
 			System.err.println(message.outString());
 		} else {
 			System.out.println(message.outString());

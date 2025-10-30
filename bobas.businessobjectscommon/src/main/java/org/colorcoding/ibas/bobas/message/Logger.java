@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.bobas.logging;
+package org.colorcoding.ibas.bobas.message;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -31,14 +31,14 @@ public class Logger {
 			synchronized (Logger.class) {
 				if (MESSAGE_LEVEL == -1) {
 					if (MyConfiguration.isDebugMode()) {
-						MESSAGE_LEVEL = LoggingLevel.DEBUG.ordinal();
+						MESSAGE_LEVEL = MessageLevel.DEBUG.ordinal();
 					} else {
 						String value = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LOG_MESSAGE_LEVEL);
 						if (value != null && !value.isEmpty()) {
-							LoggingLevel level = LoggingLevel.valueOf(value.toUpperCase());
+							MessageLevel level = MessageLevel.valueOf(value.toUpperCase());
 							MESSAGE_LEVEL = level.ordinal();
 						} else {
-							MESSAGE_LEVEL = LoggingLevel.ERROR.ordinal();
+							MESSAGE_LEVEL = MessageLevel.ERROR.ordinal();
 						}
 					}
 				}
@@ -98,7 +98,7 @@ public class Logger {
 	 * @param message 消息内容
 	 */
 	public static void log(String message) {
-		log(LoggingLevel.INFO, message, "");
+		log(MessageLevel.INFO, message, "");
 	}
 
 	/**
@@ -107,7 +107,7 @@ public class Logger {
 	 * @param level   消息级别
 	 * @param message 消息内容
 	 */
-	public static void log(LoggingLevel level, String message) {
+	public static void log(MessageLevel level, String message) {
 		log(new Message(level, message));
 	}
 
@@ -118,7 +118,7 @@ public class Logger {
 	 * @param args    格式中的参数
 	 */
 	public static void log(String message, Object... args) {
-		log(LoggingLevel.INFO, message, args);
+		log(MessageLevel.INFO, message, args);
 	}
 
 	/**
@@ -128,7 +128,7 @@ public class Logger {
 	 * @param message 消息内容及格式
 	 * @param args    格式中的参数
 	 */
-	public static void log(LoggingLevel level, String message, Object... args) {
+	public static void log(MessageLevel level, String message, Object... args) {
 		log(level, String.format(message, args));
 	}
 
@@ -141,7 +141,7 @@ public class Logger {
 		if (e == null) {
 			return;
 		}
-		log(LoggingLevel.ERROR, e);
+		log(MessageLevel.ERROR, e);
 	}
 
 	/**
@@ -150,7 +150,7 @@ public class Logger {
 	 * @param level     消息级别
 	 * @param exception 异常
 	 */
-	public static void log(LoggingLevel level, Exception e) {
+	public static void log(MessageLevel level, Exception e) {
 		if (e == null) {
 			return;
 		}

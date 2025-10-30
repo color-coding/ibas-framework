@@ -2,7 +2,7 @@ package org.colorcoding.ibas.bobas.period;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
-import org.colorcoding.ibas.bobas.logging.Logger;
+import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.task.Daemon;
 import org.colorcoding.ibas.bobas.task.IDaemonTask;
 

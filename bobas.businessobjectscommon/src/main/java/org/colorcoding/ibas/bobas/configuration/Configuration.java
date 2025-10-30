@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.data.IKeyText;
 import org.colorcoding.ibas.bobas.data.KeyText;
-import org.colorcoding.ibas.bobas.logging.Logger;
+import org.colorcoding.ibas.bobas.message.Logger;
 
 /**
  * 配置

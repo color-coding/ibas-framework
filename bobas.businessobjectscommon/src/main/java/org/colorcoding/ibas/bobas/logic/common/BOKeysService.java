@@ -6,6 +6,7 @@ import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBOLine;
 import org.colorcoding.ibas.bobas.bo.IBOMasterData;
 import org.colorcoding.ibas.bobas.bo.IBOSimple;
+import org.colorcoding.ibas.bobas.bo.IBOStorageTag;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.Criteria;
@@ -21,11 +22,11 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.db.DbTransaction;
 import org.colorcoding.ibas.bobas.db.MaxValue;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.logging.LoggingLevel;
 import org.colorcoding.ibas.bobas.logic.BusinessLogic;
 import org.colorcoding.ibas.bobas.logic.BusinessLogicException;
 import org.colorcoding.ibas.bobas.logic.LogicContract;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 /**
  * 业务对象主键服务
@@ -39,18 +40,18 @@ public class BOKeysService extends BusinessLogic<IBOKeysContract, BONumbering> {
 		if (data instanceof IBusinessObject && data == this.getHost()) {
 			IBusinessObject boData = (IBusinessObject) data;
 			if (boData.isSavable() == false) {
-				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "isSavable",
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "isSavable",
 						"false");
 				return false;
 			}
 			if (boData.isNew() == false) {
-				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "isNew",
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(), "isNew",
 						"false");
 				return false;
 			}
 			if (data instanceof IBOCustomKey) {
 				// 自定义键，不执行业务逻辑
-				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
 						"isCustomKey", "true");
 				return false;
 			}
@@ -94,7 +95,7 @@ public class BOKeysService extends BusinessLogic<IBOKeysContract, BONumbering> {
 						maxValue = dbTransaction.fetch(maxValue);
 						numbering.setAutoKey((int) maxValue.getValue() + 1);
 					}
-				} else {
+				} else if (contract.getHost() instanceof IBOStorageTag) {
 					// 主对象获取主键
 					BONumbering[] numberings = this.getTransaction().fetch(BONumbering.class, criteria);
 					if (numberings == null || numberings.length == 0) {
@@ -102,6 +103,11 @@ public class BOKeysService extends BusinessLogic<IBOKeysContract, BONumbering> {
 								I18N.prop("msg_bobas_not_found_bo_primary_key", contract.getObjectCode()));
 					}
 					numbering = numberings[0];
+				} else {
+					numbering = new BONumbering();
+					numbering.setSavable(false);
+					numbering.setObjectCode(contract.getObjectCode());
+					numbering.setAutoKey(1);
 				}
 			}
 			// 获取系列编号
@@ -129,27 +135,25 @@ public class BOKeysService extends BusinessLogic<IBOKeysContract, BONumbering> {
 			}
 			// 获取最大值
 			if (contract.getMaxValueField() != null) {
-				if (numbering.getMaxValueNumbering().contains(c -> c.getKey().equals(contract.getMaxValueKey()))) {
-					if (this.getTransaction() instanceof DbTransaction && contract.getHost() instanceof FieldedObject) {
-						DbTransaction dbTransaction = (DbTransaction) this.getTransaction();
-						FieldedObject boData = (FieldedObject) contract.getHost();
-						MaxValue maxValue = new MaxValue(contract.getHost().getClass());
-						maxValue.setKeyField(contract.getMaxValueField());
-						for (IPropertyInfo<?> item : contract.getMaxValueConditions()) {
-							maxValue.addConditionField(item);
-							maxValue.setProperty(item, boData.getProperty(item));
-						}
-						maxValue = dbTransaction.fetch(maxValue);
-						if (!maxValue.isDeleted()) {
-							numbering.getMaxValueNumbering().add(new KeyValue(contract.getMaxValueKey(), 1));
-						} else {
-							numbering.getMaxValueNumbering()
-									.add(new KeyValue(contract.getMaxValueKey(), maxValue.getValue()));
-						}
-					} else {
-						// 非数据库事务，编号为1
-						numbering.getMaxValueNumbering().add(new KeyValue(contract.getMaxValueKey(), 1));
+				if (this.getTransaction() instanceof DbTransaction && contract.getHost() instanceof FieldedObject) {
+					DbTransaction dbTransaction = (DbTransaction) this.getTransaction();
+					FieldedObject boData = (FieldedObject) contract.getHost();
+					MaxValue maxValue = new MaxValue(contract.getHost().getClass());
+					maxValue.setKeyField(contract.getMaxValueField());
+					for (IPropertyInfo<?> item : contract.getMaxValueConditions()) {
+						maxValue.addConditionField(item);
+						maxValue.setProperty(item, boData.getProperty(item));
 					}
+					maxValue = dbTransaction.fetch(maxValue);
+					if (!maxValue.isDeleted()) {
+						numbering.getMaxValueNumbering().add(new KeyValue(contract.getMaxValueKey(), 1));
+					} else {
+						numbering.getMaxValueNumbering()
+								.add(new KeyValue(contract.getMaxValueKey(), maxValue.getValue()));
+					}
+				} else {
+					// 非数据库事务，编号为1
+					numbering.getMaxValueNumbering().add(new KeyValue(contract.getMaxValueKey(), 1));
 				}
 			}
 			return numbering;
@@ -166,7 +170,7 @@ public class BOKeysService extends BusinessLogic<IBOKeysContract, BONumbering> {
 		if (contract.setPrimaryKey(key)) {
 			this.getBeAffected().setAutoKey(key + 1);
 		} else {
-			Logger.log(LoggingLevel.DEBUG, "%s: not set [%s]'s primarkey.", this.getClass().getSimpleName(),
+			Logger.log(MessageLevel.DEBUG, "%s: not set [%s]'s primarkey.", this.getClass().getSimpleName(),
 					contract.getIdentifiers());
 		}
 		// 系列号赋值
@@ -189,7 +193,7 @@ public class BOKeysService extends BusinessLogic<IBOKeysContract, BONumbering> {
 					.firstOrDefault(c -> c.getKey().equals(contract.getMaxValueKey()));
 			if (keyValue == null) {
 				throw new BusinessLogicException(I18N.prop("msg_bobas_not_found_bo_max_values",
-						this.getHost().getClass().getSimpleName(), keyProperty.getName()));
+						contract.getObjectCode(), keyProperty.getName()));
 			}
 			key = keyValue.asValue();
 			if (contract.setMaxValue(key)) {

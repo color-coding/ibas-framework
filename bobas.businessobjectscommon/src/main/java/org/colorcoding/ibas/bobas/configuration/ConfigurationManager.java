@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 
 import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.data.KeyText;
-import org.colorcoding.ibas.bobas.logging.Logger;
+import org.colorcoding.ibas.bobas.message.Logger;
 
 /**
  * 配置项管理员

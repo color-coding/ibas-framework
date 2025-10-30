@@ -11,7 +11,7 @@ import javax.servlet.annotation.WebListener;
 
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.data.KeyText;
-import org.colorcoding.ibas.bobas.logging.Logger;
+import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.task.Daemon;
 import org.colorcoding.ibas.bobas.task.IDaemonTask;
 import org.colorcoding.ibas.demo.MyConfiguration;

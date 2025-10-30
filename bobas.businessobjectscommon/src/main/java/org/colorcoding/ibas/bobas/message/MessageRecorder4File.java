@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.bobas.logging;
+package org.colorcoding.ibas.bobas.message;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -131,7 +131,7 @@ public class MessageRecorder4File extends MessageRecorder {
 
 					}, false);
 				} catch (Exception e) {
-					Logger.log(LoggingLevel.FATAL, e);
+					Logger.log(MessageLevel.FATAL, e);
 				}
 			}
 		}

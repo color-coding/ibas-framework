@@ -2,11 +2,11 @@ package org.colorcoding.ibas.bobas.logic.common;
 
 import org.colorcoding.ibas.bobas.bo.BOUtilities;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
-import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.logging.LoggingLevel;
 import org.colorcoding.ibas.bobas.logic.BusinessLogic;
 import org.colorcoding.ibas.bobas.logic.BusinessLogicException;
 import org.colorcoding.ibas.bobas.logic.LogicContract;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.period.IPeriodData;
 import org.colorcoding.ibas.bobas.period.PeriodFactory;
 import org.colorcoding.ibas.bobas.period.PeriodsManager;
@@ -18,7 +18,7 @@ public class BOPeriodService extends BusinessLogic<IBOPeriodContract, IBusinessO
 	protected boolean checkDataStatus(Object data) {
 		if (data == this.getHost()) {
 			if (!(data instanceof IPeriodData)) {
-				Logger.log(LoggingLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
+				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
 						"isPeriodData", "false");
 				return false;
 			}

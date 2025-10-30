@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.bobas.logging;
+package org.colorcoding.ibas.bobas.message;
 
 /**
  * 日志级别
@@ -6,7 +6,7 @@ package org.colorcoding.ibas.bobas.logging;
  * @author Niuren.Zhu
  *
  */
-public enum LoggingLevel {
+public enum MessageLevel {
 	/**
 	 * 严重错误
 	 */

@@ -8,8 +8,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.logging.LoggingLevel;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 /**
  * 框架守护进程
@@ -189,7 +189,7 @@ public class Daemon implements IDaemon {
 			int qSize = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_TASK_THREAD_QUEUE_SIZE, 3);
 			this.threadPool = new ThreadPoolExecutor(1, pSize, 3, TimeUnit.SECONDS,
 					new LinkedBlockingQueue<Runnable>(qSize));
-			Logger.log(LoggingLevel.INFO, "daemon: cpu %s, thread pool size %s and queue size %s.", cpu, pSize, qSize);
+			Logger.log(MessageLevel.INFO, "daemon: cpu %s, thread pool size %s and queue size %s.", cpu, pSize, qSize);
 		}
 		return threadPool;
 	}
@@ -226,13 +226,13 @@ public class Daemon implements IDaemon {
 							long start = System.currentTimeMillis();
 							long times = wrapping.getRunTimes() + 1;
 							if (wrapping.isLog() && MyConfiguration.isDebugMode()) {
-								Logger.log(LoggingLevel.DEBUG, "daemon: begin to run task [%s - %s], %sth running.",
+								Logger.log(MessageLevel.DEBUG, "daemon: begin to run task [%s - %s], %sth running.",
 										wrapping.getId(), wrapping.getName(), times);
 							}
 							wrapping.run();
 							long end = System.currentTimeMillis();
 							if (wrapping.isLog() && MyConfiguration.isDebugMode()) {
-								Logger.log(LoggingLevel.DEBUG,
+								Logger.log(MessageLevel.DEBUG,
 										"daemon: end task [%s - %s] %sth running and for [%s] milliseconds.",
 										wrapping.getId(), wrapping.getName(), times, (end - start));
 							}

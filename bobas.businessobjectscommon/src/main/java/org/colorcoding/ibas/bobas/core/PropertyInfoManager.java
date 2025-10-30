@@ -18,8 +18,8 @@ import java.util.function.Function;
 
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.logging.LoggingLevel;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 /**
  * 属性管理员
@@ -286,7 +286,7 @@ public class PropertyInfoManager {
 							// 使用加载业务对象的类加载器
 							Class.forName(objectType.getName(), true, objectType.getClassLoader());
 						} catch (ClassNotFoundException e) {
-							Logger.log(LoggingLevel.FATAL, e);
+							Logger.log(MessageLevel.FATAL, e);
 							StringBuilder builder = new StringBuilder();
 							builder.append("Class not found. Classpath:");
 							ClassLoader cl = ClassLoader.getSystemClassLoader();
@@ -294,7 +294,7 @@ public class PropertyInfoManager {
 							for (URL url : urls) {
 								builder.append(url.getFile());
 							}
-							Logger.log(LoggingLevel.FATAL, builder.toString());
+							Logger.log(MessageLevel.FATAL, builder.toString());
 						}
 					}
 				}

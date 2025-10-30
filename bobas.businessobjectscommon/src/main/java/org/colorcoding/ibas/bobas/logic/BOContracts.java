@@ -88,7 +88,7 @@ class BOKeysContract extends BOContract<IBusinessObject> implements IBOKeysContr
 				return boUnit.code();
 			}
 		}
-		return Strings.VALUE_EMPTY;
+		return this.getHost().getClass().getSimpleName();
 	}
 
 	@Override

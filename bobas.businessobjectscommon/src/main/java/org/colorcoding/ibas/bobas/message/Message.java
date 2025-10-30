@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.bobas.logging;
+package org.colorcoding.ibas.bobas.message;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -15,14 +15,14 @@ public class Message {
 	}
 
 	public Message(String message) {
-		this(LoggingLevel.INFO, message);
+		this(MessageLevel.INFO, message);
 	}
 
-	public Message(LoggingLevel level, String message) {
+	public Message(MessageLevel level, String message) {
 		this(level, message, "");
 	}
 
-	public Message(LoggingLevel level, String message, String tag) {
+	public Message(MessageLevel level, String message, String tag) {
 		this();
 		this.setLevel(level);
 		this.setContent(message);
@@ -49,15 +49,15 @@ public class Message {
 		this.time = time;
 	}
 
-	private LoggingLevel level;
+	private MessageLevel level;
 
-	public LoggingLevel getLevel() {
+	public MessageLevel getLevel() {
 		if (this.level == null)
-			this.level = LoggingLevel.INFO;
+			this.level = MessageLevel.INFO;
 		return level;
 	}
 
-	public void setLevel(LoggingLevel level) {
+	public void setLevel(MessageLevel level) {
 		this.level = level;
 	}
 

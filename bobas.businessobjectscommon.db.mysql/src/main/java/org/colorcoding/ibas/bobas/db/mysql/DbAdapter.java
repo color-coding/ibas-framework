@@ -11,8 +11,8 @@ import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
 import org.colorcoding.ibas.bobas.db.ISqlStatement;
 import org.colorcoding.ibas.bobas.db.MaxValue;
-import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.logging.LoggingLevel;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 
@@ -28,7 +28,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 					"jdbc:mysql://%s/%s?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=%s&useServerPrepStmts=true&cachePrepStmts=true",
 					server, dbName, java.net.URLEncoder.encode(timeZone, "UTF-8"));
 			if (MyConfiguration.isDebugMode()) {
-				Logger.log(LoggingLevel.DEBUG,
+				Logger.log(MessageLevel.DEBUG,
 						Strings.format("db adapter: %s", java.net.URLDecoder.decode(dbURL, "UTF-8")));
 			}
 			Connection connection = DriverManager.getConnection(dbURL, userName, userPwd);

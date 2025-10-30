@@ -3,8 +3,8 @@ package org.colorcoding.ibas.bobas.configuration;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.BOFactory;
 import org.colorcoding.ibas.bobas.i18n.I18N;
-import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.logging.LoggingLevel;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 /**
  * 可配置工厂
@@ -55,7 +55,7 @@ public abstract class ConfigurableFactory<T> {
 		}
 		// 获取类类型
 		String fullName = stringBuilder.toString();
-		Logger.log(LoggingLevel.INFO, "configurable factory: combined class name [%s].", fullName);
+		Logger.log(MessageLevel.INFO, "configurable factory: combined class name [%s].", fullName);
 		// 使用BO类加载器
 		return (Class<T>) BOFactory.loadClass(fullName);
 	}
@@ -89,7 +89,7 @@ public abstract class ConfigurableFactory<T> {
 		String configValue = MyConfiguration.getConfigValue(configKey, "").toLowerCase();
 		if (configValue == null || configValue.isEmpty()) {
 			// 没有配置，则使用默认
-			Logger.log(LoggingLevel.WARN, "configurable factory: not configured [%s], using defalut [%s].", configKey,
+			Logger.log(MessageLevel.WARN, "configurable factory: not configured [%s], using defalut [%s].", configKey,
 					typeName);
 			return this.createDefault(typeName);
 		}

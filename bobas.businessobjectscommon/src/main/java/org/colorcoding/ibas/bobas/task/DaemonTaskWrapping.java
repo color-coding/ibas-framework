@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.logging.LoggingLevel;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 /**
  * 后台任务收纳盒
@@ -191,7 +191,7 @@ class DaemonTaskWrapping {
 					folder.mkdirs();
 				}
 				if (!folder.isDirectory()) {
-					Logger.log(LoggingLevel.ERROR, "daemon: single task work folder not exists.");
+					Logger.log(MessageLevel.ERROR, "daemon: single task work folder not exists.");
 					return false;
 				}
 				File lockFile = new File(this.getLockFileName(folder.getPath(), singleTask));

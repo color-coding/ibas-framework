@@ -22,8 +22,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.logging.Logger;
-import org.colorcoding.ibas.bobas.logging.LoggingLevel;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 /**
  * 默认语言项目管理员
@@ -107,7 +107,7 @@ public class LanguageItemManager {
 				}
 			}
 			workFolder = new File(path).getPath();
-			Logger.log(LoggingLevel.DEBUG, "i18n: use folder [%s].", workFolder);
+			Logger.log(MessageLevel.DEBUG, "i18n: use folder [%s].", workFolder);
 		}
 		return workFolder;
 	}
@@ -152,10 +152,10 @@ public class LanguageItemManager {
 							this.getLanguageItems().put(item.getKey(), item);
 						}
 						if (languageItems.size() > 0) {
-							Logger.log(LoggingLevel.DEBUG, "i18n: read file's data [%s].", file.toString());
+							Logger.log(MessageLevel.DEBUG, "i18n: read file's data [%s].", file.toString());
 						}
 					} catch (UnsupportedEncodingException e) {
-						Logger.log(LoggingLevel.DEBUG, e);
+						Logger.log(MessageLevel.DEBUG, e);
 					}
 				}
 			}

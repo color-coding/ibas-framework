@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.Strings;
-import org.colorcoding.ibas.bobas.logging.Logger;
+import org.colorcoding.ibas.bobas.message.Logger;
 
 public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 
