@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
+import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.common.ICondition;
@@ -99,6 +100,23 @@ public class TestFileRepository extends TestCase {
 				System.out.println(String.format("%s ,%s", file.getParentFile().getPath(),
 						DateTimes.valueOf(file.lastModified()).toString(DateTime.FORMAT_DATETIME)));
 			}
+
+			criteria = new Criteria();
+			criteria.setResultCount(30);
+			condition = criteria.getConditions().create();
+			condition.setAlias(FileRepository.CONDITION_ALIAS_FILE_NAME);
+			condition.setValue("target/classes/i18n/locale.bobas.properties");
+			condition = criteria.getConditions().create();
+			condition.setAlias(FileRepository.CONDITION_ALIAS_FILE_NAME);
+			condition.setValue("target/classes/i18n/locale.bobas_en-US.properties");
+			condition.setRelationship(ConditionRelationship.OR);
+			System.out.println("**************************");
+			for (FileItem item : fileRepository.fetch(criteria).getResultObjects()) {
+				file = new File(item.getPath());
+				System.out.println(String.format("%s ,%s", file.getPath(),
+						DateTimes.valueOf(file.lastModified()).toString(DateTime.FORMAT_DATETIME)));
+			}
+
 		}
 	}
 }

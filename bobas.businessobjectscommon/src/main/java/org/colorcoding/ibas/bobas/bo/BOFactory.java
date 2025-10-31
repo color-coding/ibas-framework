@@ -30,7 +30,7 @@ import org.colorcoding.ibas.bobas.message.Logger;
 /**
  * 业务对象工厂
  */
-public class BOFactory {
+public final class BOFactory {
 
 	private BOFactory() {
 	}

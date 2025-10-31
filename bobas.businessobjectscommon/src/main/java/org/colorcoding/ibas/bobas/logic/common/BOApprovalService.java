@@ -9,6 +9,7 @@ import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
 import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
 import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
+import org.colorcoding.ibas.bobas.common.Enums;
 import org.colorcoding.ibas.bobas.core.ITrackable;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
@@ -103,7 +104,7 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 	protected IProcessData fetchBeAffected(IBOApprovalContract contract) {
 		try {
 			IProcessData processData = null;
-			// 非新建则尝试加载
+			// 非新建，则尝试加载存在请求
 			if (!contract.getHost().isNew()) {
 				processData = this.getProcessManager().loadProcessData(contract.getHost());
 			}
@@ -112,13 +113,9 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 				ApprovalProcess<IProcessData> process = this.getProcessManager().startProcess(contract.getHost());
 				if (process != null) {
 					processData = process.getProcessData();
-				}
-			}
-			// 未能形成审批流程
-			if (processData == null) {
-				// 重置数据状态
-				if (contract.getHost().getApprovalStatus() != emApprovalStatus.UNAFFECTED) {
-					contract.getHost().setApprovalStatus(emApprovalStatus.UNAFFECTED);
+					if (!Enums.equals(contract.getHost().getApprovalStatus(), processData.getStatus())) {
+						contract.getHost().setApprovalStatus(processData.getStatus());
+					}
 				}
 			}
 			return processData;
@@ -130,13 +127,26 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 	@Override
 	protected void impact(IBOApprovalContract contract) {
 		if (this.getBeAffected() == null) {
+			// 未能形成审批流程，重置数据状态
+			if (contract.getHost().getApprovalStatus() != emApprovalStatus.UNAFFECTED) {
+				contract.getHost().setApprovalStatus(emApprovalStatus.UNAFFECTED);
+			}
 			return;
 		}
 		try {
-			ApprovalProcess<IProcessData> process = this.getProcessManager().startProcess(this.getBeAffected());
-			if (process != null) {
-				// 检查用户是否可以修改数据
-				process.checkToSave(this.getUser());
+			ApprovalProcess<IProcessData> process = null;
+			if (!Enums.equals(this.getBeAffected().getStatus(), contract.getHost().getApprovalStatus())) {
+				// 请求状态与数据状态，不一致，则重开始流程
+				process = this.getProcessManager().startProcess(this.getBeAffected());
+				if (process != null) {
+					process.start(contract.getHost());
+				}
+			} else {
+				process = this.getProcessManager().startProcess(this.getBeAffected(), contract.getHost());
+				if (process != null) {
+					// 检查用户是否可以修改数据
+					process.checkToSave(this.getUser());
+				}
 			}
 		} catch (Exception e) {
 			throw new BusinessLogicException(e);
@@ -145,7 +155,12 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 
 	@Override
 	protected void revoke(IBOApprovalContract contract) {
-		if (this.getBeAffected() == null) {
+		if (this.getBeAffected() == null || this.getBeAffected().isNew()) {
+			// 反向逻辑新键的审批流程，视为无效
+			return;
+		}
+		// 反向逻辑退回过的，不检查审批
+		if (Enums.equals(contract.getHost().getApprovalStatus(), emApprovalStatus.RETURNED)) {
 			return;
 		}
 		try {
@@ -153,9 +168,13 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 				ITrackable trackable = (ITrackable) this.getTrigger();
 				// 检查用户是否可以删除
 				if (trackable.isDeleted()) {
-					ApprovalProcess<IProcessData> process = this.getProcessManager().startProcess(this.getBeAffected());
+					ApprovalProcess<IProcessData> process = this.getProcessManager().startProcess(this.getBeAffected(),
+							contract.getHost());
 					if (process != null) {
 						process.checkToSave(this.getUser());
+						// 数据被删除，则审批请求取消
+						this.getBeAffected().setStatus(emApprovalStatus.CANCELLED);
+						this.getBeAffected().setActivated(emYesNo.NO);
 					}
 				}
 			}

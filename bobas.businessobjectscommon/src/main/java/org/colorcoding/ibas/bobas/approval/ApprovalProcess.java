@@ -1,15 +1,14 @@
 package org.colorcoding.ibas.bobas.approval;
 
-import java.util.List;
-
 import org.colorcoding.ibas.bobas.bo.BOFactory;
 import org.colorcoding.ibas.bobas.bo.IBOTagCanceled;
 import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.DateTimes;
+import org.colorcoding.ibas.bobas.common.Enums;
 import org.colorcoding.ibas.bobas.common.ICriteria;
+import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.Numbers;
-import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalResult;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
@@ -17,10 +16,12 @@ import org.colorcoding.ibas.bobas.data.emApprovalStepStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.logic.common.IBOApprovalContract;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
 import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
+import org.colorcoding.ibas.bobas.repository.BORepositoryService;
 import org.colorcoding.ibas.bobas.repository.ITransaction;
 import org.colorcoding.ibas.bobas.repository.RepositoryException;
 
@@ -226,10 +227,10 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 			return false;
 		}
 		this.restore();// 重置初始状态
-		for (ApprovalProcessStep<?> item : this.getProcessSteps()) {
-			ApprovalProcessStep<?> stepItem = (ApprovalProcessStep<?>) item;
+		ApprovalDataJudgmentLink judgmentLinks;
+		for (ApprovalProcessStep<?> stepItem : this.getProcessSteps()) {
 			try {
-				ApprovalDataJudgmentLink judgmentLinks = new ApprovalDataJudgmentLink(this.getTransaction());
+				judgmentLinks = new ApprovalDataJudgmentLink(this.getTransaction());
 				judgmentLinks.parsingConditions(stepItem.getConditions());
 				if (judgmentLinks.judge((IBusinessObject) data)) {
 					// 满足条件，开启此步骤
@@ -259,13 +260,13 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	 * @throws RepositoryException
 	 */
 	private ApprovalProcessStep<?> nextStep() throws JudmentOperationException, ApprovalException {
-		for (ApprovalProcessStep<?> item : this.getProcessSteps()) {
-			if (item.getStatus() != emApprovalStepStatus.PENDING) {
+		ApprovalDataJudgmentLink judgmentLinks;
+		for (ApprovalProcessStep<?> stepItem : this.getProcessSteps()) {
+			if (stepItem.getStatus() != emApprovalStepStatus.PENDING) {
 				// 只考虑挂起的步骤
 				continue;
 			}
-			ApprovalProcessStep<?> stepItem = (ApprovalProcessStep<?>) item;
-			ApprovalDataJudgmentLink judgmentLinks = new ApprovalDataJudgmentLink(this.getTransaction());
+			judgmentLinks = new ApprovalDataJudgmentLink(this.getTransaction());
 			judgmentLinks.parsingConditions(stepItem.getConditions());
 			boolean done = true;
 			// 有条件，则加载实际数据进行比较
@@ -335,8 +336,10 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 				apStep.reset();// 操作步骤进行中
 				// 流程状态设置
 				this.setFinishedTime(DateTimes.VALUE_MAX);
-				this.setStatus(emApprovalStatus.PROCESSING);
-				this.onStatusChanged();
+				if (!Enums.equals(this.getStatus(), emApprovalStatus.PROCESSING)) {
+					this.setStatus(emApprovalStatus.PROCESSING);
+					this.onStatusChanged();
+				}
 			} else {
 				// 操作的步骤不是正在进行的步骤
 				throw new ApprovalException(
@@ -358,8 +361,10 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 					if (nextStep == null) {
 						// 没有下一个步骤，流程完成
 						this.setFinishedTime(DateTimes.now());
-						this.setStatus(emApprovalStatus.APPROVED);
-						this.onStatusChanged();
+						if (!Enums.equals(this.getStatus(), emApprovalStatus.APPROVED)) {
+							this.setStatus(emApprovalStatus.APPROVED);
+							this.onStatusChanged();
+						}
 					} else {
 						// 进行下一步骤
 						this.setStatus(emApprovalStatus.PROCESSING);
@@ -372,15 +377,19 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 				apStep.reject(judgment);
 				// 任意步骤拒绝，流程拒绝
 				this.setFinishedTime(DateTimes.now());
-				this.setStatus(emApprovalStatus.REJECTED);
-				this.onStatusChanged();
+				if (!Enums.equals(this.getStatus(), emApprovalStatus.REJECTED)) {
+					this.setStatus(emApprovalStatus.REJECTED);
+					this.onStatusChanged();
+				}
 			} else if (apResult == emApprovalResult.RETURNED) {
 				// 退回
 				apStep.retreat(judgment);
 				// 任意步骤退回，流程退回
 				this.setFinishedTime(DateTimes.now());
-				this.setStatus(emApprovalStatus.RETURNED);
-				this.onStatusChanged();
+				if (!Enums.equals(this.getStatus(), emApprovalStatus.RETURNED)) {
+					this.setStatus(emApprovalStatus.RETURNED);
+					this.onStatusChanged();
+				}
 			}
 		}
 	}
@@ -443,25 +452,19 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 				throw new ApprovalException(I18N.prop("msg_bobas_invaild_user_authorization"), e);
 			}
 			this.setFinishedTime(DateTimes.now());
-			this.setStatus(emApprovalStatus.CANCELLED);
-			this.onStatusChanged();
+			if (!Enums.equals(this.getStatus(), emApprovalStatus.CANCELLED)) {
+				this.setStatus(emApprovalStatus.CANCELLED);
+				this.onStatusChanged();
+			}
 			return true;
 		}
 		return false;
 	}
 
-	private void onStatusChanged() {
+	private void onStatusChanged() throws ApprovalException {
 		Logger.log("approval process: [%s]'s status change to [%s].", this.getName(), this.getStatus());
-		if (this.getFinishedTime() != DateTimes.VALUE_MAX) {
-			if (this.getStatus() != emApprovalStatus.PROCESSING) {
-				if (this.approvalData == null) {
-					try {
-						this.approvalData = this.fetchApprovalData();
-					} catch (Exception e) {
-						throw new RuntimeException(e);
-					}
-				}
-			}
+		if (this.approvalData == null) {
+			this.approvalData = this.fetchApprovalData();
 		}
 		this.changeApprovalDataStatus(this.getStatus());
 	}
@@ -580,34 +583,61 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 			throw new ApprovalException(I18N.prop("msg_bobas_invaild_bo_repository"));
 		}
 		boolean myTrans = false;
-		try {
+		try (BORepository4Approval boRepository = new BORepository4Approval()) {
 			// 开启事务
 			myTrans = transaction.beginTransaction();
-			// 调用保存审批数据
-			List<IBusinessObject> beSaved = new ArrayList<>(2);
+			// 设置仓库事务
+			boRepository.setTransaction(transaction);
+
 			// 保存审批数据（先加载真正实例）
-			if (this.approvalData instanceof IBusinessObject && this.approvalData.isDirty()) {
-				beSaved.add((IBusinessObject) this.getApprovalData());
+			if (this.approvalData.isDirty()) {
+				boRepository.toSave(this.approvalData);
 			}
 			// 调用保存审批流程
-			if (this.processData instanceof IBusinessObject && this.processData.isDirty()) {
-				beSaved.add(this.getProcessData());
+			if (this.processData.isDirty()) {
+				boRepository.toSave(this.processData);
 			}
-			transaction.save(beSaved.toArray(new IBusinessObject[] {}));
+
 			// 提交事务
 			if (myTrans) {
-				this.getTransaction().commit();
+				transaction.commit();
 			}
 		} catch (Exception e) {
 			// 回滚事务
 			if (myTrans) {
 				try {
-					this.getTransaction().rollback();
+					transaction.rollback();
 				} catch (RepositoryException e1) {
-					throw new ApprovalException(e);
+					throw new ApprovalException(e1);
 				}
 			}
 			throw new ApprovalException(e);
+		}
+	}
+
+	private class BORepository4Approval extends BORepositoryService {
+
+		public BORepository4Approval() {
+			// 跳过审批契约
+			this.addSkipLogics(IBOApprovalContract.class);
+		}
+
+		public void toSave(IApprovalData data) throws Exception {
+			if (data instanceof IBusinessObject) {
+				IOperationResult<?> operationResult = super.save((IBusinessObject) data);
+				if (operationResult.getError() != null) {
+					throw operationResult.getError();
+				}
+			}
+		}
+
+		public void toSave(IProcessData data) throws Exception {
+			if (data instanceof IBusinessObject) {
+				IOperationResult<?> operationResult = super.save((IBusinessObject) data);
+				if (operationResult.getError() != null) {
+					throw operationResult.getError();
+				}
+			}
 		}
 	}
 

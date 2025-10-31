@@ -21,6 +21,7 @@ import org.colorcoding.ibas.bobas.data.emApprovalStepStatus;
 import org.colorcoding.ibas.bobas.data.emConditionOperation;
 import org.colorcoding.ibas.bobas.data.emConditionRelationship;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
+import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.db.DbField;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
@@ -339,6 +340,18 @@ class ProcessData extends BusinessObject<ProcessData> implements IProcessData {
 
 	public void setApprovalData(IApprovalData approvalData) {
 		this.approvalData = approvalData;
+	}
+
+	emYesNo activated;
+
+	@Override
+	public emYesNo getActivated() {
+		return activated;
+	}
+
+	@Override
+	public void setActivated(emYesNo value) {
+		this.activated = value;
 	}
 
 }

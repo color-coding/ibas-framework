@@ -157,8 +157,8 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 			throw new IllegalArgumentException(
 					Strings.format("[%s] not exists property [%s].", this.getClass().getName(), property.getName()));
 		}
-		// 加载状态时，非主键不触发属性改变事件
-		if (this.isLoading() && !property.isPrimaryKey()) {
+		// 加载状态时，非主键、唯一键不触发属性改变事件
+		if (this.isLoading() && !(property.isPrimaryKey() || property.isUniqueKey())) {
 			if (property.getDefaultValue() == value) {
 				this.fields.put(property, null);
 			} else {

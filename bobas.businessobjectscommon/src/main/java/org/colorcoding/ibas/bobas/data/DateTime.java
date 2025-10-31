@@ -34,6 +34,16 @@ public class DateTime extends Date implements Serializable {
 	public static String FORMAT_DATETIME = String.format("%s'T'%s", FORMAT_DATE, FORMAT_TIME);
 
 	/**
+	 * 最小日期
+	 */
+	public static final DateTime MIN_VALUE = DateTimes.VALUE_MIN;
+
+	/**
+	 * 最大日期
+	 */
+	public static final DateTime MAX_VALUE = DateTimes.VALUE_MAX;
+
+	/**
 	 * 当前时间
 	 */
 	@Deprecated

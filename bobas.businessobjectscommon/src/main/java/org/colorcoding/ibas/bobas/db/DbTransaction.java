@@ -478,10 +478,10 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 										if (propertyInfo.getValueType() != null
 												&& propertyInfo.getValueType().isEnum()) {
 											statement.setObject(index, Enums.annotationValue(value),
-													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type()));
+													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type(), value));
 										} else {
 											statement.setObject(index, value,
-													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type()));
+													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type(), value));
 										}
 										index += 1;
 									}
@@ -496,6 +496,8 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 										if (!propertyInfo.isPrimaryKey() && !propertyInfo.isUniqueKey()
 												&& (value == DateTimes.VALUE_MIN || value == Strings.VALUE_EMPTY
 														|| value == Numbers.SHORT_VALUE_ZERO
+														|| value == Numbers.INTEGER_VALUE_ZERO
+														|| value == Numbers.LONG_VALUE_ZERO
 														|| value == Numbers.DOUBLE_VALUE_ZERO
 														|| value == Numbers.FLOAT_VALUE_ZERO)) {
 											// 默认值时存空
@@ -504,10 +506,10 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 										if (propertyInfo.getValueType() != null
 												&& propertyInfo.getValueType().isEnum()) {
 											statement.setObject(index, Enums.annotationValue(value),
-													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type()));
+													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type(), value));
 										} else {
 											statement.setObject(index, value,
-													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type()));
+													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type(), value));
 										}
 										index += 1;
 									}
@@ -525,10 +527,10 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 										if (propertyInfo.getValueType() != null
 												&& propertyInfo.getValueType().isEnum()) {
 											statement.setObject(index, Enums.annotationValue(value),
-													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type()));
+													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type(), value));
 										} else {
 											statement.setObject(index, value,
-													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type()));
+													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type(), value));
 										}
 										index += 1;
 									}
@@ -542,6 +544,8 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 										if (!propertyInfo.isPrimaryKey() && !propertyInfo.isUniqueKey()
 												&& (value == DateTimes.VALUE_MIN || value == Strings.VALUE_EMPTY
 														|| value == Numbers.SHORT_VALUE_ZERO
+														|| value == Numbers.INTEGER_VALUE_ZERO
+														|| value == Numbers.LONG_VALUE_ZERO
 														|| value == Numbers.DOUBLE_VALUE_ZERO
 														|| value == Numbers.FLOAT_VALUE_ZERO)) {
 											// 默认值时存空
@@ -550,10 +554,10 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 										if (propertyInfo.getValueType() != null
 												&& propertyInfo.getValueType().isEnum()) {
 											statement.setObject(index, Enums.annotationValue(value),
-													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type()));
+													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type(), value));
 										} else {
 											statement.setObject(index, value,
-													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type()));
+													DbTransaction.this.getAdapter().sqlTypeOf(dbField.type(), value));
 										}
 										index += 1;
 									}

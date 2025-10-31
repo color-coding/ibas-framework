@@ -340,6 +340,17 @@ public abstract class DbAdapter {
 	}
 
 	/**
+	 * 返回SQL类型
+	 * 
+	 * @param type  数据字段类型
+	 * @param value 当前值
+	 * @return
+	 */
+	public int sqlTypeOf(DbFieldType type, Object value) {
+		return this.sqlTypeOf(type);
+	}
+
+	/**
 	 * 转化查询（属性名称、属性类型）
 	 * 
 	 * @param criteria 待处理查询

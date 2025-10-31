@@ -125,16 +125,42 @@ class BusinessLogicChain implements IBusinessLogicChain {
 		this.user = user;
 	}
 
+	private ArrayList<Class<?>> skipContractTypes;
+
+	public final ArrayList<Class<?>> getSkipContractTypes() {
+		if (this.skipContractTypes == null) {
+			this.skipContractTypes = new ArrayList<>();
+		}
+		return skipContractTypes;
+	}
+
+	void setSkipContractTypes(ArrayList<Class<?>> skipContractTypes) {
+		this.skipContractTypes = skipContractTypes;
+	}
+
+	@Override
+	public void addSkipLogics(Class<?> contractType) {
+		this.getSkipContractTypes().add(contractType);
+	}
+
 	/**
 	 * 执行正向逻辑
 	 */
 	private final void forwardLogics() {
 		// 执行正向逻辑
-		for (IBusinessLogic<?> logic : this.getTriggerLogics()) {
+		for (BusinessLogic<?, ?> logic : this.getTriggerLogics()) {
 			if (logic == null) {
 				continue;
 			}
 			Logger.log(MessageLevel.INFO, "logics chain [%s]: forward logic [%s].", this.hashCode(), logic.toString());
+			// 跳过设置的契约逻辑
+			if (logic.getContract() != null) {
+				if (this.getSkipContractTypes().contains(c -> c.isInstance(logic.getContract()))) {
+					Logger.log(MessageLevel.DEBUG, BusinessLogic.MSG_LOGICS_SKIP_LOGIC_EXECUTION,
+							logic.getClass().getName(), "Skipped", "true");
+					continue;
+				}
+			}
 			logic.forward();
 		}
 	}
@@ -144,11 +170,19 @@ class BusinessLogicChain implements IBusinessLogicChain {
 	 */
 	private final void reverseLogics() {
 		// 执行反向逻辑
-		for (IBusinessLogic<?> logic : this.getTriggerCopyLogics()) {
+		for (BusinessLogic<?, ?> logic : this.getTriggerCopyLogics()) {
 			if (logic == null) {
 				continue;
 			}
 			Logger.log(MessageLevel.INFO, "logics chain [%s]: reverse logic [%s].", this.hashCode(), logic.toString());
+			// 跳过设置的契约逻辑
+			if (logic.getContract() != null) {
+				if (this.getSkipContractTypes().contains(c -> c.isInstance(logic.getContract()))) {
+					Logger.log(MessageLevel.DEBUG, BusinessLogic.MSG_LOGICS_SKIP_LOGIC_EXECUTION,
+							logic.getClass().getName(), "Skipped", "true");
+					continue;
+				}
+			}
 			logic.reverse();
 		}
 	}
@@ -233,6 +267,8 @@ class BusinessLogicChain implements IBusinessLogicChain {
 					logicChain.setUser(this.getUser());
 					logicChain.setRoot(this.getTrigger());
 					logicChain.setTrigger(item);
+					logicChain.setSkipContractTypes(this.getSkipContractTypes());
+
 					if (item.isNew() == false) {
 						if (item instanceof BONumbering || item instanceof BOSeriesNumbering
 								|| item instanceof BOLogst) {

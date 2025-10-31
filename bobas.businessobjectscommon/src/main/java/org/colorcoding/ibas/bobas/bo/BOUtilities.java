@@ -542,4 +542,24 @@ public class BOUtilities {
 			((ICheckRules) host).check();
 		}
 	}
+
+	/**
+	 * 转为json字符串
+	 * 
+	 * @param data 数据
+	 * @return
+	 */
+	public static String toJsonString(IBusinessObject data) {
+		return Strings.toJsonString(data);
+	}
+
+	/**
+	 * 转为xml字符串
+	 * 
+	 * @param data
+	 * @return
+	 */
+	public static String toXmlString(IBusinessObject data) {
+		return Strings.toXmlString(data);
+	}
 }

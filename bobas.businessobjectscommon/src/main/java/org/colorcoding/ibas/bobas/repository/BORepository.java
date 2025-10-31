@@ -7,9 +7,12 @@ import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
+import org.colorcoding.ibas.bobas.data.ArrayList;
+import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logic.BusinessLogicsManager;
 import org.colorcoding.ibas.bobas.logic.IBusinessLogicChain;
+import org.colorcoding.ibas.bobas.logic.IBusinessLogicContract;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializerManager;
@@ -24,12 +27,45 @@ public abstract class BORepository extends Repository {
 
 	private boolean skipLogics;
 
+	/**
+	 * 是否跳过逻辑
+	 * 
+	 * @return
+	 */
 	protected final boolean isSkipLogics() {
 		return skipLogics;
 	}
 
+	/**
+	 * 设置跳过逻辑
+	 * 
+	 * @param skipLogics ture or false
+	 */
 	protected final void setSkipLogics(boolean skipLogics) {
 		this.skipLogics = skipLogics;
+		if (this.skipLogics == false) {
+			this.skipLogicContracts = null;
+		}
+	}
+
+	private List<Class<?>> skipLogicContracts;
+
+	/**
+	 * 设置跳过的逻辑对应契约（isSkipLogics = true 时有效）
+	 * 
+	 * @param contract 契约类型
+	 */
+	protected final void addSkipLogics(Class<?> contract) {
+		if (!IBusinessLogicContract.class.isAssignableFrom(contract)) {
+			throw new ClassCastException("not business logic contract class.");
+		}
+		if (this.skipLogicContracts == null) {
+			this.skipLogicContracts = new ArrayList<>();
+		}
+		this.skipLogicContracts.add(contract);
+		if (this.skipLogics == false) {
+			this.skipLogics = true;
+		}
 	}
 
 	private volatile ITransaction transaction;
@@ -125,13 +161,17 @@ public abstract class BORepository extends Repository {
 				}
 				// 返回结果
 				OperationResult<T> operationResult = new OperationResult<T>(1);
-				if (this.isSkipLogics()) {
-					// 跳过业务逻辑
+				if (this.isSkipLogics() && (this.skipLogicContracts == null || this.skipLogicContracts.isEmpty())) {
+					// 跳过全部业务逻辑
 					this.getTransaction().save(new IBusinessObject[] { bo });
 				} else {
 					// 执行业务逻辑
 					try (IBusinessLogicChain logicChain = BusinessLogicsManager.create()
 							.createChain(this.getTransaction(), this.getCurrentUser())) {
+						if (this.skipLogicContracts != null) {
+							// 添加跳过的逻辑契约
+							this.skipLogicContracts.forEach(c -> logicChain.addSkipLogics(c));
+						}
 						logicChain.setTrigger(bo);
 						logicChain.setTriggerCopy(boCopy);
 						logicChain.execute();

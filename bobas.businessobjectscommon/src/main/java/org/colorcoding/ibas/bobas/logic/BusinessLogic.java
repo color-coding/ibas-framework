@@ -300,7 +300,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 	private int reverseCount = 0;
 
 	/**
-	 * 运行方向逻辑
+	 * 运行反向逻辑
 	 */
 	@Override
 	public final void reverse() {

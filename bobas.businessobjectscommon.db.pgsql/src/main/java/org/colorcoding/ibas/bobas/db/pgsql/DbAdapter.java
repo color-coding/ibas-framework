@@ -30,6 +30,20 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		}
 	}
 
+	/**
+	 * 返回SQL类型
+	 * 
+	 * @param type  数据字段类型
+	 * @param value 当前值
+	 * @return
+	 */
+	public int sqlTypeOf(DbFieldType type, Object value) {
+		if (value == null) {
+			return java.sql.Types.NULL;
+		}
+		return this.sqlTypeOf(type);
+	}
+
 	@Override
 	public String castAs(DbFieldType type, String alias) {
 		StringBuilder stringBuilder = new StringBuilder();

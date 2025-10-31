@@ -27,7 +27,7 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
  * @author Niuren.Zhu
  *
  */
-public class PropertyInfoManager {
+public final class PropertyInfoManager {
 
 	private PropertyInfoManager() {
 	}
@@ -36,7 +36,7 @@ public class PropertyInfoManager {
 
 	static final String BO_PROPERTY_NAMING_RULES_CAMEL = "%sProperty";
 
-	private static class PropertyInfoList extends ArrayList<PropertyInfo<?>> {
+	private final static class PropertyInfoList extends ArrayList<PropertyInfo<?>> {
 
 		public static final PropertyInfoList EMPTY = new PropertyInfoList(0);
 
@@ -101,8 +101,8 @@ public class PropertyInfoManager {
 						}
 						if (Strings.equalsIgnoreCase(field.getName(),
 								Strings.format(BO_PROPERTY_NAMING_RULES_UPPER, property.getName().toUpperCase()))
-								|| Strings.equalsIgnoreCase(field.getName(), Strings
-										.format(BO_PROPERTY_NAMING_RULES_CAMEL, property.getName().toUpperCase()))) {
+								|| Strings.equalsIgnoreCase(field.getName(),
+										Strings.format(BO_PROPERTY_NAMING_RULES_CAMEL, property.getName()))) {
 							property.setAnnotations(field.getAnnotations());
 						}
 					}

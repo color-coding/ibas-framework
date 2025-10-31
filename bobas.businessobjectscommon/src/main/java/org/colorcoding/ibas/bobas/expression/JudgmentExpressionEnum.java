@@ -37,6 +37,10 @@ public class JudgmentExpressionEnum extends JudgmentExpression<Object> {
 			String tmpLeftDb = Enums.annotationValue(this.getLeftValue());
 			String tmpRight = Strings.valueOf(this.getRightValue());
 			String tmpRightDb = Enums.annotationValue(this.getRightValue());
+			if (tmpRightDb == null && this.getRightValue() != null) {
+				// 按枚举取值无效，则使用初值
+				tmpRightDb = Strings.valueOf(this.getRightValue());
+			}
 			if (tmpLeft != null && tmpLeft.equals(tmpRight)) {
 				return true;
 			}
@@ -51,6 +55,10 @@ public class JudgmentExpressionEnum extends JudgmentExpression<Object> {
 			String tmpLeftDb = Enums.annotationValue(this.getLeftValue());
 			String tmpRight = Strings.valueOf(this.getRightValue());
 			String tmpRightDb = Enums.annotationValue(this.getRightValue());
+			if (tmpRightDb == null && this.getRightValue() != null) {
+				// 按枚举取值无效，则使用初值
+				tmpRightDb = Strings.valueOf(this.getRightValue());
+			}
 			if (tmpLeft != null && tmpLeft.equals(tmpRight)) {
 				return false;
 			}

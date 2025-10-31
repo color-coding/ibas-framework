@@ -52,8 +52,30 @@ public abstract class ApprovalProcessManager {
 	 * @return
 	 */
 	public <T extends IProcessData> ApprovalProcess<T> startProcess(T processData) throws ApprovalException {
+		return this.startProcess(processData, null);
+	}
+
+	/**
+	 * 开始审批流程
+	 * 
+	 * @param processData 流程数据
+	 * @param apData      待审批数据
+	 * @return
+	 */
+	public <T extends IProcessData> ApprovalProcess<T> startProcess(T processData, IApprovalData apData)
+			throws ApprovalException {
 		ApprovalProcess<T> process = this.createApprovalProcess(processData);
-		process.setTransaction(this.getTransaction());
+		if (process != null) {
+			// 加载已存在审批流程
+			process.setTransaction(this.getTransaction());
+			if (apData != null) {
+				process.setApprovalData(apData);
+				Logger.log("approval process: data [%s] using approval process, name [%s].", apData.getIdentifiers(),
+						process.getName());
+			} else {
+				Logger.log("approval process: using approval process, name [%s].", process.getName());
+			}
+		}
 		return process;
 	}
 

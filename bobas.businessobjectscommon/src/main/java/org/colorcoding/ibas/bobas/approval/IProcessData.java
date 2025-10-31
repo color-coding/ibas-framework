@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.approval;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
+import org.colorcoding.ibas.bobas.data.emYesNo;
 
 /**
  * 审批流程（数据）
@@ -32,6 +33,20 @@ public interface IProcessData extends IBusinessObject {
 	 * @param value
 	 */
 	void setStatus(emApprovalStatus value);
+
+	/**
+	 * 获取-激活的
+	 * 
+	 * @return 值
+	 */
+	emYesNo getActivated();
+
+	/**
+	 * 设置-激活的
+	 * 
+	 * @param value 值
+	 */
+	void setActivated(emYesNo value);
 
 	/**
 	 * 获取-开始时间

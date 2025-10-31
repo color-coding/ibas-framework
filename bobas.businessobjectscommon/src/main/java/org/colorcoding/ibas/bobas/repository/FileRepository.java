@@ -43,13 +43,13 @@ public class FileRepository extends Repository {
 	static final String MSG_REPOSITORY_DELETE_FILE = "repository: deleted file [%s].";
 
 	/**
-	 * 检索条件项目：文件夹。如：documents，条件仅可等于，其他忽略。
-	 */
-	public static final String CONDITION_ALIAS_FOLDER = "FileFolder";
-	/**
 	 * 检索条件项目：包含子文件夹。如： emYesNo.Yes，条件仅可等于，其他忽略。
 	 */
 	public static final String CONDITION_ALIAS_INCLUDE_SUBFOLDER = "IncludeSubfolder";
+	/**
+	 * 检索条件项目：文件夹。如：documents，条件仅可等于，其他忽略。
+	 */
+	public static final String CONDITION_ALIAS_FOLDER = FileJudgmentLink.CRITERIA_CONDITION_ALIAS_FOLDER;
 	/**
 	 * 检索条件项目：文件名称。如：ibas.*.jar，条件仅可等于，其他忽略。
 	 */
@@ -61,7 +61,7 @@ public class FileRepository extends Repository {
 	/**
 	 * 查询条件字段-文件路径
 	 */
-	public static final String CONDITION_ALIAS_FILE_PATH = "FilePath";
+	public static final String CONDITION_ALIAS_FILE_PATH = FileJudgmentLink.CRITERIA_CONDITION_ALIAS_FILE_PATH;
 	/**
 	 * 查询条件字段-类型:文件夹(Folder);文件(File)
 	 */
@@ -136,14 +136,13 @@ public class FileRepository extends Repository {
 			condition.setOperation(ConditionOperation.NONE);
 		}
 		// 是否指定工作目录
-		conditions = criteria.getConditions().where(c -> CONDITION_ALIAS_FOLDER.equals(c.getAlias()));
+		conditions = criteria.getConditions()
+				.where(c -> CONDITION_ALIAS_FOLDER.equals(c.getAlias()) && !Strings.isNullOrEmpty(c.getValue()));
 		for (ICondition condition : conditions) {
-			if (condition.getValue() != null) {
-				// 修正路径符
-				condition.setValue(condition.getValue().replace("\\", File.separator));
-				if (!condition.getValue().endsWith(File.separator)) {
-					condition.setValue(condition.getValue() + File.separator);
-				}
+			// 修正路径符
+			condition.setValue(condition.getValue().replace("\\", File.separator));
+			if (!condition.getValue().endsWith(File.separator)) {
+				condition.setValue(condition.getValue() + File.separator);
 			}
 		}
 		if (conditions.size() == 1) {
@@ -163,8 +162,45 @@ public class FileRepository extends Repository {
 				}
 			}
 		}
-
+		// 是否指定的文件含目录
+		conditions = criteria.getConditions()
+				.where(c -> CONDITION_ALIAS_FILE_NAME.equals(c.getAlias()) && !Strings.isNullOrEmpty(c.getValue()));
+		for (ICondition condition : conditions) {
+			// 修正路径符
+			condition.setValue(condition.getValue().replace("\\", File.separator));
+		}
+		if (conditions.size() == 1) {
+			for (ICondition condition : conditions) {
+				if (condition.getOperation() == ConditionOperation.EQUAL) {
+					// 指定文件路径，则更改工作目录
+					if (Strings.indexOf(condition.getValue(), File.separator) > 0) {
+						workFolder = Paths.get(workFolder, condition.getValue()).normalize().toFile().getParentFile()
+								.getPath();
+						condition.setValue(
+								condition.getValue().substring(condition.getValue().lastIndexOf(File.separator) + 1));
+					}
+				}
+			}
+		} else {
+			for (ICondition condition : conditions) {
+				if (condition.getOperation() == ConditionOperation.EQUAL) {
+					if (Strings.indexOf(condition.getValue(), File.separator) > 0) {
+						include = true;
+						// 有路径，则改成路径比较
+						condition.setAlias(CONDITION_ALIAS_FILE_PATH);
+					}
+				}
+			}
+		}
+		// 检查文件夹内文件是否符合条件
+		File folder = new File(workFolder);
+		if (!folder.isDirectory() || !folder.exists()) {
+			throw new Exception(
+					I18N.prop("msg_bobas_not_found_folder", workFolder.replace(this.getRepositoryFolder(), ".")));
+		}
+		// 重建查询
 		Criteria nCriteria = new Criteria();
+		nCriteria.setResultCount(criteria.getResultCount());
 		for (ICondition condition : criteria.getConditions()) {
 			if (condition.getOperation() == ConditionOperation.NONE) {
 				continue;
@@ -174,17 +210,9 @@ public class FileRepository extends Repository {
 		for (ISort sort : criteria.getSorts()) {
 			nCriteria.getSorts().add(sort);
 		}
-		// 检查文件夹内文件是否符合条件
-		File folder = new File(workFolder);
-		if (!folder.isDirectory() || !folder.exists()) {
-			throw new Exception(
-					I18N.prop("msg_bobas_not_found_folder", workFolder.replace(this.getRepositoryFolder(), ".")));
-		}
 		// 查询符合条件的文件
-		List<File> files = this.searchFiles(folder, include, nCriteria);
-		// 输出文件数据
 		ArrayList<FileItem> nFileItems = new ArrayList<>();
-		for (File file : files) {
+		for (File file : this.searchFiles(folder, include, nCriteria)) {
 			nFileItems.add(new FileItem(file));
 			if (criteria.getResultCount() > 0 && nFileItems.size() >= criteria.getResultCount()) {
 				break;

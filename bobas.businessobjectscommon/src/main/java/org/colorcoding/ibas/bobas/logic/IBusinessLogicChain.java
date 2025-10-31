@@ -34,4 +34,11 @@ public interface IBusinessLogicChain extends AutoCloseable {
 	 * 执行逻辑
 	 */
 	void execute();
+
+	/**
+	 * 添加跳过的逻辑
+	 * 
+	 * @param contractType 逻辑对应的契约类型
+	 */
+	void addSkipLogics(Class<?> contractType);
 }
