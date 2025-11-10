@@ -317,7 +317,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	 * @return
 	 */
 	@Override
-	public final List<IPropertyInfo<?>> properties() {
+	public synchronized final List<IPropertyInfo<?>> properties() {
 		if (this instanceof IBOUserFields && this.userFields != null && !this.userFields.isEmpty()) {
 			List<IPropertyInfo<?>> propertyInfos = super.properties();
 			propertyInfos.addAll(this.userFields.keySet());
@@ -336,7 +336,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public final <P> P getProperty(IPropertyInfo<?> property) {
+	public synchronized final <P> P getProperty(IPropertyInfo<?> property) {
 		Objects.requireNonNull(property);
 		if (Strings.isWith(property.getName(), IBOUserFields.USER_FIELD_PREFIX_SIGN, null)) {
 			if (this.userFields != null && this.userFields.containsKey(property)) {
@@ -363,7 +363,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public final <P> void setProperty(IPropertyInfo<?> property, P value) {
+	public synchronized final <P> void setProperty(IPropertyInfo<?> property, P value) {
 		Objects.requireNonNull(property);
 		if (Strings.isWith(property.getName(), IBOUserFields.USER_FIELD_PREFIX_SIGN, null)) {
 			if (this.userFields != null) {

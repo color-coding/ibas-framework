@@ -23,7 +23,7 @@ public class Decimals {
 	public static int DECIMAL_PLACES_RUNNING = 9;
 
 	private static final BigDecimal zeroThroughTen[] = {
-			//
+			// 0 - 10
 			BigDecimal.valueOf(0l).setScale(DECIMAL_PLACES_STORAGE),
 			BigDecimal.valueOf(1l).setScale(DECIMAL_PLACES_STORAGE),
 			BigDecimal.valueOf(2l).setScale(DECIMAL_PLACES_STORAGE),
@@ -176,6 +176,21 @@ public class Decimals {
 			}
 		}
 		return new BigDecimal(value);
+	}
+
+	/**
+	 * 转换值（使用缓存）
+	 * 
+	 * @param value 值
+	 * @return
+	 */
+	public static BigDecimal valueOf(BigDecimal value) {
+		for (BigDecimal item : zeroThroughTen) {
+			if (equals(item, value)) {
+				return item;
+			}
+		}
+		return value;
 	}
 
 	/**

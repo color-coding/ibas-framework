@@ -75,7 +75,7 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	 * @return
 	 */
 	@Override
-	public List<IPropertyInfo<?>> properties() {
+	public synchronized List<IPropertyInfo<?>> properties() {
 		return this.properties(null);
 	}
 
@@ -86,7 +86,7 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	 * @return
 	 */
 	@Override
-	public List<IPropertyInfo<?>> properties(Predicate<IPropertyInfo<?>> filter) {
+	public synchronized List<IPropertyInfo<?>> properties(Predicate<IPropertyInfo<?>> filter) {
 		ArrayList<IPropertyInfo<?>> propertyInfos = new ArrayList<>(this.fields.size());
 		for (IPropertyInfo<?> propertyInfo : this.fields.keySet()) {
 			if (filter == null || filter.test(propertyInfo)) {
@@ -117,7 +117,7 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <P> P getProperty(IPropertyInfo<?> property) {
+	public synchronized <P> P getProperty(IPropertyInfo<?> property) {
 		Objects.requireNonNull(property);
 		if (this.fields.containsKey(property)) {
 			P value = (P) this.fields.get(property);
@@ -151,7 +151,7 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <P> void setProperty(IPropertyInfo<?> property, P value) {
+	public synchronized <P> void setProperty(IPropertyInfo<?> property, P value) {
 		Objects.requireNonNull(property);
 		if (!this.fields.containsKey(property)) {
 			throw new IllegalArgumentException(

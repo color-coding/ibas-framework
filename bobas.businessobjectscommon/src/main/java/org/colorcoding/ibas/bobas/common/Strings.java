@@ -13,11 +13,51 @@ public class Strings {
 	private Strings() {
 	}
 
-	public static final String VALUE_ZERO = "0";
-	public static final String VALUE_ONE = "1";
+	private static final String[] alphabets = new String[] {
+			// 符号（32 - 47）
+			" ", "!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/",
+			// 数字（48 - 57）
+			"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+			// 符号（58 - 54）
+			":", ";", "<", "=", ">", "?", "@",
+			// 大写字母（65 - 90）
+			"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U",
+			"V", "W", "X", "Y", "Z",
+			// 符号（91 - 96）
+			"[", "\\", "]", "^", "_", "`",
+			// 小写字母（97 - 122）
+			"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u",
+			"v", "w", "x", "y", "z",
+			// 符号（123 - 126）
+			"{", "|", "}", "~",
+
+	};
+
+	/**
+	 * 根据字母表返回字符
+	 * 
+	 * @param value 位置（[32, 126]）
+	 * @return
+	 */
+	public static String alphabetOf(short value) {
+		if (value == 0) {
+			return VALUE_EMPTY;
+		}
+		if (value < 32 || value > 126) {
+			throw new IndexOutOfBoundsException();
+		}
+		return alphabets[value - 32];
+	}
+
+	public static String alphabetOf(int value) {
+		return alphabetOf((short) value);
+	}
+
 	public static final String VALUE_EMPTY = "";
-	public static final String VALUE_SPACE = " ";
-	public static final String VALUE_DATA_SEPARATOR = ",";
+	public static final String VALUE_ZERO = alphabetOf(48);
+	public static final String VALUE_ONE = alphabetOf(49);
+	public static final String VALUE_SPACE = alphabetOf(32);
+	public static final String VALUE_DATA_SEPARATOR = alphabetOf(44);
 
 	/**
 	 * 类型默认值
@@ -122,7 +162,16 @@ public class Strings {
 		if (value == null) {
 			return VALUE_EMPTY;
 		}
-		if (value.getClass().isArray()) {
+		if (value.getClass() == String.class) {
+			String nValue = String.valueOf(value);
+			if (nValue.length() == 1) {
+				char vChar = nValue.charAt(0);
+				if (vChar >= 32 && vChar <= 127) {
+					return alphabetOf(vChar);
+				}
+			}
+			return nValue;
+		} else if (value.getClass().isArray()) {
 			StringBuilder builder = new StringBuilder();
 			int length = Array.getLength(value);
 			for (int i = 0; i < length; i++) {
@@ -266,6 +315,16 @@ public class Strings {
 			index = builder.indexOf(oldString, index + newString.length());
 		}
 		return builder.toString();
+	}
+
+	/**
+	 * 判断字符串是否为数字
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static boolean isNumeric(String value) {
+		return Numbers.isNumeric(value);
 	}
 
 	/**

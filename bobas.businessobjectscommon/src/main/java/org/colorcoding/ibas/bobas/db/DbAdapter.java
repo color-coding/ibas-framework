@@ -4,6 +4,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -20,6 +21,7 @@ import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.DateTimes;
+import org.colorcoding.ibas.bobas.common.Decimals;
 import org.colorcoding.ibas.bobas.common.Enums;
 import org.colorcoding.ibas.bobas.common.IChildCriteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
@@ -226,13 +228,16 @@ public abstract class DbAdapter {
 		if (dataType == Integer.class) {
 			return resultSet.getInt(columnIndex);
 		} else if (dataType == String.class) {
-			return resultSet.getString(columnIndex);
+			String value = resultSet.getString(columnIndex);
+			return value == null ? null : Strings.valueOf(value);
 		} else if (dataType == BigDecimal.class) {
-			return resultSet.getBigDecimal(columnIndex);
+			BigDecimal value = resultSet.getBigDecimal(columnIndex);
+			return value == null ? null : Decimals.valueOf(value);
 		} else if (dataType == Double.class) {
 			return resultSet.getDouble(columnIndex);
 		} else if (dataType == DateTime.class) {
-			return DateTimes.valueOf(resultSet.getDate(columnIndex));
+			Date value = resultSet.getDate(columnIndex);
+			return value == null ? null : DateTimes.valueOf(value);
 		} else if (dataType == Short.class) {
 			return resultSet.getShort(columnIndex);
 		} else if (dataType == Long.class) {
@@ -242,7 +247,8 @@ public abstract class DbAdapter {
 		} else if (dataType == Float.class) {
 			return resultSet.getFloat(columnIndex);
 		} else if (dataType == Character.class) {
-			return resultSet.getString(columnIndex);
+			String value = resultSet.getString(columnIndex);
+			return value == null ? 0 : value.charAt(0);
 		} else if (dataType == Boolean.class) {
 			return resultSet.getBoolean(columnIndex);
 		} else {
@@ -259,35 +265,69 @@ public abstract class DbAdapter {
 	 * @throws ClassNotFoundException
 	 */
 	public IDataTable parsingDatas(ResultSet resultSet) throws SQLException, ClassNotFoundException {
+		if (resultSet == null || resultSet.getMetaData().getColumnCount() <= 0) {
+			return new DataTable();
+		}
+		String name;
+		IDataTableColumn dtColumn;
 		DataTable dataTable = new DataTable();
 		ResultSetMetaData metaData = resultSet.getMetaData();
-		if (metaData.getColumnCount() > 0) {
-			// 设置表名
-			dataTable.setName(metaData.getTableName(1));
-			// 创建列
-			IDataTableColumn dtColumn;
-			String name;
-			for (int i = 1; i <= metaData.getColumnCount(); i++) {
-				dtColumn = dataTable.getColumns().create();
-				name = metaData.getColumnName(i);
-				if (Strings.isNullOrEmpty(name)) {
-					name = String.format("col_%s", i);
-				}
-				dtColumn.setName(name);
-				if (!dtColumn.getName().equalsIgnoreCase(metaData.getColumnLabel(i))) {
-					dtColumn.setDescription(metaData.getColumnLabel(i));
-				}
-				dtColumn.setDataType(Class.forName(metaData.getColumnClassName(i)));
+		// 设置表名
+		dataTable.setName(metaData.getTableName(1));
+		// 创建列
+		for (int i = 1; i <= metaData.getColumnCount(); i++) {
+			dtColumn = dataTable.getColumns().create();
+			name = metaData.getColumnName(i);
+			if (Strings.isNullOrEmpty(name)) {
+				name = String.format("col_%s", i);
 			}
-			// 添加行数据
-			while (resultSet.next()) {
-				IDataTableRow row = dataTable.getRows().create();
-				// 行的每列赋值
-				for (int i = 0; i < dataTable.getColumns().size(); i++) {
-					row.setValue(i, resultSet.getObject(i + 1, dataTable.getColumns().get(i).getDataType()));
+			dtColumn.setName(name);
+			if (!dtColumn.getName().equalsIgnoreCase(metaData.getColumnLabel(i))) {
+				dtColumn.setDescription(metaData.getColumnLabel(i));
+			}
+			dtColumn.setDataType(Class.forName(metaData.getColumnClassName(i)));
+		}
+		metaData = null;
+		dtColumn = null;
+		name = null;
+		// 添加行数据
+		IDataTableRow row;
+		Object value, tmpValue;
+		while (resultSet.next()) {
+			row = dataTable.getRows().create();
+			// 行的每列赋值
+			for (int i = 0; i < dataTable.getColumns().size(); i++) {
+				value = this.parsingValue(resultSet, i + 1, dataTable.getColumns().get(i).getDataType());
+				if (value != null) {
+					// 压缩内存消耗（字符串，日期，小数）
+					if (value.getClass() == String.class || value.getClass() == DateTime.class
+							|| value.getClass() == BigDecimal.class) {
+						for (int j = dataTable.getRows().size() - 2; j > 0; j--) {
+							tmpValue = dataTable.getRows().get(j).getValue(i);
+							if (tmpValue == null) {
+								continue;
+							}
+							if (tmpValue == value) {
+								// 已是缓存数据，则退出
+								break;
+							}
+							if (tmpValue.equals(value)) {
+								value = tmpValue;
+								break;
+							}
+							if ((dataTable.getRows().size() - j) > 8) {
+								// 循环过多，则退出
+								break;
+							}
+						}
+					}
 				}
+				row.setValue(i, value);
 			}
 		}
+		row = null;
+		value = null;
+		tmpValue = null;
 		return dataTable;
 	}
 

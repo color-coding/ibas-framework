@@ -66,7 +66,13 @@ public class DateTimes {
 		if (value == null) {
 			return VALUE_MIN;
 		}
-		return new DateTime(value.getTime());
+		long time = value.getTime();
+		if (VALUE_MIN.getTime() == time) {
+			return VALUE_MIN;
+		} else if (VALUE_MAX.getTime() == time) {
+			return VALUE_MAX;
+		}
+		return valueOf(time);
 	}
 
 	/**

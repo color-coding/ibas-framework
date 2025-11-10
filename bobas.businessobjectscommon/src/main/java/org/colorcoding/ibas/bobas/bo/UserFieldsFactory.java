@@ -2,8 +2,8 @@ package org.colorcoding.ibas.bobas.bo;
 
 import java.lang.annotation.Annotation;
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,6 +27,43 @@ public class UserFieldsFactory {
 	private UserFieldsFactory() {
 	}
 
+	private final static class PropertyMap extends java.util.HashMap<IPropertyInfo<?>, Object> {
+
+		private static final long serialVersionUID = 1L;
+
+		public PropertyMap(int initialCapacity, float loadFactor) {
+			super(initialCapacity, loadFactor);
+		}
+
+		@Override
+		public String toString() {
+			Iterator<Entry<IPropertyInfo<?>, Object>> i = entrySet().iterator();
+			if (!i.hasNext())
+				return "{}";
+			int index = 0;
+			StringBuilder sb = new StringBuilder();
+			sb.append('{');
+			for (;;) {
+				Entry<IPropertyInfo<?>, Object> e = i.next();
+				IPropertyInfo<?> key = e.getKey();
+				Object value = e.getValue();
+				sb.append('[');
+				sb.append(index);
+				sb.append(']');
+				sb.append('.');
+				sb.append(key.getName());
+				// sb.append(' ');
+				sb.append('=');
+				// sb.append(' ');
+				sb.append(value == this ? "(this Map)" : value);
+				if (!i.hasNext())
+					return sb.append('}').toString();
+				sb.append(',').append(' ');
+				index++;
+			}
+		}
+	}
+
 	/**
 	 * 初始化对象字段
 	 * 
@@ -38,7 +75,7 @@ public class UserFieldsFactory {
 		if (infoList == null || infoList.isEmpty()) {
 			return null;
 		}
-		Map<IPropertyInfo<?>, Object> fieldsMap = new HashMap<>(infoList.size(), 1);
+		Map<IPropertyInfo<?>, Object> fieldsMap = new PropertyMap(infoList.size(), 1);
 		for (IPropertyInfo<?> propertyInfo : infoList) {
 			fieldsMap.put(propertyInfo, null);
 		}

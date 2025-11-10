@@ -34,6 +34,12 @@ import junit.framework.TestCase;
 public class TestCore extends TestCase {
 
 	public void testPropertyValue() throws ClassNotFoundException {
+		// 测试字母表值
+		System.out.println(Strings.valueOf(" "));
+		System.out.println(Strings.valueOf("1"));
+		System.out.println(Strings.valueOf("Q"));
+		System.out.println(Strings.valueOf("z"));
+		System.out.println(Strings.valueOf("~"));
 		// 测试基类的属性赋值
 		Order order = new Order();
 		order.setDocEntry(1);

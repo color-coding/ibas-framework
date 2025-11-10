@@ -164,7 +164,7 @@ public class DataConvert {
 
 	@Deprecated
 	public static boolean isNumeric(String value) {
-		return Strings.isNullOrEmpty(value);
+		return Numbers.isNumeric(value);
 	}
 
 	@Deprecated
