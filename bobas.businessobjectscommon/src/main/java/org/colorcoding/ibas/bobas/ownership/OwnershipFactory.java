@@ -16,6 +16,7 @@ public class OwnershipFactory {
 	private OwnershipFactory() {
 	}
 
+	private static long taskId = -1;
 	private volatile static OwnershipJudger instance;
 
 	public synchronized static OwnershipJudger createJudger() {
@@ -24,29 +25,31 @@ public class OwnershipFactory {
 				if (instance == null) {
 					instance = new Factory().create();
 
-					// 注册清理任务
-					Daemon.register(new IDaemonTask() {
+					if (OwnershipFactory.taskId < 0) {
+						// 注册清理任务
+						OwnershipFactory.taskId = Daemon.register(new IDaemonTask() {
 
-						@Override
-						public void run() {
-							if (instance == null) {
-								return;
+							@Override
+							public void run() {
+								if (instance == null) {
+									return;
+								}
+								instance = null;
 							}
-							instance = null;
-						}
 
-						@Override
-						public String getName() {
-							return "ownership cleanner";
-						}
+							@Override
+							public String getName() {
+								return "ownership cleanner";
+							}
 
-						private long interval = MyConfiguration.isDebugMode() ? 600 : 1800;
+							private long interval = MyConfiguration.isDebugMode() ? 600 : 1800;
 
-						@Override
-						public long getInterval() {
-							return this.interval;
-						}
-					});
+							@Override
+							public long getInterval() {
+								return this.interval;
+							}
+						});
+					}
 				}
 			}
 		}

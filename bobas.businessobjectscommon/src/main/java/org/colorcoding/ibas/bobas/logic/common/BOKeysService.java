@@ -64,6 +64,7 @@ public class BOKeysService extends BusinessLogic<IBOKeysContract, BONumbering> {
 		try {
 			// 获取主编号
 			ICriteria criteria = new Criteria();
+			criteria.setNoChilds(true);
 			ICondition condition = criteria.getConditions().create();
 			condition.setAlias(BONumbering.PROPERTY_OBJECTCODE.getName());
 			condition.setValue(contract.getObjectCode());
@@ -112,7 +113,7 @@ public class BOKeysService extends BusinessLogic<IBOKeysContract, BONumbering> {
 			}
 			// 获取系列编号
 			if (contract.getSeries() > 0) {
-				if (numbering.getSeriesNumberings()
+				if (!numbering.getSeriesNumberings()
 						.contains(c -> Numbers.equals(c.getSeries(), contract.getSeries()))) {
 					// 不包含此系列，则从数据库中查询
 					criteria = new Criteria();
@@ -145,11 +146,11 @@ public class BOKeysService extends BusinessLogic<IBOKeysContract, BONumbering> {
 						maxValue.setProperty(item, boData.getProperty(item));
 					}
 					maxValue = dbTransaction.fetch(maxValue);
-					if (!maxValue.isDeleted()) {
+					if (maxValue.isNew()) {
 						numbering.getMaxValueNumbering().add(new KeyValue(contract.getMaxValueKey(), 1));
 					} else {
-						numbering.getMaxValueNumbering()
-								.add(new KeyValue(contract.getMaxValueKey(), maxValue.getValue()));
+						numbering.getMaxValueNumbering().add(
+								new KeyValue(contract.getMaxValueKey(), Numbers.toInteger(maxValue.getValue()) + 1));
 					}
 				} else {
 					// 非数据库事务，编号为1
@@ -178,8 +179,8 @@ public class BOKeysService extends BusinessLogic<IBOKeysContract, BONumbering> {
 			BOSeriesNumbering numbering = this.getBeAffected().getSeriesNumberings()
 					.firstOrDefault(c -> Numbers.equals(c.getSeries(), contract.getSeries()));
 			if (numbering == null) {
-				throw new BusinessLogicException(I18N.prop("msg_bobas_not_found_bo_series_key.",
-						contract.getObjectCode(), contract.getSeries()));
+				throw new BusinessLogicException(
+						I18N.prop("msg_bobas_not_found_bo_series_key", contract.getObjectCode(), contract.getSeries()));
 			}
 			key = numbering.getNextNumber();
 			if (contract.setSeriesKey(Strings.format(numbering.getTemplate(), key))) {

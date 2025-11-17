@@ -957,6 +957,17 @@ public abstract class DbAdapter {
 	 * @return
 	 */
 	public String parsingUpdate(IFieldedObject boData) {
+		return this.parsingUpdate(boData, false);
+	}
+
+	/**
+	 * 语句-更新
+	 * 
+	 * @param boData
+	 * @param onlyModified 仅被修改的属性
+	 * @return
+	 */
+	public String parsingUpdate(IFieldedObject boData, boolean onlyModified) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("UPDATE");
 		stringBuilder.append(" ");
@@ -973,7 +984,8 @@ public abstract class DbAdapter {
 			if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
 				continue;
 			}
-			if (!boData.isModified(item)) {
+			// 跳过未修改的
+			if (onlyModified && !boData.isModified(item)) {
 				continue;
 			}
 			if (stringBuilder.length() > count) {

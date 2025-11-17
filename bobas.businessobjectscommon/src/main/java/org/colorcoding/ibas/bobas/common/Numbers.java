@@ -3,6 +3,8 @@ package org.colorcoding.ibas.bobas.common;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+import org.colorcoding.ibas.bobas.data.DataConvert;
+
 public class Numbers {
 
 	private Numbers() {
@@ -113,6 +115,13 @@ public class Numbers {
 		return value.doubleValue();
 	}
 
+	public static double toDouble(Object value) {
+		if (value == null) {
+			return Double.valueOf(Strings.VALUE_ZERO);
+		}
+		return DataConvert.convert(Double.class, value);
+	}
+
 	public static float toFloat(double value) {
 		return (float) value;
 	}
@@ -134,6 +143,13 @@ public class Numbers {
 			return Float.valueOf(Strings.VALUE_ZERO);
 		}
 		return value.floatValue();
+	}
+
+	public static float toFloat(Object value) {
+		if (value == null) {
+			return Float.valueOf(Strings.VALUE_ZERO);
+		}
+		return DataConvert.convert(Float.class, value);
 	}
 
 	public static int toInteger(double value) {
@@ -159,6 +175,13 @@ public class Numbers {
 		return value.intValue();
 	}
 
+	public static int toInteger(Object value) {
+		if (value == null) {
+			return Integer.valueOf(Strings.VALUE_ZERO);
+		}
+		return DataConvert.convert(Integer.class, value);
+	}
+
 	public static long toLong(double value) {
 		return (long) value;
 	}
@@ -180,6 +203,13 @@ public class Numbers {
 			return Long.valueOf(Strings.VALUE_ZERO);
 		}
 		return value.longValue();
+	}
+
+	public static long toLong(Object value) {
+		if (value == null) {
+			return Long.valueOf(Strings.VALUE_ZERO);
+		}
+		return DataConvert.convert(Long.class, value);
 	}
 
 	/**

@@ -7,7 +7,9 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
+import org.colorcoding.ibas.bobas.bo.BusinessObjects;
 import org.colorcoding.ibas.bobas.bo.IBOCustomKey;
+import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.IKeyValue;
@@ -97,7 +99,17 @@ public class BONumbering extends BusinessObject<BONumbering> implements IBOCusto
 		this.setProperty(PROPERTY_AUTOKEY, value);
 	}
 
-	private List<BOSeriesNumbering> seriesNumbering;
+	/**
+	 * 属性名称-序列编号
+	 */
+	private static final String PROPERTY_SERIESNUMBERINGS_NAME = "SeriesNumberings";
+
+	/**
+	 * 序列编号 属性
+	 * 
+	 */
+	public static final IPropertyInfo<SeriesNumberings> PROPERTY_SERIESNUMBERINGS = registerProperty(
+			PROPERTY_SERIESNUMBERINGS_NAME, SeriesNumberings.class, MY_CLASS);
 
 	/**
 	 * 获取-业务对象序列编号方式
@@ -105,10 +117,7 @@ public class BONumbering extends BusinessObject<BONumbering> implements IBOCusto
 	 * @return 值
 	 */
 	public final List<BOSeriesNumbering> getSeriesNumberings() {
-		if (this.seriesNumbering == null) {
-			this.seriesNumbering = new ArrayList<>();
-		}
-		return this.seriesNumbering;
+		return this.getProperty(PROPERTY_SERIESNUMBERINGS);
 	}
 
 	private List<IKeyValue> maxValueNumberings;
@@ -131,5 +140,33 @@ public class BONumbering extends BusinessObject<BONumbering> implements IBOCusto
 	@Override
 	protected void initialize() {
 		super.initialize();
+		this.setProperty(PROPERTY_SERIESNUMBERINGS, new SeriesNumberings(this));
+	}
+
+	private class SeriesNumberings extends BusinessObjects<BOSeriesNumbering, BONumbering> {
+
+		private static final long serialVersionUID = 1L;
+
+		public SeriesNumberings(BONumbering parent) {
+			super(parent);
+		}
+
+		@Override
+		public Class<?> getElementType() {
+			return BOSeriesNumbering.class;
+		}
+
+		@Override
+		public BOSeriesNumbering create() {
+			BOSeriesNumbering item = new BOSeriesNumbering();
+			item.setObjectCode(this.getParent().getObjectCode());
+			return item;
+		}
+
+		@Override
+		public ICriteria getElementCriteria() {
+			// 不查子项
+			return null;
+		}
 	}
 }
