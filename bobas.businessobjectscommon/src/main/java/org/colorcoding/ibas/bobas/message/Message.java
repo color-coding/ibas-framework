@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.message;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.Writer;
 
 import org.colorcoding.ibas.bobas.common.DateTimes;
@@ -104,7 +105,6 @@ public class Message {
 		}
 		stringBuilder.append(LINE_SEPARATOR);
 		stringBuilder.append(this.getContent());
-		// stringBuilder.append(LINE_SEPARATOR);
 		return stringBuilder.toString();
 	}
 
@@ -129,6 +129,31 @@ public class Message {
 		writer.append(LINE_SEPARATOR);
 		writer.append(this.getContent());
 		writer.append(LINE_SEPARATOR);
+		writer.flush();
+	}
+
+	public void outString(PrintStream writer) {
+		writer.append("[");
+		writer.append(this.getLevel().toString());
+		writer.append("]");
+		writer.append(" ");
+		writer.append("[");
+		writer.append(this.getTime().toString("yyyy-MM-dd HH:mm:ss.SSS"));
+		writer.append("]");
+		writer.append(" ");
+		writer.append("[");
+		writer.append(this.getThread());
+		writer.append("]");
+		if (this.getTag() != null && !this.getTag().isEmpty()) {
+			writer.append(" ");
+			writer.append("[");
+			writer.append(this.getTag());
+			writer.append("]");
+		}
+		writer.append(LINE_SEPARATOR);
+		writer.append(this.getContent());
+		writer.append(LINE_SEPARATOR);
+		writer.flush();
 	}
 
 }

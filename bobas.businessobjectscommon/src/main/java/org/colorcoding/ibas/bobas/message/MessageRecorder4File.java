@@ -22,7 +22,7 @@ public class MessageRecorder4File extends MessageRecorder {
 	public MessageRecorder4File() {
 		if (MyConfiguration.isDebugMode()) {
 			// debug模式输出到控制台
-			this.setPrint(true);
+			this.setPrint(!MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DISABLE_CONSOLE_MESSAGES, false));
 		}
 	}
 
@@ -88,6 +88,7 @@ public class MessageRecorder4File extends MessageRecorder {
 		this.fileSign = value;
 	}
 
+	private volatile long taskId = -1;
 	private volatile Queue<Message> messageQueue;
 
 	/**
@@ -99,15 +100,15 @@ public class MessageRecorder4File extends MessageRecorder {
 		if (this.messageQueue == null) {
 			synchronized (this) {
 				if (this.messageQueue == null) {
-					messageQueue = new ConcurrentLinkedQueue<Message>();// 非阻塞队列，支持异步
+					this.messageQueue = new ConcurrentLinkedQueue<Message>();// 非阻塞队列，支持异步
 				}
-				// 注册日志输出文件任务
-				try {
-					Daemon.register(new IDaemonTask() {
-
+				// 开启异步输出
+				if (this.taskId < 0) {
+					// 注册日志输出文件任务
+					this.taskId = Daemon.register(new IDaemonTask() {
 						@Override
 						public void run() {
-							writeFile();
+							MessageRecorder4File.this.writeToFile();
 						}
 
 						@Override
@@ -122,16 +123,14 @@ public class MessageRecorder4File extends MessageRecorder {
 
 						@Override
 						public boolean isActivated() {
-							if (messageQueue == null)
+							if (MessageRecorder4File.this.messageQueue == null)
 								return false;
-							if (messageQueue.isEmpty())
+							if (MessageRecorder4File.this.messageQueue.isEmpty())
 								return false;
 							return true;
 						}
 
 					}, false);
-				} catch (Exception e) {
-					Logger.log(MessageLevel.FATAL, e);
 				}
 			}
 		}
@@ -180,47 +179,53 @@ public class MessageRecorder4File extends MessageRecorder {
 		}
 		// 消息记录到其他
 		this.getMessageQueue().offer(message);
+		// 异步or同步
+		if (!(this.taskId > 0)) {
+			this.writeToFile();
+		}
 	}
 
 	/**
 	 * 输出消息到文件
 	 */
-	public void writeFile() {
+	public void writeToFile() {
 		if (this.getMessageQueue().size() <= 0) {
 			return;
 		}
-		FileWriter fileWriter = null;
 		try {
 			File file = new File(this.getFileName());
 			if (!file.exists()) {
-				file.getParentFile().mkdirs();
+				if (!file.getParentFile().exists()) {
+					file.getParentFile().mkdirs();
+				}
 				file.createNewFile();
 			}
-			fileWriter = new FileWriter(file, true);
-			while (!this.getMessageQueue().isEmpty()) {
-				Message message = this.getMessageQueue().poll();
-				if (message != null) {
+			Message message = null;
+			try (FileWriter fileWriter = new FileWriter(file, true)) {
+				while (!this.getMessageQueue().isEmpty()) {
+					message = this.getMessageQueue().poll();
+					if (message == null) {
+						continue;
+					}
 					message.outString(fileWriter);
 				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			// 日志文件创建失败，日志输出到控制台
-			while (!this.getMessageQueue().isEmpty()) {
-				Message message = this.getMessageQueue().poll();
-				if (message != null) {
-					System.err.println(message.outString());
-				}
-			}
-		} finally {
-			try {
-				if (fileWriter != null) {
-					fileWriter.close();
-				}
-				fileWriter = null;
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.err.println(e);
+				// 日志文件创建失败，日志输出到控制台
+				do {
+					if (message == null) {
+						continue;
+					}
+					if (message.getLevel() == MessageLevel.ERROR || message.getLevel() == MessageLevel.FATAL) {
+						message.outString(System.err);
+					} else {
+						message.outString(System.out);
+					}
+					message = this.getMessageQueue().poll();
+				} while (!this.getMessageQueue().isEmpty());
 			}
+		} catch (Exception e) {
+			System.err.println(e);
 		}
 	}
 }

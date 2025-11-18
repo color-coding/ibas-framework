@@ -148,11 +148,12 @@ class BusinessLogicChain implements IBusinessLogicChain {
 	 */
 	private final void forwardLogics() {
 		// 执行正向逻辑
+		Logger.log(MessageLevel.INFO, "logics chain [%s]: forward logics, count [%s].", this.hashCode(),
+				this.getTriggerLogics().size());
 		for (BusinessLogic<?, ?> logic : this.getTriggerLogics()) {
 			if (logic == null) {
 				continue;
 			}
-			Logger.log(MessageLevel.INFO, "logics chain [%s]: forward logic [%s].", this.hashCode(), logic.toString());
 			// 跳过设置的契约逻辑
 			if (logic.getContract() != null) {
 				if (this.getSkipContractTypes().contains(c -> c.isInstance(logic.getContract()))) {
@@ -170,11 +171,12 @@ class BusinessLogicChain implements IBusinessLogicChain {
 	 */
 	private final void reverseLogics() {
 		// 执行反向逻辑
+		Logger.log(MessageLevel.INFO, "logics chain [%s]: reverse logics, count [%s].", this.hashCode(),
+				this.getTriggerCopyLogics().size());
 		for (BusinessLogic<?, ?> logic : this.getTriggerCopyLogics()) {
 			if (logic == null) {
 				continue;
 			}
-			Logger.log(MessageLevel.INFO, "logics chain [%s]: reverse logic [%s].", this.hashCode(), logic.toString());
 			// 跳过设置的契约逻辑
 			if (logic.getContract() != null) {
 				if (this.getSkipContractTypes().contains(c -> c.isInstance(logic.getContract()))) {
@@ -467,7 +469,7 @@ class BusinessLogicChain implements IBusinessLogicChain {
 	protected final synchronized Collection<BusinessLogic<?, ?>> getTriggerLogics() {
 		if (this.triggerLogics == null) {
 			this.triggerLogics = this.analyzeContracts(this.getTrigger());
-			Logger.log(MessageLevel.INFO, "logics chain [%s]: trigger [%s] has [%s] contracts.", this.hashCode(),
+			Logger.log(MessageLevel.DEBUG, "logics chain [%s]: trigger [%s] has [%s] contracts.", this.hashCode(),
 					this.getTrigger(), this.triggerLogics.size());
 		}
 		return this.triggerLogics;
@@ -483,8 +485,8 @@ class BusinessLogicChain implements IBusinessLogicChain {
 	protected final synchronized Collection<BusinessLogic<?, ?>> getTriggerCopyLogics() {
 		if (this.triggerCopyLogics == null) {
 			this.triggerCopyLogics = this.analyzeContracts(this.getTriggerCopy());
-			Logger.log(MessageLevel.INFO, "logics chain [%s]: trigger's copy [%s] has [%s] contracts.", this.hashCode(),
-					this.getTriggerCopy(), this.triggerCopyLogics.size());
+			Logger.log(MessageLevel.DEBUG, "logics chain [%s]: trigger's copy [%s] has [%s] contracts.",
+					this.hashCode(), this.getTriggerCopy(), this.triggerCopyLogics.size());
 		}
 		return this.triggerCopyLogics;
 	}

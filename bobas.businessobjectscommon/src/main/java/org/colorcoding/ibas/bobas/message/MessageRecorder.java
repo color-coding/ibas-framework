@@ -20,9 +20,9 @@ public class MessageRecorder {
 			return;
 		}
 		if (message.getLevel() == MessageLevel.ERROR) {
-			System.err.println(message.outString());
+			message.outString(System.err);
 		} else {
-			System.out.println(message.outString());
+			message.outString(System.out);
 		}
 	}
 

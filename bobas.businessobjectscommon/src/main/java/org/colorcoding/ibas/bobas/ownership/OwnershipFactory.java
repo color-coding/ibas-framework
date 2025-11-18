@@ -24,9 +24,8 @@ public class OwnershipFactory {
 			synchronized (OwnershipFactory.class) {
 				if (instance == null) {
 					instance = new Factory().create();
-
+					// 注册清理任务
 					if (OwnershipFactory.taskId < 0) {
-						// 注册清理任务
 						OwnershipFactory.taskId = Daemon.register(new IDaemonTask() {
 
 							@Override

@@ -245,7 +245,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 		// 执行正向逻辑
 		this.forwardCount++;
 		Logger.log(this.forwardCount > 1 ? MessageLevel.WARN : MessageLevel.DEBUG,
-				"logics: forward logic [%s], %sth time.", this.getClass().getName(), this.forwardCount);
+				"logics: forward logic [%s@%s], times %s.", this.getClass().getName(),
+				Integer.toHexString(this.hashCode()), this.forwardCount);
 		if (this.forwardCount > 1) {
 			if (!this.onRepeatedImpact(this.forwardCount)) {
 				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
@@ -328,7 +329,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 		}
 		this.reverseCount++;
 		Logger.log(this.reverseCount > 1 ? MessageLevel.WARN : MessageLevel.DEBUG,
-				"logics: reverse logic [%s], %sth time.", this.getClass().getName(), this.reverseCount);
+				"logics: reverse logic [%s@%s], times %s.", this.getClass().getName(),
+				Integer.toHexString(this.hashCode()), this.reverseCount);
 		if (this.reverseCount > 1) {
 			if (!this.onRepeatedRevoke(this.reverseCount)) {
 				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),

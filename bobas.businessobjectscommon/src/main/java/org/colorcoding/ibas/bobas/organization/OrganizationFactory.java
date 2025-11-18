@@ -77,6 +77,7 @@ public class OrganizationFactory {
 	private OrganizationFactory() {
 	}
 
+	private static int taskId = -1;
 	private volatile static OrganizationManager instance;
 
 	public synchronized static OrganizationManager createManager() {
@@ -86,39 +87,41 @@ public class OrganizationFactory {
 					instance = new Factory().create();
 					instance.initialize();
 					// 注册清理任务
-					Daemon.register(new IDaemonTask() {
-						@Override
-						public void run() {
-							if (instance == null) {
-								// 未初始化，不做处理
-								return;
+					if (OrganizationFactory.taskId < 0) {
+						Daemon.register(new IDaemonTask() {
+							@Override
+							public void run() {
+								if (instance == null) {
+									// 未初始化，不做处理
+									return;
+								}
+								// 刷新组织
+								try {
+									OrganizationManager manager = new Factory().create();
+									manager.initialize();
+									instance = manager;
+								} catch (Exception e) {
+									// 组织刷新失败，清空
+									instance = null;
+									Logger.log(e);
+								}
 							}
-							// 刷新组织
-							try {
-								OrganizationManager manager = new Factory().create();
-								manager.initialize();
-								instance = manager;
-							} catch (Exception e) {
-								// 组织刷新失败，清空
-								instance = null;
-								Logger.log(e);
+
+							@Override
+							public String getName() {
+								return "organization cleanner";
 							}
-						}
 
-						@Override
-						public String getName() {
-							return "organization cleanner";
-						}
+							private long interval = MyConfiguration.getConfigValue(
+									MyConfiguration.CONFIG_ITEM_ORGANIZATION_MANAGER_EXPIRY_VALUE,
+									MyConfiguration.isDebugMode() ? 300 : 3600);
 
-						private long interval = MyConfiguration.getConfigValue(
-								MyConfiguration.CONFIG_ITEM_ORGANIZATION_MANAGER_EXPIRY_VALUE,
-								MyConfiguration.isDebugMode() ? 300 : 3600);
-
-						@Override
-						public long getInterval() {
-							return this.interval;
-						}
-					});
+							@Override
+							public long getInterval() {
+								return this.interval;
+							}
+						});
+					}
 				}
 			}
 		}

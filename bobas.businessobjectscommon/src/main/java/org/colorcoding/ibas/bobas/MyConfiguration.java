@@ -74,6 +74,11 @@ public class MyConfiguration extends Configuration {
 	}
 
 	/**
+	 * 配置项目-禁用控制台消息（Debug模式下有效）
+	 */
+	public final static String CONFIG_ITEM_DISABLE_CONSOLE_MESSAGES = "disableConsoleMessage";
+
+	/**
 	 * 配置项目-配置方式
 	 */
 	public final static String CONFIG_ITEM_CONFIGURATION_WAY = "ConfigurationWay";

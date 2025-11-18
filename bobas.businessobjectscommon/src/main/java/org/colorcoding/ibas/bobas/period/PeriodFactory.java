@@ -16,6 +16,7 @@ public class PeriodFactory {
 	private PeriodFactory() {
 	}
 
+	private static int taskId = -1;
 	private volatile static PeriodsManager instance;
 
 	public synchronized static PeriodsManager createManager() {
@@ -24,36 +25,37 @@ public class PeriodFactory {
 				if (instance == null) {
 					instance = new Factory().create();
 					instance.initialize();
-
 					// 注册清理任务
-					Daemon.register(new IDaemonTask() {
-						@Override
-						public void run() {
-							if (instance == null) {
-								return;
+					if (PeriodFactory.taskId < 0) {
+						Daemon.register(new IDaemonTask() {
+							@Override
+							public void run() {
+								if (instance == null) {
+									return;
+								}
+								try {
+									PeriodsManager manager = new Factory().create();
+									manager.initialize();
+									instance = manager;
+								} catch (Exception e) {
+									instance = null;
+									Logger.log(e);
+								}
 							}
-							try {
-								PeriodsManager manager = new Factory().create();
-								manager.initialize();
-								instance = manager;
-							} catch (Exception e) {
-								instance = null;
-								Logger.log(e);
+
+							@Override
+							public String getName() {
+								return "periods cleanner";
 							}
-						}
 
-						@Override
-						public String getName() {
-							return "periods cleanner";
-						}
+							private long interval = MyConfiguration.isDebugMode() ? 300 : 3600;
 
-						private long interval = MyConfiguration.isDebugMode() ? 300 : 3600;
-
-						@Override
-						public long getInterval() {
-							return this.interval;
-						}
-					});
+							@Override
+							public long getInterval() {
+								return this.interval;
+							}
+						});
+					}
 				}
 			}
 		}
