@@ -64,6 +64,14 @@ public abstract class ApprovalProcessManager implements IApprovalProcessManager 
 		if (!data.isNew()) {
 			// 不是新建查看是否存在审批
 			process = this.loadApprovalProcess(data.getIdentifiers());
+			// 不使用取消的审批流
+			if (process != null && process.getStatus() == emApprovalStatus.CANCELLED) {
+				if (data.getApprovalStatus() == emApprovalStatus.CANCELLED) {
+					if (this.checkDataStatus(data)) {
+						process = null;
+					}
+				}
+			}
 			if (process != null) {
 				process.setRepository(this.getRepository());
 				process.setApprovalData(data);
