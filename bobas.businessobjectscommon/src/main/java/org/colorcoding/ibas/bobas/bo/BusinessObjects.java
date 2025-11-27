@@ -36,20 +36,20 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 				// 父项属性改变
 				BusinessObjects.this.onParentPropertyChanged(evt);
 			} else if (evt.getSource() == BusinessObjects.this && evt.getPropertyName().equals(PROPERTY_NAME_SIZE)) {
-				if (BusinessObjects.this.parent != null && !BusinessObjects.this.parent.isLoading()) {
-					// 集合自身的属性改变事件
-					if (BusinessObjects.this.getParent() instanceof Trackable) {
-						// 改变父项的状态跟踪
-						Trackable trackable = (Trackable) BusinessObjects.this.getParent();
-						trackable.markDirty();
-					}
+				// 集合自身的属性改变事件
+				if (BusinessObjects.this.getParent() instanceof Trackable
+						&& !BusinessObjects.this.getParent().isLoading()) {
+					// 改变父项的状态跟踪
+					Trackable trackable = (Trackable) BusinessObjects.this.getParent();
+					trackable.markDirty();
 				}
 			} else if (BusinessObjects.this.contains(evt.getSource())) {
 				// 此集合中的子项的属性改变
 				if (evt.getPropertyName() != null && evt.getPropertyName().equals("isDirty")
 						&& evt.getNewValue().equals(true)) {
 					// 元素状态为Dirty时修改父项状态
-					if (BusinessObjects.this.getParent() instanceof Trackable) {
+					if (BusinessObjects.this.getParent() instanceof Trackable
+							&& !BusinessObjects.this.getParent().isLoading()) {
 						// 改变父项的状态跟踪
 						Trackable trackable = (Trackable) BusinessObjects.this.getParent();
 						trackable.markDirty();
