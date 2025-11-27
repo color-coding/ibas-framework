@@ -6,8 +6,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
-import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
@@ -112,64 +111,6 @@ public final class PropertyInfoManager {
 			}
 		}
 
-	}
-
-	private final static class PropertyMap extends java.util.HashMap<IPropertyInfo<?>, Object> {
-
-		private static final long serialVersionUID = 1L;
-
-		public PropertyMap(int initialCapacity, float loadFactor) {
-			super(initialCapacity, loadFactor);
-		}
-
-		@Override
-		public String toString() {
-			Iterator<Entry<IPropertyInfo<?>, Object>> i = entrySet().iterator();
-			if (!i.hasNext())
-				return "{}";
-			int index = 0;
-			StringBuilder sb = new StringBuilder();
-			sb.append('{');
-			for (;;) {
-				Entry<IPropertyInfo<?>, Object> e = i.next();
-				IPropertyInfo<?> key = e.getKey();
-				Object value = e.getValue();
-				sb.append('[');
-				sb.append(index);
-				sb.append(']');
-				sb.append('.');
-				sb.append(key.getName());
-				// sb.append(' ');
-				sb.append('=');
-				// sb.append(' ');
-				if (value == this) {
-					sb.append("(this Map)");
-				} else if (value instanceof IBusinessObjects) {
-					IBusinessObjects<?, ?> items = (IBusinessObjects<?, ?>) value;
-					if (items.getElementType() != null) {
-						sb.append('{');
-						sb.append(items.getElementType().getSimpleName());
-						sb.append('}');
-						sb.append('(');
-						sb.append(items.size());
-						sb.append(')');
-					} else {
-						sb.append('{');
-						sb.append(items.getClass().getSimpleName());
-						sb.append('(');
-						sb.append(items.size());
-						sb.append(')');
-						sb.append('}');
-					}
-				} else {
-					sb.append(value);
-				}
-				if (!i.hasNext())
-					return sb.append('}').toString();
-				sb.append(',').append(' ');
-				index++;
-			}
-		}
 	}
 
 	private volatile static Map<Class<?>, PropertyInfoList> PROPERTY_INFOS = new ConcurrentHashMap<Class<?>, PropertyInfoList>(
@@ -305,7 +246,7 @@ public final class PropertyInfoManager {
 			propertyInfoList.resolving(objectType);
 			propertyInfoList.recycling();
 
-			Map<IPropertyInfo<?>, Object> fieldsMap = new PropertyMap(propertyInfoList.size(), 1);
+			Map<IPropertyInfo<?>, Object> fieldsMap = new HashMap<>(propertyInfoList.size(), 1);
 			for (IPropertyInfo<?> propertyInfo : propertyInfoList) {
 				fieldsMap.put(propertyInfo, null);
 			}

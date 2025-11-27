@@ -14,6 +14,7 @@ import org.colorcoding.ibas.bobas.core.ITrackable;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logic.BusinessLogic;
 import org.colorcoding.ibas.bobas.logic.BusinessLogicException;
 import org.colorcoding.ibas.bobas.logic.LogicContract;
@@ -164,17 +165,112 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 			return;
 		}
 		try {
+			ApprovalProcess<IProcessData> process = null;
+			// 检查用户删除操作
 			if (this.getTrigger() instanceof ITrackable) {
 				ITrackable trackable = (ITrackable) this.getTrigger();
-				// 检查用户是否可以删除
 				if (trackable.isDeleted()) {
-					ApprovalProcess<IProcessData> process = this.getProcessManager().startProcess(this.getBeAffected(),
-							contract.getHost());
+					if (process == null) {
+						process = this.getProcessManager().startProcess(this.getBeAffected(), contract.getHost());
+					}
 					if (process != null) {
 						process.checkToSave(this.getUser());
-						// 数据被删除，则审批请求取消
-						this.getBeAffected().setStatus(emApprovalStatus.CANCELLED);
-						this.getBeAffected().setActivated(emYesNo.NO);
+						if (process.cancel(this.getUser().getToken(),
+								I18N.prop("msg_bobas_user_deleted_approval_data"))) {
+							return;
+						}
+					}
+				}
+			}
+			// 检查用户标记删除操作
+			if (this.getTrigger() instanceof IBOTagDeleted) {
+				IBOTagDeleted tagDeleted = (IBOTagDeleted) this.getTrigger();
+				if (tagDeleted.getDeleted() == emYesNo.YES) {
+					if (process == null) {
+						process = this.getProcessManager().startProcess(this.getBeAffected(), contract.getHost());
+					}
+					if (process != null) {
+						process.checkToSave(this.getUser());
+						if (process.cancel(this.getUser().getToken(),
+								I18N.prop("msg_bobas_user_deleted_approval_data"))) {
+							if (this.getTrigger() instanceof IApprovalData) {
+								// 审批流程取消，修改触发对象状态
+								IApprovalData approvalData = (IApprovalData) this.getTrigger();
+								if (approvalData.getApprovalStatus() == emApprovalStatus.PROCESSING) {
+									approvalData.setApprovalStatus(emApprovalStatus.CANCELLED);
+								}
+							}
+							return;
+						}
+					}
+				}
+			}
+			// 检查用户取消操作
+			if (this.getTrigger() instanceof IBOTagCanceled) {
+				IBOTagCanceled tagCanceled = (IBOTagCanceled) this.getTrigger();
+				if (tagCanceled.getCanceled() == emYesNo.YES) {
+					if (process == null) {
+						process = this.getProcessManager().startProcess(this.getBeAffected(), contract.getHost());
+					}
+					if (process != null) {
+						process.checkToSave(this.getUser());
+						if (process.cancel(this.getUser().getToken(),
+								I18N.prop("msg_bobas_user_canceled_approval_data"))) {
+							if (this.getTrigger() instanceof IApprovalData) {
+								// 审批流程取消，修改触发对象状态
+								IApprovalData approvalData = (IApprovalData) this.getTrigger();
+								if (approvalData.getApprovalStatus() == emApprovalStatus.PROCESSING) {
+									approvalData.setApprovalStatus(emApprovalStatus.CANCELLED);
+								}
+							}
+							return;
+						}
+					}
+				}
+			}
+			// 检查用户单据计划操作
+			if (this.getTrigger() instanceof IBODocument) {
+				IBODocument document = (IBODocument) this.getTrigger();
+				if (document.getDocumentStatus() == emDocumentStatus.PLANNED) {
+					if (process == null) {
+						process = this.getProcessManager().startProcess(this.getBeAffected(), contract.getHost());
+					}
+					if (process != null) {
+						process.checkToSave(this.getUser());
+						if (process.cancel(this.getUser().getToken(),
+								I18N.prop("msg_bobas_user_planed_approval_data"))) {
+							if (this.getTrigger() instanceof IApprovalData) {
+								// 审批流程取消，修改触发对象状态
+								IApprovalData approvalData = (IApprovalData) this.getTrigger();
+								if (approvalData.getApprovalStatus() == emApprovalStatus.PROCESSING) {
+									approvalData.setApprovalStatus(emApprovalStatus.CANCELLED);
+								}
+							}
+							return;
+						}
+					}
+				}
+			}
+			// 检查用户单据行计划操作
+			if (this.getTrigger() instanceof IBODocumentLine) {
+				IBODocumentLine document = (IBODocumentLine) this.getTrigger();
+				if (document.getLineStatus() == emDocumentStatus.PLANNED) {
+					if (process == null) {
+						process = this.getProcessManager().startProcess(this.getBeAffected(), contract.getHost());
+					}
+					if (process != null) {
+						process.checkToSave(this.getUser());
+						if (process.cancel(this.getUser().getToken(),
+								I18N.prop("msg_bobas_user_planed_approval_data"))) {
+							if (this.getTrigger() instanceof IApprovalData) {
+								// 审批流程取消，修改触发对象状态
+								IApprovalData approvalData = (IApprovalData) this.getTrigger();
+								if (approvalData.getApprovalStatus() == emApprovalStatus.PROCESSING) {
+									approvalData.setApprovalStatus(emApprovalStatus.CANCELLED);
+								}
+							}
+							return;
+						}
 					}
 				}
 			}
