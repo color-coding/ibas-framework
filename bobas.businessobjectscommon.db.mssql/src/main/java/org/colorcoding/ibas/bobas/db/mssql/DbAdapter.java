@@ -13,8 +13,8 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			String applicationName) throws DbException {
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-			String dbURL = String.format("jdbc:sqlserver://%s;DatabaseName=%s;ApplicationName=%s", server, dbName,
-					applicationName);
+			String dbURL = String.format("jdbc:sqlserver://%s;DatabaseName=%s;ApplicationName=%s;encrypt=false", server,
+					dbName, applicationName);
 			return DriverManager.getConnection(dbURL, userName, userPwd);
 		} catch (Exception e) {
 			// 接数据库失败
