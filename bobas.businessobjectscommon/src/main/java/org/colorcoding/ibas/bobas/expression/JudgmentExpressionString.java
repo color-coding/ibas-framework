@@ -125,6 +125,46 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 			}
 			return true;
 		}
+		// 包含
+		if (this.getOperation() == JudmentOperation.IN) {
+			// 左值为空或右值为空
+			if (this.getLeftValue() == null || this.getRightValue() == null) {
+				return false;
+			}
+			String leftValue = String.valueOf(this.getLeftValue());
+			if (!leftValue.endsWith(",")) {
+				leftValue = leftValue + ",";
+			}
+			String rightValue = String.valueOf(this.getRightValue());
+			if (!rightValue.endsWith(",")) {
+				rightValue = rightValue + ",";
+			}
+			// 右值包含左值
+			if (rightValue.indexOf(leftValue) >= 0) {
+				return true;
+			}
+			return false;
+		}
+		// 不包含
+		else if (this.getOperation() == JudmentOperation.NOT_IN) {
+			// 左值为空或右值为空
+			if (this.getLeftValue() == null || this.getRightValue() == null) {
+				return false;
+			}
+			String leftValue = String.valueOf(this.getLeftValue());
+			if (!leftValue.endsWith(",")) {
+				leftValue = leftValue + ",";
+			}
+			String rightValue = String.valueOf(this.getRightValue());
+			if (!rightValue.endsWith(",")) {
+				rightValue = rightValue + ",";
+			}
+			// 右值包含左值
+			if (rightValue.indexOf(leftValue) < 0) {
+				return true;
+			}
+			return false;
+		}
 		// 其他
 		return super.result();
 	}

@@ -188,7 +188,9 @@ public abstract class BOAdapter implements IBOAdapter {
 						&& (condition.getOperation() == ConditionOperation.START
 								|| condition.getOperation() == ConditionOperation.END
 								|| condition.getOperation() == ConditionOperation.CONTAIN
-								|| condition.getOperation() == ConditionOperation.NOT_CONTAIN)) {
+								|| condition.getOperation() == ConditionOperation.NOT_CONTAIN
+								|| condition.getOperation() == ConditionOperation.IN
+								|| condition.getOperation() == ConditionOperation.NOT_IN)) {
 					// 数值类型的字段且需要作为字符比较的
 					String toVarchar = sqlScripts.getCastTypeString(ConditionAliasDataType.ALPHANUMERIC);
 					stringBuilder.append(String.format(toVarchar, String.format(dbObject, condition.getAlias())));
@@ -217,6 +219,33 @@ public abstract class BOAdapter implements IBOAdapter {
 							|| condition.getOperation() == ConditionOperation.NOT_CONTAIN) {
 						// like 相关运算
 						stringBuilder.append(sqlScripts.getSqlString(condition.getOperation(), condition.getValue()));
+					} else if (condition.getOperation() == ConditionOperation.IN
+							|| condition.getOperation() == ConditionOperation.NOT_IN) {
+						// 与值比较，[ItemCode] IN ('A000001', 'A000002')
+						stringBuilder.append(sqlScripts.getSqlString(condition.getOperation()));
+						stringBuilder.append(" ");
+						stringBuilder.append("(");
+						if (!DataConvert.isNullOrEmpty(condition.getValue())) {
+							int index = stringBuilder.length();
+							String[] values = condition.getValue().split(",");
+							for (String value : values) {
+								value = value.trim();
+								if (DataConvert.isNullOrEmpty(value)) {
+									continue;
+								}
+								if (stringBuilder.length() > index) {
+									stringBuilder.append(", ");
+								}
+								if (condition.getAliasDataType() == ConditionAliasDataType.DATE) {
+									// 日期类型
+									stringBuilder.append(sqlScripts.getSqlString(DbFieldType.DATE, value));
+								} else {
+									// 其他都按字符串
+									stringBuilder.append(sqlScripts.getSqlString(DbFieldType.ALPHANUMERIC, value));
+								}
+							}
+						}
+						stringBuilder.append(")");
 					} else {
 						// 与值比较，[ItemCode] = 'A000001'
 						if (condition.getAliasDataType() == ConditionAliasDataType.NUMERIC

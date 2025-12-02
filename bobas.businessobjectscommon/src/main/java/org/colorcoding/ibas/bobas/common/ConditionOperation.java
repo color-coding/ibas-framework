@@ -53,7 +53,13 @@ public enum ConditionOperation {
 	IS_NULL,
 	/** 非空 */
 	@Value("NOT_NULL")
-	NOT_NULL;
+	NOT_NULL,
+	/** 在 */
+	@Value("IN")
+	IN,
+	/** 不在 */
+	@Value("NOT_IN")
+	NOT_IN;
 
 	public static ConditionOperation valueOf(int value) {
 		return values()[value];

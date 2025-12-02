@@ -212,6 +212,10 @@ public class DataConvert {
 			return ConditionOperation.START;
 		} else if (value == emConditionOperation.END_WITH) {
 			return ConditionOperation.END;
+		} else if (value == emConditionOperation.IN) {
+			return ConditionOperation.IN;
+		} else if (value == emConditionOperation.NOT_IN) {
+			return ConditionOperation.NOT_IN;
 		}
 		throw new DataConvertException(I18N.prop("msg_bobas_not_support_convert_to_type", value));
 	}
@@ -254,6 +258,10 @@ public class DataConvert {
 			return emConditionOperation.BEGIN_WITH;
 		} else if (value == ConditionOperation.END) {
 			return emConditionOperation.END_WITH;
+		} else if (value == ConditionOperation.IN) {
+			return emConditionOperation.IN;
+		} else if (value == ConditionOperation.NOT_IN) {
+			return emConditionOperation.NOT_IN;
 		}
 		throw new DataConvertException(I18N.prop("msg_bobas_not_support_convert_to_type", value));
 	}

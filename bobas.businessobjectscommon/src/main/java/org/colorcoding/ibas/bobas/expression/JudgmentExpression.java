@@ -5,8 +5,7 @@ package org.colorcoding.ibas.bobas.expression;
  * 
  * @author Niuren.Zhu
  *
- * @param <T>
- *            比较的值类型
+ * @param <T> 比较的值类型
  */
 public abstract class JudgmentExpression<T> implements IJudgmentExpression {
 

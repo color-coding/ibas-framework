@@ -160,6 +160,10 @@ public class SqlScripts implements ISqlScripts {
 			return "LIKE";
 		} else if (value == ConditionOperation.END) {
 			return "LIKE";
+		} else if (value == ConditionOperation.IN) {
+			return "IN";
+		} else if (value == ConditionOperation.NOT_IN) {
+			return "NOT IN";
 		}
 		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
 	}
@@ -257,6 +261,18 @@ public class SqlScripts implements ISqlScripts {
 			stringBuilder.append("%s");
 			return stringBuilder.toString();
 		} else if (value == ConditionOperation.LESS_THAN) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(this.getSqlString(value));
+			stringBuilder.append(" ");
+			stringBuilder.append("%s");
+			return stringBuilder.toString();
+		} else if (value == ConditionOperation.IN) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(this.getSqlString(value));
+			stringBuilder.append(" ");
+			stringBuilder.append("%s");
+			return stringBuilder.toString();
+		} else if (value == ConditionOperation.NOT_IN) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append(this.getSqlString(value));
 			stringBuilder.append(" ");

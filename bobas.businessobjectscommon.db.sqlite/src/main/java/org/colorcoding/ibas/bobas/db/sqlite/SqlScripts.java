@@ -187,6 +187,18 @@ public class SqlScripts extends org.colorcoding.ibas.bobas.db.SqlScripts {
 			stringBuilder.append(" ");
 			stringBuilder.append("%s");
 			return stringBuilder.toString();
+		} else if (value == ConditionOperation.IN) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(this.getSqlString(value));
+			stringBuilder.append(" ");
+			stringBuilder.append("%s");
+			return stringBuilder.toString();
+		} else if (value == ConditionOperation.NOT_IN) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(this.getSqlString(value));
+			stringBuilder.append(" ");
+			stringBuilder.append("%s");
+			return stringBuilder.toString();
 		}
 		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
 	}

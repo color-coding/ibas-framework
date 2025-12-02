@@ -84,7 +84,15 @@ public enum emConditionOperation {
 	 * 不包含
 	 */
 	@Value("NC")
-	NOT_CONTAIN;
+	NOT_CONTAIN,
+
+	/** 在 */
+	@Value("IN")
+	IN,
+
+	/** 不在 */
+	@Value("NI")
+	NOT_IN;
 
 	public static emConditionOperation valueOf(int value) {
 		return values()[value];

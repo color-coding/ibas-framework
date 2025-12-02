@@ -5,6 +5,7 @@ import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.expression.BOJudgmentLinkCondition;
@@ -18,7 +19,6 @@ import org.colorcoding.ibas.bobas.expression.JudmentOperation;
 import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
 import org.colorcoding.ibas.bobas.expression.NotSupportOperationException;
 import org.colorcoding.ibas.bobas.test.bo.SalesOrder;
-import org.colorcoding.ibas.bobas.data.ArrayList;
 
 import junit.framework.TestCase;
 
@@ -72,6 +72,9 @@ public class TestJudgmentExpression extends TestCase {
 		assertEquals("expression is not established. ", judgmentString.result(), true);
 		judgmentString.setRightValue("b");
 		judgmentString.setOperation(JudmentOperation.CONTAIN);
+		assertEquals("expression is not established. ", judgmentString.result(), true);
+		judgmentString.setRightValue("Aabbcc, Aabbcd");
+		judgmentString.setOperation(JudmentOperation.IN);
 		assertEquals("expression is not established. ", judgmentString.result(), true);
 		// 数值
 		JudgmentExpressionInteger judgmentInteger = new JudgmentExpressionInteger();
