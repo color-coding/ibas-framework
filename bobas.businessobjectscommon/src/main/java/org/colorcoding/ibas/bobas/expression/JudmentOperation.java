@@ -69,6 +69,14 @@ public enum JudmentOperation {
 	 */
 	NOT_NULL,
 	/**
+	 * 在
+	 */
+	IN,
+	/**
+	 * 不在
+	 */
+	NOT_IN,
+	/**
 	 * 与（仅布尔比较有效）
 	 */
 	AND,
@@ -120,6 +128,10 @@ public enum JudmentOperation {
 			return JudmentOperation.IS_NULL;
 		} else if (value == ConditionOperation.NOT_NULL) {
 			return JudmentOperation.NOT_NULL;
+		} else if (value == ConditionOperation.IN) {
+			return JudmentOperation.IN;
+		} else if (value == ConditionOperation.NOT_IN) {
+			return JudmentOperation.NOT_IN;
 		}
 		return null;
 	}
@@ -164,6 +176,10 @@ public enum JudmentOperation {
 			return JudmentOperation.NOT_BEGIN_WITH;
 		} else if (value == emConditionOperation.NOT_END_WITH) {
 			return JudmentOperation.NOT_END_WITH;
+		} else if (value == emConditionOperation.IN) {
+			return JudmentOperation.IN;
+		} else if (value == emConditionOperation.NOT_IN) {
+			return JudmentOperation.NOT_IN;
 		}
 		return null;
 	}

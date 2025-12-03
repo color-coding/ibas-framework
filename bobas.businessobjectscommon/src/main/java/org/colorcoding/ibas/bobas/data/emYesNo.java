@@ -23,5 +23,4 @@ public enum emYesNo {
 	 */
 	@Value("Y")
 	YES;
-
 }

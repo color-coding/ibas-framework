@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.expression;
 
 import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.data.DataConvert;
 
 /**
  * 字符串值表达式比较
@@ -124,6 +125,34 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 				return false;
 			}
 			return true;
+		}
+		// 包含
+		if (this.getOperation() == JudmentOperation.IN) {
+			// 左值为空或右值为空
+			if (this.getLeftValue() == null || this.getRightValue() == null) {
+				return false;
+			}
+			String leftValue = Strings.makeEndsWith(this.getLeftValue(), DataConvert.DATA_SEPARATOR);
+			String rightValue = Strings.makeEndsWith(this.getRightValue(), DataConvert.DATA_SEPARATOR);
+			// 右值包含左值
+			if (rightValue.indexOf(leftValue) >= 0) {
+				return true;
+			}
+			return false;
+		}
+		// 不包含
+		else if (this.getOperation() == JudmentOperation.NOT_IN) {
+			// 左值为空或右值为空
+			if (this.getLeftValue() == null || this.getRightValue() == null) {
+				return false;
+			}
+			String leftValue = Strings.makeEndsWith(this.getLeftValue(), DataConvert.DATA_SEPARATOR);
+			String rightValue = Strings.makeEndsWith(this.getRightValue(), DataConvert.DATA_SEPARATOR);
+			// 右值包含左值
+			if (rightValue.indexOf(leftValue) < 0) {
+				return true;
+			}
+			return false;
 		}
 		// 其他
 		return super.result();

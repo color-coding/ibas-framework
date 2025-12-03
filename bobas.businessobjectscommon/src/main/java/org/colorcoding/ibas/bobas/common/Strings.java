@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Iterator;
 
+import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializationFactory;
 
@@ -53,11 +54,30 @@ public class Strings {
 		return alphabetOf((short) value);
 	}
 
+	/**
+	 * 字符：白值
+	 */
 	public static final String VALUE_EMPTY = "";
+	/**
+	 * 字符：0
+	 */
 	public static final String VALUE_ZERO = alphabetOf(48);
+	/**
+	 * 字符：1
+	 */
 	public static final String VALUE_ONE = alphabetOf(49);
+	/**
+	 * 字符：空格
+	 */
 	public static final String VALUE_SPACE = alphabetOf(32);
-	public static final String VALUE_DATA_SEPARATOR = alphabetOf(44);
+	/**
+	 * 字符：,
+	 */
+	public static final String VALUE_COMMA = alphabetOf(44);
+	/**
+	 * 字符：;
+	 */
+	public static final String VALUE_SEMICOLON = alphabetOf(59);
 
 	/**
 	 * 类型默认值
@@ -176,7 +196,7 @@ public class Strings {
 			int length = Array.getLength(value);
 			for (int i = 0; i < length; i++) {
 				if (builder.length() > 0) {
-					builder.append(VALUE_DATA_SEPARATOR);
+					builder.append(DataConvert.DATA_SEPARATOR);
 				}
 				builder.append(Array.get(value, i));
 			}
@@ -186,7 +206,7 @@ public class Strings {
 			Iterator<?> iterator = ((Iterable<?>) value).iterator();
 			while (iterator.hasNext()) {
 				if (builder.length() > 0) {
-					builder.append(VALUE_DATA_SEPARATOR);
+					builder.append(DataConvert.DATA_SEPARATOR);
 				}
 				builder.append(iterator.next());
 			}
@@ -292,6 +312,68 @@ public class Strings {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * 判断字符串开头
+	 * 
+	 * @param content 字符串
+	 * @param prefix  开头字符
+	 * @return
+	 */
+	public static boolean startsWith(String content, String prefix) {
+		return isWith(content, prefix, null);
+	}
+
+	/**
+	 * 判断字符串结尾
+	 * 
+	 * @param content 字符串
+	 * @param suffix  结尾字符
+	 * @return
+	 */
+	public static boolean endsWith(String content, String suffix) {
+		return isWith(content, null, suffix);
+	}
+
+	/**
+	 * 使字符串开头为
+	 * 
+	 * @param content 字符串
+	 * @param prefix  开头字符
+	 * @return
+	 */
+	public static String makeStartsWith(String content, String prefix) {
+		if (isNullOrEmpty(prefix)) {
+			return content;
+		}
+		if (isNullOrEmpty(content)) {
+			return prefix;
+		}
+		if (startsWith(content, prefix)) {
+			return content;
+		}
+		return prefix + content;
+	}
+
+	/**
+	 * 使字符串结尾为
+	 * 
+	 * @param content 字符串
+	 * @param suffix  结尾字符
+	 * @return
+	 */
+	public static String makeEndsWith(String content, String suffix) {
+		if (isNullOrEmpty(suffix)) {
+			return content;
+		}
+		if (isNullOrEmpty(content)) {
+			return suffix;
+		}
+		if (endsWith(content, suffix)) {
+			return content;
+		}
+		return content + suffix;
 	}
 
 	/**

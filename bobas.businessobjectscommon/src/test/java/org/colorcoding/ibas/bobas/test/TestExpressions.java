@@ -73,6 +73,9 @@ public class TestExpressions extends TestCase {
 		judgmentString.setRightValue("b");
 		judgmentString.setOperation(JudmentOperation.CONTAIN);
 		assertEquals("expression is not established. ", judgmentString.result(), true);
+		judgmentString.setRightValue("Aabbcc, Aabbcd");
+		judgmentString.setOperation(JudmentOperation.IN);
+		assertEquals("expression is not established. ", judgmentString.result(), true);
 		// 数值
 		JudgmentExpressionInteger judgmentInteger = new JudgmentExpressionInteger();
 		judgmentInteger.setLeftValue(100);

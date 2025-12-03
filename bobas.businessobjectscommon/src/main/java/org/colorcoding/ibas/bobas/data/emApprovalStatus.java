@@ -13,25 +13,21 @@ import org.colorcoding.ibas.bobas.common.Value;
  */
 @XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public enum emApprovalStatus {
-
 	/**
 	 * 不影响
 	 */
 	@Value("U")
 	UNAFFECTED,
-
 	/**
 	 * 审批中
 	 */
 	@Value("P")
 	PROCESSING,
-
 	/**
 	 * 已批准
 	 */
 	@Value("A")
 	APPROVED,
-
 	/**
 	 * 已拒绝
 	 */

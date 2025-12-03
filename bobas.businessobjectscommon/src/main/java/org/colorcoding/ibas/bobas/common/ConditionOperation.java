@@ -35,6 +35,10 @@ public enum ConditionOperation {
 	/** 是空 */
 	IS_NULL,
 	/** 非空 */
-	NOT_NULL;
+	NOT_NULL,
+	/** 在 */
+	IN,
+	/** 不在 */
+	NOT_IN;
 
 }

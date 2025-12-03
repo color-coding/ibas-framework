@@ -33,6 +33,7 @@ import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.FieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
+import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.i18n.I18N;
@@ -185,20 +186,33 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 			if (condition.getOperation() == ConditionOperation.START) {
 				statement.setObject(index, this.getAdapter().escape(condition.getValue(), '_', '%') + "%",
 						this.getAdapter().sqlTypeOf(DbFieldType.ALPHANUMERIC));
+				index += 1;
 			} else if (condition.getOperation() == ConditionOperation.END) {
 				statement.setObject(index, "%" + this.getAdapter().escape(condition.getValue(), '_', '%'),
 						this.getAdapter().sqlTypeOf(DbFieldType.ALPHANUMERIC));
+				index += 1;
 			} else if (condition.getOperation() == ConditionOperation.CONTAIN) {
 				statement.setObject(index, "%" + this.getAdapter().escape(condition.getValue(), '_', '%') + "%",
 						this.getAdapter().sqlTypeOf(DbFieldType.ALPHANUMERIC));
+				index += 1;
 			} else if (condition.getOperation() == ConditionOperation.NOT_CONTAIN) {
 				statement.setObject(index, "%" + this.getAdapter().escape(condition.getValue(), '_', '%') + "%",
 						this.getAdapter().sqlTypeOf(DbFieldType.ALPHANUMERIC));
+				index += 1;
+			} else if (condition.getOperation() == ConditionOperation.IN
+					|| condition.getOperation() == ConditionOperation.NOT_IN) {
+				if (!Strings.isNullOrEmpty(condition.getValue())) {
+					String[] values = condition.getValue().split(DataConvert.DATA_SEPARATOR);
+					for (String value : values) {
+						statement.setObject(index, value.trim(), this.getAdapter().sqlTypeOf(DbFieldType.ALPHANUMERIC));
+						index += 1;
+					}
+				}
 			} else {
 				statement.setObject(index, condition.getValue(),
 						this.getAdapter().sqlTypeOf(condition.getAliasDataType()));
+				index += 1;
 			}
-			index += 1;
 		}
 	}
 

@@ -785,6 +785,10 @@ public abstract class DbAdapter {
 			return "LIKE";
 		} else if (value == ConditionOperation.END) {
 			return "LIKE";
+		} else if (value == ConditionOperation.IN) {
+			return "IN";
+		} else if (value == ConditionOperation.NOT_IN) {
+			return "NOT IN";
 		}
 		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
 	}
@@ -821,7 +825,9 @@ public abstract class DbAdapter {
 					&& (condition.getOperation() == ConditionOperation.START
 							|| condition.getOperation() == ConditionOperation.END
 							|| condition.getOperation() == ConditionOperation.CONTAIN
-							|| condition.getOperation() == ConditionOperation.NOT_CONTAIN)) {
+							|| condition.getOperation() == ConditionOperation.NOT_CONTAIN
+							|| condition.getOperation() == ConditionOperation.IN
+							|| condition.getOperation() == ConditionOperation.NOT_IN)) {
 				// 数值类型的字段且需要作为字符比较的
 				stringBuilder.append(this.castAs(DbFieldType.ALPHANUMERIC, condition.getAlias()));
 			} else if (!Strings.isNullOrEmpty(condition.getComparedAlias())) {
@@ -845,6 +851,23 @@ public abstract class DbAdapter {
 						|| condition.getOperation() == ConditionOperation.NOT_NULL) {
 					// 不需要值的比较，[ItemName] is NULL
 					stringBuilder.append(this.parsing(condition.getOperation()));
+				} else if (condition.getOperation() == ConditionOperation.IN
+						|| condition.getOperation() == ConditionOperation.NOT_IN) {
+					// 与值比较，[ItemCode] IN ('A000001', 'A000002')
+					stringBuilder.append(this.parsing(condition.getOperation()));
+					stringBuilder.append(" ");
+					stringBuilder.append("(");
+					if (!Strings.isNullOrEmpty(condition.getValue())) {
+						String[] values = condition.getValue().split(DataConvert.DATA_SEPARATOR);
+						for (int i = 0; i < values.length; i++) {
+							if (i > 0) {
+								stringBuilder.append(DataConvert.DATA_SEPARATOR);
+								stringBuilder.append(" ");
+							}
+							stringBuilder.append("?");
+						}
+					}
+					stringBuilder.append(")");
 				} else {
 					// 与值比较，[ItemCode] = 'A000001'
 					stringBuilder.append(this.parsing(condition.getOperation()));

@@ -13,13 +13,11 @@ import org.colorcoding.ibas.bobas.common.Value;
  */
 @XmlType(namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public enum emBOStatus {
-
 	/**
 	 * 未清
 	 */
 	@Value("O")
 	OPEN,
-
 	/**
 	 * 已清
 	 */
