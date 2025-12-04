@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.common.Strings;
 
 /**
  * 运行日志
@@ -58,16 +59,8 @@ public class Logger {
 					if (logFolder == null || logFolder.isEmpty()) {
 						logFolder = MyConfiguration.getLogFolder();
 					}
-					StringBuilder fileName = new StringBuilder();
-					fileName.append("ibas");
-					fileName.append("_");
-					fileName.append("runtime");
-					fileName.append("_");
-					fileName.append("%s");
-					fileName.append(".");
-					fileName.append("log");
 					MessageRecorder4File messageRecorder4File = new MessageRecorder4File();
-					messageRecorder4File.setFileSign(fileName.toString());
+					messageRecorder4File.setFileSign("ibas_runtime_%s.log");
 					messageRecorder4File.setWorkFolder(logFolder);
 					messageRecorder4File.setLimitSize(
 							MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LOG_FILE_SIZE_LIMIT, 50));
@@ -93,25 +86,6 @@ public class Logger {
 	}
 
 	/**
-	 * 记录消息
-	 * 
-	 * @param message 消息内容
-	 */
-	public static void log(String message) {
-		log(MessageLevel.INFO, message, "");
-	}
-
-	/**
-	 * 记录消息
-	 * 
-	 * @param level   消息级别
-	 * @param message 消息内容
-	 */
-	public static void log(MessageLevel level, String message) {
-		log(new Message(level, message));
-	}
-
-	/**
 	 * 记录消息，带格式参数（message %s.）
 	 * 
 	 * @param message 消息内容及格式
@@ -129,7 +103,7 @@ public class Logger {
 	 * @param args    格式中的参数
 	 */
 	public static void log(MessageLevel level, String message, Object... args) {
-		log(level, String.format(message, args));
+		log(new Message(level, Strings.format(message, args)));
 	}
 
 	/**
@@ -137,11 +111,8 @@ public class Logger {
 	 * 
 	 * @param exception 异常
 	 */
-	public static void log(Exception e) {
-		if (e == null) {
-			return;
-		}
-		log(MessageLevel.ERROR, e);
+	public static void log(Exception exception) {
+		log(MessageLevel.ERROR, exception);
 	}
 
 	/**
@@ -150,16 +121,17 @@ public class Logger {
 	 * @param level     消息级别
 	 * @param exception 异常
 	 */
-	public static void log(MessageLevel level, Exception e) {
-		if (e == null) {
+	public static void log(MessageLevel level, Exception exception) {
+		if (exception == null) {
 			return;
 		}
 		try (StringWriter stringWriter = new StringWriter()) {
 			try (PrintWriter printWriter = new PrintWriter(stringWriter)) {
-				e.printStackTrace(printWriter);
+				exception.printStackTrace(printWriter);
 				log(level, stringWriter.toString());
 			}
-		} catch (IOException e1) {
+		} catch (IOException e) {
+			System.err.println(e);
 		}
 	}
 

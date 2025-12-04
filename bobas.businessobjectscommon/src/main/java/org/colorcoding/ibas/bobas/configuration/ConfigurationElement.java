@@ -4,6 +4,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
+import org.colorcoding.ibas.bobas.common.Strings;
+
 /**
  * 配置项类
  * 
@@ -20,7 +22,7 @@ class ConfigurationElement {
 		this.value = value;
 	}
 
-	private String key = "";
+	private String key = Strings.VALUE_EMPTY;
 
 	@XmlAttribute(name = "key")
 	public String getKey() {
@@ -31,7 +33,7 @@ class ConfigurationElement {
 		this.key = key;
 	}
 
-	private String value = "";
+	private String value = Strings.VALUE_EMPTY;
 
 	@XmlAttribute(name = "value")
 	public String getValue() {

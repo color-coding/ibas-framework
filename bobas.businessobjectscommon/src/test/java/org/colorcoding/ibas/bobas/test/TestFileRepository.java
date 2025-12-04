@@ -7,6 +7,7 @@ import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.DateTimes;
+import org.colorcoding.ibas.bobas.common.Files;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
@@ -69,6 +70,15 @@ public class TestFileRepository extends TestCase {
 	}
 
 	public void testSearchFiles() {
+		String path = "C:\\Windows\\System32\\Win.exe";
+		System.out.println(Files.pathOf(path));
+		System.out.println(Files.nameOf(path));
+		System.out.println(Files.extensionOf(path));
+		path = "/home/users/bash.sh";
+		System.out.println(Files.pathOf(path));
+		System.out.println(Files.nameOf(path));
+		System.out.println(Files.extensionOf(path));
+
 		try (FileRepository fileRepository = new FileRepository()) {
 			fileRepository.setRepositoryFolder(System.getProperty("user.dir"));
 

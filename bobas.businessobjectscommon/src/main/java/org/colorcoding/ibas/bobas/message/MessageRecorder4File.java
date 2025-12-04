@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.DateTimes;
+import org.colorcoding.ibas.bobas.common.Files;
 import org.colorcoding.ibas.bobas.task.Daemon;
 import org.colorcoding.ibas.bobas.task.IDaemonTask;
 
@@ -143,7 +144,7 @@ public class MessageRecorder4File extends MessageRecorder {
 	 * @throws IOException
 	 */
 	public String getFileName() throws IOException {
-		String filePath = this.getWorkFolder() + File.separator;
+		String filePath = this.getWorkFolder();
 		String partName = DateTimes.today().toString("yyyyMMdd");
 		// 分文件
 		int maxCount = 999;
@@ -151,9 +152,10 @@ public class MessageRecorder4File extends MessageRecorder {
 			// 错误的文件大小
 			maxCount = 0;
 		}
+		File file;
 		for (int i = 1; i < maxCount; i++) {
 			// 查找未写满的文件
-			File file = new File(filePath + String.format(this.getFileSign(), String.format("%s_%03d", partName, i)));
+			file = Files.valueOf(filePath, String.format(this.getFileSign(), String.format("%s_%03d", partName, i)));
 			if (!file.exists()) {
 				return file.getPath();
 			}
@@ -165,7 +167,7 @@ public class MessageRecorder4File extends MessageRecorder {
 			}
 		}
 		// 不分文件
-		return filePath + String.format(this.getFileSign(), partName);
+		return Files.valueOf(filePath, String.format(this.getFileSign(), partName)).getPath();
 	}
 
 	/**

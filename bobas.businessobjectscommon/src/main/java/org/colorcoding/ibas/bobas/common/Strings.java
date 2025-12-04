@@ -78,6 +78,18 @@ public class Strings {
 	 * 字符：;
 	 */
 	public static final String VALUE_SEMICOLON = alphabetOf(59);
+	/**
+	 * 字符：.
+	 */
+	public static final String VALUE_DOT = alphabetOf(46);
+	/**
+	 * 字符：/
+	 */
+	public static final String VALUE_SLASH = alphabetOf(47);
+	/**
+	 * 字符：\
+	 */
+	public static final String VALUE_BACKSLASH = alphabetOf(92);
 
 	/**
 	 * 类型默认值
@@ -223,16 +235,7 @@ public class Strings {
 	 * @return
 	 */
 	public static boolean equals(Object a, Object b) {
-		if (a == null || b == null) {
-			return false;
-		}
-		if (a == b) {
-			return true;
-		}
-		if (valueOf(a).equals(valueOf(b))) {
-			return true;
-		}
-		return false;
+		return equals(a, b, false);
 	}
 
 	/**
@@ -243,14 +246,32 @@ public class Strings {
 	 * @return
 	 */
 	public static boolean equalsIgnoreCase(Object a, Object b) {
+		return equals(a, b, true);
+	}
+
+	/**
+	 * 是否相等
+	 * 
+	 * @param a
+	 * @param b
+	 * @param ignoreCase 忽略大小写
+	 * @return
+	 */
+	public static boolean equals(Object a, Object b, boolean ignoreCase) {
 		if (a == null || b == null) {
 			return false;
 		}
 		if (a == b) {
 			return true;
 		}
-		if (valueOf(a).equalsIgnoreCase(valueOf(b))) {
-			return true;
+		if (ignoreCase) {
+			if (valueOf(a).equalsIgnoreCase(valueOf(b))) {
+				return true;
+			}
+		} else {
+			if (valueOf(a).equals(valueOf(b))) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -317,12 +338,44 @@ public class Strings {
 	/**
 	 * 判断字符串开头
 	 * 
+	 * @param content    字符串
+	 * @param prefix     开头字符
+	 * @param ignoreCase 忽略大小写
+	 * @return
+	 */
+	public static boolean startsWith(String content, String prefix, boolean ignoreCase) {
+		if (ignoreCase) {
+			return startsWith(toUpperCase(content), toUpperCase(prefix));
+		} else {
+			return startsWith(content, prefix);
+		}
+	}
+
+	/**
+	 * 判断字符串开头
+	 * 
 	 * @param content 字符串
 	 * @param prefix  开头字符
 	 * @return
 	 */
 	public static boolean startsWith(String content, String prefix) {
 		return isWith(content, prefix, null);
+	}
+
+	/**
+	 * 判断字符串结尾
+	 * 
+	 * @param content    字符串
+	 * @param suffix     结尾字符
+	 * @param ignoreCase 忽略大小写
+	 * @return
+	 */
+	public static boolean endsWith(String content, String suffix, boolean ignoreCase) {
+		if (ignoreCase) {
+			return endsWith(toUpperCase(content), toUpperCase(suffix));
+		} else {
+			return endsWith(content, suffix);
+		}
 	}
 
 	/**
@@ -410,13 +463,91 @@ public class Strings {
 	}
 
 	/**
-	 * 转移字符串为16进制字符串
+	 * 转为大字符
 	 * 
-	 * @param src
+	 * @param value
 	 * @return
 	 */
-	public static String toHexString(String src) {
-		return Bytes.toHexString(src.getBytes());
+	public static String toUpperCase(String value) {
+		if (value == null) {
+			return null;
+		}
+		return value.toUpperCase();
+	}
+
+	/**
+	 * 去除空格
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static String trim(String value) {
+		if (value == null) {
+			return null;
+		}
+		return value.trim();
+	}
+
+	/**
+	 * 转为小字符
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static String toLowerCase(String value) {
+		if (value == null) {
+			return null;
+		}
+		return value.toLowerCase();
+	}
+
+	/**
+	 * 转移字符串为16进制字符串
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static String toHexString(String value) {
+		if (value == null) {
+			return VALUE_EMPTY;
+		}
+		return Bytes.toHexString(value.getBytes());
+	}
+
+	/**
+	 * 选择非空白值（默认空白）
+	 * 
+	 * @param values 待选值
+	 * @return
+	 */
+	public static String optionNonEmpty(String... values) {
+		if (values == null) {
+			return Strings.VALUE_EMPTY;
+		}
+		for (String value : values) {
+			if (!isNullOrEmpty(value)) {
+				return value;
+			}
+		}
+		return Strings.VALUE_EMPTY;
+	}
+
+	/**
+	 * 选择非空值（默认空白）
+	 * 
+	 * @param values 待选值
+	 * @return
+	 */
+	public static String optionNonNull(String... values) {
+		if (values == null) {
+			return Strings.VALUE_EMPTY;
+		}
+		for (String value : values) {
+			if (value != null) {
+				return value;
+			}
+		}
+		return Strings.VALUE_EMPTY;
 	}
 
 	/**

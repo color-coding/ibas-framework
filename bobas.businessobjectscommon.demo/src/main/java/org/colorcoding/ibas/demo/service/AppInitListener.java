@@ -9,6 +9,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
+import org.colorcoding.ibas.bobas.common.Files;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.data.KeyText;
 import org.colorcoding.ibas.bobas.message.Logger;
@@ -69,7 +70,7 @@ public class AppInitListener implements ServletContextListener {
 	 */
 	protected void runCommands() {
 		// 根据pom.xml文件现在工具包
-		File pomFile = new File(MyConfiguration.getWorkFolder(), "classes" + File.separator + "pom.btulz.xml");
+		File pomFile = Files.valueOf(MyConfiguration.getWorkFolder(), "classes", "pom.btulz.xml");
 		if (!pomFile.isFile() || !pomFile.exists()) {
 			return;
 		}
@@ -87,8 +88,8 @@ public class AppInitListener implements ServletContextListener {
 				Logger.log("command: get jars to [%s]. ",
 						MyConfiguration.getTempFolder() + File.separator + "ibas_tools");
 			}
-			File tsFile = new File(MyConfiguration.getTempFolder(),
-					"ibas_tools" + File.separator + "btulz.transforms.bobas-0.2.0.jar");
+			File tsFile = Files.valueOf(MyConfiguration.getTempFolder(), "ibas_tools",
+					"btulz.transforms.bobas-0.2.0.jar");
 			if (!tsFile.exists() || !tsFile.isFile()) {
 				return;
 			}
@@ -127,8 +128,7 @@ public class AppInitListener implements ServletContextListener {
 				return;
 			}
 			// 功能结构
-			File dsFile = new File(pomFile.getParent(),
-					"datastructures" + File.separator + "ds_tt_trainingtesting.xml");
+			File dsFile = Files.valueOf(pomFile.getParent(), "datastructures", "ds_tt_trainingtesting.xml");
 			if (!dsFile.exists() || !dsFile.isFile()) {
 				return;
 			}
@@ -140,7 +140,7 @@ public class AppInitListener implements ServletContextListener {
 				return;
 			}
 			// 初始数据，需要先编译demo项目（使用其jar包）
-			pomFile = new File(MyConfiguration.getWorkFolder(), "classes" + File.separator + "pom.demo.xml");
+			pomFile = Files.valueOf(MyConfiguration.getWorkFolder(), "classes", "pom.demo.xml");
 			if (!pomFile.isFile() || !pomFile.exists()) {
 				return;
 			}
@@ -154,8 +154,8 @@ public class AppInitListener implements ServletContextListener {
 				Logger.log("command: get demo jar to [%s]. ",
 						MyConfiguration.getTempFolder() + File.separator + "ibas_demo");
 			}
-			dsFile = new File(MyConfiguration.getTempFolder(),
-					"ibas_demo" + File.separator + "bobas.businessobjectscommon.demo-0.2.0.jar");
+			dsFile = Files.valueOf(MyConfiguration.getTempFolder(), "ibas_demo",
+					"bobas.businessobjectscommon.demo-0.2.0.jar");
 			if (!dsFile.exists() || !dsFile.isFile()) {
 				return;
 			}

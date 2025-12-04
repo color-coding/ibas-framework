@@ -10,9 +10,9 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.colorcoding.ibas.bobas.common.Files;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.data.IKeyText;
-import org.colorcoding.ibas.bobas.data.KeyText;
 import org.colorcoding.ibas.bobas.message.Logger;
 
 /**
@@ -40,7 +40,7 @@ public class Configuration {
 						// 测试脚本 target\test-classes
 						folder = (new File(folder)).getParentFile().getParentFile().getPath();
 					}
-					String configFile = String.format("%s%sapp.xml", folder, File.separator);
+					String configFile = Files.valueOf(folder, "app.xml").getPath();
 					try {
 						instance = create(configFile);
 					} catch (Exception e) {
@@ -261,20 +261,28 @@ public class Configuration {
 	 * @param variable 待处理字符
 	 * @return 替换过字符
 	 */
-	public static String applyVariables(String variable) {
-		String value = applyVariables(variable, new Iterator<IKeyText>() {
-
-			private Iterator<KeyText> iterator = create().getElements().iterator();
-
-			public boolean hasNext() {
-				return iterator.hasNext();
+	public static String applyVariables(String value) {
+		if (Strings.isNullOrEmpty(value)) {
+			return value;
+		}
+		ArrayList<String> names = new ArrayList<>(4);
+		Matcher matcher = Pattern.compile(VARIABLE_PATTERN).matcher(value);
+		while (matcher.find()) {
+			// 带格式名称${}
+			names.add(matcher.group(0));
+		}
+		Object variable;
+		for (String name : names) {
+			variable = create().getConfigValue(name);
+			if (variable == null) {
+				// 不带格式名称
+				variable = create().getConfigValue(name.substring(2, name.length() - 1));
 			}
-
-			public IKeyText next() {
-				return iterator.next();
+			if (variable == null) {
+				continue;
 			}
-
-		});
+			value = value.replace(name, variable == null ? Strings.VALUE_EMPTY : variable.toString());
+		}
 		return value;
 	}
 
@@ -286,22 +294,26 @@ public class Configuration {
 	 * @return 替换过字符
 	 */
 	public static String applyVariables(String value, Iterator<IKeyText> variables) {
-		if (value != null && variables != null) {
-			ArrayList<String> names = new ArrayList<>();
-			Matcher matcher = Pattern.compile(VARIABLE_PATTERN).matcher(value);
-			while (matcher.find()) {
-				// 带格式名称${}
-				names.add(matcher.group(0));
-			}
-			while (variables.hasNext()) {
-				IKeyText item = variables.next();
-				for (String name : names) {
-					// 不带格式名称
-					String tName = name.substring(2, name.length() - 1);
-					if (name.equalsIgnoreCase(item.getKey()) || tName.equalsIgnoreCase(item.getKey())) {
-						value = value.replace(name, item.getText() == null ? new String() : item.getText());
-						break;
-					}
+		if (value == null || variables == null) {
+			return value;
+		}
+		String tName;
+		ArrayList<String> names = new ArrayList<>(8);
+		Matcher matcher = Pattern.compile(VARIABLE_PATTERN).matcher(value);
+		while (matcher.find()) {
+			tName = matcher.group(0);
+			// 带格式名称${}
+			names.add(tName);
+			// 不带格式名称
+			names.add(tName.substring(2, tName.length() - 1));
+		}
+		IKeyText variable;
+		while (variables.hasNext()) {
+			variable = variables.next();
+			for (String name : names) {
+				if (name.equalsIgnoreCase(variable.getKey())) {
+					value = value.replace(name, variable.getText() == null ? Strings.VALUE_EMPTY : variable.getText());
+					break;
 				}
 			}
 		}

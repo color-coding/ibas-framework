@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.configuration;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.Collection;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -15,7 +16,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.data.KeyText;
+import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.data.IKeyValue;
 
 /**
  * 配置项操作类-XML
@@ -48,7 +50,14 @@ public class ConfigurationManagerFile extends ConfigurationManager {
 	@XmlElementWrapper(name = "appSettings")
 	@XmlElement(name = "add", type = ConfigurationElement.class)
 	private ConfigurationElement[] getConfigurationElements() {
-		return this.getElements().toArray(new ConfigurationElement[] {});
+		Collection<IKeyValue> keyValues = this.getElements();
+		ConfigurationElement[] elements = new ConfigurationElement[keyValues.size()];
+		int index = 0;
+		for (IKeyValue item : keyValues) {
+			elements[index] = new ConfigurationElement(item.getKey(), Strings.valueOf(item.getValue()));
+			index++;
+		}
+		return elements;
 	}
 
 	@SuppressWarnings("unused")
@@ -61,39 +70,37 @@ public class ConfigurationManagerFile extends ConfigurationManager {
 		}
 	}
 
-	public synchronized void save() {
-		try {
-			if (this.getConfigFile() == null || this.getConfigFile().isEmpty())
-				return;
-			File file = new File(this.getConfigFile());
-			if (file.exists()) {
-				file.delete();
-			}
-			file.createNewFile();
-			JAXBContext context = JAXBContext.newInstance(ConfigurationManagerFile.class);
-			Marshaller marshaller = context.createMarshaller();
-			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			marshaller.marshal(this, file);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+	public synchronized void save() throws Exception {
+		if (this.getConfigFile() == null || this.getConfigFile().isEmpty())
+			return;
+		File file = new File(this.getConfigFile());
+		if (file.exists()) {
+			file.delete();
 		}
+		file.createNewFile();
+		JAXBContext context = JAXBContext.newInstance(ConfigurationManagerFile.class);
+		Marshaller marshaller = context.createMarshaller();
+		marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		marshaller.marshal(this, file);
 	}
 
 	public synchronized void update() {
-		if (this.getConfigFile() == null || this.getConfigFile().isEmpty()) {
-			return;
-		}
-		File file = new File(this.getConfigFile());
-		if (!file.exists()) {
-			return;
-		}
-		try (InputStream stream = new FileInputStream(file)) {
-			JAXBContext context = JAXBContext.newInstance(ConfigurationManagerFile.class);
-			Unmarshaller unmarshaller = context.createUnmarshaller();
-			ConfigurationManagerFile tmpManager = (ConfigurationManagerFile) unmarshaller.unmarshal(stream);
-			for (KeyText item : tmpManager.getElements()) {
-				this.addConfigValue(item.getKey(), item.getText());
+		try {
+			if (this.getConfigFile() == null || this.getConfigFile().isEmpty()) {
+				return;
+			}
+			File file = new File(this.getConfigFile());
+			if (!file.exists()) {
+				return;
+			}
+			try (InputStream stream = new FileInputStream(file)) {
+				JAXBContext context = JAXBContext.newInstance(ConfigurationManagerFile.class);
+				Unmarshaller unmarshaller = context.createUnmarshaller();
+				ConfigurationManagerFile tmpManager = (ConfigurationManagerFile) unmarshaller.unmarshal(stream);
+				for (IKeyValue item : tmpManager.getElements()) {
+					this.addConfigValue(item.getKey(), item.getValue());
+				}
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);

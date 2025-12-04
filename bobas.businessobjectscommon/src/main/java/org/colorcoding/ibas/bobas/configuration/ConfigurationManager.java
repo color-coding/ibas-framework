@@ -1,14 +1,20 @@
 package org.colorcoding.ibas.bobas.configuration;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
+import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DataConvert;
-import org.colorcoding.ibas.bobas.data.KeyText;
+import org.colorcoding.ibas.bobas.data.IKeyValue;
+import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 /**
  * 配置项管理员
@@ -18,52 +24,54 @@ import org.colorcoding.ibas.bobas.message.Logger;
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class ConfigurationManager {
 
-	private HashMap<String, KeyText> elementsMap = new HashMap<String, KeyText>(128);
+	private Map<String, Object> elementsMap = new ConcurrentHashMap<>(128);
 
-	public Collection<KeyText> getElements() {
-		return this.elementsMap.values();
+	public Collection<IKeyValue> getElements() {
+		ArrayList<IKeyValue> elements = new ArrayList<>(this.elementsMap.size());
+		for (Entry<String, Object> item : this.elementsMap.entrySet()) {
+			elements.add(new KeyValue(item.getKey(), item.getValue()));
+		}
+		return elements;
 	}
 
 	public String getConfigValue(String key) {
-		KeyText element = this.elementsMap.get(key);
-		if (element != null) {
-			return element.getText();
+		Object value = this.elementsMap.get(key);
+		if (value != null) {
+			return Strings.valueOf(value);
 		}
 		return null;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <P> P getConfigValue(String key, P defaultValue) {
-		String valueString = this.getConfigValue(key);
-		if (valueString == null || valueString.isEmpty()) {
+		Object value = this.elementsMap.get(key);
+		if (value == null) {
 			return defaultValue;
-		} else {
-			try {
-				// 强行转换配置值为P类型
-				if (defaultValue != null) {
-					return (P) DataConvert.convert(defaultValue.getClass(), valueString);
-				}
-				return (P) valueString;
-			} catch (Exception e) {
-				Logger.log(e);
+		}
+		if (value.getClass() == String.class) {
+			if (Strings.isNullOrEmpty(value.toString())) {
 				return defaultValue;
 			}
 		}
+		if (defaultValue == null) {
+			return (P) value;
+		}
+		try {
+			return (P) DataConvert.convert(defaultValue.getClass(), value);
+		} catch (Exception e) {
+			Logger.log(MessageLevel.WARN, e);
+			return defaultValue;
+		}
 	}
 
-	public void addConfigValue(String key, String value) {
-		KeyText element = this.elementsMap.get(key);
-		// 值是空是删除配置项
-		if (key == null && element != null) {
-			this.elementsMap.remove(key);
+	public void addConfigValue(String key, Object value) {
+		if (key == null) {
 			return;
 		}
-		if (element == null) {
-			element = new KeyText();
-			element.setKey(key);
-			this.elementsMap.put(element.getKey(), element);
+		if (value == null) {
+			return;
 		}
-		element.setText(value);
+		this.elementsMap.put(key, value);
 	}
 
 	private String configSign;

@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.data;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,7 +15,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.Decimals;
 
 /**
- * 集合列表
+ * 列表
  * 
  * @author Niuren.Zhu
  *
@@ -25,6 +26,40 @@ import org.colorcoding.ibas.bobas.common.Decimals;
 public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 
 	private static final long serialVersionUID = 721283937680328856L;
+
+	/**
+	 * 创建列表
+	 * 
+	 * @param <E>    元素类型
+	 * @param values 初始值（空值跳过）
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <E> ArrayList<E> create(Object... values) {
+		if (values == null) {
+			return new ArrayList<>(0);
+		}
+		ArrayList<E> results = new ArrayList<>(values.length);
+		for (Object value : values) {
+			if (value == null) {
+				continue;
+			}
+			if (value.getClass().isArray()) {
+				int size = Array.getLength(value);
+				for (int i = 0; i < size; i++) {
+					results.add((E) Array.get(value, i));
+				}
+			} else if (value instanceof Iterable) {
+				Iterable<?> iterable = (Iterable<?>) value;
+				for (Object item : iterable) {
+					results.add((E) item);
+				}
+			} else {
+				results.add((E) value);
+			}
+		}
+		return results;
+	}
 
 	public ArrayList() {
 	}

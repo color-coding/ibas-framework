@@ -29,7 +29,7 @@ public class I18N {
 	 * 获取key所对应的值
 	 * 
 	 * @param key  需要翻译的文本
-	 * @param args 有效值
+	 * @param args 替换值
 	 * @return 返回key所对应的值
 	 */
 	public static String prop(String key, Object... args) {

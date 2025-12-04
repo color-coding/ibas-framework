@@ -13,15 +13,18 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.common.Files;
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
 
@@ -54,12 +57,13 @@ public class LanguageItemManager {
 
 	private Map<String, LanguageItem> languageItems;
 
-	/**
-	 * 存储多语言资源
-	 */
 	protected Map<String, LanguageItem> getLanguageItems() {
 		if (languageItems == null) {
-			languageItems = new HashMap<String, LanguageItem>();
+			synchronized (this) {
+				if (languageItems == null) {
+					languageItems = new ConcurrentHashMap<>(256);
+				}
+			}
 		}
 		return languageItems;
 	}
@@ -101,8 +105,7 @@ public class LanguageItemManager {
 					// 无效的路径
 					path = MyConfiguration.getWorkFolder();
 					if (path.endsWith("WEB-INF")) {
-						path = String.format("%s%sresources%si18n", (new File(path)).getParentFile().getPath(),
-								File.separator, File.separator);
+						path = Files.valueOf((new File(path)).getParentFile().getPath(), "resources", "i18n").getPath();
 					}
 				}
 			}
@@ -124,9 +127,10 @@ public class LanguageItemManager {
 			return;
 		}
 		try (JarFile jarFile = ((JarURLConnection) file.openConnection()).getJarFile()) {
+			JarEntry jarEntry;
 			Enumeration<JarEntry> jarEntries = jarFile.entries();
 			while (jarEntries.hasMoreElements()) {
-				JarEntry jarEntry = (JarEntry) jarEntries.nextElement();
+				jarEntry = (JarEntry) jarEntries.nextElement();
 				if (jarEntry.isDirectory()) {
 					continue;
 				}
@@ -172,30 +176,31 @@ public class LanguageItemManager {
 		if (fileFolder == null || fileFolder.isEmpty())
 			return;
 		File file = new File(fileFolder);
-		if (file.exists()) {
-			if (file.isFile()) {
-				// 添加新的语言内容
-				for (LanguageItem item : this.loadFileContent(file.getPath())) {
-					this.getLanguageItems().put(item.getKey(), item);
-				}
-			} else {
-				File[] files = file.listFiles();
-				if (files != null) {
-					for (File fileItem : files) {
-						if (!fileItem.getName().endsWith(".properties")) {
+		if (!file.exists()) {
+			return;
+		}
+		if (file.isFile()) {
+			// 添加新的语言内容
+			for (LanguageItem item : this.loadFileContent(file.getPath())) {
+				this.getLanguageItems().put(item.getKey(), item);
+			}
+		} else {
+			File[] files = file.listFiles();
+			if (files != null) {
+				for (File fileItem : files) {
+					if (!fileItem.getName().endsWith(".properties")) {
+						continue;
+					}
+					if (langCode == null || langCode.isEmpty()) {
+						if (fileItem.getName().indexOf("_") > 0) {
 							continue;
 						}
-						if (langCode == null || langCode.isEmpty()) {
-							if (fileItem.getName().indexOf("_") > 0) {
-								continue;
-							}
-						} else {
-							if (fileItem.getName().indexOf(langCode) < 0) {
-								continue;
-							}
+					} else {
+						if (fileItem.getName().indexOf(langCode) < 0) {
+							continue;
 						}
-						this.readResources(fileItem.getPath(), langCode);
 					}
+					this.readResources(fileItem.getPath(), langCode);
 				}
 			}
 		}
@@ -204,13 +209,14 @@ public class LanguageItemManager {
 	public void readResources() {
 		// 加载jar包中语言
 		try {
+			URL dir;
 			Enumeration<URL> dirs = Thread.currentThread().getContextClassLoader().getResources("i18n");
 			// 循环迭代下去
 			while (dirs.hasMoreElements()) {
 				// 获取下一个元素
-				URL url = dirs.nextElement();
-				this.loadResources(url, null);// 默认语言
-				this.loadResources(url, this.getLanguageCode());// 使用语言
+				dir = dirs.nextElement();
+				this.loadResources(dir, null);// 默认语言
+				this.loadResources(dir, this.getLanguageCode());// 使用语言
 			}
 		} catch (IOException e) {
 			Logger.log(e);
@@ -225,39 +231,34 @@ public class LanguageItemManager {
 				List<LanguageItem> languageItems = this.loadFileContent(reader);
 				Logger.log("i18n: read file's data [%s].", file);
 				return languageItems;
-			} catch (IOException e) {
-				Logger.log(e);
 			}
 		} catch (IOException e) {
 			Logger.log(e);
 		}
-		return new ArrayList<>();
+		return new ArrayList<>(0);
 	}
 
-	protected List<LanguageItem> loadFileContent(Reader reader) {
-		ArrayList<LanguageItem> languageItems = new ArrayList<>();
-		try {
-			Properties props = new Properties();
-			props.load(reader);
-			Enumeration<?> enumeration = props.propertyNames();
-			while (enumeration.hasMoreElements()) {
-				String key = (String) enumeration.nextElement();
-				// 去掉注释
-				if (key == null || key.isEmpty())
-					continue;
-				key = key.trim();// 去掉两端的空格
-				String property = props.getProperty(key);
-				if (property == null || property.isEmpty())
-					continue;
-				// 判断是否存在含有key 的 item
-				LanguageItem item = new LanguageItem();
-				item.setKey(key);
-				item.addContent(this.getLanguageCode(), property);
-				languageItems.add(item);
+	protected List<LanguageItem> loadFileContent(Reader reader) throws IOException {
+		Properties properties = new Properties();
+		properties.load(reader);
+
+		LanguageItem langItem;
+		ArrayList<LanguageItem> languageItems = new ArrayList<>(properties.size());
+
+		for (Entry<Object, Object> property : properties.entrySet()) {
+			if (property.getKey() == null) {
+				continue;
 			}
-		} catch (Exception e) {
-			Logger.log(e);
+			if (property.getValue() == null) {
+				continue;
+			}
+			// 判断是否存在含有key 的 item
+			langItem = new LanguageItem();
+			langItem.setKey(Strings.valueOf(property.getKey()));
+			langItem.addContent(this.getLanguageCode(), Strings.valueOf(property.getValue()));
+			languageItems.add(langItem);
 		}
+
 		return languageItems;
 	}
 

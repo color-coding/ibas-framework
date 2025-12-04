@@ -1,11 +1,11 @@
 package org.colorcoding.ibas.bobas.i18n;
 
-import java.util.Iterator;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.data.ArrayList;
+import org.colorcoding.ibas.bobas.data.KeyText;
 import org.colorcoding.ibas.bobas.data.List;
 
 @XmlAccessorType(XmlAccessType.NONE)
@@ -21,67 +21,51 @@ public class LanguageItem {
 		this.key = key;
 	}
 
-	private List<LanguageItemContent> languageItemContents;
+	private List<KeyText> contents;
 
-	protected List<LanguageItemContent> getLanguageItemContents() {
-		if (languageItemContents == null) {
-			languageItemContents = new ArrayList<LanguageItemContent>();
+	protected List<KeyText> getContents() {
+		if (contents == null) {
+			contents = new ArrayList<KeyText>(3);
 		}
-		return languageItemContents;
+		return contents;
 	}
 
 	public String getContent(String langcode) {
-		if (langcode != null && !langcode.isEmpty()) {
-			for (LanguageItemContent item : this.getLanguageItemContents()) {
-				if (langcode.equals(item.getLanguageCode())) {
-					return item.getContent();
+		if (!Strings.isNullOrEmpty(langcode)) {
+			for (KeyText item : this.getContents()) {
+				if (langcode.equalsIgnoreCase(item.getKey())) {
+					return item.getText();
 				}
 			}
 		}
 		return this.getContent();
 	}
 
-	/**
-	 * 默认值
-	 * 
-	 * @return
-	 */
 	public String getContent() {
-		LanguageItemContent content = this.getLanguageItemContents().firstOrDefault();
-		if (content != null) {
-			return content.getContent();
+		for (KeyText item : this.getContents()) {
+			return item.getText();
 		}
-		return String.format("[%s]", this.getKey());
+		return Strings.format("[%s]", this.getKey());
 	}
 
-	/**
-	 * 添加语言类型以及对应的翻译文本
-	 * 
-	 * @param langcode
-	 * @param content
-	 */
 	public void addContent(String langcode, String content) {
-		if (langcode == null || langcode.isEmpty())
+		if (Strings.isNullOrEmpty(langcode))
 			return;
-		if (content == null || langcode.isEmpty())
+		if (content == null)
 			return;
 		// 添加或者更新值
-		LanguageItemContent itemContent = null;
-		for (LanguageItemContent item : this.getLanguageItemContents()) {
-			if (langcode.equals(item.getLanguageCode())) {
+		KeyText itemContent = null;
+		for (KeyText item : this.getContents()) {
+			if (langcode.equalsIgnoreCase(item.getKey())) {
 				itemContent = item;
 				break;
 			}
 		}
 		if (itemContent == null) {
-			this.getLanguageItemContents().add(new LanguageItemContent(langcode, content));
+			this.getContents().add(new KeyText(langcode, content));
 		} else {
-			itemContent.setContent(content);
+			itemContent.setText(content);
 		}
-	}
-
-	public Iterator<LanguageItemContent> iterator() {
-		return this.getLanguageItemContents().iterator();
 	}
 
 }
