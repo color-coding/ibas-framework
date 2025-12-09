@@ -139,6 +139,8 @@ public class TestCore extends TestCase {
 		UserFieldsManager userFieldsManager = UserFieldsFactory.createManager();
 		userFieldsManager.registerUserField(SalesOrder.class, "U_String", String.class);
 		userFieldsManager.registerUserField(SalesOrder.class, "U_Integer", Integer.class);
+		userFieldsManager.registerUserField(SalesOrderItem.class, "U_Date", DateTime.class);
+		userFieldsManager.registerUserField(SalesOrderItem.class, "U_Decimal", BigDecimal.class);
 
 		SalesOrder salesOrder = new SalesOrder();
 		salesOrder.setDocEntry(1);
@@ -147,6 +149,14 @@ public class TestCore extends TestCase {
 		salesOrder.setDocumentTotal(Decimals.valueOf("99.99"));
 		salesOrder.setActivated(true);
 		salesOrder.setCustomerCode("C00001");
+		SalesOrderItem orderItem = salesOrder.getSalesOrderItems().create();
+		orderItem.setItemCode("A00001");
+		orderItem.setQuantity(Decimals.valueOf(10));
+		orderItem.setPrice(Decimals.valueOf(99.99));
+		orderItem = salesOrder.getSalesOrderItems().create();
+		orderItem.setItemCode("A00002");
+		orderItem.setQuantity(BigDecimal.valueOf(10));
+		orderItem.setPrice(Decimals.valueOf(199.99123456789));
 		salesOrder.markOld();
 		assertTrue("Property [isDitry] faild. ", !salesOrder.isDirty());
 
@@ -164,6 +174,9 @@ public class TestCore extends TestCase {
 				System.out.println(String.format("%s = %s", annotation.table(), annotation.name()));
 			}
 		}
+		salesOrder.setCustomerName("!@\"中文#$%^&*<>?/你好！");
+		System.out.println(Strings.toJsonString(salesOrder));
+		System.out.println(Strings.toXmlString(salesOrder));
 	}
 
 	public void testXml() throws SAXException, IOException, ValidateException {

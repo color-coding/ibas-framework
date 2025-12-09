@@ -99,6 +99,9 @@ public final class PropertyInfoManager {
 						if (!Modifier.isFinal(field.getModifiers())) {
 							continue;
 						}
+						if (property.getName() == null || property.getName().isEmpty()) {
+							continue;
+						}
 						if (Strings.equalsIgnoreCase(field.getName(),
 								Strings.format(BO_PROPERTY_NAMING_RULES_UPPER, property.getName().toUpperCase()))
 								|| Strings.equalsIgnoreCase(field.getName(),

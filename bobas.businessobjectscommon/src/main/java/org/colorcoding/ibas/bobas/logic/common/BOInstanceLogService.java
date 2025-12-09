@@ -1,7 +1,5 @@
 package org.colorcoding.ibas.bobas.logic.common;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,8 +21,6 @@ import org.colorcoding.ibas.bobas.logic.BusinessLogic;
 import org.colorcoding.ibas.bobas.logic.LogicContract;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
-import org.colorcoding.ibas.bobas.serialization.ISerializer;
-import org.colorcoding.ibas.bobas.serialization.SerializationFactory;
 
 @LogicContract(IBOInstanceLogContract.class)
 public class BOInstanceLogService extends BusinessLogic<IBOInstanceLogContract, BOLogst> {
@@ -148,14 +144,7 @@ public class BOInstanceLogService extends BusinessLogic<IBOInstanceLogContract, 
 		boLogst.setModifyTime(DateTimes.time());
 		boLogst.setModifyUser(this.getUser().getId());
 		boLogst.setTransationId(this.getTransaction().getId());
-
-		ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_JSON);
-		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
-			serializer.serialize(contract.getHost(), writer, false);
-			boLogst.setContent(writer.toString());
-		} catch (IOException e) {
-			Logger.log(e);
-		}
+		boLogst.setContent(Strings.toJsonString(contract.getHost()));
 		boLogst.setSavable(true);
 	}
 

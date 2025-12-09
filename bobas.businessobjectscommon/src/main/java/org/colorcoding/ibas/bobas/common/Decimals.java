@@ -53,6 +53,31 @@ public class Decimals {
 	public final static BigDecimal VALUE_MINUS_ONE = VALUE_ONE.negate();
 
 	/**
+	 * 数值-整数型最大
+	 */
+	public final static BigDecimal VALUE_INTEGER_MAX_VALUE = valueOf(Integer.MAX_VALUE);
+	/**
+	 * 数值-整数型最小
+	 */
+	public final static BigDecimal VALUE_INTEGER_MIN_VALUE = valueOf(Integer.MIN_VALUE);
+	/**
+	 * 数值-长整数型最大
+	 */
+	public final static BigDecimal VALUE_LONG_MAX_VALUE = valueOf(Long.MAX_VALUE);
+	/**
+	 * 数值-长整数型最小
+	 */
+	public final static BigDecimal VALUE_LONG_MIN_VALUE = valueOf(Long.MIN_VALUE);
+	/**
+	 * 数值-短整数型最大
+	 */
+	public final static BigDecimal VALUE_SHORT_MAX_VALUE = valueOf(Short.MAX_VALUE);
+	/**
+	 * 数值-短整数型最小
+	 */
+	public final static BigDecimal VALUE_SHORT_MIN_VALUE = valueOf(Short.MIN_VALUE);
+
+	/**
 	 * 类型默认值
 	 * 
 	 * @return
