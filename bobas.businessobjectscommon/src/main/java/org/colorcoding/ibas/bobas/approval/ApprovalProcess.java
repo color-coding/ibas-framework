@@ -104,7 +104,7 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 			IApprovalProcessStep step = this.currentStep();
 			for (IApprovalProcessStep item : this.getProcessSteps()) {
 				if (step == item) {
-					return preStep;
+					return preStep == null ? step : preStep;
 				}
 				preStep = item;
 			}
@@ -333,17 +333,26 @@ public abstract class ApprovalProcess implements IApprovalProcess {
 		IApprovalProcessStepMultiOwner parent = apStep.getParent();
 		if (apResult == emApprovalResult.PROCESSING) {
 			apStep.reset();
-			boolean done = true;
+			// 审批中的
+			if (parent.getStatus() == emApprovalStepStatus.PROCESSING) {
+				return;
+			}
+			// 已批准的，批准数量满足，则不撤销状态
+			int count = 0;
 			for (IApprovalProcessStepItem apItem : parent.getItems()) {
-				if (apItem.getStatus() != emApprovalStepStatus.PROCESSING) {
-					done = false;
-					break;
+				if (apItem.getStatus() == emApprovalStepStatus.APPROVED) {
+					count++;
 				}
 			}
-			if (done) {
-				// 子项都重置了，则父项重置
-				this.approval(parent, apResult, judgment);
+			if (parent.getStatus() == emApprovalStepStatus.APPROVED) {
+				if (parent.getApproversRequired() > 0) {
+					if (count >= parent.getApproversRequired()) {
+						return;
+					}
+				}
 			}
+			// 撤销
+			this.approval(parent, apResult, judgment);
 		} else {
 			if (apResult == emApprovalResult.APPROVED) {
 				// 批准

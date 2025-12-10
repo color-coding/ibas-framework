@@ -89,6 +89,7 @@ public class SerializerJson extends Serializer<JsonSchema> {
 			Marshaller marshaller = context.createMarshaller();
 			marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
 			marshaller.setProperty(MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
+			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");// 编码格式
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);
 			marshaller.marshal(object, outputStream);
 		} catch (JAXBException e) {

@@ -92,6 +92,7 @@ public class SerializerJsonNoRoot extends Serializer<JsonSchema> {
 			marshaller.setProperty(MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
 			marshaller.setProperty(MarshallerProperties.JSON_TYPE_COMPATIBILITY, true);
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);
+			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");// 编码格式
 			marshaller.marshal(object, outputStream);
 		} catch (JAXBException e) {
 			throw new SerializationException(e);
