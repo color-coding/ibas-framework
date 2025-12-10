@@ -178,6 +178,9 @@ public class Decimals {
 		if (value == null || value.isEmpty()) {
 			return VALUE_ZERO;
 		}
+		if (Numbers.isZero(value)) {
+			return VALUE_ZERO;
+		}
 		// 分拆小数位
 		int index = value.indexOf(".");
 		if (index >= 0) {
@@ -191,7 +194,7 @@ public class Decimals {
 			if (zero) {
 				value = value.substring(0, index);
 				// 小数点后都为零
-				if (value.equals("0") || value.isEmpty()) {
+				if (value.equals("0") || value.equals("-0") || value.isEmpty()) {
 					return VALUE_ZERO;
 				} else if (value.equals("1")) {
 					return VALUE_ONE;

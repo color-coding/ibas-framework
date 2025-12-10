@@ -171,8 +171,8 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 				if (this.modifiedProperties != null && !this.modifiedProperties.contains(property)) {
 					this.modifiedProperties.add(property);
 				}
-				this.markDirty();
 				this.firePropertyChange(property.getName(), oldValue, value);
+				this.markDirty();
 			}
 		}
 	}

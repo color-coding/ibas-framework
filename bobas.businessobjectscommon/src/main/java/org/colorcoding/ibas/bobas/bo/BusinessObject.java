@@ -171,7 +171,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	}
 
 	@Override
-	public void delete() {
+	public final void delete() {
 		boolean done = true;
 		if (!this.isNew()) {
 			// 非新建状态删除可用
@@ -195,7 +195,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	}
 
 	@Override
-	public void undelete() {
+	public final void undelete() {
 		super.clearDeleted();
 		BOUtilities.traverse(this, (data) -> {
 			data.undelete();
@@ -205,11 +205,25 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	/**
 	 * 不能被保存
 	 */
-	public void unsavable() {
+	public final void unsavable() {
 		this.setSavable(false);
 		BOUtilities.traverse(this, (data) -> {
 			data.unsavable();
 		});
+	}
+
+	/**
+	 * 标记为未修改
+	 * 
+	 * @param recursive 包括子项及属性
+	 */
+	public final void markOld(boolean recursive) {
+		super.markOld();
+		if (recursive) {
+			BOUtilities.traverse(this, (data) -> {
+				data.markOld(recursive);
+			});
+		}
 	}
 
 	@Override

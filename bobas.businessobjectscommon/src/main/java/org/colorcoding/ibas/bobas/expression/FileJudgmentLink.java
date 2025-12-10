@@ -76,7 +76,7 @@ public class FileJudgmentLink extends JudgmentLink {
 			@Override
 			public void setValue(Object value) {
 				if (!(value instanceof File)) {
-					throw new ExpressionException();
+					throw new ExpressionException(I18N.prop("msg_bobas_invalid_data"));
 				}
 				this.setValue((File) value);
 			}

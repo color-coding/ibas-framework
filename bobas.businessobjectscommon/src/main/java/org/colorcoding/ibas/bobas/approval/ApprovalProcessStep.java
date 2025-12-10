@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.approval;
 import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalStepStatus;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.organization.IUser;
 
 /**
@@ -106,7 +107,7 @@ public abstract class ApprovalProcessStep<T extends IProcessStepData> implements
 	 */
 	void start() throws ApprovalException {
 		if (this.getStatus() != emApprovalStepStatus.PENDING) {
-			throw new ApprovalException();
+			throw new ApprovalException(I18N.prop("msg_bobas_invalid_data"));
 		}
 		this.setStartedTime(DateTimes.now());
 		this.setStatus(emApprovalStepStatus.PROCESSING);
@@ -133,7 +134,7 @@ public abstract class ApprovalProcessStep<T extends IProcessStepData> implements
 	 */
 	public void approve(String judgment) throws ApprovalException {
 		if (this.getStatus() != emApprovalStepStatus.PROCESSING) {
-			throw new ApprovalException();
+			throw new ApprovalException(I18N.prop("msg_bobas_not_processing_approval_process_step", this.getId()));
 		}
 		this.setFinishedTime(DateTimes.now());
 		this.setStatus(emApprovalStepStatus.APPROVED);
@@ -148,7 +149,7 @@ public abstract class ApprovalProcessStep<T extends IProcessStepData> implements
 	 */
 	public void reject(String judgment) throws ApprovalException {
 		if (this.getStatus() != emApprovalStepStatus.PROCESSING) {
-			throw new ApprovalException();
+			throw new ApprovalException(I18N.prop("msg_bobas_not_processing_approval_process_step", this.getId()));
 		}
 		this.setFinishedTime(DateTimes.now());
 		this.setStatus(emApprovalStepStatus.REJECTED);
@@ -163,7 +164,7 @@ public abstract class ApprovalProcessStep<T extends IProcessStepData> implements
 	 */
 	public void retreat(String judgment) throws ApprovalException {
 		if (this.getStatus() != emApprovalStepStatus.PROCESSING) {
-			throw new ApprovalException();
+			throw new ApprovalException(I18N.prop("msg_bobas_not_processing_approval_process_step", this.getId()));
 		}
 		this.setFinishedTime(DateTimes.now());
 		this.setStatus(emApprovalStepStatus.RETURNED);
@@ -177,7 +178,7 @@ public abstract class ApprovalProcessStep<T extends IProcessStepData> implements
 	 */
 	public void reset() throws ApprovalException {
 		if (this.getStatus() != emApprovalStepStatus.APPROVED && this.getStatus() != emApprovalStepStatus.REJECTED) {
-			throw new ApprovalException();
+			throw new ApprovalException(I18N.prop("msg_bobas_invalid_data"));
 		}
 		this.setFinishedTime(DateTimes.VALUE_MAX);
 		this.setStatus(emApprovalStepStatus.PROCESSING);
@@ -191,7 +192,7 @@ public abstract class ApprovalProcessStep<T extends IProcessStepData> implements
 	 */
 	public void skip() throws ApprovalException {
 		if (this.getStatus() != emApprovalStepStatus.PENDING) {
-			throw new ApprovalException();
+			throw new ApprovalException(I18N.prop("msg_bobas_invalid_data"));
 		}
 		this.setStartedTime(DateTimes.now());
 		this.setFinishedTime(DateTimes.now());

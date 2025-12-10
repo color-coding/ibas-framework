@@ -55,8 +55,8 @@ public abstract class BusinessRuleCommon extends BusinessRule {
 			if (bo instanceof IFieldedObject) {
 				IFieldedObject fieldedObject = (IFieldedObject) bo;
 				boolean mine = false;
+				// 静默模式，不触发属性改变事件
 				if (this.isAffectedInSilent() && !bo.isLoading()) {
-					// 静默模式，不触发属性改变事件
 					fieldedObject.setLoading(true);
 					mine = true;
 				}
@@ -66,9 +66,10 @@ public abstract class BusinessRuleCommon extends BusinessRule {
 						continue;
 					}
 					value = context.getOutputValues().get(propertyInfo);
-					if (value != null) {
-						fieldedObject.setProperty(propertyInfo, value);
+					if (value == null) {
+						continue;
 					}
+					fieldedObject.setProperty(propertyInfo, value);
 				}
 				// 取消静默模式
 				if (mine == true) {

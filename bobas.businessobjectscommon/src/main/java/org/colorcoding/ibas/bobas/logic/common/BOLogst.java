@@ -26,7 +26,7 @@ public class BOLogst extends BusinessObject<BOLogst> implements IBOCustomKey, ID
 	/**
 	 * 序列化版本标记
 	 */
-	private static final long serialVersionUID = -2783812255098736239L;
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * 当前类型

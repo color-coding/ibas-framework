@@ -13,6 +13,7 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.core.IBindable;
+import org.colorcoding.ibas.bobas.core.ITrackable;
 import org.colorcoding.ibas.bobas.core.Trackable;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 
@@ -26,7 +27,7 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
 public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusinessObject> extends ArrayList<E>
 		implements IBusinessObjects<E, P> {
 
-	private static final long serialVersionUID = 7360645136974073845L;
+	private static final long serialVersionUID = 1L;
 
 	private PropertyChangeListener propertyListener = new PropertyChangeListener() {
 
@@ -35,7 +36,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 			if (evt.getSource() == BusinessObjects.this.getParent()) {
 				// 父项属性改变
 				BusinessObjects.this.onParentPropertyChanged(evt);
-			} else if (evt.getSource() == BusinessObjects.this && evt.getPropertyName().equals(PROPERTY_NAME_SIZE)) {
+			} else if (evt.getSource() == BusinessObjects.this && evt.getPropertyName().equals("size")) {
 				// 集合自身的属性改变事件
 				if (BusinessObjects.this.getParent() instanceof Trackable
 						&& !BusinessObjects.this.getParent().isLoading()) {
@@ -63,8 +64,6 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 
 		}
 	};
-
-	private static final String PROPERTY_NAME_SIZE = "size";
 
 	public BusinessObjects() {
 		this.setChangeItemStatus(true);
@@ -115,9 +114,16 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		int oldSize = this.size();
 		boolean result = super.add(item);
 		if (result) {
-			this.propertyListener
-					.propertyChange(new PropertyChangeEvent(this, PROPERTY_NAME_SIZE, oldSize, this.size()));
+			this.propertyListener.propertyChange(new PropertyChangeEvent(this, "size", oldSize, this.size()));
+			boolean mine = false;
+			if (this.getParent() instanceof ITrackable && this.getParent().isLoading()) {
+				item.setLoading(true);
+				mine = true;
+			}
 			this.afterAddItem(item);
+			if (mine == true) {
+				item.setLoading(false);
+			}
 		}
 		return result;
 	}
@@ -203,9 +209,16 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		int oldSize = this.size();
 		boolean result = super.remove(item);
 		if (result) {
-			this.propertyListener
-					.propertyChange(new PropertyChangeEvent(this, PROPERTY_NAME_SIZE, oldSize, this.size()));
+			this.propertyListener.propertyChange(new PropertyChangeEvent(this, "size", oldSize, this.size()));
+			boolean mine = false;
+			if (this.getParent() instanceof ITrackable && this.getParent().isLoading()) {
+				item.setLoading(true);
+				mine = true;
+			}
 			this.afterRemoveItem(item);
+			if (mine == true) {
+				item.setLoading(false);
+			}
 		}
 		return result;
 	}

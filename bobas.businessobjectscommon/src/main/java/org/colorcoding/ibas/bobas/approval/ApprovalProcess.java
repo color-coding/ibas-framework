@@ -173,7 +173,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 			ApprovalProcessStep<?> step = this.currentStep();
 			for (ApprovalProcessStep<?> item : this.getProcessSteps()) {
 				if (step == item) {
-					return preStep;
+					return preStep == null ? step : preStep;
 				}
 				preStep = item;
 			}
@@ -399,17 +399,26 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 		IApprovalProcessStepMultiOwner parent = apStep.getParent();
 		if (apResult == emApprovalResult.PROCESSING) {
 			apStep.reset();
-			boolean done = true;
+			// 审批中的
+			if (parent.getStatus() == emApprovalStepStatus.PROCESSING) {
+				return;
+			}
+			// 已批准的，批准数量满足，则不撤销状态
+			int count = 0;
 			for (IApprovalProcessStepItem apItem : parent.getItems()) {
-				if (apItem.getStatus() != emApprovalStepStatus.PROCESSING) {
-					done = false;
-					break;
+				if (apItem.getStatus() == emApprovalStepStatus.APPROVED) {
+					count++;
 				}
 			}
-			if (done) {
-				// 子项都重置了，则父项重置
-				this.approval((ApprovalProcessStep<?>) parent, apResult, judgment);
+			if (parent.getStatus() == emApprovalStepStatus.APPROVED) {
+				if (parent.getApproversRequired() > 0) {
+					if (count >= parent.getApproversRequired()) {
+						return;
+					}
+				}
 			}
+			// 撤销
+			this.approval((ApprovalProcessStep<?>) parent, apResult, judgment);
 		} else {
 			if (apResult == emApprovalResult.APPROVED) {
 				// 批准
@@ -589,13 +598,17 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 			// 设置仓库事务
 			boRepository.setTransaction(transaction);
 
-			// 保存审批数据（先加载真正实例）
-			if (this.approvalData.isDirty()) {
-				boRepository.toSave(this.approvalData);
+			// 保存审批数据
+			if (this.approvalData != null && this.approvalData.isSavable()) {
+				if (this.approvalData.isDirty()) {
+					boRepository.toSave(this.approvalData);
+				}
 			}
-			// 调用保存审批流程
-			if (this.processData.isDirty()) {
-				boRepository.toSave(this.processData);
+			// 保存审批流程
+			if (this.processData != null && this.processData.isSavable()) {
+				if (this.processData.isDirty()) {
+					boRepository.toSave(this.processData);
+				}
 			}
 
 			// 提交事务

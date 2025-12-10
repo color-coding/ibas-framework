@@ -69,7 +69,7 @@ public class Numbers {
 	}
 
 	/**
-	 * 判断字符串是否为数字
+	 * 字符串是否为数字
 	 * 
 	 * @param value
 	 * @return
@@ -78,14 +78,41 @@ public class Numbers {
 		if (value == null || value.isEmpty()) {
 			return false;
 		}
+		char cValue;
 		for (int i = 0; i < value.length(); i++) {
-			if (value.charAt(i) == '-' && i == 0) {
+			cValue = value.charAt(i);
+			if (cValue == '-' && i == 0) {
 				continue;
 			}
-			if (value.charAt(i) == '.') {
+			if (cValue == '.') {
 				continue;
 			}
-			if (!Character.isDigit(value.charAt(i))) {
+			if (!Character.isDigit(cValue)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * 字符串是否为0
+	 * @param value
+	 * @return
+	 */
+	public static boolean isZero(String value) {
+		if (value == null || value.isEmpty()) {
+			return true;
+		}
+		char cValue;
+		for (int i = 0; i < value.length(); i++) {
+			cValue = value.charAt(i);
+			if (cValue == '-' && i == 0) {
+				continue;
+			}
+			if (cValue == '.') {
+				continue;
+			}
+			if (cValue != '0') {
 				return false;
 			}
 		}
