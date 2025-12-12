@@ -268,7 +268,7 @@ public final class BOFactory {
 											// 去掉后面的".class" 获取真正的类名
 													+ name.substring(packageName.length() + 1, name.length() - 6)));
 										} catch (ClassNotFoundException e) {
-											e.printStackTrace();
+											System.err.println(e);
 										}
 									}
 								}
@@ -282,7 +282,7 @@ public final class BOFactory {
 		} catch (IOException e) {
 			Logger.log(e);
 		}
-		return classes.toArray(new Class<?>[] {});
+		return classes.toArray(new Class<?>[classes.size()]);
 	}
 
 	private static void findClassesInPackageByFile(String packageName, String packagePath, Set<Class<?>> classes) {
@@ -310,7 +310,7 @@ public final class BOFactory {
 						// 如果是java类文件 去掉后面的.class 只留下类名
 								+ file.getName().substring(0, file.getName().length() - 6)));
 					} catch (ClassNotFoundException e) {
-						e.printStackTrace();
+						System.err.println(e);
 					}
 				}
 			}

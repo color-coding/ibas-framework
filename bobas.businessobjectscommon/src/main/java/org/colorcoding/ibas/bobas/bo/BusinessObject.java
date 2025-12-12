@@ -1,10 +1,10 @@
 package org.colorcoding.ibas.bobas.bo;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -18,6 +18,7 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.FieldedObject;
 import org.colorcoding.ibas.bobas.core.IBindable;
+import org.colorcoding.ibas.bobas.core.ICloneable;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DataConvert;
@@ -29,8 +30,6 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.rule.BusinessRulesManager;
 import org.colorcoding.ibas.bobas.rule.IBusinessRule;
 import org.colorcoding.ibas.bobas.rule.IBusinessRules;
-import org.colorcoding.ibas.bobas.serialization.ISerializer;
-import org.colorcoding.ibas.bobas.serialization.SerializerManager;
 
 /**
  * 业务对象基础类型
@@ -166,6 +165,29 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
+	public T clone() {
+		BusinessObject<?> nData = (BusinessObject<?>) super.clone();
+		if (this.userFields != null) {
+			nData.userFields = new HashMap<>(this.userFields);
+			for (Entry<?, Object> entry : nData.userFields.entrySet()) {
+				if (entry.getValue() instanceof ICloneable) {
+					entry.setValue(((ICloneable) entry.getValue()).clone());
+				}
+			}
+		}
+		Object value = null;
+		// 给集合设置父项
+		for (IPropertyInfo<?> property : nData.properties()) {
+			value = nData.getProperty(property);
+			if (value instanceof BusinessObjects) {
+				((BusinessObjects<IBusinessObject, ?>) value).parent(nData);
+			}
+		}
+		return (T) nData;
+	}
+
+	@Override
 	public String toString() {
 		return this.getIdentifiers();
 	}
@@ -226,80 +248,74 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 		}
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public T clone() {
-		try {
-			// 使用默认管理员
-			ISerializer serializer = new SerializerManager().create();
-			T nData = (T) serializer.clone(this);
-			if (nData instanceof BusinessObject) {
-				((BusinessObject<T>) nData).reset();
-			}
-			return nData;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+	/**
+	 * 重置对象状态
+	 */
+	protected void reset() {
+		this.markNew();
+		this.setValid(true);
+		this.setBusy(false);
+		// 重置对象存储标记
+		if (this instanceof IBOStorageTag) {
+			IBOStorageTag tagBO = (IBOStorageTag) this;
+			tagBO.setLogInst(0);
+			tagBO.setDataSource(null);
+			tagBO.setCreateActionId(null);
+			tagBO.setCreateDate(null);
+			tagBO.setCreateTime(null);
+			tagBO.setCreateUserSign(null);
+			tagBO.setUpdateActionId(null);
+			tagBO.setUpdateDate(null);
+			tagBO.setUpdateTime(null);
+			tagBO.setUpdateUserSign(null);
+		}
+		// 重置引用状态
+		if (this instanceof IBOTagReferenced) {
+			IBOTagReferenced tagBO = (IBOTagReferenced) this;
+			tagBO.setReferenced(emYesNo.NO);
+		}
+		// 重置删除状态
+		if (this instanceof IBOTagDeleted) {
+			IBOTagDeleted tagBO = (IBOTagDeleted) this;
+			tagBO.setDeleted(emYesNo.NO);
+		}
+		// 重置取消状态
+		if (this instanceof IBOTagCanceled) {
+			IBOTagCanceled tagBO = (IBOTagCanceled) this;
+			tagBO.setCanceled(emYesNo.NO);
+		}
+		// 重置审批状态
+		if (this instanceof IApprovalData) {
+			IApprovalData apData = (IApprovalData) this;
+			apData.setApprovalStatus(emApprovalStatus.UNAFFECTED);
+		}
+		// 重置对象状态
+		if (this instanceof IBODocument) {
+			IBODocument docBO = (IBODocument) this;
+			docBO.setStatus(emBOStatus.OPEN);
+			docBO.setDocumentStatus(emDocumentStatus.PLANNED);
+		}
+		if (this instanceof IBODocumentLine) {
+			IBODocumentLine docLineBO = (IBODocumentLine) this;
+			docLineBO.setStatus(emBOStatus.OPEN);
+			docLineBO.setLineStatus(emDocumentStatus.PLANNED);
 		}
 	}
 
 	/**
-	 * 重置对象状态
+	 * 重置对象
+	 * 
+	 * @param recursive 包含子项
 	 */
-	public void reset() {
-		Consumer<BusinessObject<?>> action = (data) -> {
-			data.setLoading(true);
-			data.setValid(true);
-			data.setBusy(false);
-			data.markNew();
-			// 重置对象存储标记
-			if (data instanceof IBOStorageTag) {
-				IBOStorageTag tagBO = (IBOStorageTag) data;
-				tagBO.setLogInst(0);
-				tagBO.setDataSource(null);
-				tagBO.setCreateActionId(null);
-				tagBO.setCreateDate(null);
-				tagBO.setCreateTime(null);
-				tagBO.setCreateUserSign(null);
-				tagBO.setUpdateActionId(null);
-				tagBO.setUpdateDate(null);
-				tagBO.setUpdateTime(null);
-				tagBO.setUpdateUserSign(null);
-			}
-			// 重置引用状态
-			if (data instanceof IBOTagReferenced) {
-				IBOTagReferenced tagBO = (IBOTagReferenced) data;
-				tagBO.setReferenced(emYesNo.NO);
-			}
-			// 重置删除状态
-			if (data instanceof IBOTagDeleted) {
-				IBOTagDeleted tagBO = (IBOTagDeleted) data;
-				tagBO.setDeleted(emYesNo.NO);
-			}
-			// 重置取消状态
-			if (data instanceof IBOTagCanceled) {
-				IBOTagCanceled tagBO = (IBOTagCanceled) data;
-				tagBO.setCanceled(emYesNo.NO);
-			}
-			// 重置审批状态
-			if (data instanceof IApprovalData) {
-				IApprovalData apData = (IApprovalData) data;
-				apData.setApprovalStatus(emApprovalStatus.UNAFFECTED);
-			}
-			// 重置对象状态
-			if (data instanceof IBODocument) {
-				IBODocument docBO = (IBODocument) data;
-				docBO.setStatus(emBOStatus.OPEN);
-				docBO.setDocumentStatus(emDocumentStatus.PLANNED);
-			}
-			if (data instanceof IBODocumentLine) {
-				IBODocumentLine docLineBO = (IBODocumentLine) data;
-				docLineBO.setStatus(emBOStatus.OPEN);
-				docLineBO.setLineStatus(emDocumentStatus.PLANNED);
-			}
-			data.setLoading(false);
-		};
-		action.accept(this);
-		BOUtilities.traverse(this, action);
+	public final synchronized void reset(boolean recursive) {
+		this.setLoading(true);
+		this.reset();
+		if (recursive) {
+			BOUtilities.traverse(this, (data) -> {
+				data.reset(recursive);
+			});
+		}
+		this.setLoading(false);
 	}
 
 	/**

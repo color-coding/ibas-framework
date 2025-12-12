@@ -6,8 +6,6 @@ import java.lang.reflect.Array;
 import java.util.Iterator;
 
 import org.colorcoding.ibas.bobas.data.DataConvert;
-import org.colorcoding.ibas.bobas.message.Logger;
-import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializationException;
 import org.colorcoding.ibas.bobas.serialization.SerializationFactory;
@@ -17,7 +15,7 @@ public class Strings {
 	private Strings() {
 	}
 
-	static final String[] ALPHABETS = new String[] {
+	public static final String[] ALPHABETS = new String[] {
 			// 符号（32 - 47）
 			" ", "!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/",
 			// 数字（48 - 57）
@@ -560,23 +558,12 @@ public class Strings {
 	 * @return
 	 */
 	public static String toJsonString(Object data) {
-		// 首先使用内置序列化方式
 		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
-			ISerializer serializer = new SerializerJson();
+			ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_JSON);
 			serializer.serialize(data, writer);
 			return writer.toString();
-		} catch (IOException e) {
-			throw new SerializationException(e);
-		} catch (SerializationException e) {
-			Logger.log(MessageLevel.WARN, e);
-			// 内置发生错误，则使用标准方式
-			try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
-				ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_JSON);
-				serializer.serialize(data, writer);
-				return writer.toString();
-			} catch (IOException e1) {
-				throw new SerializationException(e1);
-			}
+		} catch (IOException e1) {
+			throw new SerializationException(e1);
 		}
 	}
 
@@ -587,23 +574,12 @@ public class Strings {
 	 * @return
 	 */
 	public static String toXmlString(Object data) {
-		// 首先使用内置序列化方式
 		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
-			ISerializer serializer = new SerializerXml();
+			ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_XML);
 			serializer.serialize(data, writer);
 			return writer.toString();
-		} catch (IOException e) {
-			throw new SerializationException(e);
-		} catch (SerializationException e) {
-			Logger.log(MessageLevel.WARN, e);
-			// 内置发生错误，则使用标准方式
-			try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
-				ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_XML);
-				serializer.serialize(data, writer);
-				return writer.toString();
-			} catch (IOException e1) {
-				throw new SerializationException(e1);
-			}
+		} catch (IOException e1) {
+			throw new SerializationException(e1);
 		}
 	}
 }

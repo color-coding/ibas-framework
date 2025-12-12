@@ -109,6 +109,11 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	final void parent(IBusinessObject parent) {
+		this.setParent((P) parent);
+	}
+
 	@Override
 	public final boolean add(E item) {
 		int oldSize = this.size();

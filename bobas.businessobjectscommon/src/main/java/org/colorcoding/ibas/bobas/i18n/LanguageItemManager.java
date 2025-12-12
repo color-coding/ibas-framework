@@ -99,7 +99,7 @@ public class LanguageItemManager {
 						path = uri.getPath();
 					}
 				} catch (URISyntaxException e) {
-					e.printStackTrace();
+					System.out.println(e);
 				}
 				if (path == null || path.indexOf("!") > 0) {
 					// 无效的路径

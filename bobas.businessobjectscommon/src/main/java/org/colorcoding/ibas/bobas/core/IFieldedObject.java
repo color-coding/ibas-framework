@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.List;
 
-public interface IFieldedObject extends Cloneable, Serializable, IBindable, ITrackable {
+public interface IFieldedObject extends Serializable, IBindable, ITrackable {
 	/**
 	 * 对象的属性
 	 * 

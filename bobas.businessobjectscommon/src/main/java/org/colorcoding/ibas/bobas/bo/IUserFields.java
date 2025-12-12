@@ -48,5 +48,5 @@ public interface IUserFields extends Iterable<IUserField<?>> {
 	 * @param type 值类型
 	 * @return
 	 */
-	<P> IUserField<P> register(String name, Class<P> valueType);
+	<P> IUserField<P> register(String name, Class<?> valueType);
 }

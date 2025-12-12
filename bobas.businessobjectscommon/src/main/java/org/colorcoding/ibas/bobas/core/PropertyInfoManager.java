@@ -7,12 +7,10 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
@@ -44,35 +42,31 @@ public final class PropertyInfoManager {
 
 		public PropertyInfoList(int initialCapacity) {
 			super(initialCapacity);
-			this.keys = new HashSet<String>(initialCapacity);
 		}
 
-		private Set<String> keys;
-
 		public synchronized boolean add(PropertyInfo<?> e) {
-			if (this.keys == null) {
-				// 被清理，则重建
-				this.keys = new HashSet<String>(this.size());
-				for (IPropertyInfo<?> item : this) {
-					this.keys.add(item.getName());
+			for (PropertyInfo<?> item : this) {
+				if (Strings.equalsIgnoreCase(item.getName(), e.getName())) {
+					return false;
 				}
 			}
-			if (this.keys.contains(e.getName())) {
-				return false;
+			if (this.recycled) {
+				this.recycled = false;
 			}
-			this.keys.add(e.getName());
 			return super.add(e);
 		}
 
+		private volatile boolean recycled = false;
+
 		public synchronized void recycling() {
-			if (this.keys == null) {
+			if (this.recycled) {
 				return;
 			}
-			this.keys = null;
 			this.trimToSize();
+			this.recycled = true;
 		}
 
-		private boolean resolved = false;
+		private volatile boolean resolved = false;
 
 		public synchronized void resolving(Class<?> belong) {
 			if (belong == null) {
@@ -84,26 +78,32 @@ public final class PropertyInfoManager {
 			Field field;
 			Field[] fields = belong.getFields();
 			if (fields != null && fields.length > 0) {
+				// 处理无效字段
+				for (int i = 0; i < fields.length; i++) {
+					field = fields[i];
+					if (field == null) {
+						continue;
+					}
+					if (!Modifier.isStatic(field.getModifiers())) {
+						fields[i] = null;
+					} else if (!Modifier.isPublic(field.getModifiers())) {
+						fields[i] = null;
+					} else if (!Modifier.isFinal(field.getModifiers())) {
+						fields[i] = null;
+					}
+				}
+				// 获取属性注释
 				for (PropertyInfo<?> property : this) {
+					if (property.getName() == null || property.getName().isEmpty()) {
+						continue;
+					}
 					for (int i = 0; i < fields.length; i++) {
 						field = fields[i];
 						if (field == null) {
 							continue;
 						}
-						if (!Modifier.isStatic(field.getModifiers())) {
-							continue;
-						}
-						if (!Modifier.isPublic(field.getModifiers())) {
-							continue;
-						}
-						if (!Modifier.isFinal(field.getModifiers())) {
-							continue;
-						}
-						if (property.getName() == null || property.getName().isEmpty()) {
-							continue;
-						}
 						if (Strings.equalsIgnoreCase(field.getName(),
-								Strings.format(BO_PROPERTY_NAMING_RULES_UPPER, property.getName().toUpperCase()))
+								Strings.format(BO_PROPERTY_NAMING_RULES_UPPER, property.getName()))
 								|| Strings.equalsIgnoreCase(field.getName(),
 										Strings.format(BO_PROPERTY_NAMING_RULES_CAMEL, property.getName()))) {
 							property.setAnnotations(field.getAnnotations());
@@ -113,7 +113,6 @@ public final class PropertyInfoManager {
 
 			}
 		}
-
 	}
 
 	private volatile static Map<Class<?>, PropertyInfoList> PROPERTY_INFOS = new ConcurrentHashMap<Class<?>, PropertyInfoList>(
@@ -195,7 +194,7 @@ public final class PropertyInfoManager {
 	 * @return
 	 */
 	static PropertyInfoList recursePropertyInfos(Class<?> objectType) {
-		PropertyInfoList propertys = new PropertyInfoList(32);
+		PropertyInfoList propertys = new PropertyInfoList(96);
 		if (objectType == null) {
 			return propertys;
 		}
@@ -291,12 +290,13 @@ public final class PropertyInfoManager {
 						} catch (ClassNotFoundException e) {
 							Logger.log(MessageLevel.FATAL, e);
 							StringBuilder builder = new StringBuilder();
-							builder.append("Class not found. Classpath:");
+							builder.append("class not found, classpath:");
 							ClassLoader cl = ClassLoader.getSystemClassLoader();
 							URL[] urls = ((URLClassLoader) cl).getURLs();
 							for (URL url : urls) {
 								builder.append(url.getFile());
 							}
+							builder.append(".");
 							Logger.log(MessageLevel.FATAL, builder.toString());
 						}
 					}

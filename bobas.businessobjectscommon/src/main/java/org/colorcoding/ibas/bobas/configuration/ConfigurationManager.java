@@ -11,8 +11,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DataConvert;
-import org.colorcoding.ibas.bobas.data.IKeyValue;
-import org.colorcoding.ibas.bobas.data.KeyValue;
+import org.colorcoding.ibas.bobas.data.IKeyText;
+import org.colorcoding.ibas.bobas.data.KeyText;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
 
@@ -24,27 +24,35 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class ConfigurationManager {
 
-	private Map<String, Object> elementsMap = new ConcurrentHashMap<>(128);
+	public ConfigurationManager() {
+		this(64);
+	}
 
-	public Collection<IKeyValue> getElements() {
-		ArrayList<IKeyValue> elements = new ArrayList<>(this.elementsMap.size());
-		for (Entry<String, Object> item : this.elementsMap.entrySet()) {
-			elements.add(new KeyValue(item.getKey(), item.getValue()));
+	public ConfigurationManager(int initialCapacity) {
+		this.elementsMap = new ConcurrentHashMap<>(initialCapacity, 1);
+	}
+
+	private Map<String, String> elementsMap;
+
+	public Collection<IKeyText> getElements() {
+		ArrayList<IKeyText> elements = new ArrayList<>(this.elementsMap.size());
+		for (Entry<String, String> item : this.elementsMap.entrySet()) {
+			elements.add(new KeyText(item.getKey(), item.getValue()));
 		}
 		return elements;
 	}
 
 	public String getConfigValue(String key) {
-		Object value = this.elementsMap.get(key);
+		String value = this.elementsMap.get(key);
 		if (value != null) {
-			return Strings.valueOf(value);
+			return value;
 		}
 		return null;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <P> P getConfigValue(String key, P defaultValue) {
-		Object value = this.elementsMap.get(key);
+		String value = this.getConfigValue(key);
 		if (value == null) {
 			return defaultValue;
 		}
@@ -64,7 +72,7 @@ public abstract class ConfigurationManager {
 		}
 	}
 
-	public void addConfigValue(String key, Object value) {
+	public void addConfigValue(String key, String value) {
 		if (key == null) {
 			return;
 		}

@@ -1,8 +1,10 @@
 package org.colorcoding.ibas.bobas.core;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -201,6 +203,58 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	@Override
 	protected void afterUnmarshal(Object parent) {
 		this.setLoading(false);
+	}
+
+	@Override
+	public synchronized Object clone() {
+		FieldedObject nData = (FieldedObject) super.clone();
+		// 初始化被修改属性
+		nData.modifiedProperties = new HashSet<>();
+		// 初始化对象属性
+		nData.fields = new HashMap<>(this.fields);
+		// 替换可克隆的值
+		for (Entry<?, Object> entry : nData.fields.entrySet()) {
+			if (entry.getValue() instanceof java.util.ArrayList) {
+				@SuppressWarnings("unchecked")
+				java.util.ArrayList<Object> values = (java.util.ArrayList<Object>) ((java.util.ArrayList<?>) entry
+						.getValue()).clone();
+				Object value = null;
+				for (int i = 0; i < values.size(); i++) {
+					value = values.get(i);
+					if (value instanceof ICloneable) {
+						values.set(i, ((ICloneable) value).clone());
+					}
+				}
+				entry.setValue(values);
+			} else if (entry.getValue() instanceof java.util.HashMap) {
+				@SuppressWarnings("unchecked")
+				java.util.HashMap<Object, Object> values = (java.util.HashMap<Object, Object>) ((java.util.HashMap<?, ?>) entry
+						.getValue()).clone();
+				for (Entry<Object, Object> vEntry : values.entrySet()) {
+					if (vEntry.getValue() instanceof ICloneable) {
+						vEntry.setValue(((ICloneable) vEntry.getValue()).clone());
+					}
+				}
+				entry.setValue(values);
+			} else if (entry.getValue() instanceof ICloneable) {
+				entry.setValue(((ICloneable) entry.getValue()).clone());
+			} else if (entry.getValue() != null && entry.getValue().getClass().isArray()) {
+				int length = java.lang.reflect.Array.getLength(entry.getValue());
+				Class<?> componentType = entry.getValue().getClass().getComponentType();
+				Object values = java.lang.reflect.Array.newInstance(componentType, length);
+				Object value = null;
+				for (int i = 0; i < length; i++) {
+					value = java.lang.reflect.Array.get(entry.getValue(), i);
+					if (value instanceof ICloneable) {
+						java.lang.reflect.Array.set(values, i, ((ICloneable) value).clone());
+					} else {
+						java.lang.reflect.Array.set(values, i, value);
+					}
+				}
+				entry.setValue(values);
+			}
+		}
+		return nData;
 	}
 
 	@Override

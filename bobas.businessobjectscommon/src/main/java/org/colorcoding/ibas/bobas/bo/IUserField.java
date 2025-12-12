@@ -24,6 +24,5 @@ public interface IUserField<P> {
 	 * 设置-值
 	 * 
 	 */
-	void setValue(P value);
-
+	void setValue(Object value);
 }

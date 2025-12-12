@@ -3,7 +3,7 @@ package org.colorcoding.ibas.bobas.bo;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.core.ITrackable;
 
-public interface IBusinessObject extends Cloneable, ITrackable {
+public interface IBusinessObject extends ITrackable {
 
 	/**
 	 * 是否忙
@@ -40,4 +40,5 @@ public interface IBusinessObject extends Cloneable, ITrackable {
 	 * 取消删除数据
 	 */
 	void undelete();
+
 }

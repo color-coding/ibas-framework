@@ -121,7 +121,7 @@ public class TestCore extends TestCase {
 		orderItem.setPrice(Decimals.valueOf(99.99));
 		orderItem = salesOrder.getSalesOrderItems().create();
 		orderItem.setItemCode("A00002");
-		orderItem.setQuantity(BigDecimal.valueOf(10));
+		orderItem.setQuantity(Decimals.valueOf(10));
 		orderItem.setPrice(Decimals.valueOf(199.99123456789));
 		String propertyPath = "CustomerCode";
 		System.out.println(propertyPath);
@@ -155,7 +155,7 @@ public class TestCore extends TestCase {
 		orderItem.setPrice(Decimals.valueOf(99.99));
 		orderItem = salesOrder.getSalesOrderItems().create();
 		orderItem.setItemCode("A00002");
-		orderItem.setQuantity(BigDecimal.valueOf(10));
+		orderItem.setQuantity(Decimals.valueOf(10));
 		orderItem.setPrice(Decimals.valueOf(199.99123456789));
 		salesOrder.markOld();
 		assertTrue("Property [isDitry] faild. ", !salesOrder.isDirty());
@@ -174,9 +174,6 @@ public class TestCore extends TestCase {
 				System.out.println(String.format("%s = %s", annotation.table(), annotation.name()));
 			}
 		}
-		salesOrder.setCustomerName("!@\"中文#$%^&*<>?/你好！");
-		System.out.println(Strings.toJsonString(salesOrder));
-		System.out.println(Strings.toXmlString(salesOrder));
 	}
 
 	public void testXml() throws SAXException, IOException, ValidateException {
@@ -185,6 +182,8 @@ public class TestCore extends TestCase {
 		userFieldsManager.registerUserField(SalesOrder.class, "U_OrderId", Integer.class);
 		userFieldsManager.registerUserField(SalesOrder.class, "U_OrderDate", DateTime.class);
 		userFieldsManager.registerUserField(SalesOrder.class, "U_OrderTotal", BigDecimal.class);
+		userFieldsManager.registerUserField(SalesOrderItem.class, "U_Date", DateTime.class);
+		userFieldsManager.registerUserField(SalesOrderItem.class, "U_Decimal", BigDecimal.class);
 
 		SalesOrder order = new SalesOrder();
 		order.setDocEntry(1);
@@ -203,7 +202,7 @@ public class TestCore extends TestCase {
 		orderItem.setPrice(Decimals.valueOf(99.99));
 		orderItem = order.getSalesOrderItems().create();
 		orderItem.setItemCode("A00002");
-		orderItem.setQuantity(BigDecimal.valueOf(10));
+		orderItem.setQuantity(Decimals.valueOf(10));
 		orderItem.setPrice(Decimals.valueOf(199.99123456789));
 
 		ISerializer serializer = new SerializerXml();
@@ -216,6 +215,16 @@ public class TestCore extends TestCase {
 		System.out.println("schema xml:");
 		System.out.println(writer.toString());
 
+		order.setCustomerName("!@\"中文#$%^&*<>?/你好！");
+		System.out.println("json:");
+		System.out.println(BOUtilities.toJsonString(order));
+		System.out.println("xml:");
+		System.out.println(BOUtilities.toXmlString(order));
+
+		SalesOrder nOrder = (SalesOrder) order.clone();
+		orderItem.setItemCode("A00003");
+		orderItem.setQuantity(Decimals.valueOf("99999999999999"));
+		System.out.println(BOUtilities.toXmlString(nOrder));
 	}
 
 }

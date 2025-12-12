@@ -7,12 +7,11 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
 @XmlAccessorType(XmlAccessType.NONE)
-public abstract class Bindable extends Serializable implements IBindable {
+public abstract class Bindable extends Serializable implements IBindable, ICloneable {
 
 	private static final long serialVersionUID = 1L;
 
-	transient private PropertyChangeSupport listeners;
-
+	private transient PropertyChangeSupport listeners;
 
 	public final void registerListener(PropertyChangeListener listener) {
 		if (this.listeners == null) {
@@ -20,7 +19,6 @@ public abstract class Bindable extends Serializable implements IBindable {
 		}
 		this.listeners.addPropertyChangeListener(listener);
 	}
-
 
 	public final void removeListener(PropertyChangeListener listener) {
 		if (this.listeners == null) {
@@ -36,4 +34,14 @@ public abstract class Bindable extends Serializable implements IBindable {
 		this.listeners.firePropertyChange(name, oldValue, newValue);
 	}
 
+	@Override
+	public Object clone() {
+		try {
+			Bindable nData = (Bindable) super.clone();
+			nData.listeners = null;
+			return nData;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

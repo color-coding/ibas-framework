@@ -234,7 +234,7 @@ public class TestMultitask extends TestCase {
 						try {
 							test.testSaveMaterials();
 						} catch (Exception e) {
-							e.printStackTrace();
+							System.err.println(e);
 						}
 					}
 				}
@@ -247,7 +247,7 @@ public class TestMultitask extends TestCase {
 						try {
 							test.testSaveOrders();
 						} catch (Exception e) {
-							e.printStackTrace();
+							System.err.println(e);
 						}
 					}
 				}
@@ -260,7 +260,7 @@ public class TestMultitask extends TestCase {
 						try {
 							test.testFetchOrders();
 						} catch (Exception e) {
-							e.printStackTrace();
+							System.err.println(e);
 						}
 					}
 				}

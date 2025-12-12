@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.bo.BOUtilities;
 import org.colorcoding.ibas.bobas.bo.IBODocument;
 import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
 import org.colorcoding.ibas.bobas.bo.IBOMasterData;
@@ -144,7 +145,7 @@ public class BOInstanceLogService extends BusinessLogic<IBOInstanceLogContract, 
 		boLogst.setModifyTime(DateTimes.time());
 		boLogst.setModifyUser(this.getUser().getId());
 		boLogst.setTransationId(this.getTransaction().getId());
-		boLogst.setContent(Strings.toJsonString(contract.getHost()));
+		boLogst.setContent(BOUtilities.toJsonString(contract.getHost()));
 		boLogst.setSavable(true);
 	}
 

@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.common;
 
+import org.colorcoding.ibas.bobas.core.ICloneable;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 
 /**
@@ -8,7 +9,7 @@ import org.colorcoding.ibas.bobas.core.IPropertyInfo;
  * @author Niuren.Zhu
  *
  */
-public interface ISort {
+public interface ISort extends ICloneable {
 	/**
 	 * 获取-排序的字段（属性）名
 	 */

@@ -23,7 +23,7 @@ import org.colorcoding.ibas.bobas.core.Serializable;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "Criteria", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 @XmlRootElement(name = "Criteria", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
-public class Criteria extends Serializable implements ICriteria, Cloneable {
+public class Criteria extends Serializable implements ICriteria {
 
 	private static final long serialVersionUID = -2340536835606017565L;
 
@@ -177,17 +177,23 @@ public class Criteria extends Serializable implements ICriteria, Cloneable {
 		try {
 			Criteria criteria = (Criteria) super.clone();
 			// 重置数组内容
-			criteria.childCriterias = new ChildCriterias();
-			for (IChildCriteria item : this.getChildCriterias()) {
-				criteria.getChildCriterias().add(item.clone());
+			if (this.childCriterias != null) {
+				criteria.childCriterias = new ChildCriterias(this.childCriterias.size());
+				for (IChildCriteria item : this.childCriterias) {
+					criteria.childCriterias.add(item.clone());
+				}
 			}
-			criteria.conditions = new Conditions();
-			for (ICondition item : this.getConditions()) {
-				criteria.getConditions().add(item.clone());
+			if (this.conditions != null) {
+				criteria.conditions = new Conditions(this.conditions.size());
+				for (ICondition item : this.conditions) {
+					criteria.conditions.add(item.clone());
+				}
 			}
-			criteria.sorts = new Sorts();
-			for (ISort item : this.getSorts()) {
-				criteria.getSorts().add(item.clone());
+			if (this.sorts != null) {
+				criteria.sorts = new Sorts();
+				for (ISort item : this.sorts) {
+					criteria.sorts.add(item.clone());
+				}
 			}
 			return criteria;
 		} catch (Exception e) {

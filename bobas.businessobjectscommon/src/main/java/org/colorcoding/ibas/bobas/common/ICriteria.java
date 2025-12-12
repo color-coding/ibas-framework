@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.common;
 
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
+import org.colorcoding.ibas.bobas.core.ICloneable;
 
 /**
  * 
@@ -9,7 +10,7 @@ import org.colorcoding.ibas.bobas.bo.IBusinessObject;
  * @author Niuren.Zhu
  *
  */
-public interface ICriteria {
+public interface ICriteria extends ICloneable {
 
 	/**
 	 * 获取-业务对象编码

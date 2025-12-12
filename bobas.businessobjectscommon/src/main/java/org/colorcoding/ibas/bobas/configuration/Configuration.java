@@ -44,7 +44,7 @@ public class Configuration {
 					try {
 						instance = create(configFile);
 					} catch (Exception e) {
-						e.printStackTrace();
+						System.err.println(e);
 					}
 					if (instance == null) {
 						// 读取配置文件失败
@@ -297,21 +297,19 @@ public class Configuration {
 		if (value == null || variables == null) {
 			return value;
 		}
-		String tName;
 		ArrayList<String> names = new ArrayList<>(8);
 		Matcher matcher = Pattern.compile(VARIABLE_PATTERN).matcher(value);
 		while (matcher.find()) {
-			tName = matcher.group(0);
-			// 带格式名称${}
-			names.add(tName);
-			// 不带格式名称
-			names.add(tName.substring(2, tName.length() - 1));
+			names.add(matcher.group(0));
 		}
+		String tName;
 		IKeyText variable;
 		while (variables.hasNext()) {
 			variable = variables.next();
 			for (String name : names) {
-				if (name.equalsIgnoreCase(variable.getKey())) {
+				// 不带格式名称
+				tName = name.substring(2, name.length() - 1);
+				if (name.equalsIgnoreCase(variable.getKey()) || tName.equalsIgnoreCase(variable.getKey())) {
 					value = value.replace(name, variable.getText() == null ? Strings.VALUE_EMPTY : variable.getText());
 					break;
 				}

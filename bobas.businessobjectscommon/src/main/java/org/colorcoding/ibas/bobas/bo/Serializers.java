@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.bobas.common;
+package org.colorcoding.ibas.bobas.bo;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +10,10 @@ import java.math.BigInteger;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.colorcoding.ibas.bobas.bo.IBOUserFields;
+import org.colorcoding.ibas.bobas.common.DateTimes;
+import org.colorcoding.ibas.bobas.common.Decimals;
+import org.colorcoding.ibas.bobas.common.Numbers;
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.FieldedObject;
 import org.colorcoding.ibas.bobas.core.IFieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
@@ -237,7 +240,7 @@ class SerializerXml extends Serializer {
 		outputStream.write(CHAR_BYTES[SIGN_INDEX_LESS]);
 		XmlRootElement annotation = objectType.getAnnotation(XmlRootElement.class);
 		if (annotation != null && !Strings.isNullOrEmpty(annotation.namespace())) {
-			this.write(outputStream, "ns2:");
+			this.write(outputStream, "ns:");
 		}
 		if (annotation != null && !Strings.isNullOrEmpty(annotation.name())) {
 			this.write(outputStream, annotation.name());
@@ -246,7 +249,7 @@ class SerializerXml extends Serializer {
 		}
 		if (annotation != null && !Strings.isNullOrEmpty(annotation.namespace())) {
 			outputStream.write(CHAR_BYTES[' ']);
-			this.write(outputStream, "xmlns:ns2=");
+			this.write(outputStream, "xmlns:ns=");
 			outputStream.write(CHAR_BYTES[SIGN_INDEX_COLON]);
 			this.write(outputStream, annotation.namespace());
 			outputStream.write(CHAR_BYTES[SIGN_INDEX_COLON]);
@@ -260,7 +263,7 @@ class SerializerXml extends Serializer {
 		outputStream.write(CHAR_BYTES['/']);
 		XmlRootElement annotation = objectType.getAnnotation(XmlRootElement.class);
 		if (annotation != null && !Strings.isNullOrEmpty(annotation.namespace())) {
-			this.write(outputStream, "ns2:");
+			this.write(outputStream, "ns:");
 		}
 		this.write(outputStream, objectType.getSimpleName());
 		outputStream.write(CHAR_BYTES[SIGN_INDEX_GREATER]);
@@ -579,76 +582,20 @@ abstract class Serializer implements ISerializer {
 	protected abstract void writePropertyEnd(OutputStream outputStream, IPropertyInfo<?> property, boolean isArray)
 			throws IOException;
 
-}
+	private static class UserField extends FieldedObject {
 
-class UserField extends FieldedObject {
+		private static final long serialVersionUID = 1L;
 
-	private static final long serialVersionUID = 1L;
-
-	public static final IPropertyInfo<?> PROPERTY_PARENT = new IPropertyInfo<Object>() {
-
-		@Override
-		public String getName() {
-			return "UserFields";
-		}
-
-		@Override
-		public Class<?> getValueType() {
-			return Object.class;
-		}
-
-		@Override
-		public Object getDefaultValue() {
-			return null;
-		}
-
-		@Override
-		public int getIndex() {
-			return 0;
-		}
-
-		@Override
-		public boolean isPrimaryKey() {
-			return false;
-		}
-
-		@Override
-		public boolean isUniqueKey() {
-			return false;
-		}
-
-		@Override
-		public <A extends Annotation> A getAnnotation(Class<A> type) {
-			return null;
-		}
-	};
-
-	public static final IPropertyInfo<String> PROPERTY_NAME = registerProperty("Name", String.class, UserField.class);
-	public static final IPropertyInfo<String> PROPERTY_VALUETYPE = registerProperty("ValueType", String.class,
-			UserField.class);
-
-	private IPropertyInfo<?> propertyValue;
-
-	private Object value;
-
-	public void setPropertyValue(IPropertyInfo<?> property, Object value) {
-		this.propertyValue = property;
-		this.value = value;
-	}
-
-	@Override
-	public synchronized List<IPropertyInfo<?>> properties() {
-		List<IPropertyInfo<?>> propertyInfos = super.properties();
-		propertyInfos.add(new IPropertyInfo<Object>() {
+		public static final IPropertyInfo<?> PROPERTY_PARENT = new IPropertyInfo<Object>() {
 
 			@Override
 			public String getName() {
-				return "Value";
+				return "UserFields";
 			}
 
 			@Override
 			public Class<?> getValueType() {
-				return UserField.this.propertyValue.getValueType();
+				return Object.class;
 			}
 
 			@Override
@@ -658,7 +605,7 @@ class UserField extends FieldedObject {
 
 			@Override
 			public int getIndex() {
-				return 1;
+				return 0;
 			}
 
 			@Override
@@ -675,18 +622,75 @@ class UserField extends FieldedObject {
 			public <A extends Annotation> A getAnnotation(Class<A> type) {
 				return null;
 			}
-		});
-		return propertyInfos;
+		};
+
+		public static final IPropertyInfo<String> PROPERTY_NAME = registerProperty("Name", String.class,
+				UserField.class);
+		public static final IPropertyInfo<String> PROPERTY_VALUETYPE = registerProperty("ValueType", String.class,
+				UserField.class);
+
+		private IPropertyInfo<?> propertyValue;
+
+		private Object value;
+
+		public void setPropertyValue(IPropertyInfo<?> property, Object value) {
+			this.propertyValue = property;
+			this.value = value;
+		}
+
+		@Override
+		public synchronized List<IPropertyInfo<?>> properties() {
+			List<IPropertyInfo<?>> propertyInfos = super.properties();
+			propertyInfos.add(new IPropertyInfo<Object>() {
+
+				@Override
+				public String getName() {
+					return "Value";
+				}
+
+				@Override
+				public Class<?> getValueType() {
+					return UserField.this.propertyValue.getValueType();
+				}
+
+				@Override
+				public Object getDefaultValue() {
+					return null;
+				}
+
+				@Override
+				public int getIndex() {
+					return 1;
+				}
+
+				@Override
+				public boolean isPrimaryKey() {
+					return false;
+				}
+
+				@Override
+				public boolean isUniqueKey() {
+					return false;
+				}
+
+				@Override
+				public <A extends Annotation> A getAnnotation(Class<A> type) {
+					return null;
+				}
+			});
+			return propertyInfos;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public synchronized final <P> P getProperty(IPropertyInfo<?> property) {
+			if (this.propertyValue == property) {
+				return (P) this.value;
+			} else if (property.getName().equals("Value")) {
+				return (P) this.value;
+			}
+			return super.getProperty(property);
+		}
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public synchronized final <P> P getProperty(IPropertyInfo<?> property) {
-		if (this.propertyValue == property) {
-			return (P) this.value;
-		} else if (property.getName().equals("Value")) {
-			return (P) this.value;
-		}
-		return super.getProperty(property);
-	}
 }

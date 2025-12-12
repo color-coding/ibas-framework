@@ -478,11 +478,12 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 								data = datas.get(i);
 
 								if (type == TransactionType.DELETE) {
-									// 设置主键条件值
+									// 获取主键
 									List<IPropertyInfo<?>> ptyKeys = propertyInfos.where(c -> c.isPrimaryKey());
 									if (ptyKeys.isEmpty()) {
 										throw new SQLException("this operation requires a primary key.");
 									}
+									// 设置主键条件值
 									for (IPropertyInfo<?> propertyInfo : ptyKeys) {
 										dbField = propertyInfo.getAnnotation(DbField.class);
 										if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
@@ -499,7 +500,15 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 										}
 										index += 1;
 									}
+									value = null;
+									dbField = null;
+									ptyKeys = null;
 								} else if (type == TransactionType.UPDATE) {
+									// 获取主键
+									List<IPropertyInfo<?>> ptyKeys = propertyInfos.where(c -> c.isPrimaryKey());
+									if (ptyKeys.isEmpty()) {
+										throw new SQLException("this operation requires a primary key.");
+									}
 									// 设置更新值
 									for (IPropertyInfo<?> propertyInfo : propertyInfos.where(c -> !c.isPrimaryKey())) {
 										dbField = propertyInfo.getAnnotation(DbField.class);
@@ -528,10 +537,6 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 										index += 1;
 									}
 									// 设置主键条件值
-									List<IPropertyInfo<?>> ptyKeys = propertyInfos.where(c -> c.isPrimaryKey());
-									if (ptyKeys.isEmpty()) {
-										throw new SQLException("this operation requires a primary key.");
-									}
 									for (IPropertyInfo<?> propertyInfo : ptyKeys) {
 										dbField = propertyInfo.getAnnotation(DbField.class);
 										if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
@@ -548,6 +553,9 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 										}
 										index += 1;
 									}
+									value = null;
+									dbField = null;
+									ptyKeys = null;
 								} else if (type == TransactionType.ADD) {
 									for (IPropertyInfo<?> propertyInfo : propertyInfos) {
 										dbField = propertyInfo.getAnnotation(DbField.class);
@@ -575,6 +583,8 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 										}
 										index += 1;
 									}
+									value = null;
+									dbField = null;
 								}
 								statement.addBatch();
 								count += 1;
@@ -628,7 +638,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 				}
 				// 处理子项
 				if (boChilds != null && !boChilds.isEmpty()) {
-					this.save(boChilds.toArray(new IBusinessObject[] {}));
+					this.save(boChilds.toArray(new IBusinessObject[boChilds.size()]));
 				}
 				// 处理事务存储过程
 				sqlExecuter = new BiFunction<TransactionType, List<BusinessObject<?>>, Exception>() {

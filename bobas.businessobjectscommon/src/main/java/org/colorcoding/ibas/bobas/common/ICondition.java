@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.common;
 
+import org.colorcoding.ibas.bobas.core.ICloneable;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
 
@@ -9,7 +10,7 @@ import org.colorcoding.ibas.bobas.db.DbFieldType;
  * @author Niuren.Zhu
  *
  */
-public interface ICondition {
+public interface ICondition extends ICloneable {
 	/**
 	 * 获取-条件字段（属性）名
 	 * 
@@ -148,5 +149,6 @@ public interface ICondition {
 	 * 
 	 * @return
 	 */
+	@Override
 	ICondition clone();
 }

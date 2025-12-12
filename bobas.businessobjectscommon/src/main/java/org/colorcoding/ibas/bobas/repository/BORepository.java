@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.repository;
 import java.util.Objects;
 
 import org.colorcoding.ibas.bobas.bo.BOUtilities;
+import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
@@ -124,6 +125,7 @@ public abstract class BORepository extends Repository {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected <T extends IBusinessObject> OperationResult<T> save(T bo) {
 		try {
 			Objects.requireNonNull(bo);
@@ -154,9 +156,14 @@ public abstract class BORepository extends Repository {
 					// 如果是删除数据，则使用数据库副本
 					if (bo.isDeleted()) {
 						// 完全克隆，不重置状态
-						ISerializer serializer = new SerializerManager().create();
-						bo = serializer.clone(boCopy);
-						bo.delete();
+						if (boCopy instanceof BusinessObject) {
+							bo = (T) ((BusinessObject<?>) boCopy).clone();
+							bo.delete();
+						} else {
+							ISerializer serializer = new SerializerManager().create();
+							bo = serializer.clone(boCopy);
+							bo.delete();
+						}
 					}
 				}
 				// 返回结果

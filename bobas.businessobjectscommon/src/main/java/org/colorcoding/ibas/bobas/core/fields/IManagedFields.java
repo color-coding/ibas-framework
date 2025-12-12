@@ -175,7 +175,7 @@ public interface IManagedFields {
 				fields.add(item);
 			}
 		}
-		return fields.toArray(new IFieldData[] {});
+		return fields.toArray(new IFieldData[fields.size()]);
 	}
 
 	/**

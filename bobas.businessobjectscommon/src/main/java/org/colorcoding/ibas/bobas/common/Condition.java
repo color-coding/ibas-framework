@@ -21,7 +21,7 @@ import org.colorcoding.ibas.bobas.db.DbFieldType;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "Condition", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 @XmlRootElement(name = "Condition", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
-public class Condition extends Serializable implements ICondition, Cloneable {
+public class Condition extends Serializable implements ICondition {
 
 	private static final long serialVersionUID = 3151721602767228504L;
 

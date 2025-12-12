@@ -74,6 +74,6 @@ public class ChildCriteria extends Criteria implements IChildCriteria {
 
 	@Override
 	public IChildCriteria clone() {
-		return (IChildCriteria) super.clone();
+		return (ChildCriteria) super.clone();
 	}
 }

@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.bo;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -11,6 +13,7 @@ import java.util.function.Consumer;
 import org.colorcoding.ibas.bobas.common.IChildCriteria;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
+import org.colorcoding.ibas.bobas.common.Numbers;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.FieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
@@ -20,9 +23,15 @@ import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.expression.BOJudgmentLinkCondition;
 import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.rule.BusinessRulesManager;
 import org.colorcoding.ibas.bobas.rule.IBusinessRules;
 import org.colorcoding.ibas.bobas.rule.ICheckRules;
+import org.colorcoding.ibas.bobas.serialization.ISerializer;
+import org.colorcoding.ibas.bobas.serialization.SerializationException;
+import org.colorcoding.ibas.bobas.serialization.SerializationFactory;
+import org.colorcoding.ibas.bobas.serialization.SerializerManager;
 
 public class BOUtilities {
 
@@ -30,6 +39,11 @@ public class BOUtilities {
 	}
 
 	public static IBusinessObject VALUE_EMPTY = new IBusinessObject() {
+
+		@Override
+		public IBusinessObject clone() {
+			return this;
+		}
 
 		@Override
 		public boolean isSavable() {
@@ -89,6 +103,117 @@ public class BOUtilities {
 			return false;
 		}
 	};
+
+	/**
+	 * 对象是否相等
+	 * 
+	 * @param bo1
+	 * @param bo2
+	 * @return
+	 */
+	public static boolean equals(IBusinessObject bo1, IBusinessObject bo2) {
+		if (bo1 == null) {
+			return false;
+		}
+		if (bo2 == null) {
+			return false;
+		}
+		if (bo1.getClass() != bo2.getClass()) {
+			return false;
+		}
+		if (bo1 == bo2) {
+			return true;
+		}
+		if (bo1.equals(bo2)) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 对象是否相同（类型一致，主键一致，版本一致?）
+	 * 
+	 * @param bo1
+	 * @param bo2
+	 * @param strictMode 是否严谨（版本一致）
+	 * @return
+	 */
+	public static boolean isSame(IBusinessObject bo1, IBusinessObject bo2, boolean strictMode) {
+		if (bo1 == null) {
+			return false;
+		}
+		if (bo2 == null) {
+			return false;
+		}
+		if (equals(bo1, bo2)) {
+			return true;
+		}
+		// 要求类型一致或子类
+		if (!(bo1.getClass().isInstance(bo2) || bo2.getClass().isInstance(bo1))) {
+			return false;
+		}
+		// 严谨模式，要求必须主键比较，且版本一致；非严谨模式，可唯一键比较，不要求版本号一致。
+		List<IPropertyInfo<?>> keys1 = null, keys2 = null;
+		if (strictMode == false) {
+			if (bo1.isNew() || bo2.isNew()) {
+				keys1 = BOFactory.propertyInfos(bo1.getClass()).where(c -> c.isUniqueKey());
+				if (bo1.getClass() == bo2.getClass()) {
+					keys2 = keys1;
+				} else {
+					keys2 = BOFactory.propertyInfos(bo2.getClass()).where(c -> c.isUniqueKey());
+				}
+			}
+		}
+		if (keys1 == null || keys1.isEmpty()) {
+			keys1 = BOFactory.propertyInfos(bo1.getClass()).where(c -> c.isPrimaryKey());
+		}
+		if (keys2 == null || keys2.isEmpty()) {
+			keys2 = BOFactory.propertyInfos(bo2.getClass()).where(c -> c.isPrimaryKey());
+		}
+		if (keys1 == null || keys2 == null || keys1.isEmpty() || keys2.isEmpty() || keys1.size() != keys2.size()) {
+			return false;
+		}
+		keys1.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
+		keys2.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
+		IPropertyInfo<?> key1, key2;
+		Object value1, value2;
+		for (int i = 0; i < keys1.size(); i++) {
+			key1 = keys1.get(i);
+			key2 = keys2.get(i);
+			if (!key1.getName().equals(key2.getName())) {
+				return false;
+			}
+			value1 = propertyValue(bo1, key1);
+			if (value1 == null) {
+				return false;
+			}
+			value2 = propertyValue(bo2, key2);
+			if (value2 == null) {
+				return false;
+			}
+			if (value1.getClass() != value2.getClass()) {
+				return false;
+			}
+			if (value1 != value2 && value1.equals(value2)) {
+				return false;
+			}
+		}
+		if (strictMode) {
+			IBOStorageTag tag1 = null, tag2 = null;
+			if (bo1 instanceof IBOStorageTag) {
+				tag1 = (IBOStorageTag) bo1;
+			}
+			if (bo2 instanceof IBOStorageTag) {
+				tag2 = (IBOStorageTag) bo2;
+			}
+			if (tag1 != null && tag2 != null) {
+				if (!Numbers.equals(tag1.getLogInst(), tag2.getLogInst())) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 
 	/**
 	 * 是否为对象
@@ -198,7 +323,7 @@ public class BOUtilities {
 	}
 
 	/**
-	 * 克隆实例
+	 * 克隆并重置实例
 	 * 
 	 * @param <T>
 	 * @param data
@@ -206,10 +331,24 @@ public class BOUtilities {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T clone(T data) {
-		if (isBusinessObject(data)) {
-			return (T) ((BusinessObject<?>) data).clone();
+		if (data == VALUE_EMPTY) {
+			return data;
 		}
-		throw new RuntimeException(I18N.prop("msg_bobas_invalid_data"));
+		if (isBusinessObject(data)) {
+			T nData = (T) ((BusinessObject<?>) data).clone();
+			if (nData instanceof BusinessObject) {
+				((BusinessObject<?>) nData).reset(true);
+			}
+			return nData;
+		} else {
+			// 使用默认管理员
+			ISerializer serializer = new SerializerManager().create();
+			T nData = (T) serializer.clone(data);
+			if (nData instanceof BusinessObject) {
+				((BusinessObject<?>) nData).reset(true);
+			}
+			return nData;
+		}
 	}
 
 	/**
@@ -484,7 +623,7 @@ public class BOUtilities {
 	 * @return
 	 * @throws Exception
 	 */
-	public static <T> T valueOf(IOperationResult<T> operationResult) {
+	public static <T> List<T> valueOf(IOperationResult<T> operationResult) {
 		if (operationResult == null) {
 			return null;
 		}
@@ -497,7 +636,7 @@ public class BOUtilities {
 		if (operationResult.getResultCode() != 0) {
 			throw new RuntimeException(operationResult.getMessage());
 		}
-		return (T) operationResult.getResultObjects().firstOrDefault();
+		return ArrayList.create(operationResult.getResultObjects());
 	}
 
 	/**
@@ -549,8 +688,25 @@ public class BOUtilities {
 	 * @param data 数据
 	 * @return
 	 */
-	public static String toJsonString(IBusinessObject data) {
-		return Strings.toJsonString(data);
+	public static String toJsonString(Object data) {
+		// 首先使用内置序列化方式
+		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
+			ISerializer serializer = new SerializerJson();
+			serializer.serialize(data, writer);
+			return writer.toString();
+		} catch (IOException e) {
+			throw new SerializationException(e);
+		} catch (SerializationException e) {
+			Logger.log(MessageLevel.WARN, e);
+			// 内置发生错误，则使用标准方式
+			try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
+				ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_JSON);
+				serializer.serialize(data, writer);
+				return writer.toString();
+			} catch (IOException e1) {
+				throw new SerializationException(e1);
+			}
+		}
 	}
 
 	/**
@@ -559,7 +715,24 @@ public class BOUtilities {
 	 * @param data
 	 * @return
 	 */
-	public static String toXmlString(IBusinessObject data) {
-		return Strings.toXmlString(data);
+	public static String toXmlString(Object data) {
+		// 首先使用内置序列化方式
+		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
+			ISerializer serializer = new SerializerXml();
+			serializer.serialize(data, writer);
+			return writer.toString();
+		} catch (IOException e) {
+			throw new SerializationException(e);
+		} catch (SerializationException e) {
+			Logger.log(MessageLevel.WARN, e);
+			// 内置发生错误，则使用标准方式
+			try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
+				ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_XML);
+				serializer.serialize(data, writer);
+				return writer.toString();
+			} catch (IOException e1) {
+				throw new SerializationException(e1);
+			}
+		}
 	}
 }

@@ -35,11 +35,11 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <E> ArrayList<E> create(Object... values) {
+	public static <T> ArrayList<T> create(Object... values) {
 		if (values == null) {
 			return new ArrayList<>(0);
 		}
-		ArrayList<E> results = new ArrayList<>(values.length);
+		ArrayList<T> results = new ArrayList<>(values.length);
 		for (Object value : values) {
 			if (value == null) {
 				continue;
@@ -47,15 +47,15 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 			if (value.getClass().isArray()) {
 				int size = Array.getLength(value);
 				for (int i = 0; i < size; i++) {
-					results.add((E) Array.get(value, i));
+					results.add((T) Array.get(value, i));
 				}
 			} else if (value instanceof Iterable) {
 				Iterable<?> iterable = (Iterable<?>) value;
 				for (Object item : iterable) {
-					results.add((E) item);
+					results.add((T) item);
 				}
 			} else {
-				results.add((E) value);
+				results.add((T) value);
 			}
 		}
 		return results;

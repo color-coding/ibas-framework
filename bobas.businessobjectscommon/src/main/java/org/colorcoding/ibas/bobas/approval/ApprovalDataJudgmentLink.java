@@ -66,7 +66,7 @@ public class ApprovalDataJudgmentLink extends BOJudgmentLink {
 		if (jLinkItems.isEmpty()) {
 			throw new ExpressionException(I18N.prop("msg_bobas_invaild_judgment_link_conditions"));
 		}
-		super.setJudgmentItems(jLinkItems.toArray(new JudgmentLinkItem[] {}));
+		super.setJudgmentItems(jLinkItems.toArray(new JudgmentLinkItem[jLinkItems.size()]));
 	}
 
 	public IPropertyValueOperator createPropertyValueOperator(ValueMode mode) {

@@ -16,8 +16,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.common.Strings;
-import org.colorcoding.ibas.bobas.data.IKeyValue;
+import org.colorcoding.ibas.bobas.data.IKeyText;
 
 /**
  * 配置项操作类-XML
@@ -50,11 +49,11 @@ public class ConfigurationManagerFile extends ConfigurationManager {
 	@XmlElementWrapper(name = "appSettings")
 	@XmlElement(name = "add", type = ConfigurationElement.class)
 	private ConfigurationElement[] getConfigurationElements() {
-		Collection<IKeyValue> keyValues = this.getElements();
+		Collection<IKeyText> keyValues = this.getElements();
 		ConfigurationElement[] elements = new ConfigurationElement[keyValues.size()];
 		int index = 0;
-		for (IKeyValue item : keyValues) {
-			elements[index] = new ConfigurationElement(item.getKey(), Strings.valueOf(item.getValue()));
+		for (IKeyText item : keyValues) {
+			elements[index] = new ConfigurationElement(item.getKey(), item.getText());
 			index++;
 		}
 		return elements;
@@ -86,20 +85,20 @@ public class ConfigurationManagerFile extends ConfigurationManager {
 	}
 
 	public synchronized void update() {
+		if (this.getConfigFile() == null || this.getConfigFile().isEmpty()) {
+			return;
+		}
+		File file = new File(this.getConfigFile());
+		if (!file.exists()) {
+			return;
+		}
 		try {
-			if (this.getConfigFile() == null || this.getConfigFile().isEmpty()) {
-				return;
-			}
-			File file = new File(this.getConfigFile());
-			if (!file.exists()) {
-				return;
-			}
 			try (InputStream stream = new FileInputStream(file)) {
 				JAXBContext context = JAXBContext.newInstance(ConfigurationManagerFile.class);
 				Unmarshaller unmarshaller = context.createUnmarshaller();
 				ConfigurationManagerFile tmpManager = (ConfigurationManagerFile) unmarshaller.unmarshal(stream);
-				for (IKeyValue item : tmpManager.getElements()) {
-					this.addConfigValue(item.getKey(), item.getValue());
+				for (IKeyText item : tmpManager.getElements()) {
+					this.addConfigValue(item.getKey(), item.getText());
 				}
 			}
 		} catch (Exception e) {
