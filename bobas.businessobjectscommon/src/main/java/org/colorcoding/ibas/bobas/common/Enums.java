@@ -139,7 +139,7 @@ public class Enums {
 				values.add(new KeyValue(item.name(), item.ordinal()));
 			}
 		}
-		return values.toArray(new KeyValue[] {});
+		return values.toArray(new KeyValue[values.size()]);
 	}
 
 	public static boolean equals(Object a, Object b) {

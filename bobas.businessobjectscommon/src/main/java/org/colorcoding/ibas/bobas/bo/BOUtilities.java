@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.bo;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -20,9 +22,14 @@ import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.expression.BOJudgmentLinkCondition;
 import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.rule.BusinessRulesManager;
 import org.colorcoding.ibas.bobas.rule.IBusinessRules;
 import org.colorcoding.ibas.bobas.rule.ICheckRules;
+import org.colorcoding.ibas.bobas.serialization.ISerializer;
+import org.colorcoding.ibas.bobas.serialization.SerializationException;
+import org.colorcoding.ibas.bobas.serialization.SerializationFactory;
 
 public class BOUtilities {
 
@@ -549,8 +556,25 @@ public class BOUtilities {
 	 * @param data 数据
 	 * @return
 	 */
-	public static String toJsonString(IBusinessObject data) {
-		return Strings.toJsonString(data);
+	public static String toJsonString(Object data) {
+		// 首先使用内置序列化方式
+		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
+			ISerializer serializer = new SerializerJson();
+			serializer.serialize(data, writer);
+			return writer.toString();
+		} catch (IOException e) {
+			throw new SerializationException(e);
+		} catch (SerializationException e) {
+			Logger.log(MessageLevel.WARN, e);
+			// 内置发生错误，则使用标准方式
+			try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
+				ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_JSON);
+				serializer.serialize(data, writer);
+				return writer.toString();
+			} catch (IOException e1) {
+				throw new SerializationException(e1);
+			}
+		}
 	}
 
 	/**
@@ -559,7 +583,24 @@ public class BOUtilities {
 	 * @param data
 	 * @return
 	 */
-	public static String toXmlString(IBusinessObject data) {
-		return Strings.toXmlString(data);
+	public static String toXmlString(Object data) {
+		// 首先使用内置序列化方式
+		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
+			ISerializer serializer = new SerializerXml();
+			serializer.serialize(data, writer);
+			return writer.toString();
+		} catch (IOException e) {
+			throw new SerializationException(e);
+		} catch (SerializationException e) {
+			Logger.log(MessageLevel.WARN, e);
+			// 内置发生错误，则使用标准方式
+			try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
+				ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_XML);
+				serializer.serialize(data, writer);
+				return writer.toString();
+			} catch (IOException e1) {
+				throw new SerializationException(e1);
+			}
+		}
 	}
 }

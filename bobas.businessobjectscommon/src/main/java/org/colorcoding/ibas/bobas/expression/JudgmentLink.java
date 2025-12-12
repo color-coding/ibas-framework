@@ -122,8 +122,7 @@ public abstract class JudgmentLink {
 			// 未标记完成，存在不匹配的括号
 			throw new ExpressionException(I18N.prop("msg_bobas_invaild_judgment_link_bracket", bracket));
 		}
-		JudgmentLinkItem[] jItems = currentJudgmentItems.toArray(new JudgmentLinkItem[] {});
-		return jItems;
+		return currentJudgmentItems.toArray(new JudgmentLinkItem[currentJudgmentItems.size()]);
 	}
 
 	/**

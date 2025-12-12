@@ -282,7 +282,7 @@ public final class BOFactory {
 		} catch (IOException e) {
 			Logger.log(e);
 		}
-		return classes.toArray(new Class<?>[] {});
+		return classes.toArray(new Class<?>[classes.size()]);
 	}
 
 	private static void findClassesInPackageByFile(String packageName, String packagePath, Set<Class<?>> classes) {

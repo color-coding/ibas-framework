@@ -81,7 +81,7 @@ public class BOJudgmentLink extends JudgmentLink {
 			}
 			jItems.add(item);
 		}
-		return this.judge(0, jItems.toArray(new JudgmentLinkItem[] {}));
+		return this.judge(0, jItems.toArray(new JudgmentLinkItem[jItems.size()]));
 	}
 
 	private List<IBusinessObject> getValues(IBusinessObject bo, String path) {
@@ -169,7 +169,7 @@ public class BOJudgmentLink extends JudgmentLink {
 			jItem.setRightOperter(valueOperator);
 			jItems.add(jItem);
 		}
-		return this.judge(0, jItems.toArray(new JudgmentLinkItem[] {}));
+		return this.judge(0, jItems.toArray(new JudgmentLinkItem[jItems.size()]));
 	}
 
 }
