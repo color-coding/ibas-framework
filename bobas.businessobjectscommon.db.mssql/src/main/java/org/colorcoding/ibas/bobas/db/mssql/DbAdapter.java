@@ -46,7 +46,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 	@Override
 	public String castAs(DbFieldType type, String alias) {
 		if (type == DbFieldType.ALPHANUMERIC) {
-			StringBuilder stringBuilder = new StringBuilder();
+			StringBuilder stringBuilder = new StringBuilder(64);
 			stringBuilder.append("CONVERT");
 			stringBuilder.append("(");
 			stringBuilder.append("NVARCHAR");

@@ -182,7 +182,11 @@ public class Strings {
 		if (value == null) {
 			return VALUE_EMPTY;
 		}
-		return String.format(value, args);
+		if (args != null && args.length > 0) {
+			return String.format(value, args);
+		} else {
+			return value;
+		}
 	}
 
 	/**

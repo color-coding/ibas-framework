@@ -62,7 +62,7 @@ class SerializerJson extends Serializer {
 			return;
 		}
 		char cValue;
-		int index = 0;
+		int index = -1;
 		for (int i = 0; i < value.length(); i++) {
 			cValue = value.charAt(i);
 			// 控制字符跳过
@@ -70,16 +70,16 @@ class SerializerJson extends Serializer {
 				continue;
 			}
 			if (cValue < 128) {
-				if (index > 0) {
+				if (index > -1) {
 					outputStream.write(value.substring(index, i).getBytes("utf-8"));
-					index = 0;
+					index = -1;
 				}
 				outputStream.write(CHAR_BYTES[cValue]);
-			} else {
+			} else if (index == -1) {
 				index = i;
 			}
 		}
-		if (index > 0) {
+		if (index > -1) {
 			outputStream.write(value.substring(index).getBytes("utf-8"));
 		}
 	}
@@ -213,7 +213,7 @@ class SerializerXml extends Serializer {
 			return;
 		}
 		char cValue;
-		int index = 0;
+		int index = -1;
 		for (int i = 0; i < value.length(); i++) {
 			cValue = value.charAt(i);
 			// 控制字符跳过
@@ -221,16 +221,16 @@ class SerializerXml extends Serializer {
 				continue;
 			}
 			if (cValue < 128) {
-				if (index > 0) {
+				if (index > -1) {
 					outputStream.write(value.substring(index, i).getBytes("utf-8"));
-					index = 0;
+					index = -1;
 				}
 				outputStream.write(CHAR_BYTES[cValue]);
-			} else {
+			} else if (index == -1) {
 				index = i;
 			}
 		}
-		if (index > 0) {
+		if (index > -1) {
 			outputStream.write(value.substring(index).getBytes("utf-8"));
 		}
 	}

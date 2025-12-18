@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -519,7 +520,7 @@ public abstract class DbAdapter {
 		}
 		char[] sChar = Arrays.copyOf(specials, specials.length + 1);
 		sChar[sChar.length - 1] = this.escape().charAt(0);
-		StringBuilder builder = new StringBuilder(target.length() + 10);
+		StringBuilder builder = new StringBuilder(target.length() + sChar.length * (this.escape().length() + 2));
 		for (char tItem : target.toCharArray()) {
 			for (char sItem : sChar) {
 				if (tItem == sItem) {
@@ -558,7 +559,7 @@ public abstract class DbAdapter {
 	 * @param conditions 查询条件
 	 * @return
 	 */
-	public final String parsingSelect(Class<?> boType, Iterable<ICondition> conditions) {
+	public final String parsingSelect(Class<?> boType, Collection<ICondition> conditions) {
 		ICriteria criteria = new Criteria();
 		if (conditions != null) {
 			for (ICondition item : conditions) {
@@ -624,7 +625,8 @@ public abstract class DbAdapter {
 	 * @return
 	 */
 	public String parsingSelect(Class<?> boType, ICriteria criteria, boolean withLock) {
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder(
+				(3 + criteria.getConditions().size() + criteria.getSorts().size()) * 32);
 		stringBuilder.append("SELECT");
 		if (criteria.getResultCount() > 0) {
 			stringBuilder.append(" ");
@@ -668,7 +670,7 @@ public abstract class DbAdapter {
 	 * @return
 	 */
 	public String castAs(DbFieldType type, String alias) {
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder(64);
 		if (type == DbFieldType.ALPHANUMERIC) {
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
@@ -681,7 +683,6 @@ public abstract class DbAdapter {
 			stringBuilder.append("NVARCHAR");
 			stringBuilder.append(")");
 		} else if (type == DbFieldType.DATE) {
-			stringBuilder = new StringBuilder();
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
 			stringBuilder.append(this.identifier());
@@ -693,7 +694,6 @@ public abstract class DbAdapter {
 			stringBuilder.append("DATETIME");
 			stringBuilder.append(")");
 		} else if (type == DbFieldType.NUMERIC) {
-			stringBuilder = new StringBuilder();
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
 			stringBuilder.append(this.identifier());
@@ -799,11 +799,11 @@ public abstract class DbAdapter {
 	 * @param value
 	 * @return
 	 */
-	public String parsingWhere(Iterable<ICondition> conditions) {
+	public String parsingWhere(Collection<ICondition> conditions) {
 		if (conditions == null) {
 			return Strings.VALUE_EMPTY;
 		}
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder(conditions.size() * 36);
 		for (ICondition condition : conditions) {
 			if (stringBuilder.length() > 0) {
 				stringBuilder.append(" ");
@@ -900,11 +900,11 @@ public abstract class DbAdapter {
 	 * @param value
 	 * @return
 	 */
-	public String parsingOrder(Iterable<ISort> sorts) {
+	public String parsingOrder(Collection<ISort> sorts) {
 		if (sorts == null) {
 			return Strings.VALUE_EMPTY;
 		}
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder(sorts.size() * 24);
 		for (ISort item : sorts) {
 			if (stringBuilder.length() > 0) {
 				stringBuilder.append(this.separation());
@@ -926,8 +926,9 @@ public abstract class DbAdapter {
 	 */
 	public String parsingWhere(IFieldedObject boData) {
 		DbField dbField = null;
-		StringBuilder stringBuilder = new StringBuilder();
-		for (IPropertyInfo<?> item : boData.properties().where(c -> c.isPrimaryKey())) {
+		List<IPropertyInfo<?>> keys = boData.properties().where(c -> c.isPrimaryKey());
+		StringBuilder stringBuilder = new StringBuilder(keys.size() * 32);
+		for (IPropertyInfo<?> item : keys) {
 			dbField = item.getAnnotation(DbField.class);
 			if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
 				continue;
@@ -958,7 +959,7 @@ public abstract class DbAdapter {
 	 * @return
 	 */
 	public String parsingDelete(IFieldedObject boData) {
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder(96);
 		stringBuilder.append("DELETE");
 		stringBuilder.append(" ");
 		stringBuilder.append("FROM");
@@ -991,7 +992,8 @@ public abstract class DbAdapter {
 	 * @return
 	 */
 	public String parsingUpdate(IFieldedObject boData, boolean onlyModified) {
-		StringBuilder stringBuilder = new StringBuilder();
+		List<IPropertyInfo<?>> properties = boData.properties();
+		StringBuilder stringBuilder = new StringBuilder(properties.size() * 20 + 64);
 		stringBuilder.append("UPDATE");
 		stringBuilder.append(" ");
 		stringBuilder.append(this.identifier());
@@ -1002,7 +1004,7 @@ public abstract class DbAdapter {
 		stringBuilder.append(" ");
 		DbField dbField = null;
 		int count = stringBuilder.length();
-		for (IPropertyInfo<?> item : boData.properties().where(c -> !c.isPrimaryKey())) {
+		for (IPropertyInfo<?> item : properties.where(c -> !c.isPrimaryKey())) {
 			dbField = item.getAnnotation(DbField.class);
 			if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
 				continue;
@@ -1036,11 +1038,12 @@ public abstract class DbAdapter {
 	 * @return
 	 */
 	public String parsingInsert(IFieldedObject boData) {
-		StringBuilder fieldsBuilder = new StringBuilder();
-		StringBuilder valuesBuilder = new StringBuilder();
+		List<IPropertyInfo<?>> properties = boData.properties();
+		StringBuilder fieldsBuilder = new StringBuilder(properties.size() * 16);
+		StringBuilder valuesBuilder = new StringBuilder(properties.size() * 4);
 
 		DbField dbField = null;
-		for (IPropertyInfo<?> item : boData.properties()) {
+		for (IPropertyInfo<?> item : properties) {
 			dbField = item.getAnnotation(DbField.class);
 			if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
 				continue;
@@ -1062,7 +1065,7 @@ public abstract class DbAdapter {
 			throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", boData.toString()));
 		}
 
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder(properties.size() * 20 + 64);
 		stringBuilder.append("INSERT");
 		stringBuilder.append(" ");
 		stringBuilder.append("INTO");
@@ -1090,7 +1093,7 @@ public abstract class DbAdapter {
 	 * @return
 	 */
 	public String parsingStoredProcedure(String spName, String... args) {
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder(spName.length() + args.length * 16 + 32);
 		stringBuilder.append("EXEC");
 		stringBuilder.append(" ");
 		stringBuilder.append(this.identifier());
@@ -1123,8 +1126,8 @@ public abstract class DbAdapter {
 	 * @param value
 	 * @return
 	 */
-	public String parsingMaxValue(MaxValue maxValue, Iterable<ICondition> conditions) {
-		StringBuilder stringBuilder = new StringBuilder();
+	public String parsingMaxValue(MaxValue maxValue, Collection<ICondition> conditions) {
+		StringBuilder stringBuilder = new StringBuilder(conditions.size() * 32 + 96);
 		stringBuilder.append("SELECT");
 		stringBuilder.append(" ");
 		stringBuilder.append("Max");

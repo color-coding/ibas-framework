@@ -24,7 +24,7 @@ public abstract class ConfigurableFactory<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	protected Class<T> classOf(String... names) throws ClassNotFoundException {
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder(128);
 		boolean nsDone = false;
 		for (String item : names) {
 			if (item == null || item.isEmpty()) {

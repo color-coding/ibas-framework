@@ -2,6 +2,7 @@ package org.colorcoding.ibas.bobas.db.mysql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.Collection;
 import java.util.TimeZone;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
@@ -51,7 +52,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 
 	@Override
 	public String castAs(DbFieldType type, String alias) {
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder(64);
 		if (type == DbFieldType.ALPHANUMERIC) {
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
@@ -64,7 +65,6 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			stringBuilder.append("CHAR");
 			stringBuilder.append(")");
 		} else if (type == DbFieldType.DATE) {
-			stringBuilder = new StringBuilder();
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
 			stringBuilder.append(this.identifier());
@@ -76,7 +76,6 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			stringBuilder.append("DATETIME");
 			stringBuilder.append(")");
 		} else if (type == DbFieldType.NUMERIC) {
-			stringBuilder = new StringBuilder();
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
 			stringBuilder.append(this.identifier());
@@ -109,7 +108,8 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 
 	@Override
 	public String parsingSelect(Class<?> boType, ICriteria criteria, boolean withLock) {
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder(
+				(3 + criteria.getConditions().size() + criteria.getSorts().size()) * 32);
 		stringBuilder.append("SELECT");
 		stringBuilder.append(" ");
 		stringBuilder.append("*");
@@ -145,8 +145,8 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		return stringBuilder.toString();
 	}
 
-	public String parsingMaxValue(MaxValue maxValue, Iterable<ICondition> conditions) {
-		StringBuilder stringBuilder = new StringBuilder();
+	public String parsingMaxValue(MaxValue maxValue, Collection<ICondition> conditions) {
+		StringBuilder stringBuilder = new StringBuilder(conditions.size() * 32 + 96);
 		stringBuilder.append("SELECT");
 		stringBuilder.append(" ");
 		stringBuilder.append("Max");
@@ -170,7 +170,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 
 	@Override
 	public String parsingStoredProcedure(String spName, String... args) {
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder(spName.length() + args.length * 16 + 32);
 		stringBuilder.append("CALL");
 		stringBuilder.append(" ");
 		stringBuilder.append(this.identifier());

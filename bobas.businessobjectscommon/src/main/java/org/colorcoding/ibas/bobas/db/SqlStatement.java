@@ -93,16 +93,16 @@ public class SqlStatement extends Serializable implements ISqlStatement {
 	}
 
 	@Override
-	public void setObject(int parameterIndex, Object x, DbFieldType targetType) {
+	public void setObject(int parameterIndex, Object value, DbFieldType targetType) {
 		Parameter parameter = new Parameter();
 		parameter.targetType = targetType;
-		parameter.value = x;
+		parameter.value = value;
 		this.getParameters().put(parameterIndex, parameter);
 	}
 
 	@Override
-	public void setObject(int parameterIndex, Object x) {
-		this.setObject(parameterIndex, x, DbFieldType.UNKNOWN);
+	public void setObject(int parameterIndex, Object value) {
+		this.setObject(parameterIndex, value, DbFieldType.UNKNOWN);
 	}
 
 	public void setObject(Iterable<ICondition> conditions) {

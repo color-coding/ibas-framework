@@ -71,7 +71,7 @@ public class BOInstanceLogService extends BusinessLogic<IBOInstanceLogContract, 
 		boLogst.setSavable(false);
 		boLogst.setBOCode(contract.getHost().getObjectCode());
 		// boLogst.setBOKeys(contract.getHost().toString());
-		StringBuilder builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder(64);
 		if (contract.getHost() instanceof IBOMasterData) {
 			IBOMasterData data = (IBOMasterData) contract.getHost();
 			builder.append(IBOMasterData.MASTER_PRIMARY_KEY_NAME);
