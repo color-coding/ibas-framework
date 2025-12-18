@@ -85,7 +85,7 @@ public class Message {
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
 	public String outString() {
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder(96 + (this.content == null ? 0 : this.content.length()));
 		stringBuilder.append("[");
 		stringBuilder.append(this.getLevel().toString());
 		stringBuilder.append("]");

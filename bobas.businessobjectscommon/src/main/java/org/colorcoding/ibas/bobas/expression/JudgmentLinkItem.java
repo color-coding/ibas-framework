@@ -70,7 +70,7 @@ public class JudgmentLinkItem {
 	@Override
 	public String toString() {
 		// AND ((ItemCode = "A" OR Customer = "C") AND Total >= 1000)
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder(64);
 		stringBuilder.append(this.getRelationship().toString());
 		stringBuilder.append(" ");
 		for (int i = 0; i < this.getOpenBracket(); i++) {

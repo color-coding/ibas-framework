@@ -289,7 +289,7 @@ public final class PropertyInfoManager {
 							Class.forName(objectType.getName(), true, objectType.getClassLoader());
 						} catch (ClassNotFoundException e) {
 							Logger.log(MessageLevel.FATAL, e);
-							StringBuilder builder = new StringBuilder();
+							StringBuilder builder = new StringBuilder(96);
 							builder.append("class not found, classpath:");
 							ClassLoader cl = ClassLoader.getSystemClassLoader();
 							URL[] urls = ((URLClassLoader) cl).getURLs();

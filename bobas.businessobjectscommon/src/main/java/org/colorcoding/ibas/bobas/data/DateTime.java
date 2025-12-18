@@ -1,6 +1,5 @@
 package org.colorcoding.ibas.bobas.data;
 
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -16,7 +15,7 @@ import org.colorcoding.ibas.bobas.common.DateTimes;
  */
 @XmlJavaTypeAdapter(DateTimeSerializer.class)
 @XmlType(name = "DateTime", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
-public class DateTime extends Date implements Serializable {
+public class DateTime extends Date {
 
 	private static final long serialVersionUID = 9197442988053540497L;
 

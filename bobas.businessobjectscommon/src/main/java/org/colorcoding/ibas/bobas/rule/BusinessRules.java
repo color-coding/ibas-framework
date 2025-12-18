@@ -101,16 +101,15 @@ class BusinessRules implements IBusinessRules {
 			if (MyConfiguration.isDebugMode()) {
 				Logger.log(MessageLevel.DEBUG, "rules: start executing %s rules.", bo);
 			}
-			StringBuilder builder = new StringBuilder();
+			StringBuilder builder = new StringBuilder(properties.length * 16);
 			for (IPropertyInfo<?> propertyInfo : properties) {
 				if (builder.length() > 0) {
 					builder.append(", ");
 				}
 				builder.append(propertyInfo.getName());
 			}
-			String trigger = builder.toString();
 			for (IBusinessRule rule : doRules) {
-				rule.execute(bo, trigger);
+				rule.execute(bo, builder.toString());
 			}
 		}
 	}

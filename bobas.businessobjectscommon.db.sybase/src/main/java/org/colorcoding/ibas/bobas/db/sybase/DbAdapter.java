@@ -42,7 +42,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 
 	@Override
 	public String parsingStoredProcedure(String spName, String... args) {
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder(spName.length() + args.length * 16 + 32);
 		stringBuilder.append("CALL");
 		stringBuilder.append(" ");
 		stringBuilder.append(this.identifier());

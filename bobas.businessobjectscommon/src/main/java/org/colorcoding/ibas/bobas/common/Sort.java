@@ -78,7 +78,7 @@ public class Sort extends Serializable implements ISort {
 
 	@Override
 	public String toString() {
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder(32);
 		stringBuilder.append("{sort: ");
 		stringBuilder.append(this.getAlias());
 		stringBuilder.append(" ");

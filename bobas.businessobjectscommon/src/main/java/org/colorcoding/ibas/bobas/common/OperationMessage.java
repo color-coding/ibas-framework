@@ -115,7 +115,7 @@ public class OperationMessage extends Result implements IOperationMessage {
 					errMessages.add(error.getMessage());
 					error = error.getCause();
 				}
-				StringBuilder stringBuilder = new StringBuilder();
+				StringBuilder stringBuilder = new StringBuilder(256);
 				for (int i = 0; i < errMessages.size(); i++) {
 					String message = errMessages.get(i);
 					if (message == null) {

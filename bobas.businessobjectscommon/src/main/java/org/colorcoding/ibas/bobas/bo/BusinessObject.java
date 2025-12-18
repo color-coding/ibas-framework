@@ -123,7 +123,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	@Override
 	public String getIdentifiers() {
 		String boCode = null;
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder(96);
 		if (this instanceof IBOStorageTag) {
 			IBOStorageTag tagBO = (IBOStorageTag) this;
 			boCode = tagBO.getObjectCode();
@@ -349,8 +349,10 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	@Override
 	public synchronized final List<IPropertyInfo<?>> properties() {
 		if (this instanceof IBOUserFields && this.userFields != null && !this.userFields.isEmpty()) {
+			List<IPropertyInfo<?>> userFields = new ArrayList<>(this.userFields.keySet());
+			userFields.sort((c1, c2) -> Integer.compare(c1.getIndex(), c2.getIndex()));
 			List<IPropertyInfo<?>> propertyInfos = super.properties();
-			propertyInfos.addAll(this.userFields.keySet());
+			propertyInfos.addAll(userFields);
 			return propertyInfos;
 		} else {
 			return super.properties();

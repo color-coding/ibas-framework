@@ -17,6 +17,8 @@ public abstract class UserFieldsManager {
 
 	public static List<IPropertyInfo<?>> EMPTY_USER_FIELDS = new UserFieldInfoList(0);
 
+	public static int USER_FIELDS_INDEX_START = 9000;
+
 	/**
 	 * 注册属性
 	 * 
@@ -30,7 +32,8 @@ public abstract class UserFieldsManager {
 			if (propertys != null) {
 				synchronized (propertys) {
 					if (propertys.add(property)) {
-						property.setIndex(propertys.size() - 1);
+						// 用户属性索引9000开头
+						property.setIndex(USER_FIELDS_INDEX_START + propertys.size() - 1);
 					} else {
 						return (UserFieldInfo<P>) propertys.get(property.getName());
 					}
@@ -38,7 +41,8 @@ public abstract class UserFieldsManager {
 			} else {
 				USER_FIELDS.put(objectType, propertys = new UserFieldInfoList(8));
 				propertys.add(property);
-				property.setIndex(propertys.size() - 1);
+				// 用户属性索引9000开头
+				property.setIndex(USER_FIELDS_INDEX_START + propertys.size() - 1);
 			}
 		}
 		return property;

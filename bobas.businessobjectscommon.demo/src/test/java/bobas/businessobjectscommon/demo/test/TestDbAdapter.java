@@ -13,6 +13,7 @@ import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.db.DbAdapter;
+import org.colorcoding.ibas.bobas.db.DbField;
 import org.colorcoding.ibas.bobas.db.SqlStatement;
 import org.colorcoding.ibas.demo.bo.salesorder.SalesOrder;
 
@@ -57,6 +58,72 @@ public class TestDbAdapter extends TestCase {
 		System.out.println(adapter.parsing(sqlStatement));
 		System.out.println();
 
+	}
+
+	public void testDeleteSql() {
+		SalesOrder order = new SalesOrder();
+		order.setDocEntry(2025000001);
+		order.setCustomerCode("'C00001");
+		order.setCustomerName("宇宙无敌影业");
+		order.setDocumentStatus(emDocumentStatus.FINISHED);
+		order.setDeliveryDate(DateTimes.valueOf("2025-06-01"));
+		order.setDocumentTotal(Decimals.valueOf("199.99"));
+		order.setReference1("1. 返现；\r\n2. 加急");
+
+		DbAdapter adapter;
+		SqlStatement sqlStatement;
+
+		adapter = new org.colorcoding.ibas.bobas.db.mssql.DbAdapter();
+		sqlStatement = new SqlStatement(adapter.parsingDelete(order));
+		System.out.println(adapter.getClass().getName().substring(0, adapter.getClass().getName().lastIndexOf(".")));
+		System.out.println("pseudo code:");
+		System.out.println(sqlStatement.getContent());
+		for (IPropertyInfo<?> propertyInfo : BOFactory.propertyInfos(SalesOrder.class).where(c -> c.isPrimaryKey())) {
+			sqlStatement.setObject(propertyInfo.getIndex(), order.getProperty(propertyInfo));
+		}
+		System.out.println("real code:");
+		System.out.println(adapter.parsing(sqlStatement));
+		System.out.println();
+	}
+
+	public void testUpdateSql() {
+		SalesOrder order = new SalesOrder();
+		order.setDocEntry(2025000001);
+		order.setCustomerCode("'C00001");
+		order.setCustomerName("宇宙无敌影业");
+		order.setDocumentStatus(emDocumentStatus.FINISHED);
+		order.setDeliveryDate(DateTimes.valueOf("2025-06-01"));
+		order.setDocumentTotal(Decimals.valueOf("199.99"));
+		order.setReference1("1. 返现；\r\n2. 加急");
+
+		DbAdapter adapter;
+		SqlStatement sqlStatement;
+
+		adapter = new org.colorcoding.ibas.bobas.db.mssql.DbAdapter();
+		sqlStatement = new SqlStatement(adapter.parsingUpdate(order));
+		System.out.println(adapter.getClass().getName().substring(0, adapter.getClass().getName().lastIndexOf(".")));
+		System.out.println("pseudo code:");
+		System.out.println(sqlStatement.getContent());
+		int index = 0;
+		for (IPropertyInfo<?> propertyInfo : BOFactory.propertyInfos(SalesOrder.class).where(c -> !c.isPrimaryKey())) {
+			// 仅映射数据库属性
+			if (propertyInfo.getAnnotation(DbField.class) == null) {
+				continue;
+			}
+			sqlStatement.setObject(index, order.getProperty(propertyInfo));
+			index++;
+		}
+		for (IPropertyInfo<?> propertyInfo : BOFactory.propertyInfos(SalesOrder.class).where(c -> c.isPrimaryKey())) {
+			// 仅映射数据库属性
+			if (propertyInfo.getAnnotation(DbField.class) == null) {
+				continue;
+			}
+			sqlStatement.setObject(index, order.getProperty(propertyInfo));
+			index++;
+		}
+		System.out.println("real code:");
+		System.out.println(adapter.parsing(sqlStatement));
+		System.out.println();
 	}
 
 	public void testSelectSql() {

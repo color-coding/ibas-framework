@@ -66,7 +66,7 @@ class BOKeysContract extends BOContract<IBusinessObject> implements IBOKeysContr
 	@Override
 	public String getObjectCode() {
 		if (this.getHost() instanceof IBOLine) {
-			StringBuilder stringBuilder = new StringBuilder();
+			StringBuilder stringBuilder = new StringBuilder(64);
 			stringBuilder.append(this.getHost().getClass().getSimpleName());
 			if (this.getHost() instanceof IBODocumentLine) {
 				stringBuilder.append("-");
@@ -175,7 +175,7 @@ class BOKeysContract extends BOContract<IBusinessObject> implements IBOKeysContr
 		if (this.maxValueKey == null) {
 			if (this.getHost() instanceof IBOMaxValueKey && this.getHost() instanceof BusinessObject<?>) {
 				BusinessObject<?> bo = (BusinessObject<?>) this.getHost();
-				StringBuilder stringBuilder = new StringBuilder();
+				StringBuilder stringBuilder = new StringBuilder(64 + this.getMaxValueConditions().length * 32);
 				for (IPropertyInfo<?> item : this.getMaxValueConditions()) {
 					if (stringBuilder.length() > 0) {
 						stringBuilder.append("&");

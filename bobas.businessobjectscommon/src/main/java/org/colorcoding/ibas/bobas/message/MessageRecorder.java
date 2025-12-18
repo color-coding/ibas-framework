@@ -15,7 +15,7 @@ public class MessageRecorder {
 	 * 
 	 * @param message 消息
 	 */
-	public void record(Message message) {
+	public synchronized void record(Message message) {
 		if (message == null) {
 			return;
 		}

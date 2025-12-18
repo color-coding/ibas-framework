@@ -203,7 +203,7 @@ public class Criteria extends Serializable implements ICriteria {
 
 	@Override
 	public String toString() {
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder(64);
 		stringBuilder.append("{criteria: ");
 		if (!Strings.isNullOrEmpty(this.businessObject)) {
 			stringBuilder.append(this.businessObject);

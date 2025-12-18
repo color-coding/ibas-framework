@@ -88,7 +88,8 @@ public class SqlStoredProcedure extends SqlStatement {
 	 */
 	@Override
 	public String getContent() {
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder(
+				this.getName().length() + this.getParameters().size() * 32 + 32);
 		stringBuilder.append(this.getName());
 		if (!this.getParameters().isEmpty()) {
 			stringBuilder.append(" ");

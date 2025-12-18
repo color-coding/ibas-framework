@@ -1,6 +1,5 @@
 package org.colorcoding.ibas.bobas.core;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -100,13 +99,7 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 			propertyInfos.trimToSize();
 		}
 		// 属性排序
-		propertyInfos.sort(new Comparator<IPropertyInfo<?>>() {
-
-			@Override
-			public int compare(IPropertyInfo<?> o1, IPropertyInfo<?> o2) {
-				return Integer.compare(o1.getIndex(), o2.getIndex());
-			}
-		});
+		propertyInfos.sort((c1, c2) -> Integer.compare(c1.getIndex(), c2.getIndex()));
 		return propertyInfos;
 	}
 

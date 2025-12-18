@@ -213,7 +213,7 @@ public class Condition extends Serializable implements ICondition {
 
 	@Override
 	public String toString() {
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder(64);
 		stringBuilder.append("{condition: ");
 		stringBuilder.append(this.getAlias());
 		stringBuilder.append(" ");

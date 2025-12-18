@@ -649,6 +649,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 						BusinessObject<?> data;
 						StringBuilder fieldsBuilder;
 						StringBuilder valuesBuilder;
+						List<IPropertyInfo<?>> keys;
 						try (PreparedStatement statement = DbTransaction.this.getConnection()
 								.prepareStatement(DbTransaction.this.getAdapter().sp_transaction_notification())) {
 							for (int i = 0; i < datas.size(); i++) {
@@ -661,9 +662,10 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 									type = TransactionType.UPDATE;
 								}
 								keyCount = 0;
-								fieldsBuilder = new StringBuilder();
-								valuesBuilder = new StringBuilder();
-								for (IPropertyInfo<?> propertyInfo : data.properties().where(c -> c.isPrimaryKey())) {
+								keys = data.properties().where(c -> c.isPrimaryKey());
+								fieldsBuilder = new StringBuilder(keys.size() * 16);
+								valuesBuilder = new StringBuilder(keys.size() * 16);
+								for (IPropertyInfo<?> propertyInfo : keys) {
 									dbField = propertyInfo.getAnnotation(DbField.class);
 									if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
 										continue;
