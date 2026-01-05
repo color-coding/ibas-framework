@@ -69,6 +69,21 @@ public abstract class BORepository extends Repository {
 		}
 	}
 
+	private boolean skipInstanceCheck = false;
+
+	/**
+	 * 跳过对象实例检查
+	 * 
+	 * @return
+	 */
+	protected final boolean isSkipInstanceCheck() {
+		return skipInstanceCheck;
+	}
+
+	protected final void setSkipInstanceCheck(boolean skipInstanceCheck) {
+		this.skipInstanceCheck = skipInstanceCheck;
+	}
+
 	private volatile ITransaction transaction;
 
 	public synchronized final ITransaction getTransaction() throws RepositoryException {
@@ -134,7 +149,7 @@ public abstract class BORepository extends Repository {
 			try {
 				T boCopy = null;
 				// 更新数据时，检查版本是否新于数据库副本
-				if (bo.isSavable() && !bo.isNew()) {
+				if (!this.isSkipInstanceCheck() && bo.isSavable() && !bo.isNew()) {
 					ICriteria criteria = bo.getCriteria();
 					if (criteria == null || criteria.getConditions().isEmpty()) {
 						throw new RepositoryException(I18N.prop("msg_bobas_invaild_criteria"));

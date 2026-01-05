@@ -44,6 +44,21 @@ public class BORepositoryService extends BORepository4DB {
 		this(MASTER_REPOSITORY_SIGN);
 	}
 
+	private boolean skipInstanceFetch = false;
+
+	/**
+	 * 跳过对象实例检索
+	 * 
+	 * @return
+	 */
+	protected final boolean isSkipInstanceFetch() {
+		return skipInstanceFetch;
+	}
+
+	protected final void setSkipInstanceFetch(boolean skipInstanceFetch) {
+		this.skipInstanceFetch = skipInstanceFetch;
+	}
+
 	/**
 	 * 查询数据
 	 * 
@@ -195,8 +210,11 @@ public class BORepositoryService extends BORepository4DB {
 				if (mine == true) {
 					this.commitTransaction();
 					mine = false;
-					// 获取新实例后，关闭连接
-					return this.fetch(bo.getClass(), bo.getCriteria());
+					// 是否需要获取新实例
+					if (!this.isSkipInstanceFetch()) {
+						// 获取新实例（存储过程影响后的数据）
+						return this.fetch(bo.getClass(), bo.getCriteria());
+					}
 				}
 				// 非自建事务，不获取新对象实例
 				return operationResult;
