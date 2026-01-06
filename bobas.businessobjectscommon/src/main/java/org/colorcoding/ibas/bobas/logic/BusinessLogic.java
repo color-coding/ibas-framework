@@ -18,6 +18,9 @@ import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
+import org.colorcoding.ibas.bobas.logic.common.BOKeysService;
+import org.colorcoding.ibas.bobas.logic.common.BORulesService;
+import org.colorcoding.ibas.bobas.logic.common.BOStorageTagService;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.organization.IUser;
@@ -244,9 +247,13 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 		}
 		// 执行正向逻辑
 		this.forwardCount++;
-		Logger.log(this.forwardCount > 1 ? MessageLevel.WARN : MessageLevel.DEBUG,
-				"logics: forward logic [%s@%s], times %s.", this.getClass().getName(),
-				Integer.toHexString(this.hashCode()), this.forwardCount);
+		// 重要逻辑执行次数日志
+		if (this.getClass() != BOKeysService.class && this.getClass() != BOStorageTagService.class
+				&& this.getClass() != BORulesService.class) {
+			Logger.log(this.forwardCount > 1 ? MessageLevel.WARN : MessageLevel.DEBUG,
+					"logics: forward logic [%s@%s], times %s.", this.getClass().getName(),
+					Integer.toHexString(this.hashCode()), this.forwardCount);
+		}
 		if (this.forwardCount > 1) {
 			if (!this.onRepeatedImpact(this.forwardCount)) {
 				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
@@ -328,9 +335,13 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 			return;
 		}
 		this.reverseCount++;
-		Logger.log(this.reverseCount > 1 ? MessageLevel.WARN : MessageLevel.DEBUG,
-				"logics: reverse logic [%s@%s], times %s.", this.getClass().getName(),
-				Integer.toHexString(this.hashCode()), this.reverseCount);
+		// 重要逻辑执行次数日志
+		if (this.getClass() != BOKeysService.class && this.getClass() != BOStorageTagService.class
+				&& this.getClass() != BORulesService.class) {
+			Logger.log(this.reverseCount > 1 ? MessageLevel.WARN : MessageLevel.DEBUG,
+					"logics: reverse logic [%s@%s], times %s.", this.getClass().getName(),
+					Integer.toHexString(this.hashCode()), this.reverseCount);
+		}
 		if (this.reverseCount > 1) {
 			if (!this.onRepeatedRevoke(this.reverseCount)) {
 				Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),

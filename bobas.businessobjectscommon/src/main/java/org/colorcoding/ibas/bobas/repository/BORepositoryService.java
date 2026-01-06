@@ -103,7 +103,7 @@ public class BORepositoryService extends BORepository4DB {
 					ICondition condition = null;
 					int count = criteria.getConditions().size();
 
-					IOperationResult<IBusinessObject> opRsltChilds = this.fetch(subType, cCriteria);
+					IOperationResult<IBusinessObject> opRsltChilds = super.fetch(subType, cCriteria);
 					if (opRsltChilds.getError() != null) {
 						throw opRsltChilds.getError();
 					}
@@ -156,7 +156,7 @@ public class BORepositoryService extends BORepository4DB {
 						condition.setBracketClose(condition.getBracketClose() + 1);
 					}
 					// 查询父项，并填充子项
-					OperationResult<T> opRsltParent = this.fetch(boType, nCriteria);
+					OperationResult<T> opRsltParent = super.fetch(boType, nCriteria);
 					if (opRsltParent.getError() != null) {
 						throw opRsltParent.getError();
 					}
@@ -213,7 +213,7 @@ public class BORepositoryService extends BORepository4DB {
 					// 是否需要获取新实例
 					if (!this.isSkipInstanceFetch()) {
 						// 获取新实例（存储过程影响后的数据）
-						return this.fetch(bo.getClass(), bo.getCriteria());
+						return super.fetch(bo.getClass(), bo.getCriteria());
 					}
 				}
 				// 非自建事务，不获取新对象实例

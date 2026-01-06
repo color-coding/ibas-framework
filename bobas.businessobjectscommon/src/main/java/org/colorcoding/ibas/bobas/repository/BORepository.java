@@ -6,7 +6,6 @@ import org.colorcoding.ibas.bobas.bo.BOUtilities;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ICriteria;
-import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.List;
@@ -128,7 +127,7 @@ public abstract class BORepository extends Repository {
 			Objects.requireNonNull(boType);
 			// 未打开事务，则创建
 			this.initTransaction();
-			IBusinessObject[] results = this.getTransaction().fetch(boType, criteria);
+			T[] results = this.getTransaction().fetch(boType, criteria);
 			OperationResult<T> operationResult = new OperationResult<T>(results.length);
 			for (IBusinessObject item : results) {
 				operationResult.addResultObjects(item);
@@ -155,11 +154,11 @@ public abstract class BORepository extends Repository {
 						throw new RepositoryException(I18N.prop("msg_bobas_invaild_criteria"));
 					}
 					criteria.setResultCount(1);
-					IOperationResult<T> opRsltFetch = this.fetch(bo.getClass(), criteria);
-					if (opRsltFetch.getError() != null) {
-						throw opRsltFetch.getError();
+					// 不能调用当前查询，会被重写
+					T[] results = this.getTransaction().fetch(bo.getClass(), criteria);
+					if (results.length > 0) {
+						boCopy = results[0];
 					}
-					boCopy = opRsltFetch.getResultObjects().firstOrDefault();
 					if (boCopy == null) {
 						// 不存在副本
 						throw new RepositoryException(I18N.prop("msg_bobas_not_found_bo_copy", bo.toString()));

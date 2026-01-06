@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.repository;
 
+import java.lang.annotation.Annotation;
+
 import org.colorcoding.ibas.bobas.bo.BusinessObjectUnit;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
@@ -35,6 +37,31 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 	 * 操作信息标签：权限判断
 	 */
 	final static String OPERATION_INFORMATION_DATA_OWNERSHIP_TAG = "DATA_OWNERSHIP_JUDGE";
+
+	public BORepositoryServiceApplication() {
+		// 初始设置
+		for (Annotation annotation : this.getClass().getAnnotations()) {
+			// 类实例用于web服务，则自动关闭
+			if (annotation.annotationType().getName().equals("javax.ws.rs.Path")) {
+				this.setAutoClose(true);
+			}
+		}
+	}
+
+	private boolean autoClose;
+
+	/**
+	 * 是否自动关闭
+	 * 
+	 * @return
+	 */
+	public final boolean isAutoClose() {
+		return autoClose;
+	}
+
+	public final void setAutoClose(boolean autoClose) {
+		this.autoClose = autoClose;
+	}
 
 	/**
 	 * 保存数据
@@ -203,6 +230,10 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 		} catch (Exception e) {
 			// 如果出错，不返回处理一半的数据
 			return new OperationResult<T>(e);
+		} finally {
+			if (this.isAutoClose()) {
+				this.close();
+			}
 		}
 	}
 
@@ -235,7 +266,13 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 		} catch (Exception e) {
 			return new OperationResult<>(e);
 		}
-		return super.save(bo);
+		try {
+			return super.save(bo);
+		} finally {
+			if (this.isAutoClose()) {
+				this.close();
+			}
+		}
 	}
 
 	@Override

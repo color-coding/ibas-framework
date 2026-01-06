@@ -13,7 +13,6 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.SortType;
-import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.FileItem;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.repository.FileRepository;
@@ -98,7 +97,7 @@ public class TestFileRepository extends TestCase {
 			for (FileItem item : fileRepository.fetch(criteria).getResultObjects()) {
 				file = new File(item.getPath());
 				System.out.println(String.format("%s ,%s", file.getParentFile().getPath(),
-						DateTimes.valueOf(file.lastModified()).toString(DateTime.FORMAT_DATETIME)));
+						DateTimes.valueOf(file.lastModified()).toString(DateTimes.FORMAT_DATETIME)));
 			}
 			condition = criteria.getConditions().create();
 			condition.setAlias(FileRepository.CONDITION_ALIAS_MODIFIED_TIME);
@@ -108,7 +107,7 @@ public class TestFileRepository extends TestCase {
 			for (FileItem item : fileRepository.fetch(criteria).getResultObjects()) {
 				file = new File(item.getPath());
 				System.out.println(String.format("%s ,%s", file.getParentFile().getPath(),
-						DateTimes.valueOf(file.lastModified()).toString(DateTime.FORMAT_DATETIME)));
+						DateTimes.valueOf(file.lastModified()).toString(DateTimes.FORMAT_DATETIME)));
 			}
 
 			criteria = new Criteria();
@@ -124,7 +123,7 @@ public class TestFileRepository extends TestCase {
 			for (FileItem item : fileRepository.fetch(criteria).getResultObjects()) {
 				file = new File(item.getPath());
 				System.out.println(String.format("%s ,%s", file.getPath(),
-						DateTimes.valueOf(file.lastModified()).toString(DateTime.FORMAT_DATETIME)));
+						DateTimes.valueOf(file.lastModified()).toString(DateTimes.FORMAT_DATETIME)));
 			}
 
 		}

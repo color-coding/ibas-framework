@@ -100,6 +100,10 @@ public abstract class Trackable extends Bindable implements ITrackable {
 		 */
 	}
 
+	public void markDirty() {
+		this.setDirty(true);
+	}
+
 	public void markNew() {
 		this.setNew(true);
 		this.setDirty(true);
@@ -118,10 +122,6 @@ public abstract class Trackable extends Bindable implements ITrackable {
 			this.markDirty();
 		}
 		this.setDeleted(false);
-	}
-
-	public void markDirty() {
-		this.setDirty(true);
 	}
 
 }

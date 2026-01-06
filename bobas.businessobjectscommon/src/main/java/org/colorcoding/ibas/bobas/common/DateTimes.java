@@ -17,15 +17,17 @@ public class DateTimes {
 	/**
 	 * 日期格式，默认yyyy-MM-dd
 	 */
-	public static String FORMAT_DATE = DateTime.FORMAT_DATE;
+	public static final String FORMAT_DATE = "yyyy-MM-dd";
+
 	/**
 	 * 时间格式，默HH:mm:ss
 	 */
-	public static String FORMAT_TIME = DateTime.FORMAT_TIME;
+	public static final String FORMAT_TIME = "HH:mm:ss";
+
 	/**
 	 * 日期时间格式，默认yyyy-MM-dd'T'HH:mm:ss
 	 */
-	public static String FORMAT_DATETIME = DateTime.FORMAT_DATETIME;
+	public static final String FORMAT_DATETIME = String.format("%s'T'%s", FORMAT_DATE, FORMAT_TIME);
 
 	/**
 	 * 最小日期
@@ -82,7 +84,7 @@ public class DateTimes {
 	 * @return 日期
 	 */
 	public static DateTime valueOf(String value) {
-		return valueOf(value, DateTime.FORMAT_DATE);
+		return valueOf(value, DateTimes.FORMAT_DATE);
 	}
 
 	/**

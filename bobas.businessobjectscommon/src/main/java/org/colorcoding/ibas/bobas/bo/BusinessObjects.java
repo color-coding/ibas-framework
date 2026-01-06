@@ -114,8 +114,17 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		this.setParent((P) parent);
 	}
 
+	/**
+	 * 添加对象，已存在实例跳过
+	 */
 	@Override
 	public final boolean add(E item) {
+		// 集合已存在实例，则跳过
+		for (E hasItem : this) {
+			if (hasItem == item) {
+				return false;
+			}
+		}
 		int oldSize = this.size();
 		boolean result = super.add(item);
 		if (result) {

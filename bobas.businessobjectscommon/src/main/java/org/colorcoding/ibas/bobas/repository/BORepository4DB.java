@@ -97,6 +97,7 @@ public class BORepository4DB extends BORepository {
 				if (this.getTransaction() != null) {
 					this.getTransaction().close();
 				}
+				this.myConnection = false;
 			}
 			super.close();
 		} catch (Exception e) {

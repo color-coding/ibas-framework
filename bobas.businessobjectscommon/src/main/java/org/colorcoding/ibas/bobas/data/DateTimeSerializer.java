@@ -12,8 +12,8 @@ import org.colorcoding.ibas.bobas.common.DateTimes;
  */
 class DateTimeSerializer extends XmlAdapter<String, DateTime> {
 
-	public final static String DATETIME_FORMAT_DATA = DateTime.FORMAT_DATE;
-	public final static String DATETIME_FORMAT_DATA_TIME = DateTime.FORMAT_DATETIME;
+	public final static String DATETIME_FORMAT_DATA = DateTimes.FORMAT_DATE;
+	public final static String DATETIME_FORMAT_DATA_TIME = DateTimes.FORMAT_DATETIME;
 	public final static String DATETIME_FORMAT_DATA_SLASH = "yyyy/MM/dd";
 	public final static String DATETIME_FORMAT_DATA_TIME_SLASH = "yyyy/MM/dd'T'HH:mm:ss";
 

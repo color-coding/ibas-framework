@@ -192,6 +192,9 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 		return this.getIdentifiers();
 	}
 
+	/**
+	 * 标记为删除（包括子项及属性）
+	 */
 	@Override
 	public final void delete() {
 		boolean done = true;
@@ -216,6 +219,9 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 		});
 	}
 
+	/**
+	 * 取消删除标记（包括子项及属性）
+	 */
 	@Override
 	public final void undelete() {
 		super.clearDeleted();
@@ -225,7 +231,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	}
 
 	/**
-	 * 不能被保存
+	 * 标记为不被保存（包括子项及属性）
 	 */
 	public final void unsavable() {
 		this.setSavable(false);
@@ -246,6 +252,36 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 				data.markOld(recursive);
 			});
 		}
+	}
+
+	/**
+	 * 标记为新实例
+	 * 
+	 * @param recursive 包括子项及属性
+	 */
+	public final void markNew(boolean recursive) {
+		super.markNew();
+		if (recursive) {
+			BOUtilities.traverse(this, (data) -> {
+				data.markNew(recursive);
+			});
+		}
+	}
+
+	/**
+	 * 重置对象
+	 * 
+	 * @param recursive 包含子项
+	 */
+	public final void reset(boolean recursive) {
+		this.setLoading(true);
+		this.reset();
+		if (recursive) {
+			BOUtilities.traverse(this, (data) -> {
+				data.reset(recursive);
+			});
+		}
+		this.setLoading(false);
 	}
 
 	/**
@@ -300,22 +336,6 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 			docLineBO.setStatus(emBOStatus.OPEN);
 			docLineBO.setLineStatus(emDocumentStatus.PLANNED);
 		}
-	}
-
-	/**
-	 * 重置对象
-	 * 
-	 * @param recursive 包含子项
-	 */
-	public final synchronized void reset(boolean recursive) {
-		this.setLoading(true);
-		this.reset();
-		if (recursive) {
-			BOUtilities.traverse(this, (data) -> {
-				data.reset(recursive);
-			});
-		}
-		this.setLoading(false);
 	}
 
 	/**

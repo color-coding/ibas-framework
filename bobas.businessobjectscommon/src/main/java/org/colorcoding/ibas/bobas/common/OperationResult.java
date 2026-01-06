@@ -1,7 +1,6 @@
 package org.colorcoding.ibas.bobas.common;
 
 import java.lang.reflect.Array;
-import java.util.Collection;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -60,34 +59,25 @@ public class OperationResult<P> extends OperationMessage implements IOperationRe
 		return this.resultObjects;
 	}
 
-	public final OperationResult<P> addResultObjects(Iterable<P> values) {
-		if (values != null) {
-			if (values instanceof Collection) {
-				if (this.resultObjects == null) {
-					this.resultObjects = new ArrayList<>((Collection<P>) values);
-				} else {
-					this.getResultObjects().addAll(values);
-				}
-			} else {
-				this.getResultObjects().addAll(values);
-			}
-		}
-		return this;
-	}
-
 	@SuppressWarnings("unchecked")
 	public final OperationResult<P> addResultObjects(Object value) {
-		if (value != null) {
-			if (value.getClass().isArray()) {
-				int length = Array.getLength(value);
-				if (this.resultObjects == null) {
-					this.resultObjects = new ArrayList<P>(length);
-				}
-				for (int i = 0; i < length; i++) {
-					this.getResultObjects().add((P) Array.get(value, i));
-				}
-			} else if (value instanceof Iterable) {
-				this.addResultObjects((Iterable<P>) value);
+		if (value == null) {
+			return this;
+		}
+		if (value.getClass().isArray()) {
+			int length = Array.getLength(value);
+			if (this.resultObjects == null) {
+				this.resultObjects = new ArrayList<>(length);
+			}
+			for (int i = 0; i < length; i++) {
+				this.getResultObjects().add((P) Array.get(value, i));
+			}
+		} else {
+			if (this.resultObjects == null) {
+				this.resultObjects = new ArrayList<>();
+			}
+			if (value instanceof Iterable) {
+				this.getResultObjects().addAll((Iterable<P>) value);
 			} else {
 				this.getResultObjects().add((P) value);
 			}

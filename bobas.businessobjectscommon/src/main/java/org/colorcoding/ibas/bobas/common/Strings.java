@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Iterator;
 
-import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializationException;
 import org.colorcoding.ibas.bobas.serialization.SerializationFactory;
@@ -213,7 +212,7 @@ public class Strings {
 			int length = Array.getLength(value);
 			for (int i = 0; i < length; i++) {
 				if (builder.length() > 0) {
-					builder.append(DataConvert.DATA_SEPARATOR);
+					builder.append(VALUE_COMMA);
 				}
 				builder.append(Array.get(value, i));
 			}
@@ -223,7 +222,7 @@ public class Strings {
 			Iterator<?> iterator = ((Iterable<?>) value).iterator();
 			while (iterator.hasNext()) {
 				if (builder.length() > 0) {
-					builder.append(DataConvert.DATA_SEPARATOR);
+					builder.append(VALUE_COMMA);
 				}
 				builder.append(iterator.next());
 			}

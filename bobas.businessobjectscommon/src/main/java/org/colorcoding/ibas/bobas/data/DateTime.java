@@ -20,29 +20,6 @@ public class DateTime extends Date {
 	private static final long serialVersionUID = 9197442988053540497L;
 
 	/**
-	 * 日期格式，默认yyyy-MM-dd
-	 */
-	public static String FORMAT_DATE = "yyyy-MM-dd";
-	/**
-	 * 时间格式，默HH:mm:ss
-	 */
-	public static String FORMAT_TIME = "HH:mm:ss";
-	/**
-	 * 日期时间格式，默认yyyy-MM-dd'T'HH:mm:ss
-	 */
-	public static String FORMAT_DATETIME = String.format("%s'T'%s", FORMAT_DATE, FORMAT_TIME);
-
-	/**
-	 * 最小日期
-	 */
-	public static final DateTime MIN_VALUE = DateTimes.VALUE_MIN;
-
-	/**
-	 * 最大日期
-	 */
-	public static final DateTime MAX_VALUE = DateTimes.VALUE_MAX;
-
-	/**
 	 * 当前时间
 	 */
 	@Deprecated
@@ -91,9 +68,9 @@ public class DateTime extends Date {
 		calendar.setTime(this);
 		if (calendar.get(Calendar.SECOND) > 0 || calendar.get(Calendar.MINUTE) > 0
 				|| calendar.get(Calendar.HOUR_OF_DAY) > 0) {
-			return this.toString(FORMAT_DATETIME);
+			return this.toString(DateTimes.FORMAT_DATETIME);
 		}
-		return this.toString(FORMAT_DATE);
+		return this.toString(DateTimes.FORMAT_DATE);
 	}
 
 	/**
