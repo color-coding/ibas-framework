@@ -361,7 +361,10 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 			BusinessObject<?> boData = null;
 			List<IBusinessObject> boChilds = null;
 			List<BusinessObject<?>> boDatas = null;
+			// 保存语句执行者
 			BiFunction<TransactionType, List<BusinessObject<?>>, Exception> sqlExecuter = null;
+			// 事务通知语句执行者
+			BiFunction<Boolean, List<BusinessObject<?>>, Exception> spExecuter = null;
 			Map<Class<?>, List<BusinessObject<?>>> boDeletes = new HashMap<>(4, 1);
 			Map<Class<?>, List<BusinessObject<?>>> boUpdates = new HashMap<>(4, 1);
 			Map<Class<?>, List<BusinessObject<?>>> boInserts = new HashMap<>(4, 1);
@@ -609,6 +612,99 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 						return null;
 					}
 				};
+				// 处理事务存储过程
+				if (boDatas != null && !boDatas.isEmpty()) {
+					spExecuter = new BiFunction<Boolean, List<BusinessObject<?>>, Exception>() {
+						@Override
+						public Exception apply(Boolean direction, List<BusinessObject<?>> datas) {
+							int keyCount;
+							DbField dbField;
+							TransactionType type;
+							BusinessObject<?> data;
+							StringBuilder fieldsBuilder;
+							StringBuilder valuesBuilder;
+							List<IPropertyInfo<?>> keys;
+							try (PreparedStatement statement = DbTransaction.this.getConnection()
+									.prepareStatement(DbTransaction.this.getAdapter().sp_transaction_notification())) {
+								for (int i = 0; i < datas.size(); i++) {
+									data = (BusinessObject<?>) datas.get(i);
+									if (data.isDeleted()) {
+										type = direction ? TransactionType.DELETE : TransactionType.BEFORE_DELETE;
+									} else if (data.isNew()) {
+										type = direction ? TransactionType.ADD : TransactionType.BEFORE_ADD;
+									} else {
+										type = direction ? TransactionType.UPDATE : TransactionType.BEFORE_UPDATE;
+									}
+									keyCount = 0;
+									keys = data.properties().where(c -> c.isPrimaryKey());
+									fieldsBuilder = new StringBuilder(keys.size() * 16);
+									valuesBuilder = new StringBuilder(keys.size() * 16);
+									for (IPropertyInfo<?> propertyInfo : keys) {
+										dbField = propertyInfo.getAnnotation(DbField.class);
+										if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
+											continue;
+										}
+										keyCount += 1;
+										if (fieldsBuilder.length() > 0) {
+											fieldsBuilder.append(DbTransaction.this.getAdapter().separation());
+										}
+										fieldsBuilder.append(dbField.name());
+										if (valuesBuilder.length() > 0) {
+											valuesBuilder.append(DbTransaction.this.getAdapter().separation());
+										}
+										valuesBuilder.append(Strings.valueOf(data.getProperty(propertyInfo)));
+									}
+									// 对象编码
+									statement.setString(1, BOFactory.codeOf(data.getClass()));
+									// 事务类型
+									statement.setString(2, Enums.annotationValue(type));
+									// 主键个数
+									statement.setInt(3, keyCount);
+									// 主键名称
+									statement.setString(4, fieldsBuilder.toString());
+									// 主键值
+									statement.setString(5, valuesBuilder.toString());
+									// 操作用户
+									if (!DbTransaction.this.getAdapter().isNoUserTansactionSP()) {
+										IUser user = DbTransaction.this.getUser();
+										if (user != null) {
+											statement.setInt(6, user.getId());
+										} else {
+											statement.setInt(6, -1);
+										}
+									}
+
+									// 运行语句，非0则抛异常
+									try (ResultSet resultSet = statement.executeQuery()) {
+										List<Result> results = DbTransaction.this.getAdapter()
+												.parsingDatas(Result.class, resultSet);
+										for (Result result : results) {
+											if (result.getResultCode() != 0) {
+												throw new TransactionException(Strings.format("%s - %s",
+														result.getResultCode(), result.getMessage()));
+											}
+										}
+									}
+								}
+							} catch (Exception e) {
+								return e;
+							} finally {
+								dbField = null;
+								data = null;
+								fieldsBuilder = null;
+								valuesBuilder = null;
+							}
+							return null;
+						}
+					};
+				}
+				// 执行存储过程通知（保存前）
+				if (spExecuter != null) {
+					sqlResult = spExecuter.apply(false, boDatas);
+					if (sqlResult instanceof Exception) {
+						throw sqlResult;
+					}
+				}
 				// 处理删除内容
 				for (List<BusinessObject<?>> datas : boDeletes.values()) {
 					if (datas.size() > 0) {
@@ -640,92 +736,9 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 				if (boChilds != null && !boChilds.isEmpty()) {
 					this.save(boChilds.toArray(new IBusinessObject[boChilds.size()]));
 				}
-				// 处理事务存储过程
-				sqlExecuter = new BiFunction<TransactionType, List<BusinessObject<?>>, Exception>() {
-					@Override
-					public Exception apply(TransactionType type, List<BusinessObject<?>> datas) {
-						int keyCount;
-						DbField dbField;
-						BusinessObject<?> data;
-						StringBuilder fieldsBuilder;
-						StringBuilder valuesBuilder;
-						List<IPropertyInfo<?>> keys;
-						try (PreparedStatement statement = DbTransaction.this.getConnection()
-								.prepareStatement(DbTransaction.this.getAdapter().sp_transaction_notification())) {
-							for (int i = 0; i < datas.size(); i++) {
-								data = (BusinessObject<?>) datas.get(i);
-								if (data.isDeleted()) {
-									type = TransactionType.DELETE;
-								} else if (data.isNew()) {
-									type = TransactionType.ADD;
-								} else {
-									type = TransactionType.UPDATE;
-								}
-								keyCount = 0;
-								keys = data.properties().where(c -> c.isPrimaryKey());
-								fieldsBuilder = new StringBuilder(keys.size() * 16);
-								valuesBuilder = new StringBuilder(keys.size() * 16);
-								for (IPropertyInfo<?> propertyInfo : keys) {
-									dbField = propertyInfo.getAnnotation(DbField.class);
-									if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
-										continue;
-									}
-									keyCount += 1;
-									if (fieldsBuilder.length() > 0) {
-										fieldsBuilder.append(DbTransaction.this.getAdapter().separation());
-									}
-									fieldsBuilder.append(dbField.name());
-									if (valuesBuilder.length() > 0) {
-										valuesBuilder.append(DbTransaction.this.getAdapter().separation());
-									}
-									valuesBuilder.append(Strings.valueOf(data.getProperty(propertyInfo)));
-								}
-								// 对象编码
-								statement.setString(1, BOFactory.codeOf(data.getClass()));
-								// 事务类型
-								statement.setString(2, Enums.annotationValue(type));
-								// 主键个数
-								statement.setInt(3, keyCount);
-								// 主键名称
-								statement.setString(4, fieldsBuilder.toString());
-								// 主键值
-								statement.setString(5, valuesBuilder.toString());
-								// 操作用户
-								if (!DbTransaction.this.getAdapter().isNoUserTansactionSP()) {
-									IUser user = DbTransaction.this.getUser();
-									if (user != null) {
-										statement.setInt(6, user.getId());
-									} else {
-										statement.setInt(6, -1);
-									}
-								}
-
-								// 运行语句，非0则抛异常
-								try (ResultSet resultSet = statement.executeQuery()) {
-									List<Result> results = DbTransaction.this.getAdapter().parsingDatas(Result.class,
-											resultSet);
-									for (Result result : results) {
-										if (result.getResultCode() != 0) {
-											throw new TransactionException(Strings.format("%s - %s",
-													result.getResultCode(), result.getMessage()));
-										}
-									}
-								}
-							}
-						} catch (Exception e) {
-							return e;
-						} finally {
-							dbField = null;
-							data = null;
-							fieldsBuilder = null;
-							valuesBuilder = null;
-						}
-						return null;
-					}
-				};
-				// 执行存储过程通知
-				if (boDatas != null && !boDatas.isEmpty()) {
-					sqlResult = sqlExecuter.apply(null, boDatas);
+				// 执行存储过程通知（保存后）
+				if (spExecuter != null) {
+					sqlResult = spExecuter.apply(true, boDatas);
 					if (sqlResult instanceof Exception) {
 						throw sqlResult;
 					}
@@ -764,6 +777,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 				boInserts = null;
 				sqlResult = null;
 				sqlExecuter = null;
+				spExecuter = null;
 			}
 		} catch (Exception e) {
 			throw new RepositoryException(e);
