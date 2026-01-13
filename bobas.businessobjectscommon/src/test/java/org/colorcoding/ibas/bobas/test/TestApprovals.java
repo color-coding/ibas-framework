@@ -25,6 +25,7 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.db.DbField;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
+import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
 import org.colorcoding.ibas.bobas.test.demo.SalesOrder;
 import org.colorcoding.ibas.bobas.test.demo.SalesOrderItem;
 
@@ -352,6 +353,21 @@ class ProcessData extends BusinessObject<ProcessData> implements IProcessData {
 	@Override
 	public void setActivated(emYesNo value) {
 		this.activated = value;
+	}
+
+	@Override
+	public emYesNo getReentrant() {
+		return emYesNo.NO;
+	}
+
+	@Override
+	public IUser getOwner() {
+		return OrganizationFactory.UNKNOWN_USER;
+	}
+
+	@Override
+	public void setOwner(IUser value) {
+
 	}
 
 }

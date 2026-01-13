@@ -109,13 +109,18 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 		this.approvalData = approvalData;
 	}
 
+	private IUser owner = null;
+
 	/**
 	 * 审批所有者
 	 * 
 	 * @return
 	 */
 	public IUser getOwner() {
-		return OrganizationFactory.createManager().getUser(this.getProcessData().getApprovalData().getDataOwner());
+		if (this.owner == null || Integer.compare(this.owner.getId(), this.getProcessData().getOwner().getId()) != 0) {
+			this.owner = OrganizationFactory.createManager().getUser(this.getProcessData().getOwner().getId());
+		}
+		return this.owner;
 	}
 
 	/**
@@ -488,7 +493,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 			return;
 		}
 		// 所有者修改数据
-		if (Integer.compare(this.getApprovalData().getDataOwner(), user.getId()) == 0) {
+		if (Integer.compare(this.getOwner().getId(), user.getId()) == 0) {
 			// 审批新建状态，可修改数据
 			if (this.getProcessData().isNew()) {
 				return;

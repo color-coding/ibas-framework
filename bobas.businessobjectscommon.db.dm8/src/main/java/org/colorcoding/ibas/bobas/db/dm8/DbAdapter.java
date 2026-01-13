@@ -119,8 +119,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			stringBuilder.append(" ");
 			stringBuilder.append(this.parsingWhere(criteria.getConditions()));
 		}
-		// 如果加锁，则不能排序
-		if (withLock == false && criteria.getSorts().size() > 0) {
+		if (criteria.getSorts().size() > 0) {
 			stringBuilder.append(" ");
 			stringBuilder.append("ORDER BY");
 			stringBuilder.append(" ");

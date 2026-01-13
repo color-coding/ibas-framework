@@ -109,11 +109,15 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 			if (!contract.getHost().isNew()) {
 				processData = this.getProcessManager().loadProcessData(contract.getHost());
 			}
-			// 没有已存在的流程数据，则根据尝试创建
-			if (processData == null) {
+			// 尝试创建审批流程，流程数据不存在或已批准或拒绝
+			if (processData == null || (this.getHost().isDirty() && processData.getReentrant() == emYesNo.YES
+					&& (processData.getStatus() == emApprovalStatus.APPROVED
+							|| processData.getStatus() == emApprovalStatus.REJECTED))) {
 				ApprovalProcess<IProcessData> process = this.getProcessManager().startProcess(contract.getHost());
 				if (process != null) {
 					processData = process.getProcessData();
+					// 设置审批所有者
+					processData.setOwner(this.getUser());
 					if (!Enums.equals(contract.getHost().getApprovalStatus(), processData.getStatus())) {
 						contract.getHost().setApprovalStatus(processData.getStatus());
 					}

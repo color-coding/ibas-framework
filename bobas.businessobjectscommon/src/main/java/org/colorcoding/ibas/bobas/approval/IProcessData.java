@@ -4,6 +4,7 @@ import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
+import org.colorcoding.ibas.bobas.organization.IUser;
 
 /**
  * 审批流程（数据）
@@ -77,6 +78,13 @@ public interface IProcessData extends IBusinessObject {
 	void setFinishedTime(DateTime value);
 
 	/**
+	 * 获取-可重入审批
+	 * 
+	 * @return 值
+	 */
+	emYesNo getReentrant();
+
+	/**
 	 * 获取审批数据
 	 * 
 	 * @return
@@ -90,4 +98,17 @@ public interface IProcessData extends IBusinessObject {
 	 */
 	void setApprovalData(IApprovalData value);
 
+	/**
+	 * 获取-所有者
+	 * 
+	 * @return 值
+	 */
+	IUser getOwner();
+
+	/**
+	 * 设置-所有者
+	 * 
+	 * @param value 值
+	 */
+	void setOwner(IUser value);
 }
