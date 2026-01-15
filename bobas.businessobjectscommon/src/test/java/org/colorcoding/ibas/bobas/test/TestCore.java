@@ -225,6 +225,9 @@ public class TestCore extends TestCase {
 		orderItem.setItemCode("A00003");
 		orderItem.setQuantity(Decimals.valueOf("99999999999999"));
 		System.out.println(BOUtilities.toXmlString(nOrder));
+
+		System.out.println("csv:");
+		System.out.println(BOUtilities.toCsvString(order));
 	}
 
 }

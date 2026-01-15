@@ -63,7 +63,6 @@ public class SerializerXml extends Serializer {
 		}
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T deserialize(InputSource inputSource, Class<?>... types) throws SerializationException {
 		try {
@@ -115,7 +114,7 @@ public class SerializerXml extends Serializer {
 	}
 
 	public Schema schema(Class<?> type) throws SerializationException {
-		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream(512)) {
 			this.schema(type, outputStream);
 			try (InputStream stream = new ByteArrayInputStream(outputStream.toByteArray())) {
 				SchemaFactory factory = SchemaFactory.newInstance(XML_FILE_NAMESPACE);

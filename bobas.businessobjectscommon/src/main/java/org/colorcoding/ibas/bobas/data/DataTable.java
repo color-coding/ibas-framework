@@ -1,5 +1,8 @@
 package org.colorcoding.ibas.bobas.data;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -8,7 +11,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.Serializable;
+import org.colorcoding.ibas.bobas.serialization.ISerializer;
+import org.colorcoding.ibas.bobas.serialization.SerializationException;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "DataTable", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
@@ -75,6 +81,32 @@ public class DataTable extends Serializable implements IDataTable {
 	@Override
 	public String toString() {
 		return String.format("{table: %s}", this.getName() == null ? "unknown" : this.getName());
+	}
+
+	/**
+	 * 转为字符串
+	 * 
+	 * @param type 类型：xml、json、csv
+	 * @return
+	 */
+	public String toString(String type) {
+		ISerializer serializer = null;
+		if (Strings.equalsIgnoreCase(DataTableSerializerCsv.TYPE_SIGN, type)) {
+			serializer = new DataTableSerializerCsv();
+		} else if (Strings.equalsIgnoreCase(DataTableSerializerJson.TYPE_SIGN, type)) {
+			serializer = new DataTableSerializerJson();
+		} else if (Strings.equalsIgnoreCase(DataTableSerializerXml.TYPE_SIGN, type)) {
+			serializer = new DataTableSerializerXml();
+		}
+		if (serializer != null) {
+			try (ByteArrayOutputStream writer = new ByteArrayOutputStream(1024)) {
+				serializer.serialize(this, writer);
+				return writer.toString();
+			} catch (IOException e) {
+				throw new SerializationException(e);
+			}
+		}
+		return this.toString();
 	}
 
 }

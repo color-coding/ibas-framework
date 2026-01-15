@@ -187,8 +187,8 @@ public class Files {
 	 */
 	public static void writeTo(File file, OutputStream outputStream) throws IOException {
 		try (FileInputStream inputStream = new FileInputStream(file)) {
-			byte[] buffer = new byte[4096];
 			int bytesRead;
+			byte[] buffer = new byte[4096];
 			while ((bytesRead = inputStream.read(buffer)) != -1) {
 				outputStream.write(buffer, 0, bytesRead);
 			}

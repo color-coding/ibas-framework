@@ -690,7 +690,7 @@ public class BOUtilities {
 	 */
 	public static String toJsonString(Object data) {
 		// 首先使用内置序列化方式
-		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
+		try (ByteArrayOutputStream writer = new ByteArrayOutputStream(256)) {
 			ISerializer serializer = new SerializerJson();
 			serializer.serialize(data, writer);
 			return writer.toString();
@@ -699,7 +699,7 @@ public class BOUtilities {
 		} catch (SerializationException e) {
 			Logger.log(MessageLevel.WARN, e);
 			// 内置发生错误，则使用标准方式
-			try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
+			try (ByteArrayOutputStream writer = new ByteArrayOutputStream(256)) {
 				ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_JSON);
 				serializer.serialize(data, writer);
 				return writer.toString();
@@ -717,7 +717,7 @@ public class BOUtilities {
 	 */
 	public static String toXmlString(Object data) {
 		// 首先使用内置序列化方式
-		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
+		try (ByteArrayOutputStream writer = new ByteArrayOutputStream(512)) {
 			ISerializer serializer = new SerializerXml();
 			serializer.serialize(data, writer);
 			return writer.toString();
@@ -726,7 +726,7 @@ public class BOUtilities {
 		} catch (SerializationException e) {
 			Logger.log(MessageLevel.WARN, e);
 			// 内置发生错误，则使用标准方式
-			try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
+			try (ByteArrayOutputStream writer = new ByteArrayOutputStream(512)) {
 				ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_XML);
 				serializer.serialize(data, writer);
 				return writer.toString();
@@ -735,4 +735,21 @@ public class BOUtilities {
 			}
 		}
 	}
+
+	/**
+	 * 转为csv字符串
+	 * 
+	 * @param data 数据
+	 * @return
+	 */
+	public static String toCsvString(Object data) {
+		try (ByteArrayOutputStream writer = new ByteArrayOutputStream(256)) {
+			ISerializer serializer = new SerializerCsv();
+			serializer.serialize(data, writer);
+			return writer.toString();
+		} catch (IOException e) {
+			throw new SerializationException(e);
+		}
+	}
+
 }

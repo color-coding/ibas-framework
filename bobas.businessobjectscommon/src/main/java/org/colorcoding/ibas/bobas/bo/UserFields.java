@@ -6,6 +6,10 @@ import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 
 class UserFields implements IUserFields {
 
+	public static final String ELEMENT_NAME = "UserField";
+
+	public static final String WRAPPER_NAME = "UserFields";
+
 	public static final IUserFields EMPTY_DATA = new UserFields(null);
 
 	public UserFields(BusinessObject<?> bizObject) {

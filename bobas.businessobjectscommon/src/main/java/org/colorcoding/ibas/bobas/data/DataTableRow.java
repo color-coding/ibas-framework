@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.data;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
@@ -31,7 +32,8 @@ public class DataTableRow extends Serializable implements IDataTableRow {
 		}
 	}
 
-	@XmlElement(name = "Cells", type = String.class, required = true)
+	@XmlElementWrapper(name = "Cells")
+	@XmlElement(name = "Cell", type = String.class, required = true)
 	private String[] getValueProxys() {
 		String[] values = new String[this.values.length];
 		for (int i = 0; i < this.values.length; i++) {

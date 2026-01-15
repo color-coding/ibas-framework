@@ -30,6 +30,7 @@ import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.rule.BusinessRulesManager;
 import org.colorcoding.ibas.bobas.rule.IBusinessRule;
 import org.colorcoding.ibas.bobas.rule.IBusinessRules;
+import org.colorcoding.ibas.bobas.serialization.SerializationFactory;
 
 /**
  * 业务对象基础类型
@@ -189,6 +190,21 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 
 	@Override
 	public String toString() {
+		return this.getIdentifiers();
+	}
+
+	/**
+	 * 转为字符串
+	 * 
+	 * @param type 类型：xml、json
+	 * @return
+	 */
+	public String toString(String type) {
+		if (Strings.equalsIgnoreCase(SerializationFactory.TYPE_JSON, type)) {
+			return BOUtilities.toJsonString(this);
+		} else if (Strings.equalsIgnoreCase(SerializationFactory.TYPE_XML, type)) {
+			return BOUtilities.toXmlString(this);
+		}
 		return this.getIdentifiers();
 	}
 
@@ -449,8 +465,8 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 		return UserFields.EMPTY_DATA;
 	}
 
-	@XmlElementWrapper(name = "UserFields")
-	@XmlElement(name = "UserField", type = UserFieldProxy.class, required = false)
+	@XmlElementWrapper(name = UserFields.WRAPPER_NAME)
+	@XmlElement(name = UserFields.ELEMENT_NAME, type = UserFieldProxy.class, required = false)
 	private UserFieldProxy[] getUserFieldProxies() {
 		if (this.userFields == null) {
 			return null;

@@ -3,12 +3,15 @@ package org.colorcoding.ibas.bobas.serialization.jersey.test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Random;
 
 import javax.xml.bind.JAXBException;
 
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.Criteria;
+import org.colorcoding.ibas.bobas.common.Decimals;
 import org.colorcoding.ibas.bobas.common.IChildCriteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
@@ -20,8 +23,10 @@ import org.colorcoding.ibas.bobas.data.DataTable;
 import org.colorcoding.ibas.bobas.data.IDataTableColumn;
 import org.colorcoding.ibas.bobas.data.IDataTableRow;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializationFactory;
+import org.colorcoding.ibas.bobas.serialization.SerializerXml;
 import org.colorcoding.ibas.bobas.serialization.ValidateException;
 import org.colorcoding.ibas.bobas.serialization.jersey.SerializerJson;
 import org.colorcoding.ibas.bobas.serialization.jersey.SerializerManager;
@@ -140,32 +145,49 @@ public class TestCommon extends TestCase {
 	}
 
 	public void testOperationRuslut() throws IOException {
-		OperationResult<DataTable> operationResult = new OperationResult<>();
-		operationResult.setResultCode(1);
 		DataTable dataTable = new DataTable();
 		IDataTableColumn column = dataTable.getColumns().create();
-		column.setName("Test");
+		column.setName("Name");
 		column.setDataType(String.class);
+		column = dataTable.getColumns().create();
+		column.setName("Value");
+		column.setDataType(BigDecimal.class);
 		IDataTableRow row = dataTable.getRows().create();
-		row.setValue(column, "你好，世界！");
+		row.setValue(0, "你好，世界！");
+		row.setValue(1, Decimals.VALUE_LONG_MIN_VALUE);
+		System.out.println(dataTable.toString("csv"));
+		System.out.println(dataTable.toString("json"));
+		System.out.println(dataTable.toString("xml"));
+
+		OperationResult<DataTable> operationResult = new OperationResult<>();
+		operationResult.setResultCode(new Random().nextInt());
+		operationResult.setMessage(I18N.prop("msg_bobas_unknown_exception"));
 		operationResult.getResultObjects().add(dataTable);
 
-		ByteArrayOutputStream writer = new ByteArrayOutputStream();
-		SerializerJson serializer = new SerializerJson();
-		serializer.setIncludeJsonRoot(true);
-		serializer.serialize(operationResult, writer, OperationResult.class, DataTable.class);
-		System.out.println(writer.toString());
-		operationResult = serializer.deserialize(writer.toString(), OperationResult.class, DataTable.class);
-		System.out.println(operationResult);
-		writer.close();
+		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
+			SerializerJson serializer = new SerializerJson();
+			serializer.setIncludeJsonRoot(true);
+			serializer.serialize(operationResult, writer, OperationResult.class, DataTable.class);
+			System.out.println(writer.toString());
+			operationResult = serializer.deserialize(writer.toString(), OperationResult.class, DataTable.class);
+			System.out.println(operationResult);
+		}
 
-		writer = new ByteArrayOutputStream();
-		serializer = new SerializerJson();
-		serializer.setIncludeJsonRoot(false);
-		serializer.serialize(operationResult, writer, OperationResult.class, DataTable.class);
-		System.out.println(writer.toString());
-		operationResult = serializer.deserialize(writer.toString(), OperationResult.class, DataTable.class);
-		System.out.println(operationResult);
-		writer.close();
+		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
+			SerializerJson serializer = new SerializerJson();
+			serializer.setIncludeJsonRoot(false);
+			serializer.serialize(operationResult, writer, OperationResult.class, DataTable.class);
+			System.out.println(writer.toString());
+			operationResult = serializer.deserialize(writer.toString(), OperationResult.class, DataTable.class);
+			System.out.println(operationResult);
+		}
+
+		try (ByteArrayOutputStream writer = new ByteArrayOutputStream()) {
+			SerializerXml serializer = new SerializerXml();
+			serializer.serialize(operationResult, writer, OperationResult.class, DataTable.class);
+			System.out.println(writer.toString());
+			operationResult = serializer.deserialize(writer.toString(), OperationResult.class, DataTable.class);
+			System.out.println(operationResult);
+		}
 	}
 }

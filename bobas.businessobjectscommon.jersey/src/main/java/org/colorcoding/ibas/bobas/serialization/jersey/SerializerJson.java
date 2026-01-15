@@ -27,7 +27,6 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.MediaType;
-import org.xml.sax.InputSource;
 
 public class SerializerJson extends Serializer {
 
@@ -108,23 +107,6 @@ public class SerializerJson extends Serializer {
 		try {
 			Unmarshaller unmarshaller = this.createUnmarshaller(types);
 			Object object = unmarshaller.unmarshal(ipnInputStream);
-			if (object instanceof JAXBElement) {
-				// 因为不包括头，此处返回的是这个玩意儿
-				return ((JAXBElement<T>) object).getValue();
-			} else {
-				return (T) object;
-			}
-		} catch (JAXBException e) {
-			throw new SerializationException(e);
-		}
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T deserialize(InputSource inputSource, Class<?>... types) throws SerializationException {
-		try {
-			Unmarshaller unmarshaller = this.createUnmarshaller(types);
-			Object object = unmarshaller.unmarshal(inputSource);
 			if (object instanceof JAXBElement) {
 				// 因为不包括头，此处返回的是这个玩意儿
 				return ((JAXBElement<T>) object).getValue();

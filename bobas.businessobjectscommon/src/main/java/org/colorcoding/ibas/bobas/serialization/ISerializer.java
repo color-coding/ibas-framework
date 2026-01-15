@@ -4,9 +4,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 /**
  * 
  * 序列化者
@@ -60,7 +57,7 @@ public interface ISerializer {
 	 * 
 	 * @param type 目标类型
 	 * @param data 数据
-	 * @throws SAXException
+	 * @throws ValidateException
 	 */
 	void validate(Class<?> type, String data) throws ValidateException;
 
@@ -69,7 +66,7 @@ public interface ISerializer {
 	 * 
 	 * @param type 目标类型
 	 * @param data 数据
-	 * @throws SAXException
+	 * @throws ValidateException
 	 */
 	void validate(Class<?> type, InputStream data) throws ValidateException;
 
@@ -90,15 +87,6 @@ public interface ISerializer {
 	 * @return 新对象实例
 	 */
 	<T> T deserialize(InputStream inputStream, Class<?>... types) throws SerializationException;
-
-	/**
-	 * 反序列化
-	 * 
-	 * @param inputSource 数据
-	 * @param types       其他已知类型
-	 * @return 新对象实例
-	 */
-	<T> T deserialize(InputSource inputSource, Class<?>... types) throws SerializationException;
 
 	/**
 	 * 反序列化

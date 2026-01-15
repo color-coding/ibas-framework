@@ -18,7 +18,7 @@ public abstract class Serializer implements ISerializer {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T clone(T object, Class<?>... types) throws SerializationException {
-		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream(512)) {
 			this.serialize(object, outputStream, false, types);
 			try (ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray())) {
 				Class<?>[] knownTypes = new Class[types.length + 1];
