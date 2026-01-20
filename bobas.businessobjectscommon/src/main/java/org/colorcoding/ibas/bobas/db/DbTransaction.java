@@ -289,7 +289,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 								}
 								// 复制指定的子项查询
 								for (IChildCriteria item : criteria.getChildCriterias()) {
-									if (propertyInfo.getName().equalsIgnoreCase(item.getPropertyPath())) {
+									if (Strings.equalsIgnoreCase(propertyInfo.getName(), item.getPropertyPath())) {
 										cCriteria = cCriteria.copyFrom(item);
 										cCriteria.setNoChilds(item.isNoChilds());
 										cCriteria.setResultCount(item.getResultCount());

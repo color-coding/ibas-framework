@@ -101,6 +101,25 @@ public class FileRepository extends Repository {
 		this.repositoryFolder = folder;
 	}
 
+	public void setRepositoryFolder(File folder) {
+		this.repositoryFolder = folder.getPath();
+	}
+
+	private boolean groupingFiles;
+
+	/**
+	 * 文件分组存储
+	 * 
+	 * @return
+	 */
+	public final boolean isGroupingFiles() {
+		return groupingFiles;
+	}
+
+	public final void setGroupingFiles(boolean groupingFiles) {
+		this.groupingFiles = groupingFiles;
+	}
+
 	/**
 	 * 查询文件
 	 * 
@@ -178,6 +197,8 @@ public class FileRepository extends Repository {
 								.getPath();
 						condition.setValue(
 								condition.getValue().substring(condition.getValue().lastIndexOf(File.separator) + 1));
+					} else if (this.isGroupingFiles()) {
+						workFolder = Files.valueOf(workFolder, this.groupingOf(condition.getValue())).getPath();
 					}
 				}
 			}
@@ -221,6 +242,26 @@ public class FileRepository extends Repository {
 		return nFileItems;
 	}
 
+	private String groupingOf(String name) {
+		StringBuilder builder = new StringBuilder();
+		char[] items = new char[4];
+		for (int i = 0; i < 4 && i < name.length(); i++) {
+			items[i] = name.charAt(i);
+		}
+		char item;
+		for (int i = 0; i < items.length; i++) {
+			item = items[i];
+			if (i == 2) {
+				builder.append(File.separator);
+			}
+			if (item == 0 || item < 32 || item > 127) {
+				item = 95;
+			}
+			builder.append(item);
+		}
+		return builder.toString();
+	}
+
 	/**
 	 * 查询文件
 	 * 
@@ -262,6 +303,7 @@ public class FileRepository extends Repository {
 							} else if (CONDITION_ALIAS_MODIFIED_TIME.equalsIgnoreCase(sort.getAlias())) {
 								if (sort.getSortType() == SortType.ASCENDING) {
 									Arrays.sort(folderFiles, new Comparator<File>() {
+
 										@Override
 										public int compare(File o1, File o2) {
 											return Long.compare(o1.lastModified(), o2.lastModified());
@@ -324,15 +366,20 @@ public class FileRepository extends Repository {
 			fileItem.setName(fileData.getFileName());
 			// 形成新文件名，保留扩展名
 			if (Strings.isNullOrEmpty(fileItem.getName())) {
-				String exName = Strings.VALUE_EMPTY;
-				int index = fileData.getOriginalName().lastIndexOf(".");
-				if (index > 0 && index < fileData.getOriginalName().length()) {
-					exName = fileData.getOriginalName().substring(index);
-				}
-				fileItem.setName(Strings.isNullOrEmpty(exName) ? UUID.randomUUID().toString()
-						: UUID.randomUUID().toString() + exName.toLowerCase());
+				String tmpValue = Files.extensionOf(fileData.getOriginalName());
+				fileItem.setName(Strings.isNullOrEmpty(tmpValue) ? UUID.randomUUID().toString()
+						: Strings.concat(UUID.randomUUID().toString(), Strings.VALUE_DOT, tmpValue.toLowerCase()));
 			}
-			fileItem.setPath(workFolder.getPath() + File.separator + fileItem.getName());
+			StringBuilder builder = new StringBuilder();
+			builder.append(workFolder.getPath());
+			builder.append(File.separator);
+			if (this.isGroupingFiles()) {
+				builder.append(this.groupingOf(fileItem.getName()));
+				builder.append(File.separator);
+			}
+			builder.append(fileItem.getName());
+			fileItem.setPath(builder.toString());
+			builder = null;
 			// 创建工作目录
 			File ouFile = new File(fileItem.getPath());
 			if (ouFile.getParentFile() != null && !ouFile.getParentFile().exists()) {

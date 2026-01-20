@@ -18,7 +18,6 @@ import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.data.FileItem;
-import org.colorcoding.ibas.bobas.repository.FileRepository;
 import org.colorcoding.ibas.bobas.repository.jersey.FileRepositoryService;
 import org.colorcoding.ibas.demo.MyConfiguration;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
@@ -90,7 +89,7 @@ public class ServiceFile extends FileRepositoryService {
 		try {
 			Criteria criteria = new Criteria();
 			ICondition condition = criteria.getConditions().create();
-			condition.setAlias(FileRepository.CONDITION_ALIAS_FILE_NAME);
+			condition.setAlias(FileRepositoryService.CONDITION_ALIAS_FILE_NAME);
 			condition.setValue(resource);
 			// 获取文件
 			OperationResult<FileItem> operationResult = this.fetch(criteria, token);
