@@ -406,13 +406,13 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 								boUpdates.get(boType).add(boData);
 							}
 						}
-						// 业务主对象
-						if (boType.getAnnotation(BusinessObjectUnit.class) != null) {
-							if (boDatas == null) {
-								boDatas = new ArrayList<>(bos.length);
-							}
-							boDatas.add(boData);
+					}
+					// 分析业务主对象标记
+					if (boType.getAnnotation(BusinessObjectUnit.class) != null) {
+						if (boDatas == null) {
+							boDatas = new ArrayList<>(bos.length);
 						}
+						boDatas.add(boData);
 					}
 					// 分析待处理子项
 					for (IPropertyInfo<?> propertyInfo : BOFactory.propertyInfos(boType)) {
