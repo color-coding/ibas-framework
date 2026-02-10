@@ -109,14 +109,29 @@ public class BORepositoryService extends BORepository4DB {
 					}
 					for (IBusinessObject item : opRsltChilds.getResultObjects()) {
 						if (item instanceof IBODocumentLine) {
+							if (nCriteria.getConditions().contains(
+									c -> Strings.equalsIgnoreCase(c.getAlias(), IBODocument.MASTER_PRIMARY_KEY_NAME)
+											&& nCriteria.getConditions().indexOf(c) >= count)) {
+								continue;
+							}
 							condition = nCriteria.getConditions().create();
 							condition.setAlias(IBODocument.MASTER_PRIMARY_KEY_NAME);
 							condition.setValue(((IBODocumentLine) item).getDocEntry());
 						} else if (item instanceof IBOSimpleLine) {
+							if (nCriteria.getConditions().contains(
+									c -> Strings.equalsIgnoreCase(c.getAlias(), IBOSimple.MASTER_PRIMARY_KEY_NAME)
+											&& nCriteria.getConditions().indexOf(c) >= count)) {
+								continue;
+							}
 							condition = nCriteria.getConditions().create();
 							condition.setAlias(IBOSimple.MASTER_PRIMARY_KEY_NAME);
 							condition.setValue(((IBOSimpleLine) item).getObjectKey());
 						} else if (item instanceof IBOMasterDataLine) {
+							if (nCriteria.getConditions().contains(
+									c -> Strings.equalsIgnoreCase(c.getAlias(), IBOMasterData.MASTER_PRIMARY_KEY_NAME)
+											&& nCriteria.getConditions().indexOf(c) >= count)) {
+								continue;
+							}
 							condition = nCriteria.getConditions().create();
 							condition.setAlias(IBOMasterData.MASTER_PRIMARY_KEY_NAME);
 							condition.setValue(((IBOMasterDataLine) item).getCode());
@@ -132,9 +147,18 @@ public class BORepositoryService extends BORepository4DB {
 								if (cKey == null) {
 									throw new Exception(I18N.prop("msg_bobas_invalid_argument", pItem.getName()));
 								}
+								if (nCriteria.getConditions()
+										.contains(c -> Strings.equalsIgnoreCase(c.getAlias(), pItem.getName())
+												&& nCriteria.getConditions().indexOf(c) >= count)) {
+									break;
+								}
 								condition = nCriteria.getConditions().create();
 								condition.setAlias(pItem);
 								condition.setValue(BOUtilities.propertyValue(item, cKey));
+							}
+							if (index == nCriteria.getConditions().size()) {
+								// 没有增加条件，跳过
+								continue;
 							}
 							if (nCriteria.getConditions().size() > (index + 2)) {
 								condition = nCriteria.getConditions().get(index);
