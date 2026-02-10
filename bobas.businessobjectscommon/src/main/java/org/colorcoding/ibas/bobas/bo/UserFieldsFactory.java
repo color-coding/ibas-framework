@@ -21,6 +21,9 @@ import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.db.DbField;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.task.Daemon;
+import org.colorcoding.ibas.bobas.task.IDaemonTask;
 
 public class UserFieldsFactory {
 
@@ -50,6 +53,7 @@ public class UserFieldsFactory {
 		return property;
 	}
 
+	private static long taskId = -1;
 	private volatile static UserFieldsManager instance;
 
 	public synchronized static UserFieldsManager createManager() {
@@ -58,6 +62,38 @@ public class UserFieldsFactory {
 				if (instance == null) {
 					instance = new Factory().create();
 					instance.initialize();
+					// 注册清理任务
+					if (UserFieldsFactory.taskId < 0) {
+						UserFieldsFactory.taskId = Daemon.register(new IDaemonTask() {
+							@Override
+							public void run() {
+								if (instance == null) {
+									// 未初始化，不做处理
+									return;
+								}
+								try {
+									UserFieldsManager manager = new Factory().create();
+									manager.initialize();
+									instance = manager;
+								} catch (Exception e) {
+									instance = null;
+									Logger.log(e);
+								}
+							}
+
+							@Override
+							public String getName() {
+								return "userfields cleanner";
+							}
+
+							private long interval = MyConfiguration.isDebugMode() ? 600 : 1800;
+
+							@Override
+							public long getInterval() {
+								return this.interval;
+							}
+						});
+					}
 				}
 			}
 		}
