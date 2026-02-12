@@ -107,6 +107,10 @@ public class BORepositoryService extends BORepository4DB {
 					if (opRsltChilds.getError() != null) {
 						throw opRsltChilds.getError();
 					}
+					// 无结果，不进行父项查询
+					if (opRsltChilds.getResultObjects().isEmpty()) {
+						return new OperationResult<T>();
+					}
 					for (IBusinessObject item : opRsltChilds.getResultObjects()) {
 						if (item instanceof IBODocumentLine) {
 							if (nCriteria.getConditions().contains(
