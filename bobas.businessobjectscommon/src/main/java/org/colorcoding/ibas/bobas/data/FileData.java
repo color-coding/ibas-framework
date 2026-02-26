@@ -1,6 +1,8 @@
 package org.colorcoding.ibas.bobas.data;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -10,6 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.Serializable;
 
 /**
@@ -21,7 +24,7 @@ import org.colorcoding.ibas.bobas.core.Serializable;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "FileData", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 @XmlRootElement(name = "FileData", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
-public class FileData extends Serializable {
+public class FileData extends Serializable implements AutoCloseable {
 
 	private static final long serialVersionUID = 8583908279754401069L;
 
@@ -34,25 +37,30 @@ public class FileData extends Serializable {
 
 	public FileData(File file) {
 		this();
+		this.name = file.getName();
 		this.location = file.getPath();
-		this.fileName = file.getName();
 		this.originalName = file.getName();
 	}
 
-	private String fileName;
+	public FileData(InputStream stream) {
+		this();
+		this.stream = stream;
+	}
+
+	private String name;
 
 	/**
 	 * 文件名称
 	 * 
 	 * @return
 	 */
-	@XmlElement(name = "FileName")
-	public String getFileName() {
-		return fileName;
+	@XmlElement(name = "Name")
+	public String getName() {
+		return name;
 	}
 
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	private String location;
@@ -94,16 +102,33 @@ public class FileData extends Serializable {
 	 * 
 	 * @return
 	 */
-	public InputStream getStream() {
+	public InputStream getStream() throws IOException {
+		if (this.stream == null) {
+			if (!Strings.isNullOrEmpty(this.location)) {
+				File file = new File(this.location);
+				if (file.isFile() && file.exists() && file.canRead()) {
+					this.setStream(new FileInputStream(file));
+				}
+			}
+		}
 		return stream;
 	}
 
-	public void setStream(InputStream stream) {
+	protected void setStream(InputStream stream) {
 		this.stream = stream;
 	}
 
 	@Override
+	public void close() throws Exception {
+		if (this.stream != null) {
+			this.stream.close();
+			this.stream = null;
+		}
+	}
+
+	@Override
 	public String toString() {
-		return String.format("{file data: %s}", this.getFileName());
+		return String.format("{file data: %s}",
+				Strings.isNullOrEmpty(this.getOriginalName()) ? this.getName() : this.getOriginalName());
 	}
 }

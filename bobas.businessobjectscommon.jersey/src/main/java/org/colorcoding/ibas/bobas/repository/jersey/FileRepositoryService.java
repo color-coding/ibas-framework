@@ -21,9 +21,7 @@ public class FileRepositoryService extends org.colorcoding.ibas.bobas.repository
 	 * @return
 	 */
 	public OperationResult<FileItem> save(FormDataBodyPart bodyPart, String token) {
-		try {
-			FileData fileData = new FileData();
-			fileData.setStream(bodyPart.getValueAs(InputStream.class));
+		try (FileData fileData = new FileData(bodyPart.getValueAs(InputStream.class))) {
 			fileData.setOriginalName(URLDecoder.decode(bodyPart.getContentDisposition().getFileName(), "UTF-8"));
 			return new OperationResult<>(super.save(fileData, token));
 		} catch (Exception e) {

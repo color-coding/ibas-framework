@@ -358,12 +358,8 @@ public class FileRepository extends Repository {
 			if (fileData == null || fileData.getStream() == null) {
 				throw new RepositoryException(I18N.prop("msg_bobas_invalid_data"));
 			}
-			File workFolder = new File(this.getRepositoryFolder());
-			if (!workFolder.exists()) {
-				workFolder.mkdirs();
-			}
 			FileItem fileItem = new FileItem();
-			fileItem.setName(fileData.getFileName());
+			fileItem.setName(fileData.getName());
 			// 形成新文件名，保留扩展名
 			if (Strings.isNullOrEmpty(fileItem.getName())) {
 				String tmpValue = Files.extensionOf(fileData.getOriginalName());
@@ -371,7 +367,7 @@ public class FileRepository extends Repository {
 						: Strings.concat(UUID.randomUUID().toString(), Strings.VALUE_DOT, tmpValue.toLowerCase()));
 			}
 			StringBuilder builder = new StringBuilder();
-			builder.append(workFolder.getPath());
+			builder.append(this.getRepositoryFolder());
 			builder.append(File.separator);
 			if (this.isGroupingFiles()) {
 				builder.append(this.groupingOf(fileItem.getName()));
@@ -386,18 +382,21 @@ public class FileRepository extends Repository {
 				ouFile.getParentFile().mkdirs();
 			}
 			int bytesRead = 0;
-			byte[] buffer = new byte[512];
+			byte[] buffer = new byte[1024];
 			try (OutputStream outputStream = new FileOutputStream(ouFile)) {
 				while ((bytesRead = fileData.getStream().read(buffer, 0, buffer.length)) != -1) {
 					outputStream.write(buffer, 0, bytesRead);
 				}
 				outputStream.flush();
-				fileData.getStream().close();
 			}
 			fileItem = new FileItem(ouFile);
-			fileItem.setMaskFolder(workFolder.getPath());
+			fileItem.setMaskFolder(this.getRepositoryFolder());
 			Logger.log(MSG_REPOSITORY_WRITE_FILE, Strings.isNullOrEmpty(fileData.getOriginalName()) ? fileItem.getPath()
 					: String.format("%s|%s", fileData.getOriginalName(), fileItem.getPath()));
+
+			fileData.setName(fileItem.getName());
+			fileData.setLocation(fileItem.getPath());
+
 			return new OperationResult<FileItem>().addResultObjects(fileItem);
 		} catch (Exception e) {
 			return new OperationResult<>(e);
