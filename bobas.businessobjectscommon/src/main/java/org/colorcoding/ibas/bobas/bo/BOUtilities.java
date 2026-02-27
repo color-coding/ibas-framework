@@ -102,6 +102,14 @@ public class BOUtilities {
 		public boolean isValid() {
 			return false;
 		}
+
+		@Override
+		public void setBusy(boolean value) {
+		}
+
+		@Override
+		public void setValid(boolean value) {
+		}
 	};
 
 	/**

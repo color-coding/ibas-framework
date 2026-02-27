@@ -12,10 +12,24 @@ public interface IBusinessObject extends ITrackable {
 	boolean isBusy();
 
 	/**
+	 * 设置忙状态
+	 * 
+	 * @param value
+	 */
+	void setBusy(boolean value);
+
+	/**
 	 * 是否有效
 	 * 
 	 */
 	boolean isValid();
+
+	/**
+	 * 设置有效状态
+	 * 
+	 * @param value
+	 */
+	void setValid(boolean value);
 
 	/**
 	 * 获取对象查询条件

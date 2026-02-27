@@ -257,6 +257,10 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 					if (IBusinessObject.class.isAssignableFrom(propertyInfo.getValueType())) {
 						BusinessObject<?> cData = null;
 						for (T data : datas) {
+							if (!data.isValid()) {
+								// 跳过无效的数据
+								continue;
+							}
 							propertyValue = ((BusinessObject<?>) data).getProperty(propertyInfo);
 							if (BOUtilities.isBusinessObject(propertyValue)) {
 								cData = (BusinessObject<?>) propertyValue;
@@ -279,6 +283,10 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 						boolean includingOtherChilds = false;
 						BusinessObjects<IBusinessObject, ?> cDatas = null;
 						for (T data : datas) {
+							if (!data.isValid()) {
+								// 跳过无效的数据
+								continue;
+							}
 							propertyValue = ((BusinessObject<?>) data).getProperty(propertyInfo);
 							if (BOUtilities.isBusinessObjects(propertyValue)) {
 								cDatas = (BusinessObjects<IBusinessObject, ?>) propertyValue;
@@ -302,7 +310,8 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 									}
 								}
 								// 子查询有效
-								if (cCriteria != null && !cCriteria.getConditions().isEmpty()) {
+								if (cCriteria != null && !cCriteria.isNoChilds()
+										&& !cCriteria.getConditions().isEmpty()) {
 									// 诺含有符合条件项，则全部返回（含其他项）
 									if (includingOtherChilds == true) {
 										cCriteria = this.getAdapter().convert(cCriteria, cDatas.getElementType());
@@ -335,14 +344,14 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 								}
 								// 要求子项必须有值
 								if (onlyHasChilds && cDatas.isEmpty()) {
-									data.delete();
+									data.setValid(false);
 								}
 							}
 						}
 					}
 				}
 			}
-			return datas.where(c -> c.isDeleted() == false).toArray((T[]) Array.newInstance(boType, datas.size()));
+			return datas.where(c -> c.isValid()).toArray((T[]) Array.newInstance(boType, datas.size()));
 		} catch (Exception e) {
 			throw new RepositoryException(e);
 		}

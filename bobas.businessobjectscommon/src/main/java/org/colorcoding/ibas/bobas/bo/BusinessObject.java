@@ -56,6 +56,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 		return this.isValid;
 	}
 
+	@Override
 	public final void setValid(boolean value) {
 		if (this.isValid == value) {
 			return;
@@ -71,6 +72,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 		return this.isBusy;
 	}
 
+	@Override
 	public final void setBusy(boolean value) {
 		if (value == this.isBusy) {
 			return;
@@ -241,6 +243,13 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	@Override
 	public final void undelete() {
 		super.clearDeleted();
+		if (this instanceof IBOTagDeleted) {
+			// 去除删除标记
+			IBOTagDeleted tagBO = (IBOTagDeleted) this;
+			if (tagBO.getDeleted() == emYesNo.YES) {
+				tagBO.setDeleted(emYesNo.NO);
+			}
+		}
 		BOUtilities.traverse(this, (data) -> {
 			data.undelete();
 		});
