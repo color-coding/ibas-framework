@@ -89,7 +89,7 @@ public class LanguageItemManager {
 	 */
 	protected String getWorkFolder() {
 		if (workFolder == null || workFolder.isEmpty()) {
-			String path = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_I18N_PATH);
+			String path = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_I18N_FOLDER);
 			if (path == null || path.isEmpty() || !(new File(path)).exists()) {
 				// 配置的路径不存在
 				try {

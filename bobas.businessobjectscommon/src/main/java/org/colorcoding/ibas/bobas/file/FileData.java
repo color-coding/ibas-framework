@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.bobas.data;
+package org.colorcoding.ibas.bobas.file;
 
 import java.io.File;
 import java.io.FileInputStream;

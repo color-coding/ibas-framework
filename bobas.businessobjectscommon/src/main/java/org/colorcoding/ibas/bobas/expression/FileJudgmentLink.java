@@ -5,6 +5,7 @@ import java.io.File;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.Files;
 import org.colorcoding.ibas.bobas.common.ICondition;
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 
@@ -18,21 +19,33 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 public class FileJudgmentLink extends JudgmentLink {
 
 	/**
-	 * 检索条件项目：文件所属文件夹。/folder1/folder2/file.xxx
+	 * 检索条件项目：文件所属文件夹（比较对象是文件夹时是自身）
 	 */
-	public static final String CRITERIA_CONDITION_ALIAS_FOLDER = "FileFolder";
+	public static final String CRITERIA_CONDITION_ALIAS_FILE_FOLDER = "FileFolder";
 	/**
-	 * 检索条件项目：文件名称。如：ibas.*.jar，条件仅可等于，其他忽略。
+	 * 检索条件项目：文件名称
 	 */
 	public static final String CRITERIA_CONDITION_ALIAS_FILE_NAME = "FileName";
 	/**
-	 * 查询条件字段-文件路径
+	 * 检索条件项目：文件路径（文件夹+名称）
 	 */
 	public static final String CRITERIA_CONDITION_ALIAS_FILE_PATH = "FilePath";
 	/**
-	 * 检索条件项目：最后修改时间（文件时间）。如：1479965348，条件可等于，大小等于。
+	 * 检索条件项目：最后修改时间（文件时间）
 	 */
 	public static final String CRITERIA_CONDITION_ALIAS_MODIFIED_TIME = "ModifiedTime";
+	/**
+	 * 检索条件项目：文件夹(Folder)或文件(File)
+	 */
+	public static final String CRITERIA_CONDITION_ALIAS_FILE_TYPE = "FileType";
+	/**
+	 * 查询条件值-文件
+	 */
+	public static final String CRITERIA_CONDITION_VALUE_FILE = "File";
+	/**
+	 * 查询条件值-文件夹
+	 */
+	public static final String CRITERIA_CONDITION_VALUE_FOLDER = "Folder";
 
 	private String maskFolder;
 
@@ -63,12 +76,24 @@ public class FileJudgmentLink extends JudgmentLink {
 			public Object getValue() {
 				if (CRITERIA_CONDITION_ALIAS_FILE_NAME.equals(this.getPropertyName())) {
 					return value.getName();
-				} else if (CRITERIA_CONDITION_ALIAS_FOLDER.equals(this.getPropertyName())) {
-					return Files.maskingPath(value.getParentFile(), FileJudgmentLink.this.getMaskFolder());
+				} else if (CRITERIA_CONDITION_ALIAS_FILE_FOLDER.equals(this.getPropertyName())) {
+					if (value.isDirectory()) {
+						return Files.maskingPath(value, FileJudgmentLink.this.getMaskFolder());
+					} else if (value.isFile()) {
+						return Files.maskingPath(value.getParentFile(), FileJudgmentLink.this.getMaskFolder());
+					}
 				} else if (CRITERIA_CONDITION_ALIAS_FILE_PATH.equals(this.getPropertyName())) {
 					return Files.maskingPath(value, FileJudgmentLink.this.getMaskFolder());
 				} else if (CRITERIA_CONDITION_ALIAS_MODIFIED_TIME.equals(this.getPropertyName())) {
 					return value.lastModified();
+				} else if (CRITERIA_CONDITION_ALIAS_FILE_TYPE.equals(this.getPropertyName())) {
+					if (value.isFile()) {
+						return CRITERIA_CONDITION_VALUE_FILE;
+					} else if (value.isDirectory()) {
+						return CRITERIA_CONDITION_VALUE_FOLDER;
+					} else {
+						return Strings.VALUE_EMPTY;
+					}
 				}
 				return value;
 			}
@@ -100,20 +125,22 @@ public class FileJudgmentLink extends JudgmentLink {
 			@Override
 			public Class<?> getValueClass() {
 				if (CRITERIA_CONDITION_ALIAS_FILE_NAME.equals(this.getPropertyName())
-						|| CRITERIA_CONDITION_ALIAS_FOLDER.equals(this.getPropertyName())
-						|| CRITERIA_CONDITION_ALIAS_FILE_PATH.equals(this.getPropertyName())) {
+						|| CRITERIA_CONDITION_ALIAS_FILE_FOLDER.equals(this.getPropertyName())
+						|| CRITERIA_CONDITION_ALIAS_FILE_PATH.equals(this.getPropertyName())
+						|| CRITERIA_CONDITION_ALIAS_FILE_TYPE.equals(this.getPropertyName())) {
 					return String.class;
 				} else if (CRITERIA_CONDITION_ALIAS_MODIFIED_TIME.equals(this.getPropertyName())) {
 					return Long.class;
 				}
-				return null;
+				throw new RuntimeException(I18N.prop("msg_bobas_not_support_type_expression", this.getPropertyName()));
 			}
 
 			@Override
 			public String toString() {
 				if (CRITERIA_CONDITION_ALIAS_FILE_NAME.equals(this.getPropertyName())
-						|| CRITERIA_CONDITION_ALIAS_FOLDER.equals(this.getPropertyName())
-						|| CRITERIA_CONDITION_ALIAS_FILE_PATH.equals(this.getPropertyName())) {
+						|| CRITERIA_CONDITION_ALIAS_FILE_FOLDER.equals(this.getPropertyName())
+						|| CRITERIA_CONDITION_ALIAS_FILE_PATH.equals(this.getPropertyName())
+						|| CRITERIA_CONDITION_ALIAS_FILE_TYPE.equals(this.getPropertyName())) {
 					return String.format("{file's value: %s}", this.getValue());
 				} else if (CRITERIA_CONDITION_ALIAS_MODIFIED_TIME.equals(this.getPropertyName())) {
 					return String.format("{file's value: %s}", this.getValue());

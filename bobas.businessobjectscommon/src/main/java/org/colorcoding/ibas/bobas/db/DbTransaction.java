@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -30,12 +32,12 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Numbers;
 import org.colorcoding.ibas.bobas.common.Result;
 import org.colorcoding.ibas.bobas.common.Strings;
-import org.colorcoding.ibas.bobas.core.FieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.List;
+import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
@@ -125,7 +127,9 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 			if (this.isClosed() == false) {
 				this.getConnection().close();
 			}
-			super.close();
+			if (this.cacheDatas != null) {
+				this.cacheDatas.clear();
+			}
 		} catch (SQLException e) {
 			throw new RepositoryException(e);
 		}
@@ -218,7 +222,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 
 	@Override
 	@SuppressWarnings({ "unchecked" })
-	public final <T extends IBusinessObject> T[] fetch(Class<?> boType, ICriteria criteria) throws RepositoryException {
+	public final <T> T[] fetch(Class<?> boType, ICriteria criteria) throws RepositoryException {
 		try {
 			Objects.requireNonNull(boType);
 			// 查询方法，不主动开启事务
@@ -230,7 +234,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 			if (MyConfiguration.isDebugMode()) {
 				Logger.log(MessageLevel.DEBUG, Strings.format("db sql: %s", sql));
 			}
-			List<T> datas = null;
+			List<IBusinessObject> datas = null;
 			try (PreparedStatement statement = this.getConnection().prepareStatement(sql)) {
 				// 填充参数
 				this.fillingParameters(statement, criteria.getConditions(), 1);
@@ -240,7 +244,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 				}
 			}
 			if (datas == null) {
-				datas = new ArrayList<T>();
+				datas = new ArrayList<>();
 			}
 			// 加载子对象
 			if (!datas.isEmpty() && !criteria.isNoChilds()) {
@@ -256,7 +260,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 					}
 					if (IBusinessObject.class.isAssignableFrom(propertyInfo.getValueType())) {
 						BusinessObject<?> cData = null;
-						for (T data : datas) {
+						for (IBusinessObject data : datas) {
 							if (!data.isValid()) {
 								// 跳过无效的数据
 								continue;
@@ -269,8 +273,8 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 									continue;
 								}
 								data.setLoading(true);
-								for (IBusinessObject item : this.fetch(cData.getClass(), cCriteria)) {
-									if (item == null) {
+								for (Object item : this.fetch(cData.getClass(), cCriteria)) {
+									if (!(item instanceof IBusinessObject)) {
 										continue;
 									}
 									((BusinessObject<?>) data).setProperty(propertyInfo, item);
@@ -282,7 +286,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 						boolean onlyHasChilds = false;
 						boolean includingOtherChilds = false;
 						BusinessObjects<IBusinessObject, ?> cDatas = null;
-						for (T data : datas) {
+						for (IBusinessObject data : datas) {
 							if (!data.isValid()) {
 								// 跳过无效的数据
 								continue;
@@ -333,11 +337,11 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 									if (cCriteria != null && !cCriteria.getConditions().isEmpty()) {
 										// 查询子项
 										data.setLoading(true);
-										for (IBusinessObject item : this.fetch(cDatas.getElementType(), cCriteria)) {
-											if (item == null) {
+										for (Object item : this.fetch(cDatas.getElementType(), cCriteria)) {
+											if (!(item instanceof IBusinessObject)) {
 												continue;
 											}
-											cDatas.add(item);
+											cDatas.add((IBusinessObject) item);
 										}
 										data.setLoading(false);
 									}
@@ -358,11 +362,11 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 	}
 
 	@Override
-	public final <T extends IBusinessObject> T[] save(T[] bos) throws RepositoryException {
+	public final <T> T[] save(T[] datas) throws RepositoryException {
 		try {
-			Objects.requireNonNull(bos);
-			if (bos.length == 0) {
-				return (T[]) bos;
+			Objects.requireNonNull(datas);
+			if (datas.length == 0) {
+				return datas;
 			}
 			Object cData = null;
 			Class<?> boType = null;
@@ -381,27 +385,27 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 			boolean mine = this.beginTransaction();
 			try {
 				// 分析数据，形成待处理集合
-				for (IBusinessObject bo : bos) {
-					if (!BOUtilities.isBusinessObject(bo)) {
+				for (Object data : datas) {
+					if (!BOUtilities.isBusinessObject(data)) {
 						continue;
 					}
-					boData = (BusinessObject<?>) bo;
+					boData = (BusinessObject<?>) data;
 					boType = boData.getClass();
 					// 分析待处理方式（按类型分组）
 					if (boData.isSavable() && boData.isDirty()) {
 						if (!boDeletes.containsKey(boType)) {
-							boDeletes.put(boType, new ArrayList<>(bos.length));
+							boDeletes.put(boType, new ArrayList<>(datas.length));
 						}
 						if (!boUpdates.containsKey(boType)) {
-							boUpdates.put(boType, new ArrayList<>(bos.length));
+							boUpdates.put(boType, new ArrayList<>(datas.length));
 						}
 						if (!boInserts.containsKey(boType)) {
-							boInserts.put(boType, new ArrayList<>(bos.length));
+							boInserts.put(boType, new ArrayList<>(datas.length));
 						}
-						if (bo.isDeleted()) {
+						if (boData.isDeleted()) {
 							// 删除
 							boDeletes.get(boType).add(boData);
-						} else if (bo.isNew()) {
+						} else if (boData.isNew()) {
 							// 新建
 							boInserts.get(boType).add(boData);
 						} else {
@@ -419,7 +423,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 					// 分析业务主对象标记
 					if (boType.getAnnotation(BusinessObjectUnit.class) != null) {
 						if (boDatas == null) {
-							boDatas = new ArrayList<>(bos.length);
+							boDatas = new ArrayList<>(datas.length);
 						}
 						boDatas.add(boData);
 					}
@@ -715,27 +719,27 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 					}
 				}
 				// 处理删除内容
-				for (List<BusinessObject<?>> datas : boDeletes.values()) {
-					if (datas.size() > 0) {
-						sqlResult = sqlExecuter.apply(TransactionType.DELETE, datas);
+				for (List<BusinessObject<?>> values : boDeletes.values()) {
+					if (values.size() > 0) {
+						sqlResult = sqlExecuter.apply(TransactionType.DELETE, values);
 						if (sqlResult instanceof Exception) {
 							throw sqlResult;
 						}
 					}
 				}
 				// 处理更新内容
-				for (List<BusinessObject<?>> datas : boUpdates.values()) {
-					if (datas.size() > 0) {
-						sqlResult = sqlExecuter.apply(TransactionType.UPDATE, datas);
+				for (List<BusinessObject<?>> values : boUpdates.values()) {
+					if (values.size() > 0) {
+						sqlResult = sqlExecuter.apply(TransactionType.UPDATE, values);
 						if (sqlResult instanceof Exception) {
 							throw sqlResult;
 						}
 					}
 				}
 				// 处理新建内容
-				for (List<BusinessObject<?>> datas : boInserts.values()) {
-					if (datas.size() > 0) {
-						sqlResult = sqlExecuter.apply(TransactionType.ADD, datas);
+				for (List<BusinessObject<?>> values : boInserts.values()) {
+					if (values.size() > 0) {
+						sqlResult = sqlExecuter.apply(TransactionType.ADD, values);
 						if (sqlResult instanceof Exception) {
 							throw sqlResult;
 						}
@@ -757,18 +761,17 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 					mine = false;
 				}
 				// 标记状态为已保存
-				for (IBusinessObject bo : bos) {
-					if (!BOUtilities.isBusinessObject(bo)) {
+				for (Object data : datas) {
+					if (!BOUtilities.isBusinessObject(data)) {
 						continue;
 					}
-					if (bo.isDirty() == false) {
+					boData = (BusinessObject<?>) data;
+					if (boData.isDirty() == false) {
 						continue;
 					}
-					if (bo instanceof FieldedObject) {
-						((FieldedObject) bo).markOld();
-					}
+					boData.markOld();
 				}
-				return (T[]) bos;
+				return datas;
 			} catch (Exception e) {
 				if (mine == true) {
 					this.rollback();
@@ -866,11 +869,10 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 	 * @throws RepositoryException
 	 */
 	@SuppressWarnings("unchecked")
-	public final <T extends IBusinessObject> T[] fetch(Class<?> boType, ISqlStatement sqlStatement)
-			throws RepositoryException {
+	public final <T> T[] fetch(Class<?> boType, ISqlStatement sqlStatement) throws RepositoryException {
 		try {
 			Objects.requireNonNull(sqlStatement);
-			List<T> datas;
+			List<IBusinessObject> datas;
 			// 运行查询，不使用预编译方式
 			String sql = this.getAdapter().parsing(sqlStatement);
 			if (MyConfiguration.isDebugMode()) {
@@ -883,7 +885,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 				}
 			}
 			if (datas == null) {
-				datas = new ArrayList<T>();
+				datas = new ArrayList<>();
 			}
 			// 加载子对象
 			if (!datas.isEmpty()) {
@@ -899,7 +901,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 					}
 					if (IBusinessObject.class.isAssignableFrom(propertyInfo.getValueType())) {
 						BusinessObject<?> cData = null;
-						for (T data : datas) {
+						for (IBusinessObject data : datas) {
 							propertyValue = ((BusinessObject<?>) data).getProperty(propertyInfo);
 							if (BOUtilities.isBusinessObject(propertyValue)) {
 								cData = (BusinessObject<?>) propertyValue;
@@ -908,8 +910,8 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 									continue;
 								}
 								data.setLoading(true);
-								for (IBusinessObject item : this.fetch(cData.getClass(), cCriteria)) {
-									if (item == null) {
+								for (Object item : this.fetch(cData.getClass(), cCriteria)) {
+									if (!(item instanceof IBusinessObject)) {
 										continue;
 									}
 									((BusinessObject<?>) data).setProperty(propertyInfo, item);
@@ -919,7 +921,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 						}
 					} else if (IBusinessObjects.class.isAssignableFrom(propertyInfo.getValueType())) {
 						BusinessObjects<IBusinessObject, ?> cDatas = null;
-						for (T data : datas) {
+						for (IBusinessObject data : datas) {
 							propertyValue = ((BusinessObject<?>) data).getProperty(propertyInfo);
 							if (BOUtilities.isBusinessObjects(propertyValue)) {
 								cDatas = (BusinessObjects<IBusinessObject, ?>) propertyValue;
@@ -928,11 +930,11 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 									continue;
 								}
 								data.setLoading(true);
-								for (IBusinessObject item : this.fetch(cDatas.getElementType(), cCriteria)) {
-									if (item == null) {
+								for (Object item : this.fetch(cDatas.getElementType(), cCriteria)) {
+									if (!(item instanceof IBusinessObject)) {
 										continue;
 									}
-									cDatas.add(item);
+									cDatas.add((IBusinessObject) item);
 								}
 								data.setLoading(false);
 							}
@@ -946,10 +948,75 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 		}
 	}
 
+	private volatile HashSet<Object> cacheDatas = null;
+
+	/**
+	 * 缓存数据
+	 * 
+	 * @param data 待缓存数据
+	 * @return true:缓存成功（新）; false:已缓存
+	 */
+	@Override
+	public synchronized boolean cache(Object data) {
+		Objects.requireNonNull(data);
+		if (this.cacheDatas == null) {
+			this.cacheDatas = new HashSet<>();
+		}
+		return this.cacheDatas.add(data);
+	}
+
+	/**
+	 * 缓存中查询数据
+	 * 
+	 * @param <T>      数据类型
+	 * @param boType   类型
+	 * @param criteria 查询条件
+	 * @return
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public synchronized <T> T[] fetchInCache(Class<?> boType, ICriteria criteria) throws RepositoryException {
+		try {
+			Objects.requireNonNull(criteria);
+			Objects.requireNonNull(boType);
+			// 缓存数据迭代器（不一次取出）
+			Iterator<?> iterator = new Iterator<Object>() {
+				// 数据迭代器
+				Iterator<?> current = DbTransaction.this.cacheDatas != null ? DbTransaction.this.cacheDatas.iterator()
+						: null;
+
+				@Override
+				public boolean hasNext() {
+					if (this.current != null && this.current.hasNext()) {
+						return true;
+					}
+					return false;
+				}
+
+				@Override
+				public Object next() {
+					if (this.current != null && this.current.hasNext()) {
+						Object data = this.current.next();
+						if (boType.isInstance(data)) {
+							return data;
+						} else {
+							return this.next();
+						}
+					}
+					return null;
+				}
+			};
+			return BOUtilities.fetch(iterator, criteria).toArray((T[]) Array.newInstance(boType, 0));
+		} catch (JudmentOperationException e) {
+			throw new RepositoryException(e);
+		}
+	}
+
 	@Override
 	protected void finalize() throws Throwable {
 		this.connection = null;
 		this.adapter = null;
+		this.cacheDatas = null;
 		super.finalize();
 	}
 

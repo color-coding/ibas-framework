@@ -1,33 +1,14 @@
 package org.colorcoding.ibas.bobas.repository;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.UUID;
-import java.util.function.Consumer;
+import java.util.Objects;
 
-import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.common.ConditionOperation;
-import org.colorcoding.ibas.bobas.common.Criteria;
-import org.colorcoding.ibas.bobas.common.Enums;
-import org.colorcoding.ibas.bobas.common.Files;
-import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
-import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.OperationResult;
-import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.common.Strings;
-import org.colorcoding.ibas.bobas.data.ArrayList;
-import org.colorcoding.ibas.bobas.data.FileData;
-import org.colorcoding.ibas.bobas.data.FileItem;
-import org.colorcoding.ibas.bobas.data.List;
-import org.colorcoding.ibas.bobas.data.emYesNo;
-import org.colorcoding.ibas.bobas.expression.FileJudgmentLink;
-import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
-import org.colorcoding.ibas.bobas.i18n.I18N;
+import org.colorcoding.ibas.bobas.file.FileData;
+import org.colorcoding.ibas.bobas.file.FileFactory;
+import org.colorcoding.ibas.bobas.file.FileItem;
+import org.colorcoding.ibas.bobas.file.FileTransaction;
 import org.colorcoding.ibas.bobas.message.Logger;
 
 /**
@@ -37,43 +18,116 @@ import org.colorcoding.ibas.bobas.message.Logger;
  *
  */
 public class FileRepository extends Repository {
-
-	static final String MSG_REPOSITORY_WRITE_FILE = "repository: writed file [%s].";
-
-	static final String MSG_REPOSITORY_DELETE_FILE = "repository: deleted file [%s].";
-
 	/**
 	 * 检索条件项目：包含子文件夹。如： emYesNo.Yes，条件仅可等于，其他忽略。
 	 */
-	public static final String CONDITION_ALIAS_INCLUDE_SUBFOLDER = "IncludeSubfolder";
+	public static final String CONDITION_ALIAS_INCLUDE_SUBFOLDER = FileTransaction.CONDITION_ALIAS_INCLUDE_SUBFOLDER;
 	/**
-	 * 检索条件项目：文件夹。如：documents，条件仅可等于，其他忽略。
+	 * 检索条件项目：文件所属文件夹（比较对象是文件夹时是自身）
 	 */
-	public static final String CONDITION_ALIAS_FOLDER = FileJudgmentLink.CRITERIA_CONDITION_ALIAS_FOLDER;
+	public static final String CONDITION_ALIAS_FILE_FOLDER = FileTransaction.CONDITION_ALIAS_FILE_FOLDER;
 	/**
-	 * 检索条件项目：文件名称。如：ibas.*.jar，条件仅可等于，其他忽略。
+	 * 检索条件项目：文件名称
 	 */
-	public static final String CONDITION_ALIAS_FILE_NAME = FileJudgmentLink.CRITERIA_CONDITION_ALIAS_FILE_NAME;
+	public static final String CONDITION_ALIAS_FILE_NAME = FileTransaction.CONDITION_ALIAS_FILE_NAME;
 	/**
-	 * 检索条件项目：最后修改时间（文件时间）。如：1479965348，条件可等于，大小等于。
+	 * 检索条件项目：最后修改时间（文件时间）
 	 */
-	public static final String CONDITION_ALIAS_MODIFIED_TIME = FileJudgmentLink.CRITERIA_CONDITION_ALIAS_MODIFIED_TIME;
+	public static final String CONDITION_ALIAS_MODIFIED_TIME = FileTransaction.CONDITION_ALIAS_MODIFIED_TIME;
 	/**
-	 * 查询条件字段-文件路径
+	 * 检索条件项目：文件路径（文件夹+名称）
 	 */
-	public static final String CONDITION_ALIAS_FILE_PATH = FileJudgmentLink.CRITERIA_CONDITION_ALIAS_FILE_PATH;
+	public static final String CONDITION_ALIAS_FILE_PATH = FileTransaction.CONDITION_ALIAS_FILE_PATH;
+
 	/**
-	 * 查询条件字段-类型:文件夹(Folder);文件(File)
+	 * 索条件项目：文件夹(Folder)或文件(File)
 	 */
-	public static final String CONDITION_ALIAS_FILE_TYPE = "FileType";
+	public static final String CONDITION_ALIAS_FILE_TYPE = FileTransaction.CONDITION_ALIAS_FILE_TYPE;
 	/**
 	 * 查询条件值-文件
 	 */
-	public static final String CONDITION_VALUE_FILE = "File";
+	public static final String CONDITION_VALUE_FILE = FileTransaction.CONDITION_VALUE_FILE;
 	/**
 	 * 查询条件值-文件夹
 	 */
-	public static final String CONDITION_VALUE_FOLDER = "Folder";
+	public static final String CONDITION_VALUE_FOLDER = FileTransaction.CONDITION_VALUE_FOLDER;
+
+	private String fileSign;
+
+	public FileRepository() {
+		this(Strings.VALUE_EMPTY);
+	}
+
+	public FileRepository(String fileSign) {
+		this.fileSign = fileSign;
+	}
+
+	private volatile FileTransaction transaction;
+
+	public synchronized final FileTransaction getTransaction() throws RepositoryException {
+		return transaction;
+	}
+
+	protected synchronized void setTransaction(FileTransaction transaction) {
+		this.transaction = transaction;
+	}
+
+	public synchronized final boolean inTransaction() throws RepositoryException {
+		if (this.transaction == null) {
+			return false;
+		}
+		return this.transaction.inTransaction();
+	}
+
+	public synchronized final boolean beginTransaction() throws RepositoryException {
+		if (this.transaction == null) {
+			this.initTransaction();
+		}
+		if (this.inTransaction()) {
+			return false;
+		}
+		return this.transaction.beginTransaction();
+	}
+
+	public synchronized final void rollbackTransaction() throws RepositoryException {
+		if (this.inTransaction()) {
+			this.transaction.rollback();
+		}
+	}
+
+	public synchronized final void commitTransaction() throws RepositoryException {
+		if (this.inTransaction()) {
+			this.transaction.commit();
+		}
+	}
+
+	protected synchronized boolean initTransaction() throws RepositoryException {
+		if (this.transaction != null) {
+			return false;
+		}
+		FileTransaction transaction = FileFactory.createManager(fileSign).createTransaction(this.getRepositoryFolder());
+		transaction.setGroupingFiles(this.isGroupingFiles());
+		this.setTransaction(transaction);
+		return true;
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		this.close();
+		super.finalize();
+	}
+
+	@Override
+	public synchronized void close() throws RuntimeException {
+		try {
+			if (this.transaction != null) {
+				this.transaction.close();
+			}
+			super.close();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	private String repositoryFolder;
 
@@ -83,26 +137,11 @@ public class FileRepository extends Repository {
 	 * @return
 	 */
 	public String getRepositoryFolder() {
-		if (Strings.isNullOrEmpty(this.repositoryFolder)) {
-			String workFolder = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_FILE_REPOSITORY_FOLDER);
-			if (Strings.isNullOrEmpty(workFolder)) {
-				workFolder = Files.valueOf(MyConfiguration.getDataFolder(), "files").getPath();
-			}
-			File file = new File(workFolder);
-			if (!file.exists()) {
-				file.mkdirs();
-			}
-			this.repositoryFolder = file.getPath();
-		}
 		return this.repositoryFolder;
 	}
 
 	public void setRepositoryFolder(String folder) {
 		this.repositoryFolder = folder;
-	}
-
-	public void setRepositoryFolder(File folder) {
-		this.repositoryFolder = folder.getPath();
 	}
 
 	private boolean groupingFiles;
@@ -128,223 +167,21 @@ public class FileRepository extends Repository {
 	 */
 	public OperationResult<FileItem> fetch(ICriteria criteria) {
 		try {
-			return new OperationResult<FileItem>().addResultObjects(this.searchFiles(criteria));
+			this.initTransaction();
+			OperationResult<FileItem> operationResult = new OperationResult<>();
+			FileItem[] datas = this.getTransaction().fetch(FileItem.class, criteria);
+			for (FileItem data : datas) {
+				if (!(data instanceof FileItem)) {
+					continue;
+				}
+				operationResult.addResultObjects(data);
+				Logger.log("repository: fetch [%s], [%s].", FileItem.class.getName(), data.getPath());
+			}
+			return operationResult;
 		} catch (Exception e) {
+			Logger.log(e);
 			return new OperationResult<>(e);
 		}
-	}
-
-	private List<FileItem> searchFiles(ICriteria criteria) throws Exception {
-		if (criteria == null || criteria.getConditions().isEmpty()) {
-			throw new Exception(I18N.prop("msg_bobas_invaild_criteria"));
-		}
-		List<ICondition> conditions;
-		String workFolder = this.getRepositoryFolder();
-
-		// 包含子文件夹
-		boolean include = false;
-		conditions = criteria.getConditions().where(c -> CONDITION_ALIAS_INCLUDE_SUBFOLDER.equals(c.getAlias()));
-		for (ICondition condition : conditions) {
-			emYesNo value = emYesNo.NO;
-			if (condition.getValue().length() > 1)
-				value = emYesNo.valueOf(condition.getValue());
-			else {
-				value = (emYesNo) Enums.valueOf(emYesNo.class, condition.getValue());
-			}
-			include = value == emYesNo.YES ? true : false;
-			condition.setOperation(ConditionOperation.NONE);
-		}
-		// 是否指定工作目录
-		conditions = criteria.getConditions()
-				.where(c -> CONDITION_ALIAS_FOLDER.equals(c.getAlias()) && !Strings.isNullOrEmpty(c.getValue()));
-		for (ICondition condition : conditions) {
-			// 修正路径符
-			condition.setValue(condition.getValue().replace("\\", File.separator));
-			if (!condition.getValue().endsWith(File.separator)) {
-				condition.setValue(condition.getValue() + File.separator);
-			}
-		}
-		if (conditions.size() == 1) {
-			for (ICondition condition : conditions) {
-				if (condition.getOperation() == ConditionOperation.EQUAL) {
-					// 指定查询文件夹，则更改工作目录
-					workFolder = Paths.get(workFolder, condition.getValue()).normalize().toFile().getPath();
-					condition.setOperation(ConditionOperation.NONE);
-				}
-			}
-		} else {
-			for (ICondition condition : conditions) {
-				if (include) {
-					if (condition.getOperation() == ConditionOperation.EQUAL) {
-						condition.setOperation(ConditionOperation.START);
-					}
-				}
-			}
-		}
-		// 是否指定的文件含目录
-		conditions = criteria.getConditions()
-				.where(c -> CONDITION_ALIAS_FILE_NAME.equals(c.getAlias()) && !Strings.isNullOrEmpty(c.getValue()));
-		for (ICondition condition : conditions) {
-			// 修正路径符
-			condition.setValue(condition.getValue().replace("\\", File.separator));
-		}
-		if (conditions.size() == 1) {
-			for (ICondition condition : conditions) {
-				if (condition.getOperation() == ConditionOperation.EQUAL) {
-					// 指定文件路径，则更改工作目录
-					if (Strings.indexOf(condition.getValue(), File.separator) > 0) {
-						workFolder = Paths.get(workFolder, condition.getValue()).normalize().toFile().getParentFile()
-								.getPath();
-						condition.setValue(
-								condition.getValue().substring(condition.getValue().lastIndexOf(File.separator) + 1));
-					} else if (this.isGroupingFiles()) {
-						workFolder = Files.valueOf(workFolder, this.groupingOf(condition.getValue())).getPath();
-					}
-				}
-			}
-		} else {
-			for (ICondition condition : conditions) {
-				if (condition.getOperation() == ConditionOperation.EQUAL) {
-					if (Strings.indexOf(condition.getValue(), File.separator) > 0) {
-						include = true;
-						// 有路径，则改成路径比较
-						condition.setAlias(CONDITION_ALIAS_FILE_PATH);
-					}
-				}
-			}
-		}
-		// 检查文件夹内文件是否符合条件
-		File folder = new File(workFolder);
-		if (!folder.isDirectory() || !folder.exists()) {
-			throw new Exception(
-					I18N.prop("msg_bobas_not_found_folder", workFolder.replace(this.getRepositoryFolder(), ".")));
-		}
-		// 重建查询
-		Criteria nCriteria = new Criteria();
-		nCriteria.setResultCount(criteria.getResultCount());
-		for (ICondition condition : criteria.getConditions()) {
-			if (condition.getOperation() == ConditionOperation.NONE) {
-				continue;
-			}
-			nCriteria.getConditions().add(condition);
-		}
-		for (ISort sort : criteria.getSorts()) {
-			nCriteria.getSorts().add(sort);
-		}
-		// 查询符合条件的文件
-		ArrayList<FileItem> nFileItems = new ArrayList<>();
-		for (File file : this.searchFiles(folder, include, nCriteria)) {
-			nFileItems.add(new FileItem(file));
-			if (criteria.getResultCount() > 0 && nFileItems.size() >= criteria.getResultCount()) {
-				break;
-			}
-		}
-		return nFileItems;
-	}
-
-	private String groupingOf(String name) {
-		StringBuilder builder = new StringBuilder();
-		char[] items = new char[4];
-		for (int i = 0; i < 4 && i < name.length(); i++) {
-			items[i] = name.charAt(i);
-		}
-		char item;
-		for (int i = 0; i < items.length; i++) {
-			item = items[i];
-			if (i == 2) {
-				builder.append(File.separator);
-			}
-			if (item == 0 || item < 32 || item > 127) {
-				item = 95;
-			}
-			builder.append(item);
-		}
-		return builder.toString();
-	}
-
-	/**
-	 * 查询文件
-	 * 
-	 * @param folder   目录
-	 * @param include  是否包含子目录
-	 * @param criteria 条件
-	 * @return 符合条件的文件数组
-	 */
-	private List<File> searchFiles(File folder, boolean include, ICriteria criteria) {
-		FileJudgmentLink judgmentLinks = new FileJudgmentLink();
-		judgmentLinks.setMaskFolder(this.getRepositoryFolder());
-		judgmentLinks.parsingConditions(criteria.getConditions());
-
-		ArrayList<File> files = new ArrayList<>();
-		Consumer<File> searcher = new Consumer<File>() {
-			@Override
-			public void accept(File file) {
-				if (file.isDirectory() && include) {
-					File[] folderFiles = file.listFiles();
-					// 文件排序
-					if (!criteria.getSorts().isEmpty()) {
-						for (ISort sort : criteria.getSorts()) {
-							if (CONDITION_ALIAS_FILE_NAME.equalsIgnoreCase(sort.getAlias())) {
-								if (sort.getSortType() == SortType.ASCENDING) {
-									Arrays.sort(folderFiles, new Comparator<File>() {
-										@Override
-										public int compare(File o1, File o2) {
-											return o1.getName().compareTo(o2.getName());
-										}
-									});
-								} else if (sort.getSortType() == SortType.DESCENDING) {
-									Arrays.sort(folderFiles, new Comparator<File>() {
-										@Override
-										public int compare(File o1, File o2) {
-											return o2.getName().compareTo(o1.getName());
-										}
-									});
-								}
-							} else if (CONDITION_ALIAS_MODIFIED_TIME.equalsIgnoreCase(sort.getAlias())) {
-								if (sort.getSortType() == SortType.ASCENDING) {
-									Arrays.sort(folderFiles, new Comparator<File>() {
-
-										@Override
-										public int compare(File o1, File o2) {
-											return Long.compare(o1.lastModified(), o2.lastModified());
-										}
-									});
-								} else if (sort.getSortType() == SortType.DESCENDING) {
-									Arrays.sort(folderFiles, new Comparator<File>() {
-										@Override
-										public int compare(File o1, File o2) {
-											return Long.compare(o2.lastModified(), o1.lastModified());
-										}
-									});
-								}
-							}
-						}
-					}
-					for (File item : folderFiles) {
-						this.accept(item);
-					}
-				} else if (file.isFile()) {
-					try {
-						if (judgmentLinks.judge(file)) {
-							files.add(file);
-						}
-						if (criteria.getResultCount() > 0 && files.size() >= criteria.getResultCount()) {
-							return;
-						}
-					} catch (JudmentOperationException e) {
-						Logger.log(e);
-					}
-				}
-			}
-		};
-		if (folder.isDirectory()) {
-			for (File item : folder.listFiles()) {
-				searcher.accept(item);
-			}
-		} else {
-			searcher.accept(folder);
-		}
-		return files;
 	}
 
 	/**
@@ -355,50 +192,21 @@ public class FileRepository extends Repository {
 	 */
 	public OperationResult<FileItem> save(FileData fileData) {
 		try {
-			if (fileData == null || fileData.getStream() == null) {
-				throw new RepositoryException(I18N.prop("msg_bobas_invalid_data"));
-			}
-			FileItem fileItem = new FileItem();
-			fileItem.setName(fileData.getName());
-			// 形成新文件名，保留扩展名
-			if (Strings.isNullOrEmpty(fileItem.getName())) {
-				String tmpValue = Files.extensionOf(fileData.getOriginalName());
-				fileItem.setName(Strings.isNullOrEmpty(tmpValue) ? UUID.randomUUID().toString()
-						: Strings.concat(UUID.randomUUID().toString(), Strings.VALUE_DOT, tmpValue.toLowerCase()));
-			}
-			StringBuilder builder = new StringBuilder();
-			builder.append(this.getRepositoryFolder());
-			builder.append(File.separator);
-			if (this.isGroupingFiles()) {
-				builder.append(this.groupingOf(fileItem.getName()));
-				builder.append(File.separator);
-			}
-			builder.append(fileItem.getName());
-			fileItem.setPath(builder.toString());
-			builder = null;
-			// 创建工作目录
-			File ouFile = new File(fileItem.getPath());
-			if (ouFile.getParentFile() != null && !ouFile.getParentFile().exists()) {
-				ouFile.getParentFile().mkdirs();
-			}
-			int bytesRead = 0;
-			byte[] buffer = new byte[1024];
-			try (OutputStream outputStream = new FileOutputStream(ouFile)) {
-				while ((bytesRead = fileData.getStream().read(buffer, 0, buffer.length)) != -1) {
-					outputStream.write(buffer, 0, bytesRead);
+			Objects.requireNonNull(fileData);
+			this.initTransaction();
+			OperationResult<FileItem> operationResult = new OperationResult<>();
+			for (Object data : this.getTransaction().save(new Object[] { fileData })) {
+				if (!(data instanceof FileItem)) {
+					continue;
 				}
-				outputStream.flush();
+				operationResult.addResultObjects((FileItem) data);
+				Logger.log("repository: writed [%s], [%s].", FileData.class.getName(),
+						Strings.isNullOrEmpty(fileData.getOriginalName()) ? fileData.getLocation()
+								: String.format("%s|%s", fileData.getOriginalName(), fileData.getLocation()));
 			}
-			fileItem = new FileItem(ouFile);
-			fileItem.setMaskFolder(this.getRepositoryFolder());
-			Logger.log(MSG_REPOSITORY_WRITE_FILE, Strings.isNullOrEmpty(fileData.getOriginalName()) ? fileItem.getPath()
-					: String.format("%s|%s", fileData.getOriginalName(), fileItem.getPath()));
-
-			fileData.setName(fileItem.getName());
-			fileData.setLocation(fileItem.getPath());
-
-			return new OperationResult<FileItem>().addResultObjects(fileItem);
+			return operationResult;
 		} catch (Exception e) {
+			Logger.log(e);
 			return new OperationResult<>(e);
 		}
 	}
@@ -410,39 +218,27 @@ public class FileRepository extends Repository {
 	 * @return
 	 */
 	public OperationResult<FileItem> delete(ICriteria criteria) {
-		OperationResult<FileItem> operationResult = new OperationResult<>();
 		try {
-			if (criteria == null || criteria.getConditions().isEmpty()) {
-				// 没有条件，不允许删除
+			this.initTransaction();
+			OperationResult<FileItem> operationResult = this.fetch(criteria);
+			if (operationResult.getResultCode() != 0) {
 				return operationResult;
 			}
-			OperationResult<FileItem> opRsltFetch = this.fetch(criteria);
-			if (opRsltFetch.getError() != null) {
-				throw opRsltFetch.getError();
-			}
-			for (FileItem item : opRsltFetch.getResultObjects()) {
-				File file = new File(item.getPath());
-				// 不允许删除文件夹
-				if (file.exists() && file.isDirectory()) {
-					if (file.delete()) {
-						operationResult.addResultObjects(item);
-						Logger.log(MSG_REPOSITORY_DELETE_FILE, file.getPath());
-					}
+			FileItem[] datas = operationResult.getResultObjects()
+					.toArray(new FileItem[operationResult.getResultObjects().size()]);
+			operationResult = new OperationResult<>();
+			for (FileItem data : this.getTransaction().delete(datas)) {
+				if (!(data instanceof FileItem)) {
+					continue;
 				}
+				operationResult.addResultObjects(data);
+				Logger.log("repository: deleted [%s], [%s].", FileData.class.getName(), data.getPath());
 			}
+			return operationResult;
 		} catch (Exception e) {
 			Logger.log(e);
-			operationResult.setError(e);
+			return new OperationResult<>(e);
 		}
-		return operationResult;
-	}
 
-	@Override
-	public synchronized void close() throws RuntimeException {
-		try {
-			super.close();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
 }

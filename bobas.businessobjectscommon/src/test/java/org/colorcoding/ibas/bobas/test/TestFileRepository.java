@@ -13,8 +13,8 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.SortType;
-import org.colorcoding.ibas.bobas.data.FileItem;
 import org.colorcoding.ibas.bobas.data.emYesNo;
+import org.colorcoding.ibas.bobas.file.FileItem;
 import org.colorcoding.ibas.bobas.repository.FileRepository;
 
 import junit.framework.TestCase;
@@ -25,7 +25,7 @@ public class TestFileRepository extends TestCase {
 		ICriteria criteria = new Criteria();
 		// 文件
 		ICondition condition = criteria.getConditions().create();
-		condition.setAlias(FileRepository.CONDITION_ALIAS_FOLDER);
+		condition.setAlias(FileRepository.CONDITION_ALIAS_FILE_FOLDER);
 		condition.setValue("classes");
 		// 包含子文件夹
 		condition = criteria.getConditions().create();

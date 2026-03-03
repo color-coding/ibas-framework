@@ -111,7 +111,7 @@ public class MyConfiguration extends Configuration {
 	/**
 	 * 配置项目-国际化文件路径
 	 */
-	public final static String CONFIG_ITEM_I18N_PATH = "I18nFolder";
+	public final static String CONFIG_ITEM_I18N_FOLDER = "I18nFolder";
 	/**
 	 * 配置项目-文件仓库目录
 	 */
@@ -203,4 +203,8 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-自动注册用户字段
 	 */
 	public final static String CONFIG_ITEM_AUTO_REGISTER_USER_FIELDS = "AutoRegisterUserFields";
+	/**
+	 * 配置项目-文件仓库方式
+	 */
+	public final static String CONFIG_ITEM_FILE_REPOSITORY_WAY = "FileRepositoryWay";
 }

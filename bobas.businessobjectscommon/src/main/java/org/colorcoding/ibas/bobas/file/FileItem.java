@@ -1,4 +1,4 @@
-package org.colorcoding.ibas.bobas.data;
+package org.colorcoding.ibas.bobas.file;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +15,7 @@ import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.common.Files;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.Serializable;
+import org.colorcoding.ibas.bobas.data.DateTime;
 
 /**
  * 文件项目
@@ -107,12 +108,18 @@ public class FileItem extends Serializable {
 
 	@XmlElement(name = "Path")
 	String getProxyPath() {
-		if (!Strings.isNullOrEmpty(this.maskFolder)) {
-			if (!Strings.isNullOrEmpty(this.path)) {
-				return this.path.replace(this.maskFolder, "...");
+		String path = this.path;
+		if (!Strings.isNullOrEmpty(path)) {
+			int index = Strings.indexOf(path, this.maskFolder);
+			if (index >= 0) {
+				path = path.substring(index + this.maskFolder.length());
+				if (path.startsWith(File.separator)) {
+					path = path.substring(1);
+				}
 			}
 		}
-		return path;
+		// 路径符统一
+		return Strings.replace(path, "\\", "/");
 	}
 
 	void setProxyPath(String path) {

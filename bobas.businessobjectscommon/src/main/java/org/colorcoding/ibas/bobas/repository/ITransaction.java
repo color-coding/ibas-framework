@@ -1,6 +1,5 @@
 package org.colorcoding.ibas.bobas.repository;
 
-import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 
 public interface ITransaction extends AutoCloseable {
@@ -46,7 +45,7 @@ public interface ITransaction extends AutoCloseable {
 	 * 
 	 * @return
 	 */
-	<T extends IBusinessObject> T[] fetch(Class<?> boType, ICriteria criteria) throws RepositoryException;
+	<T> T[] fetch(Class<?> boType, ICriteria criteria) throws RepositoryException;
 
 	/**
 	 * 保存对象
@@ -55,6 +54,6 @@ public interface ITransaction extends AutoCloseable {
 	 * 
 	 * @return
 	 */
-	<T extends IBusinessObject> T[] save(T[] bos) throws RepositoryException;
+	<T> T[] save(T[] bos) throws RepositoryException;
 
 }

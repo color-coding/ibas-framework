@@ -135,6 +135,9 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 	 */
 	@Override
 	protected <T extends IBusinessObject> OperationResult<T> fetch(Class<?> boType, ICriteria criteria) {
+		if (this.getCurrentUser() == OrganizationFactory.UNKNOWN_USER) {
+			return new OperationResult<>(new RepositoryException(I18N.prop("msg_bobas_invalid_user")));
+		}
 		try {
 			if (criteria == null) {
 				criteria = new Criteria();
@@ -248,6 +251,9 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 	 */
 	@Override
 	protected <T extends IBusinessObject> OperationResult<T> save(T bo) {
+		if (this.getCurrentUser() == OrganizationFactory.UNKNOWN_USER) {
+			return new OperationResult<>(new RepositoryException(I18N.prop("msg_bobas_invalid_user")));
+		}
 		try {
 			// 数据保存权限
 			if (bo instanceof IDataOwnership) {

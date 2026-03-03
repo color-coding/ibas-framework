@@ -32,14 +32,14 @@ public class Files {
 	 * @return
 	 */
 	public static String pathOf(String path) {
+		if (Strings.isNullOrEmpty(path)) {
+			return Strings.VALUE_EMPTY;
+		}
 		File file = valueOf(path);
 		if (file.isFile()) {
 			return file.getParent();
 		} else if (file.isDirectory()) {
 			return file.getPath();
-		}
-		if (Strings.isNullOrEmpty(path)) {
-			return Strings.VALUE_EMPTY;
 		}
 		// 反斜杠替换正斜杠
 		String tmpPath = Strings.replace(path, Strings.VALUE_BACKSLASH, Strings.VALUE_SLASH);
@@ -58,14 +58,14 @@ public class Files {
 	 * @return
 	 */
 	public static String nameOf(String path) {
+		if (Strings.isNullOrEmpty(path)) {
+			return Strings.VALUE_EMPTY;
+		}
 		File file = valueOf(path);
 		if (file.isFile()) {
 			return file.getName();
 		} else if (file.isDirectory()) {
 			return file.getName();
-		}
-		if (Strings.isNullOrEmpty(path)) {
-			return Strings.VALUE_EMPTY;
 		}
 		// 反斜杠替换正斜杠
 		path = Strings.replace(path, Strings.VALUE_BACKSLASH, Strings.VALUE_SLASH);
@@ -82,9 +82,11 @@ public class Files {
 	 * @return
 	 */
 	public static String extensionOf(String path) {
-		String name = nameOf(path);
-		if (Strings.indexOf(name, Strings.VALUE_DOT) > 0) {
-			return path.substring(path.lastIndexOf(Strings.VALUE_DOT) + 1);
+		if (!Strings.isNullOrEmpty(path)) {
+			String name = nameOf(path);
+			if (Strings.indexOf(name, Strings.VALUE_DOT) > 0) {
+				return path.substring(path.lastIndexOf(Strings.VALUE_DOT) + 1);
+			}
 		}
 		return Strings.VALUE_EMPTY;
 	}

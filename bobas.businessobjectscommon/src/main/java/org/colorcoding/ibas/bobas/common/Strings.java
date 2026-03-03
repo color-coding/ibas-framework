@@ -311,6 +311,9 @@ public class Strings {
 		if (content == null) {
 			return -1;
 		}
+		if (value == null) {
+			return -1;
+		}
 		return content.indexOf(value);
 	}
 

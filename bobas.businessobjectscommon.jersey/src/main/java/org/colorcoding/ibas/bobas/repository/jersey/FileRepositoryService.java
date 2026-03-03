@@ -7,11 +7,20 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.colorcoding.ibas.bobas.common.OperationResult;
-import org.colorcoding.ibas.bobas.data.FileData;
-import org.colorcoding.ibas.bobas.data.FileItem;
+import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.file.FileData;
+import org.colorcoding.ibas.bobas.file.FileItem;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 
 public class FileRepositoryService extends org.colorcoding.ibas.bobas.repository.FileRepositoryService {
+
+	public FileRepositoryService() {
+		this(Strings.VALUE_EMPTY);
+	}
+
+	public FileRepositoryService(String fileSign) {
+		super(fileSign);
+	}
 
 	/**
 	 * 保存提交内容为文件
