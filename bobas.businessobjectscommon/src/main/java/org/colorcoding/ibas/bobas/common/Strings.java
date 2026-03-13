@@ -208,23 +208,33 @@ public class Strings {
 			}
 			return nValue;
 		} else if (value.getClass().isArray()) {
+			Object tmpVlue = null;
 			StringBuilder builder = new StringBuilder();
 			int length = Array.getLength(value);
 			for (int i = 0; i < length; i++) {
 				if (builder.length() > 0) {
 					builder.append(VALUE_COMMA);
 				}
-				builder.append(Array.get(value, i));
+				tmpVlue = Array.get(value, i);
+				if (tmpVlue == null) {
+					continue;
+				}
+				builder.append(tmpVlue);
 			}
 			return builder.toString();
 		} else if (Iterable.class.isInstance(value)) {
+			Object tmpVlue = null;
 			StringBuilder builder = new StringBuilder();
 			Iterator<?> iterator = ((Iterable<?>) value).iterator();
 			while (iterator.hasNext()) {
 				if (builder.length() > 0) {
 					builder.append(VALUE_COMMA);
 				}
-				builder.append(iterator.next());
+				tmpVlue = iterator.next();
+				if (tmpVlue == null) {
+					continue;
+				}
+				builder.append(tmpVlue);
 			}
 			return builder.toString();
 		}

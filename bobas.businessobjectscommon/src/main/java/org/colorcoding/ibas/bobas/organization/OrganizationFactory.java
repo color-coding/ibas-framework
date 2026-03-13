@@ -143,9 +143,11 @@ public class OrganizationFactory {
 						if (token.equals(SYSTEM_USER.getToken())) {
 							return SYSTEM_USER;
 						}
-						for (IUser item : this.getUsers()) {
-							if (token.equals(item.getToken())) {
-								return item;
+						synchronized (this) {
+							for (IUser item : this.getUsers()) {
+								if (token.equals(item.getToken())) {
+									return item;
+								}
 							}
 						}
 					}
@@ -157,9 +159,11 @@ public class OrganizationFactory {
 					if (id == SYSTEM_USER.getId()) {
 						return SYSTEM_USER;
 					}
-					for (IUser item : this.getUsers()) {
-						if (id == item.getId()) {
-							return item;
+					synchronized (this) {
+						for (IUser item : this.getUsers()) {
+							if (id == item.getId()) {
+								return item;
+							}
 						}
 					}
 					return UNKNOWN_USER;
@@ -186,18 +190,41 @@ public class OrganizationFactory {
 				@Override
 				public IUser register(IUser user) {
 					if (user != null) {
-						for (int i = 0; i < this.getUsers().size(); i++) {
-							IUser item = this.getUsers().get(i);
-							if (item == null) {
-								continue;
+						synchronized (this) {
+							IUser item;
+							for (int i = 0; i < this.getUsers().size(); i++) {
+								item = this.getUsers().get(i);
+								if (item == null) {
+									continue;
+								}
+								if (item.getId() == user.getId()) {
+									return this.getUsers().set(i, user);
+								}
 							}
-							if (item.getId() == user.getId()) {
-								this.getUsers().set(i, user);
+							this.getUsers().add(user);
+							return user;
+						}
+					}
+					return UNKNOWN_USER;
+				}
+
+				@Override
+				public IUser unregister‌(IUser user) {
+					if (user != null) {
+						synchronized (this) {
+							IUser item;
+							for (int i = this.getUsers().size() - 1; i >= 0; i--) {
+								item = this.getUsers().get(i);
+								if (item == null) {
+									continue;
+								}
+								if (item.getId() == user.getId()) {
+									return this.getUsers().remove(i);
+								}
 							}
 						}
-						this.getUsers().add(user);
 					}
-					return user;
+					return UNKNOWN_USER;
 				}
 			};
 		}

@@ -363,10 +363,16 @@ public class Decimals {
 	 * @return
 	 */
 	public static BigDecimal divide(BigDecimal dividend, BigDecimal... divisors) {
+		if (dividend == null) {
+			dividend = VALUE_ZERO;
+		}
 		if (divisors == null || divisors.length == 0) {
 			return dividend;
 		}
 		for (BigDecimal divisor : divisors) {
+			if (divisor == null) {
+				continue;
+			}
 			dividend = divide(dividend, divisor);
 		}
 		return dividend;
@@ -380,10 +386,16 @@ public class Decimals {
 	 * @return
 	 */
 	public static BigDecimal multiply(BigDecimal multiplicand, BigDecimal... multipliers) {
+		if (multiplicand == null) {
+			multiplicand = VALUE_ZERO;
+		}
 		if (multipliers == null || multipliers.length == 0) {
 			return multiplicand;
 		}
 		for (BigDecimal multiplier : multipliers) {
+			if (multiplier == null) {
+				continue;
+			}
 			multiplicand = multiplicand.multiply(multiplier);
 		}
 		return multiplicand;
@@ -397,10 +409,16 @@ public class Decimals {
 	 * @return
 	 */
 	public static BigDecimal add(BigDecimal augend, BigDecimal... addends) {
+		if (augend == null) {
+			augend = VALUE_ZERO;
+		}
 		if (addends == null || addends.length == 0) {
 			return augend;
 		}
 		for (BigDecimal addend : addends) {
+			if (addend == null) {
+				continue;
+			}
 			augend = augend.add(addend);
 		}
 		return augend;
@@ -414,10 +432,16 @@ public class Decimals {
 	 * @return
 	 */
 	public static BigDecimal subtract(BigDecimal subtrahend, BigDecimal... subtractors) {
+		if (subtrahend == null) {
+			subtrahend = VALUE_ZERO;
+		}
 		if (subtractors == null || subtractors.length == 0) {
 			return subtrahend;
 		}
 		for (BigDecimal subtractor : subtractors) {
+			if (subtractor == null) {
+				continue;
+			}
 			subtrahend = subtrahend.subtract(subtractor);
 		}
 		return subtrahend;

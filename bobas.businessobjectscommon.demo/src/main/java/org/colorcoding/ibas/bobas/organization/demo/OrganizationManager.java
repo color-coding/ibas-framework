@@ -84,4 +84,9 @@ public class OrganizationManager extends org.colorcoding.ibas.bobas.organization
 		return null;
 	}
 
+	@Override
+	public IUser unregister‌(IUser user) {
+		return null;
+	}
+
 }

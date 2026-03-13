@@ -6,6 +6,8 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.Files;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
+import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 public class FileFactory {
 
@@ -38,9 +40,11 @@ public class FileFactory {
 					// 提供完整路径
 					if (!Strings.isNullOrEmpty(repository)) {
 						File file = Files.valueOf(repository);
-						if (file.isDirectory() && file.exists() && file.isAbsolute()) {
+						if (!file.isFile() && file.isAbsolute()) {
 							transaction.setRepositoryFolder(file.getPath());
 							return transaction;
+						} else {
+							Logger.log(MessageLevel.WARN, "repository: incorrect path [%s].", repository);
 						}
 					}
 					// 补充路径

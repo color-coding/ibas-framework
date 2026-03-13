@@ -41,4 +41,11 @@ public abstract class OrganizationManager {
 	 */
 	public abstract IUser register(IUser user);
 
+	/**
+	 * 取消注册用户
+	 * 
+	 * @param user
+	 * @return 返回注册用户
+	 */
+	public abstract IUser unregister‌(IUser user);
 }
