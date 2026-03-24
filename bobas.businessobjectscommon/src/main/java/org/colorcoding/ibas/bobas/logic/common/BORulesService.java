@@ -26,6 +26,14 @@ public class BORulesService extends BusinessLogic<IBORulesContract, IBusinessObj
 					return false;
 				}
 			}
+			if (data instanceof IBusinessObject) {
+				IBusinessObject boData = (IBusinessObject) data;
+				if (boData.isSavable() == false) {
+					Logger.log(MessageLevel.DEBUG, MSG_LOGICS_SKIP_LOGIC_EXECUTION, this.getClass().getName(),
+							"isSavable", "false");
+					return false;
+				}
+			}
 		}
 		return true;
 	}

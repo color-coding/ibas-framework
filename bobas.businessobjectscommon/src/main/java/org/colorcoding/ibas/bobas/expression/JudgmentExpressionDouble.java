@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.expression;
 
+import org.colorcoding.ibas.bobas.common.Strings;
+
 /**
  * 双精度值表达式比较
  * 
@@ -56,6 +58,11 @@ public class JudgmentExpressionDouble extends JudgmentExpressionComparable<Doubl
 	}
 
 	public final void setRightValue(String value) {
+		if (Strings.isNullOrEmpty(value)) {
+			if (this.getOperation() == JudmentOperation.IS_NULL || this.getOperation() == JudmentOperation.NOT_NULL) {
+				value = Strings.VALUE_ZERO;
+			}
+		}
 		this.setRightValue(Double.valueOf(value));
 	}
 

@@ -47,6 +47,11 @@ public interface ICondition extends ICloneable {
 	void setBracketClose(int value);
 
 	/**
+	 * 增加闭括号数（+1）
+	 */
+	int addBracketClose();
+
+	/**
 	 * 获取-几个开括号"（"
 	 * 
 	 * @return 个数
@@ -59,6 +64,11 @@ public interface ICondition extends ICloneable {
 	 * @param value 个数
 	 */
 	void setBracketOpen(int value);
+
+	/**
+	 * 增加开括号数（+1）
+	 */
+	int addBracketOpen();
 
 	/**
 	 * 获取- 比较的字段（属性）名

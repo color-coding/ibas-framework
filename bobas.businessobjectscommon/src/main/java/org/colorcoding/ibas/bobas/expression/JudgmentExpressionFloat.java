@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.expression;
 
+import org.colorcoding.ibas.bobas.common.Strings;
+
 /**
  * 浮点值表达式比较
  * 
@@ -56,6 +58,11 @@ public class JudgmentExpressionFloat extends JudgmentExpressionComparable<Float>
 	}
 
 	public final void setRightValue(String value) {
+		if (Strings.isNullOrEmpty(value)) {
+			if (this.getOperation() == JudmentOperation.IS_NULL || this.getOperation() == JudmentOperation.NOT_NULL) {
+				value = Strings.VALUE_ZERO;
+			}
+		}
 		this.setRightValue(Float.valueOf(value));
 	}
 

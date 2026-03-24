@@ -91,7 +91,7 @@ public class OperationMessage extends Result implements IOperationMessage {
 	public final Exception getError() {
 		if (this.error == null && this.getResultCode() != 0) {
 			// 发生错误，有描述，自动创建异常对象
-			if (this.getMessage() == null || !this.getMessage().isEmpty()) {
+			if (this.getMessage() == null || this.getMessage().isEmpty()) {
 				// 没有描述，未知错误
 				this.error = new Exception(I18N.prop("msg_bobas_unknown_exception"));
 			} else {

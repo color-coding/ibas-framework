@@ -33,6 +33,20 @@ public abstract class JudgmentExpression<T> implements IJudgmentExpression {
 
 	@Override
 	public boolean result() throws ExpressionException {
+		// 空值
+		if (this.getOperation() == JudmentOperation.IS_NULL) {
+			if (this.getLeftValue() == null) {
+				return true;
+			}
+			return false;
+		}
+		// 非空值
+		else if (this.getOperation() == JudmentOperation.NOT_NULL) {
+			if (this.getLeftValue() != null) {
+				return false;
+			}
+			return true;
+		}
 		// 不支持的计算
 		throw new ExpressionException("not support.");
 	}

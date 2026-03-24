@@ -23,6 +23,7 @@ import org.colorcoding.ibas.bobas.bo.BusinessObjects;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
+import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.common.Enums;
@@ -37,6 +38,7 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.List;
+import org.colorcoding.ibas.bobas.expression.BOJudgmentLinkCondition;
 import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
@@ -53,6 +55,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 		this.connection = connection;
 		this.replacementUpdate = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_REPLACEMENT_UPDATE,
 				true);
+		this.batchFetch = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_BATCH_FETCH, true);
 	}
 
 	private boolean replacementUpdate;
@@ -63,6 +66,16 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 
 	public final void setReplacementUpdate(boolean replacementUpdate) {
 		this.replacementUpdate = replacementUpdate;
+	}
+
+	private boolean batchFetch;
+
+	public final boolean isBatchFetch() {
+		return batchFetch;
+	}
+
+	public final void setBatchFetch(boolean batchFetch) {
+		this.batchFetch = batchFetch;
 	}
 
 	private volatile Connection connection;
@@ -283,74 +296,214 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 							}
 						}
 					} else if (IBusinessObjects.class.isAssignableFrom(propertyInfo.getValueType())) {
+						Object[] results = null;
+						ICriteria eCriteria = null;
 						boolean onlyHasChilds = false;
 						boolean includingOtherChilds = false;
 						BusinessObjects<IBusinessObject, ?> cDatas = null;
-						for (IBusinessObject data : datas) {
-							if (!data.isValid()) {
-								// 跳过无效的数据
-								continue;
+
+						cCriteria = new Criteria();
+						// 复制指定的子项查询
+						for (IChildCriteria item : criteria.getChildCriterias()) {
+							if (Strings.equalsIgnoreCase(propertyInfo.getName(), item.getPropertyPath())) {
+								cCriteria = cCriteria.copyFrom(item);
+								cCriteria.setNoChilds(item.isNoChilds());
+								cCriteria.setResultCount(item.getResultCount());
+								if (onlyHasChilds == false) {
+									onlyHasChilds = item.isOnlyHasChilds();
+								}
+								if (includingOtherChilds == false) {
+									includingOtherChilds = item.isIncludingOtherChilds();
+								}
 							}
-							propertyValue = ((BusinessObject<?>) data).getProperty(propertyInfo);
-							if (BOUtilities.isBusinessObjects(propertyValue)) {
-								cDatas = (BusinessObjects<IBusinessObject, ?>) propertyValue;
-								cCriteria = cDatas.getElementCriteria();
-								// 查询无效则跳过
-								if (cCriteria == null || cCriteria.getConditions().isEmpty()) {
+						}
+						// 不查询子项
+						if (cCriteria.isNoChilds()) {
+							continue;
+						}
+						if (!this.isBatchFetch() || datas.size() == 1 || includingOtherChilds) {
+							// 单独查询子项（含非条件子项）
+							if (!cCriteria.getConditions().isEmpty()) {
+								if (cCriteria.getConditions().size() > 1) {
+									cCriteria.getConditions().firstOrDefault().addBracketOpen();
+									cCriteria.getConditions().lastOrDefault().addBracketClose();
+								}
+								cCriteria.getConditions().firstOrDefault().setRelationship(ConditionRelationship.AND);
+							}
+							for (IBusinessObject data : datas) {
+								if (!data.isValid()) {
+									// 跳过无效的数据
 									continue;
 								}
-								// 复制指定的子项查询
-								for (IChildCriteria item : criteria.getChildCriterias()) {
-									if (Strings.equalsIgnoreCase(propertyInfo.getName(), item.getPropertyPath())) {
-										cCriteria = cCriteria.copyFrom(item);
-										cCriteria.setNoChilds(item.isNoChilds());
-										cCriteria.setResultCount(item.getResultCount());
-										if (onlyHasChilds == false) {
-											onlyHasChilds = item.isOnlyHasChilds();
-										}
-										if (includingOtherChilds == false) {
-											includingOtherChilds = item.isIncludingOtherChilds();
-										}
+								propertyValue = ((BusinessObject<?>) data).getProperty(propertyInfo);
+								if (BOUtilities.isBusinessObjects(propertyValue)) {
+									cDatas = (BusinessObjects<IBusinessObject, ?>) propertyValue;
+									eCriteria = cDatas.getElementCriteria();
+									// 查询无效则跳过
+									if (eCriteria == null || eCriteria.getConditions().isEmpty()) {
+										continue;
 									}
-								}
-								// 子查询有效
-								if (cCriteria != null && !cCriteria.isNoChilds()
-										&& !cCriteria.getConditions().isEmpty()) {
-									// 诺含有符合条件项，则全部返回（含其他项）
-									if (includingOtherChilds == true) {
-										cCriteria = this.getAdapter().convert(cCriteria, cDatas.getElementType());
-										try (PreparedStatement checkStatement = this.getConnection().prepareStatement(
-												this.getAdapter().parsingSelect(cDatas.getElementType(), cCriteria))) {
-											this.fillingParameters(checkStatement, cCriteria.getConditions(), 1);
-											try (ResultSet resultSet = checkStatement.executeQuery()) {
-												if (resultSet.isBeforeFirst()) {
-													// 有结果，则使用全量查询
-													cCriteria = cDatas.getElementCriteria();
-												} else {
-													// 无结果，则不查询
-													cCriteria = null;
+									eCriteria.getConditions().addAll(cCriteria.getConditions());
+									// 子查询有效
+									if (!eCriteria.getConditions().isEmpty()) {
+										// 诺含有符合条件项，则全部返回（含其他项）
+										if (includingOtherChilds == true) {
+											eCriteria = this.getAdapter().convert(eCriteria, cDatas.getElementType());
+											try (PreparedStatement checkStatement = this.getConnection()
+													.prepareStatement(this.getAdapter()
+															.parsingSelect(cDatas.getElementType(), eCriteria))) {
+												this.fillingParameters(checkStatement, eCriteria.getConditions(), 1);
+												try (ResultSet resultSet = checkStatement.executeQuery()) {
+													if (resultSet.isBeforeFirst()) {
+														// 有结果，则使用全量查询
+														eCriteria = cDatas.getElementCriteria();
+													} else {
+														// 无结果，则不查询
+														eCriteria = null;
+													}
 												}
 											}
 										}
+										// 子查询有效
+										if (eCriteria != null && !eCriteria.getConditions().isEmpty()) {
+											// 查询子项
+											results = this.fetch(cDatas.getElementType(), eCriteria);
+											data.setLoading(true);
+											cDatas.ensureCapacity(cDatas.size() + results.length);
+											for (Object item : results) {
+												if (!(item instanceof IBusinessObject)) {
+													continue;
+												}
+												cDatas.add((IBusinessObject) item);
+											}
+											// 要求子项必须有值
+											if (onlyHasChilds && cDatas.isEmpty()) {
+												data.setValid(false);
+											}
+											data.setLoading(false);
+										}
 									}
-									// 子查询有效
-									if (cCriteria != null && !cCriteria.getConditions().isEmpty()) {
-										// 查询子项
-										data.setLoading(true);
-										for (Object item : this.fetch(cDatas.getElementType(), cCriteria)) {
-											if (!(item instanceof IBusinessObject)) {
+								}
+							}
+							cDatas = null;
+							results = null;
+							eCriteria = null;
+							propertyValue = null;
+						} else {
+							// 批量查询子项（受数据库参数限制，查询的数据分批）
+							Object result = null;
+							ICriteria bCriteria = null;
+							IBusinessObject data = null;
+							BOJudgmentLinkCondition judgmentLink = null;
+							int daIndex = 0;
+							int toIndex = 0;
+							int batchCount = this.getAdapter().getBatchCount();
+							int crIndex = cCriteria.getConditions().size();
+
+							do {
+								if (bCriteria == null) {
+									bCriteria = cCriteria.clone();
+								}
+								daIndex = 0;
+								for (int index = toIndex; index < datas.size(); index++) {
+									daIndex++;
+									toIndex++;
+									data = datas.get(index);
+
+									if (!data.isValid()) {
+										// 跳过无效的数据
+										continue;
+									}
+									propertyValue = ((BusinessObject<?>) data).getProperty(propertyInfo);
+									if (BOUtilities.isBusinessObjects(propertyValue)) {
+										cDatas = (BusinessObjects<IBusinessObject, ?>) propertyValue;
+										eCriteria = cDatas.getElementCriteria();
+										// 查询无效则跳过
+										if (eCriteria == null || eCriteria.getConditions().isEmpty()) {
+											continue;
+										}
+										if (eCriteria.getConditions().size() > 1) {
+											eCriteria.getConditions().firstOrDefault().addBracketOpen();
+											eCriteria.getConditions().lastOrDefault().addBracketClose();
+										}
+										if (bCriteria.getConditions().size() > crIndex) {
+											eCriteria.getConditions().firstOrDefault()
+													.setRelationship(ConditionRelationship.OR);
+										}
+										bCriteria.getConditions().addAll(eCriteria.getConditions());
+									}
+									if (daIndex >= batchCount) {
+										break;
+									}
+								}
+								data = null;
+								eCriteria = null;
+								propertyValue = null;
+								if (bCriteria.getConditions().size() <= crIndex) {
+									// 无子项查询则继续
+									bCriteria = null;
+									continue;
+								}
+								bCriteria.getConditions().get(crIndex).setRelationship(ConditionRelationship.AND);
+								if (crIndex > 0 && bCriteria.getConditions().size() > crIndex + 1) {
+									bCriteria.getConditions().get(crIndex).addBracketOpen();
+									bCriteria.getConditions().get(bCriteria.getConditions().size() - 1)
+											.addBracketClose();
+								}
+								results = this.fetch(cDatas.getElementType(), bCriteria);
+								for (int index = toIndex - daIndex; index < toIndex; index++) {
+									data = datas.get(index);
+									if (!data.isValid()) {
+										// 跳过无效的数据
+										continue;
+									}
+									propertyValue = ((BusinessObject<?>) data).getProperty(propertyInfo);
+									if (BOUtilities.isBusinessObjects(propertyValue)) {
+										cDatas = (BusinessObjects<IBusinessObject, ?>) propertyValue;
+										if (daIndex == 1) {
+											// 查询目标唯一
+											data.setLoading(true);
+											cDatas.ensureCapacity(cDatas.size() + results.length);
+											for (int i = 0; i < results.length; i++) {
+												cDatas.add((IBusinessObject) results[i]);
+											}
+										} else {
+											eCriteria = cDatas.getElementCriteria();
+											// 查询无效则跳过
+											if (eCriteria == null || eCriteria.getConditions().isEmpty()) {
 												continue;
 											}
-											cDatas.add((IBusinessObject) item);
+											// 匹配目标条件
+											judgmentLink = new BOJudgmentLinkCondition();
+											judgmentLink.parsingConditions(eCriteria.getConditions());
+											data.setLoading(true);
+											for (int i = 0; i < results.length; i++) {
+												result = results[i];
+												if (!(result instanceof IBusinessObject)) {
+													continue;
+												}
+												if (judgmentLink.judge(result)) {
+													cDatas.add((IBusinessObject) result);
+													results[i] = null;
+												}
+											}
+										}
+										// 要求子项必须有值
+										if (onlyHasChilds && cDatas.isEmpty()) {
+											data.setValid(false);
 										}
 										data.setLoading(false);
 									}
 								}
-								// 要求子项必须有值
-								if (onlyHasChilds && cDatas.isEmpty()) {
-									data.setValid(false);
-								}
-							}
+								data = null;
+								cDatas = null;
+								result = null;
+								results = null;
+								eCriteria = null;
+								bCriteria = null;
+								judgmentLink = null;
+								propertyValue = null;
+							} while (toIndex < datas.size());
 						}
 					}
 				}

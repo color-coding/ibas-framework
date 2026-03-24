@@ -167,7 +167,7 @@ public class Strings {
 		if (count > value.length()) {
 			count = value.length();
 		}
-		return value.substring(0, count - 1);
+		return value.substring(0, count);
 	}
 
 	/**

@@ -72,6 +72,12 @@ public class Condition extends Serializable implements ICondition {
 		this.bracketClose = value;
 	}
 
+	@Override
+	public int addBracketClose() {
+		this.setBracketClose(this.bracketClose + 1);
+		return this.getBracketClose();
+	}
+
 	@XmlElement(name = "BracketOpen")
 	private int bracketOpen = 0;
 
@@ -86,6 +92,12 @@ public class Condition extends Serializable implements ICondition {
 	@Override
 	public final void setBracketOpen(int value) {
 		this.bracketOpen = value;
+	}
+
+	@Override
+	public int addBracketOpen() {
+		this.setBracketOpen(this.bracketOpen + 1);
+		return this.getBracketOpen();
 	}
 
 	@XmlElement(name = "ComparedAlias")

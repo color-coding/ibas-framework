@@ -53,9 +53,13 @@ public final class PropertyInfoManager {
 			if (this.recycled) {
 				this.recycled = false;
 			}
+			if (this.resolved) {
+				this.resolved = false;
+			}
 			return super.add(e);
 		}
 
+		// 回收的
 		private volatile boolean recycled = false;
 
 		public synchronized void recycling() {
@@ -66,6 +70,7 @@ public final class PropertyInfoManager {
 			this.recycled = true;
 		}
 
+		// 解析的
 		private volatile boolean resolved = false;
 
 		public synchronized void resolving(Class<?> belong) {
@@ -112,6 +117,7 @@ public final class PropertyInfoManager {
 				}
 
 			}
+			this.resolved = true;
 		}
 	}
 

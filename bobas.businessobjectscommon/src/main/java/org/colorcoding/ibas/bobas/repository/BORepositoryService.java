@@ -151,14 +151,16 @@ public class BORepositoryService extends BORepository4DB {
 								if (cKey == null) {
 									throw new Exception(I18N.prop("msg_bobas_invalid_argument", pItem.getName()));
 								}
+								String keyValue = Strings.valueOf(BOUtilities.propertyValue(item, cKey));
 								if (nCriteria.getConditions()
 										.contains(c -> Strings.equalsIgnoreCase(c.getAlias(), pItem.getName())
-												&& nCriteria.getConditions().indexOf(c) >= count)) {
+												&& nCriteria.getConditions().indexOf(c) >= count
+												&& Strings.equals(c.getValue(), keyValue))) {
 									break;
 								}
 								condition = nCriteria.getConditions().create();
 								condition.setAlias(pItem);
-								condition.setValue(BOUtilities.propertyValue(item, cKey));
+								condition.setValue(keyValue);
 							}
 							if (index == nCriteria.getConditions().size()) {
 								// 没有增加条件，跳过

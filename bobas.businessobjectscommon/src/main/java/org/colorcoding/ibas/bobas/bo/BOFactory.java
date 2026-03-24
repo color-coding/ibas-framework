@@ -128,7 +128,7 @@ public final class BOFactory {
 	@SuppressWarnings("unchecked")
 	public static <T> T newInstance(Class<?> type) {
 		try {
-			return (T) type.newInstance();
+			return (T) type.getDeclaredConstructor().newInstance();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

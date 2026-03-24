@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.expression;
 import java.math.BigDecimal;
 
 import org.colorcoding.ibas.bobas.common.Decimals;
+import org.colorcoding.ibas.bobas.common.Strings;
 
 /**
  * 十进制数值表达式比较
@@ -86,6 +87,11 @@ public class JudgmentExpressionDecimal extends JudgmentExpressionComparable<BigD
 	}
 
 	public final void setRightValue(String value) {
+		if (Strings.isNullOrEmpty(value)) {
+			if (this.getOperation() == JudmentOperation.IS_NULL || this.getOperation() == JudmentOperation.NOT_NULL) {
+				value = Strings.VALUE_ZERO;
+			}
+		}
 		this.setRightValue(Decimals.valueOf(value));
 	}
 

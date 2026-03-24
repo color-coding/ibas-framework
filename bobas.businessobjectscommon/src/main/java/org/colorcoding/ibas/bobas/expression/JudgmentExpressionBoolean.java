@@ -1,5 +1,8 @@
 package org.colorcoding.ibas.bobas.expression;
 
+import org.colorcoding.ibas.bobas.common.Booleans;
+import org.colorcoding.ibas.bobas.common.Strings;
+
 /**
  * 布尔值表达式比较
  * 
@@ -91,6 +94,11 @@ public class JudgmentExpressionBoolean extends JudgmentExpression<Boolean> {
 	}
 
 	public final void setRightValue(String value) {
+		if (Strings.isNullOrEmpty(value)) {
+			if (this.getOperation() == JudmentOperation.IS_NULL || this.getOperation() == JudmentOperation.NOT_NULL) {
+				value = Boolean.toString(Booleans.VALUE_FALSE);
+			}
+		}
 		this.setRightValue(Boolean.valueOf(value));
 	}
 

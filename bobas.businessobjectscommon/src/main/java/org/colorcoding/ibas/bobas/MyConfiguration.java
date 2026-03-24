@@ -176,6 +176,10 @@ public class MyConfiguration extends Configuration {
 	 */
 	public final static String CONFIG_ITEM_DB_NO_USER_TANSACTION_SP = "DbNoUserTansactionSP";
 	/**
+	 * 配置项目-数据库批量查询子项
+	 */
+	public final static String CONFIG_ITEM_DB_BATCH_FETCH = "DbBatchFetch";
+	/**
 	 * 配置项目-组织方式
 	 */
 	public final static String CONFIG_ITEM_ORGANIZATION_WAY = "OrganizationWay";
