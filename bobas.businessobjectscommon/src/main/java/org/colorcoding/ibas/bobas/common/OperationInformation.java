@@ -77,7 +77,7 @@ public class OperationInformation implements IOperationInformation {
 
 	@Override
 	public String toString() {
-		return String.format("{operation information: %s - %s}", this.getName(), this.getContent());
+		return String.format("{opInformation: %s - %s}", this.getName(), this.getContent());
 	}
 
 }

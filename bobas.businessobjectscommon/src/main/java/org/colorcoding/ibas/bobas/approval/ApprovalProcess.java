@@ -87,7 +87,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 
 	@Override
 	public String toString() {
-		return String.format("{approval process: %s %s}", this.getName(), this.getStatus());
+		return String.format("{approvalProcess: %s %s}", this.getName(), this.getStatus());
 	}
 
 	private IApprovalData approvalData;

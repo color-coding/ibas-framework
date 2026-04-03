@@ -248,6 +248,6 @@ class DaemonTaskWrapping {
 
 	@Override
 	public String toString() {
-		return String.format("{Task: %s}", this.getName());
+		return String.format("{task: %s}", this.getName());
 	}
 }

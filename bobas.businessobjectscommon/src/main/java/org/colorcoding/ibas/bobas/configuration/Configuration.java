@@ -212,8 +212,8 @@ public class Configuration {
 	 * @return
 	 */
 	public static String getTempFolder() {
-		File folder = Strings.isNullOrEmpty(System.getProperty("java.io.tmpdir")) ? new File(getWorkFolder(), "temp")
-				: new File(System.getProperty("java.io.tmpdir"));
+		String tmpFolder = System.getProperty("java.io.tmpdir");
+		File folder = Strings.isNullOrEmpty(tmpFolder) ? new File(getWorkFolder(), "temp") : new File(tmpFolder);
 		if (!folder.exists()) {
 			folder.mkdirs();
 		}

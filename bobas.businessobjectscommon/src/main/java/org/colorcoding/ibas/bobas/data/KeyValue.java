@@ -66,6 +66,6 @@ public class KeyValue extends Serializable implements IKeyValue {
 	}
 
 	public String toString() {
-		return String.format("{key value: %s %s}", this.getKey(), this.getValue());
+		return String.format("{keyValue: %s %s}", this.getKey(), this.getValue());
 	}
 }

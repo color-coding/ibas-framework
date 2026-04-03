@@ -106,8 +106,7 @@ public class FileItem extends Serializable {
 		this.path = path;
 	}
 
-	@XmlElement(name = "Path")
-	String getProxyPath() {
+	public String relativePath() {
 		String path = this.path;
 		if (!Strings.isNullOrEmpty(path)) {
 			int index = Strings.indexOf(path, this.maskFolder);
@@ -119,7 +118,12 @@ public class FileItem extends Serializable {
 			}
 		}
 		// 路径符统一
-		return Strings.replace(path, "\\", "/");
+		return Strings.replace(path, Strings.VALUE_BACKSLASH, Strings.VALUE_SLASH);
+	}
+
+	@XmlElement(name = "Path")
+	String getProxyPath() {
+		return this.relativePath();
 	}
 
 	void setProxyPath(String path) {
@@ -138,6 +142,6 @@ public class FileItem extends Serializable {
 
 	@Override
 	public String toString() {
-		return String.format("{file item: %s}", this.name);
+		return String.format("{fileItem: %s}", this.name);
 	}
 }

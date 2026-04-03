@@ -59,7 +59,7 @@ public final class UserFieldProxy {
 
 	@Override
 	public String toString() {
-		return String.format("{proxy field: %s %s}", this.getName(), this.getValue());
+		return String.format("{proxyField: %s %s}", this.getName(), this.getValue());
 	}
 
 }

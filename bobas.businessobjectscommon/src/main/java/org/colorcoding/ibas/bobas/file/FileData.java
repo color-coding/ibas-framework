@@ -128,7 +128,7 @@ public class FileData extends Serializable implements AutoCloseable {
 
 	@Override
 	public String toString() {
-		return String.format("{file data: %s}",
+		return String.format("{fileData: %s}",
 				Strings.isNullOrEmpty(this.getOriginalName()) ? this.getName() : this.getOriginalName());
 	}
 }

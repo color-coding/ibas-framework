@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE configuration>
+<ns2:configuration xmlns:ns2="http://colorcoding.org/ibas/bobas/configuration">
+    <appSettings>
+        <!-- 配置项目-公司标记 -->
+        <add key="Company" value="CC" />
+        <!-- 配置项目-是否开启调试模式 -->
+        <add key="DebugMode" value="true" />
+        <!-- 配置项目-文件仓库方式 -->
+        <add key="FileRepositoryWay" value="S3" />
+        <!-- 配置项目-文件仓库目录（存储桶） -->
+        <add key="FileRepositoryFolder" value="ibas-demo" />
+        <!-- 配置项目-文件仓库访问端点 -->
+        <add key="FileRepositoryEndpoint" value="http://ibas-s3-minio:9000" />
+        <!-- 配置项目-文件仓库访问口令 -->
+        <add key="FileRepositoryUser" value="minioadmin" />
+        <!-- 配置项目-文件仓库访问密钥 -->
+        <add key="FileRepositoryPassword" value="minioadmin" />
+        <!-- 配置项目-存储路径访问（MinIO:true） -->
+        <add key="S3PathStyleAccess" value="true" />
+    </appSettings>
+</ns2:configuration>

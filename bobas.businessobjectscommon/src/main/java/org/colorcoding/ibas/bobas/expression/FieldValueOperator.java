@@ -63,6 +63,6 @@ public class FieldValueOperator implements IPropertyValueOperator {
 
 	@Override
 	public String toString() {
-		return String.format("{field operator: %s}", this.getPropertyName());
+		return String.format("{operator: %s}", this.getPropertyName());
 	}
 }

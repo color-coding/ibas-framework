@@ -54,6 +54,6 @@ public abstract class BusinessRule implements IBusinessRule {
 
 	@Override
 	public String toString() {
-		return String.format("{business rule: %s}", this.getName());
+		return String.format("{bizRule: %s}", this.getName());
 	}
 }

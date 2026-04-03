@@ -1,8 +1,6 @@
 package org.colorcoding.ibas.bobas.file;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.UUID;
@@ -32,7 +30,7 @@ public class LocalFileTransaction extends FileTransaction {
 		super.setRepositoryFolder(Files.valueOf(folder).getPath());
 	}
 
-	private String groupingOf(String name) {
+	protected String groupingOf(String name) {
 		StringBuilder builder = new StringBuilder();
 		char[] items = new char[4];
 		for (int i = 0; i < 4 && i < name.length(); i++) {
@@ -72,18 +70,13 @@ public class LocalFileTransaction extends FileTransaction {
 					|| Strings.equalsIgnoreCase(CONDITION_ALIAS_FILE_NAME, condition.getAlias())
 					|| Strings.equalsIgnoreCase(CONDITION_ALIAS_FILE_FOLDER, condition.getAlias())) {
 				if (!Strings.isNullOrEmpty(condition.getValue())) {
-					condition.setValue(condition.getValue().replace("\\", File.separator));
-					condition.setValue(condition.getValue().replace("/", File.separator));
-
+					condition.setValue(condition.getValue().replace(Strings.VALUE_BACKSLASH, File.separator));
+					condition.setValue(condition.getValue().replace(Strings.VALUE_SLASH, File.separator));
+					condition.setValue(Files.pathOf(condition.getValue()));
 					if (Strings.equalsIgnoreCase(CONDITION_ALIAS_FILE_FOLDER, condition.getAlias())) {
 						if (!Strings.endsWith(condition.getValue(), File.separator)) {
 							condition.setValue(condition.getValue() + File.separator);
 						}
-					}
-					// 处理特殊字符
-					String check = "." + File.separator;
-					while (condition.getValue().indexOf(check) >= 0) {
-						condition.setValue(condition.getValue().replace(check, File.separator));
 					}
 				}
 			}
@@ -322,19 +315,7 @@ public class LocalFileTransaction extends FileTransaction {
 		if (!file.getPath().startsWith(this.getRepositoryFolder())) {
 			throw new SecurityException(file.getPath());
 		}
-		if (file.getParentFile() != null && !file.getParentFile().exists()) {
-			file.getParentFile().mkdirs();
-		}
-		// 创建文件目录
-		// 写入文件内容
-		int bytesRead = 0;
-		byte[] buffer = new byte[1024];
-		try (OutputStream outputStream = new FileOutputStream(file)) {
-			while ((bytesRead = fileData.getStream().read(buffer, 0, buffer.length)) != -1) {
-				outputStream.write(buffer, 0, bytesRead);
-			}
-			outputStream.flush();
-		}
+		Files.writeTo(fileData.getStream(), file);
 		return new FileItem(file);
 	}
 

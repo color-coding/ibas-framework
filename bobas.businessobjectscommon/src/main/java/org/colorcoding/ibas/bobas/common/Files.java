@@ -1,10 +1,16 @@
 package org.colorcoding.ibas.bobas.common;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Properties;
 
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.List;
@@ -26,12 +32,27 @@ public class Files {
 	}
 
 	/**
-	 * 返回文件夹路径
+	 * 标准化路径
+	 * 
+	 * @param first 部分路径
+	 * @param more  更多部分路径
+	 * @return
+	 */
+	public static String pathOf(String first, String... more) {
+		if (Strings.isNullOrEmpty(first)) {
+			return Strings.VALUE_EMPTY;
+		}
+		Path path = Paths.get(first, more).normalize();
+		return path.toString();
+	}
+
+	/**
+	 * 返回文件夹
 	 * 
 	 * @param path 待分析地址
 	 * @return
 	 */
-	public static String pathOf(String path) {
+	public static String folderOf(String path) {
 		if (Strings.isNullOrEmpty(path)) {
 			return Strings.VALUE_EMPTY;
 		}
@@ -42,7 +63,7 @@ public class Files {
 			return file.getPath();
 		}
 		// 反斜杠替换正斜杠
-		String tmpPath = Strings.replace(path, Strings.VALUE_BACKSLASH, Strings.VALUE_SLASH);
+		String tmpPath = pathOf(path).replace(Strings.VALUE_BACKSLASH, Strings.VALUE_SLASH);
 		if (tmpPath.lastIndexOf(Strings.VALUE_DOT) > 0 && tmpPath.lastIndexOf(Strings.VALUE_SLASH) > 0) {
 			return path.substring(0, tmpPath.lastIndexOf(Strings.VALUE_SLASH));
 		} else if (tmpPath.lastIndexOf(Strings.VALUE_SLASH) > 0) {
@@ -68,9 +89,9 @@ public class Files {
 			return file.getName();
 		}
 		// 反斜杠替换正斜杠
-		path = Strings.replace(path, Strings.VALUE_BACKSLASH, Strings.VALUE_SLASH);
-		if (path.lastIndexOf(Strings.VALUE_SLASH) > 0) {
-			return path.substring(path.lastIndexOf(Strings.VALUE_SLASH) + 1);
+		String tmpPath = pathOf(path).replace(Strings.VALUE_BACKSLASH, Strings.VALUE_SLASH);
+		if (tmpPath.lastIndexOf(Strings.VALUE_SLASH) > 0) {
+			return path.substring(tmpPath.lastIndexOf(Strings.VALUE_SLASH) + 1);
 		}
 		return path;
 	}
@@ -102,18 +123,34 @@ public class Files {
 		if (file == null) {
 			return Strings.VALUE_EMPTY;
 		}
-		String path = file.getPath();
+		String path = maskingPath(file.getPath(), maskFolder);
+		if (file.isDirectory()) {
+			if (!path.endsWith(File.separator)) {
+				path = path + File.separator;
+			}
+		}
+		return path;
+	}
+
+	/**
+	 * 掩饰路径
+	 * 
+	 * @param path       路径
+	 * @param maskFolder 掩饰路径（隐藏部分）
+	 * @return
+	 */
+	public static String maskingPath(String path, String maskFolder) {
+		if (Strings.isNullOrEmpty(path)) {
+			return Strings.VALUE_EMPTY;
+		}
+		path = pathOf(path);
 		if (!Strings.isNullOrEmpty(maskFolder)) {
+			maskFolder = pathOf(maskFolder);
 			if (Strings.isWith(path, maskFolder, null)) {
 				path = path.substring(maskFolder.length());
 				if (path.startsWith(File.separator)) {
 					path = path.substring(1);
 				}
-			}
-		}
-		if (file.isDirectory()) {
-			if (!path.endsWith(File.separator)) {
-				path = path + File.separator;
 			}
 		}
 		return path;
@@ -189,11 +226,103 @@ public class Files {
 	 */
 	public static void writeTo(File file, OutputStream outputStream) throws IOException {
 		try (FileInputStream inputStream = new FileInputStream(file)) {
-			int bytesRead;
-			byte[] buffer = new byte[4096];
-			while ((bytesRead = inputStream.read(buffer)) != -1) {
-				outputStream.write(buffer, 0, bytesRead);
+			writeTo(inputStream, outputStream);
+		}
+	}
+
+	/**
+	 * 内容写到输出流
+	 * 
+	 * @param inputStream  文件流
+	 * @param outputStream 输出流
+	 * @throws IOException
+	 */
+	public static void writeTo(InputStream inputStream, OutputStream outputStream) throws IOException {
+		int bytesRead;
+		byte[] buffer = new byte[4096];
+		while ((bytesRead = inputStream.read(buffer)) != -1) {
+			outputStream.write(buffer, 0, bytesRead);
+		}
+		outputStream.flush();
+	}
+
+	/**
+	 * 内容写到文件
+	 * 
+	 * @param inputStream 文件流
+	 * @param file        文件
+	 * @throws IOException
+	 */
+	public static void writeTo(InputStream inputStream, File file) throws IOException {
+		File folder = file.getParentFile();
+		if (folder != null && !folder.exists()) {
+			folder.mkdirs();
+		}
+		try (FileOutputStream outputStream = new FileOutputStream(file)) {
+			writeTo(inputStream, outputStream);
+		}
+	}
+
+	/**
+	 * 内容写到文件
+	 * 
+	 * @param params   属性
+	 * @param file     文件
+	 * @param comments 注释
+	 * @throws IOException
+	 */
+	public static void writeTo(Properties params, File file, String comments) throws IOException {
+		File folder = file.getParentFile();
+		if (folder != null && !folder.exists()) {
+			folder.mkdirs();
+		}
+		try (OutputStream outputStream = new FileOutputStream(file)) {
+			try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, "utf-8")) {
+				params.store(writer, Strings.isNullOrEmpty(comments) ? Strings.VALUE_EMPTY : comments);
 			}
+		}
+	}
+
+	/**
+	 * 内容写到文件
+	 * 
+	 * @param params 属性
+	 * @param file   文件
+	 * @throws IOException
+	 */
+	public static void writeTo(Properties params, File file) throws IOException {
+		writeTo(params, file, null);
+	}
+
+	/**
+	 * 文件内容读取字节
+	 * 
+	 * @param inputStream 文件内容
+	 * @return
+	 * @throws IOException
+	 */
+	public static byte[] readAllBytes(InputStream inputStream) throws IOException {
+		int bytesRead;
+		try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+			byte[] data = new byte[4096];
+			while ((bytesRead = inputStream.read(data, 0, data.length)) != -1) {
+				buffer.write(data, 0, bytesRead);
+			}
+			buffer.flush();
+			return buffer.toByteArray();
+		}
+	}
+
+	/**
+	 * 文件内容读取字节
+	 * 
+	 * @param file 文件
+	 * @return
+	 * @throws IOException
+	 */
+	public static byte[] readAllBytes(File file) throws IOException {
+		try (FileInputStream inputStream = new FileInputStream(file)) {
+			return readAllBytes(inputStream);
 		}
 	}
 }

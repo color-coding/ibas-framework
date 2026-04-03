@@ -136,6 +136,6 @@ public class OperationResult<P> extends OperationMessage implements IOperationRe
 
 	@Override
 	public String toString() {
-		return String.format("{operation result: %s - %s}", this.getResultCode(), this.getMessage());
+		return String.format("{opResult: %s - %s}", this.getResultCode(), this.getMessage());
 	}
 }

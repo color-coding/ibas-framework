@@ -15,7 +15,6 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
  * @author Niuren.Zhu
  *
  */
-
 public class FileJudgmentLink extends JudgmentLink {
 
 	/**

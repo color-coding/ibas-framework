@@ -92,6 +92,11 @@ public class Strings {
 	public static final String VALUE_BACKSLASH = alphabetOf(92);
 
 	/**
+	 * 字符：*
+	 */
+	public static final String VALUE_ASTERISK = alphabetOf(42);
+
+	/**
 	 * 类型默认值
 	 * 
 	 * @return

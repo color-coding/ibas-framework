@@ -1,0 +1,54 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>bobas.businessobjectscommon.file.s3</artifactId>
+	<name>bobas.businessobjectscommon.file.s3</name>
+	<url>https://colorcoding.org/ibas/bobas/db/dm8</url>
+	<parent>
+		<groupId>org.colorcoding.ibas</groupId>
+		<artifactId>bobas.businessobjectscommon.parent</artifactId>
+		<version>0.2.0</version>
+	</parent>
+	<organization>
+		<name>Color-Coding Studio</name>
+		<url>https://colorcoding.org</url>
+	</organization>
+	<properties>
+		<awssdk.version>2.42.26</awssdk.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.colorcoding.ibas</groupId>
+			<artifactId>bobas.businessobjectscommon</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>s3</artifactId>
+			<version>${awssdk.version}</version>
+			<!-- 排除所有重型HTTP客户端，只留轻量JDK实现 -->
+			<exclusions>
+				<exclusion>
+					<groupId>software.amazon.awssdk</groupId>
+					<artifactId>netty-nio-client</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>software.amazon.awssdk</groupId>
+					<artifactId>apache-client</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- 必须加：轻量JDK HTTP客户端（官方最小，无额外依赖） -->
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>url-connection-client</artifactId>
+			<version>${awssdk.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-nop</artifactId>
+			<version>1.7.36</version>
+		</dependency>
+	</dependencies>
+</project>

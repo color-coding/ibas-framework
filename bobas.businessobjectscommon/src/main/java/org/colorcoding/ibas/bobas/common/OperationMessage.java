@@ -158,6 +158,6 @@ public class OperationMessage extends Result implements IOperationMessage {
 
 	@Override
 	public String toString() {
-		return String.format("{operation message: %s - %s}", this.getResultCode(), this.getMessage());
+		return String.format("{opMessage: %s - %s}", this.getResultCode(), this.getMessage());
 	}
 }

@@ -65,7 +65,7 @@ public abstract class ApprovalProcessStep<T extends IProcessStepData> implements
 
 	@Override
 	public String toString() {
-		return String.format("{approval process step: %s %s}", this.getId(), this.getStatus());
+		return String.format("{apStep: %s %s}", this.getId(), this.getStatus());
 	}
 
 	/**

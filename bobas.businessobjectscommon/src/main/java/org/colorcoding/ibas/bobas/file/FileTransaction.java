@@ -49,6 +49,36 @@ public abstract class FileTransaction extends Transaction {
 	 */
 	public static final String CONDITION_VALUE_FOLDER = FileJudgmentLink.CRITERIA_CONDITION_VALUE_FOLDER;
 
+	private String repositoryFolder;
+
+	/**
+	 * 仓库工作目录
+	 * 
+	 * @return
+	 */
+	public String getRepositoryFolder() {
+		return this.repositoryFolder;
+	}
+
+	public void setRepositoryFolder(String folder) {
+		this.repositoryFolder = folder;
+	}
+
+	private boolean groupingFiles;
+
+	/**
+	 * 文件分组存储
+	 * 
+	 * @return
+	 */
+	public final boolean isGroupingFiles() {
+		return groupingFiles;
+	}
+
+	public final void setGroupingFiles(boolean groupingFiles) {
+		this.groupingFiles = groupingFiles;
+	}
+
 	@Override
 	public boolean inTransaction() throws RepositoryException {
 		return false;
@@ -224,36 +254,6 @@ public abstract class FileTransaction extends Transaction {
 	@Override
 	public void close() throws Exception {
 		this.cacheDatas = null;
-	}
-
-	private String repositoryFolder;
-
-	/**
-	 * 仓库工作目录
-	 * 
-	 * @return
-	 */
-	public String getRepositoryFolder() {
-		return this.repositoryFolder;
-	}
-
-	public void setRepositoryFolder(String folder) {
-		this.repositoryFolder = folder;
-	}
-
-	private boolean groupingFiles;
-
-	/**
-	 * 文件分组存储
-	 * 
-	 * @return
-	 */
-	public final boolean isGroupingFiles() {
-		return groupingFiles;
-	}
-
-	public final void setGroupingFiles(boolean groupingFiles) {
-		this.groupingFiles = groupingFiles;
 	}
 
 	protected abstract List<FileItem> searchFiles(ICriteria criteria) throws Exception;

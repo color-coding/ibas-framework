@@ -70,11 +70,11 @@ public class TestFileRepository extends TestCase {
 
 	public void testSearchFiles() {
 		String path = "C:\\Windows\\System32\\Win.exe";
-		System.out.println(Files.pathOf(path));
+		System.out.println(Files.folderOf(path));
 		System.out.println(Files.nameOf(path));
 		System.out.println(Files.extensionOf(path));
 		path = "/home/users/bash.sh";
-		System.out.println(Files.pathOf(path));
+		System.out.println(Files.folderOf(path));
 		System.out.println(Files.nameOf(path));
 		System.out.println(Files.extensionOf(path));
 

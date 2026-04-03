@@ -6,5 +6,6 @@ bobas.businessobjectscommon.db.pgsql
 bobas.businessobjectscommon.db.sybase
 bobas.businessobjectscommon.db.sqlite
 bobas.businessobjectscommon.db.dm8
+bobas.businessobjectscommon.file.s3
 bobas.businessobjectscommon.jersey
 bobas.businessobjectscommon.demo

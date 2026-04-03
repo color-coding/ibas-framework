@@ -1,27 +1,27 @@
+# compile files
 *.class
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
+*.tmp
 *.jar
 *.war
 *.ear
+.mtj.tmp/
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# log files
 hs_err_pid*
-
-# log file
 *_log_*.txt
 
-# mac os files
+# system files
 .DS_Store
 
 # release folder
 /release/
+/RemoteSystemsTempFiles/
+/Servers/
+
+# tools files
 /.vs/
 /.metadata/
 /.recommenders/
-/RemoteSystemsTempFiles/
-/Servers/
 /.idea/
+/.claude/
+CLAUDE.md
