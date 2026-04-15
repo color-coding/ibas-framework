@@ -132,13 +132,14 @@ public abstract class DbAdapter {
 			} else if (IFieldedObject.class.isAssignableFrom(boType)) {
 				if (orderProperties == null) {
 					ResultSetMetaData metaData = resultSet.getMetaData();
-					String[] columnNames = new String[metaData.getColumnCount()];
-					for (int i = 1; i <= columnNames.length; i++) {
-						columnNames[i - 1] = metaData.getColumnLabel(i);
+					ArrayList<String> columnNames = new ArrayList<>(metaData.getColumnCount());
+					for (int i = 1; i <= metaData.getColumnCount(); i++) {
+						columnNames.add(metaData.getColumnLabel(i));
 					}
 					DbField dbField;
+					String columnName;
 					IPropertyInfo<?> propertyInfo;
-					orderProperties = new IPropertyInfo<?>[columnNames.length];
+					orderProperties = new IPropertyInfo<?>[columnNames.size()];
 					List<IPropertyInfo<?>> propertyInfos = BOFactory.propertyInfos(boType);
 					for (int i = 0; i < propertyInfos.size(); i++) {
 						propertyInfo = propertyInfos.get(i);
@@ -149,33 +150,38 @@ public abstract class DbAdapter {
 						if (dbField == null || Strings.isNullOrEmpty(dbField.name())) {
 							continue;
 						}
-						for (int j = 0; j < columnNames.length; j++) {
-							if (columnNames[j] == null) {
+						for (int j = 0; j < columnNames.size(); j++) {
+							columnName = columnNames.get(j);
+							if (columnName == null) {
 								continue;
 							}
-							if (Strings.equalsIgnoreCase(columnNames[j], dbField.name())) {
+							if (Strings.equalsIgnoreCase(columnName, dbField.name())) {
 								orderProperties[j] = propertyInfo;
-								columnNames[j] = null;
+								columnNames.set(j, null);
 							}
 						}
 					}
-					if (columnNames.length > propertyInfos.size()) {
-						// 数据结果列超过对象属性，可能存在用户字段
+					if (columnNames.contains(c -> c != null)) {
+						// 可能存在用户字段
 						if (this.isRegisterUserFields() && IBOUserFields.class.isAssignableFrom(boType)) {
-							for (int j = 0; j < columnNames.length; j++) {
-								if (columnNames[j] == null) {
+							for (int j = 0; j < columnNames.size(); j++) {
+								columnName = columnNames.get(j);
+								if (columnName == null) {
 									continue;
 								}
-								if (Strings.isWith(columnNames[j], IBOUserFields.USER_FIELD_PREFIX_SIGN, null)) {
+								if (Strings.isWith(columnName, IBOUserFields.USER_FIELD_PREFIX_SIGN, null)) {
 									orderProperties[j] = UserFieldsFactory.createManager().registerUserField(boType,
-											columnNames[j], this.dbFieldTypeOf(metaData.getColumnType(j + 1)));
-									columnNames[j] = null;
+											columnName, this.dbFieldTypeOf(metaData.getColumnType(j + 1)));
+									columnNames.set(j, null);
 								}
 							}
 						}
 					}
 					propertyInfos = null;
 					propertyInfo = null;
+					columnNames = null;
+					columnName = null;
+					metaData = null;
 					dbField = null;
 				}
 				data = BOFactory.newInstance(boType);
