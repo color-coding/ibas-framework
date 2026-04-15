@@ -10,7 +10,9 @@ import org.colorcoding.ibas.bobas.bo.IBOSimple;
 import org.colorcoding.ibas.bobas.bo.IBOSimpleLine;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
+import org.colorcoding.ibas.bobas.common.Condition;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
+import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.IChildCriteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
@@ -96,13 +98,6 @@ public class BORepositoryService extends BORepository4DB {
 					if (subType == null || !IBusinessObject.class.isAssignableFrom(subType)) {
 						throw new Exception(I18N.prop("msg_bobas_invalid_argument", propertyInfo.getName()));
 					}
-					// 新建主项查询，不再查子项
-					ICriteria nCriteria = criteria.clone();
-					nCriteria.setNoChilds(true);
-					nCriteria.getChildCriterias().clear();
-					ICondition condition = null;
-					int count = criteria.getConditions().size();
-
 					IOperationResult<IBusinessObject> opRsltChilds = super.fetch(subType, cCriteria);
 					if (opRsltChilds.getError() != null) {
 						throw opRsltChilds.getError();
@@ -111,80 +106,92 @@ public class BORepositoryService extends BORepository4DB {
 					if (opRsltChilds.getResultObjects().isEmpty()) {
 						return new OperationResult<T>();
 					}
+					// 新建主项查询
+					ICriteria pCriteria = new Criteria();
+
 					for (IBusinessObject item : opRsltChilds.getResultObjects()) {
 						if (item instanceof IBODocumentLine) {
-							if (nCriteria.getConditions().contains(
-									c -> Strings.equalsIgnoreCase(c.getAlias(), IBODocument.MASTER_PRIMARY_KEY_NAME)
-											&& nCriteria.getConditions().indexOf(c) >= count)) {
-								continue;
-							}
-							condition = nCriteria.getConditions().create();
+							ICondition condition = new Condition();
 							condition.setAlias(IBODocument.MASTER_PRIMARY_KEY_NAME);
 							condition.setValue(((IBODocumentLine) item).getDocEntry());
-						} else if (item instanceof IBOSimpleLine) {
-							if (nCriteria.getConditions().contains(
-									c -> Strings.equalsIgnoreCase(c.getAlias(), IBOSimple.MASTER_PRIMARY_KEY_NAME)
-											&& nCriteria.getConditions().indexOf(c) >= count)) {
+							if (pCriteria.getConditions()
+									.contains(c -> Strings.equals(c.getAlias(), condition.getAlias())
+											&& Strings.equals(c.getValue(), condition.getValue()))) {
 								continue;
 							}
-							condition = nCriteria.getConditions().create();
+							if (pCriteria.getConditions().size() > 0) {
+								condition.setRelationship(ConditionRelationship.OR);
+							}
+							pCriteria.getConditions().add(condition);
+						} else if (item instanceof IBOSimpleLine) {
+							ICondition condition = new Condition();
 							condition.setAlias(IBOSimple.MASTER_PRIMARY_KEY_NAME);
 							condition.setValue(((IBOSimpleLine) item).getObjectKey());
-						} else if (item instanceof IBOMasterDataLine) {
-							if (nCriteria.getConditions().contains(
-									c -> Strings.equalsIgnoreCase(c.getAlias(), IBOMasterData.MASTER_PRIMARY_KEY_NAME)
-											&& nCriteria.getConditions().indexOf(c) >= count)) {
+							if (pCriteria.getConditions()
+									.contains(c -> Strings.equals(c.getAlias(), condition.getAlias())
+											&& Strings.equals(c.getValue(), condition.getValue()))) {
 								continue;
 							}
-							condition = nCriteria.getConditions().create();
+							if (pCriteria.getConditions().size() > 0) {
+								condition.setRelationship(ConditionRelationship.OR);
+							}
+							pCriteria.getConditions().add(condition);
+						} else if (item instanceof IBOMasterDataLine) {
+							ICondition condition = new Condition();
 							condition.setAlias(IBOMasterData.MASTER_PRIMARY_KEY_NAME);
 							condition.setValue(((IBOMasterDataLine) item).getCode());
-						} else {
-							int index = nCriteria.getConditions().size();
-							// 设置父项主键
-							IPropertyInfo<?> cKey = null;
-							List<IPropertyInfo<?>> cKeys = BOFactory.propertyInfos(subType)
-									.where(c -> c.isPrimaryKey());
-							for (IPropertyInfo<?> pItem : BOFactory.propertyInfos(boType)
-									.where(c -> c.isPrimaryKey())) {
-								cKey = cKeys.firstOrDefault(c -> Strings.equals(pItem.getName(), c.getName()));
-								if (cKey == null) {
-									throw new Exception(I18N.prop("msg_bobas_invalid_argument", pItem.getName()));
-								}
-								String keyValue = Strings.valueOf(BOUtilities.propertyValue(item, cKey));
-								if (nCriteria.getConditions()
-										.contains(c -> Strings.equalsIgnoreCase(c.getAlias(), pItem.getName())
-												&& nCriteria.getConditions().indexOf(c) >= count
-												&& Strings.equals(c.getValue(), keyValue))) {
-									break;
-								}
-								condition = nCriteria.getConditions().create();
-								condition.setAlias(pItem);
-								condition.setValue(keyValue);
-							}
-							if (index == nCriteria.getConditions().size()) {
-								// 没有增加条件，跳过
+							if (pCriteria.getConditions()
+									.contains(c -> Strings.equals(c.getAlias(), condition.getAlias())
+											&& Strings.equals(c.getValue(), condition.getValue()))) {
 								continue;
 							}
-							if (nCriteria.getConditions().size() > (index + 2)) {
-								condition = nCriteria.getConditions().get(index);
-								condition.setBracketOpen(condition.getBracketOpen() + 1);
-								condition = nCriteria.getConditions().lastOrDefault();
-								condition.setBracketClose(condition.getBracketClose() + 1);
+							if (pCriteria.getConditions().size() > 0) {
+								condition.setRelationship(ConditionRelationship.OR);
 							}
-							// 置为添加的首个
-							condition = nCriteria.getConditions().get(index);
-						}
-						if (nCriteria.getConditions().size() > (count + 1)) {
-							condition.setRelationship(ConditionRelationship.OR);
+							pCriteria.getConditions().add(condition);
+						} else {
+							ICondition condition = null;
+							IPropertyInfo<?> cKey = null;
+							int index = pCriteria.getConditions().size();
+							List<IPropertyInfo<?>> cKeys = BOFactory.propertyInfos(subType)
+									.where(c -> c.isPrimaryKey());
+							for (IPropertyInfo<?> pKey : BOFactory.propertyInfos(boType).where(c -> c.isPrimaryKey())) {
+								cKey = cKeys.firstOrDefault(c -> Strings.equals(pKey.getName(), c.getName()));
+								if (cKey == null) {
+									throw new Exception(I18N.prop("msg_bobas_invalid_argument", pKey.getName()));
+								}
+								condition = new Condition();
+								condition.setAlias(pKey);
+								condition.setValue(BOUtilities.propertyValue(item, cKey));
+								pCriteria.getConditions().add(condition);
+							}
+							// 没有增加条件，跳过
+							if (index == pCriteria.getConditions().size()) {
+								continue;
+							}
+							if (pCriteria.getConditions().size() > (index + 1)) {
+								pCriteria.getConditions().get(index).addBracketOpen();
+								pCriteria.getConditions().lastOrDefault().addBracketClose();
+							}
+							// 不是首个条件
+							if (index > 0) {
+								pCriteria.getConditions().get(index).setRelationship(ConditionRelationship.OR);
+							}
 						}
 					}
-					if (nCriteria.getConditions().size() > (count + 2)) {
-						condition = nCriteria.getConditions().get(count);
-						condition.setBracketOpen(condition.getBracketOpen() + 1);
-						condition = nCriteria.getConditions().lastOrDefault();
-						condition.setBracketClose(condition.getBracketClose() + 1);
+					// 合并查询
+					ICriteria nCriteria = criteria.clone();
+					nCriteria.setNoChilds(true);
+					nCriteria.getChildCriterias().clear();
+					if (nCriteria.getConditions().size() > 1) {
+						nCriteria.getConditions().firstOrDefault().addBracketOpen();
+						nCriteria.getConditions().lastOrDefault().addBracketClose();
 					}
+					if (pCriteria.getConditions().size() > 1) {
+						pCriteria.getConditions().firstOrDefault().addBracketOpen();
+						pCriteria.getConditions().lastOrDefault().addBracketClose();
+					}
+					nCriteria.getConditions().addAll(pCriteria.getConditions());
 					// 查询父项，并填充子项
 					OperationResult<T> opRsltParent = super.fetch(boType, nCriteria);
 					if (opRsltParent.getError() != null) {
