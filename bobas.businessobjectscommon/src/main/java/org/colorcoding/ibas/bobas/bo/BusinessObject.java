@@ -347,7 +347,12 @@ public abstract class BusinessObject<T extends IBusinessObject> extends Business
 			if (userField == null) {
 				continue;
 			}
-			userField.setValue(proxyField.convertValue());
+			try {
+				userField.setValue(proxyField.convertValue());
+			} catch (Exception e) {
+				throw new RuntimeException(String.format("Unexpected error [%s.%s].", this.getClass().getSimpleName(),
+						userField.getName()), e);
+			}
 		}
 	}
 

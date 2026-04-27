@@ -246,7 +246,8 @@ public class BORepository4Db extends BORepository4DbReadonly implements IBORepos
 				// 自己打开的事务
 				this.rollbackTransaction();// 关闭事务
 			}
-			throw e;
+			throw new RepositoryException(
+					String.format("Failed to save [%s] data, %s", bo.getClass().getSimpleName(), e.getMessage()), e);
 		} finally {
 			if (reader != null) {
 				reader.close();
