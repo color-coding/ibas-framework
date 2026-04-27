@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -53,6 +54,11 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 				Iterable<?> iterable = (Iterable<?>) value;
 				for (Object item : iterable) {
 					results.add((T) item);
+				}
+			} else if (value instanceof Iterator) {
+				Iterator<?> iterator = (Iterator<?>) value;
+				while (iterator.hasNext()) {
+					results.add((T) iterator.next());
 				}
 			} else {
 				results.add((T) value);

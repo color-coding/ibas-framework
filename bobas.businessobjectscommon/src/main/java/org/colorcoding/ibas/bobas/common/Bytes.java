@@ -1,8 +1,33 @@
 package org.colorcoding.ibas.bobas.common;
 
+import java.nio.charset.StandardCharsets;
+
 public class Bytes {
 
 	private Bytes() {
+	}
+
+	/**
+	 * 字符串转字节（UTF-8）
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static byte[] valueOf(String value) {
+		if (value == null) {
+			return new byte[] {};
+		}
+		return value.getBytes(StandardCharsets.UTF_8);
+	}
+
+	/**
+	 * 字符转字节
+	 * 
+	 * @param c
+	 * @return
+	 */
+	private static byte charToByte(char c) {
+		return (byte) "0123456789ABCDEF".indexOf(c);
 	}
 
 	/**
@@ -11,7 +36,7 @@ public class Bytes {
 	 * @param hexString
 	 * @return
 	 */
-	public static byte[] toBytes(String hexString) {
+	public static byte[] fromHexString(String hexString) {
 		if (hexString == null || hexString.isEmpty()) {
 			return null;
 		}
@@ -24,16 +49,6 @@ public class Bytes {
 			d[i] = (byte) (charToByte(hexChars[pos]) << 4 | charToByte(hexChars[pos + 1]));
 		}
 		return d;
-	}
-
-	/**
-	 * 字符转字节
-	 * 
-	 * @param c
-	 * @return
-	 */
-	private static byte charToByte(char c) {
-		return (byte) "0123456789ABCDEF".indexOf(c);
 	}
 
 	/**

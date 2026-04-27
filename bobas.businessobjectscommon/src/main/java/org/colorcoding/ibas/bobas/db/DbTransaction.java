@@ -295,6 +295,10 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 			}
 			return datas.toArray((T[]) Array.newInstance(boType, datas.size()));
 		} catch (Exception e) {
+			if (boType != null && e instanceof SQLException) {
+				throw new RepositoryException(
+						I18N.prop("msg_bobas_to_fetch_bo_data_faild", boType.getSimpleName(), e.getMessage()), e);
+			}
 			throw new RepositoryException(e);
 		}
 	}
@@ -644,7 +648,6 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 					}
 				}
 				cData = null;
-				boType = null;
 				boData = null;
 				// 分配执行语句的方法
 				int batchCount = this.getAdapter().getBatchCount();
@@ -881,8 +884,9 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 												.parsingDatas(Result.class, resultSet);
 										for (Result result : results) {
 											if (result.getResultCode() != 0) {
-												throw new TransactionException(Strings.format("%s - %s",
-														result.getResultCode(), result.getMessage()));
+												throw new TransactionException(
+														I18N.prop("msg_bobas_user_transaction_check_results",
+																result.getResultCode(), result.getMessage()));
 											}
 										}
 									}
@@ -965,6 +969,10 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 					this.rollback();
 					mine = false;
 				}
+				if (boType != null && (e instanceof SQLException || e instanceof TransactionException)) {
+					throw new RepositoryException(
+							I18N.prop("msg_bobas_to_save_bo_data_faild", boType.getSimpleName(), e.getMessage()), e);
+				}
 				throw e;
 			} finally {
 				cData = null;
@@ -979,6 +987,8 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 				sqlExecuter = null;
 				spExecuter = null;
 			}
+		} catch (RepositoryException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new RepositoryException(e);
 		}
@@ -1081,6 +1091,10 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 			}
 			return datas.toArray((T[]) Array.newInstance(boType, datas.size()));
 		} catch (Exception e) {
+			if (boType != null && e instanceof SQLException) {
+				throw new RepositoryException(
+						I18N.prop("msg_bobas_to_fetch_bo_data_faild", boType.getSimpleName(), e.getMessage()), e);
+			}
 			throw new RepositoryException(e);
 		}
 	}

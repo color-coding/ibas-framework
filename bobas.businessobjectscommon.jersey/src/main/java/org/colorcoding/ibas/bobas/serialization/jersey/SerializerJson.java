@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonWriter;
 import javax.xml.bind.JAXBContext;
@@ -27,6 +28,7 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.MediaType;
+import org.eclipse.persistence.oxm.json.JsonStructureSource;
 
 public class SerializerJson extends Serializer {
 
@@ -124,6 +126,22 @@ public class SerializerJson extends Serializer {
 		try {
 			Unmarshaller unmarshaller = this.createUnmarshaller(types);
 			Object object = unmarshaller.unmarshal(reader);
+			if (object instanceof JAXBElement) {
+				// 因为不包括头，此处返回的是这个玩意儿
+				return ((JAXBElement<T>) object).getValue();
+			} else {
+				return (T) object;
+			}
+		} catch (JAXBException e) {
+			throw new SerializationException(e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T deserialize(JsonObject jsonObject, Class<?>... types) throws SerializationException {
+		try {
+			Unmarshaller unmarshaller = this.createUnmarshaller(types);
+			Object object = unmarshaller.unmarshal(new JsonStructureSource(jsonObject));
 			if (object instanceof JAXBElement) {
 				// 因为不包括头，此处返回的是这个玩意儿
 				return ((JAXBElement<T>) object).getValue();
