@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -392,16 +393,19 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	 * @return
 	 */
 	@Override
-	public synchronized final List<IPropertyInfo<?>> properties() {
+	public synchronized List<IPropertyInfo<?>> properties(Predicate<IPropertyInfo<?>> filter) {
+		List<IPropertyInfo<?>> properties = super.properties(filter);
 		if (this instanceof IBOUserFields && this.userFields != null && !this.userFields.isEmpty()) {
-			List<IPropertyInfo<?>> userFields = new ArrayList<>(this.userFields.keySet());
+			List<IPropertyInfo<?>> userFields = new ArrayList<>(this.userFields.size());
+			for (IPropertyInfo<?> property : this.userFields.keySet()) {
+				if (filter == null || filter.test(property)) {
+					userFields.add(property);
+				}
+			}
 			userFields.sort((c1, c2) -> Integer.compare(c1.getIndex(), c2.getIndex()));
-			List<IPropertyInfo<?>> propertyInfos = super.properties();
-			propertyInfos.addAll(userFields);
-			return propertyInfos;
-		} else {
-			return super.properties();
+			properties.addAll(userFields);
 		}
+		return properties;
 	}
 
 	/**
