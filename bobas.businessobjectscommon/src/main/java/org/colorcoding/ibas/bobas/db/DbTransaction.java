@@ -101,6 +101,12 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 
 	public final synchronized boolean inTransaction() throws RepositoryException {
 		try {
+			if (this.connection == null) {
+				return false;
+			}
+			if (this.connection.isClosed()) {
+				return false;
+			}
 			return !this.getConnection().getAutoCommit();
 		} catch (SQLException e) {
 			throw new RepositoryException(e);
