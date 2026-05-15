@@ -24,7 +24,6 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 @XmlRootElement(name = "OperationMessage", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 public class OperationMessage extends Result implements IOperationMessage {
 
-	private static final int ERROR_DEEP = 5;
 	private static final long serialVersionUID = -4506576628874995959L;
 
 	public OperationMessage() {
@@ -109,31 +108,45 @@ public class OperationMessage extends Result implements IOperationMessage {
 				this.setResultCode(-1);
 			}
 			if (this.getMessage() == null || this.getMessage().isEmpty()) {
-				Throwable error = this.error;
-				ArrayList<String> errMessages = new ArrayList<>(ERROR_DEEP);
-				while (error != null && errMessages.size() <= ERROR_DEEP) {
-					errMessages.add(error.getMessage());
-					error = error.getCause();
-				}
-				StringBuilder stringBuilder = new StringBuilder(256);
-				for (int i = 0; i < errMessages.size(); i++) {
-					String message = errMessages.get(i);
-					if (message == null) {
-						continue;
+				if (MyConfiguration.isDebugMode()) {
+					// debug 模式保留详细错误信息
+					Throwable error = this.error;
+					ArrayList<String> errMessages = new ArrayList<>(5);
+					while (error != null && errMessages.size() <= 5) {
+						errMessages.add(error.getMessage());
+						error = error.getCause();
 					}
-					int next = i + 1;
-					if (next < errMessages.size()) {
-						String nMessage = errMessages.get(next);
-						if (nMessage != null && !nMessage.isEmpty() && message.endsWith(nMessage)) {
+					StringBuilder stringBuilder = new StringBuilder(512);
+					for (int i = 0; i < errMessages.size(); i++) {
+						String message = errMessages.get(i);
+						if (message == null) {
 							continue;
 						}
+						int next = i + 1;
+						if (next < errMessages.size()) {
+							String nMessage = errMessages.get(next);
+							if (nMessage != null && !nMessage.isEmpty() && message.endsWith(nMessage)) {
+								continue;
+							}
+						}
+						stringBuilder.append(message);
 					}
-					stringBuilder.append(message);
-				}
-				if (stringBuilder.length() > 0) {
-					this.setMessage(stringBuilder.toString());
+					if (stringBuilder.length() > 0) {
+						this.setMessage(stringBuilder.toString());
+					} else {
+						this.setMessage(this.error.getClass().getName());
+					}
 				} else {
-					this.setMessage(this.error.getClass().getName());
+					// 非 debug 模式仅取顶层消息，精简展示避免泄露内部信息
+					String message = this.error.getMessage();
+					if (message != null && !message.isEmpty()) {
+						if (message.length() > 256) {
+							message = message.substring(0, 256);
+						}
+						this.setMessage(message);
+					} else {
+						this.setMessage("internal error");
+					}
 				}
 			}
 		}

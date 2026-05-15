@@ -49,8 +49,9 @@ public class Numbers {
 
 	/**
 	 * 类型默认值
-	 * 
-	 * @return
+	 *
+	 * @param numberType 数值类型；不支持时抛出ClassCastException
+	 * @return 对应类型的零值
 	 */
 	public static Number defaultValue(Class<?> numberType) {
 		Objects.requireNonNull(numberType);
@@ -70,9 +71,9 @@ public class Numbers {
 
 	/**
 	 * 字符串是否为数字
-	 * 
-	 * @param value
-	 * @return
+	 *
+	 * @param value 字符串；null或空返回false；纯负号或"-."返回false
+	 * @return 有效数字格式返回true
 	 */
 	public static boolean isNumeric(String value) {
 		if (value == null || value.isEmpty()) {
@@ -105,8 +106,9 @@ public class Numbers {
 
 	/**
 	 * 字符串是否为0
-	 * @param value
-	 * @return
+	 *
+	 * @param value 字符串；null、空或非数字格式视为零返回true
+	 * @return 值为零返回true
 	 */
 	public static boolean isZero(String value) {
 		if (value == null || value.isEmpty()) {
@@ -252,11 +254,11 @@ public class Numbers {
 	}
 
 	/**
-	 * 判断是否相等（任意空值则不等）
-	 * 
-	 * @param a
-	 * @param b
-	 * @return
+	 * 判断是否相等（任一为null返回false）
+	 *
+	 * @param a 对象a；null返回false
+	 * @param b 对象b；null返回false
+	 * @return 相等返回true；支持Comparable比较和字符串转换比较
 	 */
 	public static boolean equals(Object a, Object b) {
 		if (a == null || b == null) {

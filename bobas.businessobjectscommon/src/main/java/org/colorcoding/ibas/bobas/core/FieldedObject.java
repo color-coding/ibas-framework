@@ -38,9 +38,9 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	 * 
 	 * @param name       属性名称
 	 * @param dataType   属性的值类型
-	 * @param objectType 对象类型
-	 * 
-	 * @return 依赖属性
+	 * @param objectType 对象类型（MY_CLASS，必须指向当前类）
+	 *
+	 * @return 属性信息
 	 */
 	public final static <P> IPropertyInfo<P> registerProperty(String name, Class<P> dataType, Class<?> objectType) {
 		return PropertyInfoManager.registerProperty(objectType, name, dataType);
@@ -51,10 +51,10 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	 * 
 	 * @param name         属性名称
 	 * @param dataType     属性的值类型
-	 * @param objectType   对象类型
+	 * @param objectType   对象类型（MY_CLASS，必须指向当前类）
 	 * @param defaultValue 默认值
-	 * 
-	 * @return 依赖属性
+	 *
+	 * @return 属性信息
 	 */
 	public final static <P> IPropertyInfo<P> registerProperty(String name, Class<P> dataType, Class<?> objectType,
 			P defaultValue) {
@@ -72,8 +72,8 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 
 	/**
 	 * 对象的属性（全部）
-	 * 
-	 * @return
+	 *
+	 * @return 属性列表
 	 */
 	@Override
 	public synchronized List<IPropertyInfo<?>> properties() {
@@ -82,9 +82,9 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 
 	/**
 	 * 对象的属性
-	 * 
-	 * @param filter 过滤条件
-	 * @return
+	 *
+	 * @param filter 过滤条件；null表示不过滤
+	 * @return 符合条件的属性列表
 	 */
 	@Override
 	public synchronized List<IPropertyInfo<?>> properties(Predicate<IPropertyInfo<?>> filter) {
@@ -105,10 +105,12 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 
 	/**
 	 * 获取属性的值
-	 * 
-	 * @param property 依赖属性
-	 * 
-	 * @return 属性的值
+	 *
+	 * 值为null时返回属性的默认值（减少内存占用）
+	 *
+	 * @param property 属性信息（不允许为null）
+	 *
+	 * @return 属性的值；存储null时返回默认值
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -139,9 +141,11 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 
 	/**
 	 * 设置属性的值
-	 * 
-	 * @param property 依赖属性
-	 * 
+	 *
+	 * 加载中时非主键/唯一键不触发属性改变事件；值等于默认值时存储null以节省内存
+	 *
+	 * @param property 属性信息（不允许为null）
+	 *
 	 * @param value    新的值
 	 */
 	@Override

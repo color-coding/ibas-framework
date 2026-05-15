@@ -10,22 +10,22 @@ import java.lang.annotation.Target;
 public @interface Field {
 	/**
 	 * 字段名称
-	 * 
-	 * @return
+	 *
+	 * @return 字段名
 	 */
 	public String name();
 
 	/**
 	 * 是否主键
-	 * 
-	 * @return
+	 *
+	 * @return true表示主键
 	 */
 	public boolean primaryKey() default Booleans.VALUE_FALSE;
 
 	/**
-	 * 是否索引键
-	 * 
-	 * @return
+	 * 是否唯一键
+	 *
+	 * @return true表示唯一键
 	 */
 	public boolean uniqueKey() default Booleans.VALUE_FALSE;
 

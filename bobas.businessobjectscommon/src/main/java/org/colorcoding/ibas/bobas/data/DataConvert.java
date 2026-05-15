@@ -22,11 +22,12 @@ public class DataConvert {
 	public final static String DATA_SEPARATOR = Strings.VALUE_COMMA;
 
 	/**
-	 * 转换类型
-	 * 
+	 * 转换类型（type为null返回null，value为null返回null，同类型直接返回，
+	 * 数值类型空字符串返回默认值0，枚举类型按名称匹配）
+	 *
 	 * @param type  目标类型
-	 * @param value 值
-	 * @return 目标类型值
+	 * @param value 原值
+	 * @return 目标类型值（不支持转换时抛ClassCastException）
 	 */
 	@SuppressWarnings("unchecked")
 	public static <P> P convert(Class<P> type, Object value) {
@@ -74,10 +75,22 @@ public class DataConvert {
 		throw new ClassCastException(I18N.prop("msg_bobas_not_support_convert_to_type", type.getName()));
 	}
 
+	/**
+	 * 转换为字符串
+	 *
+	 * @param value 原值
+	 * @return 字符串值
+	 */
 	public static String toString(Object value) {
 		return convert(String.class, value);
 	}
 
+	/**
+	 * 转换条件关系枚举（value为null时抛NullPointerException）
+	 *
+	 * @param value 框架枚举值
+	 * @return 通用条件关系
+	 */
 	public static ConditionRelationship toRelationship(emConditionRelationship value) {
 		if (value == null) {
 			throw new NullPointerException();
@@ -92,6 +105,12 @@ public class DataConvert {
 		throw new ClassCastException(I18N.prop("msg_bobas_not_support_convert_to_type", value));
 	}
 
+	/**
+	 * 转换条件操作枚举（value为null时抛NullPointerException）
+	 *
+	 * @param value 框架枚举值
+	 * @return 通用条件操作
+	 */
 	public static ConditionOperation toOperation(emConditionOperation value) {
 		if (value == null) {
 			throw new NullPointerException();
@@ -124,6 +143,12 @@ public class DataConvert {
 		throw new ClassCastException(I18N.prop("msg_bobas_not_support_convert_to_type", value));
 	}
 
+	/**
+	 * 转换条件关系枚举（反向，value为null时抛NullPointerException）
+	 *
+	 * @param value 通用条件关系
+	 * @return 框架枚举值
+	 */
 	public static emConditionRelationship toRelationship(ConditionRelationship value) {
 		if (value == null) {
 			throw new NullPointerException();
@@ -138,6 +163,12 @@ public class DataConvert {
 		throw new ClassCastException(I18N.prop("msg_bobas_not_support_convert_to_type", value));
 	}
 
+	/**
+	 * 转换条件操作枚举（反向，value为null时抛NullPointerException）
+	 *
+	 * @param value 通用条件操作
+	 * @return 框架枚举值
+	 */
 	public static emConditionOperation toOperation(ConditionOperation value) {
 		if (value == null) {
 			throw new NullPointerException();

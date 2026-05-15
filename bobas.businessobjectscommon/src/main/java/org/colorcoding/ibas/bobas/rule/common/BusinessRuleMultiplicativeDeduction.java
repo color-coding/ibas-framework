@@ -8,8 +8,10 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
 /**
- * 业务规则-乘除法推导（根据被乘数，用乘除法推导乘数或结果）
- * 
+ * 业务规则-乘除法推导
+ *
+ * 被乘数为零时结果输出零；乘数非零且结果为零时推导结果（乘数*被乘数）；被乘数与结果均非零时推导乘数（结果/被乘数）
+ *
  * @author Niuren.Zhu
  *
  */

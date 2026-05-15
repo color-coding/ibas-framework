@@ -8,6 +8,8 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
 /**
  * 业务规则-去空格
+ *
+ * 仅处理字符串类型的属性值，空字符串不做处理
  * 
  * @author Niuren.Zhu
  *

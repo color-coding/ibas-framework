@@ -32,12 +32,13 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 	}
 
 	/**
-	 * 返回SQL类型
-	 * 
+	 * 返回SQL类型；value为null时返回Types.NULL，否则委托给sqlTypeOf(type)
+	 *
 	 * @param type  数据字段类型
-	 * @param value 当前值
-	 * @return
+	 * @param value 当前值，null时返回NULL类型
+	 * @return 对应的java.sql.Types常量
 	 */
+	@Override
 	public int sqlTypeOf(DbFieldType type, Object value) {
 		if (value == null) {
 			return java.sql.Types.NULL;

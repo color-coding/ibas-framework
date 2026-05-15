@@ -82,6 +82,11 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 		this.firePropertyChange("isBusy", this.isBusy, !this.isBusy);
 	}
 
+	/**
+	 * 获取对象查询条件（无条件时返回null）
+	 *
+	 * @return 查询条件
+	 */
 	@Override
 	public ICriteria getCriteria() {
 		Criteria criteria = new Criteria();
@@ -198,9 +203,9 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 
 	/**
 	 * 转为字符串
-	 * 
-	 * @param type 类型：xml、json
-	 * @return
+	 *
+	 * @param type 类型：xml、json；其他类型返回getIdentifiers()
+	 * @return 序列化后的字符串
 	 */
 	public String toString(String type) {
 		if (Strings.equalsIgnoreCase(SerializationFactory.TYPE_JSON, type)) {
@@ -366,8 +371,6 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 
 	/**
 	 * 初始化业务规则
-	 * 
-	 * @throws RuntimeException
 	 */
 	private void initializeRules() {
 		BusinessRulesManager manager = BusinessRulesManager.create();
@@ -389,8 +392,9 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 
 	/**
 	 * 属性（包含用户字段）
-	 * 
-	 * @return
+	 *
+	 * @param filter 属性过滤条件（null时返回全部）
+	 * @return 符合条件的属性列表
 	 */
 	@Override
 	public synchronized List<IPropertyInfo<?>> properties(Predicate<IPropertyInfo<?>> filter) {
@@ -410,10 +414,9 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 
 	/**
 	 * 获取属性的值
-	 * 
-	 * @param property 依赖属性
-	 * 
-	 * @return 属性的值
+	 *
+	 * @param property 属性信息（null时抛NullPointerException）
+	 * @return 属性的值（用户字段null值返回默认值以节省内存）
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -437,10 +440,9 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 
 	/**
 	 * 设置属性的值
-	 * 
-	 * @param property 依赖属性
-	 * 
-	 * @param value    新的值
+	 *
+	 * @param property 属性信息（null时抛NullPointerException）
+	 * @param value    新的值（加载中仅设值不触发变更事件）
 	 */
 	@Override
 	@SuppressWarnings("unchecked")

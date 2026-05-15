@@ -60,6 +60,12 @@ public class KeyValue extends Serializable implements IKeyValue {
 		this.value = value;
 	}
 
+	/**
+	 * 获取值并按目标类型转换，类型不匹配时抛出ClassCastException
+	 *
+	 * @param <T> 目标类型
+	 * @return 转换后的值，可能为null
+	 */
 	@SuppressWarnings("unchecked")
 	public final <T> T asValue() {
 		return (T) value;

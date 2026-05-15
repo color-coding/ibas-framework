@@ -7,8 +7,8 @@ import org.colorcoding.ibas.bobas.bo.BOFactory;
 import org.colorcoding.ibas.bobas.core.Serializable;
 
 /**
- * 元素
- * 
+ * 结构元素基类
+ *
  * @author Niuren.Zhu
  *
  */
@@ -38,6 +38,11 @@ public abstract class Element extends Serializable implements Comparable<Element
 		this.wrapper = wrapper;
 	}
 
+	/**
+	 * 是否集合元素，wrapper非空时为集合
+	 *
+	 * @return true集合，false非集合
+	 */
 	public boolean isCollection() {
 		if (this.wrapper == null) {
 			return false;
@@ -93,6 +98,7 @@ public abstract class Element extends Serializable implements Comparable<Element
 		this.childs = childs;
 	}
 
+	/** 获取元素层级深度，根元素为0 */
 	public int getLevel() {
 		if (this.getParent() == null) {
 			return 0;
@@ -100,6 +106,12 @@ public abstract class Element extends Serializable implements Comparable<Element
 		return this.getParent().getLevel() + 1;
 	}
 
+	/**
+	 * 比较排序顺序：大写字母开头的元素排在前面（优先输出），同组内按名称自然排序
+	 *
+	 * @param target 目标元素
+	 * @return 比较结果
+	 */
 	@Override
 	public int compareTo(Element target) {
 		String sName = this.getWrapper();

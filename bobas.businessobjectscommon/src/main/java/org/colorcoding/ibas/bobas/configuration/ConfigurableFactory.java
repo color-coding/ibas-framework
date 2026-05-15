@@ -80,10 +80,10 @@ public abstract class ConfigurableFactory<T> {
 
 	/**
 	 * 创建实例
-	 * 
+	 *
 	 * @param configKey 配置项，提供命名空间
 	 * @param typeName  类名
-	 * @return
+	 * @return 创建的实例；配置为空时返回默认实例
 	 */
 	protected T create(String configKey, String typeName) {
 		String configValue = MyConfiguration.getConfigValue(configKey, "").toLowerCase();
@@ -103,10 +103,10 @@ public abstract class ConfigurableFactory<T> {
 	}
 
 	/**
-	 * 默认实例，没有配置时使用
-	 * 
-	 * @param typeName
-	 * @return
+	 * 创建默认实例（无配置时使用）
+	 *
+	 * @param typeName 类名
+	 * @return 默认实例
 	 */
 	protected abstract T createDefault(String typeName);
 

@@ -40,18 +40,18 @@ public class DateTimes {
 	public static final DateTime VALUE_MAX = valueOf(2099, 12, 31);
 
 	/**
-	 * 类型默认值
-	 * 
-	 * @return
+	 * 类型默认值（VALUE_MIN，1900-01-01）
+	 *
+	 * @return 最小日期
 	 */
 	public static DateTime defaultValue() {
 		return VALUE_MIN;
 	}
 
 	/**
-	 * 转换值
-	 * 
-	 * @param value 日期值
+	 * 转换值（时间戳）
+	 *
+	 * @param value 时间戳（毫秒）
 	 * @return 日期
 	 */
 	public static DateTime valueOf(long value) {
@@ -59,9 +59,9 @@ public class DateTimes {
 	}
 
 	/**
-	 * 转换值
-	 * 
-	 * @param value 日期
+	 * 转换值（Date对象）
+	 *
+	 * @param value Date对象；null返回VALUE_MIN
 	 * @return 日期
 	 */
 	public static DateTime valueOf(Date value) {
@@ -78,9 +78,9 @@ public class DateTimes {
 	}
 
 	/**
-	 * 转换值
-	 * 
-	 * @param value 日期的字符串
+	 * 转换值（字符串，默认日期格式）
+	 *
+	 * @param value 日期字符串；解析失败返回VALUE_MIN
 	 * @return 日期
 	 */
 	public static DateTime valueOf(String value) {
@@ -88,10 +88,10 @@ public class DateTimes {
 	}
 
 	/**
-	 * 转换值
-	 * 
-	 * @param value  日期字符串
-	 * @param format 字符串格式
+	 * 转换值（字符串，指定格式）
+	 *
+	 * @param value  日期字符串；解析失败返回VALUE_MIN
+	 * @param format 格式模板
 	 * @return 日期
 	 */
 	public static DateTime valueOf(String value, String format) {
@@ -105,12 +105,12 @@ public class DateTimes {
 	}
 
 	/**
-	 * 转换值（已处理月份）
-	 * 
+	 * 转换值（年月日，月份1-based自动转换）
+	 *
 	 * @param year  年
-	 * @param month 月
+	 * @param month 月（1-12，内部自动减1）
 	 * @param day   日
-	 * @return
+	 * @return 日期
 	 */
 	public static DateTime valueOf(int year, int month, int day) {
 		Calendar calendar = Calendar.getInstance();
@@ -155,12 +155,12 @@ public class DateTimes {
 
 	/**
 	 * 计算间隔时间
-	 * 
+	 *
 	 * @param fromTime 起始时间
 	 * @param toTime   截止时间
-	 * @param unit     间隔的时间单位
-	 * 
-	 * @return 返回日期间的间隔
+	 * @param unit     间隔的时间单位（仅支持HOUR/MINUTE/SECOND）
+	 *
+	 * @return 间隔值；不支持的单位抛出ArithmeticException
 	 */
 	public static long interval(DateTime fromTime, DateTime toTime, emTimeUnit unit) {
 		long interval = toTime.getTime() - fromTime.getTime();
@@ -179,10 +179,10 @@ public class DateTimes {
 
 	/**
 	 * 是否相等
-	 * 
-	 * @param a
-	 * @param b
-	 * @return
+	 *
+	 * @param a 日期a；null返回false
+	 * @param b 日期b；null返回false
+	 * @return 相等返回true；任一为null返回false
 	 */
 	public static boolean equals(DateTime a, DateTime b) {
 		if (a == null || b == null) {
@@ -199,10 +199,10 @@ public class DateTimes {
 
 	/**
 	 * 是否大于(a > b)
-	 * 
-	 * @param a
-	 * @param b
-	 * @return
+	 *
+	 * @param a 日期a；null返回false
+	 * @param b 日期b；null返回false
+	 * @return a大于b返回true
 	 */
 	public static boolean graterThan(DateTime a, DateTime b) {
 		if (a == null || b == null) {
@@ -213,10 +213,10 @@ public class DateTimes {
 
 	/**
 	 * 是否小于(a < b)
-	 * 
-	 * @param a
-	 * @param b
-	 * @return
+	 *
+	 * @param a 日期a；null返回false
+	 * @param b 日期b；null返回false
+	 * @return a小于b返回true
 	 */
 	public static boolean lessThan(DateTime a, DateTime b) {
 		if (a == null || b == null) {

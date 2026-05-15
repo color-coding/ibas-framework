@@ -22,10 +22,10 @@ public class Files {
 
 	/**
 	 * 返回文件
-	 * 
+	 *
 	 * @param first 部分路径
 	 * @param more  更多部分路径
-	 * @return
+	 * @return 标准化后的File对象
 	 */
 	public static File valueOf(String first, String... more) {
 		return Paths.get(first, more).normalize().toFile();
@@ -33,10 +33,10 @@ public class Files {
 
 	/**
 	 * 标准化路径
-	 * 
-	 * @param first 部分路径
+	 *
+	 * @param first 部分路径；空返回空字符串
 	 * @param more  更多部分路径
-	 * @return
+	 * @return 标准化后的路径字符串
 	 */
 	public static String pathOf(String first, String... more) {
 		if (Strings.isNullOrEmpty(first)) {
@@ -47,10 +47,10 @@ public class Files {
 	}
 
 	/**
-	 * 返回文件夹
-	 * 
-	 * @param path 待分析地址
-	 * @return
+	 * 返回文件夹路径
+	 *
+	 * @param path 待分析地址；空返回空字符串
+	 * @return 文件夹路径
 	 */
 	public static String folderOf(String path) {
 		if (Strings.isNullOrEmpty(path)) {
@@ -74,9 +74,9 @@ public class Files {
 
 	/**
 	 * 返回文件名
-	 * 
-	 * @param path 待分析地址
-	 * @return
+	 *
+	 * @param path 待分析地址；空返回空字符串
+	 * @return 文件名
 	 */
 	public static String nameOf(String path) {
 		if (Strings.isNullOrEmpty(path)) {
@@ -98,9 +98,9 @@ public class Files {
 
 	/**
 	 * 返回文件扩展名
-	 * 
-	 * @param path 待分析地址
-	 * @return
+	 *
+	 * @param path 待分析地址；空返回空字符串
+	 * @return 扩展名（不含点号）；无扩展名返回空字符串
 	 */
 	public static String extensionOf(String path) {
 		if (!Strings.isNullOrEmpty(path)) {
@@ -113,11 +113,11 @@ public class Files {
 	}
 
 	/**
-	 * 掩饰路径
-	 * 
-	 * @param path       路径
+	 * 隐藏路径前缀
+	 *
+	 * @param file       文件；null返回空字符串
 	 * @param maskFolder 掩饰路径（隐藏部分）
-	 * @return
+	 * @return 去除前缀后的路径；文件夹路径以分隔符结尾
 	 */
 	public static String maskingPath(File file, String maskFolder) {
 		if (file == null) {
@@ -133,11 +133,11 @@ public class Files {
 	}
 
 	/**
-	 * 掩饰路径
-	 * 
-	 * @param path       路径
+	 * 隐藏路径前缀
+	 *
+	 * @param path       路径；空返回空字符串
 	 * @param maskFolder 掩饰路径（隐藏部分）
-	 * @return
+	 * @return 去除前缀后的路径
 	 */
 	public static String maskingPath(String path, String maskFolder) {
 		if (Strings.isNullOrEmpty(path)) {
@@ -158,11 +158,11 @@ public class Files {
 
 	/**
 	 * 列出文件
-	 * 
+	 *
 	 * @param path   路径
-	 * @param prefix 文件名前缀（空值，跳过比较）
-	 * @param suffix 文件名后缀（空值，跳过比较）
-	 * @return
+	 * @param prefix 文件名前缀（空值跳过比较）
+	 * @param suffix 文件名后缀（空值跳过比较）
+	 * @return 匹配的文件列表
 	 */
 	public static List<File> listFiles(String path, String prefix, String suffix) {
 		return listFiles(valueOf(path), prefix, suffix);
@@ -170,11 +170,11 @@ public class Files {
 
 	/**
 	 * 列出文件
-	 * 
+	 *
 	 * @param file   文件或文件夹
-	 * @param prefix 文件名前缀（空值，跳过比较）
-	 * @param suffix 文件名后缀（空值，跳过比较）
-	 * @return
+	 * @param prefix 文件名前缀（空值跳过比较）
+	 * @param suffix 文件名后缀（空值跳过比较）
+	 * @return 匹配的文件列表
 	 */
 	public static List<File> listFiles(File file, String prefix, String suffix) {
 		if (file.isFile()) {
@@ -295,11 +295,11 @@ public class Files {
 	}
 
 	/**
-	 * 文件内容读取字节
-	 * 
-	 * @param inputStream 文件内容
-	 * @return
-	 * @throws IOException
+	 * 读取输入流的全部字节
+	 *
+	 * @param inputStream 输入流
+	 * @return 字节数组
+	 * @throws IOException 读取失败
 	 */
 	public static byte[] readAllBytes(InputStream inputStream) throws IOException {
 		int bytesRead;
@@ -314,11 +314,11 @@ public class Files {
 	}
 
 	/**
-	 * 文件内容读取字节
-	 * 
+	 * 读取文件的全部字节
+	 *
 	 * @param file 文件
-	 * @return
-	 * @throws IOException
+	 * @return 字节数组
+	 * @throws IOException 读取失败
 	 */
 	public static byte[] readAllBytes(File file) throws IOException {
 		try (FileInputStream inputStream = new FileInputStream(file)) {

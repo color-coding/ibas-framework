@@ -15,8 +15,8 @@ public interface IFieldDataDb extends IFieldData {
 
 	/**
 	 * 字段类型
-	 * 
-	 * @return
+	 *
+	 * @return 数据库字段类型
 	 */
 	DbFieldType getFieldType();
 }

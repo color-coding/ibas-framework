@@ -5,6 +5,9 @@ import java.math.BigDecimal;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 
+/**
+ * 表达式工厂（单例）
+ */
 public class ExpressionFactory {
 
 	private ExpressionFactory() {
@@ -23,6 +26,13 @@ public class ExpressionFactory {
 		return instance;
 	}
 
+	/**
+	 * 根据值类型创建判断表达式
+	 *
+	 * @param type 值类型；为null时返回null
+	 * @return 判断表达式实例
+	 * @throws JudmentOperationException 不支持的类型时抛出
+	 */
 	public IJudgmentExpression createJudgment(Class<?> type) throws JudmentOperationException {
 		if (type == null) {
 			return null;

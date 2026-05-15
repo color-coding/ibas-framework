@@ -113,11 +113,11 @@ public class BOUtilities {
 	};
 
 	/**
-	 * 对象是否相等
-	 * 
-	 * @param bo1
-	 * @param bo2
-	 * @return
+	 * 判断两个业务对象是否相等（任一为null返回false，同实例或equals返回true）
+	 *
+	 * @param bo1 对象1
+	 * @param bo2 对象2
+	 * @return 是否相等
 	 */
 	public static boolean equals(IBusinessObject bo1, IBusinessObject bo2) {
 		if (bo1 == null) {
@@ -139,12 +139,12 @@ public class BOUtilities {
 	}
 
 	/**
-	 * 对象是否相同（类型一致，主键一致，版本一致?）
-	 * 
-	 * @param bo1
-	 * @param bo2
-	 * @param strictMode 是否严谨（版本一致）
-	 * @return
+	 * 判断两个业务对象是否相同（类型兼容，主键/唯一键值equals一致，严谨模式还要求版本号相同）
+	 *
+	 * @param bo1        对象1（null返回false）
+	 * @param bo2        对象2（null返回false）
+	 * @param strictMode 严谨模式：true=主键+版本号一致；false=新建对象可用唯一键，不要求版本号
+	 * @return 是否相同
 	 */
 	public static boolean isSame(IBusinessObject bo1, IBusinessObject bo2, boolean strictMode) {
 		if (bo1 == null) {
@@ -224,10 +224,10 @@ public class BOUtilities {
 	}
 
 	/**
-	 * 是否为对象
-	 * 
-	 * @param data
-	 * @return
+	 * 是否为业务对象实例
+	 *
+	 * @param data 待判断对象
+	 * @return 是否为BusinessObject实例
 	 */
 	public static boolean isBusinessObject(Object data) {
 		if (data instanceof BusinessObject<?>) {
@@ -237,10 +237,10 @@ public class BOUtilities {
 	}
 
 	/**
-	 * 是否为对象集合
-	 * 
-	 * @param data
-	 * @return
+	 * 是否为业务对象集合实例
+	 *
+	 * @param data 待判断对象
+	 * @return 是否为BusinessObjects实例
 	 */
 	public static boolean isBusinessObjects(Object data) {
 		if (data instanceof BusinessObjects<?, ?>) {
@@ -250,10 +250,10 @@ public class BOUtilities {
 	}
 
 	/**
-	 * 是否可存储
-	 * 
-	 * @param data
-	 * @return
+	 * 是否可保存（非VALUE_EMPTY的IBusinessObject才可保存）
+	 *
+	 * @param data 待判断对象
+	 * @return 是否可保存
 	 */
 	public static boolean isSavable(Object data) {
 		if (data instanceof IBusinessObject && data != VALUE_EMPTY) {
@@ -263,10 +263,10 @@ public class BOUtilities {
 	}
 
 	/**
-	 * 是否值类型
-	 * 
-	 * @param type
-	 * @return
+	 * 是否值类型（基本类型、枚举、字符串、数值、日期等）
+	 *
+	 * @param type 待判断类型
+	 * @return 是否值类型（type为null返回false）
 	 */
 	public static boolean isValueType(Class<?> type) {
 		if (type == null) {
@@ -319,9 +319,9 @@ public class BOUtilities {
 
 	/**
 	 * 是否值类型
-	 * 
-	 * @param property
-	 * @return
+	 *
+	 * @param property 属性信息
+	 * @return 是否值类型（property为null返回false）
 	 */
 	public static boolean isValueType(IPropertyInfo<?> property) {
 		if (property == null) {
@@ -331,11 +331,11 @@ public class BOUtilities {
 	}
 
 	/**
-	 * 克隆并重置实例
-	 * 
-	 * @param <T>
-	 * @param data
-	 * @return
+	 * 克隆并重置实例（VALUE_EMPTY不克隆直接返回原实例）
+	 *
+	 * @param <T>  实例类型
+	 * @param data 原实例
+	 * @return 克隆后的新实例
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T clone(T data) {
@@ -360,11 +360,11 @@ public class BOUtilities {
 	}
 
 	/**
-	 * 版本实例a比b新
-	 * 
-	 * @param a
-	 * @param b
-	 * @return
+	 * 判断实例a的版本号是否大于b（任一非IBOStorageTag返回false）
+	 *
+	 * @param a 实例a
+	 * @param b 实例b
+	 * @return a的版本号是否大于b
 	 */
 	public static boolean isNewer(IBusinessObject a, IBusinessObject b) {
 		if (!(a instanceof IBOStorageTag) || !(b instanceof IBOStorageTag)) {
@@ -380,11 +380,11 @@ public class BOUtilities {
 
 	/**
 	 * 获取对象的属性
-	 * 
+	 *
 	 * @param <P>          属性的值类型
 	 * @param bo           对象
 	 * @param propertyName 属性名称
-	 * @return 找不到为空
+	 * @return 属性信息（对象非FieldedObject或属性名为空时返回null）
 	 */
 	@SuppressWarnings("unchecked")
 	public static <P> IPropertyInfo<P> propertyInfo(IBusinessObject bo, String propertyName) {
@@ -405,11 +405,11 @@ public class BOUtilities {
 
 	/**
 	 * 获取对象的属性值
-	 * 
+	 *
 	 * @param <P>      值类型
 	 * @param bo       对象
-	 * @param property 属性
-	 * @return
+	 * @param property 属性信息
+	 * @return 属性值（对象非FieldedObject时返回null）
 	 */
 	public static <P> P propertyValue(IBusinessObject bo, IPropertyInfo<P> property) {
 		if (!(bo instanceof FieldedObject)) {
@@ -421,15 +421,13 @@ public class BOUtilities {
 
 	/**
 	 * 获取对象的属性值
-	 * 
-	 * 支持Items.Code，并返回数组
-	 * 
-	 * 支持Items[0].Code
-	 * 
+	 *
+	 * 支持Items.Code路径式访问，并返回数组；支持Items[0].Code索引式访问
+	 *
 	 * @param <P>          值类型
 	 * @param bo           对象
 	 * @param propertyName 属性名称
-	 * @return
+	 * @return 属性值（路径中间值为null时返回null）
 	 */
 	@SuppressWarnings("unchecked")
 	public static <P> P propertyValue(IBusinessObject bo, String propertyName) {
@@ -485,9 +483,10 @@ public class BOUtilities {
 	}
 
 	/**
-	 * 循环属性，值为IBusinessObject执行方法
-	 * 
-	 * @param action
+	 * 遍历业务对象属性中的子对象并执行操作
+	 *
+	 * @param bo     业务对象
+	 * @param action 对每个子对象执行的操作（null时跳过）
 	 */
 	public static void traverse(BusinessObject<?> bo, Consumer<BusinessObject<?>> action) {
 		if (action == null) {
@@ -533,26 +532,26 @@ public class BOUtilities {
 	}
 
 	/**
-	 * 查询数据
-	 * 
-	 * @param <T>
-	 * @param criteria 查询条件
-	 * @param datas    目标数据集
-	 * @return
-	 * @throws JudmentOperationException
+	 * 从数据集中查询符合条件的业务对象
+	 *
+	 * @param <T>      数据类型
+	 * @param datas    目标数据集（null返回空列表）
+	 * @param criteria 查询条件（null返回所有业务对象）
+	 * @return 符合条件的数据列表
+	 * @throws JudmentOperationException 表达式判断异常
 	 */
 	public static <T> List<T> fetch(Iterable<T> datas, ICriteria criteria) throws JudmentOperationException {
 		return fetch(datas == null ? null : datas.iterator(), criteria);
 	}
 
 	/**
-	 * 查询数据
-	 * 
-	 * @param <T>
-	 * @param criteria 查询条件（可指定数量）
+	 * 从数据集中查询符合条件的业务对象（criteria为null时返回所有业务对象，datas为null时返回空列表）
+	 *
+	 * @param <T>      数据类型
 	 * @param datas    目标数据集
-	 * @return
-	 * @throws JudmentOperationException
+	 * @param criteria 查询条件
+	 * @return 符合条件的数据列表
+	 * @throws JudmentOperationException 表达式判断异常
 	 */
 	public static <T> List<T> fetch(Iterator<T> datas, ICriteria criteria) throws JudmentOperationException {
 		ArrayList<T> results = new ArrayList<>();
@@ -624,12 +623,11 @@ public class BOUtilities {
 	}
 
 	/**
-	 * 获取对象实例
-	 * 
-	 * @param <T>             对象类型
-	 * @param operationResult 结果集
-	 * @return
-	 * @throws Exception
+	 * 从操作结果中提取数据列表
+	 *
+	 * @param <T>             数据类型
+	 * @param operationResult 操作结果
+	 * @return 数据列表（operationResult为null返回null，有错误时抛RuntimeException）
 	 */
 	public static <T> List<T> valueOf(IOperationResult<T> operationResult) {
 		if (operationResult == null) {
@@ -648,9 +646,9 @@ public class BOUtilities {
 	}
 
 	/**
-	 * 执行业务对象规则
-	 * 
-	 * @param host 规则宿主
+	 * 执行业务对象规则（先执行子项，再执行自身）
+	 *
+	 * @param host 目标对象（BusinessObject或ICheckRules实例）
 	 */
 	public static void executeRules(Object host) {
 		if (host instanceof BusinessObject<?>) {
@@ -691,10 +689,10 @@ public class BOUtilities {
 	}
 
 	/**
-	 * 转为json字符串
-	 * 
-	 * @param data 数据
-	 * @return
+	 * 转为json字符串（内置序列化失败时使用标准方式）
+	 *
+	 * @param data 数据对象
+	 * @return json字符串
 	 */
 	public static String toJsonString(Object data) {
 		// 首先使用内置序列化方式
@@ -718,10 +716,10 @@ public class BOUtilities {
 	}
 
 	/**
-	 * 转为xml字符串
-	 * 
-	 * @param data
-	 * @return
+	 * 转为xml字符串（内置序列化失败时使用标准方式）
+	 *
+	 * @param data 数据对象
+	 * @return xml字符串
 	 */
 	public static String toXmlString(Object data) {
 		// 首先使用内置序列化方式
@@ -746,9 +744,9 @@ public class BOUtilities {
 
 	/**
 	 * 转为csv字符串
-	 * 
-	 * @param data 数据
-	 * @return
+	 *
+	 * @param data 数据对象
+	 * @return csv字符串
 	 */
 	public static String toCsvString(Object data) {
 		try (ByteArrayOutputStream writer = new ByteArrayOutputStream(256)) {

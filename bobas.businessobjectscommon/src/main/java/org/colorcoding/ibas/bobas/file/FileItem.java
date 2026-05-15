@@ -18,8 +18,8 @@ import org.colorcoding.ibas.bobas.core.Serializable;
 import org.colorcoding.ibas.bobas.data.DateTime;
 
 /**
- * 文件项目
- * 
+ * 文件项目，描述文件或文件夹的属性
+ *
  * @author Niuren.Zhu
  *
  */
@@ -44,6 +44,7 @@ public class FileItem extends Serializable {
 
 	private String maskFolder;
 
+	/** 隐藏的基准目录，用于计算相对路径 */
 	public String getMaskFolder() {
 		return maskFolder;
 	}
@@ -55,6 +56,7 @@ public class FileItem extends Serializable {
 	@XmlElement(name = "Name")
 	private String name;
 
+	/** 文件或文件夹名称 */
 	public String getName() {
 		return name;
 	}
@@ -66,6 +68,7 @@ public class FileItem extends Serializable {
 	@XmlElement(name = "IsFolder")
 	private boolean isFolder;
 
+	/** 是否文件夹 */
 	public boolean isFolder() {
 		return isFolder;
 	}
@@ -77,6 +80,7 @@ public class FileItem extends Serializable {
 	@XmlElement(name = "IsFile")
 	private boolean isFile;
 
+	/** 是否文件 */
 	public boolean isFile() {
 		return isFile;
 	}
@@ -88,6 +92,7 @@ public class FileItem extends Serializable {
 	@XmlElement(name = "ModifyTime")
 	private DateTime modifyTime;
 
+	/** 最后修改时间 */
 	public DateTime getModifyTime() {
 		return modifyTime;
 	}
@@ -98,6 +103,7 @@ public class FileItem extends Serializable {
 
 	private String path;
 
+	/** 文件完整路径 */
 	public String getPath() {
 		return path;
 	}
@@ -106,6 +112,11 @@ public class FileItem extends Serializable {
 		this.path = path;
 	}
 
+	/**
+	 * 获取相对于基准目录的路径，路径分隔符统一为斜杠
+	 *
+	 * @return 相对路径
+	 */
 	public String relativePath() {
 		String path = this.path;
 		if (!Strings.isNullOrEmpty(path)) {
@@ -131,10 +142,10 @@ public class FileItem extends Serializable {
 	}
 
 	/**
-	 * 文件数据写入输出流
-	 * 
-	 * @param out 输出流
-	 * @throws IOException
+	 * 将文件内容写入输出流
+	 *
+	 * @param outputStream 输出流
+	 * @throws IOException 文件读取或写入失败
 	 */
 	public void writeTo(OutputStream outputStream) throws IOException {
 		Files.writeTo(Files.valueOf(this.getPath()), outputStream);

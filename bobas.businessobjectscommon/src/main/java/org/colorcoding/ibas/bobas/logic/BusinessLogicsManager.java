@@ -8,8 +8,8 @@ import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.repository.ITransaction;
 
 /**
- * 业务逻辑管理员
- * 
+ * 业务逻辑管理器（单例）
+ *
  * @author Niuren.Zhu
  *
  */
@@ -32,10 +32,23 @@ public class BusinessLogicsManager {
 		return instance;
 	}
 
+	/**
+	 * 创建业务逻辑链
+	 *
+	 * @param transaction 事务
+	 * @return 逻辑链实例
+	 */
 	synchronized BusinessLogicChain createChain(ITransaction transaction) {
 		return new BusinessLogicChain(transaction);
 	}
 
+	/**
+	 * 创建业务逻辑链并设置用户
+	 *
+	 * @param transaction 事务
+	 * @param user        执行用户
+	 * @return 逻辑链实例
+	 */
 	public synchronized IBusinessLogicChain createChain(ITransaction transaction, IUser user) {
 		BusinessLogicChain logicChain = new BusinessLogicChain(transaction);
 		logicChain.setUser(user);
@@ -44,6 +57,12 @@ public class BusinessLogicsManager {
 
 	private Map<Class<?>, Class<?>> logicClasses;
 
+	/**
+	 * 根据契约类型创建业务逻辑实例
+	 *
+	 * @param contract 契约类型
+	 * @return 业务逻辑实例；未找到时返回null
+	 */
 	public synchronized BusinessLogic<?, ?> createLogic(Class<?> contract) {
 		Class<?> logicClass = this.logicClasses.get(contract);
 		if (logicClass == null) {

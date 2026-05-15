@@ -9,8 +9,8 @@ import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.Serializable;
 
 /**
- * 值及描述
- * 
+ * 键及文本描述
+ *
  * @author Niuren.Zhu
  */
 @XmlType(name = "KeyText", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
@@ -30,7 +30,7 @@ public class KeyText extends Serializable implements IKeyText {
 	}
 
 	/**
-	 * 值
+	 * 键
 	 */
 	@XmlElement(name = "Key")
 	private String key;

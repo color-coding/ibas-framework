@@ -11,6 +11,8 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
 /**
  * 业务规则-求差运算
+ *
+ * 被减数为null时视为零；减数为null时跳过不参与减法
  * 
  * @author Niuren.Zhu
  *

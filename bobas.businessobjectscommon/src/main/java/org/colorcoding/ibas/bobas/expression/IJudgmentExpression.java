@@ -23,9 +23,9 @@ public interface IJudgmentExpression extends IExpression {
 	Object getLeftValue();
 
 	/**
-	 * 设置表达式-右值
-	 * 
-	 * @param value
+	 * 设置表达式-左值
+	 *
+	 * @param value 左值
 	 */
 	void setLeftValue(Object value);
 

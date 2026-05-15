@@ -3,6 +3,11 @@ package org.colorcoding.ibas.bobas.expression;
 import org.colorcoding.ibas.bobas.common.Enums;
 import org.colorcoding.ibas.bobas.common.Strings;
 
+/**
+ * 枚举值表达式比较
+ *
+ * 等于/不等时同时比较枚举名称和注解值
+ */
 public class JudgmentExpressionEnum extends JudgmentExpression<Object> {
 
 	private Object leftValue;

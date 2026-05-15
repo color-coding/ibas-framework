@@ -32,9 +32,9 @@ public class UserFieldsFactory {
 
 	/**
 	 * 初始化对象字段
-	 * 
+	 *
 	 * @param objectType 对象类型
-	 * @return
+	 * @return 字段映射（类型未注册用户字段时返回null）
 	 */
 	static Map<IPropertyInfo<?>, Object> initFields(Class<?> objectType) {
 		List<IPropertyInfo<?>> infoList = createManager().getUserFieldInfoList(objectType);
@@ -56,6 +56,11 @@ public class UserFieldsFactory {
 	private static long taskId = -1;
 	private volatile static UserFieldsManager instance;
 
+	/**
+	 * 创建用户字段管理器（单例模式，定时自动刷新）
+	 *
+	 * @return 用户字段管理器实例
+	 */
 	public synchronized static UserFieldsManager createManager() {
 		if (instance == null) {
 			synchronized (UserFieldsFactory.class) {

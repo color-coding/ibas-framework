@@ -8,8 +8,10 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
 /**
- * 业务规则-加减法推导（根据被加数，用加减法推导加数或结果）
- * 
+ * 业务规则-加减法推导
+ *
+ * 已知被加数时：加数为空则推导结果（加数+被加数），结果为空则推导加数（结果-被加数）
+ *
  * @author Niuren.Zhu
  *
  */

@@ -72,8 +72,9 @@ public abstract class UserFieldsManager {
 
 	/**
 	 * 设置类型无用户字段
-	 * 
+	 *
 	 * @param objectType 所属类型
+	 * @return 空的用户字段列表
 	 */
 	public List<IPropertyInfo<?>> setNoUserFields(Class<?> objectType) {
 		this.USER_FIELDS.put(objectType, new UserFieldInfoList(0));
@@ -82,33 +83,33 @@ public abstract class UserFieldsManager {
 
 	/**
 	 * 注册属性
-	 * 
+	 *
 	 * @param objectType 所属类型
 	 * @param name       名称
 	 * @param valueType  值类型
-	 * @return
+	 * @return 注册的属性信息
 	 */
 	public IPropertyInfo<?> registerUserField(Class<?> objectType, String name, Class<?> valueType) {
 		return this.registerUserField(objectType, UserFieldsFactory.createUserField(name, valueType));
 	}
 
 	/**
-	 * 注册属性
-	 * 
+	 * 注册属性（通过数据库字段类型）
+	 *
 	 * @param objectType 所属类型
 	 * @param name       名称
-	 * @param valueType  值类型
-	 * @return
+	 * @param valueType  数据库字段类型
+	 * @return 注册的属性信息
 	 */
 	public IPropertyInfo<?> registerUserField(Class<?> objectType, String name, DbFieldType valueType) {
 		return this.registerUserField(objectType, name, this.classOf(valueType));
 	}
 
 	/**
-	 * 获取数据类型
-	 * 
+	 * 获取数据库字段类型对应的Java类型
+	 *
 	 * @param type 数据库字段类型
-	 * @return
+	 * @return Java类型（未识别类型抛RuntimeException）
 	 */
 	public Class<?> classOf(DbFieldType type) {
 		if (type == DbFieldType.ALPHANUMERIC) {

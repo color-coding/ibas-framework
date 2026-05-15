@@ -172,7 +172,7 @@ public final class PropertyInfoManager {
 	 * @param objectType 所属类型
 	 * @param name       属性名称
 	 * @param type       属性类型
-	 * @return
+	 * @return 属性信息
 	 */
 	static <P> IPropertyInfo<P> registerProperty(Class<?> objectType, String name, Class<P> type) {
 		return registerProperty(objectType, createProperty(name, type));
@@ -185,7 +185,7 @@ public final class PropertyInfoManager {
 	 * @param name         属性名称
 	 * @param type         属性类型
 	 * @param defaultValue 属性默认值
-	 * @return
+	 * @return 属性信息
 	 */
 	static <P> IPropertyInfo<P> registerProperty(Class<?> objectType, String name, Class<P> type, P defaultValue) {
 		PropertyInfo<P> property = createProperty(name, type);
@@ -196,8 +196,8 @@ public final class PropertyInfoManager {
 	/**
 	 * 获取属性列表（包含父项类型）
 	 * 
-	 * @param objectType 获取的对象类型
-	 * @return
+	 * @param objectType 获取的对象类型；null或FieldedObject.class时返回空列表
+	 * @return 属性列表
 	 */
 	static PropertyInfoList recursePropertyInfos(Class<?> objectType) {
 		PropertyInfoList propertys = new PropertyInfoList(96);
@@ -216,9 +216,9 @@ public final class PropertyInfoManager {
 	/**
 	 * 获取属性列表
 	 * 
-	 * @param objectType 类型
+	 * @param objectType 类型；未注册时向上查找父类
 	 * @return 类型的属性列表
-	 * @throws IllegalArgumentException
+	 * @throws IllegalArgumentException 类型未注册且父类均未注册时抛出
 	 */
 	static PropertyInfoList getPropertyInfoList(Class<?> objectType) {
 		synchronized (PROPERTY_INFOS) {
@@ -246,7 +246,7 @@ public final class PropertyInfoManager {
 	 * 初始化对象字段
 	 * 
 	 * @param objectType 对象类型
-	 * @return
+	 * @return 字段映射（所有属性值初始化为null）
 	 */
 	static Map<IPropertyInfo<?>, Object> initFields(Class<?> objectType) {
 		PropertyInfoList propertyInfoList = getPropertyInfoList(objectType);

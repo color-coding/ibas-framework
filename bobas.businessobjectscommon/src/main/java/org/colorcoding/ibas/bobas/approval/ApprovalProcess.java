@@ -27,7 +27,7 @@ import org.colorcoding.ibas.bobas.repository.RepositoryException;
 
 /**
  * 审批流程
- * 
+ *
  * @author Niuren.Zhu
  *
  */
@@ -93,7 +93,9 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	private IApprovalData approvalData;
 
 	/**
-	 * 审批数据
+	 * 获取审批数据，优先使用显式设置的数据，否则从流程数据获取
+	 *
+	 * @return 审批数据，可能为null
 	 */
 	public final IApprovalData getApprovalData() {
 		if (this.approvalData == null) {
@@ -112,9 +114,9 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	private IUser owner = null;
 
 	/**
-	 * 审批所有者
-	 * 
-	 * @return
+	 * 获取审批所有者，根据流程数据中的用户ID从组织工厂加载
+	 *
+	 * @return 审批所有者
 	 */
 	public IUser getOwner() {
 		if (this.owner == null || Integer.compare(this.owner.getId(), this.getProcessData().getOwner().getId()) != 0) {
@@ -124,7 +126,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	}
 
 	/**
-	 * 恢复初始状态
+	 * 恢复流程和所有步骤为初始状态
 	 */
 	protected final void restore() {
 		this.setStartedTime(DateTimes.VALUE_MIN);
@@ -139,10 +141,10 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	public abstract ApprovalProcessStep<?>[] getProcessSteps();
 
 	/**
-	 * 获取步骤
-	 * 
+	 * 根据编号获取步骤，包括多人审批步骤的子项
+	 *
 	 * @param id 步骤编号
-	 * @return
+	 * @return 步骤，未找到返回null
 	 */
 	protected ApprovalProcessStep<?> getProcessStep(int id) {
 		if (this.getProcessSteps() == null) {
@@ -165,9 +167,9 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	}
 
 	/**
-	 * 获取前一个步骤
-	 * 
-	 * @return
+	 * 获取当前步骤或前一个已完成步骤
+	 *
+	 * @return 步骤，可能为null
 	 */
 	protected final ApprovalProcessStep<?> getPreviousProcessStep() {
 		if (this.getProcessSteps() == null) {
@@ -208,7 +210,9 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	}
 
 	/**
-	 * 获取当前步骤
+	 * 获取当前正在审批的步骤
+	 *
+	 * @return 当前步骤，无进行中步骤时返回null
 	 */
 	public final ApprovalProcessStep<?> currentStep() {
 		if (this.getProcessSteps() == null) {
@@ -227,6 +231,12 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 		return null;
 	}
 
+	/**
+	 * 根据审批数据启动流程，依次判断步骤条件并激活首个满足条件的步骤
+	 *
+	 * @param data 审批数据，为null时返回false
+	 * @return true流程启动成功，false无步骤满足条件或出错
+	 */
 	public final boolean start(IApprovalData data) {
 		if (data == null) {
 			return false;
@@ -258,11 +268,11 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	}
 
 	/**
-	 * 激活下一个步骤
-	 * 
-	 * @throws JudmentOperationException
-	 * @throws ApprovalException
-	 * @throws RepositoryException
+	 * 激活下一个满足条件的挂起步骤
+	 *
+	 * @return 下一个步骤，无满足条件的步骤时返回null
+	 * @throws JudmentOperationException 条件判断异常
+	 * @throws ApprovalException 审批异常
 	 */
 	private ApprovalProcessStep<?> nextStep() throws JudmentOperationException, ApprovalException {
 		ApprovalDataJudgmentLink judgmentLinks;
@@ -298,6 +308,15 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 		return null;
 	}
 
+	/**
+	 * 审批指定步骤，需验证用户授权码。若当前步骤完成后下一步骤所有者与当前相同，则自动审批。
+	 *
+	 * @param stepId          步骤编号
+	 * @param apResult        审批结果
+	 * @param authorizationCode 用户授权码
+	 * @param judgment        审批意见
+	 * @throws ApprovalException 步骤不存在、授权码无效或审批状态异常
+	 */
 	public final void approval(int stepId, emApprovalResult apResult, String authorizationCode, String judgment)
 			throws ApprovalException {
 		ApprovalProcessStep<?> apStep = this.getProcessStep(stepId);
@@ -457,6 +476,14 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 		}
 	}
 
+	/**
+	 * 取消审批流程，仅审批中的状态可取消，需验证所有者授权码
+	 *
+	 * @param authorizationCode 所有者授权码
+	 * @param remarks           取消备注
+	 * @return true取消成功，false流程非审批中状态无法取消
+	 * @throws ApprovalException 授权码无效
+	 */
 	public final boolean cancel(String authorizationCode, String remarks) throws ApprovalException {
 		if (this.getStatus() == emApprovalStatus.PROCESSING) {
 			// 仅审批中的可以取消
@@ -484,8 +511,10 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	}
 
 	/**
-	 * 判断用户是否有权限修改数据，可重载。
-	 * 
+	 * 判断用户是否有权限修改数据，可重载
+	 *
+	 * @param user 操作用户
+	 * @throws ApprovalException 无权限时抛出
 	 */
 	public void checkToSave(IUser user) throws ApprovalException {
 		// 没有审批步骤，无效的审批流，可修改数据
@@ -542,11 +571,12 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	}
 
 	/**
-	 * 状态发生变化时调用
-	 * 
-	 * @param value 当前状态
+	 * 流程状态变化时同步更新审批数据状态
+	 *
+	 * @param status 当前流程状态
+	 * @throws ApprovalException 审批异常
 	 */
-	protected void changeApprovalDataStatus(emApprovalStatus status) {
+	protected void changeApprovalDataStatus(emApprovalStatus status) throws ApprovalException {
 		if (this.getApprovalData().getApprovalStatus() != status) {
 			// 当审批数据状态与变化状态不一样时
 			this.getApprovalData().setApprovalStatus(status);
@@ -554,11 +584,10 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	}
 
 	/**
-	 * 获取审批数据
-	 * 
-	 * @return
-	 * @throws ApprovalException
-	 * @throws RepositoryException
+	 * 从数据库查询实际审批数据，需事务已设置且审批数据有有效查询条件
+	 *
+	 * @return 审批数据
+	 * @throws ApprovalException 事务未设置、查询条件无效或数据不存在
 	 */
 	protected IApprovalData fetchApprovalData() throws ApprovalException {
 		if (this.getTransaction() == null) {
@@ -589,7 +618,10 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	}
 
 	/**
-	 * 保存当前审批流程及数据 保存审批数据时，若不是实际数据，则自动查询实际数据，此时需要保证Class已被加载。
+	 * 保存审批流程及审批数据。非实际数据时自动查询实际数据，需保证Class已被加载。
+	 * 自建事务时自动提交或回滚。
+	 *
+	 * @throws ApprovalException 事务未设置或保存失败
 	 */
 	public void save() throws ApprovalException {
 		ITransaction transaction = this.getTransaction();

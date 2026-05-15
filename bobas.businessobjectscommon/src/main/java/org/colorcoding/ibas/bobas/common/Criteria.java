@@ -29,18 +29,18 @@ public class Criteria extends Serializable implements ICriteria {
 
 	/**
 	 * 创建实例
-	 * 
-	 * @return
+	 *
+	 * @return 空查询
 	 */
 	public static ICriteria create() {
 		return new Criteria();
 	}
 
 	/**
-	 * 创建实例
-	 * 
-	 * @param value 值
-	 * @return
+	 * 创建实例（从识别码）
+	 *
+	 * @param value 识别码字符串；空返回null
+	 * @return 查询实例；非识别码格式返回null
 	 */
 	public static ICriteria create(String value) {
 		if (value == null || value.isEmpty()) {
@@ -55,11 +55,11 @@ public class Criteria extends Serializable implements ICriteria {
 
 	/**
 	 * 根据识别码创建查询
-	 * 
-	 * {[CC_TT_SALESORDER].[DocEntry = 1]&[LineId = 2]}
-	 * 
-	 * @param identifiers
-	 * @return
+	 *
+	 * 格式: {[CC_TT_SALESORDER].[DocEntry = 1]&[LineId = 2]}
+	 *
+	 * @param identifiers 识别码字符串
+	 * @return 查询实例
 	 */
 	private static ICriteria fromIdentifiers(String identifiers) {
 		Criteria criteria = new Criteria();

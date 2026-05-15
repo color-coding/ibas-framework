@@ -19,6 +19,13 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 				application = Strings.format("ibas_%s", this.hashCode());
 			}
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+			// 清洗 server 和 dbName 中的 JDBC URL 注入字符
+			if (server != null) {
+				server = server.replace(";", Strings.VALUE_EMPTY).replace("=", Strings.VALUE_EMPTY);
+			}
+			if (dbName != null) {
+				dbName = dbName.replace(";", Strings.VALUE_EMPTY).replace("=", Strings.VALUE_EMPTY);
+			}
 			String dbURL = String.format(
 					"jdbc:sqlserver://%s;DatabaseName=%s;encrypt=false;ApplicationName=%s;useBulkCopyForBatchInsert=true",
 					server, dbName, application);
@@ -31,6 +38,9 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		}
 	}
 
+	/**
+	 * 返回SQL值；字符串类型添加N前缀以支持Unicode
+	 */
 	@Override
 	public String sqlValueOf(Object value, int sqlType) {
 		String sqlValue = super.sqlValueOf(value, sqlType);

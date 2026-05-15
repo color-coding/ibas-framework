@@ -10,6 +10,13 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 
 public class TransactionManager extends org.colorcoding.ibas.bobas.file.TransactionManager {
 
+	/**
+	 * 创建S3文件事务，未配置存储桶时抛出异常
+	 *
+	 * @param repository 仓储路径，为空时使用根路径
+	 * @return S3文件事务
+	 * @throws RuntimeException 未配置存储桶时抛出
+	 */
 	@Override
 	public FileTransaction createTransaction(String repository) {
 		String bucket = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_FILE_REPOSITORY_FOLDER);

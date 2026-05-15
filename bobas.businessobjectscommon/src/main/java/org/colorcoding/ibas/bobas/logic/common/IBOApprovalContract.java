@@ -10,8 +10,8 @@ public interface IBOApprovalContract extends IBusinessLogicContract {
 
 	/**
 	 * 业务对象实例
-	 * 
-	 * @return
+	 *
+	 * @return 审批数据对象
 	 */
 	IApprovalData getHost();
 }

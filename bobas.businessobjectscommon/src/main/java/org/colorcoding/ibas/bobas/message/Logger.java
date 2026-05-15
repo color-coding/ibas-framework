@@ -22,9 +22,9 @@ public class Logger {
 	private static volatile int MESSAGE_LEVEL = -1;
 
 	/**
-	 * 是否处于debug模式
-	 * 
-	 * @return
+	 * 获取日志级别（有内部缓存）
+	 *
+	 * @return 当前日志级别的ordinal值
 	 */
 	protected static int getLoggingLevel() {
 		// 访问频繁，提高下性能
@@ -55,15 +55,13 @@ public class Logger {
 			synchronized (Logger.class) {
 				if (recorder == null) {
 					// 没有实例，则使用默认
-					String logFolder = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LOG_FILE_FOLDER);
-					if (logFolder == null || logFolder.isEmpty()) {
-						logFolder = MyConfiguration.getLogFolder();
-					}
 					MessageRecorder4File messageRecorder4File = new MessageRecorder4File();
 					messageRecorder4File.setFileSign("ibas_runtime_%s.log");
-					messageRecorder4File.setWorkFolder(logFolder);
+					messageRecorder4File.setWorkFolder(MyConfiguration.getConfigValue(
+							MyConfiguration.CONFIG_ITEM_LOG_FILE_FOLDER, MyConfiguration.getLogFolder()));
 					messageRecorder4File.setLimitSize(
 							MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_LOG_FILE_SIZE_LIMIT, 50));
+
 					recorder = messageRecorder4File;
 				}
 			}
@@ -72,9 +70,9 @@ public class Logger {
 	}
 
 	/**
-	 * 日记记录主要方法
-	 * 
-	 * @param message 传递过来的消息
+	 * 日志记录主要方法
+	 *
+	 * @param message 消息对象；null忽略；级别低于阈值忽略
 	 */
 	public static void log(Message message) {
 		if (message == null) {
@@ -107,19 +105,19 @@ public class Logger {
 	}
 
 	/**
-	 * 记录消息
-	 * 
-	 * @param exception 异常
+	 * 记录异常（ERROR级别）
+	 *
+	 * @param exception 异常；null忽略
 	 */
 	public static void log(Exception exception) {
 		log(MessageLevel.ERROR, exception);
 	}
 
 	/**
-	 * 记录消息
-	 * 
+	 * 记录异常
+	 *
 	 * @param level     消息级别
-	 * @param exception 异常
+	 * @param exception 异常；null忽略
 	 */
 	public static void log(MessageLevel level, Exception exception) {
 		if (exception == null) {

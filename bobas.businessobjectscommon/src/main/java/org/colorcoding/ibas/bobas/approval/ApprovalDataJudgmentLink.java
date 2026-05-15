@@ -14,6 +14,9 @@ import org.colorcoding.ibas.bobas.expression.SQLScriptValueOperator;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.repository.ITransaction;
 
+/**
+ * 审批数据条件判断链，将审批步骤条件转换为判断链
+ */
 public class ApprovalDataJudgmentLink extends BOJudgmentLink {
 
 	public ApprovalDataJudgmentLink(ITransaction transaction) {
@@ -23,9 +26,10 @@ public class ApprovalDataJudgmentLink extends BOJudgmentLink {
 	private ITransaction transaction;
 
 	/**
-	 * 初始化判断条件
-	 * 
-	 * @param conditions
+	 * 解析审批步骤条件，转换为判断链项
+	 *
+	 * @param conditions 审批步骤条件数组，为空或null时不做处理
+	 * @throws ExpressionException 条件无效时抛出
 	 */
 	public void parsingConditions(IApprovalProcessStepCondition[] conditions) {
 		// 判断无条件
@@ -69,6 +73,13 @@ public class ApprovalDataJudgmentLink extends BOJudgmentLink {
 		super.setJudgmentItems(jLinkItems.toArray(new JudgmentLinkItem[jLinkItems.size()]));
 	}
 
+	/**
+	 * 根据取值方式创建属性值操作器
+	 *
+	 * @param mode 取值方式：PROPERTY使用对象属性，DB_FIELD使用数据库字段，SQL_SCRIPT使用数据库脚本
+	 * @return 属性值操作器
+	 * @throws ExpressionException SQL_SCRIPT模式要求DbTransaction类型的事务
+	 */
 	public IPropertyValueOperator createPropertyValueOperator(ValueMode mode) {
 		if (mode == ValueMode.DB_FIELD) {
 			// 使用数据库字段属性比较

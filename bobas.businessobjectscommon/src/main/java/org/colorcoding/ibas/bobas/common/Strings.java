@@ -36,9 +36,9 @@ public class Strings {
 
 	/**
 	 * 根据字母表返回字符
-	 * 
-	 * @param value 位置（[32, 126]）
-	 * @return
+	 *
+	 * @param value ASCII码（0返回空字符串；范围[32,126]，越界抛IndexOutOfBoundsException）
+	 * @return 对应字符
 	 */
 	public static String alphabetOf(short value) {
 		if (value == 0) {
@@ -98,8 +98,8 @@ public class Strings {
 
 	/**
 	 * 类型默认值
-	 * 
-	 * @return
+	 *
+	 * @return 空字符串
 	 */
 	public static String defaultValue() {
 		return VALUE_EMPTY;
@@ -107,9 +107,9 @@ public class Strings {
 
 	/**
 	 * 判断字符串是否为空值
-	 * 
-	 * @param value
-	 * @return
+	 *
+	 * @param value 字符串
+	 * @return null或空字符串返回true
 	 */
 	public static boolean isNullOrEmpty(String value) {
 		if (value == null) {
@@ -136,11 +136,13 @@ public class Strings {
 
 	/**
 	 * 截取字符串
-	 * 
-	 * @param value      字符串
+	 *
+	 * 索引越界时返回空字符串，不抛异常
+	 *
+	 * @param value      字符串；null返回空字符串
 	 * @param beginIndex 开始索引
 	 * @param endIndex   结束索引
-	 * @return
+	 * @return 截取结果；无效输入返回空字符串
 	 */
 	public static String substring(String value, int beginIndex, int endIndex) {
 		if (value == null) {
@@ -156,11 +158,13 @@ public class Strings {
 	}
 
 	/**
-	 * 截取字符串
-	 * 
-	 * @param value 字符串
-	 * @param count 截取长度
-	 * @return
+	 * 截取字符串（从起始位置）
+	 *
+	 * count必须大于1；超过字符串长度时自动调整
+	 *
+	 * @param value 字符串；null返回空字符串
+	 * @param count 截取长度；不大于1时返回空字符串
+	 * @return 截取结果
 	 */
 	public static String substring(String value, int count) {
 		if (value == null) {
@@ -177,10 +181,12 @@ public class Strings {
 
 	/**
 	 * 格式化字符串
-	 * 
-	 * @param value 模板
-	 * @param args  参数
-	 * @return
+	 *
+	 * null模板返回空字符串；无参数返回模板本身
+	 *
+	 * @param value 模板；null返回空字符串
+	 * @param args  格式参数
+	 * @return 格式化结果
 	 */
 	public static String format(String value, Object... args) {
 		if (value == null) {
@@ -195,9 +201,11 @@ public class Strings {
 
 	/**
 	 * 转为字符串
-	 * 
-	 * @param value
-	 * @return
+	 *
+	 * 数组/集合以逗号拼接；null返回空字符串
+	 *
+	 * @param value 对象；null返回空字符串
+	 * @return 字符串表示
 	 */
 	public static String valueOf(Object value) {
 		if (value == null) {
@@ -248,10 +256,10 @@ public class Strings {
 
 	/**
 	 * 是否相等
-	 * 
-	 * @param a
-	 * @param b
-	 * @return
+	 *
+	 * @param a 对象a
+	 * @param b 对象b
+	 * @return 相等返回true；任一为null返回false
 	 */
 	public static boolean equals(Object a, Object b) {
 		return equals(a, b, false);
@@ -259,10 +267,10 @@ public class Strings {
 
 	/**
 	 * 是否相等（忽略大小写）
-	 * 
-	 * @param a
-	 * @param b
-	 * @return
+	 *
+	 * @param a 对象a
+	 * @param b 对象b
+	 * @return 相等返回true；任一为null返回false
 	 */
 	public static boolean equalsIgnoreCase(Object a, Object b) {
 		return equals(a, b, true);
@@ -270,11 +278,13 @@ public class Strings {
 
 	/**
 	 * 是否相等
-	 * 
-	 * @param a
-	 * @param b
+	 *
+	 * 任一参数为null返回false
+	 *
+	 * @param a          对象a
+	 * @param b          对象b
 	 * @param ignoreCase 忽略大小写
-	 * @return
+	 * @return 相等返回true；任一为null返回false
 	 */
 	public static boolean equals(Object a, Object b, boolean ignoreCase) {
 		if (a == null || b == null) {
@@ -297,9 +307,11 @@ public class Strings {
 
 	/**
 	 * 字符串拼接
-	 * 
+	 *
+	 * null项自动跳过
+	 *
 	 * @param pars 待拼接内容
-	 * @return
+	 * @return 拼接结果；无有效内容返回空字符串
 	 */
 	public static String concat(String... pars) {
 		if (pars.length > 0) {
@@ -317,10 +329,10 @@ public class Strings {
 
 	/**
 	 * 字符串位置
-	 * 
-	 * @param content 字符串
-	 * @param value   待查询内容
-	 * @return
+	 *
+	 * @param content 字符串；null返回-1
+	 * @param value   待查询内容；null返回-1
+	 * @return 索引位置；未找到或输入null返回-1
 	 */
 	public static int indexOf(String content, String value) {
 		if (content == null) {
@@ -334,11 +346,11 @@ public class Strings {
 
 	/**
 	 * 判断字符串开头结尾
-	 * 
-	 * @param content 字符串
-	 * @param prefix  开头字符（空跳过）
-	 * @param suffix  结尾字符（空跳过）
-	 * @return
+	 *
+	 * @param content 字符串；空返回false
+	 * @param prefix  开头字符；空值跳过比较
+	 * @param suffix  结尾字符；空值跳过比较
+	 * @return 同时满足返回true
 	 */
 	public static boolean isWith(String content, String prefix, String suffix) {
 		if (isNullOrEmpty(content)) {
@@ -359,11 +371,11 @@ public class Strings {
 
 	/**
 	 * 判断字符串开头
-	 * 
-	 * @param content    字符串
+	 *
+	 * @param content    字符串；空返回false
 	 * @param prefix     开头字符
 	 * @param ignoreCase 忽略大小写
-	 * @return
+	 * @return 匹配返回true
 	 */
 	public static boolean startsWith(String content, String prefix, boolean ignoreCase) {
 		if (ignoreCase) {
@@ -375,10 +387,10 @@ public class Strings {
 
 	/**
 	 * 判断字符串开头
-	 * 
-	 * @param content 字符串
+	 *
+	 * @param content 字符串；空返回false
 	 * @param prefix  开头字符
-	 * @return
+	 * @return 匹配返回true
 	 */
 	public static boolean startsWith(String content, String prefix) {
 		return isWith(content, prefix, null);
@@ -386,11 +398,11 @@ public class Strings {
 
 	/**
 	 * 判断字符串结尾
-	 * 
-	 * @param content    字符串
+	 *
+	 * @param content    字符串；空返回false
 	 * @param suffix     结尾字符
 	 * @param ignoreCase 忽略大小写
-	 * @return
+	 * @return 匹配返回true
 	 */
 	public static boolean endsWith(String content, String suffix, boolean ignoreCase) {
 		if (ignoreCase) {
@@ -402,21 +414,21 @@ public class Strings {
 
 	/**
 	 * 判断字符串结尾
-	 * 
-	 * @param content 字符串
+	 *
+	 * @param content 字符串；空返回false
 	 * @param suffix  结尾字符
-	 * @return
+	 * @return 匹配返回true
 	 */
 	public static boolean endsWith(String content, String suffix) {
 		return isWith(content, null, suffix);
 	}
 
 	/**
-	 * 使字符串开头为
-	 * 
+	 * 确保字符串以指定前缀开头；已有则原样返回，否则拼接前缀
+	 *
 	 * @param content 字符串
-	 * @param prefix  开头字符
-	 * @return
+	 * @param prefix  期望前缀；空值返回原字符串
+	 * @return 处理后的字符串
 	 */
 	public static String makeStartsWith(String content, String prefix) {
 		if (isNullOrEmpty(prefix)) {
@@ -432,11 +444,11 @@ public class Strings {
 	}
 
 	/**
-	 * 使字符串结尾为
-	 * 
+	 * 确保字符串以指定后缀结尾；已有则原样返回，否则拼接后缀
+	 *
 	 * @param content 字符串
-	 * @param suffix  结尾字符
-	 * @return
+	 * @param suffix  期望后缀；空值返回原字符串
+	 * @return 处理后的字符串
 	 */
 	public static String makeEndsWith(String content, String suffix) {
 		if (isNullOrEmpty(suffix)) {
@@ -453,9 +465,11 @@ public class Strings {
 
 	/**
 	 * 替换字符
-	 * 
+	 *
+	 * content或oldString为空时返回原字符串
+	 *
 	 * @param content   原字符串
-	 * @param oldString 搜索内容
+	 * @param oldString 搜索内容；空值不替换
 	 * @param newString 替换内容
 	 */
 	public static String replace(String content, String oldString, String newString) {
@@ -476,19 +490,19 @@ public class Strings {
 
 	/**
 	 * 判断字符串是否为数字
-	 * 
-	 * @param value
-	 * @return
+	 *
+	 * @param value 字符串；null或空返回false
+	 * @return 有效数字格式返回true
 	 */
 	public static boolean isNumeric(String value) {
 		return Numbers.isNumeric(value);
 	}
 
 	/**
-	 * 转为大字符
-	 * 
-	 * @param value
-	 * @return
+	 * 转为大写字符
+	 *
+	 * @param value 字符串；null返回null
+	 * @return 大写字符串
 	 */
 	public static String toUpperCase(String value) {
 		if (value == null) {
@@ -499,9 +513,9 @@ public class Strings {
 
 	/**
 	 * 去除空格
-	 * 
-	 * @param value
-	 * @return
+	 *
+	 * @param value 字符串；null返回null
+	 * @return 去空格结果
 	 */
 	public static String trim(String value) {
 		if (value == null) {
@@ -511,10 +525,10 @@ public class Strings {
 	}
 
 	/**
-	 * 转为小字符
-	 * 
-	 * @param value
-	 * @return
+	 * 转为小写字符
+	 *
+	 * @param value 字符串；null返回null
+	 * @return 小写字符串
 	 */
 	public static String toLowerCase(String value) {
 		if (value == null) {
@@ -524,10 +538,10 @@ public class Strings {
 	}
 
 	/**
-	 * 转移字符串为16进制字符串
-	 * 
-	 * @param value
-	 * @return
+	 * 转换字符串为16进制字符串
+	 *
+	 * @param value 字符串；null返回空字符串
+	 * @return 小写16进制字符串
 	 */
 	public static String toHexString(String value) {
 		if (value == null) {
@@ -537,10 +551,10 @@ public class Strings {
 	}
 
 	/**
-	 * 转移字符串为base64字符串
-	 * 
-	 * @param value
-	 * @return
+	 * 转换字符串为base64字符串（UTF-8编码）
+	 *
+	 * @param value 字符串；null返回空字符串
+	 * @return base64编码字符串
 	 */
 	public static String toBase64String(String value) {
 		if (value == null) {
@@ -550,10 +564,10 @@ public class Strings {
 	}
 
 	/**
-	 * 选择非空白值（默认空白）
-	 * 
-	 * @param values 待选值
-	 * @return
+	 * 选择非空白值
+	 *
+	 * @param values 待选值；null返回空字符串
+	 * @return 第一个非空白值；全部空白返回空字符串
 	 */
 	public static String optionNonEmpty(String... values) {
 		if (values == null) {
@@ -568,10 +582,10 @@ public class Strings {
 	}
 
 	/**
-	 * 选择非空值（默认空白）
-	 * 
-	 * @param values 待选值
-	 * @return
+	 * 选择非空值
+	 *
+	 * @param values 待选值；null返回空字符串
+	 * @return 第一个非null值；全部为null返回空字符串
 	 */
 	public static String optionNonNull(String... values) {
 		if (values == null) {
@@ -587,9 +601,9 @@ public class Strings {
 
 	/**
 	 * 转为json字符串
-	 * 
-	 * @param data 数据
-	 * @return
+	 *
+	 * @param data 数据对象
+	 * @return JSON字符串；序列化失败抛出SerializationException
 	 */
 	public static String toJsonString(Object data) {
 		try (ByteArrayOutputStream writer = new ByteArrayOutputStream(256)) {
@@ -603,9 +617,9 @@ public class Strings {
 
 	/**
 	 * 转为xml字符串
-	 * 
-	 * @param data
-	 * @return
+	 *
+	 * @param data 数据对象
+	 * @return XML字符串；序列化失败抛出SerializationException
 	 */
 	public static String toXmlString(Object data) {
 		try (ByteArrayOutputStream writer = new ByteArrayOutputStream(512)) {

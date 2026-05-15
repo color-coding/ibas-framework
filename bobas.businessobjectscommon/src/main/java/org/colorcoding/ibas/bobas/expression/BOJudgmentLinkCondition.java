@@ -8,16 +8,16 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 
 /**
- * 业务对象判断链
- * 
+ * 业务对象判断链（基于查询条件）
+ *
  * @author Niuren.Zhu
  *
  */
 public class BOJudgmentLinkCondition extends BOJudgmentLink {
 	/**
-	 * 初始化判断条件
-	 * 
-	 * @param conditions
+	 * 从查询条件初始化判断链
+	 *
+	 * @param conditions 查询条件集合
 	 */
 	public void parsingConditions(Iterable<ICondition> conditions) {
 		// 判断无条件

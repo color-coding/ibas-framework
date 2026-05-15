@@ -6,12 +6,17 @@ import java.io.OutputStream;
 import org.colorcoding.ibas.bobas.common.Strings;
 
 /**
- * 数据串书写员
+ * 数据串书写器基类，将字符串写入输出流，支持字符转义
  */
 public abstract class Writer {
 
 	private String charset;
 
+	/**
+	 * 获取字符编码，默认UTF-8
+	 *
+	 * @return 字符编码名称
+	 */
 	public String getCharset() {
 		if (Strings.isNullOrEmpty(this.charset)) {
 			this.charset = "utf-8";
@@ -23,6 +28,13 @@ public abstract class Writer {
 		this.charset = charset;
 	}
 
+	/**
+	 * 将字符串写入输出流，跳过控制字符，对ASCII字符使用转义映射
+	 *
+	 * @param outputStream 输出流
+	 * @param value        待写入字符串，为null或空时不写入
+	 * @throws IOException 写入失败
+	 */
 	public void write(OutputStream outputStream, String value) throws IOException {
 		if (value == null || value.isEmpty()) {
 			return;
@@ -62,6 +74,12 @@ public abstract class Writer {
 		outputStream.write('\n');
 	}
 
+	/**
+	 * 字符到字节序列的转义映射
+	 *
+	 * @param value 字符
+	 * @return 转义后的字节序列，null表示跳过该字符
+	 */
 	protected abstract byte[] bytesOf(char value);
 
 	public abstract void writeHeader(OutputStream outputStream) throws IOException;

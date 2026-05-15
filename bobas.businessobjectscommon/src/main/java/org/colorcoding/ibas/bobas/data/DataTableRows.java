@@ -31,6 +31,9 @@ public class DataTableRows extends ArrayList<IDataTableRow> implements IDataTabl
 		this.table = table;
 	}
 
+	/**
+	 * 创建并添加新行，添加失败时返回null
+	 */
 	@Override
 	public IDataTableRow create() {
 		DataTableRow row = new DataTableRow();

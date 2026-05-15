@@ -36,20 +36,20 @@ public class DateTime extends Date {
 	}
 
 	/**
-	 * 转换值
-	 * 
-	 * @param value 日期值
-	 * @return 日期
+	 * 将毫秒值转为日期
+	 *
+	 * @param value 毫秒值
+	 * @return 日期对象
 	 */
 	public static DateTime valueOf(long value) {
 		return DateTimes.valueOf(value);
 	}
 
 	/**
-	 * 转换值
-	 * 
-	 * @param value 日期值
-	 * @return 日期
+	 * 将字符串转为日期
+	 *
+	 * @param value 日期字符串
+	 * @return 日期对象
 	 */
 	public static DateTime valueOf(String value) {
 		return DateTimes.valueOf(value);
@@ -75,9 +75,9 @@ public class DateTime extends Date {
 
 	/**
 	 * 输出字符串
-	 * 
-	 * @param format 字符串格式（yyyy-MM-dd'T'HH:mm:ss）
-	 * @return
+	 *
+	 * @param format 日期格式（如yyyy-MM-dd'T'HH:mm:ss）
+	 * @return 格式化后的日期字符串
 	 */
 	public String toString(String format) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(format);
@@ -85,10 +85,10 @@ public class DateTime extends Date {
 	}
 
 	/**
-	 * 日期增加天数
-	 * 
-	 * @param days
-	 * @return
+	 * 日期增加天数（负数表示减少）
+	 *
+	 * @param days 天数
+	 * @return 新的日期对象
 	 */
 	public DateTime addDays(int days) {
 		Calendar calendar = Calendar.getInstance();
@@ -98,10 +98,10 @@ public class DateTime extends Date {
 	}
 
 	/**
-	 * 日期增加月数
-	 * 
-	 * @param months
-	 * @return
+	 * 日期增加月数（负数表示减少）
+	 *
+	 * @param months 月数
+	 * @return 新的日期对象
 	 */
 	public DateTime addMonths(int months) {
 		Calendar calendar = Calendar.getInstance();
@@ -111,10 +111,10 @@ public class DateTime extends Date {
 	}
 
 	/**
-	 * 日期增加年数
-	 * 
-	 * @param years
-	 * @return
+	 * 日期增加年数（负数表示减少）
+	 *
+	 * @param years 年数
+	 * @return 新的日期对象
 	 */
 	public DateTime addYears(int years) {
 		Calendar calendar = Calendar.getInstance();

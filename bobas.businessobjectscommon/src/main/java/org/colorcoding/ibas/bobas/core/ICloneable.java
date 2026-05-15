@@ -7,8 +7,8 @@ public interface ICloneable extends java.lang.Cloneable {
 
 	/**
 	 * 克隆对象
-	 * 
-	 * @return
+	 *
+	 * @return 克隆后的对象
 	 */
 	Object clone();
 }

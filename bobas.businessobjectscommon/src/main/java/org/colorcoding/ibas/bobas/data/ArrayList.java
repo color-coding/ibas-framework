@@ -30,10 +30,10 @@ public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 
 	/**
 	 * 创建列表
-	 * 
-	 * @param <E>    元素类型
-	 * @param values 初始值（空值跳过）
-	 * @return
+	 *
+	 * @param <T>    元素类型
+	 * @param values 初始值（空值跳过，数组/可迭代类型自动展开）
+	 * @return 新创建的列表（values为null时返回空列表）
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> ArrayList<T> create(Object... values) {

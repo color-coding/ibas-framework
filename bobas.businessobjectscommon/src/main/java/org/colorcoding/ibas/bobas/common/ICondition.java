@@ -33,9 +33,9 @@ public interface ICondition extends ICloneable {
 	void setAlias(IPropertyInfo<?> property);
 
 	/**
-	 * 获取-几个闭括号"）"
-	 * 
-	 * @return 比括号个数
+	 * 获取-闭括号数量
+	 *
+	 * @return 闭括号个数
 	 */
 	int getBracketClose();
 
@@ -71,9 +71,9 @@ public interface ICondition extends ICloneable {
 	int addBracketOpen();
 
 	/**
-	 * 获取- 比较的字段（属性）名
-	 * 
-	 * @return 个数
+	 * 获取-比较的字段（属性）名
+	 *
+	 * @return 字段名
 	 */
 	String getComparedAlias();
 
@@ -141,23 +141,23 @@ public interface ICondition extends ICloneable {
 	void setRelationship(ConditionRelationship value);
 
 	/**
-	 * 获取-条件字段类型的字段
-	 * 
-	 * @return
+	 * 获取-条件字段的数据类型
+	 *
+	 * @return 数据库字段类型
 	 */
 	DbFieldType getAliasDataType();
 
 	/**
-	 * 设置-条件字段类型的字段
-	 * 
-	 * @param value
+	 * 设置-条件字段的数据类型
+	 *
+	 * @param value 数据库字段类型
 	 */
 	void setAliasDataType(DbFieldType value);
 
 	/**
 	 * 克隆
-	 * 
-	 * @return
+	 *
+	 * @return 克隆后的条件
 	 */
 	@Override
 	ICondition clone();

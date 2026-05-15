@@ -34,6 +34,12 @@ public enum DbFieldType {
 	 */
 	BYTES;
 
+	/**
+	 * 根据Java类型获取对应的数据库字段类型（null或未识别类型返回UNKNOWN）
+	 *
+	 * @param type Java类型
+	 * @return 数据库字段类型
+	 */
 	public static DbFieldType valueOf(Class<?> type) {
 		if (type == BigDecimal.class || type == Float.class || type == Double.class) {
 			return DECIMAL;

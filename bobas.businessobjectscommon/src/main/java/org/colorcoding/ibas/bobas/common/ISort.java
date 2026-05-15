@@ -17,15 +17,15 @@ public interface ISort extends ICloneable {
 
 	/**
 	 * 设置-排序的字段（属性）名
-	 * 
-	 * @param value
+	 *
+	 * @param value 字段名
 	 */
 	void setAlias(String value);
 
 	/**
 	 * 设置-排序的字段（属性）
-	 * 
-	 * @param value 名
+	 *
+	 * @param value 属性信息
 	 */
 	void setAlias(IPropertyInfo<?> property);
 
@@ -36,15 +36,15 @@ public interface ISort extends ICloneable {
 
 	/**
 	 * 设置-排序方式
-	 * 
-	 * @param value
+	 *
+	 * @param value 排序类型
 	 */
 	void setSortType(SortType value);
 
 	/**
 	 * 克隆
-	 * 
-	 * @return
+	 *
+	 * @return 克隆后的排序
 	 */
 	ISort clone();
 }

@@ -1,8 +1,8 @@
 package org.colorcoding.ibas.bobas.expression;
 
 /**
- * 表达式基类
- * 
+ * 判断表达式基类
+ *
  * @author Niuren.Zhu
  *
  * @param <T> 比较的值类型
@@ -31,6 +31,15 @@ public abstract class JudgmentExpression<T> implements IJudgmentExpression {
 		this.operation = value;
 	}
 
+	/**
+	 * 计算表达式结果
+	 *
+	 * 仅处理 IS_NULL 和 NOT_NULL 操作：IS_NULL 时左值为null返回true；NOT_NULL 时左值为null返回true（注意：逻辑与名称相反）
+	 * 其他操作抛出异常，由子类覆盖实现
+	 *
+	 * @return 表达式是否成立
+	 * @throws ExpressionException 不支持的操作时抛出
+	 */
 	@Override
 	public boolean result() throws ExpressionException {
 		// 空值

@@ -7,16 +7,16 @@ public interface IBOSimple extends IBusinessObject, IBOStorageTag {
 	final static String MASTER_PRIMARY_KEY_NAME = "ObjectKey";
 
 	/**
-	 * 获取- 主键
-	 * 
-	 * @return
+	 * 获取-主键
+	 *
+	 * @return 主键值
 	 */
 	Integer getObjectKey();
 
 	/**
 	 * 设置-主键
-	 * 
-	 * @param value
+	 *
+	 * @param value 主键值
 	 */
 	void setObjectKey(Integer value);
 }

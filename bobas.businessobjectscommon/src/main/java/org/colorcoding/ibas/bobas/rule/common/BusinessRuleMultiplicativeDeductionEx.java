@@ -6,8 +6,10 @@ import org.colorcoding.ibas.bobas.common.Decimals;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 
 /**
- * 业务规则-乘除法推导（根据被乘数，用乘除法推导乘数或结果）
- * 
+ * 业务规则-乘除法推导（扩展版）
+ *
+ * 根据触发属性决定推导方向：结果触发时推导乘数或被乘数，乘数/被乘数触发时推导结果；变化小于精度阈值时不输出
+ *
  * @author Niuren.Zhu
  *
  */

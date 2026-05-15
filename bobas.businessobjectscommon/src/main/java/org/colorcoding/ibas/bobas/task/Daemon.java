@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -13,17 +14,17 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 /**
  * 框架守护进程
- * 
+ *
  * 用途：处理定时任务
- * 
+ *
  * @author Niuren.Zhu
  *
  */
-public class Daemon implements IDaemon {
+public class Daemon {
 
 	/**
 	 * 注册后台任务
-	 * 
+	 *
 	 * @param task 任务
 	 * @return 任务ID，小于0任务注册失败
 	 * @throws InvalidDaemonTaskException
@@ -34,7 +35,7 @@ public class Daemon implements IDaemon {
 
 	/**
 	 * 注册后台任务
-	 * 
+	 *
 	 * @param task 任务
 	 * @param log  是否记录日志
 	 * @return 任务ID，小于0任务注册失败
@@ -49,19 +50,18 @@ public class Daemon implements IDaemon {
 	/**
 	 * 终止线程
 	 */
-	public static void destory() {
+	public static void destroy() {
 		synchronized (Daemon.class) {
 			if (daemon != null) {
 				daemon.stop();
 				daemon = null;
-				System.gc();
 			}
 		}
 	}
 
 	/**
 	 * 移出任务
-	 * 
+	 *
 	 * @param id 注册时分配的id
 	 * @return true，成功；false，失败
 	 */
@@ -71,9 +71,9 @@ public class Daemon implements IDaemon {
 		}
 	}
 
-	private volatile static IDaemon daemon;
+	private volatile static Daemon daemon;
 
-	static IDaemon create() {
+	private static Daemon create() {
 		if (daemon == null) {
 			synchronized (Daemon.class) {
 				if (daemon == null) {
@@ -86,28 +86,53 @@ public class Daemon implements IDaemon {
 	}
 
 	private volatile Thread daemonThread;
+	private Thread shutdownHook;
 
-	@Override
 	public synchronized void initialize() {
 		this.running = true;
 		if (this.daemonThread == null) {
 			Thread thread = new Thread(new Runnable() {
 				@Override
 				public void run() {
-					while (running) {
-						try {
-							checkRun();
-							Thread.sleep(500);// 每500毫秒检查次任务
-						} catch (Exception e) {
-							System.err.println(e);
+					try {
+						while (running) {
+							try {
+								checkRun();
+								Thread.sleep(500);// 每500毫秒检查次任务
+							} catch (InterruptedException e) {
+								// 被中断，恢复中断状态并退出循环
+								Thread.currentThread().interrupt();
+								break;
+							} catch (Exception e) {
+								Logger.log(e);
+							}
 						}
+					} finally {
+						// 确保线程池被关闭
+						Daemon.this.shutdownThreadPool();
 					}
 				}
 			});
 			thread.setName("ibas-framework-daemon");
 			thread.setPriority(Thread.MAX_PRIORITY);
 			thread.setDaemon(true);
-			thread.start();
+			this.daemonThread = thread;
+			this.daemonThread.start();
+		}
+		// 注册JVM关闭钩子，确保线程被正确终止
+		if (this.shutdownHook == null) {
+			this.shutdownHook = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					Daemon.destroy();
+				}
+			});
+			this.shutdownHook.setName("ibas-framework-daemon-shutdown-hook");
+			try {
+				Runtime.getRuntime().addShutdownHook(this.shutdownHook);
+			} catch (IllegalStateException e) {
+				// JVM正在关闭，忽略
+			}
 		}
 	}
 
@@ -116,14 +141,63 @@ public class Daemon implements IDaemon {
 	 */
 	private volatile boolean running;
 
-	@Override
 	public void stop() {
 		this.running = false;
-		if (this.daemonThread != null) {
-			this.daemonThread.interrupt();
+		// 中断守护线程并等待其终止
+		Thread thread = this.daemonThread;
+		if (thread != null) {
+			thread.interrupt();
+			try {
+				thread.join(5000);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+			this.daemonThread = null;
 		}
-		if (this.threadPool != null) {
-			this.threadPool.shutdown();
+		// 关闭线程池
+		this.shutdownThreadPool();
+		// 关闭所有注册的任务
+		synchronized (this.getWrappings()) {
+			for (DaemonTaskWrapping wrapping : this.getWrappings()) {
+				if (wrapping == null) {
+					continue;
+				}
+				try {
+					wrapping.getTask().close();
+				} catch (Exception e) {
+					Logger.log(e);
+				}
+			}
+			this.getWrappings().clear();
+		}
+		// 移除关闭钩子
+		thread = this.shutdownHook;
+		if (thread != null) {
+			try {
+				Runtime.getRuntime().removeShutdownHook(thread);
+			} catch (IllegalStateException e) {
+				// JVM正在关闭，忽略
+			}
+			this.shutdownHook = null;
+		}
+	}
+
+	/**
+	 * 安全关闭线程池
+	 */
+	private void shutdownThreadPool() {
+		ExecutorService pool = this.threadPool;
+		if (pool != null) {
+			pool.shutdown();
+			try {
+				if (!pool.awaitTermination(5, TimeUnit.SECONDS)) {
+					pool.shutdownNow();
+				}
+			} catch (InterruptedException e) {
+				pool.shutdownNow();
+				Thread.currentThread().interrupt();
+			}
+			this.threadPool = null;
 		}
 	}
 
@@ -136,7 +210,6 @@ public class Daemon implements IDaemon {
 		return wrappings;
 	}
 
-	@Override
 	public long add(IDaemonTask task, boolean isLog) throws InvalidDaemonTaskException {
 		if (task == null || task.getName() == null || task.getName().isEmpty()) {
 			throw new InvalidDaemonTaskException();
@@ -158,7 +231,6 @@ public class Daemon implements IDaemon {
 		}
 	}
 
-	@Override
 	public boolean remove(long taskId) {
 		if (taskId < 0) {
 			return false;
@@ -179,7 +251,7 @@ public class Daemon implements IDaemon {
 		return false;
 	}
 
-	private ExecutorService threadPool;
+	private volatile ExecutorService threadPool;
 
 	public ExecutorService getThreadPool() {
 		if (this.threadPool == null) {
@@ -187,14 +259,15 @@ public class Daemon implements IDaemon {
 			int pSize = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_TASK_THREAD_POOL_SIZE, cpu);
 			pSize = pSize < 3 ? 3 : pSize;
 			int qSize = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_TASK_THREAD_QUEUE_SIZE, 3);
-			this.threadPool = new ThreadPoolExecutor(1, pSize, 3, TimeUnit.SECONDS,
+			ThreadPoolExecutor executor = new ThreadPoolExecutor(1, pSize, 3, TimeUnit.SECONDS,
 					new LinkedBlockingQueue<Runnable>(qSize));
+			executor.allowCoreThreadTimeOut(true);
+			this.threadPool = executor;
 			Logger.log(MessageLevel.INFO, "daemon: cpu %s, thread pool size %s and queue size %s.", cpu, pSize, qSize);
 		}
 		return threadPool;
 	}
 
-	@Override
 	public void checkRun() {
 		long time = System.currentTimeMillis();
 		synchronized (this.getWrappings()) {
@@ -203,7 +276,6 @@ public class Daemon implements IDaemon {
 					continue;
 				}
 				if (wrapping.isRunning()) {
-					// 同时仅启动一个任务
 					continue;
 				}
 				if (!wrapping.isActivated()) {
@@ -212,36 +284,38 @@ public class Daemon implements IDaemon {
 				// 可以运行否
 				boolean done = wrapping.tryRun(time);
 				if (done) {
-					// 从线程池中调用新的线程运行此任务
-					this.getThreadPool().execute(new Runnable() {
+					// 在提交前设置运行状态，防止同一任务被重复提交
+					wrapping.setRunning(true);
+					try {
+						// 从线程池中调用新的线程运行此任务
+						this.getThreadPool().execute(new Runnable() {
 
-						@Override
-						public void run() {
-							if (wrapping.isRunning()) {
-								// 如果已在执行则退出
-								return;
+							@Override
+							public void run() {
+								long start = System.currentTimeMillis();
+								long times = wrapping.getRunTimes() + 1;
+								if (wrapping.isLog() && MyConfiguration.isDebugMode()) {
+									Logger.log(MessageLevel.DEBUG, "daemon: begin to run task [%s - %s], %sth running.",
+											wrapping.getId(), wrapping.getName(), times);
+								}
+								wrapping.run();
+								long end = System.currentTimeMillis();
+								if (wrapping.isLog() && MyConfiguration.isDebugMode()) {
+									Logger.log(MessageLevel.DEBUG,
+											"daemon: end task [%s - %s] %sth running and for [%s] milliseconds.",
+											wrapping.getId(), wrapping.getName(), times, (end - start));
+								}
+								if (wrapping.getNextRunTime() <= 0l) {
+									// 下次运行时间，小于等于0，则移出任务
+									Daemon.this.remove(wrapping.getId());
+								}
 							}
-							// 设置状态为运行中
-							wrapping.setRunning(true);
-							long start = System.currentTimeMillis();
-							long times = wrapping.getRunTimes() + 1;
-							if (wrapping.isLog() && MyConfiguration.isDebugMode()) {
-								Logger.log(MessageLevel.DEBUG, "daemon: begin to run task [%s - %s], %sth running.",
-										wrapping.getId(), wrapping.getName(), times);
-							}
-							wrapping.run();
-							long end = System.currentTimeMillis();
-							if (wrapping.isLog() && MyConfiguration.isDebugMode()) {
-								Logger.log(MessageLevel.DEBUG,
-										"daemon: end task [%s - %s] %sth running and for [%s] milliseconds.",
-										wrapping.getId(), wrapping.getName(), times, (end - start));
-							}
-							if (wrapping.getNextRunTime() <= 0l) {
-								// 下次运行时间，小于等于0，则移出任务
-								Daemon.this.remove(wrapping.getId());
-							}
-						}
-					});
+						});
+					} catch (RejectedExecutionException e) {
+						// 线程池已满或已关闭，重置运行状态
+						wrapping.setRunning(false);
+						Logger.log(MessageLevel.WARN, "daemon: task [%s] rejected by thread pool.", wrapping.getName());
+					}
 				}
 			}
 		}

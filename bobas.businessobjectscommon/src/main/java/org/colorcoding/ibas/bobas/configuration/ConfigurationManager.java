@@ -34,6 +34,11 @@ public abstract class ConfigurationManager {
 
 	private Map<String, String> elementsMap;
 
+	/**
+	 * 获取全部配置项
+	 *
+	 * @return 配置项集合
+	 */
 	public Collection<IKeyText> getElements() {
 		ArrayList<IKeyText> elements = new ArrayList<>(this.elementsMap.size());
 		for (Entry<String, String> item : this.elementsMap.entrySet()) {
@@ -42,6 +47,12 @@ public abstract class ConfigurationManager {
 		return elements;
 	}
 
+	/**
+	 * 获取配置值
+	 *
+	 * @param key 配置项键名
+	 * @return 配置值；未找到返回null
+	 */
 	public String getConfigValue(String key) {
 		String value = this.elementsMap.get(key);
 		if (value != null) {
@@ -50,6 +61,13 @@ public abstract class ConfigurationManager {
 		return null;
 	}
 
+	/**
+	 * 获取配置值（带默认值和类型转换）
+	 *
+	 * @param key          配置项键名
+	 * @param defaultValue 默认值；未找到配置或转换失败时返回
+	 * @return 配置值；转换失败返回defaultValue
+	 */
 	@SuppressWarnings("unchecked")
 	public <P> P getConfigValue(String key, P defaultValue) {
 		String value = this.getConfigValue(key);
@@ -72,6 +90,12 @@ public abstract class ConfigurationManager {
 		}
 	}
 
+	/**
+	 * 添加配置项（key或value为null时忽略）
+	 *
+	 * @param key   键名
+	 * @param value 值
+	 */
 	public void addConfigValue(String key, String value) {
 		if (key == null) {
 			return;

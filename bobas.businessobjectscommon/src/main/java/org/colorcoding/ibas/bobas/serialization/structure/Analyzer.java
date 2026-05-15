@@ -16,8 +16,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.colorcoding.ibas.bobas.data.DateTime;
 
 /**
- * 结构分析者
- * 
+ * 结构分析者，用于解析类型的序列化结构
+ *
  * @author Niuren.Zhu
  *
  */
@@ -35,11 +35,7 @@ public class Analyzer {
 
 	private boolean recursion;
 
-	/**
-	 * 是否递归分析
-	 * 
-	 * @return
-	 */
+	/** 是否递归分析子类型 */
 	public final boolean isRecursion() {
 		return recursion;
 	}
@@ -49,10 +45,10 @@ public class Analyzer {
 	}
 
 	/**
-	 * 命名元素
-	 * 
-	 * @param method
-	 * @return
+	 * 从方法名提取元素名称，去除get/set/is前缀
+	 *
+	 * @param method 方法
+	 * @return 提取的元素名称
 	 */
 	protected String namedElement(Method method) {
 		String name = method.getName();
@@ -66,10 +62,10 @@ public class Analyzer {
 	}
 
 	/**
-	 * 分析类型
-	 * 
-	 * @param type
-	 * @return
+	 * 分析类型的序列化结构
+	 *
+	 * @param type 目标类型
+	 * @return 根元素，包含类型的完整结构信息
 	 */
 	public ElementRoot analyse(Class<?> type) {
 		ElementRoot element = new ElementRoot(type.getSimpleName(), type);
@@ -166,6 +162,12 @@ public class Analyzer {
 		}
 	}
 
+	/**
+	 * 根据方法的XmlElement注解创建元素
+	 *
+	 * @param method 方法
+	 * @return 元素对象，方法无XmlElement注解时返回null
+	 */
 	protected Element createElement(Method method) {
 		XmlElement xmlElement = method.getAnnotation(XmlElement.class);
 		if (xmlElement == null) {
@@ -194,6 +196,12 @@ public class Analyzer {
 		return element;
 	}
 
+	/**
+	 * 根据字段的XmlElement注解创建元素
+	 *
+	 * @param field 字段
+	 * @return 元素对象，字段无XmlElement注解时返回null
+	 */
 	protected Element createElement(Field field) {
 		XmlElement xmlElement = field.getAnnotation(XmlElement.class);
 		if (xmlElement == null) {

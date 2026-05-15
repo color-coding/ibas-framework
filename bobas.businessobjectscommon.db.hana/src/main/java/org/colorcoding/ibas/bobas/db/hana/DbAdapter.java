@@ -34,6 +34,9 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		}
 	}
 
+	/**
+	 * 返回SQL值；字符串类型添加N前缀以支持Unicode
+	 */
 	@Override
 	public String sqlValueOf(Object value, int sqlType) {
 		String sqlValue = super.sqlValueOf(value, sqlType);

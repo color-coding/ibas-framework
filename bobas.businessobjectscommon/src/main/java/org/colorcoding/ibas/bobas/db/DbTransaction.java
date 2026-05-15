@@ -1002,10 +1002,10 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 
 	/**
 	 * 查询最大值
-	 * 
-	 * @param maxValue 最大值内容
-	 * @return
-	 * @throws RepositoryException
+	 *
+	 * @param maxValue 最大值查询配置
+	 * @return 查询结果（更新maxValue中的值）
+	 * @throws RepositoryException 查询失败时抛出
 	 */
 	public final MaxValue fetch(MaxValue maxValue) throws RepositoryException {
 		try {
@@ -1041,17 +1041,17 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 	}
 
 	/**
-	 * 查询
-	 * 
-	 * @param sqlStatement 语句
+	 * 查询（直接执行SQL语句，返回数据表格）
+	 *
+	 * @param sqlStatement SQL语句对象
 	 * @return 数据表格
-	 * @throws RepositoryException
+	 * @throws RepositoryException 查询失败时抛出
 	 */
 	public final IDataTable fetch(ISqlStatement sqlStatement) throws RepositoryException {
 		try {
 			Objects.requireNonNull(sqlStatement);
 			String sql = this.getAdapter().parsing(sqlStatement);
-			Logger.log(Strings.format("db sql: run by user [%s].\n%s", this.getUser().getId(), sql));
+			Logger.log(MessageLevel.DEBUG, Strings.format("db sql: run by user [%s].\n%s", this.getUser().getId(), sql));
 			// 运行查询，不使用预编译方式
 			try (Statement statement = this.getConnection().createStatement()) {
 				try (ResultSet resultSet = statement.executeQuery(sql)) {
@@ -1064,13 +1064,13 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 	}
 
 	/**
-	 * 查询
-	 * 
+	 * 查询（直接执行SQL语句，返回业务对象数组）
+	 *
 	 * @param <T>          返回类型
 	 * @param boType       返回类型
-	 * @param sqlStatement 语句
-	 * @return
-	 * @throws RepositoryException
+	 * @param sqlStatement SQL语句对象
+	 * @return 业务对象数组
+	 * @throws RepositoryException 查询失败时抛出
 	 */
 	@SuppressWarnings("unchecked")
 	public final <T> T[] fetch(Class<?> boType, ISqlStatement sqlStatement) throws RepositoryException {
@@ -1124,11 +1124,12 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 
 	/**
 	 * 缓存中查询数据
-	 * 
+	 *
 	 * @param <T>      数据类型
 	 * @param boType   类型
 	 * @param criteria 查询条件
-	 * @return
+	 * @return 符合条件的数据数组
+	 * @throws RepositoryException 查询失败时抛出
 	 */
 	@Override
 	@SuppressWarnings("unchecked")

@@ -52,9 +52,9 @@ public class MyConfiguration extends Configuration {
 	private static volatile short DEBUG_MODE = -1;
 
 	/**
-	 * 处于debug模式
-	 * 
-	 * @return
+	 * 处于debug模式（有内部缓存）
+	 *
+	 * @return true表示调试模式
 	 */
 	public static boolean isDebugMode() {
 		// 访问频繁，提高下性能

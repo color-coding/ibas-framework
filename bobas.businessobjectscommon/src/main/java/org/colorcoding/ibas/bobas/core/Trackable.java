@@ -71,20 +71,20 @@ public abstract class Trackable extends Bindable implements ITrackable {
 	private volatile boolean isLoading = false;
 
 	/**
-	 * 数据加载中
-	 * 
-	 * 数据加载中 不触发属性改变事件
-	 * 
-	 * @return
+	 * 获取-数据加载中状态
+	 *
+	 * 加载中时不触发非主键/唯一键的属性改变事件
+	 *
+	 * @return 是否加载中
 	 */
 	public final boolean isLoading() {
 		return isLoading;
 	}
 
 	/**
-	 * 设置-数据加载中
-	 * 
-	 * @param value
+	 * 设置-数据加载中状态
+	 *
+	 * @param value 是否加载中
 	 */
 	public final void setLoading(boolean value) {
 		this.isLoading = value;

@@ -6,8 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 逻辑契约
- * 
+ * 逻辑契约注解
+ *
  * @author Niuren.Zhu
  *
  */
@@ -17,8 +17,8 @@ public @interface LogicContract {
 
 	/**
 	 * 契约类型
-	 * 
-	 * @return
+	 *
+	 * @return 契约接口类
 	 */
 	public Class<?> value();
 }

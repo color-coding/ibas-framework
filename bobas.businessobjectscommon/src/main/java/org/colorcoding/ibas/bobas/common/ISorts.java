@@ -10,17 +10,17 @@ import org.colorcoding.ibas.bobas.data.List;
  */
 public interface ISorts extends List<ISort> {
 	/**
-	 * 新建Sort
+	 * 新建排序
 	 *
-	 * @return
+	 * @return 新建的排序
 	 */
 	ISort create();
 
 	/**
-	 * 获取查询排序
-	 * 
+	 * 获取排序
+	 *
 	 * @param index 索引
-	 * @return
+	 * @return 排序
 	 */
 	ISort get(int index);
 }

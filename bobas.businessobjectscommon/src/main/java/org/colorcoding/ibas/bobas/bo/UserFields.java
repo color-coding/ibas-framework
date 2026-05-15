@@ -114,6 +114,13 @@ class UserFields implements IUserFields {
 		};
 	}
 
+	/**
+	 * 按名称获取用户字段；名称不存在时抛出IndexOutOfBoundsException
+	 *
+	 * @param name 字段名称（忽略大小写）
+	 * @return 用户字段
+	 * @throws IndexOutOfBoundsException 名称不存在时
+	 */
 	@Override
 	public <P> IUserField<P> get(String name) {
 		for (int i = 0; i < this.fields.length; i++) {
@@ -130,6 +137,13 @@ class UserFields implements IUserFields {
 		return (IUserField<P>) this.fields[index];
 	}
 
+	/**
+	 * 注册用户字段；若名称不存在则自动注册并重新初始化
+	 *
+	 * @param name      字段名称
+	 * @param valueType 值类型
+	 * @return 用户字段
+	 */
 	@Override
 	public <P> IUserField<P> register(String name, Class<?> valueType) {
 		if (this.indexOf(name) < 0) {

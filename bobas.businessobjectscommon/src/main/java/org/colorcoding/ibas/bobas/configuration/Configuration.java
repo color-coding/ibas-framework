@@ -1,7 +1,6 @@
 package org.colorcoding.ibas.bobas.configuration;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -27,8 +26,8 @@ public class Configuration {
 
 	/**
 	 * 创建实例，使用默认位置配置
-	 * 
-	 * @return
+	 *
+	 * @return 配置管理器实例（单例）
 	 */
 	public static ConfigurationManager create() {
 		if (instance == null) {
@@ -61,10 +60,11 @@ public class Configuration {
 	}
 
 	/**
-	 * 创建实例
-	 * 
+	 * 创建实例（指定配置文件路径）
+	 *
 	 * @param configFile 配置文件路径
-	 * @return
+	 * @return 配置管理器实例（单例）
+	 * @throws Exception 读取配置文件失败
 	 */
 	public static ConfigurationManager create(String configFile) throws Exception {
 		synchronized (Configuration.class) {
@@ -100,9 +100,9 @@ public class Configuration {
 
 	/**
 	 * 获取配置项的值
-	 * 
+	 *
 	 * @param key 配置项
-	 * @return
+	 * @return 配置值；未找到返回null
 	 */
 	public static String getConfigValue(String key) {
 		return create().getConfigValue(key);
@@ -120,59 +120,64 @@ public class Configuration {
 
 	/**
 	 * 程序启动的目录（主要的配置文件目录）
-	 * 
-	 * @return
+	 * <p>
+	 * 解析优先级：
+	 * <ol>
+	 * <li>线程上下文类加载器的类路径根目录（常规classpath、WEB-INF/classes）</li>
+	 * <li>ProtectionDomain 获取类加载位置（java -jar 场景下 getResource 返回null）</li>
+	 * <li>系统属性 user.dir（最终回退）</li>
+	 * </ol>
+	 * 特殊处理：
+	 * <ul>
+	 * <li>若路径指向文件（如JAR），取其所在目录</li>
+	 * <li>Web容器场景，WEB-INF/classes 定位到 WEB-INF 目录</li>
+	 * </ul>
+	 *
+	 * @return 启动目录路径
 	 */
 	public static String getStartupFolder() {
 		try {
 			File file = null;
-			URL url = Thread.currentThread().getContextClassLoader().getResource("");
-			String path = null;
-			if (url != null) {
-				URI uri = url.toURI();
-				if (uri != null) {
-					path = uri.getPath();
-				}
-				if (path == null) {
-					path = url.getPath();
-					if (path != null)
-						path = java.net.URLDecoder.decode(path, "UTF-8");
+			// 优先：线程上下文类加载器的类路径根目录
+			if (file == null) {
+				URL url = Thread.currentThread().getContextClassLoader().getResource("");
+				if (url != null) {
+					file = new File(url.toURI());
 				}
 			}
-			// file:/E:/WorkTemp/ibas/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/ibcp.systemcenter.service/WEB-INF/classes/
-			// 取到的值如上
-			if (path != null) {
-				if (path.split(":").length > 2) {
-					path = path.substring(path.indexOf(":") + 1, path.length());
-				}
-				if (path.indexOf("!") > 0) {
-					path = path.substring(0, path.indexOf("!"));
+			// 回退：ProtectionDomain 获取类加载位置
+			// java -jar 场景下 getResource("") 可能返回 null，此时可获取到 JAR 文件路径
+			if (file == null) {
+				URL codeSourceLocation = Configuration.class.getProtectionDomain().getCodeSource().getLocation();
+				if (codeSourceLocation != null) {
+					file = new File(codeSourceLocation.toURI());
 				}
 			}
-			if (path == null) {
-				path = System.getProperty("user.dir");
+			// 最终回退：当前工作目录
+			if (file == null) {
+				file = new File(System.getProperty("user.dir"));
 			}
-			file = new File(path);
+			// 如果是文件（如JAR），取其所在目录
 			if (file.isFile()) {
 				file = file.getParentFile();
 			}
-			if (file.getParentFile() != null && file.getParentFile().isDirectory()
-					&& file.getParentFile().getName().equals("WEB-INF")) {
-				// web路径
+			// Web容器场景：类路径为 .../WEB-INF/classes，定位到 WEB-INF 目录
+			if (file.getName().equalsIgnoreCase("classes") && file.getParentFile() != null
+					&& file.getParentFile().getName().equalsIgnoreCase("WEB-INF")) {
 				file = file.getParentFile();
 			}
 			return file.getPath();
-		} catch (URISyntaxException | UnsupportedEncodingException e) {
+		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	/**
 	 * 获取资源地址
-	 * 
-	 * @param type 资源名称
-	 * @return 统一格式（此对象避免路径的中文问题）
-	 * @throws URISyntaxException
+	 *
+	 * @param name 资源名称
+	 * @return URI；未找到返回null
+	 * @throws URISyntaxException URL转URI失败
 	 */
 	public static URI getResource(String name) throws URISyntaxException {
 		URL url = Thread.currentThread().getContextClassLoader().getResource(name);
@@ -189,8 +194,8 @@ public class Configuration {
 
 	/**
 	 * 获取工作目录
-	 * 
-	 * @return
+	 *
+	 * @return 工作目录路径（目录不存在则自动创建）
 	 */
 	public static String getWorkFolder() {
 		String path = getConfigValue(CONFIG_ITEM_WORK_FOLDER);
@@ -208,8 +213,8 @@ public class Configuration {
 
 	/**
 	 * 获取临时目录
-	 * 
-	 * @return
+	 *
+	 * @return 临时目录路径（目录不存在则自动创建）
 	 */
 	public static String getTempFolder() {
 		String tmpFolder = System.getProperty("java.io.tmpdir");
@@ -222,8 +227,8 @@ public class Configuration {
 
 	/**
 	 * 获取数据目录
-	 * 
-	 * @return
+	 *
+	 * @return 数据目录路径（目录不存在则自动创建）
 	 */
 	public static String getDataFolder() {
 		File folder = new File(getWorkFolder(), "data");
@@ -235,8 +240,8 @@ public class Configuration {
 
 	/**
 	 * 获取日志目录
-	 * 
-	 * @return
+	 *
+	 * @return 日志目录路径（目录不存在则自动创建）
 	 */
 	public static String getLogFolder() {
 		File folder = new File(getWorkFolder(), "logs");

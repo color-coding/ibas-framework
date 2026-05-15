@@ -9,6 +9,8 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
 /**
  * 业务规则-除法运算
+ *
+ * 除数为null或零时直接退出不输出；结果精度内不变时也不输出
  * 
  * @author Niuren.Zhu
  *

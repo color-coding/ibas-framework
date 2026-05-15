@@ -77,9 +77,9 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 	private boolean changeItemStatus;
 
 	/**
-	 * 是否自动改变子项状态，父项变化
-	 * 
-	 * @return
+	 * 是否自动改变子项状态（父项状态变化时同步到子项）
+	 *
+	 * @return 是否自动改变
 	 */
 	protected final boolean isChangeItemStatus() {
 		return changeItemStatus;
@@ -115,7 +115,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 	}
 
 	/**
-	 * 添加对象，已存在实例跳过
+	 * 添加对象，已存在实例跳过，并自动修正子项编号及主键关联
 	 */
 	@Override
 	public final boolean add(E item) {
@@ -274,8 +274,8 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 
 	/**
 	 * 当父项属性发生变化
-	 * 
-	 * @param evt
+	 *
+	 * @param evt 属性变更事件
 	 */
 	protected void onParentPropertyChanged(PropertyChangeEvent evt) {
 		// 父项空，退出
@@ -376,17 +376,17 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 	}
 
 	/**
-	 * 当元素属性发生变化
-	 * 
-	 * @param evt
+	 * 当元素属性发生变化（子类可重写以实现自定义逻辑）
+	 *
+	 * @param evt 属性变更事件
 	 */
 	protected void onItemPropertyChanged(PropertyChangeEvent evt) {
 	}
 
 	/**
-	 * 父项数据变化时触发改变元素数据
-	 * 
-	 * @param evt
+	 * 父项数据变化时触发改变元素数据（处理Canceled/Deleted/Status等状态同步）
+	 *
+	 * @param evt 属性变更事件
 	 */
 	private void changeItemStatus(PropertyChangeEvent evt) {
 		// 父项的属性改变

@@ -11,40 +11,38 @@ public abstract class Serializable implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * （系统）回掉方法-反序列化之前
-	 * 
-	 * @param target
-	 * @param parent
+	 * （系统）回调方法-反序列化之前
+	 *
+	 * @param target JAXB反序列化器
+	 * @param parent 所属父项
 	 */
 	final void beforeUnmarshal(Unmarshaller target, Object parent) {
 		this.beforeUnmarshal(parent);
 	}
 
 	/**
-	 * （系统）回掉方法-反序列化之后
-	 * 
-	 * @param target
-	 * @param parent
+	 * （系统）回调方法-反序列化之后
+	 *
+	 * @param target JAXB反序列化器
+	 * @param parent 所属父项
 	 */
 	final void afterUnmarshal(Unmarshaller target, Object parent) {
 		this.afterUnmarshal(parent);
 	}
 
 	/**
-	 * （系统）回掉方法-序列化之前
-	 * 
-	 * @param target
-	 * @param parent
+	 * （系统）回调方法-序列化之前
+	 *
+	 * @param marshaller JAXB序列化器
 	 */
 	final void beforeMarshal(Marshaller marshaller) {
 		this.beforeMarshal();
 	}
 
 	/**
-	 * （系统）回掉方法-序列化之后
-	 * 
-	 * @param target
-	 * @param parent
+	 * （系统）回调方法-序列化之后
+	 *
+	 * @param marshaller JAXB序列化器
 	 */
 	final void afterMarshal(Marshaller marshaller) {
 		this.afterMarshal();

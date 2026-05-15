@@ -7,8 +7,8 @@ import org.colorcoding.ibas.bobas.organization.InvalidAuthorizationException;
 import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
 
 /**
- * 仓库（带用户）
- * 
+ * 仓库基类，提供用户认证功能
+ *
  * @author Niuren.Zhu
  *
  */
@@ -17,9 +17,9 @@ public class Repository implements AutoCloseable {
 	private IUser currentUser;
 
 	/**
-	 * 获取当前用户
-	 * 
-	 * @return
+	 * 获取当前用户，未设置时返回UNKNOWN_USER
+	 *
+	 * @return 当前用户，永不为null
 	 */
 	public final IUser getCurrentUser() {
 		if (this.currentUser == null) {
@@ -33,9 +33,9 @@ public class Repository implements AutoCloseable {
 	}
 
 	/**
-	 * 获取当前用户token
-	 * 
-	 * @return
+	 * 获取当前用户口令，未设置用户时返回空字符串
+	 *
+	 * @return 用户口令
 	 */
 	public final String getUserToken() {
 		IUser user = this.currentUser;
@@ -46,20 +46,20 @@ public class Repository implements AutoCloseable {
 	}
 
 	/**
-	 * 设置当前用户
-	 * 
-	 * @param user 用户
-	 * @throws InvalidAuthorizationException
+	 * 通过用户对象设置当前用户
+	 *
+	 * @param user 用户对象
+	 * @throws InvalidAuthorizationException 口令无效时抛出
 	 */
 	public final void setUserToken(IUser user) throws InvalidAuthorizationException {
 		this.setUserToken(user.getToken());
 	}
 
 	/**
-	 * 设置当前用户
-	 * 
-	 * @param token 用户口令
-	 * @throws InvalidAuthorizationException
+	 * 通过口令设置当前用户，与当前口令相同时不做处理，口令为空或无匹配用户时抛出异常
+	 *
+	 * @param token 用户口令，不可为空
+	 * @throws InvalidAuthorizationException 口令为空或无匹配用户
 	 */
 	public final void setUserToken(String token) throws InvalidAuthorizationException {
 		if (Strings.isNullOrEmpty(token)) {

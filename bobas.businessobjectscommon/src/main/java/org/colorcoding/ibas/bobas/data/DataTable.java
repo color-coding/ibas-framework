@@ -84,10 +84,10 @@ public class DataTable extends Serializable implements IDataTable {
 	}
 
 	/**
-	 * 转为字符串
-	 * 
-	 * @param type 类型：xml、json、csv
-	 * @return
+	 * 按指定格式转为字符串
+	 *
+	 * @param type 类型：xml、json、csv；不识别时回退到toString()
+	 * @return 序列化后的字符串
 	 */
 	public String toString(String type) {
 		ISerializer serializer = null;

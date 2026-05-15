@@ -10,9 +10,9 @@ import java.lang.annotation.Target;
 public @interface DbProcedure {
 
 	/**
-	 * 名称
-	 * 
-	 * @return
+	 * 存储过程名称
+	 *
+	 * @return 名称
 	 */
 	public String name();
 

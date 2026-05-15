@@ -20,20 +20,20 @@ public class EncryptMD5 {
 			"S", "T", "U", "V", "W", "X", "Y", "Z" };
 
 	/**
-	 * 把inputString加密
-	 * 
-	 * @throws Exception
+	 * MD5加密
+	 *
+	 * @param inputStr 原始字符串；null返回null
+	 * @return 16进制小写MD5摘要字符串
 	 */
 	public static String md5(String inputStr) {
 		return encodeByMD5(inputStr);
 	}
 
 	/**
-	 * 把inputString组合并加密
-	 * 
+	 * MD5加密（拼接多个字符串后加密）
+	 *
 	 * @param inputStrs 字符串数组
-	 * @return
-	 * @throws Exception
+	 * @return 16进制小写MD5摘要字符串
 	 */
 	public static String md5(String... inputStrs) {
 		StringBuilder stringBuilder = new StringBuilder();
@@ -66,13 +66,12 @@ public class EncryptMD5 {
 	}
 
 	/**
-	 * 加密字符串
-	 * 
-	 * @param text  字符串
-	 * @param chars 密文内容
-	 * @param key   混淆字符
-	 * @return
-	 * @throws Exception
+	 * 生成短链接字符串
+	 *
+	 * @param text  原始字符串
+	 * @param chars 密文字符表
+	 * @param key   混淆键
+	 * @return 短链接字符串
 	 */
 	public static String shortText(String text, String[] chars, String key) {
 		String hex = EncryptMD5.md5(key + text);
@@ -104,24 +103,22 @@ public class EncryptMD5 {
 	}
 
 	/**
-	 * 加密字符串
-	 * 
-	 * @param text 字符串
-	 * @param key  混淆字符
-	 * @return
-	 * @throws Exception
+	 * 生成短链接字符串（自定义混淆键）
+	 *
+	 * @param text 原始字符串
+	 * @param key  混淆键
+	 * @return 短链接字符串
 	 */
 	public static String shortText(String text, String key) {
 		return shortText(text, CHARS, key);
 	}
 
 	/**
-	 * 加密字符串
+	 * 生成短链接字符串（自定义密文字符表，使用公司配置作混淆键）
 	 *
-	 * @param text  字符串
-	 * @param chars 密文字符
-	 * @return
-	 * @throws Exception
+	 * @param text  原始字符串
+	 * @param chars 密文字符表
+	 * @return 短链接字符串
 	 */
 	public static String shortText(String text, String[] chars) {
 		String key = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_COMPANY);
@@ -132,11 +129,10 @@ public class EncryptMD5 {
 	}
 
 	/**
-	 * 加密字符串
-	 * 
-	 * @param text 字符串
-	 * @return
-	 * @throws Exception
+	 * 生成短链接字符串（使用默认字符表和公司配置作混淆键）
+	 *
+	 * @param text 原始字符串
+	 * @return 短链接字符串
 	 */
 	public static String shortText(String text) {
 		// 自定义生成MD5加密字符串前的混合KEY

@@ -78,19 +78,19 @@ public class Decimals {
 	public final static BigDecimal VALUE_SHORT_MIN_VALUE = valueOf(Short.MIN_VALUE);
 
 	/**
-	 * 类型默认值
-	 * 
-	 * @return
+	 * 类型默认值（VALUE_ZERO）
+	 *
+	 * @return 零值BigDecimal
 	 */
 	public static BigDecimal defaultValue() {
 		return VALUE_ZERO;
 	}
 
 	/**
-	 * 转换值（保留小数点后9位）
-	 * 
+	 * 转换值（0-10及-1使用缓存，其余保留小数点后9位）
+	 *
 	 * @param value 值
-	 * @return
+	 * @return BigDecimal；0-10及-1返回缓存实例
 	 */
 	public static BigDecimal valueOf(double value) {
 		if (value >= 0 && value < zeroThroughTen.length) {
@@ -106,10 +106,10 @@ public class Decimals {
 	}
 
 	/**
-	 * 转换值（保留小数点后9位）
-	 * 
+	 * 转换值（0-10及-1使用缓存，其余保留小数点后9位）
+	 *
 	 * @param value 值
-	 * @return
+	 * @return BigDecimal
 	 */
 	public static BigDecimal valueOf(float value) {
 		if (value >= 0 && value < zeroThroughTen.length) {
@@ -125,10 +125,10 @@ public class Decimals {
 	}
 
 	/**
-	 * 转换值
-	 * 
+	 * 转换值（0-10及-1使用缓存）
+	 *
 	 * @param value 值
-	 * @return
+	 * @return BigDecimal
 	 */
 	public static BigDecimal valueOf(long value) {
 		if (value >= 0 && value < zeroThroughTen.length) {
@@ -140,10 +140,10 @@ public class Decimals {
 	}
 
 	/**
-	 * 转换值
-	 * 
+	 * 转换值（0-10及-1使用缓存）
+	 *
 	 * @param value 值
-	 * @return
+	 * @return BigDecimal
 	 */
 	public static BigDecimal valueOf(int value) {
 		if (value >= 0 && value < zeroThroughTen.length) {
@@ -155,10 +155,10 @@ public class Decimals {
 	}
 
 	/**
-	 * 转换值
-	 * 
+	 * 转换值（0-10使用缓存）
+	 *
 	 * @param value 值
-	 * @return
+	 * @return BigDecimal
 	 */
 	public static BigDecimal valueOf(short value) {
 		if (value >= 0 && value < zeroThroughTen.length) {
@@ -169,10 +169,10 @@ public class Decimals {
 	}
 
 	/**
-	 * 转换值
-	 * 
-	 * @param value 值
-	 * @return
+	 * 转换值（字符串）
+	 *
+	 * @param value 字符串；null或空返回VALUE_ZERO
+	 * @return BigDecimal
 	 */
 	public static BigDecimal valueOf(String value) {
 		if (value == null || value.isEmpty()) {
@@ -207,10 +207,10 @@ public class Decimals {
 	}
 
 	/**
-	 * 转换值（使用缓存）
-	 * 
-	 * @param value 值
-	 * @return
+	 * 转换值（0-10使用缓存匹配）
+	 *
+	 * @param value 值；不在缓存范围则原样返回
+	 * @return 缓存匹配的实例或原值
 	 */
 	public static BigDecimal valueOf(BigDecimal value) {
 		for (BigDecimal item : zeroThroughTen) {
@@ -223,10 +223,10 @@ public class Decimals {
 
 	/**
 	 * 是否相等
-	 * 
-	 * @param a
-	 * @param b
-	 * @return
+	 *
+	 * @param a 数值a；null返回false
+	 * @param b 数值b；null返回false
+	 * @return 值相等返回true；任一为null返回false
 	 */
 	public static boolean equals(BigDecimal a, BigDecimal b) {
 		if (a == null || b == null) {
@@ -243,10 +243,10 @@ public class Decimals {
 
 	/**
 	 * 是否大于(a > b)
-	 * 
-	 * @param a
-	 * @param b
-	 * @return
+	 *
+	 * @param a 数值a；null返回false
+	 * @param b 数值b；null返回false
+	 * @return a大于b返回true
 	 */
 	public static boolean graterThan(BigDecimal a, BigDecimal b) {
 		if (a == null || b == null) {
@@ -257,10 +257,10 @@ public class Decimals {
 
 	/**
 	 * 是否小于(a < b)
-	 * 
-	 * @param a
-	 * @param b
-	 * @return
+	 *
+	 * @param a 数值a；null返回false
+	 * @param b 数值b；null返回false
+	 * @return a小于b返回true
 	 */
 	public static boolean lessThan(BigDecimal a, BigDecimal b) {
 		if (a == null || b == null) {
@@ -271,9 +271,9 @@ public class Decimals {
 
 	/**
 	 * 是否为零
-	 * 
-	 * @param value
-	 * @return
+	 *
+	 * @param value 数值；不允许为null
+	 * @return 值为零返回true
 	 */
 	public static boolean isZero(BigDecimal value) {
 		if (VALUE_ZERO.equals(value)) {
@@ -286,11 +286,11 @@ public class Decimals {
 
 	/**
 	 * 截取小数位
-	 * 
-	 * @param value 值
+	 *
+	 * @param value 值；不允许为null
 	 * @param scale 保留位数
 	 * @param mode  截取方式
-	 * @return
+	 * @return 截取后的值
 	 */
 	public static BigDecimal round(BigDecimal value, int scale, RoundingMode mode) {
 		return value.divide(VALUE_ONE, scale, mode);
@@ -298,22 +298,20 @@ public class Decimals {
 
 	/**
 	 * 四舍五入小数位
-	 * 
+	 *
 	 * @param value 值
 	 * @param scale 保留小数位数
-	 * @return
+	 * @return 截取后的值
 	 */
 	public static BigDecimal round(BigDecimal value, int scale) {
 		return round(value, scale, ROUNDING_MODE_DEFAULT);
 	}
 
 	/**
-	 * 四舍五入小数位
-	 * 
-	 * 保留运行时位数（默认9位）
-	 * 
+	 * 四舍五入小数位（保留运行时位数，默认9位）
+	 *
 	 * @param value 值
-	 * @return
+	 * @return 截取后的值
 	 */
 	public static BigDecimal round(BigDecimal value) {
 		return round(value, DECIMAL_PLACES_RUNNING, ROUNDING_MODE_DEFAULT);
@@ -321,10 +319,10 @@ public class Decimals {
 
 	/**
 	 * 除法
-	 * 
+	 *
 	 * @param dividend 被除数
 	 * @param divisor  除数
-	 * @return
+	 * @return 商（保留运行时小数位）
 	 */
 	public static BigDecimal divide(BigDecimal dividend, BigDecimal divisor) {
 		return divide(dividend, divisor, DECIMAL_PLACES_RUNNING, ROUNDING_MODE_DEFAULT);
@@ -332,11 +330,11 @@ public class Decimals {
 
 	/**
 	 * 除法
-	 * 
+	 *
 	 * @param dividend 被除数
 	 * @param divisor  除数
 	 * @param scale    保留小数位
-	 * @return
+	 * @return 商
 	 */
 	public static BigDecimal divide(BigDecimal dividend, BigDecimal divisor, int scale) {
 		return divide(dividend, divisor, scale, ROUNDING_MODE_DEFAULT);
@@ -344,23 +342,23 @@ public class Decimals {
 
 	/**
 	 * 除法
-	 * 
-	 * @param dividend 被除数
-	 * @param divisor  除数
-	 * @param scale    保留小数位
-	 * @param rounding 进位方式
-	 * @return
+	 *
+	 * @param dividend      被除数
+	 * @param divisor       除数
+	 * @param scale         保留小数位
+	 * @param roundingMode  进位方式
+	 * @return 商
 	 */
 	public static BigDecimal divide(BigDecimal dividend, BigDecimal divisor, int scale, RoundingMode roundingMode) {
 		return dividend.divide(divisor, scale, roundingMode);
 	}
 
 	/**
-	 * 除法
-	 * 
-	 * @param dividend 被除数
-	 * @param divisors 乘除数组（0个，返回被除数）
-	 * @return
+	 * 除法（连除）
+	 *
+	 * @param dividend 被除数；null视为VALUE_ZERO
+	 * @param divisors 除数数组（0个返回被除数；null跳过）
+	 * @return 计算结果
 	 */
 	public static BigDecimal divide(BigDecimal dividend, BigDecimal... divisors) {
 		if (dividend == null) {
@@ -379,11 +377,11 @@ public class Decimals {
 	}
 
 	/**
-	 * 乘法
-	 * 
-	 * @param multiplicand 被乘数
-	 * @param multipliers  乘数数组（0个，返回被乘数）
-	 * @return
+	 * 乘法（连乘）
+	 *
+	 * @param multiplicand 被乘数；null视为VALUE_ZERO
+	 * @param multipliers  乘数数组（0个返回被乘数；null跳过）
+	 * @return 计算结果
 	 */
 	public static BigDecimal multiply(BigDecimal multiplicand, BigDecimal... multipliers) {
 		if (multiplicand == null) {
@@ -402,11 +400,11 @@ public class Decimals {
 	}
 
 	/**
-	 * 加法
-	 * 
-	 * @param augend  被加数
-	 * @param addends 加数组（0个，返回被加数）
-	 * @return
+	 * 加法（连加）
+	 *
+	 * @param augend  被加数；null视为VALUE_ZERO
+	 * @param addends 加数数组（0个返回被加数；null跳过）
+	 * @return 计算结果
 	 */
 	public static BigDecimal add(BigDecimal augend, BigDecimal... addends) {
 		if (augend == null) {
@@ -425,11 +423,11 @@ public class Decimals {
 	}
 
 	/**
-	 * 减法
-	 * 
-	 * @param subtrahend 被减数
-	 * @param addends    减数组（0个，返回被减数）
-	 * @return
+	 * 减法（连减）
+	 *
+	 * @param subtrahend  被减数；null视为VALUE_ZERO
+	 * @param subtractors 减数数组（0个返回被减数；null跳过）
+	 * @return 计算结果
 	 */
 	public static BigDecimal subtract(BigDecimal subtrahend, BigDecimal... subtractors) {
 		if (subtrahend == null) {

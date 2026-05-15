@@ -11,16 +11,16 @@ import org.colorcoding.ibas.bobas.common.Booleans;
 @Target(ElementType.TYPE)
 public @interface DbTable {
 	/**
-	 * 表名称
-	 * 
-	 * @return
+	 * 数据库表名称（支持${Variable}变量替换）
+	 *
+	 * @return 表名
 	 */
 	public String name();
 
 	/**
-	 * 实体表
-	 * 
-	 * @return
+	 * 是否实体表（实体表参与数据删除和更新操作）
+	 *
+	 * @return 是否实体表（默认true）
 	 */
 	public boolean entity() default Booleans.VALUE_TRUE;
 }

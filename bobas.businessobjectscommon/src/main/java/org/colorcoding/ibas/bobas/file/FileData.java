@@ -16,8 +16,8 @@ import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.Serializable;
 
 /**
- * 文件数据
- * 
+ * 文件数据，用于传输和存储文件内容
+ *
  * @author Niuren.Zhu
  *
  */
@@ -49,11 +49,7 @@ public class FileData extends Serializable implements AutoCloseable {
 
 	private String name;
 
-	/**
-	 * 文件名称
-	 * 
-	 * @return
-	 */
+	/** 文件名称 */
 	@XmlElement(name = "Name")
 	public String getName() {
 		return name;
@@ -65,11 +61,7 @@ public class FileData extends Serializable implements AutoCloseable {
 
 	private String location;
 
-	/**
-	 * 文件位置
-	 * 
-	 * @return
-	 */
+	/** 文件存储位置 */
 	@XmlElement(name = "Location")
 	public String getLocation() {
 		return location;
@@ -81,11 +73,7 @@ public class FileData extends Serializable implements AutoCloseable {
 
 	private String originalName;
 
-	/**
-	 * 原始文件名称
-	 * 
-	 * @return
-	 */
+	/** 原始文件名称 */
 	@XmlElement(name = "OriginalName")
 	public String getOriginalName() {
 		return originalName;
@@ -98,9 +86,10 @@ public class FileData extends Serializable implements AutoCloseable {
 	private InputStream stream;
 
 	/**
-	 * 文件流
-	 * 
-	 * @return
+	 * 获取文件流，优先返回已设置的流；未设置时根据location尝试打开文件输入流
+	 *
+	 * @return 文件流，location无效或文件不可读时返回null
+	 * @throws IOException 文件打开失败时可能抛出
 	 */
 	public InputStream getStream() throws IOException {
 		if (this.stream == null) {

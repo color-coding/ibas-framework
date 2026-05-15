@@ -12,7 +12,7 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 /**
  * 业务规则集合
- * 
+ *
  * @author Niuren.Zhu
  *
  */
@@ -66,10 +66,10 @@ class BusinessRules implements IBusinessRules {
 	}
 
 	/**
-	 * 检查业务规则是否注册
-	 * 
-	 * @param rule
-	 * @return
+	 * 检查业务规则是否可注册
+	 *
+	 * @param rule 待注册的业务规则
+	 * @return 允许注册返回true
 	 */
 	protected boolean checkRules(IBusinessRule rule) {
 		return true;

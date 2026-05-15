@@ -12,13 +12,15 @@ import org.colorcoding.ibas.bobas.data.List;
 public interface IOperationResult<P> extends IOperationMessage {
 	/**
 	 * 返回对象
-	 * 
+	 *
+	 * @return 结果对象列表
 	 */
 	List<P> getResultObjects();
 
 	/**
 	 * 操作执行信息
-	 * 
+	 *
+	 * @return 信息列表
 	 */
 	List<IOperationInformation> getInformations();
 

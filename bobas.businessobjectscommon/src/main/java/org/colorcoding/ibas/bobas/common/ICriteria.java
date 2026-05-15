@@ -14,8 +14,8 @@ public interface ICriteria extends ICloneable {
 
 	/**
 	 * 获取-业务对象编码
-	 * 
-	 * @return
+	 *
+	 * @return 业务对象编码
 	 */
 	String getBusinessObject();
 
@@ -84,15 +84,15 @@ public interface ICriteria extends ICloneable {
 
 	/**
 	 * 获取排序字段
-	 * 
-	 * @return
+	 *
+	 * @return 排序集合
 	 */
 	ISorts getSorts();
 
 	/**
 	 * 克隆
-	 * 
-	 * @return
+	 *
+	 * @return 克隆后的查询
 	 */
 	ICriteria clone();
 

@@ -8,6 +8,8 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
 /**
  * 业务规则-最大字符长度
+ *
+ * 属性值为null时跳过该属性检查
  * 
  * @author Niuren.Zhu
  *

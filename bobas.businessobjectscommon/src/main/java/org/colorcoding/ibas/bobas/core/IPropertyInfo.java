@@ -29,24 +29,24 @@ public interface IPropertyInfo<P> {
 
 	/**
 	 * 是否为主键
-	 * 
-	 * @return
+	 *
+	 * @return true表示主键
 	 */
 	boolean isPrimaryKey();
 
 	/**
 	 * 是否为唯一键
-	 * 
-	 * @return
+	 *
+	 * @return true表示唯一键
 	 */
 	boolean isUniqueKey();
 
 	/**
-	 * 获取属性属性
-	 * 
-	 * @param <A>
-	 * @param type
-	 * @return
+	 * 获取属性上的注解
+	 *
+	 * @param <A>  注解类型
+	 * @param type 注解类
+	 * @return 注解实例，未找到返回null
 	 */
 	<A extends Annotation> A getAnnotation(Class<A> type);
 }

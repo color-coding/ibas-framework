@@ -49,7 +49,7 @@ import software.amazon.awssdk.services.s3.model.S3Object;
 
 public class S3FileTransaction extends FileTransaction {
 	/**
-	 * 配置项目-存储区域
+	 * 配置项目-存储文件夹（亦作为默认存储桶）
 	 */
 	public final static String CONFIG_ITEM_FILE_REPOSITORY_FOLDER = MyConfiguration.CONFIG_ITEM_FILE_REPOSITORY_FOLDER;
 	/**
@@ -127,6 +127,14 @@ public class S3FileTransaction extends FileTransaction {
 				.build();
 	}
 
+	/**
+	 * 初始化S3客户端，存储区域默认使用AWS_CN_GLOBAL
+	 *
+	 * @param endpoint  端点地址
+	 * @param accessKey 访问口令
+	 * @param secretKey 访问密钥
+	 * @throws RepositoryException 客户端已存在时抛出
+	 */
 	public void initClient(String endpoint, String accessKey, String secretKey) throws RepositoryException {
 		this.initClient(endpoint, accessKey, secretKey);
 	}
@@ -147,6 +155,13 @@ public class S3FileTransaction extends FileTransaction {
 		}
 	}
 
+	/**
+	 * 保存文件到S3，fileData或其流为null时返回null
+	 *
+	 * @param fileData 文件数据
+	 * @return 保存后的文件项，输入为null时返回null
+	 * @throws Exception S3操作异常
+	 */
 	@Override
 	protected FileItem save(FileData fileData) throws Exception {
 		if (fileData == null || fileData.getStream() == null) {
@@ -190,6 +205,13 @@ public class S3FileTransaction extends FileTransaction {
 		return fileItem;
 	}
 
+	/**
+	 * 删除S3文件，文件不存在时返回false
+	 *
+	 * @param fileItem 文件项
+	 * @return 成功删除返回true，文件不存在返回false
+	 * @throws Exception S3操作异常
+	 */
 	@Override
 	protected boolean delete(FileItem fileItem) throws Exception {
 		try {

@@ -7,6 +7,7 @@ import java.util.Collection;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.DateTimes;
+import org.colorcoding.ibas.bobas.common.Files;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
@@ -21,9 +22,9 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 	public Connection createConnection(String server, String dbName, String userName, String userPwd) {
 		try {
 			Class.forName("org.sqlite.JDBC");
-			File file = new File(dbName);
+			File file = Files.valueOf(dbName);
 			if (file.getParentFile() == null || !file.getParentFile().isDirectory()) {
-				file = new File(MyConfiguration.getDataFolder(), file.getName());
+				file = Files.valueOf(MyConfiguration.getDataFolder(), file.getName());
 				if (!file.getParentFile().exists()) {
 					file.getParentFile().mkdirs();
 				}

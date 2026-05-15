@@ -36,6 +36,11 @@ public final class UserFieldProxy {
 		this.valueType = valueType;
 	}
 
+	/**
+	 * 根据类型设置值类型（转换为DbFieldType字符串表示）
+	 *
+	 * @param valueType 值类型
+	 */
 	public final void setValueType(Class<?> valueType) {
 		this.setValueType(DbFieldType.valueOf(valueType).toString());
 	}
@@ -47,6 +52,11 @@ public final class UserFieldProxy {
 		return value;
 	}
 
+	/**
+	 * 设置值；null和DateTimes.VALUE_MIN均存储为null
+	 *
+	 * @param value 值对象
+	 */
 	public final void setValue(Object value) {
 		if (value == null) {
 			this.value = null;

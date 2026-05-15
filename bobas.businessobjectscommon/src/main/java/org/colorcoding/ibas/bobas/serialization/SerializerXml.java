@@ -27,6 +27,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+import javax.xml.XMLConstants;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.DateTime;
@@ -101,6 +102,8 @@ public class SerializerXml extends Serializer {
 	public void validate(Schema schema, InputStream data) throws ValidateException {
 		try {
 			Validator validator = schema.newValidator();
+			validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+			validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 			Source xmlSource = new StreamSource(data);
 			validator.validate(xmlSource);
 		} catch (SAXException | IOException e) {
@@ -118,6 +121,8 @@ public class SerializerXml extends Serializer {
 			this.schema(type, outputStream);
 			try (InputStream stream = new ByteArrayInputStream(outputStream.toByteArray())) {
 				SchemaFactory factory = SchemaFactory.newInstance(XML_FILE_NAMESPACE);
+				factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+				factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 				Source xsdSource = new StreamSource(stream);
 				return factory.newSchema(xsdSource);
 			}
@@ -134,7 +139,13 @@ public class SerializerXml extends Serializer {
 	@Override
 	public void schema(Class<?> type, OutputStream outputStream) throws SerializationException {
 		try {
-			DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+			dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+			dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+			dbf.setXIncludeAware(false);
+			dbf.setExpandEntityReferences(false);
+			DocumentBuilder db = dbf.newDocumentBuilder();
 			DOMImplementation domImpl = db.getDOMImplementation();
 			Document document = domImpl.createDocument(XML_FILE_NAMESPACE, "xs:schema", null);
 			// 创建文档
@@ -143,7 +154,15 @@ public class SerializerXml extends Serializer {
 			schemaWriter.element = new Analyzer().analyse(type);
 			schemaWriter.write();
 			// 将xml写到文件中
-			javax.xml.transform.Transformer transformer = TransformerFactory.newInstance().newTransformer();
+			TransformerFactory tf = TransformerFactory.newInstance();
+			tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+			try {
+				tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+				tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+			} catch (IllegalArgumentException e) {
+				// Oracle JDK 8 内置 TransformerFactory 不支持此属性，忽略
+			}
+			javax.xml.transform.Transformer transformer = tf.newTransformer();
 			// 添加xml 头信息
 			transformer.setOutputProperty(OutputKeys.METHOD, "xml");
 			transformer.setOutputProperty(OutputKeys.ENCODING, XML_FILE_ENCODING);

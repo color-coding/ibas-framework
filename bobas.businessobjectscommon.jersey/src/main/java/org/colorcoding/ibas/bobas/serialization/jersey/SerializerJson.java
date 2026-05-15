@@ -59,11 +59,11 @@ public class SerializerJson extends Serializer {
 	private JAXBContext context;
 
 	/**
-	 * 创建json序列化类
-	 * 
+	 * 创建JAXB上下文（首次创建后缓存复用）
+	 *
 	 * @param types 已知类型
-	 * @return
-	 * @throws JAXBException
+	 * @return JAXB上下文
+	 * @throws JAXBException 创建上下文失败时抛出
 	 */
 	protected JAXBContext createJAXBContextJson(Class<?>... types) throws JAXBException {
 		if (context == null) {
@@ -103,6 +103,9 @@ public class SerializerJson extends Serializer {
 		return unmarshaller;
 	}
 
+	/**
+	 * 反序列化JSON流，不包含根元素时自动提取JAXBElement的值
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T deserialize(InputStream ipnInputStream, Class<?>... types) throws SerializationException {
@@ -120,6 +123,9 @@ public class SerializerJson extends Serializer {
 		}
 	}
 
+	/**
+	 * 反序列化JSON读取器，不包含根元素时自动提取JAXBElement的值
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T deserialize(Reader reader, Class<?>... types) throws SerializationException {
@@ -137,6 +143,9 @@ public class SerializerJson extends Serializer {
 		}
 	}
 
+	/**
+	 * 反序列化JsonObject，不包含根元素时自动提取JAXBElement的值
+	 */
 	@SuppressWarnings("unchecked")
 	public <T> T deserialize(JsonObject jsonObject, Class<?>... types) throws SerializationException {
 		try {
@@ -153,6 +162,9 @@ public class SerializerJson extends Serializer {
 		}
 	}
 
+	/**
+	 * 输出类型的JSON Schema（draft-07）
+	 */
 	@Override
 	public void schema(Class<?> type, OutputStream outputStream) throws SerializationException {
 
@@ -167,6 +179,9 @@ public class SerializerJson extends Serializer {
 		}
 	}
 
+	/**
+	 * JSON格式不支持校验，始终抛出UnsupportedOperationException
+	 */
 	@Override
 	public void validate(Class<?> type, InputStream data) throws ValidateException {
 		throw new UnsupportedOperationException();

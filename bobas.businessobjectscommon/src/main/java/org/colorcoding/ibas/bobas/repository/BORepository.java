@@ -18,8 +18,8 @@ import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializerManager;
 
 /**
- * 业务对象仓库（查询、保存）
- * 
+ * 业务对象仓库（查询、保存），支持业务逻辑链和版本检查
+ *
  * @author Niuren.Zhu
  *
  */
@@ -27,19 +27,15 @@ public abstract class BORepository extends Repository {
 
 	private boolean skipLogics;
 
-	/**
-	 * 是否跳过逻辑
-	 * 
-	 * @return
-	 */
+	/** 是否跳过全部业务逻辑 */
 	protected final boolean isSkipLogics() {
 		return skipLogics;
 	}
 
 	/**
-	 * 设置跳过逻辑
-	 * 
-	 * @param skipLogics ture or false
+	 * 设置是否跳过全部业务逻辑，设为false时清空跳过的契约列表
+	 *
+	 * @param skipLogics true跳过，false不跳过
 	 */
 	protected final void setSkipLogics(boolean skipLogics) {
 		this.skipLogics = skipLogics;
@@ -51,9 +47,9 @@ public abstract class BORepository extends Repository {
 	private List<Class<?>> skipLogicContracts;
 
 	/**
-	 * 设置跳过的逻辑对应契约（isSkipLogics = true 时有效）
-	 * 
-	 * @param contract 契约类型
+	 * 添加跳过的逻辑契约类型，同时自动开启跳过逻辑标记
+	 *
+	 * @param contract 逻辑契约类型，必须实现IBusinessLogicContract
 	 */
 	protected final void addSkipLogics(Class<?> contract) {
 		if (!IBusinessLogicContract.class.isAssignableFrom(contract)) {
@@ -70,11 +66,7 @@ public abstract class BORepository extends Repository {
 
 	private boolean skipInstanceCheck = false;
 
-	/**
-	 * 跳过对象实例检查
-	 * 
-	 * @return
-	 */
+	/** 跳过对象实例（数据库副本）版本检查 */
 	protected final boolean isSkipInstanceCheck() {
 		return skipInstanceCheck;
 	}
@@ -122,6 +114,13 @@ public abstract class BORepository extends Repository {
 		}
 	}
 
+	/**
+	 * 查询业务对象
+	 *
+	 * @param boType   业务对象类型
+	 * @param criteria 查询条件
+	 * @return 操作结果，出错时包含异常信息
+	 */
 	protected <T extends IBusinessObject> OperationResult<T> fetch(Class<?> boType, ICriteria criteria) {
 		try {
 			Objects.requireNonNull(boType);
@@ -139,6 +138,13 @@ public abstract class BORepository extends Repository {
 		}
 	}
 
+	/**
+	 * 保存业务对象，包含版本检查、业务逻辑链执行和事务管理。
+	 * 非新建对象且未跳过实例检查时，会验证数据库副本版本；删除操作使用数据库副本。
+	 *
+	 * @param bo 待保存对象
+	 * @return 操作结果，包含保存后的对象（删除时不包含）
+	 */
 	@SuppressWarnings("unchecked")
 	protected <T extends IBusinessObject> OperationResult<T> save(T bo) {
 		try {
@@ -232,9 +238,9 @@ public abstract class BORepository extends Repository {
 
 	/**
 	 * 初始化事务
-	 * 
-	 * @return true，自建
-	 * @throws RepositoryException
+	 *
+	 * @return true自建事务，false事务已存在
+	 * @throws RepositoryException 事务创建失败
 	 */
 	protected abstract boolean initTransaction() throws RepositoryException;
 }

@@ -12,31 +12,31 @@ public interface IChildCriteria extends ICriteria {
 
 	/**
 	 * 获取-属性路径
-	 * 
-	 * @return
+	 *
+	 * @return 属性路径
 	 */
 	String getPropertyPath();
 
 	/**
 	 * 设置-属性路径
-	 * 
-	 * @param value
+	 *
+	 * @param value 属性路径
 	 */
 	void setPropertyPath(String value);
 
 	/**
 	 * 设置-属性路径
-	 * 
-	 * @param value
+	 *
+	 * @param value 属性信息
 	 */
 	void setPropertyPath(IPropertyInfo<?> property);
 
 	/**
-	 * 获取-是否入口
-	 * 
-	 * 先查子项，再根据子项查父项
-	 * 
-	 * @return
+	 * 获取-是否入口查询
+	 *
+	 * 入口查询：先查子项，再根据子项查父项
+	 *
+	 * @return true表示入口查询
 	 */
 	boolean isEntry();
 
@@ -55,9 +55,9 @@ public interface IChildCriteria extends ICriteria {
 	boolean isOnlyHasChilds();
 
 	/**
-	 * 设置-是否父要求结果
-	 * 
-	 * @param value
+	 * 设置-是否仅返回有子项的结果
+	 *
+	 * @param value true表示子项无结果时父项也不返回
 	 */
 	void setOnlyHasChilds(boolean value);
 
@@ -77,8 +77,8 @@ public interface IChildCriteria extends ICriteria {
 
 	/**
 	 * 克隆
-	 * 
-	 * @return
+	 *
+	 * @return 克隆后的子项查询
 	 */
 	IChildCriteria clone();
 }

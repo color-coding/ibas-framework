@@ -152,12 +152,12 @@ public abstract class BusinessRuleCollection extends BusinessRule {
 	/**
 	 * 执行业务逻辑
 	 * 
-	 * @param context 内容
+	 * @param context 规则执行上下文
 	 */
 	protected abstract void execute(BusinessRuleContext context) throws Exception;
 
 	/**
-	 * 业务规则执行内容
+	 * 业务规则执行上下文
 	 * 
 	 * @author Niuren.Zhu
 	 *

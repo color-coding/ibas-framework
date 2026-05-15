@@ -25,9 +25,10 @@ public class S3FileItem extends FileItem {
 
 	/**
 	 * 文件数据写入输出流
-	 * 
+	 *
 	 * @param out 输出流
-	 * @throws IOException
+	 * @throws RuntimeException loader未设置时抛出
+	 * @throws IOException 可能由loader内部抛出
 	 */
 	@Override
 	public void writeTo(OutputStream outputStream) throws IOException {

@@ -16,8 +16,9 @@ public class Enums {
 
 	/**
 	 * 类型默认值
-	 * 
-	 * @return
+	 *
+	 * @param enumType 枚举类型；不允许为null，非枚举抛ClassCastException
+	 * @return 枚举的第一个值（缓存）
 	 */
 	public static Enum<?> defaultValue(Class<?> enumType) {
 		Objects.requireNonNull(enumType);
@@ -35,10 +36,10 @@ public class Enums {
 	}
 
 	/**
-	 * 属性标记值
-	 * 
-	 * @param value
-	 * @return
+	 * 获取枚举值的@Value注解标记值
+	 *
+	 * @param value 枚举实例；null返回null
+	 * @return 注解值；非枚举或无注解返回null
 	 */
 	public static String annotationValue(Object value) {
 		if (value != null) {
@@ -59,10 +60,10 @@ public class Enums {
 
 	/**
 	 * 获取枚举值
-	 * 
-	 * @param type  枚举类型
-	 * @param value 字符串（包括dbValue）
-	 * @return 字符串对应的枚举值
+	 *
+	 * @param type  枚举类型；null返回null
+	 * @param value 字符串（支持枚举名称、@Value注解值、ordinal索引）；null返回null
+	 * @return 匹配的枚举值；未匹配返回null
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T valueOf(Class<?> type, String value) {
@@ -96,10 +97,10 @@ public class Enums {
 
 	/**
 	 * 获取枚举值
-	 * 
-	 * @param type  枚举类型
-	 * @param value 枚举的数值（枚举值或索引）
-	 * @return 数值对应的枚举值
+	 *
+	 * @param type  枚举类型；null返回null
+	 * @param value 枚举的ordinal索引
+	 * @return 匹配的枚举值；未匹配返回null
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T valueOf(Class<?> type, int value) {
@@ -121,10 +122,10 @@ public class Enums {
 	}
 
 	/**
-	 * 转换类型为KeyValue
-	 * 
-	 * @param type 目前可识别的类型：枚举类型
-	 * @return
+	 * 转换枚举类型为KeyValue数组
+	 *
+	 * @param enumType 枚举类型；不允许为null，非枚举抛ClassCastException
+	 * @return KeyValue数组（key=枚举名，value=ordinal）
 	 */
 	public static KeyValue[] toKeyValues(Class<?> enumType) {
 		Objects.requireNonNull(enumType);

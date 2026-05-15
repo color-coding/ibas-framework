@@ -12,9 +12,9 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCollection;
 
 /**
  * 业务规则-集合元素状态
- * 
- * 子项状态完全一致，则使用此状态
- * 
+ *
+ * 取集合元素中最低的非计划状态作为结果状态；若无非计划状态，则不输出
+ *
  * @author Niuren.Zhu
  *
  */

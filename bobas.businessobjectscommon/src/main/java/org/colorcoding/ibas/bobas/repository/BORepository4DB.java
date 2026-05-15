@@ -11,8 +11,8 @@ import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
 
 /**
- * 业务对象仓库（数据库方式）
- * 
+ * 业务对象仓库（数据库方式），自动管理数据库连接和事务
+ *
  * @author Niuren.Zhu
  *
  */
@@ -29,6 +29,16 @@ public class BORepository4DB extends BORepository {
 	private String dbSign;
 	private boolean myConnection = false;
 
+	/**
+	 * 连接数据库，参数为空时从配置读取默认值。已有连接时抛出异常。
+	 *
+	 * @param dbType     数据库类型，为空时从配置读取
+	 * @param dbServer   服务器地址，为空时从配置读取
+	 * @param dbName     数据库名，为空时从配置读取
+	 * @param dbUser     用户名，为空时从配置读取
+	 * @param dbPassword 密码，为空时从配置读取
+	 * @throws RepositoryException 连接已存在或创建失败
+	 */
 	public final synchronized void connect(String dbType, String dbServer, String dbName, String dbUser,
 			String dbPassword) throws RepositoryException {
 		try {
@@ -84,6 +94,7 @@ public class BORepository4DB extends BORepository {
 		this.connect(Strings.VALUE_EMPTY, Strings.VALUE_EMPTY, dbName, dbUser, dbPassword);
 	}
 
+	/** 使用配置默认值连接数据库 */
 	public final void connect() throws RepositoryException {
 		this.connect(Strings.VALUE_EMPTY, Strings.VALUE_EMPTY, Strings.VALUE_EMPTY, Strings.VALUE_EMPTY,
 				Strings.VALUE_EMPTY);
@@ -125,10 +136,10 @@ public class BORepository4DB extends BORepository {
 	}
 
 	/**
-	 * 初始化事务
-	 * 
-	 * @return true，自建
-	 * @throws RepositoryException
+	 * 初始化事务，无事务时自动连接数据库
+	 *
+	 * @return true自建连接，false事务已存在
+	 * @throws RepositoryException 连接失败
 	 */
 	@Override
 	protected synchronized boolean initTransaction() throws RepositoryException {

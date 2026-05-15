@@ -15,8 +15,8 @@ public interface IBOUserFields {
 
 	/**
 	 * 用户字段集合
-	 * 
-	 * @return
+	 *
+	 * @return 用户字段集合实例
 	 */
 	IUserFields getUserFields();
 

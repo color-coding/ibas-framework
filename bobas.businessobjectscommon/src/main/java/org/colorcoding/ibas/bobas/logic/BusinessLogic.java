@@ -29,9 +29,9 @@ import org.colorcoding.ibas.bobas.repository.Transaction;
 
 /**
  * 业务逻辑基类
- * 
+ *
  * @param <L> 契约类型
- * @param <T> 被影响的对象
+ * @param <T> 被影响的对象类型
  */
 public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends IBusinessObject>
 		implements IBusinessLogic<T> {
@@ -42,8 +42,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 
 	/**
 	 * 获取-业务逻辑链
-	 * 
-	 * @return
+	 *
+	 * @return 所属逻辑链
 	 */
 	final BusinessLogicChain getLogicChain() {
 		return this.logicChain;
@@ -55,8 +55,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 
 	/**
 	 * 获取-当前用户
-	 * 
-	 * @return
+	 *
+	 * @return 当前执行用户
 	 */
 	protected final IUser getUser() {
 		return this.getLogicChain().getUser();
@@ -66,8 +66,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 
 	/**
 	 * 获取-契约数据
-	 * 
-	 * @return
+	 *
+	 * @return 当前逻辑的契约
 	 */
 	protected final L getContract() {
 		return this.contract;
@@ -81,9 +81,9 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 	private IBusinessObject host;
 
 	/**
-	 * 获取-契约数据所属
-	 * 
-	 * @return
+	 * 获取-契约数据所属对象（宿主）
+	 *
+	 * @return 契约所属业务对象
 	 */
 	protected final IBusinessObject getHost() {
 		return host;
@@ -94,9 +94,9 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 	}
 
 	/**
-	 * 获取-契约链触发对象
-	 * 
-	 * @return
+	 * 获取-逻辑链触发对象
+	 *
+	 * @return 触发逻辑链的业务对象
 	 */
 	protected final Object getTrigger() {
 		return this.getLogicChain().getTrigger();
@@ -106,8 +106,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 
 	/**
 	 * 获取-契约数据父项
-	 * 
-	 * @return
+	 *
+	 * @return 契约的父级对象
 	 */
 	protected final Object getParent() {
 		return parent;
@@ -119,8 +119,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 
 	/**
 	 * 获取-契约数据所属根项
-	 * 
-	 * @return
+	 *
+	 * @return 逻辑链的根触发对象
 	 */
 	protected final Object getRoot() {
 		Object root = this.getLogicChain().getRoot();
@@ -133,8 +133,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 
 	/**
 	 * 获取-事务
-	 * 
-	 * @return
+	 *
+	 * @return 当前事务
 	 */
 	protected final ITransaction getTransaction() {
 		return this.getLogicChain().getTransaction();
@@ -143,7 +143,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 	private T beAffected;
 
 	/**
-	 * 获取-被影响的对象
+	 * 获取-被影响的对象；未加载时为null
 	 */
 	public final T getBeAffected() {
 		return this.beAffected;
@@ -151,13 +151,11 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 
 	/**
 	 * 检查数据状态
-	 * 
-	 * 审批数据，批准和不影响的有效；单据，非计划和没取消的有效
-	 * 
-	 * 第一次执行，检查契约数据父项状态；第二次执行，检查契约数据状态。
-	 * 
+	 *
+	 * 删除、标记删除、标记取消的数据无效；审批数据仅批准状态有效；单据仅非计划状态有效
+	 *
 	 * @param data 检查的数据
-	 * @return 有效，true；无效，false
+	 * @return 数据状态有效返回true；无效返回false
 	 */
 	protected boolean checkDataStatus(Object data) {
 		if (data instanceof ITrackable) {
@@ -314,7 +312,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 	public final void reverse() {
 		// 检查父项数据状态
 		if (this.getParent() != null && !this.checkDataStatus(this.getParent())) {
-			// 数据状态不通过，跳过正向逻辑执行
+			// 数据状态不通过，跳过反向逻辑执行
 			return;
 		}
 		// 契约的数据为新建时，不执行反向逻辑
@@ -331,7 +329,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 		}
 		// 检查契约数据状态
 		if (!this.checkDataStatus(this.getContract())) {
-			// 数据状态不通过，跳过正向逻辑执行
+			// 数据状态不通过，跳过反向逻辑执行
 			return;
 		}
 		this.reverseCount++;
@@ -375,11 +373,11 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 
 	/**
 	 * 查询被影响对象（优先使用缓存方式）
-	 * 
-	 * @param <B>
-	 * @param boType
-	 * @param criteria
-	 * @return
+	 *
+	 * @param <B>      业务对象类型
+	 * @param boType   业务对象类
+	 * @param criteria 查询条件
+	 * @return 查询到的对象，可能为null
 	 */
 	protected final <B> B fetchBeAffected(Class<B> boType, ICriteria criteria) {
 		if (this.getTransaction() instanceof Transaction) {
@@ -391,11 +389,12 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 
 	/**
 	 * 查询被影响对象（优先使用缓存方式）
-	 * 
-	 * @param <B>
-	 * @param criteria
-	 * @param boType
-	 * @return
+	 *
+	 * @param <B>      业务对象类型
+	 * @param criteria 查询条件
+	 * @param boType   业务对象类
+	 * @return 查询到的对象，可能为null
+	 * @deprecated 参数顺序不规范，请使用 {@link #fetchBeAffected(Class, ICriteria)}
 	 */
 	@Deprecated
 	protected final <B> B fetchBeAffected(ICriteria criteria, Class<B> boType) {
@@ -404,12 +403,12 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 
 	/**
 	 * 逻辑链中查询被影响对象
-	 * 
-	 * @param <B>
-	 * @param boType
-	 * @param criteria
-	 * @param all      返回全部
-	 * @return
+	 *
+	 * @param <B>      业务对象类型
+	 * @param boType   业务对象类
+	 * @param criteria 查询条件
+	 * @param all      是否返回全部；false时只返回第一条
+	 * @return 查询结果列表
 	 */
 	@SuppressWarnings("unchecked")
 	protected final <B> List<B> fetchBeAffectedInLogics(Class<B> boType, ICriteria criteria, boolean all) {
@@ -501,12 +500,12 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 
 	/**
 	 * 缓存中查询被影响对象
-	 * 
-	 * @param <B>
-	 * @param boType
-	 * @param criteria
-	 * @param all      返回全部
-	 * @return
+	 *
+	 * @param <B>      业务对象类型
+	 * @param boType   业务对象类
+	 * @param criteria 查询条件
+	 * @param all      是否返回全部；false时只返回第一条
+	 * @return 查询结果列表
 	 */
 	protected final <B> List<B> fetchBeAffectedInCaches(Class<B> boType, ICriteria criteria, boolean all) {
 		List<B> results = new ArrayList<>();
@@ -527,20 +526,20 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 	}
 
 	/**
-	 * 重复执行正向逻辑时
-	 * 
-	 * @param times 次数
-	 * @return 是否继续执行
+	 * 重复执行正向逻辑时的回调
+	 *
+	 * @param times 重复次数
+	 * @return 是否继续执行；默认false
 	 */
 	protected boolean onRepeatedImpact(int times) {
 		return false;
 	}
 
 	/**
-	 * 重复执行反向逻辑时
-	 * 
-	 * @param times 次数
-	 * @return 是否继续执行
+	 * 重复执行反向逻辑时的回调
+	 *
+	 * @param times 重复次数
+	 * @return 是否继续执行；默认false
 	 */
 	protected boolean onRepeatedRevoke(int times) {
 		return false;
@@ -548,18 +547,23 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 
 	/**
 	 * 检索被影响的数据
-	 * 
-	 * @return
+	 *
+	 * @param contract 契约数据
+	 * @return 被影响的对象；可能为null或代理对象
 	 */
 	protected abstract T fetchBeAffected(L contract);
 
 	/**
-	 * 执行逻辑
+	 * 执行逻辑（正向）
+	 *
+	 * @param contract 契约数据
 	 */
 	protected abstract void impact(L contract);
 
 	/**
-	 * 撤销逻辑
+	 * 撤销逻辑（反向）
+	 *
+	 * @param contract 契约数据
 	 */
 	protected abstract void revoke(L contract);
 }

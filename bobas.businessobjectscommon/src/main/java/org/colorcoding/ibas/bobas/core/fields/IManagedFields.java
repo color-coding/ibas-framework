@@ -19,9 +19,9 @@ import org.colorcoding.ibas.bobas.db.DbFieldType;
  */
 public interface IManagedFields {
 	/**
-	 * 获取字段
-	 * 
-	 * @return 字段
+	 * 获取全部字段
+	 *
+	 * @return 字段数组；非IFieldedObject实例返回空数组
 	 */
 	default IFieldData[] getFields() {
 		if (this instanceof IFieldedObject) {
@@ -163,9 +163,10 @@ public interface IManagedFields {
 	}
 
 	/**
-	 * 获取字段
-	 * 
-	 * @return 字段
+	 * 获取字段（带过滤）
+	 *
+	 * @param filter 过滤条件；不允许为null
+	 * @return 符合条件的字段数组
 	 */
 	default IFieldData[] getFields(Predicate<? super IFieldData> filter) {
 		Objects.requireNonNull(filter);
@@ -179,9 +180,10 @@ public interface IManagedFields {
 	}
 
 	/**
-	 * 获取字段
-	 * 
-	 * @return 字段
+	 * 获取指定名称的字段
+	 *
+	 * @param name 字段名称
+	 * @return 字段数据；未找到或非IFieldedObject实例返回null
 	 */
 	default IFieldData getField(String name) {
 		if (this instanceof IFieldedObject) {

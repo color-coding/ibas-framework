@@ -63,9 +63,9 @@ public final class BOFactory {
 
 	/**
 	 * 注册对象
-	 * 
+	 *
 	 * @param type 对象类型
-	 * @return
+	 * @return 是否注册成功（无@BusinessObjectUnit注解时返回false）
 	 */
 	public static boolean register(Class<?> type) {
 		String boCode = codeOf(type);
@@ -79,10 +79,10 @@ public final class BOFactory {
 
 	/**
 	 * 注册对象
-	 * 
+	 *
 	 * @param boCode 对象编码
 	 * @param type   对象类型
-	 * @return
+	 * @return 是否注册成功（type为null时返回false）
 	 */
 	public static boolean register(String boCode, Class<?> type) {
 		if (type == null) {
@@ -95,9 +95,9 @@ public final class BOFactory {
 
 	/**
 	 * 获取对象编码
-	 * 
+	 *
 	 * @param type 对象类型
-	 * @return
+	 * @return 对象编码（type为null或无@BusinessObjectUnit注解时返回空字符串）
 	 */
 	public static String codeOf(Class<?> type) {
 		if (type == null) {
@@ -110,6 +110,13 @@ public final class BOFactory {
 		return Strings.VALUE_EMPTY;
 	}
 
+	/**
+	 * 获取对象类型
+	 *
+	 * @param boCode 对象编码
+	 * @return 对象类型（编码未注册时抛ClassNotFoundException）
+	 * @throws ClassNotFoundException 编码未注册
+	 */
 	public static Class<?> classOf(String boCode) throws ClassNotFoundException {
 		Class<?> clazz = MAP_CODE2BO.get(boCode);
 		if (clazz != null) {
@@ -120,10 +127,11 @@ public final class BOFactory {
 
 	/**
 	 * 创建对象实例
-	 * 
-	 * @param <T>
-	 * @param type
-	 * @return
+	 *
+	 * @param <T>  实例类型
+	 * @param type 对象类型
+	 * @return 新创建的实例
+	 * @throws RuntimeException 创建实例失败时抛出
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T newInstance(Class<?> type) {
@@ -138,9 +146,10 @@ public final class BOFactory {
 
 	/**
 	 * 获取对象的所有属性
-	 * 
-	 * @param type 对象
-	 * @return
+	 *
+	 * @param type 对象类型
+	 * @return 属性列表
+	 * @throws RuntimeException 类型无法解析时抛出
 	 */
 	public static List<IPropertyInfo<?>> propertyInfos(Class<?> type) {
 		if (BO_PROPERTIES.containsKey(type)) {
@@ -187,8 +196,8 @@ public final class BOFactory {
 
 	/**
 	 * 当前类加载器
-	 * 
-	 * @return
+	 *
+	 * @return 类加载器（未设置时返回当前线程的上下文类加载器）
 	 */
 	public static ClassLoader getClassLoader() {
 		if (classLoader == null) {
@@ -197,29 +206,35 @@ public final class BOFactory {
 		return classLoader;
 	}
 
+	/**
+	 * 设置类加载器
+	 *
+	 * @param loader 类加载器
+	 */
 	public static void setClassLoader(ClassLoader loader) {
 		classLoader = loader;
 	}
 
 	/**
-	 * 获取类
-	 * 
-	 * @param packageName 类名
-	 * @return
+	 * 加载类
+	 *
+	 * @param className 类全名
+	 * @return 加载的类
+	 * @throws RuntimeException 类未找到时抛出
 	 */
-	public static Class<?> loadClass(String classsName) {
+	public static Class<?> loadClass(String className) {
 		try {
-			return getClassLoader().loadClass(classsName);
+			return getClassLoader().loadClass(className);
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	/**
-	 * 获取类（不触发类加载）
-	 * 
-	 * @param packageName 类的命名空间
-	 * @return
+	 * 扫描包下所有类并加载（会触发类初始化）
+	 *
+	 * @param packageName 包命名空间
+	 * @return 加载的类数组
 	 */
 	public static Class<?>[] loadClasses(String packageName) {
 		int idx;
@@ -305,7 +320,7 @@ public final class BOFactory {
 					findClassesInPackageByFile(packageName + "." + file.getName(), file.getAbsolutePath(), classes);
 				} else {
 					try {
-						// 这里用forName有一些不好，会触发static方法，没有使用classLoader的load干净
+						// 这里用forFor有一些不好，会触发static方法，没有使用classLoader的load干净
 						classes.add(classLoader.loadClass(packageName + '.'
 						// 如果是java类文件 去掉后面的.class 只留下类名
 								+ file.getName().substring(0, file.getName().length() - 6)));

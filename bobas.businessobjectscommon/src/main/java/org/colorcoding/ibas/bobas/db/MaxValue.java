@@ -11,6 +11,9 @@ import org.colorcoding.ibas.bobas.core.Trackable;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.List;
 
+/**
+ * 最大值查询结果对象，用于存储数据库聚合查询（如MAX）的结果
+ */
 public class MaxValue extends Trackable implements IFieldedObject {
 
 	private static final long serialVersionUID = 1L;
@@ -65,6 +68,13 @@ public class MaxValue extends Trackable implements IFieldedObject {
 
 	private Map<IPropertyInfo<?>, Object> fields = null;
 
+	/**
+	 * 获取属性值。存储值为null时返回属性默认值；属性未注册时抛出异常
+	 *
+	 * @param property 属性信息，不可为null
+	 * @return 属性值，存储值为null时返回默认值
+	 * @throws IllegalArgumentException 属性未注册时
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <P> P getProperty(IPropertyInfo<?> property) {
@@ -81,6 +91,13 @@ public class MaxValue extends Trackable implements IFieldedObject {
 				Strings.format("[%s] not exists property [%s].", this.getClass().getName(), property.getName()));
 	}
 
+	/**
+	 * 设置属性值。加载中直接存储；否则值变化时标记脏并触发属性变更事件；属性未注册时抛出异常
+	 *
+	 * @param property 属性信息，不可为null
+	 * @param value 属性值
+	 * @throws IllegalArgumentException 属性未注册时
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <P> void setProperty(IPropertyInfo<?> property, P value) {

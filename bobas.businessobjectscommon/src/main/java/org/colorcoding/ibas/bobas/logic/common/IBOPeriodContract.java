@@ -10,8 +10,8 @@ public interface IBOPeriodContract extends IBusinessLogicContract {
 
 	/**
 	 * 业务对象实例
-	 * 
-	 * @return
+	 *
+	 * @return 期间数据对象
 	 */
 	IPeriodData getHost();
 }

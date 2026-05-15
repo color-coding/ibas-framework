@@ -105,6 +105,12 @@ public class SqlStatement extends Serializable implements ISqlStatement {
 		this.setObject(parameterIndex, value, DbFieldType.UNKNOWN);
 	}
 
+	/**
+	 * 根据条件集合批量设置参数。字段间比较和空值判断条件（IS_NULL/NOT_NULL）不设置参数值；
+	 * CONTAIN/NOT_CONTAIN自动添加%通配符；START添加后缀%；END添加前缀%
+	 *
+	 * @param conditions 查询条件集合
+	 */
 	public void setObject(Iterable<ICondition> conditions) {
 		if (conditions != null) {
 			int index = 0;

@@ -98,24 +98,24 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 创建数据库链接
-	 * 
+	 * 创建数据库连接
+	 *
 	 * @param server   服务器地址
 	 * @param dbName   数据库名称
 	 * @param userName 用户名
 	 * @param userPwd  密码
-	 * @return
+	 * @return 数据库连接
 	 */
 	public abstract Connection createConnection(String server, String dbName, String userName, String userPwd);
 
 	/**
 	 * 解析数据
-	 * 
+	 *
 	 * @param <T>       对象类型
 	 * @param boType    对象类型（Result、KeyText、KeyValue、BusinessObject、SPValues）
 	 * @param resultSet 结果集
-	 * @return
-	 * @throws SQLException
+	 * @return 解析后的数据列表
+	 * @throws SQLException 数据库访问异常
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> List<T> parsingDatas(Class<?> boType, ResultSet resultSet) throws SQLException {
@@ -196,14 +196,14 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 设置对象属性值
-	 * 
+	 * 设置对象属性值（加载中模式设置，完成后自动markOld）
+	 *
 	 * @param <T>             类型
 	 * @param data            对象实例
 	 * @param resultSet       数据集
-	 * @param orderProperties 排序的属性（按结果集）
-	 * @return
-	 * @throws SQLException
+	 * @param orderProperties 排序的属性（按结果集列顺序）
+	 * @return 设置属性后的对象实例
+	 * @throws SQLException 数据库访问异常
 	 */
 	public <T> T setProperties(T data, ResultSet resultSet, IPropertyInfo<?>[] orderProperties) throws SQLException {
 		if (data instanceof IFieldedObject) {
@@ -223,13 +223,13 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 解析值
-	 * 
+	 * 解析值（String/BigDecimal/DateTime类型数据库null值返回null，数值类型返回0，枚举按名称匹配）
+	 *
 	 * @param resultSet   结果集
-	 * @param columnIndex 列索引
+	 * @param columnIndex 列索引（从1开始）
 	 * @param dataType    目标类型
-	 * @return
-	 * @throws SQLException
+	 * @return 解析后的值
+	 * @throws SQLException 数据库访问异常
 	 */
 	public Object parsingValue(ResultSet resultSet, int columnIndex, Class<?> dataType) throws SQLException {
 		if (dataType == Integer.class) {
@@ -264,12 +264,12 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 解析数据集到表格
-	 * 
-	 * @param resultSet 数据集
-	 * @return
-	 * @throws SQLException
-	 * @throws ClassNotFoundException
+	 * 解析数据集到表格（自动去重字符串/日期/小数值以节省内存）
+	 *
+	 * @param resultSet 数据集（null或空结果集返回空DataTable）
+	 * @return 数据表格
+	 * @throws SQLException           数据库访问异常
+	 * @throws ClassNotFoundException 列类型无法识别时抛出
 	 */
 	public IDataTable parsingDatas(ResultSet resultSet) throws SQLException, ClassNotFoundException {
 		if (resultSet == null || resultSet.getMetaData().getColumnCount() <= 0) {
@@ -340,9 +340,9 @@ public abstract class DbAdapter {
 
 	/**
 	 * 返回数据库字段类型
-	 * 
-	 * @param sqlTypes
-	 * @return
+	 *
+	 * @param sqlType java.sql.Types中的SQL类型常量
+	 * @return 对应的DbFieldType
 	 */
 	public DbFieldType dbFieldTypeOf(int sqlType) {
 		if (java.sql.Types.VARCHAR == sqlType || java.sql.Types.NVARCHAR == sqlType
@@ -364,10 +364,10 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 返回SQL类型
-	 * 
+	 * 返回SQL类型常量
+	 *
 	 * @param type 数据字段类型
-	 * @return
+	 * @return java.sql.Types中的常量
 	 */
 	public int sqlTypeOf(DbFieldType type) {
 		if (type == DbFieldType.ALPHANUMERIC) {
@@ -391,29 +391,29 @@ public abstract class DbAdapter {
 	 * 
 	 * @param type  数据字段类型
 	 * @param value 当前值
-	 * @return
+	 * @return java.sql.Types中的常量
 	 */
 	public int sqlTypeOf(DbFieldType type, Object value) {
 		return this.sqlTypeOf(type);
 	}
 
 	/**
-	 * 转化查询（属性名称、属性类型）
-	 * 
+	 * 转化查询（属性名称、属性类型），criteria为null时创建新实例
+	 *
 	 * @param criteria 待处理查询
 	 * @param boType   目标类型
-	 * @return
+	 * @return 转换后的查询条件（克隆副本）
 	 */
 	public ICriteria convert(ICriteria criteria, Class<?> boType) {
 		return this.convert(criteria, BOFactory.propertyInfos(boType));
 	}
 
 	/**
-	 * 转化查询（属性名称、属性类型）
-	 * 
+	 * 转化查询（属性名称、属性类型），criteria为null时创建新实例
+	 *
 	 * @param criteria      待处理查询
 	 * @param propertyInfos 对象属性
-	 * @return
+	 * @return 转换后的查询条件（克隆副本）
 	 */
 	public ICriteria convert(ICriteria criteria, List<IPropertyInfo<?>> propertyInfos) {
 		if (criteria == null) {
@@ -511,11 +511,11 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 处理特殊字符
-	 * 
-	 * @param target   目标
+	 * 处理特殊字符（在目标字符串中转义指定字符和转义符自身）
+	 *
+	 * @param target   目标字符串
 	 * @param specials 待处理的特殊字符
-	 * @return
+	 * @return 转义后的字符串（target为空时原样返回）
 	 */
 	public String escape(String target, char... specials) {
 		if (Strings.isNullOrEmpty(target)) {
@@ -540,8 +540,8 @@ public abstract class DbAdapter {
 
 	/**
 	 * 语句-事务通知存储过程
-	 * 
-	 * @return
+	 *
+	 * @return EXEC SQL字符串
 	 */
 	public final String sp_transaction_notification() {
 		return this.parsingStoredProcedure(Strings.format("%s_SP_TRANSACTION_NOTIFICATION", this.getCompanyId()),
@@ -549,21 +549,21 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 语句-查询
-	 * 
+	 * 语句-查询（无条件）
+	 *
 	 * @param boType 对象类型
-	 * @return
+	 * @return SELECT SQL字符串
 	 */
 	public final String parsingSelect(Class<?> boType) {
 		return this.parsingSelect(boType, new Criteria());
 	}
 
 	/**
-	 * 语句-查询
-	 * 
+	 * 语句-查询（条件集合）
+	 *
 	 * @param boType     对象类型
-	 * @param conditions 查询条件
-	 * @return
+	 * @param conditions 查询条件（null时查询全部）
+	 * @return SELECT SQL字符串
 	 */
 	public final String parsingSelect(Class<?> boType, Collection<ICondition> conditions) {
 		ICriteria criteria = new Criteria();
@@ -576,11 +576,11 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 语句-查询
-	 * 
+	 * 语句-查询（SPValues类型生成存储过程调用）
+	 *
 	 * @param boType   对象类型
 	 * @param criteria 查询条件
-	 * @return
+	 * @return SELECT SQL字符串或EXEC SQL字符串
 	 */
 	public final String parsingSelect(Class<?> boType, ICriteria criteria) {
 		if (SPValues.class.isAssignableFrom(boType)) {
@@ -597,10 +597,10 @@ public abstract class DbAdapter {
 	private Map<Class<?>, String> tables = new ConcurrentHashMap<>(128);
 
 	/**
-	 * 返回对象类型对应的表
-	 * 
+	 * 返回对象类型对应的表名（从@DbTable或@DbField注解获取，支持${Variable}变量替换）
+	 *
 	 * @param boType 对象类型
-	 * @return
+	 * @return 表名称（找不到时抛RuntimeException）
 	 */
 	public String table(Class<?> boType) {
 		if (this.tables.containsKey(boType)) {
@@ -623,12 +623,12 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 语句-查询
-	 * 
+	 * 语句-查询（带锁选项）
+	 *
 	 * @param boType   对象类型
 	 * @param criteria 查询条件
-	 * @param withLock 是否带锁
-	 * @return
+	 * @param withLock 是否加行锁
+	 * @return SELECT SQL字符串
 	 */
 	public String parsingSelect(Class<?> boType, ICriteria criteria, boolean withLock) {
 		StringBuilder stringBuilder = new StringBuilder(
@@ -668,11 +668,11 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 语句-转换类型
-	 * 
-	 * @param type  目标类型
-	 * @param alias 转换字段
-	 * @return
+	 * 语句-类型转换（CAST字段为目标数据库类型）
+	 *
+	 * @param type  目标数据库字段类型
+	 * @param alias 字段别名
+	 * @return CAST表达式字符串
 	 */
 	public String castAs(DbFieldType type, String alias) {
 		StringBuilder stringBuilder = new StringBuilder(64);
@@ -730,10 +730,10 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 语句-排序
-	 * 
-	 * @param type
-	 * @return
+	 * 语句-排序方向
+	 *
+	 * @param type 排序类型
+	 * @return SQL排序关键字（ASC/DESC，未知类型抛RuntimeException）
 	 */
 	public String parsing(SortType type) {
 		if (type == SortType.ASCENDING) {
@@ -745,10 +745,10 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 语句-条件关系
-	 * 
-	 * @param value
-	 * @return
+	 * 语句-条件关系（AND/OR）
+	 *
+	 * @param value 条件关系
+	 * @return SQL关系关键字
 	 */
 	public String parsing(ConditionRelationship value) {
 		if (value == ConditionRelationship.AND) {
@@ -760,10 +760,10 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 语句-条件操作
-	 * 
-	 * @param value
-	 * @return
+	 * 语句-条件操作（=/>/</LIKE/IN等）
+	 *
+	 * @param value 条件操作
+	 * @return SQL操作符（未知操作抛RuntimeException）
 	 */
 	public String parsing(ConditionOperation value) {
 		if (value == ConditionOperation.EQUAL) {
@@ -799,10 +799,10 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 语句-条件
-	 * 
-	 * @param value
-	 * @return
+	 * 语句-WHERE条件子句（conditions为null时返回空字符串）
+	 *
+	 * @param conditions 条件集合
+	 * @return WHERE子句字符串
 	 */
 	public String parsingWhere(Collection<ICondition> conditions) {
 		if (conditions == null) {
@@ -900,10 +900,10 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 语句-排序
-	 * 
-	 * @param value
-	 * @return
+	 * 语句-ORDER BY排序子句（sorts为null时返回空字符串）
+	 *
+	 * @param sorts 排序集合
+	 * @return ORDER BY子句字符串
 	 */
 	public String parsingOrder(Collection<ISort> sorts) {
 		if (sorts == null) {
@@ -924,10 +924,10 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 语句-条件
-	 * 
-	 * @param value
-	 * @return
+	 * 语句-主键条件（根据主键属性生成WHERE子句，无主键时抛异常）
+	 *
+	 * @param boData 业务对象数据
+	 * @return WHERE条件字符串
 	 */
 	public String parsingWhere(IFieldedObject boData) {
 		DbField dbField = null;
@@ -958,10 +958,10 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 语句-删除
-	 * 
-	 * @param value
-	 * @return
+	 * 语句-删除（根据主键生成DELETE语句）
+	 *
+	 * @param boData 业务对象数据
+	 * @return DELETE SQL字符串
 	 */
 	public String parsingDelete(IFieldedObject boData) {
 		StringBuilder stringBuilder = new StringBuilder(96);
@@ -980,10 +980,10 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 语句-更新
-	 * 
-	 * @param boData
-	 * @return
+	 * 语句-更新（所有非主键属性）
+	 *
+	 * @param boData 业务对象数据
+	 * @return UPDATE SQL字符串
 	 */
 	public String parsingUpdate(IFieldedObject boData) {
 		return this.parsingUpdate(boData, false);
@@ -991,10 +991,10 @@ public abstract class DbAdapter {
 
 	/**
 	 * 语句-更新
-	 * 
-	 * @param boData
-	 * @param onlyModified 仅被修改的属性
-	 * @return
+	 *
+	 * @param boData       业务对象数据
+	 * @param onlyModified 仅更新被修改的属性
+	 * @return UPDATE SQL字符串
 	 */
 	public String parsingUpdate(IFieldedObject boData, boolean onlyModified) {
 		List<IPropertyInfo<?>> properties = boData.properties();
@@ -1037,10 +1037,10 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 语句-插入
-	 * 
-	 * @param value
-	 * @return
+	 * 语句-插入（根据所有属性生成INSERT语句，无属性时抛异常）
+	 *
+	 * @param boData 业务对象数据
+	 * @return INSERT SQL字符串
 	 */
 	public String parsingInsert(IFieldedObject boData) {
 		List<IPropertyInfo<?>> properties = boData.properties();
@@ -1092,10 +1092,11 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 语句-运行存储过程
-	 * 
-	 * @param value
-	 * @return
+	 * 语句-运行存储过程（空参数名用?占位）
+	 *
+	 * @param spName 存储过程名称（支持${Variable}变量替换）
+	 * @param args   参数名称数组（空字符串用?占位）
+	 * @return EXEC SQL字符串
 	 */
 	public String parsingStoredProcedure(String spName, String... args) {
 		StringBuilder stringBuilder = new StringBuilder(spName.length() + args.length * 16 + 32);
@@ -1126,10 +1127,11 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 语句-获取最大值
-	 * 
-	 * @param value
-	 * @return
+	 * 语句-获取最大值（IDbTableLock类型加UPDLOCK锁）
+	 *
+	 * @param maxValue   最大值查询配置
+	 * @param conditions 查询条件
+	 * @return SELECT MAX SQL字符串
 	 */
 	public String parsingMaxValue(MaxValue maxValue, Collection<ICondition> conditions) {
 		StringBuilder stringBuilder = new StringBuilder(conditions.size() * 32 + 96);
@@ -1159,10 +1161,10 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 语句-可执行
-	 * 
-	 * @param sqlStatement sql语句
-	 * @return
+	 * 语句-可执行（将SqlStatement中?占位符替换为实际值，存储过程生成EXEC语句）
+	 *
+	 * @param sqlStatement SQL语句对象
+	 * @return 可执行的SQL字符串（空语句返回空字符串）
 	 */
 	public String parsing(ISqlStatement sqlStatement) {
 		String sqlString = null;
@@ -1244,11 +1246,11 @@ public abstract class DbAdapter {
 	private static String TEMPLATE_SQL_VALUE = "'%s'";
 
 	/**
-	 * 返回SQL值
-	 * 
+	 * 返回SQL值（null和VALUE_MIN返回"NULL"，枚举按注解值或ordinal转换，字符串处理单引号转义）
+	 *
 	 * @param value   原值
-	 * @param sqlType 目标类型
-	 * @return
+	 * @param sqlType 目标SQL类型（java.sql.Types常量）
+	 * @return SQL值字符串
 	 */
 	public String sqlValueOf(Object value, int sqlType) {
 		if (java.sql.Types.NULL == sqlType) {

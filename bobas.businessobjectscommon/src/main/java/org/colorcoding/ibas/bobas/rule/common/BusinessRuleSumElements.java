@@ -10,6 +10,8 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCollection;
 
 /**
  * 业务规则-集合元素属性求和
+ *
+ * 集合中已删除的对象不参与求和；非BigDecimal类型的值跳过
  * 
  * @author Niuren.Zhu
  *

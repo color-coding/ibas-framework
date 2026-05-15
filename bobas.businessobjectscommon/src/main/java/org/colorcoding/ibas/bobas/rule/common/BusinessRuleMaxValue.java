@@ -8,6 +8,8 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
 /**
  * 业务规则-最大值检查
+ *
+ * 比较值为null时永远通过；属性值为null时视为必填错误
  * 
  * @author Niuren.Zhu
  *

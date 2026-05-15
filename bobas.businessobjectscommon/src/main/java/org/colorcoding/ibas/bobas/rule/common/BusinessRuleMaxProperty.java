@@ -7,7 +7,9 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
 /**
- * 业务规则-最大值检查
+ * 业务规则-最大属性值检查
+ *
+ * 最大属性值为null时直接通过；其他属性值为null时视为必填错误
  * 
  * @author Niuren.Zhu
  *

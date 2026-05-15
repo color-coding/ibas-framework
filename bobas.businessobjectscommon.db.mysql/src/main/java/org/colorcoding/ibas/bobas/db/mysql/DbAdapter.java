@@ -198,6 +198,9 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * 解析SQL语句；对反斜杠进行双写转义
+	 */
 	@Override
 	public String parsing(ISqlStatement sqlStatement) {
 		// 处理转义字符

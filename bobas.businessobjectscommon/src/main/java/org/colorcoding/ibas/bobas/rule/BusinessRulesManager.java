@@ -30,7 +30,7 @@ public class BusinessRulesManager {
 	private volatile Map<Class<?>, IBusinessRules> rules;
 
 	/**
-	 * 配置项
+	 * 业务规则映射（类 → 规则集合）
 	 */
 	protected final Map<Class<?>, IBusinessRules> getRules() {
 		if (rules == null) {
@@ -43,6 +43,12 @@ public class BusinessRulesManager {
 		return rules;
 	}
 
+	/**
+	 * 获取类型的业务规则集合
+	 *
+	 * @param type 业务对象类型；为null时返回null
+	 * @return 业务规则集合；不存在时自动创建
+	 */
 	public final IBusinessRules getRules(Class<?> type) {
 		if (type == null) {
 			return null;

@@ -8,11 +8,15 @@ import java.beans.PropertyChangeListener;
 public interface IBindable {
 	/**
 	 * 添加属性变化监听
+	 *
+	 * @param listener 监听器
 	 */
 	void registerListener(PropertyChangeListener listener);
 
 	/**
-	 * 移出属性变化监听
+	 * 移除属性变化监听
+	 *
+	 * @param listener 监听器
 	 */
 	void removeListener(PropertyChangeListener listener);
 }

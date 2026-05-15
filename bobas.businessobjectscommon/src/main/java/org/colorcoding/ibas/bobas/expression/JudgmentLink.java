@@ -3,14 +3,17 @@ package org.colorcoding.ibas.bobas.expression;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 
+/**
+ * 判断链抽象基类
+ */
 public abstract class JudgmentLink {
 
 	private JudgmentLinkItem[] judgmentItems;
 
 	/**
 	 * 获取判断链项目
-	 * 
-	 * @return
+	 *
+	 * @return 判断条件项数组
 	 */
 	public final JudgmentLinkItem[] getJudgmentItems() {
 		return judgmentItems;
@@ -18,17 +21,17 @@ public abstract class JudgmentLink {
 
 	/**
 	 * 设置判断链项目
-	 * 
-	 * @param judgmentItems
+	 *
+	 * @param judgmentItems 判断条件项数组
 	 */
 	public final void setJudgmentItems(JudgmentLinkItem[] judgmentItems) {
 		this.judgmentItems = judgmentItems;
 	}
 
 	/**
-	 * 创建值操作
-	 * 
-	 * @return
+	 * 创建默认值操作者
+	 *
+	 * @return 值操作者实例
 	 */
 	protected IValueOperator createValueOperator() {
 		return new IValueOperator() {
@@ -61,10 +64,10 @@ public abstract class JudgmentLink {
 
 	/**
 	 * 判断对象是否满足条件
-	 * 
-	 * @param object 对象
-	 * @return true,满足;false,不满足
-	 * @throws JudmentOperationException
+	 *
+	 * @param object 待判断的对象
+	 * @return true满足条件；false不满足；无条件时返回true
+	 * @throws JudmentOperationException 判断操作异常
 	 */
 	public boolean judge(Object object) throws JudmentOperationException {
 		// 无条件
@@ -89,11 +92,10 @@ public abstract class JudgmentLink {
 
 	/**
 	 * 获取括号内的判断条件
-	 * 
-	 * @param bracket       括号
-	 * @param judgmentItems 条件
+	 *
 	 * @param startIndex    开始的索引
-	 * @return
+	 * @param judgmentItems 条件数组
+	 * @return 括号范围内的子条件数组
 	 */
 	private JudgmentLinkItem[] getJudgmentItems(int startIndex, JudgmentLinkItem[] judgmentItems) {
 		boolean done = false;// 完成
@@ -127,11 +129,11 @@ public abstract class JudgmentLink {
 
 	/**
 	 * 判断条件是否成立
-	 * 
-	 * @param bracket       当前括号数
-	 * @param judgmentItems 当前判断条件
-	 * @return true,满足;false,不满足
-	 * @throws JudmentOperationException
+	 *
+	 * @param bracket       当前括号层数
+	 * @param judgmentItems 当前判断条件数组
+	 * @return true满足条件；false不满足
+	 * @throws JudmentOperationException 判断操作异常
 	 */
 	protected boolean judge(int bracket, JudgmentLinkItem[] judgmentItems) throws JudmentOperationException {
 		boolean currentValue = false;// 当前的结果

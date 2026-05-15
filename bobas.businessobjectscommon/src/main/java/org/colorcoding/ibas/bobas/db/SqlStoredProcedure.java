@@ -41,18 +41,18 @@ public class SqlStoredProcedure extends SqlStatement {
 	private String name;
 
 	/**
-	 * 获取-存储过程名称
-	 * 
-	 * @return
+	 * 获取存储过程名称
+	 *
+	 * @return 存储过程名称
 	 */
 	public String getName() {
 		return this.name;
 	}
 
 	/**
-	 * 设置-存储过程名称
-	 * 
-	 * @param value 值
+	 * 设置存储过程名称
+	 *
+	 * @param value 存储过程名称
 	 */
 	public void setName(String value) {
 		this.name = value;
@@ -84,7 +84,9 @@ public class SqlStoredProcedure extends SqlStatement {
 	}
 
 	/**
-	 * 获取-内容（伪代码）
+	 * 获取内容（伪代码，拼接名称和参数，非实际SQL语句）
+	 *
+	 * @return 伪代码字符串
 	 */
 	@Override
 	public String getContent() {
@@ -114,7 +116,9 @@ public class SqlStoredProcedure extends SqlStatement {
 	}
 
 	/**
-	 * 不可用
+	 * 不可用（存储过程不支持直接设置内容，调用时抛RuntimeException）
+	 *
+	 * @param value 忽略
 	 */
 	@Override
 	public void setContent(String value) {

@@ -28,7 +28,7 @@ import org.colorcoding.ibas.bobas.serialization.writer.Writer;
 import org.colorcoding.ibas.bobas.serialization.writer.XmlWriter;
 
 /**
- * 半序列化（json字符串）
+ * 业务对象JSON序列化器（仅序列化，不支持反序列化）
  */
 class SerializerJson extends Serializer {
 
@@ -41,7 +41,7 @@ class SerializerJson extends Serializer {
 }
 
 /**
- * 半序列化（xml字符串）
+ * 业务对象XML序列化器（仅序列化，不支持反序列化）
  */
 class SerializerXml extends Serializer {
 
@@ -54,7 +54,7 @@ class SerializerXml extends Serializer {
 }
 
 /**
- * 半序列化（csv字符串）
+ * 业务对象CSV序列化器（仅序列化，不支持反序列化；仅支持值类型属性）
  */
 class SerializerCsv extends Serializer {
 
@@ -122,7 +122,7 @@ class SerializerCsv extends Serializer {
 }
 
 /**
- * 内部使用序列化
+ * 业务对象序列化基类（仅序列化，不支持反序列化/克隆/校验）
  */
 abstract class Serializer implements ISerializer {
 

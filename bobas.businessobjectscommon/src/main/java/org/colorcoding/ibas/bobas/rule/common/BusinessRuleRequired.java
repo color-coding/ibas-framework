@@ -9,7 +9,9 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
 /**
- * 业务规则-要求值检查
+ * 业务规则-必填值检查
+ *
+ * null、空字符串、最小日期(DateTimes.VALUE_MIN)均视为未填写
  * 
  * @author Niuren.Zhu
  *

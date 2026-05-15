@@ -17,7 +17,7 @@ import org.colorcoding.ibas.bobas.serialization.writer.Writer;
 import org.colorcoding.ibas.bobas.serialization.writer.XmlWriter;
 
 /**
- * 半序列化（json字符串）
+ * DataTable专用JSON序列化器（仅支持序列化，不支持反序列化）
  */
 class DataTableSerializerJson extends DataTableSerializer {
 
@@ -59,7 +59,7 @@ class DataTableSerializerJson extends DataTableSerializer {
 }
 
 /**
- * 半序列化（xml字符串）
+ * DataTable专用XML序列化器（仅支持序列化，不支持反序列化）
  */
 class DataTableSerializerXml extends DataTableSerializer {
 
@@ -110,7 +110,7 @@ class DataTableSerializerXml extends DataTableSerializer {
 }
 
 /**
- * 半序列化（csv字符串）
+ * DataTable专用CSV序列化器（仅支持序列化，不支持反序列化）
  */
 class DataTableSerializerCsv extends DataTableSerializer {
 
@@ -169,7 +169,7 @@ class DataTableSerializerCsv extends DataTableSerializer {
 }
 
 /**
- * 内部使用序列化
+ * DataTable序列化器基类（仅支持序列化，clone/deserialize/schema/validate均未实现）
  */
 abstract class DataTableSerializer implements ISerializer {
 

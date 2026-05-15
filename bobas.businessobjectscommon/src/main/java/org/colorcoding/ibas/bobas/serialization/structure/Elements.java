@@ -6,6 +6,9 @@ import javax.xml.bind.annotation.XmlElement;
 
 import org.colorcoding.ibas.bobas.data.ArrayList;
 
+/**
+ * 元素集合，添加元素时自动移除同名或同wrapper的已有元素
+ */
 public class Elements extends ArrayList<Element> {
 
 	public Elements(Element parent) {
@@ -49,6 +52,12 @@ public class Elements extends ArrayList<Element> {
 		return true;
 	}
 
+	/**
+	 * 添加元素，自动移除同名（无wrapper时）或同wrapper（有wrapper时）的已有元素，并设置父项
+	 *
+	 * @param e 待添加元素
+	 * @return true添加成功
+	 */
 	@Override
 	public boolean add(Element e) {
 		for (int i = this.size() - 1; i >= 0; i--) {

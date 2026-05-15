@@ -50,8 +50,8 @@ public class BORepositoryService extends BORepository4DB {
 
 	/**
 	 * 跳过对象实例检索
-	 * 
-	 * @return
+	 *
+	 * @return 为true时保存后不重新获取对象实例
 	 */
 	protected final boolean isSkipInstanceFetch() {
 		return skipInstanceFetch;
@@ -69,7 +69,7 @@ public class BORepositoryService extends BORepository4DB {
 	 * @param <T>      对象类型
 	 * @param boType   对象类型
 	 * @param criteria 查询条件
-	 * @return
+	 * @return 操作结果，包含查询到的对象或错误信息
 	 */
 	@Override
 	protected <T extends IBusinessObject> OperationResult<T> fetch(Class<?> boType, ICriteria criteria) {
@@ -227,12 +227,12 @@ public class BORepositoryService extends BORepository4DB {
 
 	/**
 	 * 保存数据
-	 * 
-	 * 自建事务，重新获取对象实例
-	 * 
+	 *
+	 * 自建事务时保存后重新获取对象实例；skipInstanceFetch为true时跳过重新获取
+	 *
 	 * @param <T> 对象类型
 	 * @param bo  待保存对象
-	 * @return
+	 * @return 操作结果，自建事务时包含重新获取的实例，否则包含保存结果或错误信息
 	 */
 	@Override
 	protected <T extends IBusinessObject> OperationResult<T> save(T bo) {

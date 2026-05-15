@@ -7,30 +7,30 @@ public interface IBOMasterDataLine extends IBusinessObject, IBOLine, IBOStorageT
 	final static String MASTER_PRIMARY_KEY_NAME = "Code";
 
 	/**
-	 * 获取-编码 主键
-	 * 
-	 * @return
+	 * 获取编码（主键）
+	 *
+	 * @return 编码
 	 */
 	String getCode();
 
 	/**
-	 * 设置-编码 主键
-	 * 
-	 * @param value
+	 * 设置编码
+	 *
+	 * @param value 编码
 	 */
 	void setCode(String value);
 
 	/**
-	 * 获取-行编号 主键
-	 * 
-	 * @return
+	 * 获取行编号（主键）
+	 *
+	 * @return 行编号
 	 */
 	Integer getLineId();
 
 	/**
-	 * 设置-行编号 主键
-	 * 
-	 * @param value
+	 * 设置行编号
+	 *
+	 * @param value 行编号
 	 */
 	void setLineId(Integer value);
 }

@@ -10,8 +10,8 @@ public interface IBOStorageTagContract extends IBusinessLogicContract {
 
 	/**
 	 * 业务对象实例
-	 * 
-	 * @return
+	 *
+	 * @return 存储标记对象
 	 */
 	IBOStorageTag getHost();
 }

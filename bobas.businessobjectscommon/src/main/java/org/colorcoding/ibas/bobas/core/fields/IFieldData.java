@@ -17,8 +17,9 @@ public interface IFieldData {
 
 	/**
 	 * 设置值
-	 * 
-	 * @return 是否修改
+	 *
+	 * @param value 新值
+	 * @return true表示值已修改
 	 */
 	boolean setValue(Object value);
 
@@ -28,8 +29,7 @@ public interface IFieldData {
 	java.lang.Class<?> getValueType();
 
 	/**
-	 * 是否保存
-	 * 
+	 * 是否可保存（有数据库字段映射）
 	 */
 	boolean isSavable();
 
@@ -44,14 +44,14 @@ public interface IFieldData {
 	boolean isUniqueKey();
 
 	/**
-	 * 附件的数据，如定义字段
+	 * 是否原始数据（无数据库字段映射）
 	 */
 	boolean isOriginal();
 
 	/**
 	 * 是否修改过
-	 * 
-	 * @return
+	 *
+	 * @return true表示值已修改
 	 */
 	boolean isDirty();
 }

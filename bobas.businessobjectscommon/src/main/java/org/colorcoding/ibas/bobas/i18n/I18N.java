@@ -26,11 +26,11 @@ public class I18N {
 	}
 
 	/**
-	 * 获取key所对应的值
-	 * 
-	 * @param key  需要翻译的文本
-	 * @param args 替换值
-	 * @return 返回key所对应的值
+	 * 获取国际化文本
+	 *
+	 * @param key  文本键名；未找到时返回[key]格式
+	 * @param args 格式化参数
+	 * @return 国际化文本
 	 */
 	public static String prop(String key, Object... args) {
 		return getInstance().getContent(key, args);

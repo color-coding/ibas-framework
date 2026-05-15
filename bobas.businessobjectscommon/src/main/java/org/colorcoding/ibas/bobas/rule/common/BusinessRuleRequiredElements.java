@@ -13,6 +13,8 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
 /**
  * 业务规则-要求集合有元素
+ *
+ * 主对象删除或标记删除时跳过检查；业务对象集合仅计未删除的可保存项
  * 
  * @author Niuren.Zhu
  *

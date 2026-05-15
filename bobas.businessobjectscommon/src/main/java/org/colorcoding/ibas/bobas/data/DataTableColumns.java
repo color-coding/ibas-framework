@@ -28,6 +28,11 @@ public class DataTableColumns extends ArrayList<IDataTableColumn> implements IDa
 		this.table = table;
 	}
 
+	/**
+	 * 创建并添加列，自动命名为"col_N"（N为当前列数）
+	 *
+	 * @return 新建的列；添加失败返回null
+	 */
 	@Override
 	public IDataTableColumn create() {
 		DataTableColumn column = new DataTableColumn();
@@ -46,6 +51,12 @@ public class DataTableColumns extends ArrayList<IDataTableColumn> implements IDa
 		return column;
 	}
 
+	/**
+	 * 按名称获取列；名称不存在时返回null
+	 *
+	 * @param name 列名称
+	 * @return 列对象，未找到返回null
+	 */
 	public IDataTableColumn get(String name) {
 		for (int i = 0; i < super.size(); i++) {
 			if (super.get(i).getName().equals(name)) {

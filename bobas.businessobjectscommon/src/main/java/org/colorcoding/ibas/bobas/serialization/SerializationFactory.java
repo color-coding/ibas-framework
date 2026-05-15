@@ -4,20 +4,16 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.configuration.ConfigurableFactory;
 
 /**
- * 序列化者工厂
- * 
+ * 序列化工厂
+ *
  * @author Niuren.Zhu
  *
  */
 public class SerializationFactory {
 
-	/**
-	 * 输出字符串类型，XML
-	 */
+	/** 序列化类型：XML */
 	public final static String TYPE_XML = "xml";
-	/**
-	 * 输出化字符串类型，JSON
-	 */
+	/** 序列化类型：JSON */
 	public final static String TYPE_JSON = "json";
 
 	private SerializationFactory() {
@@ -25,6 +21,11 @@ public class SerializationFactory {
 
 	private volatile static SerializerManager instance;
 
+	/**
+	 * 创建序列化管理器（单例）
+	 *
+	 * @return 序列化管理器实例
+	 */
 	public synchronized static SerializerManager createManager() {
 		if (instance == null) {
 			synchronized (SerializationFactory.class) {

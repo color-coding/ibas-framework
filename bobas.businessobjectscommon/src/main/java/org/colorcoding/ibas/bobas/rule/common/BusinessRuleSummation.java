@@ -11,6 +11,8 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
 /**
  * 业务规则-求和运算
+ *
+ * 非BigDecimal类型的加数项跳过不参与求和
  * 
  * @author Niuren.Zhu
  *
