@@ -78,6 +78,7 @@ public class Numbers {
 		if (value == null || value.isEmpty()) {
 			return false;
 		}
+		boolean hasDot = false;
 		char cValue;
 		for (int i = 0; i < value.length(); i++) {
 			cValue = value.charAt(i);
@@ -85,11 +86,19 @@ public class Numbers {
 				continue;
 			}
 			if (cValue == '.') {
+				if (hasDot) {
+					return false;
+				}
+				hasDot = true;
 				continue;
 			}
 			if (!Character.isDigit(cValue)) {
 				return false;
 			}
+		}
+		// 纯负号或 "-." 不是有效数字
+		if (value.equals("-") || value.equals("-.")) {
+			return false;
 		}
 		return true;
 	}
@@ -101,6 +110,9 @@ public class Numbers {
 	 */
 	public static boolean isZero(String value) {
 		if (value == null || value.isEmpty()) {
+			return true;
+		}
+		if (!isNumeric(value)) {
 			return true;
 		}
 		char cValue;

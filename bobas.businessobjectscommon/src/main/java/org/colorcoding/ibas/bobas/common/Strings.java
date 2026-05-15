@@ -533,7 +533,20 @@ public class Strings {
 		if (value == null) {
 			return VALUE_EMPTY;
 		}
-		return Bytes.toHexString(value.getBytes());
+		return Bytes.toHexString(Bytes.valueOf(value));
+	}
+
+	/**
+	 * 转移字符串为base64字符串
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static String toBase64String(String value) {
+		if (value == null) {
+			return VALUE_EMPTY;
+		}
+		return Bytes.toBase64String(Bytes.valueOf(value));
 	}
 
 	/**

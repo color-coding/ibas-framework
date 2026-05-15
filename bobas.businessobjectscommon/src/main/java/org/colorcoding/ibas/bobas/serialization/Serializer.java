@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.common.Bytes;
 
 /**
  * 序列化对象
@@ -41,7 +42,7 @@ public abstract class Serializer implements ISerializer {
 
 	@Override
 	public <T> T deserialize(String data, Class<?>... types) throws SerializationException {
-		try (InputStream stream = new ByteArrayInputStream(data.getBytes())) {
+		try (InputStream stream = new ByteArrayInputStream(Bytes.valueOf(data))) {
 			return this.deserialize(stream, types);
 		} catch (IOException e) {
 			throw new SerializationException(e);
@@ -50,7 +51,7 @@ public abstract class Serializer implements ISerializer {
 
 	@Override
 	public void validate(Class<?> type, String data) throws ValidateException {
-		try (InputStream stream = new ByteArrayInputStream(data.getBytes())) {
+		try (InputStream stream = new ByteArrayInputStream(Bytes.valueOf(data))) {
 			this.validate(type, stream);
 		} catch (IOException e) {
 			throw new ValidateException(e);

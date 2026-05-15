@@ -262,7 +262,7 @@ public final class PropertyInfoManager {
 		}
 	}
 
-	private static ArrayList<PropertyInfoRegisterListener> listeners = new ArrayList<>(4);
+	private static java.util.concurrent.CopyOnWriteArrayList<PropertyInfoRegisterListener> listeners = new java.util.concurrent.CopyOnWriteArrayList<>();
 
 	public static void registerListener(PropertyInfoRegisterListener listener) {
 		// 要求有值

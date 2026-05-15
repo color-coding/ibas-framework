@@ -8,6 +8,7 @@ import java.util.Random;
 
 import javax.xml.bind.JAXBException;
 
+import org.colorcoding.ibas.bobas.common.Bytes;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.Criteria;
@@ -134,7 +135,7 @@ public class TestCommon extends TestCase {
 		System.out.println(oldJSON);
 
 		serializer = new SerializerJson();
-		ByteArrayInputStream inputStream = new ByteArrayInputStream(oldJSON.getBytes());
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(Bytes.valueOf(oldJSON));
 		inputStream.reset();
 		criteria = serializer.deserialize(inputStream, Criteria.class);
 
