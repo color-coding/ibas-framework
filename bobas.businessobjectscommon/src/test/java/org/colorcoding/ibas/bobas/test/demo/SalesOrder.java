@@ -1174,4 +1174,35 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 
 		};
 	}
+
+	/**
+	 * 属性名称-单据交换率
+	 */
+	private static final String PROPERTY_U_DOCUMENTRATE_NAME = "U_DocumentRate";
+
+	/**
+	 * 单据交换率 属性
+	 */
+	@DbField(name = "DocRate", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
+	public static final IPropertyInfo<BigDecimal> PROPERTY_U_DOCUMENTRATE = registerProperty(
+			PROPERTY_U_DOCUMENTRATE_NAME, BigDecimal.class, MY_CLASS);
+
+	/**
+	 * 获取-单据交换率
+	 * 
+	 * @return 值
+	 */
+	@XmlElement(name = PROPERTY_U_DOCUMENTRATE_NAME)
+	public final BigDecimal getU_DocumentRate() {
+		return this.getProperty(PROPERTY_U_DOCUMENTRATE);
+	}
+
+	/**
+	 * 设置-单据交换率
+	 * 
+	 * @param value 值
+	 */
+	public final void setU_DocumentRate(BigDecimal value) {
+		this.setProperty(PROPERTY_U_DOCUMENTRATE, value);
+	}
 }

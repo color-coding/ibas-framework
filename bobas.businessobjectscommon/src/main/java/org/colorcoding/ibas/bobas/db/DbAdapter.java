@@ -169,7 +169,7 @@ public abstract class DbAdapter {
 								if (columnName == null) {
 									continue;
 								}
-								if (Strings.isWith(columnName, IBOUserFields.USER_FIELD_PREFIX_SIGN, null)) {
+								if (Strings.startsWith(columnName, IBOUserFields.USER_FIELD_PREFIX_SIGN)) {
 									orderProperties[j] = UserFieldsFactory.createManager().registerUserField(boType,
 											columnName, this.dbFieldTypeOf(metaData.getColumnType(j + 1)));
 									columnNames.set(j, null);

@@ -191,6 +191,7 @@ public class TestCore extends TestCase {
 		order.setDeliveryDate(DateTimes.today());
 		order.setDocumentStatus(emDocumentStatus.RELEASED);
 		order.setDocumentTotal(Decimals.valueOf("99.99"));
+		order.setU_DocumentRate(Decimals.valueOf("99.99"));
 
 		order.getUserFields().get("U_OrderType").setValue("S0000");
 		order.getUserFields().get("U_OrderId").setValue(5768);

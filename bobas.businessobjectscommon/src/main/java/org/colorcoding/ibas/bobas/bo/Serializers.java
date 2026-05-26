@@ -209,7 +209,8 @@ abstract class Serializer implements ISerializer {
 		for (int i = 0; i < properties.size(); i++) {
 			property = properties.get(i);
 			if (!(object instanceof UserField)) {
-				if (Strings.startsWith(property.getName(), IBOUserFields.USER_FIELD_PREFIX_SIGN)) {
+				if (Strings.startsWith(property.getName(), IBOUserFields.USER_FIELD_PREFIX_SIGN)
+						&& !IPropertyInfo.class.getPackage().equals(property.getClass().getPackage())) {
 					userProperties.add(property);
 					continue;
 				}

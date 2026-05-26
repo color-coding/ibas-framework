@@ -422,7 +422,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	@SuppressWarnings("unchecked")
 	public synchronized final <P> P getProperty(IPropertyInfo<?> property) {
 		Objects.requireNonNull(property);
-		if (Strings.isWith(property.getName(), IBOUserFields.USER_FIELD_PREFIX_SIGN, null)) {
+		if (Strings.startsWith(property.getName(), IBOUserFields.USER_FIELD_PREFIX_SIGN)) {
 			if (this.userFields != null && this.userFields.containsKey(property)) {
 				P value = (P) this.userFields.get(property);
 				// 值是空，则使用默认值（减少内存占用）
@@ -431,11 +431,13 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 				}
 				return value;
 			}
-			throw new IllegalArgumentException(
-					Strings.format("[%s] not exists property [%s].", this.getClass().getName(), property.getName()));
-		} else {
-			return super.getProperty(property);
+			// 非代码注册的
+			if (!IPropertyInfo.class.getPackage().equals(property.getClass().getPackage())) {
+				throw new IllegalArgumentException(Strings.format("[%s] not exists property [%s].",
+						this.getClass().getName(), property.getName()));
+			}
 		}
+		return super.getProperty(property);
 	}
 
 	/**
@@ -448,12 +450,8 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	@SuppressWarnings("unchecked")
 	public synchronized final <P> void setProperty(IPropertyInfo<?> property, P value) {
 		Objects.requireNonNull(property);
-		if (Strings.isWith(property.getName(), IBOUserFields.USER_FIELD_PREFIX_SIGN, null)) {
-			if (this.userFields != null) {
-				if (!this.userFields.containsKey(property)) {
-					throw new IllegalArgumentException(Strings.format("[%s] not exists property [%s].",
-							this.getClass().getName(), property.getName()));
-				}
+		if (Strings.startsWith(property.getName(), IBOUserFields.USER_FIELD_PREFIX_SIGN)) {
+			if (this.userFields != null && this.userFields.containsKey(property)) {
 				if (this.isLoading()) {
 					this.userFields.put(property, value);
 				} else {
@@ -467,10 +465,15 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 						this.firePropertyChange(property.getName(), oldValue, value);
 					}
 				}
+				return;
 			}
-		} else {
-			super.setProperty(property, value);
+			// 非代码注册的
+			if (!IPropertyInfo.class.getPackage().equals(property.getClass().getPackage())) {
+				throw new IllegalArgumentException(Strings.format("[%s] not exists property [%s].",
+						this.getClass().getName(), property.getName()));
+			}
 		}
+		super.setProperty(property, value);
 	}
 
 	public final IUserFields getUserFields() {
