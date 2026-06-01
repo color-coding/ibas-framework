@@ -16,6 +16,9 @@ public class FieldValueOperator implements IPropertyValueOperator {
 	protected IPropertyInfo<?> property;
 
 	public IPropertyInfo<?> getProperty() {
+		if (this.dataObject == null) {
+			throw new ExpressionException("data object not set.");
+		}
 		if (this.property == null) {
 			this.property = this.dataObject.properties()
 					.firstOrDefault(c -> c.getName().equalsIgnoreCase(this.getPropertyName()));
@@ -45,6 +48,9 @@ public class FieldValueOperator implements IPropertyValueOperator {
 
 	@Override
 	public Class<?> getValueClass() {
+		if (this.dataObject == null) {
+			return null;
+		}
 		return this.getProperty().getValueType();
 	}
 

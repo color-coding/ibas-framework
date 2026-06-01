@@ -26,7 +26,7 @@ public class SerializationFactory {
 	 *
 	 * @return 序列化管理器实例
 	 */
-	public synchronized static SerializerManager createManager() {
+	public static SerializerManager createManager() {
 		if (instance == null) {
 			synchronized (SerializationFactory.class) {
 				if (instance == null) {

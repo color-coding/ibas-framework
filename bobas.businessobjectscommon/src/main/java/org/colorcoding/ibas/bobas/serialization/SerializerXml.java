@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -46,6 +48,33 @@ import org.xml.sax.SAXException;
  */
 public class SerializerXml extends Serializer {
 
+	private Map<String, JAXBContext> contextCache;
+
+	private JAXBContext getOrCreateContext(Class<?>... types) throws JAXBException {
+		String key = Arrays.stream(types).map(Class::getName).sorted().collect(Collectors.joining(","));
+		if (this.contextCache == null) {
+			this.contextCache = new HashMap<>();
+		}
+		JAXBContext ctx = this.contextCache.get(key);
+		if (ctx == null) {
+			ctx = JAXBContext.newInstance(types);
+			this.contextCache.put(key, ctx);
+		}
+		return ctx;
+	}
+
+	/**
+	 * 为Unmarshaller设置XXE安全属性，JDK 8内置JAXB不支持时静默忽略
+	 */
+	private void configureSecureUnmarshaller(Unmarshaller unmarshaller) {
+		try {
+			unmarshaller.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+			unmarshaller.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+		} catch (Exception e) {
+			// JDK 8 内置 Unmarshaller 不支持此属性，忽略
+		}
+	}
+
 	@Override
 	public void serialize(Object object, OutputStream outputStream, boolean formated, Class<?>... types) {
 		try {
@@ -53,7 +82,7 @@ public class SerializerXml extends Serializer {
 			Class<?>[] knownTypes = new Class<?>[types.length + 1];
 			knownTypes[0] = object.getClass();
 			System.arraycopy(types, 0, knownTypes, 1, types.length);
-			JAXBContext context = JAXBContext.newInstance(knownTypes);
+			JAXBContext context = this.getOrCreateContext(knownTypes);
 			Marshaller marshaller = context.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");// 编码格式
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);// 是否格式化生成的xml串
@@ -67,8 +96,10 @@ public class SerializerXml extends Serializer {
 	@SuppressWarnings("unchecked")
 	public <T> T deserialize(InputSource inputSource, Class<?>... types) throws SerializationException {
 		try {
+			// 反序列化不使用缓存，避免types不含根类型时context缺少descriptor
 			JAXBContext context = JAXBContext.newInstance(types);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
+			this.configureSecureUnmarshaller(unmarshaller);
 			return (T) unmarshaller.unmarshal(inputSource);
 		} catch (JAXBException e) {
 			throw new SerializationException(e);
@@ -79,8 +110,10 @@ public class SerializerXml extends Serializer {
 	@SuppressWarnings("unchecked")
 	public <T> T deserialize(InputStream inputStream, Class<?>... types) throws SerializationException {
 		try {
+			// 反序列化不使用缓存，避免types不含根类型时context缺少descriptor
 			JAXBContext context = JAXBContext.newInstance(types);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
+			this.configureSecureUnmarshaller(unmarshaller);
 			return (T) unmarshaller.unmarshal(inputStream);
 		} catch (JAXBException e) {
 			throw new SerializationException(e);
@@ -91,8 +124,10 @@ public class SerializerXml extends Serializer {
 	@SuppressWarnings("unchecked")
 	public <T> T deserialize(Reader reader, Class<?>... types) throws SerializationException {
 		try {
+			// 反序列化不使用缓存，避免types不含根类型时context缺少descriptor
 			JAXBContext context = JAXBContext.newInstance(types);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
+			this.configureSecureUnmarshaller(unmarshaller);
 			return (T) unmarshaller.unmarshal(reader);
 		} catch (JAXBException e) {
 			throw new SerializationException(e);
@@ -102,8 +137,12 @@ public class SerializerXml extends Serializer {
 	public void validate(Schema schema, InputStream data) throws ValidateException {
 		try {
 			Validator validator = schema.newValidator();
-			validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-			validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+			try {
+				validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+				validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+			} catch (SAXException e) {
+				// JDK 8 内置 Validator 不支持此属性，忽略
+			}
 			Source xmlSource = new StreamSource(data);
 			validator.validate(xmlSource);
 		} catch (SAXException | IOException e) {

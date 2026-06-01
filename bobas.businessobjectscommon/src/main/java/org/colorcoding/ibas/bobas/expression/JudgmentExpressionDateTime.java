@@ -23,81 +23,51 @@ public class JudgmentExpressionDateTime extends JudgmentExpression<DateTime> {
 	public boolean result() throws ExpressionException {
 		// 等于
 		if (this.getOperation() == JudmentOperation.EQUAL) {
-			// 左值为空
-			if (this.getLeftValue() == null) {
-				if (this.getRightValue() == null) {
-					return true;
-				}
-				return false;
-			}
-			// 比较左右值
-			if (this.getLeftValue().equals(this.getRightValue())) {
+			if (this.getLeftValue() == null && this.getRightValue() == null) {
 				return true;
 			}
-			return false;
+			if (this.getLeftValue() == null || this.getRightValue() == null) {
+				return false;
+			}
+			return this.getLeftValue().compareTo(this.getRightValue()) == 0;
 		}
 		// 不等于
 		else if (this.getOperation() == JudmentOperation.NOT_EQUAL) {
-			// 左值为空
-			if (this.getLeftValue() == null) {
-				if (this.getRightValue() != null) {
-					return true;
-				}
+			if (this.getLeftValue() == null && this.getRightValue() == null) {
 				return false;
 			}
-			// 比较左右值
-			if (!this.getLeftValue().equals(this.getRightValue())) {
+			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return true;
 			}
-			return false;
+			return this.getLeftValue().compareTo(this.getRightValue()) != 0;
 		}
 		// 大于
 		else if (this.getOperation() == JudmentOperation.GRATER_THAN) {
-			// 左值为空或右值为空
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
 			}
-			// 比较左右值
-			if (this.getLeftValue().after(this.getRightValue())) {
-				return true;
-			}
-			return false;
+			return this.getLeftValue().compareTo(this.getRightValue()) > 0;
 		}
 		// 小于
 		else if (this.getOperation() == JudmentOperation.LESS_THAN) {
-			// 左值为空或右值为空
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
 			}
-			// 比较左右值
-			if (this.getLeftValue().before(this.getRightValue())) {
-				return true;
-			}
-			return false;
+			return this.getLeftValue().compareTo(this.getRightValue()) < 0;
 		}
 		// 大于等于
 		else if (this.getOperation() == JudmentOperation.GRATER_EQUAL) {
-			// 左值为空或右值为空
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
 			}
-			// 比较左右值
-			if (this.getLeftValue().after(this.getRightValue()) || this.getLeftValue().equals(this.getRightValue())) {
-				return true;
-			}
-			return false;
+			return this.getLeftValue().compareTo(this.getRightValue()) >= 0;
 		}
 		// 小于等于
 		else if (this.getOperation() == JudmentOperation.LESS_EQUAL) {
-			// 左值为空或右值为空
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
 			}
-			// 比较左右值
-			if (this.getLeftValue().before(this.getRightValue()) || this.getLeftValue().equals(this.getRightValue())) {
-				return true;
-			}
-			return false;
+			return this.getLeftValue().compareTo(this.getRightValue()) <= 0;
 		}
 		return super.result();
 	}
@@ -115,6 +85,8 @@ public class JudgmentExpressionDateTime extends JudgmentExpression<DateTime> {
 			this.setLeftValue((DateTime) value);
 		} else if (value instanceof String) {
 			this.setLeftValue((String) value);
+		} else if (value != null) {
+			this.setLeftValue(Strings.valueOf(value));
 		}
 	}
 
@@ -139,6 +111,8 @@ public class JudgmentExpressionDateTime extends JudgmentExpression<DateTime> {
 			this.setRightValue((DateTime) value);
 		} else if (value instanceof String) {
 			this.setRightValue((String) value);
+		} else if (value != null) {
+			this.setRightValue(Strings.valueOf(value));
 		}
 	}
 

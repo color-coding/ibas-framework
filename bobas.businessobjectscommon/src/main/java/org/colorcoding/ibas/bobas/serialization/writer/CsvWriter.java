@@ -30,6 +30,9 @@ public class CsvWriter extends Writer {
 
 	@Override
 	protected byte[] bytesOf(char value) {
+		if (value >= CHAR_BYTES.length) {
+			return null;
+		}
 		return CHAR_BYTES[value];
 	}
 

@@ -181,11 +181,14 @@ public class Analyzer {
 		if (xmlElement.type() != null && xmlElement.type() != DEFAULT.class) {
 			element.setType(xmlElement.type());
 		}
-		if (element.getType() == null) {
+		if (element.getType() == null || element.getType() == void.class) {
 			element.setType(method.getReturnType());
 		}
-		if (element.getType() == null && method.getParameterCount() > 0) {
+		if ((element.getType() == null || element.getType() == void.class) && method.getParameterCount() > 0) {
 			element.setType(method.getParameterTypes()[0]);
+		}
+		if (element.getType() == void.class) {
+			return null;
 		}
 		XmlElementWrapper xmlWrapper = method.getAnnotation(XmlElementWrapper.class);
 		if (xmlWrapper != null && xmlWrapper.name() != null && !xmlWrapper.name().isEmpty()

@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.expression;
 
-public class JudmentOperationException extends Exception {
+public class JudmentOperationException extends RuntimeException {
 
 	private static final long serialVersionUID = -793232791382567764L;
 

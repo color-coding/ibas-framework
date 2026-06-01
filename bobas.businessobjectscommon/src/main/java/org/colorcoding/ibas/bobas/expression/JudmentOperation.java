@@ -86,7 +86,12 @@ public enum JudmentOperation {
 	OR;
 
 	public static JudmentOperation valueOf(int value) {
-		return values()[value];
+		JudmentOperation[] ops = values();
+		if (value < 0 || value >= ops.length) {
+			throw new JudmentOperationException(
+					String.format("invalid operation value: %d, valid range [0, %d]", value, ops.length - 1));
+		}
+		return ops[value];
 	}
 
 	public static JudmentOperation valueOf(String value, boolean ignoreCase) {

@@ -188,8 +188,15 @@ class DaemonTaskWrapping {
 		}
 		if (this.getTask() instanceof ISingleDaemonTask) {
 			ISingleDaemonTask singleTask = (ISingleDaemonTask) this.getTask();
+			String signature = singleTask.getLockSignature();
+			// 安全校验：签名中不允许包含路径分隔符，防止路径穿越
+			if (signature.contains("/") || signature.contains("\\") || signature.contains("..")) {
+				Logger.log(MessageLevel.ERROR, "daemon: invalid lock signature [%s], path traversal detected.",
+						signature);
+				return false;
+			}
 			File lockFile = new File(new File(MyConfiguration.getTempFolder()),
-					"~ibas_" + singleTask.getLockSignature() + ".lock");
+					"~ibas_" + signature + ".lock");
 			SingleTaskLock lock = new SingleTaskLock(lockFile, singleTask.getKeepTime());
 			if (!lock.tryAcquire()) {
 				return false;
@@ -206,6 +213,7 @@ class DaemonTaskWrapping {
 		if (this.getTask() == null) {
 			return;
 		}
+		String originalName = Thread.currentThread().getName();
 		Thread.currentThread().setName(String.format("ibas-task|%s", this.getName()));
 		this.addRunTimes();
 		try {
@@ -220,7 +228,8 @@ class DaemonTaskWrapping {
 				this.currentLock.release();
 				this.currentLock = null;
 			}
-			Thread.currentThread().setName("ibas-task|sleeping");
+			// 恢复线程池线程的原始名称，避免影响后续复用
+			Thread.currentThread().setName(originalName);
 		}
 	}
 

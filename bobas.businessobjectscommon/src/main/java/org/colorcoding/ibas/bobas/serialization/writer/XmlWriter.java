@@ -44,7 +44,30 @@ public class XmlWriter extends Writer {
 
 	@Override
 	protected byte[] bytesOf(char value) {
+		if (value >= CHAR_BYTES.length) {
+			return null;
+		}
 		return CHAR_BYTES[value];
+	}
+
+	/**
+	 * 解析对象类型的命名空间和名称
+	 *
+	 * @param objectType 对象类型
+	 * @return 数组 [namespace, name]
+	 */
+	private String[] resolveObjectInfo(Class<?> objectType) {
+		String namespace = null, name = null;
+		for (Annotation annotation : objectType.getAnnotations()) {
+			if (annotation instanceof XmlRootElement) {
+				namespace = ((XmlRootElement) annotation).namespace();
+				name = ((XmlRootElement) annotation).name();
+			} else if (annotation instanceof XmlType) {
+				// namespace = ((XmlType) annotation).namespace();
+				name = ((XmlType) annotation).name();
+			}
+		}
+		return new String[] { namespace, name };
 	}
 
 	@Override
@@ -74,16 +97,8 @@ public class XmlWriter extends Writer {
 	@Override
 	public void writeObjectStart(OutputStream outputStream, Class<?> objectType) throws IOException {
 		outputStream.write(CHAR_BYTES[SIGN_INDEX_LESS]);
-		String namespace = null, name = null;
-		for (Annotation annotation : objectType.getAnnotations()) {
-			if (annotation instanceof XmlRootElement) {
-				namespace = ((XmlRootElement) annotation).namespace();
-				name = ((XmlRootElement) annotation).name();
-			} else if (annotation instanceof XmlType) {
-				// namespace = ((XmlType) annotation).namespace();
-				name = ((XmlType) annotation).name();
-			}
-		}
+		String[] info = this.resolveObjectInfo(objectType);
+		String namespace = info[0], name = info[1];
 		if (!Strings.isNullOrEmpty(namespace)) {
 			this.write(outputStream, "ns:");
 		}
@@ -107,16 +122,8 @@ public class XmlWriter extends Writer {
 		outputStream.write(CHAR_BYTES[SIGN_INDEX_LESS]);
 		outputStream.write(CHAR_BYTES['/']);
 
-		String namespace = null, name = null;
-		for (Annotation annotation : objectType.getAnnotations()) {
-			if (annotation instanceof XmlRootElement) {
-				namespace = ((XmlRootElement) annotation).namespace();
-				name = ((XmlRootElement) annotation).name();
-			} else if (annotation instanceof XmlType) {
-				// namespace = ((XmlType) annotation).namespace();
-				name = ((XmlType) annotation).name();
-			}
-		}
+		String[] info = this.resolveObjectInfo(objectType);
+		String namespace = info[0], name = info[1];
 		if (!Strings.isNullOrEmpty(namespace)) {
 			this.write(outputStream, "ns:");
 		}

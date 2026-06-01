@@ -75,7 +75,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 		// 非开始于
 		else if (this.getOperation() == JudmentOperation.NOT_BEGIN_WITH) {
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
-				return false;
+				return true;
 			}
 			if (!this.getLeftValue().startsWith(this.getRightValue())) {
 				return true;
@@ -85,7 +85,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 		// 非结束于
 		else if (this.getOperation() == JudmentOperation.NOT_END_WITH) {
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
-				return false;
+				return true;
 			}
 			if (!this.getLeftValue().endsWith(this.getRightValue())) {
 				return true;
@@ -105,7 +105,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 		// 不包含
 		else if (this.getOperation() == JudmentOperation.NOT_CONTAIN) {
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
-				return false;
+				return true;
 			}
 			if (this.getLeftValue().indexOf(this.getRightValue()) < 0) {
 				return true;

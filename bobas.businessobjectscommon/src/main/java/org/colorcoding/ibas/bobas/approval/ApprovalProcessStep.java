@@ -183,6 +183,19 @@ public abstract class ApprovalProcessStep<T extends IProcessStepData> implements
 		this.setFinishedTime(DateTimes.VALUE_MAX);
 		this.setStatus(emApprovalStepStatus.PROCESSING);
 		this.setJudgment("");
+		if (this instanceof IApprovalProcessStepMultiOwner) {
+			IApprovalProcessStepMultiOwner multiStep = (IApprovalProcessStepMultiOwner) this;
+			if (multiStep.getItems() != null) {
+				for (IApprovalProcessStepItem item : multiStep.getItems()) {
+					if (item instanceof ApprovalProcessStep) {
+						ApprovalProcessStep<?> itemStep = (ApprovalProcessStep<?>) item;
+						itemStep.setFinishedTime(DateTimes.VALUE_MAX);
+						itemStep.setStatus(emApprovalStepStatus.PROCESSING);
+						itemStep.setJudgment("");
+					}
+				}
+			}
+		}
 	}
 
 	/**

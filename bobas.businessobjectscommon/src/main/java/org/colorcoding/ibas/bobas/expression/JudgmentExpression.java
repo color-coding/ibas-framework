@@ -34,7 +34,7 @@ public abstract class JudgmentExpression<T> implements IJudgmentExpression {
 	/**
 	 * 计算表达式结果
 	 *
-	 * 仅处理 IS_NULL 和 NOT_NULL 操作：IS_NULL 时左值为null返回true；NOT_NULL 时左值为null返回true（注意：逻辑与名称相反）
+	 * 仅处理 IS_NULL 和 NOT_NULL 操作：IS_NULL 时左值为null返回true；NOT_NULL 时左值非null返回true
 	 * 其他操作抛出异常，由子类覆盖实现
 	 *
 	 * @return 表达式是否成立
@@ -52,9 +52,9 @@ public abstract class JudgmentExpression<T> implements IJudgmentExpression {
 		// 非空值
 		else if (this.getOperation() == JudmentOperation.NOT_NULL) {
 			if (this.getLeftValue() != null) {
-				return false;
+				return true;
 			}
-			return true;
+			return false;
 		}
 		// 不支持的计算
 		throw new ExpressionException("not support.");

@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.expression;
 
+import java.util.Objects;
+
 import org.colorcoding.ibas.bobas.common.Booleans;
 import org.colorcoding.ibas.bobas.common.Strings;
 
@@ -23,31 +25,25 @@ public class JudgmentExpressionBoolean extends JudgmentExpression<Boolean> {
 	public boolean result() throws ExpressionException {
 		// 等
 		if (this.getOperation() == JudmentOperation.EQUAL) {
-			if (this.getLeftValue() == this.getRightValue()) {
-				return true;
-			}
-			return false;
+			return Objects.equals(this.getLeftValue(), this.getRightValue());
 		}
 		// 不等
 		else if (this.getOperation() == JudmentOperation.NOT_EQUAL) {
-			if (this.getLeftValue() != this.getRightValue()) {
-				return true;
-			}
-			return false;
+			return !Objects.equals(this.getLeftValue(), this.getRightValue());
 		}
 		// 且
 		else if (this.getOperation() == JudmentOperation.AND) {
-			if (this.getLeftValue() && this.getRightValue()) {
-				return true;
+			if (this.getLeftValue() == null || this.getRightValue() == null) {
+				return false;
 			}
-			return false;
+			return this.getLeftValue() && this.getRightValue();
 		}
 		// 或
 		else if (this.getOperation() == JudmentOperation.OR) {
-			if (this.getLeftValue() || this.getRightValue()) {
-				return true;
+			if (this.getLeftValue() == null && this.getRightValue() == null) {
+				return false;
 			}
-			return false;
+			return Boolean.TRUE.equals(this.getLeftValue()) || Boolean.TRUE.equals(this.getRightValue());
 		}
 		// 不支持的
 		return super.result();
@@ -66,6 +62,8 @@ public class JudgmentExpressionBoolean extends JudgmentExpression<Boolean> {
 			this.setLeftValue((Boolean) value);
 		} else if (value instanceof String) {
 			this.setLeftValue((String) value);
+		} else if (value == null) {
+			this.leftValue = false;
 		}
 	}
 
@@ -90,6 +88,8 @@ public class JudgmentExpressionBoolean extends JudgmentExpression<Boolean> {
 			this.setRightValue((Boolean) value);
 		} else if (value instanceof String) {
 			this.setRightValue((String) value);
+		} else if (value == null) {
+			this.rightValue = false;
 		}
 	}
 

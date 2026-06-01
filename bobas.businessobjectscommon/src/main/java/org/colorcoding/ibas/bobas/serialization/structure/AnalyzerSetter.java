@@ -61,7 +61,10 @@ public class AnalyzerSetter extends Analyzer {
 		}
 		if (IBusinessObjects.class.isAssignableFrom(type)) {
 			if (type.getName().endsWith("s")) {
-				type = BOFactory.loadClass(type.getName().substring(0, type.getName().length() - 1));
+				Class<?> itemType = BOFactory.loadClass(type.getName().substring(0, type.getName().length() - 1));
+				if (itemType != null) {
+					type = itemType;
+				}
 			}
 		}
 		return new ElementMethod(this.namedElement(method), type);

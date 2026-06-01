@@ -30,6 +30,8 @@ public class JudgmentExpressionFloat extends JudgmentExpressionComparable<Float>
 			this.setLeftValue((Float) value);
 		} else if (value instanceof String) {
 			this.setLeftValue((String) value);
+		} else if (value != null) {
+			this.setLeftValue(Strings.valueOf(value));
 		}
 	}
 
@@ -54,6 +56,8 @@ public class JudgmentExpressionFloat extends JudgmentExpressionComparable<Float>
 			this.setRightValue((Float) value);
 		} else if (value instanceof String) {
 			this.setRightValue((String) value);
+		} else if (value != null) {
+			this.setRightValue(Strings.valueOf(value));
 		}
 	}
 

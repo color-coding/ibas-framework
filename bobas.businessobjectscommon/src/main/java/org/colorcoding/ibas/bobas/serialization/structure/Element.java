@@ -122,6 +122,9 @@ public abstract class Element extends Serializable implements Comparable<Element
 		if (tName == null || tName.isEmpty()) {
 			tName = target.getName();
 		}
+		if (sName == null || sName.isEmpty() || tName == null || tName.isEmpty()) {
+			return 0;
+		}
 		if (Character.isUpperCase(tName.charAt(0)) == Character.isUpperCase(sName.charAt(0))) {
 			return sName.compareTo(tName);
 		} else {

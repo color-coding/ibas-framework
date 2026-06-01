@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.expression;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,18 +49,31 @@ public class SQLScriptValueOperator implements IPropertyValueOperator {
 					throw new RuntimeException(I18N.prop("msg_bobas_invalid_sql_query"));
 				}
 				String query = this.propertyName;
-				// 替换查询中的变量
+				// 使用参数化方式替换查询中的变量，避免SQL注入
 				Matcher matcher = Pattern.compile(MyConfiguration.VARIABLE_PATTERN).matcher(query);
+				ArrayList<Object> sqlParameters = new ArrayList<>();
+				StringBuffer stringBuffer = new StringBuffer();
 				while (matcher.find()) {
 					// 带格式名称${}
 					String vName = matcher.group(0);
 					String tName = vName.substring(2, vName.length() - 1);
-					String vValue = Strings.valueOf(BOUtilities.propertyValue(this.bo, tName));
-					if (vValue != null) {
-						query = query.replace(vName, vValue.replace("'", "''"));
+					Object pValue = BOUtilities.propertyValue(this.bo, tName);
+					if (pValue != null) {
+						// 使用参数占位符替代直接拼接值
+						matcher.appendReplacement(stringBuffer, "?");
+						sqlParameters.add(pValue);
+					} else {
+						// 值为空时替换为NULL
+						matcher.appendReplacement(stringBuffer, "NULL");
 					}
 				}
-				IDataTable table = this.dbTransaction.fetch(new SqlStatement(query));
+				matcher.appendTail(stringBuffer);
+				query = stringBuffer.toString();
+				SqlStatement statement = new SqlStatement(query);
+				for (int i = 0; i < sqlParameters.size(); i++) {
+					statement.setObject(i, sqlParameters.get(i));
+				}
+				IDataTable table = this.dbTransaction.fetch(statement);
 				if (table != null && !table.getColumns().isEmpty() && !table.getRows().isEmpty()) {
 					this.value = table.getRows().get(0).getValue(0);
 				}

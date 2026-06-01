@@ -16,18 +16,29 @@ import org.colorcoding.ibas.bobas.common.Bytes;
  */
 public abstract class Serializer implements ISerializer {
 
+	/**
+	 * 构建已知类型数组，将对象类型与额外类型合并
+	 *
+	 * @param object 目标对象
+	 * @param types  额外已知类型
+	 * @return 合并后的已知类型数组
+	 */
+	protected Class<?>[] buildKnownTypes(Object object, Class<?>... types) {
+		Class<?>[] knownTypes = new Class[types.length + 1];
+		knownTypes[0] = object.getClass();
+		for (int i = 0; i < types.length; i++) {
+			knownTypes[i + 1] = types[i];
+		}
+		return knownTypes;
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T clone(T object, Class<?>... types) throws SerializationException {
 		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream(512)) {
 			this.serialize(object, outputStream, false, types);
 			try (ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray())) {
-				Class<?>[] knownTypes = new Class[types.length + 1];
-				knownTypes[0] = object.getClass();
-				for (int i = 0; i < types.length; i++) {
-					knownTypes[i + 1] = types[i];
-				}
-				return (T) this.deserialize(inputStream, knownTypes);
+				return (T) this.deserialize(inputStream, this.buildKnownTypes(object, types));
 			}
 		} catch (IOException e) {
 			throw new SerializationException(e);

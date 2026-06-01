@@ -30,6 +30,8 @@ public class JudgmentExpressionDouble extends JudgmentExpressionComparable<Doubl
 			this.setLeftValue((Double) value);
 		} else if (value instanceof String) {
 			this.setLeftValue((String) value);
+		} else if (value != null) {
+			this.setLeftValue(Strings.valueOf(value));
 		}
 	}
 
@@ -54,6 +56,8 @@ public class JudgmentExpressionDouble extends JudgmentExpressionComparable<Doubl
 			this.setRightValue((Double) value);
 		} else if (value instanceof String) {
 			this.setRightValue((String) value);
+		} else if (value != null) {
+			this.setRightValue(Strings.valueOf(value));
 		}
 	}
 

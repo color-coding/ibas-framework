@@ -90,7 +90,8 @@ public class TestBusinessObject extends TestCase {
 		stringBuilder.append(String.format("\"Canceled\":\"%s\",", emYesNo.YES));
 		stringBuilder.append(String.format("\"Status\":\"%s\"", emBOStatus.CLOSED));
 		stringBuilder.append("}}");
-		ISerializer serializer = new SerializerJson();
+		SerializerJson serializer = new SerializerJson();
+		serializer.setIncludeJsonRoot(true);
 		serializer.validate(SalesOrder.class, stringBuilder.toString());
 		IBusinessObject bo = serializer.deserialize(stringBuilder.toString(), SalesOrder.class);
 		ByteArrayOutputStream writer = new ByteArrayOutputStream();

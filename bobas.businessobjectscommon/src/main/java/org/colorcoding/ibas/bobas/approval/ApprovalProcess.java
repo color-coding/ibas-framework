@@ -119,8 +119,12 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	 * @return 审批所有者
 	 */
 	public IUser getOwner() {
-		if (this.owner == null || Integer.compare(this.owner.getId(), this.getProcessData().getOwner().getId()) != 0) {
-			this.owner = OrganizationFactory.createManager().getUser(this.getProcessData().getOwner().getId());
+		IProcessData pData = this.getProcessData();
+		if (pData == null || pData.getOwner() == null) {
+			return null;
+		}
+		if (this.owner == null || Integer.compare(this.owner.getId(), pData.getOwner().getId()) != 0) {
+			this.owner = OrganizationFactory.createManager().getUser(pData.getOwner().getId());
 		}
 		return this.owner;
 	}
@@ -272,7 +276,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	 *
 	 * @return 下一个步骤，无满足条件的步骤时返回null
 	 * @throws JudmentOperationException 条件判断异常
-	 * @throws ApprovalException 审批异常
+	 * @throws ApprovalException         审批异常
 	 */
 	private ApprovalProcessStep<?> nextStep() throws JudmentOperationException, ApprovalException {
 		ApprovalDataJudgmentLink judgmentLinks;
@@ -288,7 +292,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 			if (judgmentLinks.getJudgmentItems() != null && judgmentLinks.getJudgmentItems().length > 0) {
 				// 审批的数据可能存在是代理数据情况
 				if (this.approvalData == null) {
-					this.approvalData = this.fetchApprovalData();
+					this.setApprovalData(this.fetchApprovalData());
 				}
 				if (this.getApprovalData() instanceof IBusinessObject) {
 					// 数据为业务对象时进行属性的条件判断
@@ -311,10 +315,10 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	/**
 	 * 审批指定步骤，需验证用户授权码。若当前步骤完成后下一步骤所有者与当前相同，则自动审批。
 	 *
-	 * @param stepId          步骤编号
-	 * @param apResult        审批结果
+	 * @param stepId            步骤编号
+	 * @param apResult          审批结果
 	 * @param authorizationCode 用户授权码
-	 * @param judgment        审批意见
+	 * @param judgment          审批意见
 	 * @throws ApprovalException 步骤不存在、授权码无效或审批状态异常
 	 */
 	public final void approval(int stepId, emApprovalResult apResult, String authorizationCode, String judgment)
@@ -340,7 +344,8 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 			// 不是当前步骤，且为单用户审批步骤
 			if (!(step == apStep || step instanceof IApprovalProcessStepItem
 					|| step instanceof IApprovalProcessStepMultiOwner)) {
-				if (step.getOwner() == apStep.getOwner() || Numbers.equals(apStep.getOwner(), step.getId())) {
+				if (step.getOwner() != null && apStep.getOwner() != null
+						&& Integer.compare(step.getOwner().getId(), apStep.getOwner().getId()) == 0) {
 					this.approval(step.getId(), apResult, authorizationCode, judgment);
 				}
 			}
@@ -492,6 +497,11 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 			} catch (InvalidAuthorizationException e) {
 				throw new ApprovalException(I18N.prop("msg_bobas_invaild_user_authorization"), e);
 			}
+			// 重置当前进行中的步骤
+			ApprovalProcessStep<?> currentStep = this.currentStep();
+			if (currentStep != null) {
+				currentStep.restore();
+			}
 			this.setFinishedTime(DateTimes.now());
 			if (!Enums.equals(this.getStatus(), emApprovalStatus.CANCELLED)) {
 				this.setStatus(emApprovalStatus.CANCELLED);
@@ -505,7 +515,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	private void onStatusChanged() throws ApprovalException {
 		Logger.log("approval process: [%s]'s status change to [%s].", this.getName(), this.getStatus());
 		if (this.approvalData == null) {
-			this.approvalData = this.fetchApprovalData();
+			this.setApprovalData(this.fetchApprovalData());
 		}
 		this.changeApprovalDataStatus(this.getStatus());
 	}
@@ -618,8 +628,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	}
 
 	/**
-	 * 保存审批流程及审批数据。非实际数据时自动查询实际数据，需保证Class已被加载。
-	 * 自建事务时自动提交或回滚。
+	 * 保存审批流程及审批数据。非实际数据时自动查询实际数据，需保证Class已被加载。 自建事务时自动提交或回滚。
 	 *
 	 * @throws ApprovalException 事务未设置或保存失败
 	 */

@@ -223,8 +223,8 @@ class BusinessLogicChain implements IBusinessLogicChain {
 				// 代理对象
 				continue;
 			}
-			// 无效状态数据
-			if (logic.getBeAffected().isNew() && logic.getBeAffected().isDeleted()) {
+			// 无效状态数据（已删除的对象跳过）
+			if (logic.getBeAffected().isDeleted()) {
 				continue;
 			}
 			// 对象集合
@@ -303,8 +303,6 @@ class BusinessLogicChain implements IBusinessLogicChain {
 			DateTime endTime = DateTimes.now();
 			Logger.log(MessageLevel.INFO, "logics chain [%s]: ends at [%s].", this.hashCode(),
 					DateTimes.toString(endTime, DateTimes.FORMAT_TIME));
-			startTime = null;
-			endTime = null;
 		} catch (Exception e) {
 			throw new BusinessLogicException(e);
 		}
@@ -518,8 +516,28 @@ class BusinessLogicChain implements IBusinessLogicChain {
 		this.trigger = null;
 		this.triggerCopy = null;
 		this.transaction = null;
+		if (this.triggerLogics != null) {
+			for (BusinessLogic<?, ?> logic : this.triggerLogics) {
+				if (logic != null) {
+					logic.setLogicChain(null);
+					logic.setHost(null);
+					logic.setParent(null);
+				}
+			}
+		}
+		if (this.triggerCopyLogics != null) {
+			for (BusinessLogic<?, ?> logic : this.triggerCopyLogics) {
+				if (logic != null) {
+					logic.setLogicChain(null);
+					logic.setHost(null);
+					logic.setParent(null);
+				}
+			}
+		}
 		this.triggerLogics = null;
 		this.triggerCopyLogics = null;
+		this.parentChain = null;
+		this.skipContractTypes = null;
 	}
 
 }
