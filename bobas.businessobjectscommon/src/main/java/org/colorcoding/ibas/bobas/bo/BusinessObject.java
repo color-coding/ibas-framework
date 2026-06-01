@@ -79,7 +79,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 			return;
 		}
 		this.isBusy = value;
-		this.firePropertyChange("isBusy", this.isBusy, !this.isBusy);
+		this.firePropertyChange("isBusy", !this.isBusy, this.isBusy);
 	}
 
 	/**
@@ -378,7 +378,9 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 		if (rules != null && !rules.isInitialized()) {
 			synchronized (rules) {
 				// 未初始化，则进行初始化
-				rules.register(this.registerRules());
+				if (!rules.isInitialized()) {
+					rules.register(this.registerRules());
+				}
 			}
 		}
 	}
@@ -453,10 +455,18 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 		if (Strings.startsWith(property.getName(), IBOUserFields.USER_FIELD_PREFIX_SIGN)) {
 			if (this.userFields != null && this.userFields.containsKey(property)) {
 				if (this.isLoading()) {
-					this.userFields.put(property, value);
+					// 加载中：默认值存null以节省内存，与系统字段逻辑一致
+					if (Objects.equals(property.getDefaultValue(), value)) {
+						this.userFields.put(property, null);
+					} else {
+						this.userFields.put(property, value);
+					}
 				} else {
 					P oldValue = (P) this.userFields.get(property);
-					if (oldValue != value) {
+					if (oldValue == null) {
+						oldValue = (P) property.getDefaultValue();
+					}
+					if (oldValue == null || value == null || !oldValue.equals(value)) {
 						this.userFields.put(property, value);
 						if (this.modifiedProperties != null && !this.modifiedProperties.contains(property)) {
 							this.modifiedProperties.add(property);

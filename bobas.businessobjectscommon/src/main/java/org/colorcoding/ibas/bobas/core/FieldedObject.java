@@ -25,12 +25,10 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	private static final long serialVersionUID = 1L;
 
 	public FieldedObject() {
-		this.setLoading(true);
 		// 初始化对象属性
 		this.fields = PropertyInfoManager.initFields(this.getClass());
 		// 初始化被修改属性
 		this.modifiedProperties = new HashSet<IPropertyInfo<?>>();
-		this.setLoading(false);
 	}
 
 	/**
@@ -158,14 +156,17 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 		}
 		// 加载状态时，非主键、唯一键不触发属性改变事件
 		if (this.isLoading() && !(property.isPrimaryKey() || property.isUniqueKey())) {
-			if (property.getDefaultValue() == value) {
+			if (Objects.equals(property.getDefaultValue(), value)) {
 				this.fields.put(property, null);
 			} else {
 				this.fields.put(property, value);
 			}
 		} else {
 			P oldValue = (P) this.fields.get(property);
-			if (oldValue != value) {
+			if (oldValue == null) {
+				oldValue = (P) property.getDefaultValue();
+			}
+			if (oldValue == null || value == null || !oldValue.equals(value)) {
 				this.fields.put(property, value);
 				if (this.modifiedProperties != null && !this.modifiedProperties.contains(property)) {
 					this.modifiedProperties.add(property);

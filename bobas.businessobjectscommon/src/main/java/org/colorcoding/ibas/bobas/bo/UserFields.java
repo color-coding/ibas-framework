@@ -48,8 +48,11 @@ class UserFields implements IUserFields {
 				@Override
 				public void setValue(Object value) {
 					if (UserFields.this.parent.userFields.containsKey(property)) {
-						Object oldValue = this.getValue();
-						if (oldValue != value) {
+						Object oldValue = UserFields.this.parent.userFields.get(property);
+						if (oldValue == null) {
+							oldValue = property.getDefaultValue();
+						}
+						if (oldValue == null || value == null || !oldValue.equals(value)) {
 							UserFields.this.parent.userFields.put(property, value);
 							UserFields.this.parent.firePropertyChange(property, oldValue, value);
 						}

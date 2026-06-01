@@ -44,10 +44,10 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 					Trackable trackable = (Trackable) BusinessObjects.this.getParent();
 					trackable.markDirty();
 				}
-			} else if (BusinessObjects.this.contains(evt.getSource())) {
+			} else if (BusinessObjects.this.identityContains(evt.getSource())) {
 				// 此集合中的子项的属性改变
 				if (evt.getPropertyName() != null && evt.getPropertyName().equals("isDirty")
-						&& evt.getNewValue().equals(true)) {
+						&& Boolean.TRUE.equals(evt.getNewValue())) {
 					// 元素状态为Dirty时修改父项状态
 					if (BusinessObjects.this.getParent() instanceof Trackable
 							&& !BusinessObjects.this.getParent().isLoading()) {
@@ -67,6 +67,24 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 
 	public BusinessObjects() {
 		this.setChangeItemStatus(true);
+	}
+
+	/**
+	 * 基于实例引用（==）判断集合中是否包含指定对象，避免调用equals的开销
+	 *
+	 * @param item 待查找的对象
+	 * @return 集合中存在相同引用时返回true
+	 */
+	private boolean identityContains(Object item) {
+		if (item == null) {
+			return false;
+		}
+		for (int i = 0; i < this.size(); i++) {
+			if (this.get(i) == item) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public BusinessObjects(P parent) {
@@ -161,12 +179,12 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 					}
 					if (tmp instanceof IBOLine) {
 						IBOLine tmpLine = (IBOLine) tmp;
-						if (tmpLine.getLineId() > max) {
-							max = tmpLine.getLineId();
+						if (tmpLine.getLineId() >= max) {
+							max = tmpLine.getLineId() + 1;
 						}
 					}
 				}
-				line.setLineId(max + 1);
+				line.setLineId(max);
 			}
 		}
 		// 没父项，退出
@@ -220,8 +238,19 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 	}
 
 	public final boolean remove(E item) {
+		// 使用实例引用（==）语义查找，与add()的去重逻辑一致
+		int index = -1;
+		for (int i = 0; i < this.size(); i++) {
+			if (this.get(i) == item) {
+				index = i;
+				break;
+			}
+		}
+		if (index < 0) {
+			return false;
+		}
 		int oldSize = this.size();
-		boolean result = super.remove(item);
+		boolean result = super.remove(index) != null;
 		if (result) {
 			this.propertyListener.propertyChange(new PropertyChangeEvent(this, "size", oldSize, this.size()));
 			boolean mine = false;
@@ -254,7 +283,7 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 				this.remove(item);
 			} else {
 				item.delete();
-				this.afterRemoveItem(item);
+				// 非新建对象仅标记删除，仍在集合中，不移除监听器
 			}
 		}
 	}
@@ -268,6 +297,11 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 	@Override
 	public final void deleteAll() {
 		for (int i = this.size() - 1; i >= 0; i--) {
+			E item = this.get(i);
+			// 跳过已删除的非新建对象，避免重复处理
+			if (!item.isNew() && item.isDeleted()) {
+				continue;
+			}
 			this.delete(i);
 		}
 	}
@@ -497,6 +531,9 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		}
 		if (criteria == null) {
 			criteria = this.getParent().getCriteria();
+		}
+		if (criteria == null) {
+			return null;
 		}
 		if (IBOLine.class.isAssignableFrom(this.getElementType())) {
 			// 元素类型是行类型，则添加排序字段
