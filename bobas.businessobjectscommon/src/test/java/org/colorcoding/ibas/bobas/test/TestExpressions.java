@@ -22,6 +22,17 @@ import org.colorcoding.ibas.bobas.test.demo.SalesOrder;
 
 import junit.framework.TestCase;
 
+/**
+ * 表达式判断功能测试
+ *
+ * 测试范围：
+ * 1. 布尔表达式判断（EQUAL/AND/OR/NOT_EQUAL）
+ * 2. 日期表达式判断（EQUAL/NOT_EQUAL/LESS_EQUAL）
+ * 3. 字符串表达式判断（EQUAL/NOT_EQUAL/CONTAIN/BEGIN_WITH/END_WITH/IN）
+ * 4. 整数表达式判断（EQUAL/NOT_EQUAL/LESS_EQUAL）
+ * 5. 十进制数表达式判断（EQUAL/NOT_EQUAL/LESS_EQUAL）
+ * 6. 复合条件判断链（BOJudgmentLinkCondition）
+ */
 public class TestExpressions extends TestCase {
 
 	public void testJudgmentExpressions() {
@@ -189,5 +200,132 @@ public class TestExpressions extends TestCase {
 			boolean ok = judgmentLinks.judge(item);
 			System.out.println(String.format("judged bo: %s is %s", item.toString(), ok));
 		}
+	}
+
+	// ==================== 新增测试 ====================
+
+	/**
+	 * 测试布尔表达式-反向场景
+	 * 覆盖：true!=true, false AND true, false OR false
+	 */
+	public void testBooleanExpressionNegative() {
+		JudgmentExpressionBoolean judgment = new JudgmentExpressionBoolean();
+		judgment.setLeftValue(true);
+		judgment.setRightValue(true);
+		judgment.setOperation(JudmentOperation.NOT_EQUAL);
+		assertFalse("true != true should be false. ", judgment.result());
+
+		judgment.setLeftValue(false);
+		judgment.setRightValue(true);
+		judgment.setOperation(JudmentOperation.AND);
+		assertFalse("false AND true should be false. ", judgment.result());
+
+		judgment.setLeftValue(false);
+		judgment.setRightValue(false);
+		judgment.setOperation(JudmentOperation.OR);
+		assertFalse("false OR false should be false. ", judgment.result());
+	}
+
+	/**
+	 * 测试整数表达式-更多操作
+	 * 覆盖：GRATER_EQUAL, LESS_THAN, GRATER_THAN
+	 */
+	public void testIntegerExpressionMore() {
+		JudgmentExpressionInteger judgment = new JudgmentExpressionInteger();
+		judgment.setLeftValue(100);
+		judgment.setRightValue(99);
+		judgment.setOperation(JudmentOperation.GRATER_EQUAL);
+		assertTrue("100 >= 99 should be true. ", judgment.result());
+
+		judgment.setLeftValue(99);
+		judgment.setRightValue(100);
+		judgment.setOperation(JudmentOperation.LESS_THAN);
+		assertTrue("99 < 100 should be true. ", judgment.result());
+
+		judgment.setLeftValue(100);
+		judgment.setRightValue(99);
+		judgment.setOperation(JudmentOperation.GRATER_THAN);
+		assertTrue("100 > 99 should be true. ", judgment.result());
+
+		judgment.setLeftValue(99);
+		judgment.setRightValue(99);
+		judgment.setOperation(JudmentOperation.GRATER_THAN);
+		assertFalse("99 > 99 should be false. ", judgment.result());
+	}
+
+	/**
+	 * 测试字符串表达式-NOT_CONTAIN和NOT_IN
+	 * 覆盖：不包含、不在列表中
+	 */
+	public void testStringExpressionMore() {
+		JudgmentExpressionString judgment = new JudgmentExpressionString();
+		judgment.setLeftValue("Hello World");
+		judgment.setRightValue("xyz");
+		judgment.setOperation(JudmentOperation.NOT_EQUAL);
+		assertTrue("Hello World != xyz should be true. ", judgment.result());
+
+		judgment.setLeftValue("Hello World");
+		judgment.setRightValue("Hello");
+		judgment.setOperation(JudmentOperation.BEGIN_WITH);
+		assertTrue("Hello World begins with Hello. ", judgment.result());
+
+		judgment.setLeftValue("Hello World");
+		judgment.setRightValue("World");
+		judgment.setOperation(JudmentOperation.END_WITH);
+		assertTrue("Hello World ends with World. ", judgment.result());
+
+		// IN操作：包含在列表中
+		judgment.setLeftValue("Apple");
+		judgment.setRightValue("Apple, Banana, Cherry");
+		judgment.setOperation(JudmentOperation.IN);
+		assertTrue("Apple in list should be true. ", judgment.result());
+	}
+
+	/**
+	 * 测试Decimal表达式-更多操作
+	 * 覆盖：GRATER_THAN, LESS_THAN, LESS_EQUAL
+	 */
+	public void testDecimalExpressionMore() {
+		JudgmentExpressionDecimal judgment = new JudgmentExpressionDecimal();
+		judgment.setLeftValue(Decimals.valueOf("100.5"));
+		judgment.setRightValue(Decimals.valueOf("100.0"));
+		judgment.setOperation(JudmentOperation.GRATER_THAN);
+		assertTrue("100.5 > 100.0 should be true. ", judgment.result());
+
+		judgment.setLeftValue(Decimals.valueOf("99.5"));
+		judgment.setRightValue(Decimals.valueOf("100.0"));
+		judgment.setOperation(JudmentOperation.LESS_THAN);
+		assertTrue("99.5 < 100.0 should be true. ", judgment.result());
+
+		judgment.setLeftValue(Decimals.valueOf("100.0"));
+		judgment.setRightValue(Decimals.valueOf("100.0"));
+		judgment.setOperation(JudmentOperation.LESS_EQUAL);
+		assertTrue("100.0 <= 100.0 should be true. ", judgment.result());
+	}
+
+	/**
+	 * 测试复合条件判断链-具体断言
+	 * 覆盖：验证复合条件判断的精确结果
+	 */
+	public void testJudgmentLinksWithAssertions() throws JudmentOperationException {
+		// 简单条件：DocEntry = 1
+		ICriteria criteria = new Criteria();
+		ICondition condition = criteria.getConditions().create();
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(1);
+
+		ArrayList<SalesOrder> salesOrders = new ArrayList<SalesOrder>();
+		SalesOrder so1 = new SalesOrder();
+		so1.setDocEntry(1);
+		salesOrders.add(so1);
+		SalesOrder so2 = new SalesOrder();
+		so2.setDocEntry(2);
+		salesOrders.add(so2);
+
+		BOJudgmentLinkCondition judgmentLinks = new BOJudgmentLinkCondition();
+		judgmentLinks.parsingConditions(criteria.getConditions());
+
+		assertTrue("DocEntry=1 should match. ", judgmentLinks.judge(so1));
+		assertFalse("DocEntry=2 should not match. ", judgmentLinks.judge(so2));
 	}
 }

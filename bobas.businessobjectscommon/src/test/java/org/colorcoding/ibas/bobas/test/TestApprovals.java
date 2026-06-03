@@ -31,6 +31,26 @@ import org.colorcoding.ibas.bobas.test.demo.SalesOrderItem;
 
 import junit.framework.TestCase;
 
+/**
+ * 审批流程功能测试
+ *
+ * 测试范围：
+ * 1. 审批流程启动（条件匹配与不匹配）
+ * 2. 金额阶梯条件审批（不同金额对应不同审批级别）
+ * 3. 子项属性作为条件的审批流程
+ * 4. 审批步骤状态流转（批准/拒绝/撤销）
+ * 5. 审批流程状态（PROCESSING/APPROVED/REJECTED）
+ * 6. 审批流程取消
+ * 7. 属性与属性值比较模式（ValueMode.DB_FIELD）
+ *
+ * 辅助类：
+ * - ApprovalProcessManager: 审批流程管理器（测试实现）
+ * - ProcessData: 审批流程数据
+ * - ApprovalProcess: 审批流程实例
+ * - ApprovalProcessStep: 审批步骤
+ * - ApprovalProcessStepCondition: 审批步骤条件
+ * - ApprovalUser: 审批用户
+ */
 public class TestApprovals extends TestCase {
 
 	public void testProcess() throws ApprovalException {

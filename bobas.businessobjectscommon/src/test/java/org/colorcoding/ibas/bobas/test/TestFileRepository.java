@@ -19,6 +19,15 @@ import org.colorcoding.ibas.bobas.repository.FileRepository;
 
 import junit.framework.TestCase;
 
+/**
+ * 文件仓库功能测试
+ *
+ * 测试范围：
+ * 1. 文件查询（按文件夹/扩展名/文件名/修改时间条件）
+ * 2. 文件搜索（包含子文件夹、排序、分页）
+ * 3. 多条件组合查询（OR关系文件名查询）
+ * 4. 文件路径工具（Files.folderOf/nameOf/extensionOf）
+ */
 public class TestFileRepository extends TestCase {
 
 	public void testFetchFile() {

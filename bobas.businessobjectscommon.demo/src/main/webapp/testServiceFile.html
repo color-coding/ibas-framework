@@ -1,27 +1,126 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Test File Services</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test File Services</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #f5f7fa; color: #333; padding: 24px; line-height: 1.6;
+        }
+        h1 { font-size: 22px; color: #2c3e50; margin-bottom: 16px; }
+        .card {
+            background: #fff; border-radius: 8px; padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 16px;
+        }
+        .card h2 { font-size: 16px; color: #555; margin-bottom: 12px; }
+        .form-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        input[type="file"] { font-size: 14px; }
+        .btn {
+            display: inline-block; padding: 8px 20px; font-size: 14px; font-weight: 500;
+            color: #fff; background: #3498db; border: none; border-radius: 4px;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .btn:hover { background: #2980b9; }
+        .btn:active { background: #2471a3; }
+        .btn-success { background: #27ae60; }
+        .btn-success:hover { background: #219a52; }
+        .btn-success:active { background: #1e8449; }
+        .result-area {
+            margin-top: 12px; padding: 12px; background: #f8f9fa; border: 1px solid #e0e0e0;
+            border-radius: 4px; font-size: 13px; white-space: pre-wrap; word-break: break-all;
+            max-height: 300px; overflow-y: auto; display: none;
+        }
+        .result-area.error { background: #fef0f0; border-color: #f5c6cb; color: #c0392b; }
+        .result-area.success { background: #f0fef4; border-color: #c3e6cb; color: #27ae60; }
+        .token-row { margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .token-row label { font-size: 13px; color: #777; }
+        .token-row input {
+            padding: 4px 8px; font-size: 13px; border: 1px solid #ccc; border-radius: 4px; width: 120px;
+        }
+        .hint { font-size: 12px; color: #999; margin-top: 8px; }
+    </style>
 </head>
 <body>
-	<div>
-		<h1>Upload File</h1>
-		<form action="services/jersey/files/upload?token=1q2w3e" method="post"
-			enctype="multipart/form-data">
-			<p>
-				select file : <input type="file" name="file" size="50" />
-			</p>
-			<input type="submit" value="upload" />
-		</form>
-	</div>
-	<div>
-		<input type="button" value="download" onclick="download();" />
-	</div>
+    <h1>📂 File Service Tester</h1>
+
+    <div class="token-row">
+        <label>Token:</label>
+        <input type="text" id="tokenInput" value="1q2w3e" />
+    </div>
+
+    <div class="card">
+        <h2>Upload File</h2>
+        <form id="uploadForm" method="post" enctype="multipart/form-data">
+            <div class="form-row">
+                <input type="file" id="fileInput" name="file" required />
+                <button type="submit" class="btn">Upload</button>
+            </div>
+            <div class="hint">Supported: multipart/form-data</div>
+        </form>
+        <div id="uploadResult" class="result-area"></div>
+    </div>
+
+    <div class="card">
+        <h2>Download File</h2>
+        <div class="form-row">
+            <input type="text" id="fileNameInput" placeholder="File name (optional)" style="padding:6px 10px; font-size:13px; border:1px solid #ccc; border-radius:4px; width:200px;" />
+            <button type="button" class="btn btn-success" onclick="downloadFile()">Download</button>
+        </div>
+    </div>
+
+    <script>
+        var getRootUrl = function () {
+            var tmp = window.location.href;
+            return tmp.substring(0, tmp.indexOf('/test'));
+        };
+
+        var getToken = function () {
+            return document.getElementById('tokenInput').value || '1q2w3e';
+        };
+
+        var showResult = function (elementId, message, isError) {
+            var el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = 'result-area ' + (isError ? 'error' : 'success');
+            el.style.display = 'block';
+        };
+
+        // Upload
+        document.getElementById('uploadForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            var fileInput = document.getElementById('fileInput');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                showResult('uploadResult', 'Please select a file first.', true);
+                return;
+            }
+            var formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            var url = getRootUrl() + '/services/jersey/files/upload?token=' + getToken();
+            fetch(url, {
+                method: 'POST',
+                body: formData
+            }).then(function (response) {
+                if (!response.ok) throw new Error('HTTP ' + response.status + ' ' + response.statusText);
+                return response.text();
+            }).then(function (data) {
+                showResult('uploadResult', 'Upload successful!\n' + data, false);
+            }).catch(function (err) {
+                showResult('uploadResult', 'Upload failed: ' + err.message, true);
+            });
+        });
+
+        // Download
+        var downloadFile = function () {
+            var fileName = document.getElementById('fileNameInput').value;
+            var url = getRootUrl() + '/services/jersey/files/download?token=' + getToken();
+            if (fileName) {
+                url += '&fileName=' + encodeURIComponent(fileName);
+            }
+            window.open(url);
+        };
+    </script>
 </body>
-<script>
-	var download = function() {
-		window.open("services/jersey/files/download?token=1q2w3e");
-	}
-</script>
 </html>

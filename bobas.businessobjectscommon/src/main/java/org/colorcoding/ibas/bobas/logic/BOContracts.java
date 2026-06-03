@@ -185,9 +185,10 @@ class BOKeysContract extends BOContract<IBusinessObject> implements IBOKeysContr
 					stringBuilder.append(Strings.valueOf(bo.getProperty(item)));
 				}
 				this.maxValueKey = stringBuilder.toString();
-
 			}
-			this.maxValueKey = Strings.VALUE_EMPTY;
+			if (this.maxValueKey == null) {
+				this.maxValueKey = Strings.VALUE_EMPTY;
+			}
 		}
 		return this.maxValueKey;
 	}

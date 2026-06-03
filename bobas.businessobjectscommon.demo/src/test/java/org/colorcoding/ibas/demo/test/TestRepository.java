@@ -1,4 +1,4 @@
-package bobas.businessobjectscommon.demo.test;
+package org.colorcoding.ibas.demo.test;
 
 import java.util.Random;
 
@@ -21,12 +21,23 @@ import org.colorcoding.ibas.demo.repository.BORepositoryTrainingTesting;
 
 import junit.framework.TestCase;
 
+/**
+ * 数据仓库（Repository）功能测试
+ *
+ * 测试范围：
+ * 1. 事务管理（开启/回滚，回滚后数据不可见）
+ * 2. 自动关闭资源（try-with-resources）
+ */
 public class TestRepository extends TestCase {
 
+	// ==================== 1. 事务管理 ====================
+
+	/**
+	 * 测试事务管理
+	 * 覆盖：开启事务→保存物料→保存订单（含2000行子项）→回滚事务→查询验证数据不可见
+	 */
 	public void testTransaction() throws Exception {
 		try (BORepositoryTrainingTesting boRepository = new BORepositoryTrainingTesting()) {
-			// 是否执行业务逻辑
-			// boRepository.skipLogics();
 			boRepository.setUserToken(OrganizationFactory.SYSTEM_USER.getToken());
 			// 打开事务
 			boRepository.beginTransaction();
@@ -49,7 +60,7 @@ public class TestRepository extends TestCase {
 			System.out.println(Strings.format("+++++++++++++ new bo: %s +++++++++++++", materials.toString()));
 			System.out.println();
 
-			// 创建订单
+			// 创建订单（含2000行子项）
 			ISalesOrder salesOrder = new SalesOrder();
 			salesOrder.setCustomerCode("C0001");
 			ISalesOrderItem item = salesOrder.getSalesOrderItems().create();
@@ -98,6 +109,12 @@ public class TestRepository extends TestCase {
 		}
 	}
 
+	// ==================== 2. 自动关闭资源 ====================
+
+	/**
+	 * 测试自动关闭资源（try-with-resources）
+	 * 覆盖：使用try-with-resources管理BORepository，保存并查询用户
+	 */
 	public void testAutoClose() throws Exception {
 		// 打开日志
 		BOInstanceLogService.BO_LOGST_SETTING.put(User.BUSINESS_OBJECT_CODE, true);
@@ -127,7 +144,6 @@ public class TestRepository extends TestCase {
 						item.getUserName()));
 			}
 			System.out.println();
-
 		}
 	}
 }

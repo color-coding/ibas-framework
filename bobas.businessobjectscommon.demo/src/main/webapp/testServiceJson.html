@@ -1,250 +1,305 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Test Services | Json</title>
-    <script type="text/javascript" src="./3rdparty/jquery.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Services | JSON</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #f5f7fa; color: #333; padding: 24px; line-height: 1.6;
+        }
+        h1 { font-size: 22px; color: #2c3e50; margin-bottom: 16px; }
+        h1 small { font-size: 13px; color: #999; font-weight: normal; margin-left: 8px; }
+        .header-row { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+        .token-row { display: flex; align-items: center; gap: 8px; }
+        .token-row label { font-size: 13px; color: #777; }
+        .token-row input {
+            padding: 4px 8px; font-size: 13px; border: 1px solid #ccc; border-radius: 4px; width: 120px;
+        }
+        .link-btn {
+            font-size: 13px; color: #3498db; cursor: pointer; text-decoration: none;
+            border-bottom: 1px dashed #3498db; padding-bottom: 1px;
+        }
+        .link-btn:hover { color: #2980b9; }
+        .card {
+            background: #fff; border-radius: 8px; padding: 16px 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 16px;
+        }
+        .card h2 { font-size: 15px; color: #555; margin-bottom: 10px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { padding: 8px 12px; text-align: left; }
+        th { font-size: 12px; color: #999; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #eee; }
+        td { border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+        tr:last-child td { border-bottom: none; }
+        .bo-name { font-weight: 500; color: #2c3e50; }
+        .btn {
+            display: inline-block; padding: 5px 14px; font-size: 13px; font-weight: 500;
+            color: #fff; background: #3498db; border: none; border-radius: 4px;
+            cursor: pointer; transition: background 0.2s; margin-right: 4px;
+        }
+        .btn:hover { background: #2980b9; }
+        .btn:active { background: #2471a3; }
+        .btn:disabled { background: #bdc3c7; cursor: not-allowed; }
+        .btn-green { background: #27ae60; }
+        .btn-green:hover { background: #219a52; }
+        .btn-orange { background: #e67e22; }
+        .btn-orange:hover { background: #d35400; }
+        .result-card {
+            background: #fff; border-radius: 8px; padding: 16px 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .result-header { display: flex; gap: 24px; margin-bottom: 10px; flex-wrap: wrap; }
+        .result-item { font-size: 13px; }
+        .result-item label { color: #999; margin-right: 4px; }
+        .result-item span { font-weight: 500; color: #2c3e50; }
+        .result-item span.error { color: #c0392b; }
+        .result-item span.success { color: #27ae60; }
+        .result-url {
+            font-size: 12px; color: #888; margin-bottom: 8px; word-break: break-all;
+            padding: 6px 10px; background: #f8f9fa; border-radius: 4px; display: none;
+        }
+        .result-body {
+            padding: 12px; background: #f8f9fa; border: 1px solid #e0e0e0;
+            border-radius: 4px; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 12px; line-height: 1.5; white-space: pre-wrap; word-break: break-all;
+            max-height: 400px; overflow-y: auto; min-height: 40px; color: #555;
+        }
+        .result-body:empty::before { content: "No data"; color: #ccc; }
+        .loading .result-body::after { content: "Loading..."; color: #999; }
+        .nav-links { margin-bottom: 16px; font-size: 13px; }
+        .nav-links a { color: #3498db; text-decoration: none; margin-right: 12px; }
+        .nav-links a:hover { text-decoration: underline; }
+    </style>
     <script>
+        // ---- 工具方法 ----
         var getRootUrl = function () {
             var tmp = window.location.href;
             return tmp.substring(0, tmp.indexOf('/test'));
         };
-        var getWADL = function () {
-            var url = getRootUrl() + '/services/jersey/application.wadl';
-            $.ajax({
-                type: 'GET',
-                contentType: "application/xml",
-                url: url,
-                success: function (data, status) {
-                    document.location.assign(url);
-                },
-                error: function (err) {
-                    showErrors(err);
-                }
-            });
+
+        var getToken = function () {
+            return document.getElementById('tokenInput').value || '1q2w3e';
         };
+
         var address = getRootUrl() + '/services/jersey/json';
-        var showResult = function (opRslt) {
-            $("#rsltCode").html("");
-            $("#rsltMsg").html("");
-            $("#rsltCount").html("");
-            $("#rsltValues").html("");
-            if (opRslt) {
-                if (opRslt.ResultCode) {
-                    $("#rsltCode").html(opRslt.ResultCode);
+
+        var $id = function (id) { return document.getElementById(id); };
+
+        // ---- 显示结果 ----
+        var showResult = function (opRslt, url) {
+            $id('rsltCode').textContent = '';
+            $id('rsltCode').className = '';
+            $id('rsltMsg').textContent = '';
+            $id('rsltMsg').className = '';
+            $id('rsltCount').textContent = '';
+            $id('rsltValues').textContent = '';
+            if (url) {
+                $id('rsltUrl').textContent = url;
+                $id('rsltUrl').style.display = 'block';
+            }
+            if (opRslt !== null && opRslt !== undefined) {
+                if (opRslt.ResultCode !== undefined) {
+                    $id('rsltCode').textContent = opRslt.ResultCode;
+                    $id('rsltCode').className = opRslt.ResultCode === 0 ? 'success' : 'error';
                 }
                 if (opRslt.Message) {
-                    $("#rsltMsg").html(opRslt.Message);
+                    $id('rsltMsg').textContent = opRslt.Message;
                 }
                 if (opRslt.ResultObjects) {
-                    $("#rsltCount").html(opRslt.ResultObjects.length);
+                    $id('rsltCount').textContent = Array.isArray(opRslt.ResultObjects) ? opRslt.ResultObjects.length : 0;
                 }
-                $("#rsltValues").html(JSON.stringify(opRslt, null, 4));
-            }
-            else {
-                $("#rsltCode").html(-999);
-                $("#rsltMsg").html("unkown.");
+                $id('rsltValues').textContent = JSON.stringify(opRslt, null, 2);
+            } else {
+                $id('rsltCode').textContent = '-999';
+                $id('rsltCode').className = 'error';
+                $id('rsltMsg').textContent = 'Unknown error.';
             }
         };
-        var showErrors = function (err) {
-            $("#rsltCode").html("");
-            $("#rsltMsg").html("");
-            $("#rsltCount").html("");
-            $("#rsltValues").html("");
-            if (err) {
-                if (err.status) {
-                    $("#rsltCode").html(err.status);
-                }
-                if (err.statusText) {
-                    $("#rsltMsg").html(err.statusText);
-                }
-                $("#rsltValues").html(err.responseText);
+
+        var showError = function (status, statusText, responseText, url) {
+            $id('rsltCode').textContent = status || '-999';
+            $id('rsltCode').className = 'error';
+            $id('rsltMsg').textContent = statusText || 'Unknown error.';
+            $id('rsltCount').textContent = '';
+            $id('rsltValues').textContent = responseText || '';
+            if (url) {
+                $id('rsltUrl').textContent = url;
+                $id('rsltUrl').style.display = 'block';
             }
-            else {
-                $("#rsltCode").html(-999);
-                $("#rsltMsg").html("unkown.");
+        };
+
+        // ---- 请求封装 ----
+        var ajaxGet = function (url) {
+            return fetch(url, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            }).then(function (response) {
+                if (!response.ok) throw response;
+                return response.text();
+            });
+        };
+
+        var ajaxPost = function (url, data) {
+            return fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(function (response) {
+                if (!response.ok) throw response;
+                return response.json();
+            });
+        };
+
+        var handleFetchError = function (err, url) {
+            if (err instanceof Response) {
+                err.text().then(function (text) {
+                    showError(err.status, err.statusText, text, url);
+                });
+            } else {
+                showError(-999, err.message || 'Network error', '', url);
             }
-        }
+        };
+
+        // ---- Schema → 默认对象 ----
         var generateFromSchema = function (schema) {
-            // 处理对象类型
             if (schema.type === 'object') {
-                const obj = {};
+                var obj = {};
                 if (schema.properties) {
-                    Object.entries(schema.properties).forEach(([key, value]) => {
-                        obj[key] = generateFromSchema(value);
+                    Object.keys(schema.properties).forEach(function (key) {
+                        obj[key] = generateFromSchema(schema.properties[key]);
                     });
                 }
                 return obj;
             }
-            // 处理数组类型
             if (schema.type === 'array') {
                 if (schema.items) {
                     return [generateFromSchema(schema.items)];
                 }
                 return [];
             }
-            // 处理基础类型（带默认值）
             if (schema.default !== undefined) {
                 return schema.default;
             }
-            // 返回类型默认值
-            const typeDefaults = {
-                string: '',
-                number: 0,
-                boolean: false,
-                null: null
-            };
-            return typeDefaults[schema.type] ?? null;
-        }
-        var token = '1q2w3e';
+            var typeDefaults = { string: '', number: 0, boolean: false, null: null };
+            return typeDefaults[schema.type] !== undefined ? typeDefaults[schema.type] : null;
+        };
+
+        // ---- 业务操作 ----
         var testCreateMaterials = function () {
-            var url = address + '/schema?boCode=CC_TT_MATERIALS&token=' + token;
-            var criteria = {};
-            $.ajax({
-                type: 'GET',
-                contentType: "application/json",
-                url: url,
-                success: function (data, status) {
-                    showResult(generateFromSchema(JSON.parse(data)));
-                },
-                error: function (err) {
-                    showErrors(err);
-                }
-            });
-        }
+            var url = address + '/schema?boCode=CC_TT_MATERIALS&token=' + getToken();
+            ajaxGet(url).then(function (data) {
+                var obj = generateFromSchema(JSON.parse(data));
+                showResult(obj, url);
+            }).catch(function (err) { handleFetchError(err, url); });
+        };
+
         var testFetchMaterials = function () {
-            var url = address + '/fetchMaterials?token=' + token;
-            var criteria = {};
-            $.ajax({
-                type: 'POST',
-                contentType: "application/json",
-                url: url,
-                data: JSON.stringify(criteria),
-                success: function (data, status) {
-                    showResult(data);
-                },
-                error: function (err) {
-                    showErrors(err);
-                }
-            });
-        }
+            var url = address + '/fetchMaterials?token=' + getToken();
+            ajaxPost(url, {}).then(function (data) {
+                showResult(data, url);
+            }).catch(function (err) { handleFetchError(err, url); });
+        };
+
         var testSaveMaterials = function () {
-            var url = address + '/saveMaterials?token=' + token;
-            var data = testCreateMaterials();
-            $.ajax({
-                type: 'POST',
-                contentType: "application/json",
-                url: url,
-                data: JSON.stringify(data),
-                success: function (data, status) {
-                    showResult(data);
-                },
-                error: function (err) {
-                    showErrors(err);
-                }
-            });
+            var schemaUrl = address + '/schema?boCode=CC_TT_MATERIALS&token=' + getToken();
+            var saveUrl = address + '/saveMaterials?token=' + getToken();
+            // 先获取 schema 创建默认对象，再保存
+            ajaxGet(schemaUrl).then(function (data) {
+                var obj = generateFromSchema(JSON.parse(data));
+                return ajaxPost(saveUrl, obj);
+            }).then(function (data) {
+                showResult(data, saveUrl);
+            }).catch(function (err) { handleFetchError(err, saveUrl); });
         };
 
         var testCreateSalesOrder = function () {
-            var url = address + '/schema?boCode=CC_TT_SALESORDER&token=' + token;
-            var criteria = {};
-            $.ajax({
-                type: 'GET',
-                contentType: "application/json",
-                url: url,
-                success: function (data, status) {
-                    showResult(generateFromSchema(JSON.parse(data)));
-                },
-                error: function (err) {
-                    showErrors(err);
-                }
-            });
-        }
-        var testFetchSalesOrder = function () {
-            var url = address + '/fetchSalesOrder?token=' + token;
-            var criteria = { "ResultCount": "20" };
-            $.ajax({
-                type: 'POST',
-                contentType: "application/json",
-                url: url,
-                data: JSON.stringify(criteria),
-                success: function (data, status) {
-                    showResult(data);
-                },
-                error: function (err) {
-                    showErrors(err);
-                }
-            });
-        }
-        var testSaveSalesOrder = function () {
-            var url = address + '/saveSalesOrder?token=' + token;
-            var data = testCreateSalesOrder();
-            $.ajax({
-                type: 'POST',
-                contentType: "application/json",
-                url: url,
-                data: JSON.stringify(data),
-                success: function (data, status) {
-                    showResult(data);
-                },
-                error: function (err) {
-                    showErrors(err);
-                }
-            });
+            var url = address + '/schema?boCode=CC_TT_SALESORDER&token=' + getToken();
+            ajaxGet(url).then(function (data) {
+                var obj = generateFromSchema(JSON.parse(data));
+                showResult(obj, url);
+            }).catch(function (err) { handleFetchError(err, url); });
         };
 
+        var testFetchSalesOrder = function () {
+            var url = address + '/fetchSalesOrder?token=' + getToken();
+            ajaxPost(url, { ResultCount: 20 }).then(function (data) {
+                showResult(data, url);
+            }).catch(function (err) { handleFetchError(err, url); });
+        };
+
+        var testSaveSalesOrder = function () {
+            var schemaUrl = address + '/schema?boCode=CC_TT_SALESORDER&token=' + getToken();
+            var saveUrl = address + '/saveSalesOrder?token=' + getToken();
+            ajaxGet(schemaUrl).then(function (data) {
+                var obj = generateFromSchema(JSON.parse(data));
+                return ajaxPost(saveUrl, obj);
+            }).then(function (data) {
+                showResult(data, saveUrl);
+            }).catch(function (err) { handleFetchError(err, saveUrl); });
+        };
+
+        var getWADL = function () {
+            var url = getRootUrl() + '/services/jersey/application.wadl';
+            window.open(url);
+        };
     </script>
 </head>
 
 <body>
-    <label>test data services | json</label>
-    <a href=""><label style="color:blue" onclick="getWADL();"> [WADL]</label></a>
-    <br />
-    <div>
+    <div class="header-row">
+        <h1>🔗 JSON Service Tester <small>application/json</small></h1>
+        <div class="token-row">
+            <label>Token:</label>
+            <input type="text" id="tokenInput" value="1q2w3e" />
+        </div>
+    </div>
+
+    <div class="nav-links">
+        <a href="testServiceXml.html">XML Service</a>
+        <a href="testServiceFile.html">File Service</a>
+        <a href="javascript:void(0)" onclick="getWADL()">WADL</a>
+    </div>
+
+    <div class="card">
+        <h2>Business Objects</h2>
         <table>
-            <tr>
-                <td>
-                    <label>Materials</label>
-                </td>
-                <td>
-                    <input type="button" value="create" onclick="testCreateMaterials();" />
-                </td>
-                <td>
-                    <input type="button" value="fetch" onclick="testFetchMaterials();" />
-                </td>
-                <td>
-                    <input type="button" value="save" onclick="testSaveMaterials();" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label>SalesOrder</label>
-                </td>
-                <td>
-                    <input type="button" value="create" onclick="testCreateSalesOrder();" />
-                </td>
-                <td>
-                    <input type="button" value="fetch" onclick="testFetchSalesOrder();" />
-                </td>
-                <td>
-                    <input type="button" value="save" onclick="testSaveSalesOrder();" />
-                </td>
-            </tr>
+            <thead>
+                <tr>
+                    <th style="width:30%">Object</th>
+                    <th style="width:23%">Create (Schema)</th>
+                    <th style="width:23%">Fetch</th>
+                    <th style="width:24%">Save</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="bo-name">Materials</td>
+                    <td><button class="btn" onclick="testCreateMaterials()">Create</button></td>
+                    <td><button class="btn btn-green" onclick="testFetchMaterials()">Fetch</button></td>
+                    <td><button class="btn btn-orange" onclick="testSaveMaterials()">Save</button></td>
+                </tr>
+                <tr>
+                    <td class="bo-name">SalesOrder</td>
+                    <td><button class="btn" onclick="testCreateSalesOrder()">Create</button></td>
+                    <td><button class="btn btn-green" onclick="testFetchSalesOrder()">Fetch</button></td>
+                    <td><button class="btn btn-orange" onclick="testSaveSalesOrder()">Save</button></td>
+                </tr>
+            </tbody>
         </table>
     </div>
-    <br />
-    <div>
-        <label>code:</label>
-        <label id="rsltCode"></label>
-        <br />
-        <label>messages:</label>
-        <label id="rsltMsg"></label>
-        <br />
-        <label>count:</label>
-        <label id="rsltCount"></label>
-        <br />
-        <label id="rsltValues"></label>
+
+    <div class="result-card">
+        <h2>Result</h2>
+        <div class="result-header">
+            <div class="result-item"><label>Code:</label><span id="rsltCode"></span></div>
+            <div class="result-item"><label>Message:</label><span id="rsltMsg"></span></div>
+            <div class="result-item"><label>Count:</label><span id="rsltCount"></span></div>
+        </div>
+        <div id="rsltUrl" class="result-url"></div>
+        <pre id="rsltValues" class="result-body"></pre>
     </div>
 </body>
 

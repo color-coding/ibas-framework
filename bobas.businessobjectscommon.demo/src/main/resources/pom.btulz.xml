@@ -33,5 +33,10 @@
 			<artifactId>btulz.transforms.bobas</artifactId>
 			<version>0.2.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.colorcoding.ibas</groupId>
+			<artifactId>bobas.businessobjectscommon.db.sqlite</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 </project>
