@@ -2,12 +2,16 @@ package org.colorcoding.ibas.bobas.logic.common;
 
 import org.colorcoding.ibas.bobas.bo.BOUtilities;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
+import org.colorcoding.ibas.bobas.bo.IBOTagReferenced;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.core.ITrackable;
+import org.colorcoding.ibas.bobas.data.emYesNo;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logic.BusinessLogic;
 import org.colorcoding.ibas.bobas.logic.LogicContract;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
+import org.colorcoding.ibas.bobas.rule.BusinessRuleException;
 import org.colorcoding.ibas.bobas.rule.BusinessRulesManager;
 import org.colorcoding.ibas.bobas.rule.IBusinessRules;
 import org.colorcoding.ibas.bobas.rule.ICheckRules;
@@ -79,7 +83,20 @@ public class BORulesService extends BusinessLogic<IBORulesContract, IBusinessObj
 
 	@Override
 	protected void revoke(IBORulesContract contract) {
-
+		// 引用的数据，不能被物理删除
+		if (contract.getHost() instanceof IBOTagReferenced) {
+			if (this.getTrigger() instanceof IBusinessObject) {
+				if (contract.getHost().getClass() == this.getTrigger().getClass()) {
+					IBusinessObject trigger = (IBusinessObject) this.getTrigger();
+					if (BOUtilities.isSame(contract.getHost(), trigger, true)) {
+						if (trigger.isDeleted() && ((IBOTagReferenced) trigger).getReferenced() == emYesNo.YES) {
+							throw new BusinessRuleException(
+									I18N.prop("msg_bobas_data_was_referenced_not_allow_to_delete", trigger.toString()));
+						}
+					}
+				}
+			}
+		}
 	}
 
 }
