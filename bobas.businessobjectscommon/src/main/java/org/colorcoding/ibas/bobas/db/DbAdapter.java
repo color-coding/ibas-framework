@@ -347,18 +347,25 @@ public abstract class DbAdapter {
 	public DbFieldType dbFieldTypeOf(int sqlType) {
 		if (java.sql.Types.VARCHAR == sqlType || java.sql.Types.NVARCHAR == sqlType
 				|| java.sql.Types.LONGNVARCHAR == sqlType || java.sql.Types.LONGVARCHAR == sqlType
-				|| java.sql.Types.CHAR == sqlType || java.sql.Types.CLOB == sqlType || java.sql.Types.NCHAR == sqlType
-				|| java.sql.Types.NCLOB == sqlType) {
+				|| java.sql.Types.CHAR == sqlType || java.sql.Types.NCHAR == sqlType) {
 			return DbFieldType.ALPHANUMERIC;
+		} else if (java.sql.Types.CLOB == sqlType || java.sql.Types.NCLOB == sqlType) {
+			return DbFieldType.MEMO;
 		} else if (java.sql.Types.DECIMAL == sqlType || java.sql.Types.DOUBLE == sqlType
-				|| java.sql.Types.FLOAT == sqlType) {
+				|| java.sql.Types.FLOAT == sqlType || java.sql.Types.REAL == sqlType
+				|| java.sql.Types.NUMERIC == sqlType) {
 			return DbFieldType.DECIMAL;
 		} else if (java.sql.Types.DATE == sqlType || java.sql.Types.TIMESTAMP == sqlType
-				|| java.sql.Types.TIMESTAMP_WITH_TIMEZONE == sqlType) {
+				|| java.sql.Types.TIMESTAMP_WITH_TIMEZONE == sqlType || java.sql.Types.TIME == sqlType
+				|| java.sql.Types.TIME_WITH_TIMEZONE == sqlType) {
 			return DbFieldType.DATE;
 		} else if (java.sql.Types.INTEGER == sqlType || java.sql.Types.SMALLINT == sqlType
-				|| java.sql.Types.TINYINT == sqlType || java.sql.Types.NUMERIC == sqlType) {
+				|| java.sql.Types.TINYINT == sqlType || java.sql.Types.BIGINT == sqlType) {
 			return DbFieldType.NUMERIC;
+		} else if (java.sql.Types.BIT == sqlType || java.sql.Types.BOOLEAN == sqlType
+				|| java.sql.Types.BINARY == sqlType || java.sql.Types.VARBINARY == sqlType
+				|| java.sql.Types.LONGVARBINARY == sqlType || java.sql.Types.BLOB == sqlType) {
+			return DbFieldType.BYTES;
 		}
 		return DbFieldType.UNKNOWN;
 	}
@@ -379,7 +386,7 @@ public abstract class DbAdapter {
 		} else if (type == DbFieldType.NUMERIC) {
 			return java.sql.Types.INTEGER;
 		} else if (type == DbFieldType.BYTES) {
-			return java.sql.Types.BIT;
+			return java.sql.Types.VARBINARY;
 		} else if (type == DbFieldType.MEMO) {
 			return java.sql.Types.LONGVARCHAR;
 		}
@@ -819,77 +826,70 @@ public abstract class DbAdapter {
 			for (int i = 0; i < condition.getBracketOpen(); i++) {
 				stringBuilder.append("(");
 			}
-			// 字段名
-			if (condition.getAliasDataType() == DbFieldType.MEMO) {
-				stringBuilder.append(this.identifier());
-				stringBuilder.append(condition.getAlias());
-				stringBuilder.append(this.identifier());
-			} else if ((condition.getAliasDataType() == DbFieldType.NUMERIC
-					|| condition.getAliasDataType() == DbFieldType.DECIMAL
-					|| condition.getAliasDataType() == DbFieldType.DATE)
-					&& (condition.getOperation() == ConditionOperation.START
-							|| condition.getOperation() == ConditionOperation.END
-							|| condition.getOperation() == ConditionOperation.CONTAIN
-							|| condition.getOperation() == ConditionOperation.NOT_CONTAIN
-							|| condition.getOperation() == ConditionOperation.IN
-							|| condition.getOperation() == ConditionOperation.NOT_IN)) {
-				// 数值类型的字段且需要作为字符比较的
-				stringBuilder.append(this.castAs(DbFieldType.ALPHANUMERIC, condition.getAlias()));
-			} else if (!Strings.isNullOrEmpty(condition.getComparedAlias())) {
-				// 字段之间比较，以主条件为比较类型
-				stringBuilder.append(this.identifier());
-				stringBuilder.append(condition.getAlias());
-				stringBuilder.append(this.identifier());
-				stringBuilder.append(" ");
-				stringBuilder.append(this.parsing(condition.getOperation()));
-				stringBuilder.append(" ");
-				stringBuilder.append(this.castAs(condition.getAliasDataType(), condition.getComparedAlias()));
+			// 比较左侧
+			if (Strings.isNullOrEmpty(condition.getAlias())) {
+				// 字段名为空，则为值(ComparedAlias)与值(Value)的比较
+				stringBuilder.append("?");
 			} else {
-				stringBuilder.append(this.identifier());
-				stringBuilder.append(condition.getAlias());
-				stringBuilder.append(this.identifier());
-			}
-			if (Strings.isNullOrEmpty(condition.getComparedAlias())) {
-				// 字段与值的比较
-				stringBuilder.append(" ");
-				if (condition.getOperation() == ConditionOperation.IS_NULL
-						|| condition.getOperation() == ConditionOperation.NOT_NULL) {
-					// 不需要值的比较，[ItemName] is NULL
-					stringBuilder.append(this.parsing(condition.getOperation()));
-				} else if (condition.getOperation() == ConditionOperation.IN
-						|| condition.getOperation() == ConditionOperation.NOT_IN) {
-					// 与值比较，[ItemCode] IN ('A000001', 'A000002')
-					stringBuilder.append(this.parsing(condition.getOperation()));
-					stringBuilder.append(" ");
-					stringBuilder.append("(");
-					if (!Strings.isNullOrEmpty(condition.getValue())) {
-						String[] values = condition.getValue().split(DataConvert.DATA_SEPARATOR);
-						for (int i = 0; i < values.length; i++) {
-							if (i > 0) {
-								stringBuilder.append(DataConvert.DATA_SEPARATOR);
-								stringBuilder.append(" ");
-							}
-							stringBuilder.append("?");
-						}
-					}
-					stringBuilder.append(")");
+				// 输出字段名
+				if ((condition.getAliasDataType() == DbFieldType.NUMERIC
+						|| condition.getAliasDataType() == DbFieldType.DECIMAL
+						|| condition.getAliasDataType() == DbFieldType.DATE)
+						&& (condition.getOperation() == ConditionOperation.START
+								|| condition.getOperation() == ConditionOperation.END
+								|| condition.getOperation() == ConditionOperation.CONTAIN
+								|| condition.getOperation() == ConditionOperation.NOT_CONTAIN
+								|| condition.getOperation() == ConditionOperation.IN
+								|| condition.getOperation() == ConditionOperation.NOT_IN)) {
+					// 数值类型的字段且需要作为字符比较的
+					stringBuilder.append(this.castAs(DbFieldType.ALPHANUMERIC, condition.getAlias()));
 				} else {
-					// 与值比较，[ItemCode] = 'A000001'
-					stringBuilder.append(this.parsing(condition.getOperation()));
-					stringBuilder.append(" ");
+					stringBuilder.append(this.identifier());
+					stringBuilder.append(condition.getAlias());
+					stringBuilder.append(this.identifier());
+				}
+			}
+			// 操作符
+			stringBuilder.append(" ");
+			stringBuilder.append(this.parsing(condition.getOperation()));
+			if (condition.getOperation() == ConditionOperation.IS_NULL
+					|| condition.getOperation() == ConditionOperation.NOT_NULL) {
+				// 空和非空判断，忽略比较值
+				continue;
+			}
+			// 比较右侧
+			stringBuilder.append(" ");
+			if (!Strings.isNullOrEmpty(condition.getAlias()) && !Strings.isNullOrEmpty(condition.getComparedAlias())) {
+				// 字段与字段的比较：[Alias] = CAST(ComparedAlias)
+				stringBuilder.append(this.castAs(condition.getAliasDataType(), condition.getComparedAlias()));
+			} else if (condition.getOperation() == ConditionOperation.IN
+					|| condition.getOperation() == ConditionOperation.NOT_IN) {
+				// IN、NOT IN，值拆成数组
+				stringBuilder.append("(");
+				int count = Strings.split(condition.getValue()).length;
+				for (int i = 0; i < count; i++) {
+					if (i > 0) {
+						stringBuilder.append(Strings.VALUE_COMMA);
+						stringBuilder.append(" ");
+					}
 					stringBuilder.append("?");
 				}
-				if (condition.getOperation() == ConditionOperation.START
-						|| condition.getOperation() == ConditionOperation.END
-						|| condition.getOperation() == ConditionOperation.CONTAIN
-						|| condition.getOperation() == ConditionOperation.NOT_CONTAIN) {
-					stringBuilder.append(" ");
-					stringBuilder.append("ESCAPE");
-					stringBuilder.append(" ");
-					stringBuilder.append("'");
-					stringBuilder.append(this.escape());
-					stringBuilder.append("'");
-				}
+				stringBuilder.append(")");
+			} else {
+				// 直接比较值
+				stringBuilder.append("?");
+			}
+			if ((condition.getOperation() == ConditionOperation.START
+					|| condition.getOperation() == ConditionOperation.END
+					|| condition.getOperation() == ConditionOperation.CONTAIN
+					|| condition.getOperation() == ConditionOperation.NOT_CONTAIN)
+					&& !Strings.isNullOrEmpty(condition.getAlias())) {
+				stringBuilder.append(" ");
+				stringBuilder.append("ESCAPE");
+				stringBuilder.append(" ");
+				stringBuilder.append("'");
+				stringBuilder.append(this.escape());
+				stringBuilder.append("'");
 			}
 			// 闭括号
 			for (int i = 0; i < condition.getBracketClose(); i++) {

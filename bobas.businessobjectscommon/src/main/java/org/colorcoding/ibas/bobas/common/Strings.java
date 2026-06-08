@@ -538,6 +538,27 @@ public class Strings {
 	}
 
 	/**
+	 * 分割字符串
+	 * 
+	 * @param content 内容
+	 * @param regex   分割字符
+	 * @return
+	 */
+	public static String[] split(String content, String regex) {
+		return isNullOrEmpty(content) ? new String[] {} : content.split(regex);
+	}
+
+	/**
+	 * 分割字符串（,）
+	 * 
+	 * @param content 内容
+	 * @return
+	 */
+	public static String[] split(String content) {
+		return split(content, VALUE_COMMA);
+	}
+
+	/**
 	 * 转换字符串为16进制字符串
 	 *
 	 * @param value 字符串；null返回空字符串

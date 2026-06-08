@@ -41,9 +41,11 @@ public enum DbFieldType {
 	 * @return 数据库字段类型
 	 */
 	public static DbFieldType valueOf(Class<?> type) {
-		if (type == BigDecimal.class || type == Float.class || type == Double.class) {
+		if (type == BigDecimal.class || type == Float.class || type == Double.class || type == float.class
+				|| type == double.class) {
 			return DECIMAL;
-		} else if (type == Integer.class || type == Short.class || type == Long.class) {
+		} else if (type == Integer.class || type == Short.class || type == Long.class || type == int.class
+				|| type == short.class || type == long.class) {
 			return NUMERIC;
 		} else if (type == DateTime.class) {
 			return DATE;

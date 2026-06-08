@@ -35,7 +35,6 @@ import org.colorcoding.ibas.bobas.common.Result;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
-import org.colorcoding.ibas.bobas.data.DataConvert;
 import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.expression.BOJudgmentLinkCondition;
@@ -196,17 +195,32 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 	protected void fillingParameters(PreparedStatement statement, Iterable<ICondition> conditions, int index)
 			throws SQLException, Exception {
 		for (ICondition condition : conditions) {
+			// 比较左侧
+			if (Strings.isNullOrEmpty(condition.getAlias())) {
+				// 字段名为空，则为值(ComparedAlias)与值(Value)的比较
+				statement.setObject(index, condition.getComparedAlias(),
+						this.getAdapter().sqlTypeOf(condition.getAliasDataType()));
+				index += 1;
+			}
 			if (condition.getOperation() == ConditionOperation.IS_NULL
 					|| condition.getOperation() == ConditionOperation.NOT_NULL) {
-				// 空比较，不需要值
+				// 空和非空判断，忽略比较值
 				continue;
 			}
-			if (!Strings.isNullOrEmpty(condition.getComparedAlias())) {
-				// 字段间比较，不需要值
+			if (!Strings.isNullOrEmpty(condition.getAlias()) && !Strings.isNullOrEmpty(condition.getComparedAlias())) {
+				// 字段与字段的比较，不需要值
 				continue;
 			}
-			// 填充语句参数值，注意：包含、开始等，类型应为字符，且需要补充%号
-			if (condition.getOperation() == ConditionOperation.START) {
+			// 比较右侧
+			if (condition.getOperation() == ConditionOperation.IN
+					|| condition.getOperation() == ConditionOperation.NOT_IN) {
+				// IN、NOT IN，值拆成数组
+				String[] values = Strings.split(condition.getValue());
+				for (String value : values) {
+					statement.setObject(index, value.trim(), this.getAdapter().sqlTypeOf(DbFieldType.ALPHANUMERIC));
+					index += 1;
+				}
+			} else if (condition.getOperation() == ConditionOperation.START) {
 				statement.setObject(index, this.getAdapter().escape(condition.getValue(), '_', '%') + "%",
 						this.getAdapter().sqlTypeOf(DbFieldType.ALPHANUMERIC));
 				index += 1;
@@ -222,16 +236,8 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 				statement.setObject(index, "%" + this.getAdapter().escape(condition.getValue(), '_', '%') + "%",
 						this.getAdapter().sqlTypeOf(DbFieldType.ALPHANUMERIC));
 				index += 1;
-			} else if (condition.getOperation() == ConditionOperation.IN
-					|| condition.getOperation() == ConditionOperation.NOT_IN) {
-				if (!Strings.isNullOrEmpty(condition.getValue())) {
-					String[] values = condition.getValue().split(DataConvert.DATA_SEPARATOR);
-					for (String value : values) {
-						statement.setObject(index, value.trim(), this.getAdapter().sqlTypeOf(DbFieldType.ALPHANUMERIC));
-						index += 1;
-					}
-				}
 			} else {
+				// 直接比较值
 				statement.setObject(index, condition.getValue(),
 						this.getAdapter().sqlTypeOf(condition.getAliasDataType()));
 				index += 1;
@@ -262,11 +268,16 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 						? this.getAdapter().parsingSelect(boType, nCriteria, true)
 						: this.getAdapter().parsingSelect(boType, nCriteria);
 				if (MyConfiguration.isDebugMode()) {
-					Logger.log(MessageLevel.DEBUG, Strings.format("db sql: %s", sql));
+					Logger.log(MessageLevel.DEBUG, Strings.format("prepared sql: %s", sql));
 				}
 				try (PreparedStatement statement = this.getConnection().prepareStatement(sql)) {
 					// 填充参数
 					this.fillingParameters(statement, nCriteria.getConditions(), 1);
+					if (MyConfiguration.isDebugMode()) {
+						SqlBuilder sqlBuilder = new SqlBuilder(sql);
+						this.fillingParameters(sqlBuilder, nCriteria.getConditions(), 1);
+						Logger.log(MessageLevel.DEBUG, Strings.format("executable sql: %s", sqlBuilder.getExecutableSql()));
+					}
 					// 运行查询
 					try (ResultSet resultSet = statement.executeQuery();) {
 						results = this.getAdapter().parsingDatas(boType, resultSet);
@@ -677,7 +688,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 							return new SQLException("no sql statement.");
 						}
 						if (MyConfiguration.isDebugMode()) {
-							Logger.log(MessageLevel.DEBUG, Strings.format("db sql: %s", sql));
+							Logger.log(MessageLevel.DEBUG, Strings.format("prepared sql: %s", sql));
 						}
 						Object value;
 						DbField dbField;
@@ -1020,11 +1031,16 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 			criteria = this.getAdapter().convert(criteria, maxValue.getType());
 			String sql = this.getAdapter().parsingMaxValue(maxValue, criteria.getConditions());
 			if (MyConfiguration.isDebugMode()) {
-				Logger.log(MessageLevel.DEBUG, Strings.format("db sql: %s", sql));
+				Logger.log(MessageLevel.DEBUG, Strings.format("prepared sql: %s", sql));
 			}
 			try (PreparedStatement statement = this.getConnection().prepareStatement(sql)) {
 				// 填充参数
 				this.fillingParameters(statement, criteria.getConditions(), 1);
+				if (MyConfiguration.isDebugMode()) {
+					SqlBuilder sqlBuilder = new SqlBuilder(sql);
+					this.fillingParameters(sqlBuilder, criteria.getConditions(), 1);
+					Logger.log(MessageLevel.DEBUG, Strings.format("executable sql: %s", sqlBuilder.getExecutableSql()));
+				}
 				// 运行查询
 				try (ResultSet resultSet = statement.executeQuery()) {
 					while (resultSet.next()) {
@@ -1051,7 +1067,8 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 		try {
 			Objects.requireNonNull(sqlStatement);
 			String sql = this.getAdapter().parsing(sqlStatement);
-			Logger.log(MessageLevel.DEBUG, Strings.format("db sql: run by user [%s].\n%s", this.getUser().getId(), sql));
+			Logger.log(MessageLevel.DEBUG,
+					Strings.format("db sql: run by user [%s].\n%s", this.getUser().getId(), sql));
 			// 运行查询，不使用预编译方式
 			try (Statement statement = this.getConnection().createStatement()) {
 				try (ResultSet resultSet = statement.executeQuery(sql)) {

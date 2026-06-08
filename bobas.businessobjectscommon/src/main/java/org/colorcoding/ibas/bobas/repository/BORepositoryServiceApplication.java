@@ -142,6 +142,9 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 				// 使用过滤查询（存在子查询则不使用，第一个条件为“或”不能使用）
 				criteria = criteria.copyFrom(filterCriteria);
 				IOperationResult<T> opRslt = super.fetch(boType, criteria);
+				if (opRslt.getError() != null) {
+					throw opRslt.getError();
+				}
 				Logger.log("repository: filter fetch [%s], result [%s].", boType.getName(),
 						opRslt.getResultObjects().size());
 				operationResult.addResultObjects(opRslt.getResultObjects());

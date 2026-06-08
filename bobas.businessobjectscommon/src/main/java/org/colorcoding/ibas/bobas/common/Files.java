@@ -8,8 +8,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.FileAttribute;
+import java.util.Collection;
 import java.util.Properties;
 
 import org.colorcoding.ibas.bobas.data.ArrayList;
@@ -324,5 +330,572 @@ public class Files {
 		try (FileInputStream inputStream = new FileInputStream(file)) {
 			return readAllBytes(inputStream);
 		}
+	}
+
+	// ======================== java.nio.file.Files 常用方法封装 ========================
+
+	/**
+	 * 判断文件或目录是否存在
+	 *
+	 * @param path 路径
+	 * @return 存在返回true
+	 */
+	public static boolean exists(String path) {
+		return exists(valueOf(path));
+	}
+
+	/**
+	 * 判断文件或目录是否存在
+	 *
+	 * @param file 文件
+	 * @return 存在返回true
+	 */
+	public static boolean exists(File file) {
+		return java.nio.file.Files.exists(file.toPath(), LinkOption.NOFOLLOW_LINKS);
+	}
+
+	/**
+	 * 判断是否为目录
+	 *
+	 * @param path 路径
+	 * @return 是目录返回true
+	 */
+	public static boolean isDirectory(String path) {
+		return isDirectory(valueOf(path));
+	}
+
+	/**
+	 * 判断是否为目录
+	 *
+	 * @param file 文件
+	 * @return 是目录返回true
+	 */
+	public static boolean isDirectory(File file) {
+		return java.nio.file.Files.isDirectory(file.toPath(), LinkOption.NOFOLLOW_LINKS);
+	}
+
+	/**
+	 * 判断是否为普通文件
+	 *
+	 * @param path 路径
+	 * @return 是普通文件返回true
+	 */
+	public static boolean isRegularFile(String path) {
+		return isRegularFile(valueOf(path));
+	}
+
+	/**
+	 * 判断是否为普通文件
+	 *
+	 * @param file 文件
+	 * @return 是普通文件返回true
+	 */
+	public static boolean isRegularFile(File file) {
+		return java.nio.file.Files.isRegularFile(file.toPath(), LinkOption.NOFOLLOW_LINKS);
+	}
+
+	/**
+	 * 判断是否为隐藏文件
+	 *
+	 * @param path 路径
+	 * @return 是隐藏文件返回true
+	 */
+	public static boolean isHidden(String path) throws IOException {
+		return isHidden(valueOf(path));
+	}
+
+	/**
+	 * 判断是否为隐藏文件
+	 *
+	 * @param file 文件
+	 * @return 是隐藏文件返回true
+	 */
+	public static boolean isHidden(File file) throws IOException {
+		return java.nio.file.Files.isHidden(file.toPath());
+	}
+
+	/**
+	 * 判断文件是否可读
+	 *
+	 * @param path 路径
+	 * @return 可读返回true
+	 */
+	public static boolean isReadable(String path) {
+		return isReadable(valueOf(path));
+	}
+
+	/**
+	 * 判断文件是否可读
+	 *
+	 * @param file 文件
+	 * @return 可读返回true
+	 */
+	public static boolean isReadable(File file) {
+		return java.nio.file.Files.isReadable(file.toPath());
+	}
+
+	/**
+	 * 判断文件是否可写
+	 *
+	 * @param path 路径
+	 * @return 可写返回true
+	 */
+	public static boolean isWritable(String path) {
+		return isWritable(valueOf(path));
+	}
+
+	/**
+	 * 判断文件是否可写
+	 *
+	 * @param file 文件
+	 * @return 可写返回true
+	 */
+	public static boolean isWritable(File file) {
+		return java.nio.file.Files.isWritable(file.toPath());
+	}
+
+	/**
+	 * 返回文件大小（字节）
+	 *
+	 * @param path 路径
+	 * @return 文件大小
+	 * @throws IOException 读取失败
+	 */
+	public static long size(String path) throws IOException {
+		return size(valueOf(path));
+	}
+
+	/**
+	 * 返回文件大小（字节）
+	 *
+	 * @param file 文件
+	 * @return 文件大小
+	 * @throws IOException 读取失败
+	 */
+	public static long size(File file) throws IOException {
+		return java.nio.file.Files.size(file.toPath());
+	}
+
+	/**
+	 * 创建文件
+	 *
+	 * @param path 路径
+	 * @return 创建后的文件
+	 * @throws IOException 创建失败
+	 */
+	public static File createFile(String path) throws IOException {
+		return createFile(valueOf(path));
+	}
+
+	/**
+	 * 创建文件
+	 *
+	 * @param file 文件
+	 * @return 创建后的文件
+	 * @throws IOException 创建失败
+	 */
+	public static File createFile(File file) throws IOException {
+		File folder = file.getParentFile();
+		if (folder != null && !folder.exists()) {
+			folder.mkdirs();
+		}
+		Path created = java.nio.file.Files.createFile(file.toPath(), new FileAttribute<?>[0]);
+		return created.toFile();
+	}
+
+	/**
+	 * 创建目录
+	 *
+	 * @param path 路径
+	 * @return 创建后的目录
+	 * @throws IOException 创建失败
+	 */
+	public static File createDirectory(String path) throws IOException {
+		return createDirectory(valueOf(path));
+	}
+
+	/**
+	 * 创建目录
+	 *
+	 * @param file 文件
+	 * @return 创建后的目录
+	 * @throws IOException 创建失败
+	 */
+	public static File createDirectory(File file) throws IOException {
+		File folder = file.getParentFile();
+		if (folder != null && !folder.exists()) {
+			folder.mkdirs();
+		}
+		Path created = java.nio.file.Files.createDirectory(file.toPath(), new FileAttribute<?>[0]);
+		return created.toFile();
+	}
+
+	/**
+	 * 删除文件或目录（目录必须为空）
+	 *
+	 * @param path 路径
+	 * @throws IOException 删除失败
+	 */
+	public static void delete(String path) throws IOException {
+		delete(valueOf(path));
+	}
+
+	/**
+	 * 删除文件或目录（目录必须为空）
+	 *
+	 * @param file 文件
+	 * @throws IOException 删除失败
+	 */
+	public static void delete(File file) throws IOException {
+		java.nio.file.Files.delete(file.toPath());
+	}
+
+	/**
+	 * 存在则删除文件或目录（目录必须为空），不存在不报错
+	 *
+	 * @param path 路径
+	 * @return 实际删除了返回true
+	 * @throws IOException 删除失败
+	 */
+	public static boolean deleteIfExists(String path) throws IOException {
+		return deleteIfExists(valueOf(path));
+	}
+
+	/**
+	 * 存在则删除文件或目录（目录必须为空），不存在不报错
+	 *
+	 * @param file 文件
+	 * @return 实际删除了返回true
+	 * @throws IOException 删除失败
+	 */
+	public static boolean deleteIfExists(File file) throws IOException {
+		return java.nio.file.Files.deleteIfExists(file.toPath());
+	}
+
+	/**
+	 * 复制文件
+	 *
+	 * @param source 源文件
+	 * @param target 目标文件
+	 * @throws IOException 复制失败
+	 */
+	public static void copy(String source, String target) throws IOException {
+		copy(valueOf(source), valueOf(target));
+	}
+
+	/**
+	 * 复制文件
+	 *
+	 * @param source 源文件
+	 * @param target 目标文件
+	 * @throws IOException 复制失败
+	 */
+	public static void copy(File source, File target) throws IOException {
+		copy(source, target, false);
+	}
+
+	/**
+	 * 复制文件
+	 *
+	 * @param source          源文件
+	 * @param target          目标文件
+	 * @param replaceExisting 是否替换已存在的目标文件
+	 * @throws IOException 复制失败
+	 */
+	public static void copy(String source, String target, boolean replaceExisting) throws IOException {
+		copy(valueOf(source), valueOf(target), replaceExisting);
+	}
+
+	/**
+	 * 复制文件
+	 *
+	 * @param source          源文件
+	 * @param target          目标文件
+	 * @param replaceExisting 是否替换已存在的目标文件
+	 * @throws IOException 复制失败
+	 */
+	public static void copy(File source, File target, boolean replaceExisting) throws IOException {
+		if (replaceExisting) {
+			java.nio.file.Files.copy(source.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		} else {
+			java.nio.file.Files.copy(source.toPath(), target.toPath());
+		}
+	}
+
+	/**
+	 * 移动或重命名文件
+	 *
+	 * @param source 源文件
+	 * @param target 目标文件
+	 * @throws IOException 移动失败
+	 */
+	public static void move(String source, String target) throws IOException {
+		move(valueOf(source), valueOf(target));
+	}
+
+	/**
+	 * 移动或重命名文件
+	 *
+	 * @param source 源文件
+	 * @param target 目标文件
+	 * @throws IOException 移动失败
+	 */
+	public static void move(File source, File target) throws IOException {
+		move(source, target, false);
+	}
+
+	/**
+	 * 移动或重命名文件
+	 *
+	 * @param source          源文件
+	 * @param target          目标文件
+	 * @param replaceExisting 是否替换已存在的目标文件
+	 * @throws IOException 移动失败
+	 */
+	public static void move(String source, String target, boolean replaceExisting) throws IOException {
+		move(valueOf(source), valueOf(target), replaceExisting);
+	}
+
+	/**
+	 * 移动或重命名文件
+	 *
+	 * @param source          源文件
+	 * @param target          目标文件
+	 * @param replaceExisting 是否替换已存在的目标文件
+	 * @throws IOException 移动失败
+	 */
+	public static void move(File source, File target, boolean replaceExisting) throws IOException {
+		if (replaceExisting) {
+			java.nio.file.Files.move(source.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		} else {
+			java.nio.file.Files.move(source.toPath(), target.toPath());
+		}
+	}
+
+	/**
+	 * 读取文件的所有行
+	 *
+	 * @param path    路径
+	 * @param charset 字符集；null使用UTF-8
+	 * @return 行内容列表
+	 * @throws IOException 读取失败
+	 */
+	public static List<String> readAllLines(String path, Charset charset) throws IOException {
+		return readAllLines(valueOf(path), null);
+	}
+
+	/**
+	 * 读取文件的所有行
+	 *
+	 * @param file    文件
+	 * @param charset 字符集；null使用UTF-8
+	 * @return 行内容列表
+	 * @throws IOException 读取失败
+	 */
+	public static List<String> readAllLines(File file, Charset charset) throws IOException {
+		if (charset == null) {
+			charset = Charset.forName("UTF-8");
+		}
+		return new ArrayList<>(java.nio.file.Files.readAllLines(file.toPath(), charset));
+	}
+
+	/**
+	 * 读取文件的所有行（UTF-8编码）
+	 *
+	 * @param path 路径
+	 * @return 行内容列表
+	 * @throws IOException 读取失败
+	 */
+	public static List<String> readAllLines(String path) throws IOException {
+		return readAllLines(valueOf(path), null);
+	}
+
+	/**
+	 * 读取文件的所有行（UTF-8编码）
+	 *
+	 * @param file 文件
+	 * @return 行内容列表
+	 * @throws IOException 读取失败
+	 */
+	public static List<String> readAllLines(File file) throws IOException {
+		return readAllLines(file, null);
+	}
+
+	/**
+	 * 将字节数组写入文件
+	 *
+	 * @param data 字节数组
+	 * @param path 路径
+	 * @throws IOException 写入失败
+	 */
+	public static void writeTo(byte[] data, String path) throws IOException {
+		writeTo(data, valueOf(path));
+	}
+
+	/**
+	 * 将字节数组写入文件
+	 *
+	 * @param data 字节数组
+	 * @param file 文件
+	 * @throws IOException 写入失败
+	 */
+	public static void writeTo(byte[] data, File file) throws IOException {
+		File folder = file.getParentFile();
+		if (folder != null && !folder.exists()) {
+			folder.mkdirs();
+		}
+		java.nio.file.Files.write(file.toPath(), data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+	}
+
+	/**
+	 * 将行集合写入文件
+	 *
+	 * @param lines   行内容集合
+	 * @param path    路径
+	 * @param charset 字符集；null使用UTF-8
+	 * @throws IOException 写入失败
+	 */
+	public static void writeTo(Collection<String> lines, String path, Charset charset) throws IOException {
+		writeTo(lines, valueOf(path), charset);
+	}
+
+	/**
+	 * 将行集合写入文件
+	 *
+	 * @param lines   行内容集合
+	 * @param file    文件
+	 * @param charset 字符集；null使用UTF-8
+	 * @throws IOException 写入失败
+	 */
+	public static void writeTo(Collection<String> lines, File file, Charset charset) throws IOException {
+		if (charset == null) {
+			charset = Charset.forName("UTF-8");
+		}
+		File folder = file.getParentFile();
+		if (folder != null && !folder.exists()) {
+			folder.mkdirs();
+		}
+		java.nio.file.Files.write(file.toPath(), lines, charset, StandardOpenOption.CREATE,
+				StandardOpenOption.TRUNCATE_EXISTING);
+	}
+
+	/**
+	 * 将行集合写入文件（UTF-8编码）
+	 *
+	 * @param lines 行内容集合
+	 * @param path  路径
+	 * @throws IOException 写入失败
+	 */
+	public static void writeTo(Collection<String> lines, String path) throws IOException {
+		writeTo(lines, valueOf(path), null);
+	}
+
+	/**
+	 * 将行集合写入文件（UTF-8编码）
+	 *
+	 * @param lines 行内容集合
+	 * @param file  文件
+	 * @throws IOException 写入失败
+	 */
+	public static void writeTo(Collection<String> lines, File file) throws IOException {
+		writeTo(lines, file, null);
+	}
+
+	/**
+	 * 探测文件的内容类型（MIME类型）
+	 *
+	 * @param path 路径
+	 * @return 内容类型字符串，如"text/plain"；无法判断返回null
+	 * @throws IOException 探测失败
+	 */
+	public static String probeContentType(String path) throws IOException {
+		return probeContentType(valueOf(path));
+	}
+
+	/**
+	 * 探测文件的内容类型（MIME类型）
+	 *
+	 * @param file 文件
+	 * @return 内容类型字符串，如"text/plain"；无法判断返回null
+	 * @throws IOException 探测失败
+	 */
+	public static String probeContentType(File file) throws IOException {
+		return java.nio.file.Files.probeContentType(file.toPath());
+	}
+
+	/**
+	 * 获取文件的输入流
+	 *
+	 * @param path 路径
+	 * @return 输入流
+	 * @throws IOException 打开失败
+	 */
+	public static InputStream newInputStream(String path) throws IOException {
+		return newInputStream(valueOf(path));
+	}
+
+	/**
+	 * 获取文件的输入流
+	 *
+	 * @param file 文件
+	 * @return 输入流
+	 * @throws IOException 打开失败
+	 */
+	public static InputStream newInputStream(File file) throws IOException {
+		return java.nio.file.Files.newInputStream(file.toPath());
+	}
+
+	/**
+	 * 获取文件的输出流
+	 *
+	 * @param path 路径
+	 * @return 输出流
+	 * @throws IOException 打开失败
+	 */
+	public static OutputStream newOutputStream(String path) throws IOException {
+		return newOutputStream(valueOf(path));
+	}
+
+	/**
+	 * 获取文件的输出流
+	 *
+	 * @param file 文件
+	 * @return 输出流
+	 * @throws IOException 打开失败
+	 */
+	public static OutputStream newOutputStream(File file) throws IOException {
+		File folder = file.getParentFile();
+		if (folder != null && !folder.exists()) {
+			folder.mkdirs();
+		}
+		return java.nio.file.Files.newOutputStream(file.toPath(), StandardOpenOption.CREATE,
+				StandardOpenOption.TRUNCATE_EXISTING);
+	}
+
+	/**
+	 * 递归遍历文件树
+	 *
+	 * @param path 起始路径
+	 * @return 所有文件和目录的列表（含起始路径自身）
+	 * @throws IOException 遍历失败
+	 */
+	public static List<File> walk(String path) throws IOException {
+		return walk(valueOf(path));
+	}
+
+	/**
+	 * 递归遍历文件树
+	 *
+	 * @param file 起始文件或目录
+	 * @return 所有文件和目录的列表（含起始路径自身）
+	 * @throws IOException 遍历失败
+	 */
+	public static List<File> walk(File file) throws IOException {
+		ArrayList<File> results = new ArrayList<>();
+		for (Path p : java.nio.file.Files.walk(file.toPath()).toArray(Path[]::new)) {
+			results.add(p.toFile());
+		}
+		results.trimToSize();
+		return results;
 	}
 }
