@@ -22,7 +22,6 @@ import org.colorcoding.ibas.bobas.bo.BusinessObjectUnit;
 import org.colorcoding.ibas.bobas.bo.BusinessObjects;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
-import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.DateTimes;
@@ -183,68 +182,6 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 		}
 	}
 
-	/**
-	 * 为语句填充参数
-	 * 
-	 * @param statement  语句
-	 * @param conditions 条件参数
-	 * @param index      参数开始索引
-	 * @throws SQLException
-	 * @throws Exception
-	 */
-	protected void fillingParameters(PreparedStatement statement, Iterable<ICondition> conditions, int index)
-			throws SQLException, Exception {
-		for (ICondition condition : conditions) {
-			// 比较左侧
-			if (Strings.isNullOrEmpty(condition.getAlias())) {
-				// 字段名为空，则为值(ComparedAlias)与值(Value)的比较
-				statement.setObject(index, condition.getComparedAlias(),
-						this.getAdapter().sqlTypeOf(condition.getAliasDataType()));
-				index += 1;
-			}
-			if (condition.getOperation() == ConditionOperation.IS_NULL
-					|| condition.getOperation() == ConditionOperation.NOT_NULL) {
-				// 空和非空判断，忽略比较值
-				continue;
-			}
-			if (!Strings.isNullOrEmpty(condition.getAlias()) && !Strings.isNullOrEmpty(condition.getComparedAlias())) {
-				// 字段与字段的比较，不需要值
-				continue;
-			}
-			// 比较右侧
-			if (condition.getOperation() == ConditionOperation.IN
-					|| condition.getOperation() == ConditionOperation.NOT_IN) {
-				// IN、NOT IN，值拆成数组
-				String[] values = Strings.split(condition.getValue());
-				for (String value : values) {
-					statement.setObject(index, value.trim(), this.getAdapter().sqlTypeOf(DbFieldType.ALPHANUMERIC));
-					index += 1;
-				}
-			} else if (condition.getOperation() == ConditionOperation.START) {
-				statement.setObject(index, this.getAdapter().escape(condition.getValue(), '_', '%') + "%",
-						this.getAdapter().sqlTypeOf(DbFieldType.ALPHANUMERIC));
-				index += 1;
-			} else if (condition.getOperation() == ConditionOperation.END) {
-				statement.setObject(index, "%" + this.getAdapter().escape(condition.getValue(), '_', '%'),
-						this.getAdapter().sqlTypeOf(DbFieldType.ALPHANUMERIC));
-				index += 1;
-			} else if (condition.getOperation() == ConditionOperation.CONTAIN) {
-				statement.setObject(index, "%" + this.getAdapter().escape(condition.getValue(), '_', '%') + "%",
-						this.getAdapter().sqlTypeOf(DbFieldType.ALPHANUMERIC));
-				index += 1;
-			} else if (condition.getOperation() == ConditionOperation.NOT_CONTAIN) {
-				statement.setObject(index, "%" + this.getAdapter().escape(condition.getValue(), '_', '%') + "%",
-						this.getAdapter().sqlTypeOf(DbFieldType.ALPHANUMERIC));
-				index += 1;
-			} else {
-				// 直接比较值
-				statement.setObject(index, condition.getValue(),
-						this.getAdapter().sqlTypeOf(condition.getAliasDataType()));
-				index += 1;
-			}
-		}
-	}
-
 	@Override
 	@SuppressWarnings({ "unchecked" })
 	public final <T> T[] fetch(Class<?> boType, ICriteria criteria) throws RepositoryException {
@@ -268,16 +205,15 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 						? this.getAdapter().parsingSelect(boType, nCriteria, true)
 						: this.getAdapter().parsingSelect(boType, nCriteria);
 				if (MyConfiguration.isDebugMode()) {
-					Logger.log(MessageLevel.DEBUG, Strings.format("prepared sql: %s", sql));
+					// Logger.log(MessageLevel.DEBUG, Strings.format("parameterized sql: %s", sql));
+					SqlPreparedStatement sqlBuilder = new SqlPreparedStatement(sql);
+					this.getAdapter().bindParameters(sqlBuilder, nCriteria.getConditions(), 1);
+					Logger.log(MessageLevel.DEBUG,
+							Strings.format("executable sql: %s", this.getAdapter().parsing(sqlBuilder)));
 				}
 				try (PreparedStatement statement = this.getConnection().prepareStatement(sql)) {
 					// 填充参数
-					this.fillingParameters(statement, nCriteria.getConditions(), 1);
-					if (MyConfiguration.isDebugMode()) {
-						SqlBuilder sqlBuilder = new SqlBuilder(sql);
-						this.fillingParameters(sqlBuilder, nCriteria.getConditions(), 1);
-						Logger.log(MessageLevel.DEBUG, Strings.format("executable sql: %s", sqlBuilder.getExecutableSql()));
-					}
+					this.getAdapter().bindParameters(statement, nCriteria.getConditions(), 1);
 					// 运行查询
 					try (ResultSet resultSet = statement.executeQuery();) {
 						results = this.getAdapter().parsingDatas(boType, resultSet);
@@ -414,7 +350,8 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 									eCriteria = this.getAdapter().convert(eCriteria, cDatas.getElementType());
 									try (PreparedStatement checkStatement = this.getConnection().prepareStatement(
 											this.getAdapter().parsingSelect(cDatas.getElementType(), eCriteria))) {
-										this.fillingParameters(checkStatement, eCriteria.getConditions(), 1);
+										this.getAdapter().bindParameters(checkStatement, eCriteria.getConditions(),
+												1);
 										try (ResultSet resultSet = checkStatement.executeQuery()) {
 											if (resultSet.isBeforeFirst()) {
 												// 有结果，则使用全量查询
@@ -688,7 +625,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 							return new SQLException("no sql statement.");
 						}
 						if (MyConfiguration.isDebugMode()) {
-							Logger.log(MessageLevel.DEBUG, Strings.format("prepared sql: %s", sql));
+							Logger.log(MessageLevel.DEBUG, Strings.format("parameterized sql: %s", sql));
 						}
 						Object value;
 						DbField dbField;
@@ -1031,16 +968,15 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 			criteria = this.getAdapter().convert(criteria, maxValue.getType());
 			String sql = this.getAdapter().parsingMaxValue(maxValue, criteria.getConditions());
 			if (MyConfiguration.isDebugMode()) {
-				Logger.log(MessageLevel.DEBUG, Strings.format("prepared sql: %s", sql));
+				// Logger.log(MessageLevel.DEBUG, Strings.format("parameterized sql: %s", sql));
+				SqlPreparedStatement sqlBuilder = new SqlPreparedStatement(sql);
+				this.getAdapter().bindParameters(sqlBuilder, criteria.getConditions(), 1);
+				Logger.log(MessageLevel.DEBUG,
+						Strings.format("executable sql: %s", this.getAdapter().parsing(sqlBuilder)));
 			}
 			try (PreparedStatement statement = this.getConnection().prepareStatement(sql)) {
 				// 填充参数
-				this.fillingParameters(statement, criteria.getConditions(), 1);
-				if (MyConfiguration.isDebugMode()) {
-					SqlBuilder sqlBuilder = new SqlBuilder(sql);
-					this.fillingParameters(sqlBuilder, criteria.getConditions(), 1);
-					Logger.log(MessageLevel.DEBUG, Strings.format("executable sql: %s", sqlBuilder.getExecutableSql()));
-				}
+				this.getAdapter().bindParameters(statement, criteria.getConditions(), 1);
 				// 运行查询
 				try (ResultSet resultSet = statement.executeQuery()) {
 					while (resultSet.next()) {
@@ -1063,7 +999,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 	 * @return 数据表格
 	 * @throws RepositoryException 查询失败时抛出
 	 */
-	public final IDataTable fetch(ISqlStatement sqlStatement) throws RepositoryException {
+	public final IDataTable fetch(SqlStatement sqlStatement) throws RepositoryException {
 		try {
 			Objects.requireNonNull(sqlStatement);
 			String sql = this.getAdapter().parsing(sqlStatement);
@@ -1090,14 +1026,14 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 	 * @throws RepositoryException 查询失败时抛出
 	 */
 	@SuppressWarnings("unchecked")
-	public final <T> T[] fetch(Class<?> boType, ISqlStatement sqlStatement) throws RepositoryException {
+	public final <T> T[] fetch(Class<?> boType, SqlStatement sqlStatement) throws RepositoryException {
 		try {
 			Objects.requireNonNull(sqlStatement);
 			List<IBusinessObject> datas;
 			// 运行查询，不使用预编译方式
 			String sql = this.getAdapter().parsing(sqlStatement);
 			if (MyConfiguration.isDebugMode()) {
-				Logger.log(MessageLevel.DEBUG, Strings.format("db sql: %s", sql));
+				Logger.log(MessageLevel.DEBUG, Strings.format("executable sql: %s", sql));
 			}
 			try (Statement statement = this.getConnection().createStatement()) {
 				try (ResultSet resultSet = statement.executeQuery(sql)) {

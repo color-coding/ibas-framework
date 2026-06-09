@@ -16,7 +16,7 @@ echo '*****************************************************************'
 cd $(dirname $0)
 WORK_FOLDER=${PWD}
 # 仓库根地址
-ROOT_URL=http://maven.colorcoding.org/repository/
+ROOT_URL=https://maven.colorcoding.org/repository/
 # 仓库名称
 REPOSITORY=$1
 # 设置默认仓库名称
@@ -43,7 +43,7 @@ if [ -e ${WORK_FOLDER}/pom.xml ]; then
     -Dpackaging=pom
 fi
 # 发布子项
-while read line; do
+LC_ALL=C sed 's/\r//g' "${WORK_FOLDER}/compile_order.txt" | while IFS= read -r line; do
   if [ -e ${WORK_FOLDER}/${line}/pom.xml ]; then
     for PACKAGE in $(find release -name "${line}-*.jar"); do
       case "$PACKAGE" in
@@ -67,5 +67,5 @@ while read line; do
       esac
     done
   fi
-done <${WORK_FOLDER}/compile_order.txt | sed 's/\r//g'
+done
 echo --操作完成

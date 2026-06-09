@@ -19,12 +19,12 @@ public interface IUserGeter {
 	 * 获取当前用户
 	 *
 	 * @return 通过供应者获取的用户
-	 * @throws RuntimeException 供应者为null时不支持
+	 * @throws UnsupportedOperationException 供应者为null时不支持
 	 */
 	default IUser getUser() {
 		if (this.userSupplier() != null) {
 			return this.userSupplier().get();
 		}
-		throw new RuntimeException("not support.");
+		throw new UnsupportedOperationException();
 	}
 }

@@ -5,6 +5,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -550,7 +551,7 @@ public abstract class DbAdapter {
 	 *
 	 * @return EXEC SQL字符串
 	 */
-	public final String sp_transaction_notification() {
+	final String sp_transaction_notification() {
 		return this.parsingStoredProcedure(Strings.format("%s_SP_TRANSACTION_NOTIFICATION", this.getCompanyId()),
 				new String[this.isNoUserTansactionSP() ? 5 : 6]);
 	}
@@ -852,44 +853,44 @@ public abstract class DbAdapter {
 			// 操作符
 			stringBuilder.append(" ");
 			stringBuilder.append(this.parsing(condition.getOperation()));
-			if (condition.getOperation() == ConditionOperation.IS_NULL
-					|| condition.getOperation() == ConditionOperation.NOT_NULL) {
-				// 空和非空判断，忽略比较值
-				continue;
-			}
-			// 比较右侧
-			stringBuilder.append(" ");
-			if (!Strings.isNullOrEmpty(condition.getAlias()) && !Strings.isNullOrEmpty(condition.getComparedAlias())) {
-				// 字段与字段的比较：[Alias] = CAST(ComparedAlias)
-				stringBuilder.append(this.castAs(condition.getAliasDataType(), condition.getComparedAlias()));
-			} else if (condition.getOperation() == ConditionOperation.IN
-					|| condition.getOperation() == ConditionOperation.NOT_IN) {
-				// IN、NOT IN，值拆成数组
-				stringBuilder.append("(");
-				int count = Strings.split(condition.getValue()).length;
-				for (int i = 0; i < count; i++) {
-					if (i > 0) {
-						stringBuilder.append(Strings.VALUE_COMMA);
-						stringBuilder.append(" ");
+			// 空和非空判断，忽略比较值
+			if (!(condition.getOperation() == ConditionOperation.IS_NULL
+					|| condition.getOperation() == ConditionOperation.NOT_NULL)) {
+				// 比较右侧
+				stringBuilder.append(" ");
+				if (!Strings.isNullOrEmpty(condition.getAlias())
+						&& !Strings.isNullOrEmpty(condition.getComparedAlias())) {
+					// 字段与字段的比较：[Alias] = CAST(ComparedAlias)
+					stringBuilder.append(this.castAs(condition.getAliasDataType(), condition.getComparedAlias()));
+				} else if (condition.getOperation() == ConditionOperation.IN
+						|| condition.getOperation() == ConditionOperation.NOT_IN) {
+					// IN、NOT IN，值拆成数组
+					stringBuilder.append("(");
+					int count = Strings.split(condition.getValue()).length;
+					for (int i = 0; i < count; i++) {
+						if (i > 0) {
+							stringBuilder.append(Strings.VALUE_COMMA);
+							stringBuilder.append(" ");
+						}
+						stringBuilder.append("?");
 					}
+					stringBuilder.append(")");
+				} else {
+					// 直接比较值
 					stringBuilder.append("?");
 				}
-				stringBuilder.append(")");
-			} else {
-				// 直接比较值
-				stringBuilder.append("?");
-			}
-			if ((condition.getOperation() == ConditionOperation.START
-					|| condition.getOperation() == ConditionOperation.END
-					|| condition.getOperation() == ConditionOperation.CONTAIN
-					|| condition.getOperation() == ConditionOperation.NOT_CONTAIN)
-					&& !Strings.isNullOrEmpty(condition.getAlias())) {
-				stringBuilder.append(" ");
-				stringBuilder.append("ESCAPE");
-				stringBuilder.append(" ");
-				stringBuilder.append("'");
-				stringBuilder.append(this.escape());
-				stringBuilder.append("'");
+				if ((condition.getOperation() == ConditionOperation.START
+						|| condition.getOperation() == ConditionOperation.END
+						|| condition.getOperation() == ConditionOperation.CONTAIN
+						|| condition.getOperation() == ConditionOperation.NOT_CONTAIN)
+						&& !Strings.isNullOrEmpty(condition.getAlias())) {
+					stringBuilder.append(" ");
+					stringBuilder.append("ESCAPE");
+					stringBuilder.append(" ");
+					stringBuilder.append("'");
+					stringBuilder.append(this.escape());
+					stringBuilder.append("'");
+				}
 			}
 			// 闭括号
 			for (int i = 0; i < condition.getBracketClose(); i++) {
@@ -1161,36 +1162,44 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 语句-可执行（将SqlStatement中?占位符替换为实际值，存储过程生成EXEC语句）
-	 *
+	 * 语句-可执行（占位符?替换为实际值）
+	 * 
 	 * @param sqlStatement SQL语句对象
 	 * @return 可执行的SQL字符串（空语句返回空字符串）
 	 */
-	public String parsing(ISqlStatement sqlStatement) {
-		String sqlString = null;
+	public String parsing(SqlStatement sqlStatement) {
+		String sqlString = sqlStatement.getContent();
 		if (sqlStatement instanceof SqlStoredProcedure) {
+			// 存储过程：先生成EXEC语句（含?占位符）
 			SqlStoredProcedure storedProcedure = (SqlStoredProcedure) sqlStatement;
 			sqlString = this.parsingStoredProcedure(storedProcedure.getName(),
 					new String[storedProcedure.getParameters().size()]);
-		} else {
-			sqlString = sqlStatement.getContent();
 		}
-		if (Strings.isNullOrEmpty(sqlString)) {
-			return Strings.VALUE_EMPTY;
-		}
-		if (sqlStatement instanceof SqlStatement) {
-			SqlStatement statement = (SqlStatement) sqlStatement;
+		// 含参数的语句：替换?占位符为参数值
+		if (sqlStatement instanceof SqlPreparedStatement) {
+			SqlPreparedStatement statement = (SqlPreparedStatement) sqlStatement;
 			if (statement.getParameters().size() > 0) {
 				StringBuilder sqlBuilder = new StringBuilder(
 						sqlString.length() + (statement.getParameters().size() * 16));
-				int index = 0;
-				SqlStatement.Parameter parameter = null;
-				Map<Integer, SqlStatement.Parameter> parameters = statement.getParameters();
+				int index = 1;
+				// 如果索引小于默认值，则使用最小
+				for (Integer item : statement.getParameters().keySet()) {
+					if (item < index) {
+						index = item;
+					}
+				}
+				SqlPreparedStatement.Parameter parameter = null;
+				Map<Integer, SqlPreparedStatement.Parameter> parameters = statement.getParameters();
 				for (char item : sqlString.toCharArray()) {
 					if (item == '?') {
 						if (parameters.containsKey(index)) {
 							parameter = parameters.get(index);
-							if (parameter.targetType == DbFieldType.UNKNOWN) {
+							if (parameter.targetType != null && parameter.targetType != DbFieldType.UNKNOWN) {
+								// 使用DbFieldType推导SQL类型
+								sqlBuilder
+										.append(this.sqlValueOf(parameter.value, this.sqlTypeOf(parameter.targetType)));
+							} else {
+								// 未知类型，根据Java值类型回退判断
 								if (parameter.value == null) {
 									sqlBuilder.append(this.sqlValueOf(parameter.value, java.sql.Types.NULL));
 								} else if (parameter.value instanceof BigDecimal) {
@@ -1211,9 +1220,6 @@ public abstract class DbAdapter {
 								} else {
 									sqlBuilder.append(this.sqlValueOf(parameter.value, java.sql.Types.VARCHAR));
 								}
-							} else {
-								sqlBuilder
-										.append(this.sqlValueOf(parameter.value, this.sqlTypeOf(parameter.targetType)));
 							}
 						} else {
 							sqlBuilder.append(this.sqlValueOf(null, java.sql.Types.NULL));
@@ -1246,7 +1252,8 @@ public abstract class DbAdapter {
 	private static String TEMPLATE_SQL_VALUE = "'%s'";
 
 	/**
-	 * 返回SQL值（null和VALUE_MIN返回"NULL"，枚举按注解值或ordinal转换，字符串处理单引号转义）
+	 * 返回SQL值（null和VALUE_MIN返回"NULL"，枚举按注解值或ordinal转换，
+	 * 字符串处理单引号转义及安全防护：空字符替换、转义字符处理，防止SQL注入）
 	 *
 	 * @param value   原值
 	 * @param sqlType 目标SQL类型（java.sql.Types常量）
@@ -1263,11 +1270,10 @@ public abstract class DbAdapter {
 			return this.sqlValueOf(null, java.sql.Types.NULL);
 		}
 		if (value.getClass().isEnum()) {
-			if (java.sql.Types.VARCHAR == sqlType || java.sql.Types.NVARCHAR == sqlType
-					|| java.sql.Types.CHAR == sqlType || java.sql.Types.NCHAR == sqlType) {
+			if (this.dbFieldTypeOf(sqlType) == DbFieldType.ALPHANUMERIC
+					|| this.dbFieldTypeOf(sqlType) == DbFieldType.MEMO) {
 				return Strings.format(TEMPLATE_SQL_VALUE, Enums.annotationValue(value));
-			} else if (java.sql.Types.INTEGER == sqlType || java.sql.Types.SMALLINT == sqlType
-					|| java.sql.Types.TINYINT == sqlType) {
+			} else if (this.dbFieldTypeOf(sqlType) == DbFieldType.NUMERIC) {
 				if (value instanceof Enum<?>) {
 					Enum<?> itemValue = (Enum<?>) value;
 					return Strings.valueOf(itemValue.ordinal());
@@ -1276,21 +1282,90 @@ public abstract class DbAdapter {
 		}
 		String sqlValue = null;
 		if (value instanceof String) {
-			// 字符串类型，处理特殊字符
-			sqlValue = Strings.replace(value.toString(), "'", "''");
+			// 字符串类型，处理特殊字符（防SQL注入：单引号双写、空字符替换）
+			String strValue = value.toString();
+			StringBuilder sb = new StringBuilder(strValue.length() + 8);
+			for (int i = 0; i < strValue.length(); i++) {
+				char c = strValue.charAt(i);
+				if (c == '\'') {
+					// 单引号双写转义
+					sb.append("''");
+				} else if (c == '\0') {
+					// 空字符替换为空格，防止截断攻击
+					sb.append(' ');
+				} else {
+					sb.append(c);
+				}
+			}
+			sqlValue = sb.toString();
 		} else {
 			sqlValue = Strings.valueOf(value);
 		}
-		if (java.sql.Types.VARCHAR == sqlType || java.sql.Types.NVARCHAR == sqlType
-				|| java.sql.Types.LONGNVARCHAR == sqlType || java.sql.Types.LONGVARCHAR == sqlType) {
+		DbFieldType fieldType = this.dbFieldTypeOf(sqlType);
+		if (fieldType == DbFieldType.ALPHANUMERIC || fieldType == DbFieldType.MEMO) {
 			sqlValue = Strings.format(TEMPLATE_SQL_VALUE, sqlValue);
-		} else if (java.sql.Types.DATE == sqlType || java.sql.Types.TIME == sqlType
-				|| java.sql.Types.TIMESTAMP == sqlType) {
-			sqlValue = Strings.format(TEMPLATE_SQL_VALUE, sqlValue);
-		} else if (java.sql.Types.CHAR == sqlType || java.sql.Types.CLOB == sqlType || java.sql.Types.NCHAR == sqlType
-				|| java.sql.Types.NCLOB == sqlType) {
+		} else if (fieldType == DbFieldType.DATE) {
 			sqlValue = Strings.format(TEMPLATE_SQL_VALUE, sqlValue);
 		}
 		return sqlValue;
+	}
+
+	/**
+	 * 为语句填充参数
+	 * 
+	 * @param statement  语句
+	 * @param conditions 条件参数
+	 * @param index      参数开始索引
+	 * @throws SQLException
+	 */
+	public void bindParameters(PreparedStatement statement, Iterable<ICondition> conditions, int index)
+			throws SQLException {
+		for (ICondition condition : conditions) {
+			// 比较左侧
+			if (Strings.isNullOrEmpty(condition.getAlias())) {
+				// 字段名为空，则为值(ComparedAlias)与值(Value)的比较
+				statement.setObject(index, condition.getComparedAlias(), this.sqlTypeOf(condition.getAliasDataType()));
+				index += 1;
+			}
+			if (condition.getOperation() == ConditionOperation.IS_NULL
+					|| condition.getOperation() == ConditionOperation.NOT_NULL) {
+				// 空和非空判断，忽略比较值
+				continue;
+			}
+			if (!Strings.isNullOrEmpty(condition.getAlias()) && !Strings.isNullOrEmpty(condition.getComparedAlias())) {
+				// 字段与字段的比较，不需要值
+				continue;
+			}
+			// 比较右侧
+			if (condition.getOperation() == ConditionOperation.IN
+					|| condition.getOperation() == ConditionOperation.NOT_IN) {
+				// IN、NOT IN，值拆成数组
+				String[] values = Strings.split(condition.getValue());
+				for (String value : values) {
+					statement.setObject(index, value.trim(), this.sqlTypeOf(DbFieldType.ALPHANUMERIC));
+					index += 1;
+				}
+			} else if (condition.getOperation() == ConditionOperation.START) {
+				statement.setObject(index, this.escape(condition.getValue(), '_', '%') + "%",
+						this.sqlTypeOf(DbFieldType.ALPHANUMERIC));
+				index += 1;
+			} else if (condition.getOperation() == ConditionOperation.END) {
+				statement.setObject(index, "%" + this.escape(condition.getValue(), '_', '%'),
+						this.sqlTypeOf(DbFieldType.ALPHANUMERIC));
+				index += 1;
+			} else if (condition.getOperation() == ConditionOperation.CONTAIN) {
+				statement.setObject(index, "%" + this.escape(condition.getValue(), '_', '%') + "%",
+						this.sqlTypeOf(DbFieldType.ALPHANUMERIC));
+				index += 1;
+			} else if (condition.getOperation() == ConditionOperation.NOT_CONTAIN) {
+				statement.setObject(index, "%" + this.escape(condition.getValue(), '_', '%') + "%",
+						this.sqlTypeOf(DbFieldType.ALPHANUMERIC));
+				index += 1;
+			} else {
+				// 直接比较值
+				statement.setObject(index, condition.getValue(), this.sqlTypeOf(condition.getAliasDataType()));
+				index += 1;
+			}
+		}
 	}
 }

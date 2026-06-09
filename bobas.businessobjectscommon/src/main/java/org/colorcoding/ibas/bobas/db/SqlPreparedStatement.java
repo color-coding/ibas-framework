@@ -1,400 +1,405 @@
 package org.colorcoding.ibas.bobas.db;
 
+import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.colorcoding.ibas.bobas.common.ICondition;
+import org.colorcoding.ibas.bobas.common.Strings;
 
 /**
- * SQL语句构建器，通过PreparedStatement接口收集参数，生成填充参数后的完整SQL
+ * SQL语句构建器
+ * 
+ * 通过PreparedStatement接口收集参数，索引 1 开始
  */
-public class SqlBuilder implements PreparedStatement {
+public class SqlPreparedStatement extends SqlStatement implements PreparedStatement {
+
+	private static final long serialVersionUID = -8302156932671231289L;
 
 	/**
-	 * 参数项，同时容纳值与SQL类型
+	 * 参数项
 	 */
-	static class Parameter {
-		Object value;
-		int sqlType;
+	protected class Parameter {
 
-		Parameter(Object value, int sqlType) {
-			this.value = value;
-			this.sqlType = sqlType;
+		/** 目标数据库字段类型 */
+		public DbFieldType targetType;
+
+		/** 参数值 */
+		public Object value;
+
+		/** 参数名称（存储过程使用） */
+		public String name;
+
+		@Override
+		public String toString() {
+			return Strings.format("{parameter: %s}", value);
 		}
 	}
 
-	public SqlBuilder(String sql) {
-		this.originalSql = sql;
+	/**
+	 * 构造
+	 */
+	public SqlPreparedStatement() {
 	}
 
-	private final String originalSql;
-	private final List<Parameter> parameters = new ArrayList<>();
+	/**
+	 * 构造
+	 *
+	 * @param sql 原始SQL语句
+	 */
+	public SqlPreparedStatement(String sql) {
+		super(sql);
+	}
 
-	private void addParam(int index, Object value, int sqlType) {
-		int idx = index - 1;
-		while (this.parameters.size() <= idx) {
-			this.parameters.add(new Parameter(null, Types.NULL));
+	private Map<Integer, Parameter> parameters;
+
+	protected Map<Integer, Parameter> getParameters() {
+		if (this.parameters == null) {
+			this.parameters = new HashMap<Integer, Parameter>();
 		}
-		this.parameters.get(idx).value = value;
-		this.parameters.get(idx).sqlType = sqlType;
+		return this.parameters;
+	}
+
+	@Override
+	public void clearParameters() {
+		if (this.parameters != null) {
+			this.parameters.clear();
+		}
+	}
+
+	protected Parameter addParameter(Object value, DbFieldType targetType) {
+		return this.addParameter(this.getParameters().size() + 1, value, targetType);
+	}
+
+	protected Parameter addParameter(int parameterIndex, Object value, int sqlType) {
+		return this.addParameter(parameterIndex, value, this.getAdapter().dbFieldTypeOf(sqlType));
+	}
+
+	protected Parameter addParameter(int parameterIndex, Object value, DbFieldType targetType) {
+		Parameter parameter = new Parameter();
+		parameter.targetType = targetType;
+		parameter.value = value;
+		this.getParameters().put(parameterIndex, parameter);
+		return parameter;
+	}
+
+	private DbAdapter adapter;
+
+	/**
+	 * 设置数据库适配器
+	 *
+	 * @param adapter 数据库适配器实例
+	 */
+	public void setAdapter(DbAdapter adapter) {
+		this.adapter = adapter;
 	}
 
 	/**
-	 * 判断SQL类型是否为字符串类型（需要加引号）
+	 * 获取数据库适配器（未设置时使用默认实例）
 	 */
-	private static boolean isStringType(int sqlType) {
-		return sqlType == Types.CHAR || sqlType == Types.VARCHAR || sqlType == Types.LONGVARCHAR
-				|| sqlType == Types.NCHAR || sqlType == Types.NVARCHAR || sqlType == Types.LONGNVARCHAR
-				|| sqlType == Types.CLOB || sqlType == Types.NCLOB;
-	}
-
-	/**
-	 * 判断SQL类型是否为日期时间类型（需要加引号）
-	 */
-	private static boolean isDateTimeType(int sqlType) {
-		return sqlType == Types.DATE || sqlType == Types.TIME || sqlType == Types.TIMESTAMP
-				|| sqlType == Types.TIME_WITH_TIMEZONE || sqlType == Types.TIMESTAMP_WITH_TIMEZONE;
-	}
-
-	/**
-	 * 判断SQL类型是否为数值类型（不需要加引号）
-	 */
-	private static boolean isNumericType(int sqlType) {
-		return sqlType == Types.TINYINT || sqlType == Types.SMALLINT || sqlType == Types.INTEGER
-				|| sqlType == Types.BIGINT || sqlType == Types.FLOAT || sqlType == Types.DOUBLE
-				|| sqlType == Types.REAL || sqlType == Types.NUMERIC || sqlType == Types.DECIMAL;
-	}
-
-	/**
-	 * 获取填充参数后的完整SQL语句
-	 */
-	public String getExecutableSql() {
-		StringBuilder sb = new StringBuilder(this.originalSql.length() + this.parameters.size() * 16);
-		int paramIndex = 0;
-		for (int i = 0; i < this.originalSql.length(); i++) {
-			char c = this.originalSql.charAt(i);
-			if (c == '?') {
-				if (paramIndex < this.parameters.size()) {
-					Parameter param = this.parameters.get(paramIndex);
-					sb.append(this.formatValue(param.value, param.sqlType));
+	private DbAdapter getAdapter() {
+		if (this.adapter == null) {
+			this.adapter = new DbAdapter() {
+				@Override
+				public Connection createConnection(String server, String dbName, String userName, String userPwd) {
+					return null;
 				}
-				paramIndex++;
-			} else {
-				sb.append(c);
-			}
+			};
 		}
-		return sb.toString();
+		return this.adapter;
+	}
+
+	public void setObject(int parameterIndex, Object value, DbFieldType targetType) throws SQLException {
+		this.addParameter(parameterIndex, value, targetType);
 	}
 
 	/**
-	 * 将参数值格式化为SQL字面量
+	 * 根据条件集合批量设置参数
+	 *
+	 * @param conditions 查询条件集合
+	 * @param beginIndex 始于参数索引
+	 * @throws SQLException
 	 */
-	private String formatValue(Object value, int sqlType) {
-		if (value == null) {
-			return "NULL";
-		}
-		// 优先根据SQL类型决定格式
-		if (isStringType(sqlType)) {
-			return "'" + escapeString(value.toString()) + "'";
-		}
-		if (isDateTimeType(sqlType)) {
-			return "'" + escapeString(value.toString()) + "'";
-		}
-		if (isNumericType(sqlType)) {
-			return value.toString();
-		}
-		// SQL类型未知时，根据Java类型回退判断
-		if (value instanceof Number) {
-			return value.toString();
-		}
-		if (value instanceof Boolean) {
-			return ((Boolean) value) ? "1" : "0";
-		}
-		// 默认作为字符串处理
-		return "'" + escapeString(value.toString()) + "'";
+	public void setObject(Iterable<ICondition> conditions, int beginIndex) throws SQLException {
+		this.getAdapter().bindParameters(this, conditions, beginIndex);
 	}
 
 	/**
-	 * 转义SQL字符串中的特殊字符
+	 * 根据条件集合批量设置参数
+	 *
+	 * @param conditions 查询条件集合
+	 * @throws SQLException
 	 */
-	private String escapeString(String value) {
-		StringBuilder sb = new StringBuilder(value.length() + 8);
-		for (int i = 0; i < value.length(); i++) {
-			char c = value.charAt(i);
-			switch (c) {
-			case '\'':
-				sb.append("''");
-				break;
-			case '\\':
-				sb.append("\\\\");
-				break;
-			case '\0':
-				// 空字符替换为空格，防止截断
-				sb.append(' ');
-				break;
-			default:
-				sb.append(c);
-			}
+	public void setObject(Iterable<ICondition> conditions) throws SQLException {
+		this.setObject(conditions, 1);
+	}
+
+	/**
+	 * 可执行SQL语句
+	 */
+	@Override
+	public String executableSql() {
+		DbAdapter dbAdapter = this.getAdapter();
+		if (dbAdapter != null) {
+			return dbAdapter.parsing(this);
 		}
-		return sb.toString();
+		throw new UnsupportedOperationException("db adapter is required.");
 	}
 
 	// ---- 以下为PreparedStatement接口中setXxx方法的参数记录实现 ----
 
 	@Override
-	public void setObject(int parameterIndex, Object x, int targetSqlType) throws SQLException {
-		this.addParam(parameterIndex, x, targetSqlType);
+	public void setObject(int parameterIndex, Object x) {
+		this.addParameter(parameterIndex, x, Types.OTHER);
 	}
 
 	@Override
-	public void setObject(int parameterIndex, Object x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.OTHER);
+	public void setObject(int parameterIndex, Object x, int targetSqlType) throws SQLException {
+		this.addParameter(parameterIndex, x, targetSqlType);
 	}
 
 	@Override
 	public void setString(int parameterIndex, String x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.VARCHAR);
+		this.addParameter(parameterIndex, x, Types.VARCHAR);
 	}
 
 	@Override
 	public void setInt(int parameterIndex, int x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.INTEGER);
+		this.addParameter(parameterIndex, x, Types.INTEGER);
 	}
 
 	@Override
 	public void setLong(int parameterIndex, long x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.BIGINT);
+		this.addParameter(parameterIndex, x, Types.BIGINT);
 	}
 
 	@Override
 	public void setDouble(int parameterIndex, double x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.DOUBLE);
+		this.addParameter(parameterIndex, x, Types.DOUBLE);
 	}
 
 	@Override
 	public void setFloat(int parameterIndex, float x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.FLOAT);
+		this.addParameter(parameterIndex, x, Types.FLOAT);
 	}
 
 	@Override
 	public void setShort(int parameterIndex, short x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.SMALLINT);
+		this.addParameter(parameterIndex, x, Types.SMALLINT);
 	}
 
 	@Override
 	public void setByte(int parameterIndex, byte x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.TINYINT);
+		this.addParameter(parameterIndex, x, Types.TINYINT);
 	}
 
 	@Override
 	public void setBoolean(int parameterIndex, boolean x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.BOOLEAN);
+		this.addParameter(parameterIndex, x, Types.BOOLEAN);
 	}
 
 	@Override
 	public void setDate(int parameterIndex, Date x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.DATE);
+		this.addParameter(parameterIndex, x, Types.DATE);
 	}
 
 	@Override
 	public void setTime(int parameterIndex, Time x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.TIME);
+		this.addParameter(parameterIndex, x, Types.TIME);
 	}
 
 	@Override
 	public void setTimestamp(int parameterIndex, Timestamp x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.TIMESTAMP);
+		this.addParameter(parameterIndex, x, Types.TIMESTAMP);
 	}
 
 	@Override
 	public void setBigDecimal(int parameterIndex, java.math.BigDecimal x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.DECIMAL);
+		this.addParameter(parameterIndex, x, Types.DECIMAL);
 	}
 
 	@Override
 	public void setNull(int parameterIndex, int sqlType) throws SQLException {
-		this.addParam(parameterIndex, null, sqlType);
+		this.addParameter(parameterIndex, null, sqlType);
 	}
 
 	@Override
 	public void setBytes(int parameterIndex, byte[] x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.VARBINARY);
+		this.addParameter(parameterIndex, x, Types.VARBINARY);
 	}
 
 	@Override
 	public void setObject(int parameterIndex, Object x, int targetSqlType, int scaleOrLength) throws SQLException {
-		this.addParam(parameterIndex, x, targetSqlType);
+		this.addParameter(parameterIndex, x, targetSqlType);
 	}
 
 	@Override
 	public void setDate(int parameterIndex, Date x, java.util.Calendar cal) throws SQLException {
-		this.addParam(parameterIndex, x, Types.DATE);
+		this.addParameter(parameterIndex, x, Types.DATE);
 	}
 
 	@Override
 	public void setTime(int parameterIndex, Time x, java.util.Calendar cal) throws SQLException {
-		this.addParam(parameterIndex, x, Types.TIME);
+		this.addParameter(parameterIndex, x, Types.TIME);
 	}
 
 	@Override
 	public void setTimestamp(int parameterIndex, Timestamp x, java.util.Calendar cal) throws SQLException {
-		this.addParam(parameterIndex, x, Types.TIMESTAMP);
+		this.addParameter(parameterIndex, x, Types.TIMESTAMP);
 	}
 
 	@Override
 	public void setNull(int parameterIndex, int sqlType, String typeName) throws SQLException {
-		this.addParam(parameterIndex, null, sqlType);
+		this.addParameter(parameterIndex, null, sqlType);
 	}
 
 	@Override
 	public void setAsciiStream(int parameterIndex, java.io.InputStream x, int length) throws SQLException {
-		this.addParam(parameterIndex, x, Types.LONGVARCHAR);
+		this.addParameter(parameterIndex, x, Types.LONGVARCHAR);
 	}
 
 	@Override
 	public void setBinaryStream(int parameterIndex, java.io.InputStream x, int length) throws SQLException {
-		this.addParam(parameterIndex, x, Types.LONGVARBINARY);
+		this.addParameter(parameterIndex, x, Types.LONGVARBINARY);
 	}
 
 	@Override
 	public void setCharacterStream(int parameterIndex, java.io.Reader x, int length) throws SQLException {
-		this.addParam(parameterIndex, x, Types.LONGVARCHAR);
+		this.addParameter(parameterIndex, x, Types.LONGVARCHAR);
 	}
 
 	@Override
 	public void setAsciiStream(int parameterIndex, java.io.InputStream x, long length) throws SQLException {
-		this.addParam(parameterIndex, x, Types.LONGVARCHAR);
+		this.addParameter(parameterIndex, x, Types.LONGVARCHAR);
 	}
 
 	@Override
 	public void setBinaryStream(int parameterIndex, java.io.InputStream x, long length) throws SQLException {
-		this.addParam(parameterIndex, x, Types.LONGVARBINARY);
+		this.addParameter(parameterIndex, x, Types.LONGVARBINARY);
 	}
 
 	@Override
 	public void setCharacterStream(int parameterIndex, java.io.Reader x, long length) throws SQLException {
-		this.addParam(parameterIndex, x, Types.LONGVARCHAR);
+		this.addParameter(parameterIndex, x, Types.LONGVARCHAR);
 	}
 
 	@Override
 	public void setAsciiStream(int parameterIndex, java.io.InputStream x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.LONGVARCHAR);
+		this.addParameter(parameterIndex, x, Types.LONGVARCHAR);
 	}
 
 	@Override
 	public void setBinaryStream(int parameterIndex, java.io.InputStream x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.LONGVARBINARY);
+		this.addParameter(parameterIndex, x, Types.LONGVARBINARY);
 	}
 
 	@Override
 	public void setCharacterStream(int parameterIndex, java.io.Reader x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.LONGVARCHAR);
+		this.addParameter(parameterIndex, x, Types.LONGVARCHAR);
 	}
 
 	@Override
 	public void setBlob(int parameterIndex, java.sql.Blob x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.BLOB);
+		this.addParameter(parameterIndex, x, Types.BLOB);
 	}
 
 	@Override
 	public void setClob(int parameterIndex, java.sql.Clob x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.CLOB);
+		this.addParameter(parameterIndex, x, Types.CLOB);
 	}
 
 	@Override
 	public void setArray(int parameterIndex, java.sql.Array x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.ARRAY);
+		this.addParameter(parameterIndex, x, Types.ARRAY);
 	}
 
 	@Override
 	public void setURL(int parameterIndex, java.net.URL x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.VARCHAR);
+		this.addParameter(parameterIndex, x, Types.VARCHAR);
 	}
 
 	@Override
 	public void setNString(int parameterIndex, String x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.NVARCHAR);
+		this.addParameter(parameterIndex, x, Types.NVARCHAR);
 	}
 
 	@Override
 	public void setNClob(int parameterIndex, java.sql.NClob x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.NCLOB);
+		this.addParameter(parameterIndex, x, Types.NCLOB);
 	}
 
 	@Override
 	public void setSQLXML(int parameterIndex, java.sql.SQLXML x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.SQLXML);
+		this.addParameter(parameterIndex, x, Types.SQLXML);
 	}
 
 	@Override
 	public void setRef(int parameterIndex, java.sql.Ref x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.REF);
+		this.addParameter(parameterIndex, x, Types.REF);
 	}
 
 	@Override
 	public void setRowId(int parameterIndex, java.sql.RowId x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.ROWID);
+		this.addParameter(parameterIndex, x, Types.ROWID);
 	}
 
 	@Override
 	public void setNCharacterStream(int parameterIndex, java.io.Reader x, long length) throws SQLException {
-		this.addParam(parameterIndex, x, Types.LONGNVARCHAR);
+		this.addParameter(parameterIndex, x, Types.LONGNVARCHAR);
 	}
 
 	@Override
 	public void setNCharacterStream(int parameterIndex, java.io.Reader x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.LONGNVARCHAR);
+		this.addParameter(parameterIndex, x, Types.LONGNVARCHAR);
 	}
 
 	@Override
 	public void setClob(int parameterIndex, java.io.Reader x, long length) throws SQLException {
-		this.addParam(parameterIndex, x, Types.CLOB);
+		this.addParameter(parameterIndex, x, Types.CLOB);
 	}
 
 	@Override
 	public void setBlob(int parameterIndex, java.io.InputStream x, long length) throws SQLException {
-		this.addParam(parameterIndex, x, Types.BLOB);
+		this.addParameter(parameterIndex, x, Types.BLOB);
 	}
 
 	@Override
 	public void setNClob(int parameterIndex, java.io.Reader x, long length) throws SQLException {
-		this.addParam(parameterIndex, x, Types.NCLOB);
+		this.addParameter(parameterIndex, x, Types.NCLOB);
 	}
 
 	@Override
 	public void setClob(int parameterIndex, java.io.Reader x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.CLOB);
+		this.addParameter(parameterIndex, x, Types.CLOB);
 	}
 
 	@Override
 	public void setBlob(int parameterIndex, java.io.InputStream x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.BLOB);
+		this.addParameter(parameterIndex, x, Types.BLOB);
 	}
 
 	@Override
 	public void setNClob(int parameterIndex, java.io.Reader x) throws SQLException {
-		this.addParam(parameterIndex, x, Types.NCLOB);
+		this.addParameter(parameterIndex, x, Types.NCLOB);
 	}
 
 	@Override
 	@Deprecated
 	public void setUnicodeStream(int parameterIndex, java.io.InputStream x, int length) throws SQLException {
-		this.addParam(parameterIndex, x, Types.LONGVARCHAR);
-	}
-
-	@Override
-	public void clearParameters() throws SQLException {
-		this.parameters.clear();
+		this.addParameter(parameterIndex, x, Types.LONGVARCHAR);
 	}
 
 	// ---- 以下为Statement/PreparedStatement中不需要的方法 ----
 
 	@Override
 	public void addBatch() throws SQLException {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

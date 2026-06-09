@@ -1,8 +1,5 @@
 package org.colorcoding.ibas.bobas.db;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -10,8 +7,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
-import org.colorcoding.ibas.bobas.common.ConditionOperation;
-import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.Serializable;
 
@@ -21,23 +16,9 @@ import org.colorcoding.ibas.bobas.core.Serializable;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "SqlStatement", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
 @XmlRootElement(name = "SqlStatement", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
-public class SqlStatement extends Serializable implements ISqlStatement {
+public class SqlStatement extends Serializable {
 
 	private static final long serialVersionUID = -4755976465377026859L;
-
-	class Parameter {
-
-		public DbFieldType targetType;
-
-		public Object value;
-
-		public String name;
-
-		@Override
-		public String toString() {
-			return Strings.format("{parameter: %s}", value);
-		}
-	}
 
 	/**
 	 * 构造
@@ -47,7 +28,7 @@ public class SqlStatement extends Serializable implements ISqlStatement {
 
 	/**
 	 * 构造
-	 * 
+	 *
 	 * @param sql 脚本内容
 	 */
 	public SqlStatement(String sql) {
@@ -57,7 +38,6 @@ public class SqlStatement extends Serializable implements ISqlStatement {
 
 	private String content;
 
-	@Override
 	@XmlElement(name = "Content")
 	public String getContent() {
 		if (this.content == null) {
@@ -66,80 +46,22 @@ public class SqlStatement extends Serializable implements ISqlStatement {
 		return this.content;
 	}
 
-	@Override
 	public void setContent(String value) {
 		this.content = value;
+	}
+
+	/**
+	 * 获取可执行的SQL语句。
+	 * 基类直接返回Content，子类可覆盖此方法实现参数替换等逻辑。
+	 *
+	 * @return 可执行的SQL字符串
+	 */
+	public String executableSql() {
+		return this.getContent();
 	}
 
 	@Override
 	public String toString() {
 		return Strings.format("{sql: %s...}", Strings.substring(this.getContent(), 26));
 	}
-
-	private Map<Integer, Parameter> parameters;
-
-	Map<Integer, Parameter> getParameters() {
-		if (this.parameters == null) {
-			this.parameters = new HashMap<Integer, Parameter>();
-		}
-		return this.parameters;
-	}
-
-	@Override
-	public void clearParameters() {
-		if (this.parameters != null) {
-			this.parameters.clear();
-		}
-	}
-
-	@Override
-	public void setObject(int parameterIndex, Object value, DbFieldType targetType) {
-		Parameter parameter = new Parameter();
-		parameter.targetType = targetType;
-		parameter.value = value;
-		this.getParameters().put(parameterIndex, parameter);
-	}
-
-	@Override
-	public void setObject(int parameterIndex, Object value) {
-		this.setObject(parameterIndex, value, DbFieldType.UNKNOWN);
-	}
-
-	/**
-	 * 根据条件集合批量设置参数。字段间比较和空值判断条件（IS_NULL/NOT_NULL）不设置参数值；
-	 * CONTAIN/NOT_CONTAIN自动添加%通配符；START添加后缀%；END添加前缀%
-	 *
-	 * @param conditions 查询条件集合
-	 */
-	public void setObject(Iterable<ICondition> conditions) {
-		if (conditions != null) {
-			int index = 0;
-			for (ICondition condition : conditions) {
-				if (condition == null) {
-					continue;
-				}
-				// 字段间比较，不设置参数值
-				if (!Strings.isNullOrEmpty(condition.getComparedAlias())) {
-					continue;
-				}
-				// 空值比较，不设置参数值
-				if (condition.getOperation() == ConditionOperation.IS_NULL
-						|| condition.getOperation() == ConditionOperation.NOT_NULL) {
-					continue;
-				}
-				if (condition.getOperation() == ConditionOperation.CONTAIN
-						|| condition.getOperation() == ConditionOperation.NOT_CONTAIN) {
-					this.setObject(index, "%" + condition.getValue() + "%", condition.getAliasDataType());
-				} else if (condition.getOperation() == ConditionOperation.START) {
-					this.setObject(index, condition.getValue() + "%", condition.getAliasDataType());
-				} else if (condition.getOperation() == ConditionOperation.END) {
-					this.setObject(index, "%" + condition.getValue(), condition.getAliasDataType());
-				} else {
-					this.setObject(index, condition.getValue(), condition.getAliasDataType());
-				}
-				index++;
-			}
-		}
-	}
-
 }

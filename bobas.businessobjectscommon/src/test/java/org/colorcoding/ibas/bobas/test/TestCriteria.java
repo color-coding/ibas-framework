@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.UUID;
 
 import javax.xml.bind.JAXBContext;
@@ -22,7 +23,7 @@ import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.db.DbAdapter;
-import org.colorcoding.ibas.bobas.db.SqlStatement;
+import org.colorcoding.ibas.bobas.db.SqlPreparedStatement;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializerXml;
 import org.colorcoding.ibas.bobas.test.demo.SalesOrder;
@@ -33,19 +34,14 @@ import junit.framework.TestCase;
 /**
  * 查询条件（Criteria）功能测试
  *
- * 测试范围：
- * 1. Criteria的JAXB序列化/反序列化
- * 2. Condition/Sort/ChildCriteria的结构
- * 3. 从标识字符串创建Criteria
- * 4. Criteria的克隆与copyFrom
- * 5. 分页查询（next/previous）
- * 6. SQL语句生成（DbAdapter）
+ * 测试范围： 1. Criteria的JAXB序列化/反序列化 2. Condition/Sort/ChildCriteria的结构 3.
+ * 从标识字符串创建Criteria 4. Criteria的克隆与copyFrom 5. 分页查询（next/previous） 6.
+ * SQL语句生成（DbAdapter）
  */
 public class TestCriteria extends TestCase {
 
 	/**
-	 * 创建标准测试用Criteria
-	 * 包含：条件（带括号）、排序、子项查询
+	 * 创建标准测试用Criteria 包含：条件（带括号）、排序、子项查询
 	 */
 	private ICriteria createTestCriteria() {
 		ICriteria criteria = new Criteria();
@@ -79,8 +75,7 @@ public class TestCriteria extends TestCase {
 	// ==================== 1. JAXB序列化/反序列化 ====================
 
 	/**
-	 * 测试Criteria的JAXB序列化与反序列化
-	 * 覆盖：Condition/Sort/Criteria的marshal和unmarshal，序列化前后一致性
+	 * 测试Criteria的JAXB序列化与反序列化 覆盖：Condition/Sort/Criteria的marshal和unmarshal，序列化前后一致性
 	 */
 	public void testXml() throws JAXBException, IOException {
 		ICriteria criteria = new Criteria();
@@ -157,7 +152,7 @@ public class TestCriteria extends TestCase {
 
 	}
 
-	public void testFromString() {
+	public void testFromString() throws SQLException {
 		ICriteria criteria = new Criteria();
 		criteria.setResultCount(100);
 		// ("DocStatus" = 'P' OR "DocStatus" = 'F')
@@ -211,7 +206,7 @@ public class TestCriteria extends TestCase {
 				return null;
 			}
 		};
-		SqlStatement sqlStatement = new SqlStatement(adapter.parsingSelect(SalesOrder.class, criteria));
+		SqlPreparedStatement sqlStatement = new SqlPreparedStatement(adapter.parsingSelect(SalesOrder.class, criteria));
 		System.out.println(sqlStatement.getContent());
 		sqlStatement.setObject(criteria.getConditions());
 		System.out.println(adapter.parsing(sqlStatement));
@@ -263,8 +258,7 @@ public class TestCriteria extends TestCase {
 	}
 
 	/**
-	 * 测试Criteria基本结构
-	 * 覆盖：条件数量、排序数量、子项查询、ResultCount
+	 * 测试Criteria基本结构 覆盖：条件数量、排序数量、子项查询、ResultCount
 	 */
 	public void testCriteriaStructure() {
 		ICriteria criteria = createTestCriteria();
@@ -275,8 +269,7 @@ public class TestCriteria extends TestCase {
 	}
 
 	/**
-	 * 测试Condition操作符
-	 * 覆盖：各种ConditionOperation设置
+	 * 测试Condition操作符 覆盖：各种ConditionOperation设置
 	 */
 	public void testConditionOperations() {
 		ICriteria criteria = new Criteria();
@@ -311,8 +304,7 @@ public class TestCriteria extends TestCase {
 	}
 
 	/**
-	 * 测试条件关系
-	 * 覆盖：AND/OR关系设置
+	 * 测试条件关系 覆盖：AND/OR关系设置
 	 */
 	public void testConditionRelationship() {
 		ICriteria criteria = new Criteria();
@@ -329,8 +321,7 @@ public class TestCriteria extends TestCase {
 	}
 
 	/**
-	 * 测试子项查询条件
-	 * 覆盖：PropertyPath、NoChilds、IncludingOtherChilds、OnlyHasChilds
+	 * 测试子项查询条件 覆盖：PropertyPath、NoChilds、IncludingOtherChilds、OnlyHasChilds
 	 */
 	public void testChildCriteriaProperties() {
 		ICriteria criteria = new Criteria();
@@ -348,8 +339,7 @@ public class TestCriteria extends TestCase {
 	}
 
 	/**
-	 * 测试分页查询（next/previous）
-	 * 覆盖：基于已有结果构造下一页/上一页条件
+	 * 测试分页查询（next/previous） 覆盖：基于已有结果构造下一页/上一页条件
 	 */
 	public void testResultCriteria() {
 		ICriteria criteria = new Criteria();

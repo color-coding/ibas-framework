@@ -50,7 +50,7 @@ class BOContract<T> implements IBusinessLogicContract {
 		if (this.getHost() instanceof IBusinessObject) {
 			return ((IBusinessObject) this.getHost()).getIdentifiers();
 		}
-		throw new RuntimeException(Strings.format("Method not implemented."));
+		throw new UnsupportedOperationException(Strings.format("Method not implemented."));
 	}
 }
 

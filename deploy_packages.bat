@@ -16,7 +16,7 @@ echo ***************************************************************************
 rem 设置参数变量
 set WORK_FOLDER=%~dp0
 rem 仓库根地址
-set ROOT_URL=http://maven.colorcoding.org/repository/
+set ROOT_URL=https://maven.colorcoding.org/repository/
 rem 仓库名称
 set REPOSITORY=%1
 rem 设置默认仓库名称
@@ -71,7 +71,7 @@ goto :EOF
 rem ********************************以下为函数************************************
 :CHECK_MAVEN_FAILD
 echo 没有检测到MAVEN，请按照以下步骤检查
-echo 1. 是否安装，下载地址：http://maven.apache.org/download.cgi
+echo 1. 是否安装，下载地址：https://maven.apache.org/download.cgi
 echo 2. 是否配置到PATH变量，配置后需要重启
 echo 3. 运行mvn -v检查配置是否成功
 goto :EOF

@@ -44,6 +44,9 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 	@Override
 	public String sqlValueOf(Object value, int sqlType) {
 		String sqlValue = super.sqlValueOf(value, sqlType);
+		if (value == null || "NULL".equals(sqlValue)) {
+			return sqlValue;
+		}
 		if (java.sql.Types.VARCHAR == sqlType || java.sql.Types.NVARCHAR == sqlType
 				|| java.sql.Types.LONGNVARCHAR == sqlType || java.sql.Types.LONGVARCHAR == sqlType
 				|| java.sql.Types.CHAR == sqlType || java.sql.Types.CLOB == sqlType || java.sql.Types.NCHAR == sqlType

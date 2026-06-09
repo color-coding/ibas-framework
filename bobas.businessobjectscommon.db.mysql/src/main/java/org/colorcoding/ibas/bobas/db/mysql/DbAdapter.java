@@ -10,8 +10,8 @@ import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.db.DbFieldType;
-import org.colorcoding.ibas.bobas.db.ISqlStatement;
 import org.colorcoding.ibas.bobas.db.MaxValue;
+import org.colorcoding.ibas.bobas.db.SqlStatement;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
 
@@ -202,7 +202,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 	 * 解析SQL语句；对反斜杠进行双写转义
 	 */
 	@Override
-	public String parsing(ISqlStatement sqlStatement) {
+	public String parsing(SqlStatement sqlStatement) {
 		// 处理转义字符
 		return Strings.replace(super.parsing(sqlStatement), "\\", "\\\\");
 	}

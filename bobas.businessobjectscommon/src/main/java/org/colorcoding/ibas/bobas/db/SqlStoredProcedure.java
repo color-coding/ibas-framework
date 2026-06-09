@@ -4,21 +4,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
-import org.colorcoding.ibas.bobas.MyConfiguration;
-
 /**
  * 数据库存储过程
  * 
  */
-@XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "SqlStoredProcedure", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
-@XmlRootElement(name = "SqlStoredProcedure", namespace = MyConfiguration.NAMESPACE_BOBAS_COMMON)
-public class SqlStoredProcedure extends SqlStatement {
+public class SqlStoredProcedure extends SqlPreparedStatement {
 
 	private static final long serialVersionUID = 8400088898134597897L;
 
@@ -76,11 +66,8 @@ public class SqlStoredProcedure extends SqlStatement {
 	 * @param targetType 目标类型
 	 */
 	public void setObject(String name, Object value, DbFieldType targetType) {
-		Parameter parameter = new Parameter();
+		Parameter parameter = this.addParameter(value, targetType);
 		parameter.name = name;
-		parameter.value = value;
-		parameter.targetType = targetType;
-		this.getParameters().put(this.getParameters().size(), parameter);
 	}
 
 	/**
@@ -116,13 +103,13 @@ public class SqlStoredProcedure extends SqlStatement {
 	}
 
 	/**
-	 * 不可用（存储过程不支持直接设置内容，调用时抛RuntimeException）
+	 * 不可用
 	 *
 	 * @param value 忽略
 	 */
 	@Override
 	public void setContent(String value) {
-		throw new RuntimeException("please input by name or parameters.");
+		throw new UnsupportedOperationException("please input by name or parameters.");
 	}
 
 }

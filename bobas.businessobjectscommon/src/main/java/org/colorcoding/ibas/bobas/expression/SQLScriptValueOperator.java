@@ -11,7 +11,7 @@ import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.db.DbTransaction;
-import org.colorcoding.ibas.bobas.db.SqlStatement;
+import org.colorcoding.ibas.bobas.db.SqlPreparedStatement;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 
 /**
@@ -69,9 +69,9 @@ public class SQLScriptValueOperator implements IPropertyValueOperator {
 				}
 				matcher.appendTail(stringBuffer);
 				query = stringBuffer.toString();
-				SqlStatement statement = new SqlStatement(query);
+				SqlPreparedStatement statement = new SqlPreparedStatement(query);
 				for (int i = 0; i < sqlParameters.size(); i++) {
-					statement.setObject(i, sqlParameters.get(i));
+					statement.setObject(i + 1, sqlParameters.get(i));
 				}
 				IDataTable table = this.dbTransaction.fetch(statement);
 				if (table != null && !table.getColumns().isEmpty() && !table.getRows().isEmpty()) {
