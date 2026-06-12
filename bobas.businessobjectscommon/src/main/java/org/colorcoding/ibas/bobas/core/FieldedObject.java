@@ -27,8 +27,7 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	public FieldedObject() {
 		// 初始化对象属性
 		this.fields = PropertyInfoManager.initFields(this.getClass());
-		// 初始化被修改属性
-		this.modifiedProperties = new HashSet<IPropertyInfo<?>>();
+		// 被修改属性延迟初始化，首次写入时创建以节省内存
 	}
 
 	/**
@@ -106,6 +105,9 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	 *
 	 * 值为null时返回属性的默认值（减少内存占用）
 	 *
+	 * 不使用synchronized：属性Map的key集合在构造后不再变化，put仅替换已有key的value，
+	 * 不会触发rehash/扩容等结构性修改，因此并发get是安全的。
+	 *
 	 * @param property 属性信息（不允许为null）
 	 *
 	 * @return 属性的值；存储null时返回默认值
@@ -168,9 +170,7 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 			}
 			if (oldValue == null || value == null || !oldValue.equals(value)) {
 				this.fields.put(property, value);
-				if (this.modifiedProperties != null && !this.modifiedProperties.contains(property)) {
-					this.modifiedProperties.add(property);
-				}
+				this.getModifiedProperties().add(property);
 				this.firePropertyChange(property.getName(), oldValue, value);
 				this.markDirty();
 			}
@@ -193,6 +193,20 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 		return false;
 	}
 
+	/**
+	 * 获取被修改的属性集合（延迟初始化，首次写入时创建以节省内存）
+	 *
+	 * 对于只读对象（查询结果等），不会触发创建，节省每个实例约48B的HashSet开销
+	 *
+	 * @return 被修改的属性集合
+	 */
+	protected final Set<IPropertyInfo<?>> getModifiedProperties() {
+		if (this.modifiedProperties == null) {
+			this.modifiedProperties = new HashSet<>();
+		}
+		return this.modifiedProperties;
+	}
+
 	@Override
 	protected void beforeUnmarshal(Object parent) {
 		this.setLoading(true);
@@ -206,8 +220,8 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	@Override
 	public synchronized Object clone() {
 		FieldedObject nData = (FieldedObject) super.clone();
-		// 初始化被修改属性
-		nData.modifiedProperties = new HashSet<>();
+		// 被修改属性延迟初始化
+		nData.modifiedProperties = null;
 		// 初始化对象属性
 		nData.fields = new HashMap<>(this.fields);
 		// 替换可克隆的值

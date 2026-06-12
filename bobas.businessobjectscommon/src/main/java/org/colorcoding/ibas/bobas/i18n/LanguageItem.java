@@ -25,7 +25,7 @@ public class LanguageItem {
 
 	protected List<KeyText> getContents() {
 		if (contents == null) {
-			contents = new ArrayList<>(4);
+			contents = new ArrayList<>(2);
 		}
 		return contents;
 	}

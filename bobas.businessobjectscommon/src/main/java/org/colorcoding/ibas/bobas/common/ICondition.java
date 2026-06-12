@@ -2,7 +2,7 @@ package org.colorcoding.ibas.bobas.common;
 
 import org.colorcoding.ibas.bobas.core.ICloneable;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
-import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.db.DataType;
 
 /**
  * 查询条件
@@ -145,14 +145,14 @@ public interface ICondition extends ICloneable {
 	 *
 	 * @return 数据库字段类型
 	 */
-	DbFieldType getAliasDataType();
+	DataType getAliasDataType();
 
 	/**
 	 * 设置-条件字段的数据类型
 	 *
 	 * @param value 数据库字段类型
 	 */
-	void setAliasDataType(DbFieldType value);
+	void setAliasDataType(DataType value);
 
 	/**
 	 * 克隆

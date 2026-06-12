@@ -417,6 +417,9 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	/**
 	 * 获取属性的值
 	 *
+	 * 不使用synchronized：读操作不修改状态，属性Map的key集合在构造后不变，
+	 * 并发get安全。详见FieldedObject.getProperty()注释。
+	 *
 	 * @param property 属性信息（null时抛NullPointerException）
 	 * @return 属性的值（用户字段null值返回默认值以节省内存）
 	 */
@@ -468,9 +471,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 					}
 					if (oldValue == null || value == null || !oldValue.equals(value)) {
 						this.userFields.put(property, value);
-						if (this.modifiedProperties != null && !this.modifiedProperties.contains(property)) {
-							this.modifiedProperties.add(property);
-						}
+						this.getModifiedProperties().add(property);
 						this.markDirty();
 						this.firePropertyChange(property.getName(), oldValue, value);
 					}
@@ -539,9 +540,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 		if (this.isLoading()) {
 			return;
 		}
-		if (this.modifiedProperties != null && !this.modifiedProperties.contains(userField)) {
-			this.modifiedProperties.add(userField);
-		}
+		this.getModifiedProperties().add(userField);
 		this.markDirty();
 		super.firePropertyChange(userField.getName(), oldValue, newValue);
 	}

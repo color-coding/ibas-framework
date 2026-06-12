@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.Strings;
-import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.db.DataType;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
 
@@ -57,8 +57,8 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 	}
 
 	@Override
-	public String castAs(DbFieldType type, String alias) {
-		if (type == DbFieldType.ALPHANUMERIC) {
+	public String castAs(DataType type, String alias) {
+		if (type == DataType.ALPHANUMERIC) {
 			StringBuilder stringBuilder = new StringBuilder(64);
 			stringBuilder.append("CONVERT");
 			stringBuilder.append("(");

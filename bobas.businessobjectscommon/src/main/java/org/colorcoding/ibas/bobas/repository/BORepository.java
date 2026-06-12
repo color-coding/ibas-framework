@@ -7,6 +7,7 @@ import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.OperationResult;
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.i18n.I18N;
@@ -53,7 +54,7 @@ public abstract class BORepository extends Repository {
 	 */
 	protected final void addSkipLogics(Class<?> contract) {
 		if (!IBusinessLogicContract.class.isAssignableFrom(contract)) {
-			throw new ClassCastException("not business logic contract class.");
+			throw new IllegalArgumentException(Strings.format("class [%s] is not business logic contract class.", contract.getName()));
 		}
 		if (this.skipLogicContracts == null) {
 			this.skipLogicContracts = new ArrayList<>();
@@ -157,7 +158,7 @@ public abstract class BORepository extends Repository {
 				if (!this.isSkipInstanceCheck() && bo.isSavable() && !bo.isNew()) {
 					ICriteria criteria = bo.getCriteria();
 					if (criteria == null || criteria.getConditions().isEmpty()) {
-						throw new RepositoryException(I18N.prop("msg_bobas_invaild_criteria"));
+						throw new RepositoryException(I18N.prop("msg_bobas_invalid_criteria"));
 					}
 					criteria.setResultCount(1);
 					// 不能调用当前查询，会被重写

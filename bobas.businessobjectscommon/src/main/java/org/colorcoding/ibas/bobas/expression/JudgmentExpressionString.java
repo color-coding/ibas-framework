@@ -14,7 +14,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 
 	}
 
-	public JudgmentExpressionString(String leftValue, JudmentOperation operation, String rightValue) {
+	public JudgmentExpressionString(String leftValue, JudgmentOperation operation, String rightValue) {
 		super(leftValue, operation, rightValue);
 	}
 
@@ -53,7 +53,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 	@Override
 	public boolean result() throws ExpressionException {
 		// 开始与
-		if (this.getOperation() == JudmentOperation.BEGIN_WITH) {
+		if (this.getOperation() == JudgmentOperation.BEGIN_WITH) {
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
 			}
@@ -63,7 +63,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 			return false;
 		}
 		// 结束于
-		else if (this.getOperation() == JudmentOperation.END_WITH) {
+		else if (this.getOperation() == JudgmentOperation.END_WITH) {
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
 			}
@@ -73,7 +73,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 			return false;
 		}
 		// 非开始于
-		else if (this.getOperation() == JudmentOperation.NOT_BEGIN_WITH) {
+		else if (this.getOperation() == JudgmentOperation.NOT_BEGIN_WITH) {
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return true;
 			}
@@ -83,7 +83,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 			return false;
 		}
 		// 非结束于
-		else if (this.getOperation() == JudmentOperation.NOT_END_WITH) {
+		else if (this.getOperation() == JudgmentOperation.NOT_END_WITH) {
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return true;
 			}
@@ -93,7 +93,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 			return false;
 		}
 		// 包含
-		else if (this.getOperation() == JudmentOperation.CONTAIN) {
+		else if (this.getOperation() == JudgmentOperation.CONTAIN) {
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
 			}
@@ -103,7 +103,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 			return false;
 		}
 		// 不包含
-		else if (this.getOperation() == JudmentOperation.NOT_CONTAIN) {
+		else if (this.getOperation() == JudgmentOperation.NOT_CONTAIN) {
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return true;
 			}
@@ -113,7 +113,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 			return false;
 		}
 		// 包含
-		if (this.getOperation() == JudmentOperation.IN) {
+		if (this.getOperation() == JudgmentOperation.IN) {
 			// 左值为空或右值为空
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
@@ -127,7 +127,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 			return false;
 		}
 		// 不包含
-		else if (this.getOperation() == JudmentOperation.NOT_IN) {
+		else if (this.getOperation() == JudgmentOperation.NOT_IN) {
 			// 左值为空或右值为空
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;

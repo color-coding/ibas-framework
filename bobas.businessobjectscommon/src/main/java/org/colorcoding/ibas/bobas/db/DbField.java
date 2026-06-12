@@ -12,21 +12,28 @@ import org.colorcoding.ibas.bobas.common.Strings;
 @Target(ElementType.FIELD)
 public @interface DbField {
 	/**
-	 * 数据库字段名称
+	 * 名称
 	 *
-	 * @return 字段名
+	 * @return 名称
 	 */
 	public String name();
 
 	/**
-	 * 数据库字段类型
+	 * 类型
 	 *
-	 * @return 字段类型
+	 * @return 类型
 	 */
-	public DbFieldType type();
+	public DataType type();
 
 	/**
-	 * 数据库表名称（支持${Variable}变量替换）
+	 * 编辑类型
+	 *
+	 * @return 编辑类型
+	 */
+	public EditType editType() default EditType.DEFAULT;
+
+	/**
+	 * 表名称（支持${Variable}变量替换）
 	 *
 	 * @return 表名（默认空字符串）
 	 */

@@ -55,7 +55,7 @@ public class SqlStoredProcedure extends SqlPreparedStatement {
 	 * @param value 值
 	 */
 	public void setObject(String name, Object value) {
-		this.setObject(name, value, DbFieldType.UNKNOWN);
+		this.setObject(name, value, DataType.UNKNOWN);
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class SqlStoredProcedure extends SqlPreparedStatement {
 	 * @param value      值
 	 * @param targetType 目标类型
 	 */
-	public void setObject(String name, Object value, DbFieldType targetType) {
+	public void setObject(String name, Object value, DataType targetType) {
 		Parameter parameter = this.addParameter(value, targetType);
 		parameter.name = name;
 	}

@@ -9,7 +9,7 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.expression.FileJudgmentLink;
-import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
+import org.colorcoding.ibas.bobas.expression.JudgmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.repository.RepositoryException;
 import org.colorcoding.ibas.bobas.repository.Transaction;
@@ -246,7 +246,7 @@ public abstract class FileTransaction extends Transaction {
 				}
 			}
 			return datas.toArray((T[]) Array.newInstance(dataType, datas.size()));
-		} catch (JudmentOperationException e) {
+		} catch (JudgmentOperationException e) {
 			throw new RepositoryException(e);
 		}
 	}

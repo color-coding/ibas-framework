@@ -65,7 +65,7 @@ public class Daemon {
 	 * @param id 注册时分配的id
 	 * @return true，成功；false，失败
 	 */
-	public static boolean unRegister(long id) {
+	public static boolean unregister(long id) {
 		synchronized (Daemon.class) {
 			return create().remove(id);
 		}

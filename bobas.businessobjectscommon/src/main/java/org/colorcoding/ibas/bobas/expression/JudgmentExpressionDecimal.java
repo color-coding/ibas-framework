@@ -16,7 +16,7 @@ public class JudgmentExpressionDecimal extends JudgmentExpressionComparable<BigD
 	public JudgmentExpressionDecimal() {
 	}
 
-	public JudgmentExpressionDecimal(BigDecimal leftValue, JudmentOperation operation, BigDecimal rightValue) {
+	public JudgmentExpressionDecimal(BigDecimal leftValue, JudgmentOperation operation, BigDecimal rightValue) {
 		super(leftValue, operation, rightValue);
 	}
 
@@ -98,7 +98,7 @@ public class JudgmentExpressionDecimal extends JudgmentExpressionComparable<BigD
 
 	public final void setRightValue(String value) {
 		if (Strings.isNullOrEmpty(value)) {
-			if (this.getOperation() == JudmentOperation.IS_NULL || this.getOperation() == JudmentOperation.NOT_NULL) {
+			if (this.getOperation() == JudgmentOperation.IS_NULL || this.getOperation() == JudgmentOperation.NOT_NULL) {
 				value = Strings.VALUE_ZERO;
 			}
 		}

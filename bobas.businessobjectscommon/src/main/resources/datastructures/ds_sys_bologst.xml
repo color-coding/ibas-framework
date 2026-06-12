@@ -8,7 +8,7 @@
     <Property Name="ModifyUser" Description="修改用户" DataType="Numeric" DataSubType="Default" EditSize="8" Mapped="Modifier"/>
     <Property Name="ModifyDate" Description="修改日期" DataType="Date" DataSubType="Default" EditSize="8" Mapped="ModifyDate"/>
     <Property Name="ModifyTime" Description="修改时间" DataType="Date" DataSubType="Time" EditSize="8" Mapped="ModifyTime"/>
-    <Property Name="TransationId" Description="事务标识" DataType="Alphanumeric" DataSubType="Default" EditSize="36" Mapped="TransationId" UniqueKey="Yes"/>
+    <Property Name="TransactionId" Description="事务标识" DataType="Alphanumeric" DataSubType="Default" EditSize="36" Mapped="TransactionId" UniqueKey="Yes"/>
     <Property Name="Cause" Description="动机" DataType="Alphanumeric" DataSubType="Default" EditSize="8" Mapped="Cause"/>
     <Property Name="Content" Description="内容" DataType="Memo" DataSubType="Default" EditSize="8" Mapped="Content"/>
   </Model>

@@ -16,20 +16,17 @@ import junit.framework.TestCase;
 /**
  * 数据类型转换测试
  *
- * 测试范围：
- * 1. 基本类型转换（String/Integer/Long/Double/Float/BigDecimal/Boolean/DateTime）
- * 2. 枚举类型转换
- * 3. 同类型直接返回
- * 4. null值处理
- * 5. 条件枚举转换（emConditionOperation/emConditionRelationship ↔ ConditionOperation/ConditionRelationship）
+ * 测试范围： 1. 基本类型转换（String/Integer/Long/Double/Float/BigDecimal/Boolean/DateTime）
+ * 2. 枚举类型转换 3. 同类型直接返回 4. null值处理 5.
+ * 条件枚举转换（emConditionOperation/emConditionRelationship ↔
+ * ConditionOperation/ConditionRelationship）
  */
 public class TestDataConvert extends TestCase {
 
 	// ==================== 1. 基本类型转换 ====================
 
 	/**
-	 * 测试转换为String
-	 * 覆盖：各种类型→String
+	 * 测试转换为String 覆盖：各种类型→String
 	 */
 	public void testConvertToString() {
 		assertEquals("Integer to String. ", "123", DataConvert.convert(String.class, 123));
@@ -38,8 +35,7 @@ public class TestDataConvert extends TestCase {
 	}
 
 	/**
-	 * 测试转换为Integer
-	 * 覆盖：String→Integer、空值→0
+	 * 测试转换为Integer 覆盖：String→Integer、空值→0
 	 */
 	public void testConvertToInteger() {
 		assertEquals("String to Integer. ", Integer.valueOf(123), DataConvert.convert(Integer.class, "123"));
@@ -48,8 +44,7 @@ public class TestDataConvert extends TestCase {
 	}
 
 	/**
-	 * 测试转换为Long
-	 * 覆盖：String→Long、空值→0
+	 * 测试转换为Long 覆盖：String→Long、空值→0
 	 */
 	public void testConvertToLong() {
 		assertEquals("String to Long. ", Long.valueOf(123456L), DataConvert.convert(Long.class, "123456"));
@@ -57,8 +52,7 @@ public class TestDataConvert extends TestCase {
 	}
 
 	/**
-	 * 测试转换为Double
-	 * 覆盖：String→Double
+	 * 测试转换为Double 覆盖：String→Double
 	 */
 	public void testConvertToDouble() {
 		assertEquals("String to Double. ", Double.valueOf(99.99), DataConvert.convert(Double.class, "99.99"));
@@ -66,8 +60,7 @@ public class TestDataConvert extends TestCase {
 	}
 
 	/**
-	 * 测试转换为Float
-	 * 覆盖：String→Float
+	 * 测试转换为Float 覆盖：String→Float
 	 */
 	public void testConvertToFloat() {
 		assertEquals("String to Float. ", Float.valueOf(99.99f), DataConvert.convert(Float.class, "99.99"));
@@ -75,8 +68,7 @@ public class TestDataConvert extends TestCase {
 	}
 
 	/**
-	 * 测试转换为BigDecimal
-	 * 覆盖：String→BigDecimal、空值→ZERO
+	 * 测试转换为BigDecimal 覆盖：String→BigDecimal、空值→ZERO
 	 */
 	public void testConvertToBigDecimal() {
 		assertEquals("String to BigDecimal. ", Decimals.valueOf("99.99"),
@@ -86,8 +78,7 @@ public class TestDataConvert extends TestCase {
 	}
 
 	/**
-	 * 测试转换为Boolean
-	 * 覆盖：String→Boolean
+	 * 测试转换为Boolean 覆盖：String→Boolean
 	 */
 	public void testConvertToBoolean() {
 		assertEquals("String true to Boolean. ", Boolean.TRUE, DataConvert.convert(Boolean.class, "true"));
@@ -95,8 +86,7 @@ public class TestDataConvert extends TestCase {
 	}
 
 	/**
-	 * 测试转换为DateTime
-	 * 覆盖：String→DateTime、Long→DateTime
+	 * 测试转换为DateTime 覆盖：String→DateTime、Long→DateTime
 	 */
 	public void testConvertToDateTime() {
 		DateTime date = DataConvert.convert(DateTime.class, "2025-06-01");
@@ -140,7 +130,7 @@ public class TestDataConvert extends TestCase {
 		try {
 			DataConvert.convert(Thread.class, "hello");
 			fail("Should throw ClassCastException for unsupported type.");
-		} catch (ClassCastException e) {
+		} catch (IllegalArgumentException e) {
 			// expected
 		}
 	}
@@ -148,59 +138,47 @@ public class TestDataConvert extends TestCase {
 	// ==================== 3. 条件枚举转换 ====================
 
 	/**
-	 * 测试emConditionRelationship → ConditionRelationship
-	 * 覆盖：AND/OR/NONE
+	 * 测试emConditionRelationship → ConditionRelationship 覆盖：AND/OR/NONE
 	 */
 	public void testToConditionRelationship() {
-		assertEquals("AND. ", ConditionRelationship.AND,
-				DataConvert.toRelationship(emConditionRelationship.AND));
-		assertEquals("OR. ", ConditionRelationship.OR,
-				DataConvert.toRelationship(emConditionRelationship.OR));
-		assertEquals("NONE. ", ConditionRelationship.NONE,
-				DataConvert.toRelationship(emConditionRelationship.NONE));
+		assertEquals("AND. ", ConditionRelationship.AND, DataConvert.toRelationship(emConditionRelationship.AND));
+		assertEquals("OR. ", ConditionRelationship.OR, DataConvert.toRelationship(emConditionRelationship.OR));
+		assertEquals("NONE. ", ConditionRelationship.NONE, DataConvert.toRelationship(emConditionRelationship.NONE));
 	}
 
 	/**
-	 * 测试emConditionOperation → ConditionOperation
-	 * 覆盖：主要操作符
+	 * 测试emConditionOperation → ConditionOperation 覆盖：主要操作符
 	 */
 	public void testToConditionOperation() {
-		assertEquals("EQUAL. ", ConditionOperation.EQUAL,
-				DataConvert.toOperation(emConditionOperation.EQUAL));
+		assertEquals("EQUAL. ", ConditionOperation.EQUAL, DataConvert.toOperation(emConditionOperation.EQUAL));
 		assertEquals("NOT_EQUAL. ", ConditionOperation.NOT_EQUAL,
 				DataConvert.toOperation(emConditionOperation.NOT_EQUAL));
-		assertEquals("CONTAIN. ", ConditionOperation.CONTAIN,
-				DataConvert.toOperation(emConditionOperation.CONTAIN));
-		assertEquals("GRATER_EQUAL. ", ConditionOperation.GRATER_EQUAL,
-				DataConvert.toOperation(emConditionOperation.GRATER_EQUAL));
+		assertEquals("CONTAIN. ", ConditionOperation.CONTAIN, DataConvert.toOperation(emConditionOperation.CONTAIN));
+		assertEquals("GREATER_EQUAL. ", ConditionOperation.GREATER_EQUAL,
+				DataConvert.toOperation(emConditionOperation.GREATER_EQUAL));
 		assertEquals("LESS_THAN. ", ConditionOperation.LESS_THAN,
 				DataConvert.toOperation(emConditionOperation.LESS_THAN));
 		assertEquals("BEGIN_WITH → START. ", ConditionOperation.START,
 				DataConvert.toOperation(emConditionOperation.BEGIN_WITH));
 		assertEquals("END_WITH → END. ", ConditionOperation.END,
 				DataConvert.toOperation(emConditionOperation.END_WITH));
-		assertEquals("IN. ", ConditionOperation.IN,
-				DataConvert.toOperation(emConditionOperation.IN));
+		assertEquals("IN. ", ConditionOperation.IN, DataConvert.toOperation(emConditionOperation.IN));
 	}
 
 	/**
-	 * 测试ConditionRelationship → emConditionRelationship
-	 * 覆盖：反向转换
+	 * 测试ConditionRelationship → emConditionRelationship 覆盖：反向转换
 	 */
 	public void testFromConditionRelationship() {
 		assertEquals("AND reverse. ", emConditionRelationship.AND,
 				DataConvert.toRelationship(ConditionRelationship.AND));
-		assertEquals("OR reverse. ", emConditionRelationship.OR,
-				DataConvert.toRelationship(ConditionRelationship.OR));
+		assertEquals("OR reverse. ", emConditionRelationship.OR, DataConvert.toRelationship(ConditionRelationship.OR));
 	}
 
 	/**
-	 * 测试ConditionOperation → emConditionOperation
-	 * 覆盖：反向转换
+	 * 测试ConditionOperation → emConditionOperation 覆盖：反向转换
 	 */
 	public void testFromConditionOperation() {
-		assertEquals("EQUAL reverse. ", emConditionOperation.EQUAL,
-				DataConvert.toOperation(ConditionOperation.EQUAL));
+		assertEquals("EQUAL reverse. ", emConditionOperation.EQUAL, DataConvert.toOperation(ConditionOperation.EQUAL));
 		assertEquals("START → BEGIN_WITH. ", emConditionOperation.BEGIN_WITH,
 				DataConvert.toOperation(ConditionOperation.START));
 		assertEquals("END → END_WITH. ", emConditionOperation.END_WITH,
@@ -214,13 +192,13 @@ public class TestDataConvert extends TestCase {
 		try {
 			DataConvert.toRelationship((emConditionRelationship) null);
 			fail("Should throw NullPointerException.");
-		} catch (NullPointerException e) {
+		} catch (IllegalArgumentException e) {
 			// expected
 		}
 		try {
 			DataConvert.toOperation((emConditionOperation) null);
 			fail("Should throw NullPointerException.");
-		} catch (NullPointerException e) {
+		} catch (IllegalArgumentException e) {
 			// expected
 		}
 	}

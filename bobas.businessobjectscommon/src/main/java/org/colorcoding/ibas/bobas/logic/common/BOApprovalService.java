@@ -145,12 +145,14 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 				process = this.getProcessManager().startProcess(this.getBeAffected());
 				if (process != null) {
 					process.start(contract.getHost());
+					process.perfecting();
 				}
 			} else {
 				process = this.getProcessManager().startProcess(this.getBeAffected(), contract.getHost());
 				if (process != null) {
 					// 检查用户是否可以修改数据
 					process.checkToSave(this.getUser());
+					process.perfecting();
 				}
 			}
 		} catch (Exception e) {

@@ -28,7 +28,7 @@ public class SqlPreparedStatement extends SqlStatement implements PreparedStatem
 	protected class Parameter {
 
 		/** 目标数据库字段类型 */
-		public DbFieldType targetType;
+		public DataType targetType;
 
 		/** 参数值 */
 		public Object value;
@@ -73,7 +73,7 @@ public class SqlPreparedStatement extends SqlStatement implements PreparedStatem
 		}
 	}
 
-	protected Parameter addParameter(Object value, DbFieldType targetType) {
+	protected Parameter addParameter(Object value, DataType targetType) {
 		return this.addParameter(this.getParameters().size() + 1, value, targetType);
 	}
 
@@ -81,7 +81,7 @@ public class SqlPreparedStatement extends SqlStatement implements PreparedStatem
 		return this.addParameter(parameterIndex, value, this.getAdapter().dbFieldTypeOf(sqlType));
 	}
 
-	protected Parameter addParameter(int parameterIndex, Object value, DbFieldType targetType) {
+	protected Parameter addParameter(int parameterIndex, Object value, DataType targetType) {
 		Parameter parameter = new Parameter();
 		parameter.targetType = targetType;
 		parameter.value = value;
@@ -115,7 +115,7 @@ public class SqlPreparedStatement extends SqlStatement implements PreparedStatem
 		return this.adapter;
 	}
 
-	public void setObject(int parameterIndex, Object value, DbFieldType targetType) throws SQLException {
+	public void setObject(int parameterIndex, Object value, DataType targetType) throws SQLException {
 		this.addParameter(parameterIndex, value, targetType);
 	}
 

@@ -192,7 +192,7 @@ public class TestMultitask extends TestCase {
 		childCriteria.setPropertyPath(SalesOrder.PROPERTY_SALESORDERITEMS);
 		condition = childCriteria.getConditions().create();
 		condition.setAlias(SalesOrderItem.PROPERTY_QUANTITY);
-		condition.setOperation(ConditionOperation.GRATER_EQUAL);
+		condition.setOperation(ConditionOperation.GREATER_EQUAL);
 		condition.setValue(Decimals.valueOf(3));
 		// ORDER BY "DocEntry" DESC, "CardCode" ASC
 		ISort sort = criteria.getSorts().create();

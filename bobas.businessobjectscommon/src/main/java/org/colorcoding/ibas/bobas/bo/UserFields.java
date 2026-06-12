@@ -2,6 +2,7 @@ package org.colorcoding.ibas.bobas.bo;
 
 import java.util.Iterator;
 
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 
 class UserFields implements IUserFields {
@@ -103,7 +104,7 @@ class UserFields implements IUserFields {
 			@Override
 			public IUserField<?> next() {
 				if (!hasNext()) {
-					throw new IndexOutOfBoundsException();
+					throw new IllegalStateException("no more elements in user fields iterator");
 				}
 				return UserFields.this.fields[this.index++];
 			}
@@ -118,11 +119,11 @@ class UserFields implements IUserFields {
 	}
 
 	/**
-	 * 按名称获取用户字段；名称不存在时抛出IndexOutOfBoundsException
+	 * 按名称获取用户字段；名称不存在时抛出IllegalArgumentException
 	 *
 	 * @param name 字段名称（忽略大小写）
 	 * @return 用户字段
-	 * @throws IndexOutOfBoundsException 名称不存在时
+	 * @throws IllegalArgumentException 名称不存在时
 	 */
 	@Override
 	public <P> IUserField<P> get(String name) {
@@ -131,7 +132,7 @@ class UserFields implements IUserFields {
 				return this.get(i);
 			}
 		}
-		throw new IndexOutOfBoundsException(name);
+		throw new IllegalArgumentException(Strings.format("user field [%s] not found.", name));
 	}
 
 	@Override

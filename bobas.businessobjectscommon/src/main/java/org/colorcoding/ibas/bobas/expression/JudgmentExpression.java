@@ -13,21 +13,21 @@ public abstract class JudgmentExpression<T> implements IJudgmentExpression {
 
 	}
 
-	public JudgmentExpression(T leftValue, JudmentOperation operation, T rightValue) {
+	public JudgmentExpression(T leftValue, JudgmentOperation operation, T rightValue) {
 		this.setLeftValue(leftValue);
 		this.setRightValue(rightValue);
 		this.setOperation(operation);
 	}
 
-	private JudmentOperation operation;
+	private JudgmentOperation operation;
 
 	@Override
-	public final JudmentOperation getOperation() {
+	public final JudgmentOperation getOperation() {
 		return this.operation;
 	}
 
 	@Override
-	public final void setOperation(JudmentOperation value) {
+	public final void setOperation(JudgmentOperation value) {
 		this.operation = value;
 	}
 
@@ -43,14 +43,14 @@ public abstract class JudgmentExpression<T> implements IJudgmentExpression {
 	@Override
 	public boolean result() throws ExpressionException {
 		// 空值
-		if (this.getOperation() == JudmentOperation.IS_NULL) {
+		if (this.getOperation() == JudgmentOperation.IS_NULL) {
 			if (this.getLeftValue() == null) {
 				return true;
 			}
 			return false;
 		}
 		// 非空值
-		else if (this.getOperation() == JudmentOperation.NOT_NULL) {
+		else if (this.getOperation() == JudgmentOperation.NOT_NULL) {
 			if (this.getLeftValue() != null) {
 				return true;
 			}

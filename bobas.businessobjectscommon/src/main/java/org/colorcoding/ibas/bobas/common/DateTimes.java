@@ -204,11 +204,25 @@ public class DateTimes {
 	 * @param b 日期b；null返回false
 	 * @return a大于b返回true
 	 */
-	public static boolean graterThan(DateTime a, DateTime b) {
+	public static boolean greaterThan(DateTime a, DateTime b) {
 		if (a == null || b == null) {
 			return false;
 		}
 		return a.compareTo(b) > 0;
+	}
+
+	/**
+	 * 是否大于等于(a >= b)
+	 *
+	 * @param a 日期a；null返回false
+	 * @param b 日期b；null返回false
+	 * @return a大于等于b返回true
+	 */
+	public static boolean greaterEqual(DateTime a, DateTime b) {
+		if (a == null || b == null) {
+			return false;
+		}
+		return a.compareTo(b) >= 0;
 	}
 
 	/**
@@ -223,6 +237,437 @@ public class DateTimes {
 			return false;
 		}
 		return a.compareTo(b) < 0;
+	}
+
+	/**
+	 * 是否小于等于(a <= b)
+	 *
+	 * @param a 日期a；null返回false
+	 * @param b 日期b；null返回false
+	 * @return a小于等于b返回true
+	 */
+	public static boolean lessEqual(DateTime a, DateTime b) {
+		if (a == null || b == null) {
+			return false;
+		}
+		return a.compareTo(b) <= 0;
+	}
+
+	/**
+	 * 日期加天数（负数表示减少）
+	 *
+	 * @param value 日期；null返回VALUE_MIN
+	 * @param days  天数
+	 * @return 新日期
+	 */
+	public static DateTime addDays(DateTime value, int days) {
+		if (value == null) {
+			return VALUE_MIN;
+		}
+		return value.addDays(days);
+	}
+
+	/**
+	 * 日期加月数（负数表示减少）
+	 *
+	 * @param value 日期；null返回VALUE_MIN
+	 * @param months 月数
+	 * @return 新日期
+	 */
+	public static DateTime addMonths(DateTime value, int months) {
+		if (value == null) {
+			return VALUE_MIN;
+		}
+		return value.addMonths(months);
+	}
+
+	/**
+	 * 日期加年数（负数表示减少）
+	 *
+	 * @param value 日期；null返回VALUE_MIN
+	 * @param years 年数
+	 * @return 新日期
+	 */
+	public static DateTime addYears(DateTime value, int years) {
+		if (value == null) {
+			return VALUE_MIN;
+		}
+		return value.addYears(years);
+	}
+
+	/**
+	 * 日期加小时（负数表示减少）
+	 *
+	 * @param value  日期；null返回VALUE_MIN
+	 * @param hours  小时数
+	 * @return 新日期
+	 */
+	public static DateTime addHours(DateTime value, int hours) {
+		if (value == null) {
+			return VALUE_MIN;
+		}
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(value);
+		calendar.add(Calendar.HOUR_OF_DAY, hours);
+		return valueOf(calendar.getTimeInMillis());
+	}
+
+	/**
+	 * 日期加分钟（负数表示减少）
+	 *
+	 * @param value   日期；null返回VALUE_MIN
+	 * @param minutes 分钟数
+	 * @return 新日期
+	 */
+	public static DateTime addMinutes(DateTime value, int minutes) {
+		if (value == null) {
+			return VALUE_MIN;
+		}
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(value);
+		calendar.add(Calendar.MINUTE, minutes);
+		return valueOf(calendar.getTimeInMillis());
+	}
+
+	/**
+	 * 日期加秒数（负数表示减少）
+	 *
+	 * @param value   日期；null返回VALUE_MIN
+	 * @param seconds 秒数
+	 * @return 新日期
+	 */
+	public static DateTime addSeconds(DateTime value, int seconds) {
+		if (value == null) {
+			return VALUE_MIN;
+		}
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(value);
+		calendar.add(Calendar.SECOND, seconds);
+		return valueOf(calendar.getTimeInMillis());
+	}
+
+	/**
+	 * 计算两个日期间隔天数（toTime - fromTime）
+	 *
+	 * @param fromTime 起始时间；null视为VALUE_MIN
+	 * @param toTime   截止时间；null视为VALUE_MIN
+	 * @return 间隔天数（不足一天按整天算，如1天23小时=1天）
+	 */
+	public static long diffDays(DateTime fromTime, DateTime toTime) {
+		if (fromTime == null) {
+			fromTime = VALUE_MIN;
+		}
+		if (toTime == null) {
+			toTime = VALUE_MIN;
+		}
+		long diff = toTime.getTime() - fromTime.getTime();
+		return diff / (1000 * 60 * 60 * 24);
+	}
+
+	/**
+	 * 计算两个日期间隔月数（toTime - fromTime）
+	 *
+	 * @param fromTime 起始时间；null视为VALUE_MIN
+	 * @param toTime   截止时间；null视为VALUE_MIN
+	 * @return 间隔月数
+	 */
+	public static int diffMonths(DateTime fromTime, DateTime toTime) {
+		if (fromTime == null) {
+			fromTime = VALUE_MIN;
+		}
+		if (toTime == null) {
+			toTime = VALUE_MIN;
+		}
+		Calendar from = Calendar.getInstance();
+		from.setTime(fromTime);
+		Calendar to = Calendar.getInstance();
+		to.setTime(toTime);
+		return (to.get(Calendar.YEAR) - from.get(Calendar.YEAR)) * 12
+				+ (to.get(Calendar.MONTH) - from.get(Calendar.MONTH));
+	}
+
+	/**
+	 * 计算两个日期间隔年数（toTime - fromTime）
+	 *
+	 * @param fromTime 起始时间；null视为VALUE_MIN
+	 * @param toTime   截止时间；null视为VALUE_MIN
+	 * @return 间隔年数
+	 */
+	public static int diffYears(DateTime fromTime, DateTime toTime) {
+		return diffMonths(fromTime, toTime) / 12;
+	}
+
+	/**
+	 * 取日期的年份
+	 *
+	 * @param value 日期；null返回0
+	 * @return 年份
+	 */
+	public static int getYear(DateTime value) {
+		if (value == null) {
+			return 0;
+		}
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(value);
+		return calendar.get(Calendar.YEAR);
+	}
+
+	/**
+	 * 取日期的月份（1-12）
+	 *
+	 * @param value 日期；null返回0
+	 * @return 月份（1-based）
+	 */
+	public static int getMonth(DateTime value) {
+		if (value == null) {
+			return 0;
+		}
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(value);
+		return calendar.get(Calendar.MONTH) + 1;
+	}
+
+	/**
+	 * 取日期的天数（当月第几天）
+	 *
+	 * @param value 日期；null返回0
+	 * @return 日（1-31）
+	 */
+	public static int getDay(DateTime value) {
+		if (value == null) {
+			return 0;
+		}
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(value);
+		return calendar.get(Calendar.DAY_OF_MONTH);
+	}
+
+	/**
+	 * 取日期的小时
+	 *
+	 * @param value 日期；null返回0
+	 * @return 小时（0-23）
+	 */
+	public static int getHour(DateTime value) {
+		if (value == null) {
+			return 0;
+		}
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(value);
+		return calendar.get(Calendar.HOUR_OF_DAY);
+	}
+
+	/**
+	 * 取日期的分钟
+	 *
+	 * @param value 日期；null返回0
+	 * @return 分钟（0-59）
+	 */
+	public static int getMinute(DateTime value) {
+		if (value == null) {
+			return 0;
+		}
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(value);
+		return calendar.get(Calendar.MINUTE);
+	}
+
+	/**
+	 * 取日期的秒数
+	 *
+	 * @param value 日期；null返回0
+	 * @return 秒（0-59）
+	 */
+	public static int getSecond(DateTime value) {
+		if (value == null) {
+			return 0;
+		}
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(value);
+		return calendar.get(Calendar.SECOND);
+	}
+
+	/**
+	 * 取日期是星期几（1=周一，7=周日，ISO标准）
+	 *
+	 * @param value 日期；null返回0
+	 * @return 星期几（1-7）
+	 */
+	public static int getDayOfWeek(DateTime value) {
+		if (value == null) {
+			return 0;
+		}
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(value);
+		int day = calendar.get(Calendar.DAY_OF_WEEK);
+		// Calendar: 1=Sunday ... 7=Saturday → ISO: 1=Monday ... 7=Sunday
+		return day == Calendar.SUNDAY ? 7 : day - 1;
+	}
+
+	/**
+	 * 取日期所在月的最后一天
+	 *
+	 * @param value 日期；null返回VALUE_MIN
+	 * @return 当月最后一天的日期（时间部分清零）
+	 */
+	public static DateTime getEndOfMonth(DateTime value) {
+		if (value == null) {
+			return VALUE_MIN;
+		}
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(value);
+		calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		return valueOf(calendar.getTimeInMillis());
+	}
+
+	/**
+	 * 取日期所在月的第一天
+	 *
+	 * @param value 日期；null返回VALUE_MIN
+	 * @return 当月第一天的日期（时间部分清零）
+	 */
+	public static DateTime getBeginOfMonth(DateTime value) {
+		if (value == null) {
+			return VALUE_MIN;
+		}
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(value);
+		calendar.set(Calendar.DAY_OF_MONTH, 1);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		return valueOf(calendar.getTimeInMillis());
+	}
+
+	/**
+	 * 取日期所在年的第一天
+	 *
+	 * @param value 日期；null返回VALUE_MIN
+	 * @return 当年第一天的日期（时间部分清零）
+	 */
+	public static DateTime getBeginOfYear(DateTime value) {
+		if (value == null) {
+			return VALUE_MIN;
+		}
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(value);
+		calendar.set(Calendar.MONTH, Calendar.JANUARY);
+		calendar.set(Calendar.DAY_OF_MONTH, 1);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		return valueOf(calendar.getTimeInMillis());
+	}
+
+	/**
+	 * 取日期所在年的最后一天
+	 *
+	 * @param value 日期；null返回VALUE_MIN
+	 * @return 当年最后一天的日期（时间部分清零）
+	 */
+	public static DateTime getEndOfYear(DateTime value) {
+		if (value == null) {
+			return VALUE_MIN;
+		}
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(value);
+		calendar.set(Calendar.MONTH, Calendar.DECEMBER);
+		calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		return valueOf(calendar.getTimeInMillis());
+	}
+
+	/**
+	 * 取日期的日期部分（时间清零）
+	 *
+	 * @param value 日期；null返回VALUE_MIN
+	 * @return 仅保留年月日的日期
+	 */
+	public static DateTime getDateOnly(DateTime value) {
+		if (value == null) {
+			return VALUE_MIN;
+		}
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(value);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		return valueOf(calendar.getTimeInMillis());
+	}
+
+	/**
+	 * 取最大日期
+	 *
+	 * @param values 日期数组；null跳过，全null返回VALUE_MIN
+	 * @return 最大日期
+	 */
+	public static DateTime max(DateTime... values) {
+		if (values == null || values.length == 0) {
+			return VALUE_MIN;
+		}
+		DateTime result = null;
+		for (DateTime value : values) {
+			if (value == null) {
+				continue;
+			}
+			if (result == null || value.compareTo(result) > 0) {
+				result = value;
+			}
+		}
+		return result != null ? result : VALUE_MIN;
+	}
+
+	/**
+	 * 取最小日期
+	 *
+	 * @param values 日期数组；null跳过，全null返回VALUE_MIN
+	 * @return 最小日期
+	 */
+	public static DateTime min(DateTime... values) {
+		if (values == null || values.length == 0) {
+			return VALUE_MIN;
+		}
+		DateTime result = null;
+		for (DateTime value : values) {
+			if (value == null) {
+				continue;
+			}
+			if (result == null || value.compareTo(result) < 0) {
+				result = value;
+			}
+		}
+		return result != null ? result : VALUE_MIN;
+	}
+
+	/**
+	 * 判断是否在范围内（from <= value <= to）
+	 *
+	 * @param value 日期
+	 * @param from  起始日期（含）；null不限制
+	 * @param to    截止日期（含）；null不限制
+	 * @return 在范围内返回true
+	 */
+	public static boolean between(DateTime value, DateTime from, DateTime to) {
+		if (value == null) {
+			return false;
+		}
+		if (from != null && value.compareTo(from) < 0) {
+			return false;
+		}
+		if (to != null && value.compareTo(to) > 0) {
+			return false;
+		}
+		return true;
 	}
 
 }

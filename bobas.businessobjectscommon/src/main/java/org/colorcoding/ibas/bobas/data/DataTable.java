@@ -79,6 +79,13 @@ public class DataTable extends Serializable implements IDataTable {
 	}
 
 	@Override
+	public void ensureCapacity(int rowCount) {
+		if (this.rows != null) {
+			this.rows.ensureCapacity(rowCount);
+		}
+	}
+
+	@Override
 	public String toString() {
 		return String.format("{table: %s}", this.getName() == null ? "unknown" : this.getName());
 	}

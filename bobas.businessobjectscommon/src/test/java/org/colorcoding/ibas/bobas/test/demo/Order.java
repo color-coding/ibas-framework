@@ -11,7 +11,7 @@ import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.db.DbField;
-import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.db.DataType;
 
 @XmlRootElement(name = "Order", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
 public class Order extends BusinessObject<Order> {
@@ -35,7 +35,7 @@ public class Order extends BusinessObject<Order> {
 	/**
 	 * 凭证编号 属性
 	 */
-	@DbField(name = "DocEntry", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = true)
+	@DbField(name = "DocEntry", type = DataType.NUMERIC, table = DB_TABLE_NAME, primaryKey = true)
 	public static final IPropertyInfo<Integer> PROPERTY_DOCENTRY = registerProperty(PROPERTY_DOCENTRY_NAME,
 			Integer.class, MY_CLASS);
 
@@ -66,7 +66,7 @@ public class Order extends BusinessObject<Order> {
 	/**
 	 * 凭证日期 属性
 	 */
-	@DbField(name = "TaxDate", type = DbFieldType.DATE, table = DB_TABLE_NAME)
+	@DbField(name = "TaxDate", type = DataType.DATE, table = DB_TABLE_NAME)
 	public static final IPropertyInfo<DateTime> PROPERTY_DOCUMENTDATE = registerProperty(PROPERTY_DOCUMENTDATE_NAME,
 			DateTime.class, MY_CLASS);
 
@@ -97,7 +97,7 @@ public class Order extends BusinessObject<Order> {
 	/**
 	 * 单据状态 属性
 	 */
-	@DbField(name = "DocStatus", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME)
+	@DbField(name = "DocStatus", type = DataType.ALPHANUMERIC, table = DB_TABLE_NAME)
 	public static final IPropertyInfo<emDocumentStatus> PROPERTY_DOCUMENTSTATUS = registerProperty(
 			PROPERTY_DOCUMENTSTATUS_NAME, emDocumentStatus.class, MY_CLASS);
 
@@ -158,7 +158,7 @@ public class Order extends BusinessObject<Order> {
 	/**
 	 * 单据总计 属性
 	 */
-	@DbField(name = "DocTotal", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME)
+	@DbField(name = "DocTotal", type = DataType.DECIMAL, table = DB_TABLE_NAME)
 	public static final IPropertyInfo<BigDecimal> PROPERTY_DOCUMENTTOTAL = registerProperty(PROPERTY_DOCUMENTTOTAL_NAME,
 			BigDecimal.class, MY_CLASS);
 

@@ -31,9 +31,9 @@ public class ExpressionFactory {
 	 *
 	 * @param type 值类型；为null时返回null
 	 * @return 判断表达式实例
-	 * @throws JudmentOperationException 不支持的类型时抛出
+	 * @throws JudgmentOperationException 不支持的类型时抛出
 	 */
-	public IJudgmentExpression createJudgment(Class<?> type) throws JudmentOperationException {
+	public IJudgmentExpression createJudgment(Class<?> type) throws JudgmentOperationException {
 		if (type == null) {
 			return null;
 		}
@@ -58,7 +58,7 @@ public class ExpressionFactory {
 		} else if (type.isEnum()) {
 			return new JudgmentExpressionEnum();
 		}
-		throw new JudmentOperationException(I18N.prop("msg_bobas_not_support_type_expression", type.getName()));
+		throw new JudgmentOperationException(I18N.prop("msg_bobas_not_support_type_expression", type.getName()));
 	}
 
 }

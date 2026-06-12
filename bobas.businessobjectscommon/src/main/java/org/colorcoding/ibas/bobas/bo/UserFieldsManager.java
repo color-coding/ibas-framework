@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.List;
-import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.db.DataType;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 
 public abstract class UserFieldsManager {
@@ -101,7 +101,7 @@ public abstract class UserFieldsManager {
 	 * @param valueType  数据库字段类型
 	 * @return 注册的属性信息
 	 */
-	public IPropertyInfo<?> registerUserField(Class<?> objectType, String name, DbFieldType valueType) {
+	public IPropertyInfo<?> registerUserField(Class<?> objectType, String name, DataType valueType) {
 		return this.registerUserField(objectType, name, this.classOf(valueType));
 	}
 
@@ -111,16 +111,16 @@ public abstract class UserFieldsManager {
 	 * @param type 数据库字段类型
 	 * @return Java类型（未识别类型抛RuntimeException）
 	 */
-	public Class<?> classOf(DbFieldType type) {
-		if (type == DbFieldType.ALPHANUMERIC) {
+	public Class<?> classOf(DataType type) {
+		if (type == DataType.ALPHANUMERIC) {
 			return String.class;
-		} else if (type == DbFieldType.DATE) {
+		} else if (type == DataType.DATE) {
 			return DateTime.class;
-		} else if (type == DbFieldType.DECIMAL) {
+		} else if (type == DataType.DECIMAL) {
 			return BigDecimal.class;
-		} else if (type == DbFieldType.NUMERIC) {
+		} else if (type == DataType.NUMERIC) {
 			return Integer.class;
-		} else if (type == DbFieldType.MEMO) {
+		} else if (type == DataType.MEMO) {
 			return String.class;
 		}
 		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", type.toString()));

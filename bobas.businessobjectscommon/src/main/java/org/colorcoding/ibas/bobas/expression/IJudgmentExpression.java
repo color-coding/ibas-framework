@@ -48,13 +48,13 @@ public interface IJudgmentExpression extends IExpression {
 	 * 
 	 * @return
 	 */
-	JudmentOperation getOperation();
+	JudgmentOperation getOperation();
 
 	/**
 	 * 设置表达式-计算方式
 	 * 
 	 * @param value
 	 */
-	void setOperation(JudmentOperation value);
+	void setOperation(JudgmentOperation value);
 
 }

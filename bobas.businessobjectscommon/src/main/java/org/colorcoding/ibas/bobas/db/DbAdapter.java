@@ -70,18 +70,18 @@ public abstract class DbAdapter {
 		return this.companyId;
 	}
 
-	private Boolean noUserTansactionSP;
+	private Boolean noUserTransactionSP;
 
-	public final Boolean isNoUserTansactionSP() {
-		if (this.noUserTansactionSP == null) {
-			this.noUserTansactionSP = MyConfiguration
-					.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_NO_USER_TANSACTION_SP, false);
+	public final Boolean isNoUserTransactionSP() {
+		if (this.noUserTransactionSP == null) {
+			this.noUserTransactionSP = MyConfiguration
+					.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_NO_USER_TRANSACTION_SP, false);
 		}
-		return noUserTansactionSP;
+		return noUserTransactionSP;
 	}
 
-	protected final void setNoUserTansactionSP(Boolean noUserTansactionSP) {
-		this.noUserTansactionSP = noUserTansactionSP;
+	protected final void setNoUserTransactionSP(Boolean noUserTransactionSP) {
+		this.noUserTransactionSP = noUserTransactionSP;
 	}
 
 	private Boolean registerUserFields;
@@ -298,36 +298,33 @@ public abstract class DbAdapter {
 		metaData = null;
 		dtColumn = null;
 		name = null;
+		// 按列构建值缓存（压缩内存消耗，字符串/日期/小数等引用类型去重）
+		int columnCount = dataTable.getColumns().size();
+		@SuppressWarnings("unchecked")
+		Map<Object, Object>[] columnCaches = new Map[columnCount];
+		for (int i = 0; i < columnCount; i++) {
+			Class<?> dataType = dataTable.getColumns().get(i).getDataType();
+			// 仅对引用类型建立缓存（基本类型包装类由JVM缓存，无需去重）
+			if (dataType == String.class || dataType == DateTime.class
+					|| dataType == BigDecimal.class) {
+				columnCaches[i] = new java.util.HashMap<>(64);
+			}
+		}
 		// 添加行数据
 		IDataTableRow row;
-		Object value, tmpValue;
+		Object value;
 		while (resultSet.next()) {
 			row = dataTable.getRows().create();
 			// 行的每列赋值
-			for (int i = 0; i < dataTable.getColumns().size(); i++) {
+			for (int i = 0; i < columnCount; i++) {
 				value = this.parsingValue(resultSet, i + 1, dataTable.getColumns().get(i).getDataType());
-				if (value != null) {
-					// 压缩内存消耗（字符串，日期，小数）
-					if (value.getClass() == String.class || value.getClass() == DateTime.class
-							|| value.getClass() == BigDecimal.class) {
-						for (int j = dataTable.getRows().size() - 2; j > 0; j--) {
-							tmpValue = dataTable.getRows().get(j).getValue(i);
-							if (tmpValue == null) {
-								continue;
-							}
-							if (tmpValue == value) {
-								// 已是缓存数据，则退出
-								break;
-							}
-							if (tmpValue.equals(value)) {
-								value = tmpValue;
-								break;
-							}
-							if ((dataTable.getRows().size() - j) > 8) {
-								// 循环过多，则退出
-								break;
-							}
-						}
+				if (value != null && columnCaches[i] != null) {
+					// 使用列级HashMap缓存去重，O(1)查找替代原线性扫描
+					Object cached = columnCaches[i].get(value);
+					if (cached != null) {
+						value = cached;
+					} else {
+						columnCaches[i].put(value, value);
 					}
 				}
 				row.setValue(i, value);
@@ -335,7 +332,7 @@ public abstract class DbAdapter {
 		}
 		row = null;
 		value = null;
-		tmpValue = null;
+		columnCaches = null;
 		return dataTable;
 	}
 
@@ -343,32 +340,32 @@ public abstract class DbAdapter {
 	 * 返回数据库字段类型
 	 *
 	 * @param sqlType java.sql.Types中的SQL类型常量
-	 * @return 对应的DbFieldType
+	 * @return 对应的DataType
 	 */
-	public DbFieldType dbFieldTypeOf(int sqlType) {
+	public DataType dbFieldTypeOf(int sqlType) {
 		if (java.sql.Types.VARCHAR == sqlType || java.sql.Types.NVARCHAR == sqlType
 				|| java.sql.Types.LONGNVARCHAR == sqlType || java.sql.Types.LONGVARCHAR == sqlType
 				|| java.sql.Types.CHAR == sqlType || java.sql.Types.NCHAR == sqlType) {
-			return DbFieldType.ALPHANUMERIC;
+			return DataType.ALPHANUMERIC;
 		} else if (java.sql.Types.CLOB == sqlType || java.sql.Types.NCLOB == sqlType) {
-			return DbFieldType.MEMO;
+			return DataType.MEMO;
 		} else if (java.sql.Types.DECIMAL == sqlType || java.sql.Types.DOUBLE == sqlType
 				|| java.sql.Types.FLOAT == sqlType || java.sql.Types.REAL == sqlType
 				|| java.sql.Types.NUMERIC == sqlType) {
-			return DbFieldType.DECIMAL;
+			return DataType.DECIMAL;
 		} else if (java.sql.Types.DATE == sqlType || java.sql.Types.TIMESTAMP == sqlType
 				|| java.sql.Types.TIMESTAMP_WITH_TIMEZONE == sqlType || java.sql.Types.TIME == sqlType
 				|| java.sql.Types.TIME_WITH_TIMEZONE == sqlType) {
-			return DbFieldType.DATE;
+			return DataType.DATE;
 		} else if (java.sql.Types.INTEGER == sqlType || java.sql.Types.SMALLINT == sqlType
 				|| java.sql.Types.TINYINT == sqlType || java.sql.Types.BIGINT == sqlType) {
-			return DbFieldType.NUMERIC;
+			return DataType.NUMERIC;
 		} else if (java.sql.Types.BIT == sqlType || java.sql.Types.BOOLEAN == sqlType
 				|| java.sql.Types.BINARY == sqlType || java.sql.Types.VARBINARY == sqlType
 				|| java.sql.Types.LONGVARBINARY == sqlType || java.sql.Types.BLOB == sqlType) {
-			return DbFieldType.BYTES;
+			return DataType.BYTES;
 		}
-		return DbFieldType.UNKNOWN;
+		return DataType.UNKNOWN;
 	}
 
 	/**
@@ -377,18 +374,18 @@ public abstract class DbAdapter {
 	 * @param type 数据字段类型
 	 * @return java.sql.Types中的常量
 	 */
-	public int sqlTypeOf(DbFieldType type) {
-		if (type == DbFieldType.ALPHANUMERIC) {
+	public int sqlTypeOf(DataType type) {
+		if (type == DataType.ALPHANUMERIC) {
 			return java.sql.Types.VARCHAR;
-		} else if (type == DbFieldType.DECIMAL) {
+		} else if (type == DataType.DECIMAL) {
 			return java.sql.Types.DECIMAL;
-		} else if (type == DbFieldType.DATE) {
+		} else if (type == DataType.DATE) {
 			return java.sql.Types.DATE;
-		} else if (type == DbFieldType.NUMERIC) {
+		} else if (type == DataType.NUMERIC) {
 			return java.sql.Types.INTEGER;
-		} else if (type == DbFieldType.BYTES) {
+		} else if (type == DataType.BYTES) {
 			return java.sql.Types.VARBINARY;
-		} else if (type == DbFieldType.MEMO) {
+		} else if (type == DataType.MEMO) {
 			return java.sql.Types.LONGVARCHAR;
 		}
 		return java.sql.Types.OTHER;
@@ -401,7 +398,7 @@ public abstract class DbAdapter {
 	 * @param value 当前值
 	 * @return java.sql.Types中的常量
 	 */
-	public int sqlTypeOf(DbFieldType type, Object value) {
+	public int sqlTypeOf(DataType type, Object value) {
 		return this.sqlTypeOf(type);
 	}
 
@@ -440,7 +437,7 @@ public abstract class DbAdapter {
 						condition.setAlias(dbField.name());
 					}
 					if (propertyInfo.getValueType() != null) {
-						condition.setAliasDataType(DbFieldType.valueOf(propertyInfo.getValueType()));
+						condition.setAliasDataType(DataType.valueOf(propertyInfo.getValueType()));
 						// 枚举类型的转值
 						if (propertyInfo.getValueType().isEnum()) {
 							tmpValue = Enums.valueOf(propertyInfo.getValueType(), condition.getValue());
@@ -553,7 +550,7 @@ public abstract class DbAdapter {
 	 */
 	final String sp_transaction_notification() {
 		return this.parsingStoredProcedure(Strings.format("%s_SP_TRANSACTION_NOTIFICATION", this.getCompanyId()),
-				new String[this.isNoUserTansactionSP() ? 5 : 6]);
+				new String[this.isNoUserTransactionSP() ? 5 : 6]);
 	}
 
 	/**
@@ -682,9 +679,9 @@ public abstract class DbAdapter {
 	 * @param alias 字段别名
 	 * @return CAST表达式字符串
 	 */
-	public String castAs(DbFieldType type, String alias) {
+	public String castAs(DataType type, String alias) {
 		StringBuilder stringBuilder = new StringBuilder(64);
-		if (type == DbFieldType.ALPHANUMERIC) {
+		if (type == DataType.ALPHANUMERIC) {
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
 			stringBuilder.append(this.identifier());
@@ -695,7 +692,7 @@ public abstract class DbAdapter {
 			stringBuilder.append(" ");
 			stringBuilder.append("NVARCHAR");
 			stringBuilder.append(")");
-		} else if (type == DbFieldType.DATE) {
+		} else if (type == DataType.DATE) {
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
 			stringBuilder.append(this.identifier());
@@ -706,7 +703,7 @@ public abstract class DbAdapter {
 			stringBuilder.append(" ");
 			stringBuilder.append("DATETIME");
 			stringBuilder.append(")");
-		} else if (type == DbFieldType.NUMERIC) {
+		} else if (type == DataType.NUMERIC) {
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
 			stringBuilder.append(this.identifier());
@@ -718,7 +715,7 @@ public abstract class DbAdapter {
 			stringBuilder.append("INT");
 			stringBuilder.append(")");
 			return stringBuilder.toString();
-		} else if (type == DbFieldType.DECIMAL) {
+		} else if (type == DataType.DECIMAL) {
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
 			stringBuilder.append(this.identifier());
@@ -778,11 +775,11 @@ public abstract class DbAdapter {
 			return "=";
 		} else if (value == ConditionOperation.NOT_EQUAL) {
 			return "<>";
-		} else if (value == ConditionOperation.GRATER_THAN) {
+		} else if (value == ConditionOperation.GREATER_THAN) {
 			return ">";
 		} else if (value == ConditionOperation.LESS_THAN) {
 			return "<";
-		} else if (value == ConditionOperation.GRATER_EQUAL) {
+		} else if (value == ConditionOperation.GREATER_EQUAL) {
 			return ">=";
 		} else if (value == ConditionOperation.LESS_EQUAL) {
 			return "<=";
@@ -833,9 +830,9 @@ public abstract class DbAdapter {
 				stringBuilder.append("?");
 			} else {
 				// 输出字段名
-				if ((condition.getAliasDataType() == DbFieldType.NUMERIC
-						|| condition.getAliasDataType() == DbFieldType.DECIMAL
-						|| condition.getAliasDataType() == DbFieldType.DATE)
+				if ((condition.getAliasDataType() == DataType.NUMERIC
+						|| condition.getAliasDataType() == DataType.DECIMAL
+						|| condition.getAliasDataType() == DataType.DATE)
 						&& (condition.getOperation() == ConditionOperation.START
 								|| condition.getOperation() == ConditionOperation.END
 								|| condition.getOperation() == ConditionOperation.CONTAIN
@@ -843,7 +840,7 @@ public abstract class DbAdapter {
 								|| condition.getOperation() == ConditionOperation.IN
 								|| condition.getOperation() == ConditionOperation.NOT_IN)) {
 					// 数值类型的字段且需要作为字符比较的
-					stringBuilder.append(this.castAs(DbFieldType.ALPHANUMERIC, condition.getAlias()));
+					stringBuilder.append(this.castAs(DataType.ALPHANUMERIC, condition.getAlias()));
 				} else {
 					stringBuilder.append(this.identifier());
 					stringBuilder.append(condition.getAlias());
@@ -1194,8 +1191,8 @@ public abstract class DbAdapter {
 					if (item == '?') {
 						if (parameters.containsKey(index)) {
 							parameter = parameters.get(index);
-							if (parameter.targetType != null && parameter.targetType != DbFieldType.UNKNOWN) {
-								// 使用DbFieldType推导SQL类型
+							if (parameter.targetType != null && parameter.targetType != DataType.UNKNOWN) {
+								// 使用DataType推导SQL类型
 								sqlBuilder
 										.append(this.sqlValueOf(parameter.value, this.sqlTypeOf(parameter.targetType)));
 							} else {
@@ -1270,10 +1267,10 @@ public abstract class DbAdapter {
 			return this.sqlValueOf(null, java.sql.Types.NULL);
 		}
 		if (value.getClass().isEnum()) {
-			if (this.dbFieldTypeOf(sqlType) == DbFieldType.ALPHANUMERIC
-					|| this.dbFieldTypeOf(sqlType) == DbFieldType.MEMO) {
+			if (this.dbFieldTypeOf(sqlType) == DataType.ALPHANUMERIC
+					|| this.dbFieldTypeOf(sqlType) == DataType.MEMO) {
 				return Strings.format(TEMPLATE_SQL_VALUE, Enums.annotationValue(value));
-			} else if (this.dbFieldTypeOf(sqlType) == DbFieldType.NUMERIC) {
+			} else if (this.dbFieldTypeOf(sqlType) == DataType.NUMERIC) {
 				if (value instanceof Enum<?>) {
 					Enum<?> itemValue = (Enum<?>) value;
 					return Strings.valueOf(itemValue.ordinal());
@@ -1301,10 +1298,10 @@ public abstract class DbAdapter {
 		} else {
 			sqlValue = Strings.valueOf(value);
 		}
-		DbFieldType fieldType = this.dbFieldTypeOf(sqlType);
-		if (fieldType == DbFieldType.ALPHANUMERIC || fieldType == DbFieldType.MEMO) {
+		DataType fieldType = this.dbFieldTypeOf(sqlType);
+		if (fieldType == DataType.ALPHANUMERIC || fieldType == DataType.MEMO) {
 			sqlValue = Strings.format(TEMPLATE_SQL_VALUE, sqlValue);
-		} else if (fieldType == DbFieldType.DATE) {
+		} else if (fieldType == DataType.DATE) {
 			sqlValue = Strings.format(TEMPLATE_SQL_VALUE, sqlValue);
 		}
 		return sqlValue;
@@ -1342,24 +1339,24 @@ public abstract class DbAdapter {
 				// IN、NOT IN，值拆成数组
 				String[] values = Strings.split(condition.getValue());
 				for (String value : values) {
-					statement.setObject(index, value.trim(), this.sqlTypeOf(DbFieldType.ALPHANUMERIC));
+					statement.setObject(index, value.trim(), this.sqlTypeOf(DataType.ALPHANUMERIC));
 					index += 1;
 				}
 			} else if (condition.getOperation() == ConditionOperation.START) {
 				statement.setObject(index, this.escape(condition.getValue(), '_', '%') + "%",
-						this.sqlTypeOf(DbFieldType.ALPHANUMERIC));
+						this.sqlTypeOf(DataType.ALPHANUMERIC));
 				index += 1;
 			} else if (condition.getOperation() == ConditionOperation.END) {
 				statement.setObject(index, "%" + this.escape(condition.getValue(), '_', '%'),
-						this.sqlTypeOf(DbFieldType.ALPHANUMERIC));
+						this.sqlTypeOf(DataType.ALPHANUMERIC));
 				index += 1;
 			} else if (condition.getOperation() == ConditionOperation.CONTAIN) {
 				statement.setObject(index, "%" + this.escape(condition.getValue(), '_', '%') + "%",
-						this.sqlTypeOf(DbFieldType.ALPHANUMERIC));
+						this.sqlTypeOf(DataType.ALPHANUMERIC));
 				index += 1;
 			} else if (condition.getOperation() == ConditionOperation.NOT_CONTAIN) {
 				statement.setObject(index, "%" + this.escape(condition.getValue(), '_', '%') + "%",
-						this.sqlTypeOf(DbFieldType.ALPHANUMERIC));
+						this.sqlTypeOf(DataType.ALPHANUMERIC));
 				index += 1;
 			} else {
 				// 直接比较值

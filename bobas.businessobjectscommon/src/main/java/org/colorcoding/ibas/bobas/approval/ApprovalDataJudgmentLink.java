@@ -9,7 +9,7 @@ import org.colorcoding.ibas.bobas.expression.ExpressionException;
 import org.colorcoding.ibas.bobas.expression.IPropertyValueOperator;
 import org.colorcoding.ibas.bobas.expression.IValueOperator;
 import org.colorcoding.ibas.bobas.expression.JudgmentLinkItem;
-import org.colorcoding.ibas.bobas.expression.JudmentOperation;
+import org.colorcoding.ibas.bobas.expression.JudgmentOperation;
 import org.colorcoding.ibas.bobas.expression.SQLScriptValueOperator;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.repository.ITransaction;
@@ -40,27 +40,27 @@ public class ApprovalDataJudgmentLink extends BOJudgmentLink {
 		for (IApprovalProcessStepCondition item : conditions) {
 			JudgmentLinkItem jItem = new JudgmentLinkItem();
 			if (item.getRelation() == emConditionRelationship.NONE || item.getRelation() == null) {
-				jItem.setRelationship(JudmentOperation.AND);
+				jItem.setRelationship(JudgmentOperation.AND);
 			} else {
-				jItem.setRelationship(JudmentOperation.valueOf(item.getRelation()));
+				jItem.setRelationship(JudgmentOperation.valueOf(item.getRelation()));
 			}
-			jItem.setOperation(JudmentOperation.valueOf(item.getOperation()));
+			jItem.setOperation(JudgmentOperation.valueOf(item.getOperation()));
 			// 左边取值
 			IPropertyValueOperator propertyValueOperator = this
 					.createPropertyValueOperator(item.getPropertyValueMode());
 			propertyValueOperator.setPropertyName(item.getPropertyName());
-			jItem.setLeftOperter(propertyValueOperator);
+			jItem.setLeftOperator(propertyValueOperator);
 			// 右边取值
 			if (item.getConditionValueMode() == ValueMode.INPUT) {
 				// 与值比较
 				IValueOperator valueOperator = this.createValueOperator();
 				valueOperator.setValue(item.getConditionValue());
-				jItem.setRightOperter(valueOperator);
+				jItem.setRightOperator(valueOperator);
 			} else {
 				// 与对象属性值比较
 				IPropertyValueOperator valueOperator = this.createPropertyValueOperator(item.getConditionValueMode());
 				valueOperator.setPropertyName(item.getPropertyName());
-				jItem.setRightOperter(valueOperator);
+				jItem.setRightOperator(valueOperator);
 			}
 			// 设置括号
 			jItem.setCloseBracket(item.getBracketClose());
@@ -68,7 +68,7 @@ public class ApprovalDataJudgmentLink extends BOJudgmentLink {
 			jLinkItems.add(jItem);
 		}
 		if (jLinkItems.isEmpty()) {
-			throw new ExpressionException(I18N.prop("msg_bobas_invaild_judgment_link_conditions"));
+			throw new ExpressionException(I18N.prop("msg_bobas_invalid_judgment_link_conditions"));
 		}
 		super.setJudgmentItems(jLinkItems.toArray(new JudgmentLinkItem[jLinkItems.size()]));
 	}
@@ -87,7 +87,7 @@ public class ApprovalDataJudgmentLink extends BOJudgmentLink {
 		} else if (mode == ValueMode.SQL_SCRIPT) {
 			// 数据库脚本比较
 			if (!(this.transaction instanceof DbTransaction)) {
-				throw new ExpressionException(I18N.prop("msg_bobas_invaild_database_connection"));
+				throw new ExpressionException(I18N.prop("msg_bobas_invalid_database_connection"));
 			}
 			return new SQLScriptValueOperator((DbTransaction) this.transaction);
 		} else {

@@ -1,7 +1,5 @@
 package org.colorcoding.ibas.bobas.repository;
 
-import java.util.function.Supplier;
-
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.db.DbFactory;
@@ -65,18 +63,10 @@ public class BORepository4DB extends BORepository {
 				dbPassword = MyConfiguration.getConfigValue(
 						Strings.concat(this.dbSign, MyConfiguration.CONFIG_ITEM_DB_USER_PASSWORD), "1q2w3e");
 			}
-			this.setTransaction(new DbTransaction(
-					DbFactory.create().createConnection(dbType, dbServer, dbName, dbUser, dbPassword)) {
-				@Override
-				public Supplier<IUser> userSupplier() {
-					return new Supplier<IUser>() {
-						@Override
-						public IUser get() {
-							return BORepository4DB.this.getCurrentUser();
-						}
-					};
-				}
-			});
+			DbTransaction transaction = new DbTransaction(
+					DbFactory.create().createConnection(dbType, dbServer, dbName, dbUser, dbPassword));
+			transaction.setUser(this.getCurrentUser());
+			this.setTransaction(transaction);
 			this.myConnection = true;
 		} catch (RepositoryException e) {
 			throw e;
@@ -121,15 +111,14 @@ public class BORepository4DB extends BORepository {
 		super.setTransaction(transaction);
 		this.myConnection = false;
 		if (transaction instanceof DbTransaction) {
-			Supplier<IUser> supplier = ((DbTransaction) transaction).userSupplier();
-			if (supplier != null) {
-				IUser user = supplier.get();
-				if (user != OrganizationFactory.UNKNOWN_USER) {
-					try {
-						this.setUserToken(user.getToken());
-					} catch (Exception e) {
-						throw new RuntimeException(e);
-					}
+			DbTransaction dbTrans = (DbTransaction) transaction;
+			// 从 transaction 读取用户，同步到 repository
+			IUser user = dbTrans.getUser();
+			if (user != null && user != OrganizationFactory.UNKNOWN_USER) {
+				try {
+					this.setUserToken(user.getToken());
+				} catch (Exception e) {
+					throw new RuntimeException(e);
 				}
 			}
 		}
@@ -148,7 +137,7 @@ public class BORepository4DB extends BORepository {
 			return true;
 		}
 		if (this.getTransaction() == null) {
-			throw new RepositoryException(I18N.prop("msg_bobas_invaild_database_connection"));
+			throw new RepositoryException(I18N.prop("msg_bobas_invalid_database_connection"));
 		}
 		return false;
 	}

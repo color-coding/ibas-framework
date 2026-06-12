@@ -111,7 +111,7 @@
     <Property Name="UserName" Description="名称" DataType="Alphanumeric" DataSubType="Default" EditSize="100" Mapped="UserName"/>
     <Property Name="UserPassword" Description="用户密码" DataType="Alphanumeric" DataSubType="Default" EditSize="100" Mapped="PassWord"/>
     <Property Name="Activated" Description="激活" DataType="Alphanumeric" DataSubType="Default" EditSize="1" DeclaredType="emYesNo" Mapped="Activated"/>
-    <Property Name="SupperUser" Description="超级用户" DataType="Alphanumeric" DataSubType="Default" EditSize="1" DeclaredType="emYesNo" Mapped="SupperUser"/>
+    <Property Name="SuperUser" Description="超级用户" DataType="Alphanumeric" DataSubType="Default" EditSize="1" DeclaredType="emYesNo" Mapped="SuperUser"/>
     <Property Name="eMail" Description="电子邮件地址" DataType="Alphanumeric" DataSubType="Default" EditSize="100" Mapped="eMail"/>
     <Property Name="ObjectKey" Description="对象编号" DataType="Numeric" DataSubType="Default" EditSize="8" Mapped="ObjectKey" PrimaryKey="Yes"/>
     <Property Name="ObjectCode" Description="对象类型" DataType="Alphanumeric" DataSubType="Default" EditSize="30" Mapped="ObjectCode"/>
@@ -162,5 +162,5 @@
     <Property Name="Referenced" Description="已引用" DataType="Alphanumeric" DataSubType="Default" EditSize="1" DeclaredType="emYesNo" Mapped="Refed"/>
     <Property Name="Deleted" Description="删除的" DataType="Alphanumeric" DataSubType="Default" EditSize="1" DeclaredType="emYesNo" Mapped="Deleted"/>
   </Model>
-  <BusinessObject MappedModel="MaterialsJournal" ShortName="CC_TT_MATERIALSJOURNAL"/>  
+  <BusinessObject MappedModel="MaterialsJournal" ShortName="CC_TT_MATERIALSJOURNAL"/>
 </Domain>

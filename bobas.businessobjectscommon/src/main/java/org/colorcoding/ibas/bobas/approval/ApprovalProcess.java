@@ -14,7 +14,7 @@ import org.colorcoding.ibas.bobas.data.emApprovalResult;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emApprovalStepStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
-import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
+import org.colorcoding.ibas.bobas.expression.JudgmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logic.common.IBOApprovalContract;
 import org.colorcoding.ibas.bobas.message.Logger;
@@ -263,7 +263,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 					// 跳过此步骤
 					stepItem.skip();
 				}
-			} catch (JudmentOperationException | ApprovalException e) {
+			} catch (JudgmentOperationException | ApprovalException e) {
 				Logger.log(e);
 				return false;
 			}
@@ -275,10 +275,10 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	 * 激活下一个满足条件的挂起步骤
 	 *
 	 * @return 下一个步骤，无满足条件的步骤时返回null
-	 * @throws JudmentOperationException 条件判断异常
-	 * @throws ApprovalException         审批异常
+	 * @throws JudgmentOperationException 条件判断异常
+	 * @throws ApprovalException          审批异常
 	 */
-	private ApprovalProcessStep<?> nextStep() throws JudmentOperationException, ApprovalException {
+	private ApprovalProcessStep<?> nextStep() throws JudgmentOperationException, ApprovalException {
 		ApprovalDataJudgmentLink judgmentLinks;
 		for (ApprovalProcessStep<?> stepItem : this.getProcessSteps()) {
 			if (stepItem.getStatus() != emApprovalStepStatus.PENDING) {
@@ -313,6 +313,12 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	}
 
 	/**
+	 * 完善流程数据（流程被确认是调用）
+	 */
+	public void perfecting() throws ApprovalException {
+	}
+
+	/**
 	 * 审批指定步骤，需验证用户授权码。若当前步骤完成后下一步骤所有者与当前相同，则自动审批。
 	 *
 	 * @param stepId            步骤编号
@@ -335,7 +341,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 				this.approval(apStep, apResult, judgment);
 			}
 		} catch (InvalidAuthorizationException e) {
-			throw new ApprovalException(I18N.prop("msg_bobas_invaild_user_authorization"), e);
+			throw new ApprovalException(I18N.prop("msg_bobas_invalid_user_authorization"), e);
 		}
 		// 下个步骤，如果还是当前用户，则自动批准
 		if (this.getStatus() == emApprovalStatus.PROCESSING && apResult == emApprovalResult.APPROVED) {
@@ -398,7 +404,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 						// 进行下一步骤
 						this.setStatus(emApprovalStatus.PROCESSING);
 					}
-				} catch (JudmentOperationException e) {
+				} catch (JudgmentOperationException e) {
 					throw new ApprovalException(e);
 				}
 			} else if (apResult == emApprovalResult.REJECTED) {
@@ -495,7 +501,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 			try {
 				this.getOwner().checkAuthorization(authorizationCode);
 			} catch (InvalidAuthorizationException e) {
-				throw new ApprovalException(I18N.prop("msg_bobas_invaild_user_authorization"), e);
+				throw new ApprovalException(I18N.prop("msg_bobas_invalid_user_authorization"), e);
 			}
 			// 重置当前进行中的步骤
 			ApprovalProcessStep<?> currentStep = this.currentStep();
@@ -601,7 +607,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	 */
 	protected IApprovalData fetchApprovalData() throws ApprovalException {
 		if (this.getTransaction() == null) {
-			throw new ApprovalException(I18N.prop("msg_bobas_invaild_bo_repository"));
+			throw new ApprovalException(I18N.prop("msg_bobas_invalid_bo_repository"));
 		}
 		// 审批数据不是业务对象，则查询实际业务对象
 		ICriteria criteria = this.getApprovalData().getCriteria();
@@ -635,7 +641,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	public void save() throws ApprovalException {
 		ITransaction transaction = this.getTransaction();
 		if (transaction == null) {
-			throw new ApprovalException(I18N.prop("msg_bobas_invaild_bo_repository"));
+			throw new ApprovalException(I18N.prop("msg_bobas_invalid_bo_repository"));
 		}
 		boolean myTrans = false;
 		try (BORepository4Approval boRepository = new BORepository4Approval()) {

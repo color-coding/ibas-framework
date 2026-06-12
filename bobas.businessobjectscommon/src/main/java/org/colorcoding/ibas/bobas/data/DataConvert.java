@@ -72,7 +72,7 @@ public class DataConvert {
 				}
 			}
 		}
-		throw new ClassCastException(I18N.prop("msg_bobas_not_support_convert_to_type", type.getName()));
+		throw new IllegalArgumentException(I18N.prop("msg_bobas_not_support_convert_to_type", type.getName()));
 	}
 
 	/**
@@ -86,14 +86,14 @@ public class DataConvert {
 	}
 
 	/**
-	 * 转换条件关系枚举（value为null时抛NullPointerException）
+	 * 转换条件关系枚举（value为null时抛IllegalArgumentException）
 	 *
 	 * @param value 框架枚举值
 	 * @return 通用条件关系
 	 */
 	public static ConditionRelationship toRelationship(emConditionRelationship value) {
 		if (value == null) {
-			throw new NullPointerException();
+			throw new IllegalArgumentException("condition relationship must not be null");
 		}
 		if (value == emConditionRelationship.AND) {
 			return ConditionRelationship.AND;
@@ -102,18 +102,18 @@ public class DataConvert {
 		} else if (value == emConditionRelationship.NONE) {
 			return ConditionRelationship.NONE;
 		}
-		throw new ClassCastException(I18N.prop("msg_bobas_not_support_convert_to_type", value));
+		throw new IllegalArgumentException(I18N.prop("msg_bobas_not_support_convert_to_type", value));
 	}
 
 	/**
-	 * 转换条件操作枚举（value为null时抛NullPointerException）
+	 * 转换条件操作枚举（value为null时抛IllegalArgumentException）
 	 *
 	 * @param value 框架枚举值
 	 * @return 通用条件操作
 	 */
 	public static ConditionOperation toOperation(emConditionOperation value) {
 		if (value == null) {
-			throw new NullPointerException();
+			throw new IllegalArgumentException("condition operation must not be null");
 		}
 		if (value == emConditionOperation.CONTAIN) {
 			return ConditionOperation.CONTAIN;
@@ -123,10 +123,10 @@ public class DataConvert {
 			return ConditionOperation.EQUAL;
 		} else if (value == emConditionOperation.NOT_EQUAL) {
 			return ConditionOperation.NOT_EQUAL;
-		} else if (value == emConditionOperation.GRATER_EQUAL) {
-			return ConditionOperation.GRATER_EQUAL;
-		} else if (value == emConditionOperation.GRATER_THAN) {
-			return ConditionOperation.GRATER_THAN;
+		} else if (value == emConditionOperation.GREATER_EQUAL) {
+			return ConditionOperation.GREATER_EQUAL;
+		} else if (value == emConditionOperation.GREATER_THAN) {
+			return ConditionOperation.GREATER_THAN;
 		} else if (value == emConditionOperation.LESS_EQUAL) {
 			return ConditionOperation.LESS_EQUAL;
 		} else if (value == emConditionOperation.LESS_THAN) {
@@ -140,18 +140,18 @@ public class DataConvert {
 		} else if (value == emConditionOperation.NOT_IN) {
 			return ConditionOperation.NOT_IN;
 		}
-		throw new ClassCastException(I18N.prop("msg_bobas_not_support_convert_to_type", value));
+		throw new IllegalArgumentException(I18N.prop("msg_bobas_not_support_convert_to_type", value));
 	}
 
 	/**
-	 * 转换条件关系枚举（反向，value为null时抛NullPointerException）
+	 * 转换条件关系枚举（反向，value为null时抛IllegalArgumentException）
 	 *
 	 * @param value 通用条件关系
 	 * @return 框架枚举值
 	 */
 	public static emConditionRelationship toRelationship(ConditionRelationship value) {
 		if (value == null) {
-			throw new NullPointerException();
+			throw new IllegalArgumentException("condition relationship must not be null");
 		}
 		if (value == ConditionRelationship.AND) {
 			return emConditionRelationship.AND;
@@ -160,18 +160,18 @@ public class DataConvert {
 		} else if (value == ConditionRelationship.NONE) {
 			return emConditionRelationship.NONE;
 		}
-		throw new ClassCastException(I18N.prop("msg_bobas_not_support_convert_to_type", value));
+		throw new IllegalArgumentException(I18N.prop("msg_bobas_not_support_convert_to_type", value));
 	}
 
 	/**
-	 * 转换条件操作枚举（反向，value为null时抛NullPointerException）
+	 * 转换条件操作枚举（反向，value为null时抛IllegalArgumentException）
 	 *
 	 * @param value 通用条件操作
 	 * @return 框架枚举值
 	 */
 	public static emConditionOperation toOperation(ConditionOperation value) {
 		if (value == null) {
-			throw new NullPointerException();
+			throw new IllegalArgumentException("condition operation must not be null");
 		}
 		if (value == ConditionOperation.CONTAIN) {
 			return emConditionOperation.CONTAIN;
@@ -181,10 +181,10 @@ public class DataConvert {
 			return emConditionOperation.EQUAL;
 		} else if (value == ConditionOperation.NOT_EQUAL) {
 			return emConditionOperation.NOT_EQUAL;
-		} else if (value == ConditionOperation.GRATER_EQUAL) {
-			return emConditionOperation.GRATER_EQUAL;
-		} else if (value == ConditionOperation.GRATER_THAN) {
-			return emConditionOperation.GRATER_THAN;
+		} else if (value == ConditionOperation.GREATER_EQUAL) {
+			return emConditionOperation.GREATER_EQUAL;
+		} else if (value == ConditionOperation.GREATER_THAN) {
+			return emConditionOperation.GREATER_THAN;
 		} else if (value == ConditionOperation.LESS_EQUAL) {
 			return emConditionOperation.LESS_EQUAL;
 		} else if (value == ConditionOperation.LESS_THAN) {
@@ -198,7 +198,7 @@ public class DataConvert {
 		} else if (value == ConditionOperation.NOT_IN) {
 			return emConditionOperation.NOT_IN;
 		}
-		throw new ClassCastException(I18N.prop("msg_bobas_not_support_convert_to_type", value));
+		throw new IllegalArgumentException(I18N.prop("msg_bobas_not_support_convert_to_type", value));
 	}
 
 	@Deprecated

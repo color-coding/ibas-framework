@@ -15,11 +15,11 @@ public enum ConditionOperation {
 	/** 等于(=) */
 	EQUAL,
 	/** 大于(>) */
-	GRATER_THAN,
+	GREATER_THAN,
 	/** 小于(<) */
 	LESS_THAN,
 	/** 大于等于(>=) */
-	GRATER_EQUAL,
+	GREATER_EQUAL,
 	/** 小于等于(<=) */
 	LESS_EQUAL,
 	/** 不等于(<>) */

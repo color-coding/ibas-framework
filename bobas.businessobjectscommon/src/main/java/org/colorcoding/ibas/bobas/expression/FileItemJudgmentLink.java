@@ -12,7 +12,7 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
  */
 public class FileItemJudgmentLink extends FileJudgmentLink {
 
-	public boolean judge(FileItem file) throws JudmentOperationException {
+	public boolean judge(FileItem file) throws JudgmentOperationException {
 		return super.judge(file);
 	}
 

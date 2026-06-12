@@ -316,7 +316,7 @@ public class Criteria extends Serializable implements ICriteria {
 	public final ICriteria next(IBusinessObject lastBO) {
 		if (lastBO != null) {
 			SortType sortType = SortType.ASCENDING;
-			ConditionOperation operation = ConditionOperation.GRATER_THAN;
+			ConditionOperation operation = ConditionOperation.GREATER_THAN;
 			if (!this.getSorts().isEmpty()) {
 				sortType = this.getSorts().firstOrDefault().getSortType();
 			}
@@ -341,7 +341,7 @@ public class Criteria extends Serializable implements ICriteria {
 				sortType = this.getSorts().firstOrDefault().getSortType();
 			}
 			if (sortType == SortType.DESCENDING) {
-				operation = ConditionOperation.GRATER_THAN;
+				operation = ConditionOperation.GREATER_THAN;
 			}
 			ICriteria boCriteria = this.boCriteria(firstBO, operation);
 			if (boCriteria == null) {

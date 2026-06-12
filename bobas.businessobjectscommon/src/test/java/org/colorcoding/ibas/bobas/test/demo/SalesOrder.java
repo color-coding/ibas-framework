@@ -19,7 +19,7 @@ import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emBOStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.db.DbField;
-import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.db.DataType;
 import org.colorcoding.ibas.bobas.rule.IBusinessRule;
 import org.colorcoding.ibas.bobas.rule.common.BusinessRuleDocumentStatus;
 import org.colorcoding.ibas.bobas.rule.common.BusinessRuleMaxLength;
@@ -64,7 +64,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 期间编号 属性
 	 */
-	@DbField(name = "DocNum", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "DocNum", type = DataType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<Integer> PROPERTY_DOCNUM = registerProperty(PROPERTY_DOCNUM_NAME, Integer.class,
 			MY_CLASS);
 
@@ -95,7 +95,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 期间 属性
 	 */
-	@DbField(name = "Period", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Period", type = DataType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<Integer> PROPERTY_PERIOD = registerProperty(PROPERTY_PERIOD_NAME, Integer.class,
 			MY_CLASS);
 
@@ -126,7 +126,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * Instance 属性
 	 */
-	@DbField(name = "Instance", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Instance", type = DataType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<Integer> PROPERTY_INSTANCE = registerProperty(PROPERTY_INSTANCE_NAME,
 			Integer.class, MY_CLASS);
 
@@ -157,7 +157,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 服务系列 属性
 	 */
-	@DbField(name = "Series", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Series", type = DataType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<Integer> PROPERTY_SERIES = registerProperty(PROPERTY_SERIES_NAME, Integer.class,
 			MY_CLASS);
 
@@ -188,7 +188,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 手写 属性
 	 */
-	@DbField(name = "Handwrtten", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Handwrtten", type = DataType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<emYesNo> PROPERTY_HANDWRITTEN = registerProperty(PROPERTY_HANDWRITTEN_NAME,
 			emYesNo.class, MY_CLASS);
 
@@ -219,7 +219,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 已引用 属性
 	 */
-	@DbField(name = "Refed", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Refed", type = DataType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<emYesNo> PROPERTY_REFERENCED = registerProperty(PROPERTY_REFERENCED_NAME,
 			emYesNo.class, MY_CLASS);
 
@@ -250,7 +250,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 取消 属性
 	 */
-	@DbField(name = "Canceled", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Canceled", type = DataType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<emYesNo> PROPERTY_CANCELED = registerProperty(PROPERTY_CANCELED_NAME,
 			emYesNo.class, MY_CLASS);
 
@@ -281,7 +281,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 类型 属性
 	 */
-	@DbField(name = "Object", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Object", type = DataType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<String> PROPERTY_OBJECTCODE = registerProperty(PROPERTY_OBJECTCODE_NAME,
 			String.class, MY_CLASS);
 
@@ -312,7 +312,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 数据源 属性
 	 */
-	@DbField(name = "DataSource", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "DataSource", type = DataType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<String> PROPERTY_DATASOURCE = registerProperty(PROPERTY_DATASOURCE_NAME,
 			String.class, MY_CLASS);
 
@@ -343,7 +343,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 实例号（版本） 属性
 	 */
-	@DbField(name = "LogInst", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "LogInst", type = DataType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<Integer> PROPERTY_LOGINST = registerProperty(PROPERTY_LOGINST_NAME, Integer.class,
 			MY_CLASS);
 
@@ -374,7 +374,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 用户 属性
 	 */
-	@DbField(name = "UserSign", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "UserSign", type = DataType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<Integer> PROPERTY_USERSIGN = registerProperty(PROPERTY_USERSIGN_NAME,
 			Integer.class, MY_CLASS);
 
@@ -405,7 +405,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 是否结转 属性
 	 */
-	@DbField(name = "Transfered", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Transfered", type = DataType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<emYesNo> PROPERTY_TRANSFERED = registerProperty(PROPERTY_TRANSFERED_NAME,
 			emYesNo.class, MY_CLASS);
 
@@ -436,7 +436,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 状态 属性
 	 */
-	@DbField(name = "Status", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Status", type = DataType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<emBOStatus> PROPERTY_STATUS = registerProperty(PROPERTY_STATUS_NAME,
 			emBOStatus.class, MY_CLASS);
 
@@ -467,7 +467,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 创建日期 属性
 	 */
-	@DbField(name = "CreateDate", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "CreateDate", type = DataType.DATE, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<DateTime> PROPERTY_CREATEDATE = registerProperty(PROPERTY_CREATEDATE_NAME,
 			DateTime.class, MY_CLASS);
 
@@ -498,7 +498,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 创建时间 属性
 	 */
-	@DbField(name = "CreateTime", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "CreateTime", type = DataType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<Short> PROPERTY_CREATETIME = registerProperty(PROPERTY_CREATETIME_NAME,
 			Short.class, MY_CLASS);
 
@@ -529,7 +529,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 修改日期 属性
 	 */
-	@DbField(name = "UpdateDate", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "UpdateDate", type = DataType.DATE, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<DateTime> PROPERTY_UPDATEDATE = registerProperty(PROPERTY_UPDATEDATE_NAME,
 			DateTime.class, MY_CLASS);
 
@@ -560,7 +560,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 修改时间 属性
 	 */
-	@DbField(name = "UpdateTime", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "UpdateTime", type = DataType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<Short> PROPERTY_UPDATETIME = registerProperty(PROPERTY_UPDATETIME_NAME,
 			Short.class, MY_CLASS);
 
@@ -591,7 +591,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 创建用户 属性
 	 */
-	@DbField(name = "Creator", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Creator", type = DataType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<Integer> PROPERTY_CREATEUSERSIGN = registerProperty(PROPERTY_CREATEUSERSIGN_NAME,
 			Integer.class, MY_CLASS);
 
@@ -622,7 +622,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 修改用户 属性
 	 */
-	@DbField(name = "Updator", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Updator", type = DataType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<Integer> PROPERTY_UPDATEUSERSIGN = registerProperty(PROPERTY_UPDATEUSERSIGN_NAME,
 			Integer.class, MY_CLASS);
 
@@ -653,7 +653,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 创建动作标识 属性
 	 */
-	@DbField(name = "CreateActId", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "CreateActId", type = DataType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<String> PROPERTY_CREATEACTIONID = registerProperty(PROPERTY_CREATEACTIONID_NAME,
 			String.class, MY_CLASS);
 
@@ -684,7 +684,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 更新动作标识 属性
 	 */
-	@DbField(name = "UpdateActId", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "UpdateActId", type = DataType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<String> PROPERTY_UPDATEACTIONID = registerProperty(PROPERTY_UPDATEACTIONID_NAME,
 			String.class, MY_CLASS);
 
@@ -715,7 +715,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 数据所有者 属性
 	 */
-	@DbField(name = "DataOwner", type = DbFieldType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "DataOwner", type = DataType.NUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<Integer> PROPERTY_DATAOWNER = registerProperty(PROPERTY_DATAOWNER_NAME,
 			Integer.class, MY_CLASS);
 
@@ -746,7 +746,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 团队成员 属性
 	 */
-	@DbField(name = "TeamMembers", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "TeamMembers", type = DataType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<String> PROPERTY_TEAMMEMBERS = registerProperty(PROPERTY_TEAMMEMBERS_NAME,
 			String.class, MY_CLASS);
 
@@ -777,7 +777,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 数据所属组织 属性
 	 */
-	@DbField(name = "OrgCode", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "OrgCode", type = DataType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<String> PROPERTY_ORGANIZATION = registerProperty(PROPERTY_ORGANIZATION_NAME,
 			String.class, MY_CLASS);
 
@@ -808,7 +808,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 审批状态 属性
 	 */
-	@DbField(name = "ApvlStatus", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "ApvlStatus", type = DataType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<emApprovalStatus> PROPERTY_APPROVALSTATUS = registerProperty(
 			PROPERTY_APPROVALSTATUS_NAME, emApprovalStatus.class, MY_CLASS);
 
@@ -839,7 +839,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 过账日期 属性
 	 */
-	@DbField(name = "DocDate", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "DocDate", type = DataType.DATE, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<DateTime> PROPERTY_POSTINGDATE = registerProperty(PROPERTY_POSTINGDATE_NAME,
 			DateTime.class, MY_CLASS);
 
@@ -870,7 +870,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 到期日 属性
 	 */
-	@DbField(name = "DocDueDate", type = DbFieldType.DATE, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "DocDueDate", type = DataType.DATE, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<DateTime> PROPERTY_DELIVERYDATE = registerProperty(PROPERTY_DELIVERYDATE_NAME,
 			DateTime.class, MY_CLASS);
 
@@ -901,7 +901,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 参考1 属性
 	 */
-	@DbField(name = "Ref1", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Ref1", type = DataType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<String> PROPERTY_REFERENCE1 = registerProperty(PROPERTY_REFERENCE1_NAME,
 			String.class, MY_CLASS);
 
@@ -932,7 +932,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 参考2 属性
 	 */
-	@DbField(name = "Ref2", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Ref2", type = DataType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<String> PROPERTY_REFERENCE2 = registerProperty(PROPERTY_REFERENCE2_NAME,
 			String.class, MY_CLASS);
 
@@ -963,7 +963,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 备注 属性
 	 */
-	@DbField(name = "Remarks", type = DbFieldType.MEMO, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "Remarks", type = DataType.MEMO, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<String> PROPERTY_REMARKS = registerProperty(PROPERTY_REMARKS_NAME, String.class,
 			MY_CLASS);
 
@@ -994,7 +994,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 客户代码 属性
 	 */
-	@DbField(name = "CardCode", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "CardCode", type = DataType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<String> PROPERTY_CUSTOMERCODE = registerProperty(PROPERTY_CUSTOMERCODE_NAME,
 			String.class, MY_CLASS);
 
@@ -1025,7 +1025,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 客户名称 属性
 	 */
-	@DbField(name = "CardName", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "CardName", type = DataType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<String> PROPERTY_CUSTOMERNAME = registerProperty(PROPERTY_CUSTOMERNAME_NAME,
 			String.class, MY_CLASS);
 
@@ -1056,7 +1056,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 单据货币 属性
 	 */
-	@DbField(name = "DocCur", type = DbFieldType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "DocCur", type = DataType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<String> PROPERTY_DOCUMENTCURRENCY = registerProperty(
 			PROPERTY_DOCUMENTCURRENCY_NAME, String.class, MY_CLASS);
 
@@ -1087,7 +1087,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 单据交换率 属性
 	 */
-	@DbField(name = "DocRate", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "DocRate", type = DataType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<BigDecimal> PROPERTY_DOCUMENTRATE = registerProperty(PROPERTY_DOCUMENTRATE_NAME,
 			BigDecimal.class, MY_CLASS);
 
@@ -1183,7 +1183,7 @@ public class SalesOrder extends Order implements IBOUserFields, IBODocument, IBO
 	/**
 	 * 单据交换率 属性
 	 */
-	@DbField(name = "DocRate", type = DbFieldType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
+	@DbField(name = "DocRate", type = DataType.DECIMAL, table = DB_TABLE_NAME, primaryKey = false)
 	public static final IPropertyInfo<BigDecimal> PROPERTY_U_DOCUMENTRATE = registerProperty(
 			PROPERTY_U_DOCUMENTRATE_NAME, BigDecimal.class, MY_CLASS);
 

@@ -53,7 +53,7 @@ public class TestFileRepository extends TestCase {
 		// 修改时间大于2016-11-11
 		condition = criteria.getConditions().create();
 		condition.setAlias(FileRepository.CONDITION_ALIAS_MODIFIED_TIME);
-		condition.setOperation(ConditionOperation.GRATER_THAN);
+		condition.setOperation(ConditionOperation.GREATER_THAN);
 		condition.setValue(DateTimes.valueOf("2016-11-11").getTime());
 
 		try (FileRepository fileRepository = new FileRepository()) {

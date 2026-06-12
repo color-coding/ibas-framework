@@ -12,14 +12,14 @@ public abstract class JudgmentExpressionComparable<T extends Comparable<T>> exte
 
 	}
 
-	public JudgmentExpressionComparable(T leftValue, JudmentOperation operation, T rightValue) {
+	public JudgmentExpressionComparable(T leftValue, JudgmentOperation operation, T rightValue) {
 		super(leftValue, operation, rightValue);
 	}
 
 	@Override
 	public boolean result() throws ExpressionException {
 		// 等于
-		if (this.getOperation() == JudmentOperation.EQUAL) {
+		if (this.getOperation() == JudgmentOperation.EQUAL) {
 			// 左值为空
 			if (this.getLeftValue() == null) {
 				if (this.getRightValue() == null) {
@@ -37,7 +37,7 @@ public abstract class JudgmentExpressionComparable<T extends Comparable<T>> exte
 			return false;
 		}
 		// 不等于
-		else if (this.getOperation() == JudmentOperation.NOT_EQUAL) {
+		else if (this.getOperation() == JudgmentOperation.NOT_EQUAL) {
 			// 左值为空
 			if (this.getLeftValue() == null) {
 				if (this.getRightValue() != null) {
@@ -55,7 +55,7 @@ public abstract class JudgmentExpressionComparable<T extends Comparable<T>> exte
 			return false;
 		}
 		// 大于
-		else if (this.getOperation() == JudmentOperation.GRATER_THAN) {
+		else if (this.getOperation() == JudgmentOperation.GREATER_THAN) {
 			// 左值为空或右值为空
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
@@ -67,7 +67,7 @@ public abstract class JudgmentExpressionComparable<T extends Comparable<T>> exte
 			return false;
 		}
 		// 小于
-		else if (this.getOperation() == JudmentOperation.LESS_THAN) {
+		else if (this.getOperation() == JudgmentOperation.LESS_THAN) {
 			// 左值为空或右值为空
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
@@ -79,7 +79,7 @@ public abstract class JudgmentExpressionComparable<T extends Comparable<T>> exte
 			return false;
 		}
 		// 大于等于
-		else if (this.getOperation() == JudmentOperation.GRATER_EQUAL) {
+		else if (this.getOperation() == JudgmentOperation.GREATER_EQUAL) {
 			// 左值为空或右值为空
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
@@ -91,7 +91,7 @@ public abstract class JudgmentExpressionComparable<T extends Comparable<T>> exte
 			return false;
 		}
 		// 小于等于
-		else if (this.getOperation() == JudmentOperation.LESS_EQUAL) {
+		else if (this.getOperation() == JudgmentOperation.LESS_EQUAL) {
 			// 左值为空或右值为空
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;

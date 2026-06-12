@@ -248,11 +248,25 @@ public class Decimals {
 	 * @param b 数值b；null返回false
 	 * @return a大于b返回true
 	 */
-	public static boolean graterThan(BigDecimal a, BigDecimal b) {
+	public static boolean greaterThan(BigDecimal a, BigDecimal b) {
 		if (a == null || b == null) {
 			return false;
 		}
 		return a.compareTo(b) > 0;
+	}
+
+	/**
+	 * 是否大于等于(a >= b)
+	 *
+	 * @param a 数值a；null返回false
+	 * @param b 数值b；null返回false
+	 * @return a大于等于b返回true
+	 */
+	public static boolean greaterEqual(BigDecimal a, BigDecimal b) {
+		if (a == null || b == null) {
+			return false;
+		}
+		return a.compareTo(b) >= 0;
 	}
 
 	/**
@@ -267,6 +281,20 @@ public class Decimals {
 			return false;
 		}
 		return a.compareTo(b) < 0;
+	}
+
+	/**
+	 * 是否小于等于(a <= b)
+	 *
+	 * @param a 数值a；null返回false
+	 * @param b 数值b；null返回false
+	 * @return a小于等于b返回true
+	 */
+	public static boolean lessEqual(BigDecimal a, BigDecimal b) {
+		if (a == null || b == null) {
+			return false;
+		}
+		return a.compareTo(b) <= 0;
 	}
 
 	/**
@@ -443,5 +471,231 @@ public class Decimals {
 			subtrahend = subtrahend.subtract(subtractor);
 		}
 		return subtrahend;
+	}
+
+	/**
+	 * 取绝对值
+	 *
+	 * @param value 数值；null返回VALUE_ZERO
+	 * @return 绝对值
+	 */
+	public static BigDecimal abs(BigDecimal value) {
+		if (value == null) {
+			return VALUE_ZERO;
+		}
+		return value.abs();
+	}
+
+	/**
+	 * 取反（正变负，负变正）
+	 *
+	 * @param value 数值；null返回VALUE_ZERO
+	 * @return 取反后的值
+	 */
+	public static BigDecimal negate(BigDecimal value) {
+		if (value == null) {
+			return VALUE_ZERO;
+		}
+		return value.negate();
+	}
+
+	/**
+	 * 取最大值
+	 *
+	 * @param values 数值数组；null跳过，全部为null返回VALUE_ZERO
+	 * @return 最大值
+	 */
+	public static BigDecimal max(BigDecimal... values) {
+		if (values == null || values.length == 0) {
+			return VALUE_ZERO;
+		}
+		BigDecimal result = null;
+		for (BigDecimal value : values) {
+			if (value == null) {
+				continue;
+			}
+			if (result == null || value.compareTo(result) > 0) {
+				result = value;
+			}
+		}
+		return result != null ? result : VALUE_ZERO;
+	}
+
+	/**
+	 * 取最小值
+	 *
+	 * @param values 数值数组；null跳过，全部为null返回VALUE_ZERO
+	 * @return 最小值
+	 */
+	public static BigDecimal min(BigDecimal... values) {
+		if (values == null || values.length == 0) {
+			return VALUE_ZERO;
+		}
+		BigDecimal result = null;
+		for (BigDecimal value : values) {
+			if (value == null) {
+				continue;
+			}
+			if (result == null || value.compareTo(result) < 0) {
+				result = value;
+			}
+		}
+		return result != null ? result : VALUE_ZERO;
+	}
+
+	/**
+	 * 取余（a % b）
+	 *
+	 * @param dividend 被除数；null视为VALUE_ZERO
+	 * @param divisor  除数；null或为零返回被除数
+	 * @return 余数
+	 */
+	public static BigDecimal remainder(BigDecimal dividend, BigDecimal divisor) {
+		if (dividend == null) {
+			return VALUE_ZERO;
+		}
+		if (divisor == null || isZero(divisor)) {
+			return dividend;
+		}
+		return dividend.remainder(divisor);
+	}
+
+	/**
+	 * 百分比（a占b的百分比，保留运行时小数位）
+	 *
+	 * @param value   数值
+	 * @param total   总数；null或为零返回VALUE_ZERO
+	 * @return 百分比值（0~1之间）
+	 */
+	public static BigDecimal percent(BigDecimal value, BigDecimal total) {
+		if (value == null || total == null || isZero(total)) {
+			return VALUE_ZERO;
+		}
+		return divide(value, total);
+	}
+
+	/**
+	 * 按比例计算（value × rate）
+	 *
+	 * @param value 数值
+	 * @param rate  比例
+	 * @return 计算结果
+	 */
+	public static BigDecimal rate(BigDecimal value, BigDecimal rate) {
+		if (value == null || rate == null) {
+			return VALUE_ZERO;
+		}
+		return multiply(value, rate);
+	}
+
+	/**
+	 * 判断是否为正数
+	 *
+	 * @param value 数值
+	 * @return 正数返回true
+	 */
+	public static boolean isPositive(BigDecimal value) {
+		return value != null && value.compareTo(VALUE_ZERO) > 0;
+	}
+
+	/**
+	 * 判断是否为负数
+	 *
+	 * @param value 数值
+	 * @return 负数返回true
+	 */
+	public static boolean isNegative(BigDecimal value) {
+		return value != null && value.compareTo(VALUE_ZERO) < 0;
+	}
+
+	/**
+	 * 判断是否为非正数（零或负数）
+	 *
+	 * @param value 数值
+	 * @return 零或负数返回true
+	 */
+	public static boolean isNotPositive(BigDecimal value) {
+		return value == null || value.compareTo(VALUE_ZERO) <= 0;
+	}
+
+	/**
+	 * 判断是否为非负数（零或正数）
+	 *
+	 * @param value 数值
+	 * @return 零或正数返回true
+	 */
+	public static boolean isNotNegative(BigDecimal value) {
+		return value == null || value.compareTo(VALUE_ZERO) >= 0;
+	}
+
+	/**
+	 * 判断数值是否近似（忽略微小差异）
+	 * <p>
+	 * 采用绝对误差与相对误差相结合的策略：
+	 * <ul>
+	 * <li>绝对误差阈值：10^(degree - digits)，用于接近0的情况（相对误差在接近0时无意义）</li>
+	 * <li>相对误差阈值：10^(-digits)，用于常规比较</li>
+	 * </ul>
+	 * 两个阈值任一满足即视为近似。
+	 *
+	 * @param value1 值1；null返回false
+	 * @param value2 值2；null返回false
+	 * @param digits 小数位数（精度）
+	 * @param degree 精确度（绝对误差比相对误差宽松的数量级，默认为1）
+	 * @return 近似返回true
+	 */
+	public static boolean isApproximated(BigDecimal value1, BigDecimal value2, int digits, int degree) {
+		if (value1 == null || value2 == null) {
+			return false;
+		}
+		// 计算绝对差值
+		BigDecimal diff = value1.subtract(value2).abs();
+		// 绝对误差阈值：10^(degree - digits)，用于接近0的情况
+		BigDecimal absEpsilon;
+		int exponent = degree - digits;
+		if (exponent >= 0) {
+			absEpsilon = BigDecimal.TEN.pow(exponent);
+		} else {
+			absEpsilon = BigDecimal.ONE.divide(BigDecimal.TEN.pow(-exponent), DECIMAL_PLACES_RUNNING, ROUNDING_MODE_DEFAULT);
+		}
+		if (diff.compareTo(absEpsilon) <= 0) {
+			return true;
+		}
+		// 相对误差阈值：10^(-digits)
+		BigDecimal relEpsilon = BigDecimal.ONE.divide(BigDecimal.TEN.pow(digits), DECIMAL_PLACES_RUNNING, ROUNDING_MODE_DEFAULT);
+		// 相对误差判断：diff / max(|value1|, |value2|) <= relEpsilon
+		BigDecimal maxAbs = value1.abs().max(value2.abs());
+		if (isZero(maxAbs)) {
+			// maxAbs为零说明value1和value2均为零，此时diff也为零，已被绝对误差判断覆盖
+			return false;
+		}
+		return diff.divide(maxAbs, DECIMAL_PLACES_RUNNING, ROUNDING_MODE_DEFAULT).compareTo(relEpsilon) <= 0;
+	}
+
+	/**
+	 * 判断数值是否近似（忽略微小差异）
+	 * <p>
+	 * 默认精确度为1（绝对误差比相对误差宽松1个数量级）
+	 *
+	 * @param value1 值1；null返回false
+	 * @param value2 值2；null返回false
+	 * @param digits 小数位数（精度）
+	 * @return 近似返回true
+	 */
+	public static boolean isApproximated(BigDecimal value1, BigDecimal value2, int digits) {
+		return isApproximated(value1, value2, digits, 1);
+	}
+
+	/**
+	 * 判断数值是否近似（忽略微小差异）
+	 * <p>
+	 * 默认小数位数为6（存储精度），精确度为1（绝对误差比相对误差宽松1个数量级）
+	 *
+	 * @param value1 值1；null返回false
+	 * @param value2 值2；null返回false
+	 * @return 近似返回true
+	 */
+	public static boolean isApproximated(BigDecimal value1, BigDecimal value2) {
+		return isApproximated(value1, value2, DECIMAL_PLACES_STORAGE, 1);
 	}
 }

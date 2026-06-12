@@ -106,7 +106,7 @@ public class FileRepositoryService extends FileRepository {
 			return new OperationResult<>(new RepositoryException(I18N.prop("msg_bobas_invalid_user")));
 		}
 		if (criteria == null || criteria.getConditions().isEmpty()) {
-			return new OperationResult<>(new RepositoryException(I18N.prop("msg_bobas_invaild_criteria")));
+			return new OperationResult<>(new RepositoryException(I18N.prop("msg_bobas_invalid_criteria")));
 		}
 		return super.delete(criteria);
 	}

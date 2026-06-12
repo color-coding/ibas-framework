@@ -13,7 +13,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.core.Serializable;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.db.DataType;
 
 /**
  * 查询条件
@@ -137,11 +137,11 @@ public class Condition extends Serializable implements ICondition {
 		this.setValue(Strings.valueOf(value));
 		if (value != null) {
 			if (value instanceof BigDecimal) {
-				this.aliasDataType = DbFieldType.DECIMAL;
+				this.aliasDataType = DataType.DECIMAL;
 			} else if (value instanceof Integer || value instanceof Short) {
-				this.aliasDataType = DbFieldType.NUMERIC;
+				this.aliasDataType = DataType.NUMERIC;
 			} else if (value instanceof DateTime) {
-				this.aliasDataType = DbFieldType.DATE;
+				this.aliasDataType = DataType.DATE;
 			}
 		}
 	}
@@ -199,18 +199,18 @@ public class Condition extends Serializable implements ICondition {
 	}
 
 	@XmlTransient // 运行过程值，序列化不用输出
-	private DbFieldType aliasDataType = null;
+	private DataType aliasDataType = null;
 
 	@Override
-	public DbFieldType getAliasDataType() {
+	public DataType getAliasDataType() {
 		if (this.aliasDataType == null) {
-			this.aliasDataType = DbFieldType.ALPHANUMERIC;
+			this.aliasDataType = DataType.ALPHANUMERIC;
 		}
 		return this.aliasDataType;
 	}
 
 	@Override
-	public void setAliasDataType(DbFieldType value) {
+	public void setAliasDataType(DataType value) {
 		this.aliasDataType = value;
 	}
 

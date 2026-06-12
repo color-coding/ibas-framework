@@ -22,7 +22,7 @@ public enum emConditionOperation {
 	 * 大于(>)
 	 */
 	@Value("GT")
-	GRATER_THAN,
+	GREATER_THAN,
 	/**
 	 * 小于(<)
 	 */
@@ -32,7 +32,7 @@ public enum emConditionOperation {
 	 * 大于等于(>=)
 	 */
 	@Value("GE")
-	GRATER_EQUAL,
+	GREATER_EQUAL,
 	/**
 	 * 小于等于(<=)
 	 */

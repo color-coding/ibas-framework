@@ -290,9 +290,9 @@ public class TestCriteria extends TestCase {
 		// 大于等于
 		condition = criteria.getConditions().create();
 		condition.setAlias("Field3");
-		condition.setOperation(ConditionOperation.GRATER_EQUAL);
+		condition.setOperation(ConditionOperation.GREATER_EQUAL);
 		condition.setValue(100);
-		assertEquals("Operation should be GRATER_EQUAL. ", ConditionOperation.GRATER_EQUAL, condition.getOperation());
+		assertEquals("Operation should be GREATER_EQUAL. ", ConditionOperation.GREATER_EQUAL, condition.getOperation());
 
 		// 不为空
 		condition = criteria.getConditions().create();

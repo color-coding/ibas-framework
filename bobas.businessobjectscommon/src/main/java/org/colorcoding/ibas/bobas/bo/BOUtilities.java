@@ -21,7 +21,7 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.expression.BOJudgmentLinkCondition;
-import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
+import org.colorcoding.ibas.bobas.expression.JudgmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
@@ -538,9 +538,9 @@ public class BOUtilities {
 	 * @param datas    目标数据集（null返回空列表）
 	 * @param criteria 查询条件（null返回所有业务对象）
 	 * @return 符合条件的数据列表
-	 * @throws JudmentOperationException 表达式判断异常
+	 * @throws JudgmentOperationException 表达式判断异常
 	 */
-	public static <T> List<T> fetch(Iterable<T> datas, ICriteria criteria) throws JudmentOperationException {
+	public static <T> List<T> fetch(Iterable<T> datas, ICriteria criteria) throws JudgmentOperationException {
 		return fetch(datas == null ? null : datas.iterator(), criteria);
 	}
 
@@ -551,9 +551,9 @@ public class BOUtilities {
 	 * @param datas    目标数据集
 	 * @param criteria 查询条件
 	 * @return 符合条件的数据列表
-	 * @throws JudmentOperationException 表达式判断异常
+	 * @throws JudgmentOperationException 表达式判断异常
 	 */
-	public static <T> List<T> fetch(Iterator<T> datas, ICriteria criteria) throws JudmentOperationException {
+	public static <T> List<T> fetch(Iterator<T> datas, ICriteria criteria) throws JudgmentOperationException {
 		ArrayList<T> results = new ArrayList<>();
 		if (datas == null) {
 			return results;
@@ -588,7 +588,7 @@ public class BOUtilities {
 					for (IChildCriteria cCriteria : criteria.getChildCriterias()) {
 						propertyInfo = propertyInfo((IBusinessObject) data, cCriteria.getPropertyPath());
 						if (propertyInfo == null) {
-							throw new JudmentOperationException(
+							throw new JudgmentOperationException(
 									I18N.prop("msg_bobas_not_found_bo_property", cCriteria.getPropertyPath()));
 						}
 						cData = propertyValue((IBusinessObject) data, propertyInfo);

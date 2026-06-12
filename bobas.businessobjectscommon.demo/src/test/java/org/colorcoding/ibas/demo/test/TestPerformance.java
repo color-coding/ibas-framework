@@ -8,7 +8,7 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
+import org.colorcoding.ibas.bobas.expression.JudgmentOperationException;
 import org.colorcoding.ibas.demo.bo.materialsjournal.MaterialsJournal;
 
 import junit.framework.TestCase;
@@ -45,7 +45,7 @@ public class TestPerformance extends TestCase {
 	 * 测试缓存查询性能
 	 * 覆盖：阶梯增长（每次新增一个对象后查询）vs 一次性查询（2000个对象一次查询）
 	 */
-	public void testFetchInCache() throws JudmentOperationException {
+	public void testFetchInCache() throws JudgmentOperationException {
 		ICriteria criteria = createTestCriteria();
 
 		MaterialsJournal journal;

@@ -9,7 +9,7 @@ import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.db.DbField;
-import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.db.DataType;
 
 /**
  * 管理数据字段
@@ -146,7 +146,7 @@ public interface IManagedFields {
 						}
 
 						@Override
-						public DbFieldType getFieldType() {
+						public DataType getFieldType() {
 							return dbField.type();
 						}
 
@@ -306,7 +306,7 @@ public interface IManagedFields {
 						}
 
 						@Override
-						public DbFieldType getFieldType() {
+						public DataType getFieldType() {
 							return dbField.type();
 						}
 

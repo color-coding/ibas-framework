@@ -9,7 +9,7 @@ import org.colorcoding.ibas.bobas.MyConfiguration;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlSeeAlso({ DataTableColumn.class })
-@XmlType(name = "DataTableColumns",namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
+@XmlType(name = "DataTableColumns", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class DataTableColumns extends ArrayList<IDataTableColumn> implements IDataTableColumns {
 
 	private static final long serialVersionUID = -592228599611799067L;
@@ -57,6 +57,7 @@ public class DataTableColumns extends ArrayList<IDataTableColumn> implements IDa
 	 * @param name 列名称
 	 * @return 列对象，未找到返回null
 	 */
+	@Override
 	public IDataTableColumn get(String name) {
 		for (int i = 0; i < super.size(); i++) {
 			if (super.get(i).getName().equals(name)) {

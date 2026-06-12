@@ -15,14 +15,14 @@ public class JudgmentExpressionDateTime extends JudgmentExpression<DateTime> {
 
 	}
 
-	public JudgmentExpressionDateTime(DateTime leftValue, JudmentOperation operation, DateTime rightValue) {
+	public JudgmentExpressionDateTime(DateTime leftValue, JudgmentOperation operation, DateTime rightValue) {
 		super(leftValue, operation, rightValue);
 	}
 
 	@Override
 	public boolean result() throws ExpressionException {
 		// 等于
-		if (this.getOperation() == JudmentOperation.EQUAL) {
+		if (this.getOperation() == JudgmentOperation.EQUAL) {
 			if (this.getLeftValue() == null && this.getRightValue() == null) {
 				return true;
 			}
@@ -32,7 +32,7 @@ public class JudgmentExpressionDateTime extends JudgmentExpression<DateTime> {
 			return this.getLeftValue().compareTo(this.getRightValue()) == 0;
 		}
 		// 不等于
-		else if (this.getOperation() == JudmentOperation.NOT_EQUAL) {
+		else if (this.getOperation() == JudgmentOperation.NOT_EQUAL) {
 			if (this.getLeftValue() == null && this.getRightValue() == null) {
 				return false;
 			}
@@ -42,28 +42,28 @@ public class JudgmentExpressionDateTime extends JudgmentExpression<DateTime> {
 			return this.getLeftValue().compareTo(this.getRightValue()) != 0;
 		}
 		// 大于
-		else if (this.getOperation() == JudmentOperation.GRATER_THAN) {
+		else if (this.getOperation() == JudgmentOperation.GREATER_THAN) {
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
 			}
 			return this.getLeftValue().compareTo(this.getRightValue()) > 0;
 		}
 		// 小于
-		else if (this.getOperation() == JudmentOperation.LESS_THAN) {
+		else if (this.getOperation() == JudgmentOperation.LESS_THAN) {
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
 			}
 			return this.getLeftValue().compareTo(this.getRightValue()) < 0;
 		}
 		// 大于等于
-		else if (this.getOperation() == JudmentOperation.GRATER_EQUAL) {
+		else if (this.getOperation() == JudgmentOperation.GREATER_EQUAL) {
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
 			}
 			return this.getLeftValue().compareTo(this.getRightValue()) >= 0;
 		}
 		// 小于等于
-		else if (this.getOperation() == JudmentOperation.LESS_EQUAL) {
+		else if (this.getOperation() == JudgmentOperation.LESS_EQUAL) {
 			if (this.getLeftValue() == null || this.getRightValue() == null) {
 				return false;
 			}
@@ -118,7 +118,7 @@ public class JudgmentExpressionDateTime extends JudgmentExpression<DateTime> {
 
 	public final void setRightValue(String value) {
 		if (Strings.isNullOrEmpty(value)) {
-			if (this.getOperation() == JudmentOperation.IS_NULL || this.getOperation() == JudmentOperation.NOT_NULL) {
+			if (this.getOperation() == JudgmentOperation.IS_NULL || this.getOperation() == JudgmentOperation.NOT_NULL) {
 				value = DateTimes.toString(DateTimes.VALUE_MIN, DateTimes.FORMAT_DATE);
 			}
 		}

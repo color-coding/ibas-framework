@@ -13,7 +13,7 @@ public class JudgmentExpressionShort extends JudgmentExpressionComparable<Short>
 
 	}
 
-	public JudgmentExpressionShort(short leftValue, JudmentOperation operation, short rightValue) {
+	public JudgmentExpressionShort(short leftValue, JudgmentOperation operation, short rightValue) {
 		super(leftValue, operation, rightValue);
 	}
 
@@ -63,7 +63,7 @@ public class JudgmentExpressionShort extends JudgmentExpressionComparable<Short>
 
 	public final void setRightValue(String value) {
 		if (Strings.isNullOrEmpty(value)) {
-			if (this.getOperation() == JudmentOperation.IS_NULL || this.getOperation() == JudmentOperation.NOT_NULL) {
+			if (this.getOperation() == JudgmentOperation.IS_NULL || this.getOperation() == JudgmentOperation.NOT_NULL) {
 				value = Strings.VALUE_ZERO;
 			}
 		}

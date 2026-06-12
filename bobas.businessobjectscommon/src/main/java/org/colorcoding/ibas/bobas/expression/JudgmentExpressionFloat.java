@@ -13,7 +13,7 @@ public class JudgmentExpressionFloat extends JudgmentExpressionComparable<Float>
 
 	}
 
-	public JudgmentExpressionFloat(float leftValue, JudmentOperation operation, float rightValue) {
+	public JudgmentExpressionFloat(float leftValue, JudgmentOperation operation, float rightValue) {
 		super(leftValue, operation, rightValue);
 	}
 
@@ -63,7 +63,7 @@ public class JudgmentExpressionFloat extends JudgmentExpressionComparable<Float>
 
 	public final void setRightValue(String value) {
 		if (Strings.isNullOrEmpty(value)) {
-			if (this.getOperation() == JudmentOperation.IS_NULL || this.getOperation() == JudmentOperation.NOT_NULL) {
+			if (this.getOperation() == JudgmentOperation.IS_NULL || this.getOperation() == JudgmentOperation.NOT_NULL) {
 				value = Strings.VALUE_ZERO;
 			}
 		}

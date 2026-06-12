@@ -16,8 +16,8 @@ import org.colorcoding.ibas.bobas.expression.JudgmentExpressionDateTime;
 import org.colorcoding.ibas.bobas.expression.JudgmentExpressionDecimal;
 import org.colorcoding.ibas.bobas.expression.JudgmentExpressionInteger;
 import org.colorcoding.ibas.bobas.expression.JudgmentExpressionString;
-import org.colorcoding.ibas.bobas.expression.JudmentOperation;
-import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
+import org.colorcoding.ibas.bobas.expression.JudgmentOperation;
+import org.colorcoding.ibas.bobas.expression.JudgmentOperationException;
 import org.colorcoding.ibas.bobas.test.demo.SalesOrder;
 
 import junit.framework.TestCase;
@@ -41,78 +41,78 @@ public class TestExpressions extends TestCase {
 		judgment = new JudgmentExpressionBoolean();
 		judgment.setLeftValue(true);
 		judgment.setRightValue(true);
-		judgment.setOperation(JudmentOperation.EQUAL);
+		judgment.setOperation(JudgmentOperation.EQUAL);
 		assertEquals("expression is not established. ", judgment.result(), true);
-		judgment.setOperation(JudmentOperation.AND);
-		assertEquals("expression is not established. ", judgment.result(), true);
-		judgment.setRightValue(false);
-		judgment.setOperation(JudmentOperation.NOT_EQUAL);
+		judgment.setOperation(JudgmentOperation.AND);
 		assertEquals("expression is not established. ", judgment.result(), true);
 		judgment.setRightValue(false);
-		judgment.setOperation(JudmentOperation.OR);
+		judgment.setOperation(JudgmentOperation.NOT_EQUAL);
+		assertEquals("expression is not established. ", judgment.result(), true);
+		judgment.setRightValue(false);
+		judgment.setOperation(JudgmentOperation.OR);
 		assertEquals("expression is not established. ", judgment.result(), true);
 		// 日期
 		JudgmentExpressionDateTime judgmentDateTime = new JudgmentExpressionDateTime();
 		judgmentDateTime.setLeftValue(DateTimes.valueOf("2016-03-15"));
 		judgmentDateTime.setRightValue(DateTimes.valueOf("2016-03-15"));
-		judgmentDateTime.setOperation(JudmentOperation.EQUAL);
+		judgmentDateTime.setOperation(JudgmentOperation.EQUAL);
 		assertEquals("expression is not established. ", judgmentDateTime.result(), true);
 		judgmentDateTime.setRightValue(DateTimes.valueOf("2016-03-16"));
-		judgmentDateTime.setOperation(JudmentOperation.NOT_EQUAL);
+		judgmentDateTime.setOperation(JudgmentOperation.NOT_EQUAL);
 		assertEquals("expression is not established. ", judgmentDateTime.result(), true);
-		judgmentDateTime.setOperation(JudmentOperation.LESS_EQUAL);
+		judgmentDateTime.setOperation(JudgmentOperation.LESS_EQUAL);
 		assertEquals("expression is not established. ", judgmentDateTime.result(), true);
 		// 字符串
 		JudgmentExpressionString judgmentString = new JudgmentExpressionString();
 		judgmentString.setLeftValue("Aabbcc");
 		judgmentString.setRightValue("Aabbcc");
-		judgmentString.setOperation(JudmentOperation.EQUAL);
+		judgmentString.setOperation(JudgmentOperation.EQUAL);
 		assertEquals("expression is not established. ", judgmentString.result(), true);
 		judgmentString.setRightValue("Aabb");
-		judgmentString.setOperation(JudmentOperation.NOT_EQUAL);
+		judgmentString.setOperation(JudgmentOperation.NOT_EQUAL);
 		assertEquals("expression is not established. ", judgmentString.result(), true);
-		judgmentString.setOperation(JudmentOperation.GRATER_EQUAL);
+		judgmentString.setOperation(JudgmentOperation.GREATER_EQUAL);
 		assertEquals("expression is not established. ", judgmentString.result(), true);
-		judgmentString.setOperation(JudmentOperation.CONTAIN);
+		judgmentString.setOperation(JudgmentOperation.CONTAIN);
 		assertEquals("expression is not established. ", judgmentString.result(), true);
 		judgmentString.setRightValue("Aa");
-		judgmentString.setOperation(JudmentOperation.BEGIN_WITH);
+		judgmentString.setOperation(JudgmentOperation.BEGIN_WITH);
 		assertEquals("expression is not established. ", judgmentString.result(), true);
 		judgmentString.setRightValue("cc");
-		judgmentString.setOperation(JudmentOperation.END_WITH);
+		judgmentString.setOperation(JudgmentOperation.END_WITH);
 		assertEquals("expression is not established. ", judgmentString.result(), true);
 		judgmentString.setRightValue("b");
-		judgmentString.setOperation(JudmentOperation.CONTAIN);
+		judgmentString.setOperation(JudgmentOperation.CONTAIN);
 		assertEquals("expression is not established. ", judgmentString.result(), true);
 		judgmentString.setRightValue("Aabbcc, Aabbcd");
-		judgmentString.setOperation(JudmentOperation.IN);
+		judgmentString.setOperation(JudgmentOperation.IN);
 		assertEquals("expression is not established. ", judgmentString.result(), true);
 		// 数值
 		JudgmentExpressionInteger judgmentInteger = new JudgmentExpressionInteger();
 		judgmentInteger.setLeftValue(100);
 		judgmentInteger.setRightValue(100);
-		judgmentInteger.setOperation(JudmentOperation.EQUAL);
+		judgmentInteger.setOperation(JudgmentOperation.EQUAL);
 		assertEquals("expression is not established. ", judgmentInteger.result(), true);
 		judgmentInteger.setRightValue(101);
-		judgmentInteger.setOperation(JudmentOperation.NOT_EQUAL);
+		judgmentInteger.setOperation(JudgmentOperation.NOT_EQUAL);
 		assertEquals("expression is not established. ", judgmentInteger.result(), true);
-		judgmentInteger.setOperation(JudmentOperation.LESS_EQUAL);
+		judgmentInteger.setOperation(JudgmentOperation.LESS_EQUAL);
 		assertEquals("expression is not established. ", judgmentInteger.result(), true);
 		// 十进制数值
 		JudgmentExpressionDecimal judgmentDecimal = new JudgmentExpressionDecimal();
 		judgmentDecimal.setLeftValue(Decimals.valueOf("1000.999"));
 		judgmentDecimal.setRightValue(Decimals.valueOf("1000.999"));
-		judgmentDecimal.setOperation(JudmentOperation.EQUAL);
+		judgmentDecimal.setOperation(JudgmentOperation.EQUAL);
 		assertEquals("expression is not established. ", judgmentDecimal.result(), true);
 		judgmentDecimal.setRightValue(Decimals.valueOf("1000.99901"));
-		judgmentDecimal.setOperation(JudmentOperation.NOT_EQUAL);
+		judgmentDecimal.setOperation(JudgmentOperation.NOT_EQUAL);
 		assertEquals("expression is not established. ", judgmentDecimal.result(), true);
-		judgmentDecimal.setOperation(JudmentOperation.LESS_EQUAL);
+		judgmentDecimal.setOperation(JudgmentOperation.LESS_EQUAL);
 		assertEquals("expression is not established. ", judgmentDecimal.result(), true);
 
 	}
 
-	public void testJudgmentLinks() throws JudmentOperationException {
+	public void testJudgmentLinks() throws JudgmentOperationException {
 		// 查询条件
 		ICriteria criteria = new Criteria();
 		criteria.setResultCount(100);
@@ -143,13 +143,13 @@ public class TestExpressions extends TestCase {
 		condition.setBracketClose(0);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTTOTAL.getName());
 		condition.setValue(10000);
-		condition.setOperation(ConditionOperation.GRATER_EQUAL);
+		condition.setOperation(ConditionOperation.GREATER_EQUAL);
 		condition.setRelationship(ConditionRelationship.AND);
 		condition = criteria.getConditions().create();
 		condition.setBracketClose(3);
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTTOTAL.getName());
 		condition.setValue(10000);
-		condition.setOperation(ConditionOperation.GRATER_EQUAL);
+		condition.setOperation(ConditionOperation.GREATER_EQUAL);
 		condition.setRelationship(ConditionRelationship.AND);
 		// and "CustomerCode" = "C00001" and "DataOwner" <> 1
 		condition = criteria.getConditions().create();
@@ -212,44 +212,44 @@ public class TestExpressions extends TestCase {
 		JudgmentExpressionBoolean judgment = new JudgmentExpressionBoolean();
 		judgment.setLeftValue(true);
 		judgment.setRightValue(true);
-		judgment.setOperation(JudmentOperation.NOT_EQUAL);
+		judgment.setOperation(JudgmentOperation.NOT_EQUAL);
 		assertFalse("true != true should be false. ", judgment.result());
 
 		judgment.setLeftValue(false);
 		judgment.setRightValue(true);
-		judgment.setOperation(JudmentOperation.AND);
+		judgment.setOperation(JudgmentOperation.AND);
 		assertFalse("false AND true should be false. ", judgment.result());
 
 		judgment.setLeftValue(false);
 		judgment.setRightValue(false);
-		judgment.setOperation(JudmentOperation.OR);
+		judgment.setOperation(JudgmentOperation.OR);
 		assertFalse("false OR false should be false. ", judgment.result());
 	}
 
 	/**
 	 * 测试整数表达式-更多操作
-	 * 覆盖：GRATER_EQUAL, LESS_THAN, GRATER_THAN
+	 * 覆盖：GREATER_EQUAL, LESS_THAN, GREATER_THAN
 	 */
 	public void testIntegerExpressionMore() {
 		JudgmentExpressionInteger judgment = new JudgmentExpressionInteger();
 		judgment.setLeftValue(100);
 		judgment.setRightValue(99);
-		judgment.setOperation(JudmentOperation.GRATER_EQUAL);
+		judgment.setOperation(JudgmentOperation.GREATER_EQUAL);
 		assertTrue("100 >= 99 should be true. ", judgment.result());
 
 		judgment.setLeftValue(99);
 		judgment.setRightValue(100);
-		judgment.setOperation(JudmentOperation.LESS_THAN);
+		judgment.setOperation(JudgmentOperation.LESS_THAN);
 		assertTrue("99 < 100 should be true. ", judgment.result());
 
 		judgment.setLeftValue(100);
 		judgment.setRightValue(99);
-		judgment.setOperation(JudmentOperation.GRATER_THAN);
+		judgment.setOperation(JudgmentOperation.GREATER_THAN);
 		assertTrue("100 > 99 should be true. ", judgment.result());
 
 		judgment.setLeftValue(99);
 		judgment.setRightValue(99);
-		judgment.setOperation(JudmentOperation.GRATER_THAN);
+		judgment.setOperation(JudgmentOperation.GREATER_THAN);
 		assertFalse("99 > 99 should be false. ", judgment.result());
 	}
 
@@ -261,45 +261,45 @@ public class TestExpressions extends TestCase {
 		JudgmentExpressionString judgment = new JudgmentExpressionString();
 		judgment.setLeftValue("Hello World");
 		judgment.setRightValue("xyz");
-		judgment.setOperation(JudmentOperation.NOT_EQUAL);
+		judgment.setOperation(JudgmentOperation.NOT_EQUAL);
 		assertTrue("Hello World != xyz should be true. ", judgment.result());
 
 		judgment.setLeftValue("Hello World");
 		judgment.setRightValue("Hello");
-		judgment.setOperation(JudmentOperation.BEGIN_WITH);
+		judgment.setOperation(JudgmentOperation.BEGIN_WITH);
 		assertTrue("Hello World begins with Hello. ", judgment.result());
 
 		judgment.setLeftValue("Hello World");
 		judgment.setRightValue("World");
-		judgment.setOperation(JudmentOperation.END_WITH);
+		judgment.setOperation(JudgmentOperation.END_WITH);
 		assertTrue("Hello World ends with World. ", judgment.result());
 
 		// IN操作：包含在列表中
 		judgment.setLeftValue("Apple");
 		judgment.setRightValue("Apple, Banana, Cherry");
-		judgment.setOperation(JudmentOperation.IN);
+		judgment.setOperation(JudgmentOperation.IN);
 		assertTrue("Apple in list should be true. ", judgment.result());
 	}
 
 	/**
 	 * 测试Decimal表达式-更多操作
-	 * 覆盖：GRATER_THAN, LESS_THAN, LESS_EQUAL
+	 * 覆盖：GREATER_THAN, LESS_THAN, LESS_EQUAL
 	 */
 	public void testDecimalExpressionMore() {
 		JudgmentExpressionDecimal judgment = new JudgmentExpressionDecimal();
 		judgment.setLeftValue(Decimals.valueOf("100.5"));
 		judgment.setRightValue(Decimals.valueOf("100.0"));
-		judgment.setOperation(JudmentOperation.GRATER_THAN);
+		judgment.setOperation(JudgmentOperation.GREATER_THAN);
 		assertTrue("100.5 > 100.0 should be true. ", judgment.result());
 
 		judgment.setLeftValue(Decimals.valueOf("99.5"));
 		judgment.setRightValue(Decimals.valueOf("100.0"));
-		judgment.setOperation(JudmentOperation.LESS_THAN);
+		judgment.setOperation(JudgmentOperation.LESS_THAN);
 		assertTrue("99.5 < 100.0 should be true. ", judgment.result());
 
 		judgment.setLeftValue(Decimals.valueOf("100.0"));
 		judgment.setRightValue(Decimals.valueOf("100.0"));
-		judgment.setOperation(JudmentOperation.LESS_EQUAL);
+		judgment.setOperation(JudgmentOperation.LESS_EQUAL);
 		assertTrue("100.0 <= 100.0 should be true. ", judgment.result());
 	}
 
@@ -307,7 +307,7 @@ public class TestExpressions extends TestCase {
 	 * 测试复合条件判断链-具体断言
 	 * 覆盖：验证复合条件判断的精确结果
 	 */
-	public void testJudgmentLinksWithAssertions() throws JudmentOperationException {
+	public void testJudgmentLinksWithAssertions() throws JudgmentOperationException {
 		// 简单条件：DocEntry = 1
 		ICriteria criteria = new Criteria();
 		ICondition condition = criteria.getConditions().create();

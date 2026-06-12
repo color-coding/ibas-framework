@@ -15,4 +15,11 @@ public interface IDataTableRows extends List<IDataTableRow> {
 	 * @return 新创建的行实例
 	 */
 	IDataTableRow create();
+
+	/**
+	 * 预分配行容量，减少扩容次数
+	 *
+	 * @param capacity 最小容量
+	 */
+	void ensureCapacity(int capacity);
 }

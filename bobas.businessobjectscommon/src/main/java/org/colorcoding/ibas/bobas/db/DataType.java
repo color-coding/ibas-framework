@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import org.colorcoding.ibas.bobas.data.DateTime;
 
-public enum DbFieldType {
+public enum DataType {
 	/**
 	 * 未知
 	 */
@@ -40,7 +40,7 @@ public enum DbFieldType {
 	 * @param type Java类型
 	 * @return 数据库字段类型
 	 */
-	public static DbFieldType valueOf(Class<?> type) {
+	public static DataType valueOf(Class<?> type) {
 		if (type == BigDecimal.class || type == Float.class || type == Double.class || type == float.class
 				|| type == double.class) {
 			return DECIMAL;

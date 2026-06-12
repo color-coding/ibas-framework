@@ -7,13 +7,13 @@ package org.colorcoding.ibas.bobas.expression;
  *
  */
 public class JudgmentLinkItem {
-	private JudmentOperation relationship;
+	private JudgmentOperation relationship;
 
-	public final JudmentOperation getRelationship() {
+	public final JudgmentOperation getRelationship() {
 		return relationship;
 	}
 
-	public final void setRelationship(JudmentOperation operation) {
+	public final void setRelationship(JudgmentOperation operation) {
 		this.relationship = operation;
 	}
 
@@ -27,34 +27,34 @@ public class JudgmentLinkItem {
 		this.openBracket = openBracket;
 	}
 
-	private IValueOperator leftOperter;
+	private IValueOperator leftOperator;
 
-	public final IValueOperator getLeftOperter() {
-		return leftOperter;
+	public final IValueOperator getLeftOperator() {
+		return leftOperator;
 	}
 
-	public final void setLeftOperter(IValueOperator leftOperter) {
-		this.leftOperter = leftOperter;
+	public final void setLeftOperator(IValueOperator leftOperator) {
+		this.leftOperator = leftOperator;
 	}
 
-	private JudmentOperation operation;
+	private JudgmentOperation operation;
 
-	public final JudmentOperation getOperation() {
+	public final JudgmentOperation getOperation() {
 		return operation;
 	}
 
-	public final void setOperation(JudmentOperation operation) {
+	public final void setOperation(JudgmentOperation operation) {
 		this.operation = operation;
 	}
 
-	private IValueOperator rightOperter;
+	private IValueOperator rightOperator;
 
-	public final IValueOperator getRightOperter() {
-		return rightOperter;
+	public final IValueOperator getRightOperator() {
+		return rightOperator;
 	}
 
-	public final void setRightOperter(IValueOperator rightOperter) {
-		this.rightOperter = rightOperter;
+	public final void setRightOperator(IValueOperator rightOperator) {
+		this.rightOperator = rightOperator;
 	}
 
 	private int closeBracket = 0;
@@ -76,11 +76,11 @@ public class JudgmentLinkItem {
 		for (int i = 0; i < this.getOpenBracket(); i++) {
 			stringBuilder.append("(");
 		}
-		stringBuilder.append(this.getLeftOperter().toString());
+		stringBuilder.append(this.getLeftOperator().toString());
 		stringBuilder.append(" ");
 		stringBuilder.append(this.getOperation().toString());
 		stringBuilder.append(" ");
-		stringBuilder.append(this.getRightOperter().toString());
+		stringBuilder.append(this.getRightOperator().toString());
 		for (int i = 0; i < this.getCloseBracket(); i++) {
 			stringBuilder.append(")");
 		}

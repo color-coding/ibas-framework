@@ -13,7 +13,7 @@ public class JudgmentExpressionDouble extends JudgmentExpressionComparable<Doubl
 
 	}
 
-	public JudgmentExpressionDouble(double leftValue, JudmentOperation operation, double rightValue) {
+	public JudgmentExpressionDouble(double leftValue, JudgmentOperation operation, double rightValue) {
 		super(leftValue, operation, rightValue);
 	}
 
@@ -63,7 +63,7 @@ public class JudgmentExpressionDouble extends JudgmentExpressionComparable<Doubl
 
 	public final void setRightValue(String value) {
 		if (Strings.isNullOrEmpty(value)) {
-			if (this.getOperation() == JudmentOperation.IS_NULL || this.getOperation() == JudmentOperation.NOT_NULL) {
+			if (this.getOperation() == JudgmentOperation.IS_NULL || this.getOperation() == JudgmentOperation.NOT_NULL) {
 				value = Strings.VALUE_ZERO;
 			}
 		}

@@ -193,13 +193,13 @@ public class TestCommons extends TestCase {
 		try {
 			Strings.alphabetOf(31);
 			fail("Should throw IndexOutOfBoundsException for value < 32.");
-		} catch (IndexOutOfBoundsException e) {
+		} catch (IllegalArgumentException e) {
 			// expected
 		}
 		try {
 			Strings.alphabetOf(127);
 			fail("Should throw IndexOutOfBoundsException for value > 126.");
-		} catch (IndexOutOfBoundsException e) {
+		} catch (IllegalArgumentException e) {
 			// expected
 		}
 	}
@@ -252,13 +252,13 @@ public class TestCommons extends TestCase {
 	}
 
 	/**
-	 * 测试Decimals比较 覆盖：equals/graterThan/lessThan/isZero
+	 * 测试Decimals比较 覆盖：equals/greaterThan/lessThan/isZero
 	 */
 	public void testDecimalsComparison() {
 		assertTrue("Equals. ", Decimals.equals(Decimals.VALUE_ONE, Decimals.VALUE_ONE));
 		assertFalse("Not equals null. ", Decimals.equals(null, Decimals.VALUE_ONE));
-		assertTrue("GraterThan. ", Decimals.graterThan(Decimals.valueOf(2), Decimals.VALUE_ONE));
-		assertFalse("GraterThan null. ", Decimals.graterThan(null, Decimals.VALUE_ONE));
+		assertTrue("GreaterThan. ", Decimals.greaterThan(Decimals.valueOf(2), Decimals.VALUE_ONE));
+		assertFalse("GreaterThan null. ", Decimals.greaterThan(null, Decimals.VALUE_ONE));
 		assertTrue("LessThan. ", Decimals.lessThan(Decimals.VALUE_ONE, Decimals.valueOf(2)));
 		assertTrue("IsZero. ", Decimals.isZero(Decimals.VALUE_ZERO));
 		assertFalse("Not zero. ", Decimals.isZero(Decimals.VALUE_ONE));
@@ -299,15 +299,15 @@ public class TestCommons extends TestCase {
 	}
 
 	/**
-	 * 测试DateTimes比较 覆盖：equals/graterThan/lessThan、null处理
+	 * 测试DateTimes比较 覆盖：equals/greaterThan/lessThan、null处理
 	 */
 	public void testDateTimesComparison() {
 		DateTime a = DateTimes.valueOf(2025, 1, 1);
 		DateTime b = DateTimes.valueOf(2025, 6, 1);
 		assertTrue("Equals. ", DateTimes.equals(a, a));
 		assertFalse("Not equals null. ", DateTimes.equals(null, a));
-		assertTrue("GraterThan. ", DateTimes.graterThan(b, a));
-		assertFalse("GraterThan null. ", DateTimes.graterThan(null, a));
+		assertTrue("GreaterThan. ", DateTimes.greaterThan(b, a));
+		assertFalse("GreaterThan null. ", DateTimes.greaterThan(null, a));
 		assertTrue("LessThan. ", DateTimes.lessThan(a, b));
 		assertFalse("LessThan null. ", DateTimes.lessThan(null, b));
 	}

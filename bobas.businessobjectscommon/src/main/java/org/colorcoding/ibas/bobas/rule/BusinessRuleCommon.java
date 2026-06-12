@@ -47,8 +47,8 @@ public abstract class BusinessRuleCommon extends BusinessRule {
 			}
 			// 执行规则
 			if (MyConfiguration.isDebugMode()) {
-				Logger.log(MessageLevel.DEBUG, "rules: executing rule [%s - %s].", this.getClass().getName(),
-						this.getName());
+				Logger.log(MessageLevel.DEBUG, "rules: executing rule [%s@%s].", this.getClass().getName(),
+						Integer.toHexString(this.hashCode()));
 			}
 			this.execute(context);
 			// 赋值输出属性
@@ -77,8 +77,8 @@ public abstract class BusinessRuleCommon extends BusinessRule {
 				}
 			}
 		} catch (Exception e) {
-			throw new BusinessRuleException(I18N.prop("msg_bobas_bo_executing_business_rule_faild", bo, this.getName()),
-					e);
+			throw new BusinessRuleException(
+					I18N.prop("msg_bobas_bo_executing_business_rule_failed", bo, this.getName()), e);
 		}
 	}
 

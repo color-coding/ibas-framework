@@ -81,11 +81,11 @@ public class BORepositoryService extends BORepository4DB {
 					IPropertyInfo<?> propertyInfo = BOFactory.propertyInfos(boType)
 							.firstOrDefault(c -> c.getName().equalsIgnoreCase(cCriteria.getPropertyPath()));
 					if (propertyInfo == null) {
-						throw new Exception(I18N.prop("msg_bobas_not_found_bo_property", cCriteria.getPropertyPath()));
+						throw new RepositoryException(I18N.prop("msg_bobas_not_found_bo_property", cCriteria.getPropertyPath()));
 					}
 					if (propertyInfo.getValueType() == null
 							|| !IBusinessObjects.class.isAssignableFrom(propertyInfo.getValueType())) {
-						throw new Exception(I18N.prop("msg_bobas_invalid_argument", propertyInfo.getName()));
+						throw new RepositoryException(I18N.prop("msg_bobas_invalid_argument", propertyInfo.getName()));
 					}
 					Class<?> subType = null;
 					Object tmpObject = BOFactory.newInstance(boType);
@@ -96,7 +96,7 @@ public class BORepositoryService extends BORepository4DB {
 						}
 					}
 					if (subType == null || !IBusinessObject.class.isAssignableFrom(subType)) {
-						throw new Exception(I18N.prop("msg_bobas_invalid_argument", propertyInfo.getName()));
+						throw new RepositoryException(I18N.prop("msg_bobas_invalid_argument", propertyInfo.getName()));
 					}
 					IOperationResult<IBusinessObject> opRsltChilds = super.fetch(subType, cCriteria);
 					if (opRsltChilds.getError() != null) {
@@ -158,7 +158,7 @@ public class BORepositoryService extends BORepository4DB {
 							for (IPropertyInfo<?> pKey : BOFactory.propertyInfos(boType).where(c -> c.isPrimaryKey())) {
 								cKey = cKeys.firstOrDefault(c -> Strings.equals(pKey.getName(), c.getName()));
 								if (cKey == null) {
-									throw new Exception(I18N.prop("msg_bobas_invalid_argument", pKey.getName()));
+									throw new RepositoryException(I18N.prop("msg_bobas_invalid_argument", pKey.getName()));
 								}
 								condition = new Condition();
 								condition.setAlias(pKey);

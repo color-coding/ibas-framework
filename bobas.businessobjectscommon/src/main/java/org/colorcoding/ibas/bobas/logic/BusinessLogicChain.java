@@ -283,12 +283,12 @@ class BusinessLogicChain implements IBusinessLogicChain {
 							// 主体被修改，则查询副本
 							criteria = item.getCriteria();
 							if (criteria == null || criteria.getConditions().isEmpty()) {
-								throw new RepositoryException(I18N.prop("msg_bobas_invaild_criteria"));
+								throw new RepositoryException(I18N.prop("msg_bobas_invalid_criteria"));
 							}
 							criteria.setResultCount(1);
 							tmpDatas = this.getTransaction().fetch(item.getClass(), criteria);
 							if (tmpDatas == null || tmpDatas.length != 1) {
-								throw new RepositoryException(I18N.prop("msg_bobas_fetch_bo_copy_faild", item));
+								throw new RepositoryException(I18N.prop("msg_bobas_fetch_bo_copy_failed", item));
 							}
 							if (BOUtilities.isNewer(tmpDatas[0], item)) {
 								throw new RepositoryException(

@@ -67,9 +67,9 @@ public abstract class JudgmentLink {
 	 *
 	 * @param object 待判断的对象
 	 * @return true满足条件；false不满足；无条件时返回true
-	 * @throws JudmentOperationException 判断操作异常
+	 * @throws JudgmentOperationException 判断操作异常
 	 */
-	public boolean judge(Object object) throws JudmentOperationException {
+	public boolean judge(Object object) throws JudgmentOperationException {
 		// 无条件
 		if (this.getJudgmentItems() == null) {
 			return true;
@@ -77,14 +77,14 @@ public abstract class JudgmentLink {
 		// 设置所以条件的比较值
 		for (JudgmentLinkItem item : this.getJudgmentItems()) {
 			// 左值
-			if (item.getLeftOperter() instanceof IPropertyValueOperator) {
-				IPropertyValueOperator pOperter = (IPropertyValueOperator) item.getLeftOperter();
-				pOperter.setValue(object);
+			if (item.getLeftOperator() instanceof IPropertyValueOperator) {
+				IPropertyValueOperator pOperator = (IPropertyValueOperator) item.getLeftOperator();
+				pOperator.setValue(object);
 			}
 			// 右值
-			if (item.getRightOperter() instanceof IPropertyValueOperator) {
-				IPropertyValueOperator pOperter = (IPropertyValueOperator) item.getRightOperter();
-				pOperter.setValue(object);
+			if (item.getRightOperator() instanceof IPropertyValueOperator) {
+				IPropertyValueOperator pOperator = (IPropertyValueOperator) item.getRightOperator();
+				pOperator.setValue(object);
 			}
 		}
 		return this.judge(0, this.getJudgmentItems());
@@ -122,7 +122,7 @@ public abstract class JudgmentLink {
 		}
 		if (!done) {
 			// 未标记完成，存在不匹配的括号
-			throw new ExpressionException(I18N.prop("msg_bobas_invaild_judgment_link_bracket", bracket));
+			throw new ExpressionException(I18N.prop("msg_bobas_invalid_judgment_link_bracket", bracket));
 		}
 		return currentJudgmentItems.toArray(new JudgmentLinkItem[currentJudgmentItems.size()]);
 	}
@@ -133,9 +133,9 @@ public abstract class JudgmentLink {
 	 * @param bracket       当前括号层数
 	 * @param judgmentItems 当前判断条件数组
 	 * @return true满足条件；false不满足
-	 * @throws JudmentOperationException 判断操作异常
+	 * @throws JudgmentOperationException 判断操作异常
 	 */
-	protected boolean judge(int bracket, JudgmentLinkItem[] judgmentItems) throws JudmentOperationException {
+	protected boolean judge(int bracket, JudgmentLinkItem[] judgmentItems) throws JudgmentOperationException {
 		boolean currentValue = false;// 当前的结果
 		ExpressionFactory factory = ExpressionFactory.create();
 		IJudgmentExpression rootJudExp = null;
@@ -156,17 +156,17 @@ public abstract class JudgmentLink {
 				}
 			} else {
 				// 计算当前表达式
-				IJudgmentExpression currentJudExp = factory.createJudgment(jItem.getLeftOperter().getValueClass());
-				currentJudExp.setLeftValue(jItem.getLeftOperter().getValue());
+				IJudgmentExpression currentJudExp = factory.createJudgment(jItem.getLeftOperator().getValueClass());
+				currentJudExp.setLeftValue(jItem.getLeftOperator().getValue());
 				currentJudExp.setOperation(jItem.getOperation());
-				currentJudExp.setRightValue(jItem.getRightOperter().getValue());
+				currentJudExp.setRightValue(jItem.getRightOperator().getValue());
 				currentValue = currentJudExp.result();
 			}
 			if (rootJudExp == null) {
 				// 第一个表达式
 				rootJudExp = factory.createJudgment(Boolean.class);
 				rootJudExp.setLeftValue(currentValue);
-				rootJudExp.setOperation(JudmentOperation.AND);
+				rootJudExp.setOperation(JudgmentOperation.AND);
 				rootJudExp.setRightValue(true);
 			} else {
 				// 后续表达式

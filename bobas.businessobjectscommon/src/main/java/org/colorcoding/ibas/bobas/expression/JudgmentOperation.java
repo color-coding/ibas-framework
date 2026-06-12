@@ -11,7 +11,7 @@ import org.colorcoding.ibas.bobas.data.emConditionRelationship;
  * @author Niuren.Zhu
  *
  */
-public enum JudmentOperation {
+public enum JudgmentOperation {
 	/**
 	 * 等于
 	 */
@@ -23,7 +23,7 @@ public enum JudmentOperation {
 	/**
 	 * 大于
 	 */
-	GRATER_THAN,
+	GREATER_THAN,
 	/**
 	 * 小于
 	 */
@@ -31,7 +31,7 @@ public enum JudmentOperation {
 	/**
 	 * 大于等于
 	 */
-	GRATER_EQUAL,
+	GREATER_EQUAL,
 	/**
 	 * 小于等于
 	 */
@@ -85,118 +85,118 @@ public enum JudmentOperation {
 	 */
 	OR;
 
-	public static JudmentOperation valueOf(int value) {
-		JudmentOperation[] ops = values();
+	public static JudgmentOperation valueOf(int value) {
+		JudgmentOperation[] ops = values();
 		if (value < 0 || value >= ops.length) {
-			throw new JudmentOperationException(
+			throw new ExpressionException(
 					String.format("invalid operation value: %d, valid range [0, %d]", value, ops.length - 1));
 		}
 		return ops[value];
 	}
 
-	public static JudmentOperation valueOf(String value, boolean ignoreCase) {
+	public static JudgmentOperation valueOf(String value, boolean ignoreCase) {
 		if (ignoreCase) {
-			for (Object item : JudmentOperation.class.getEnumConstants()) {
+			for (Object item : JudgmentOperation.class.getEnumConstants()) {
 				if (item.toString().equalsIgnoreCase(value)) {
-					return (JudmentOperation) item;
+					return (JudgmentOperation) item;
 				}
 			}
 		}
-		return JudmentOperation.valueOf(value);
+		return JudgmentOperation.valueOf(value);
 	}
 
-	public static JudmentOperation valueOf(ConditionOperation value) {
+	public static JudgmentOperation valueOf(ConditionOperation value) {
 		if (value == null) {
 			return null;
 		}
 		if (value == ConditionOperation.CONTAIN) {
-			return JudmentOperation.CONTAIN;
+			return JudgmentOperation.CONTAIN;
 		} else if (value == ConditionOperation.NOT_CONTAIN) {
-			return JudmentOperation.NOT_CONTAIN;
+			return JudgmentOperation.NOT_CONTAIN;
 		} else if (value == ConditionOperation.EQUAL) {
-			return JudmentOperation.EQUAL;
+			return JudgmentOperation.EQUAL;
 		} else if (value == ConditionOperation.NOT_EQUAL) {
-			return JudmentOperation.NOT_EQUAL;
-		} else if (value == ConditionOperation.GRATER_EQUAL) {
-			return JudmentOperation.GRATER_EQUAL;
-		} else if (value == ConditionOperation.GRATER_THAN) {
-			return JudmentOperation.GRATER_THAN;
+			return JudgmentOperation.NOT_EQUAL;
+		} else if (value == ConditionOperation.GREATER_EQUAL) {
+			return JudgmentOperation.GREATER_EQUAL;
+		} else if (value == ConditionOperation.GREATER_THAN) {
+			return JudgmentOperation.GREATER_THAN;
 		} else if (value == ConditionOperation.LESS_EQUAL) {
-			return JudmentOperation.LESS_EQUAL;
+			return JudgmentOperation.LESS_EQUAL;
 		} else if (value == ConditionOperation.LESS_THAN) {
-			return JudmentOperation.LESS_THAN;
+			return JudgmentOperation.LESS_THAN;
 		} else if (value == ConditionOperation.START) {
-			return JudmentOperation.BEGIN_WITH;
+			return JudgmentOperation.BEGIN_WITH;
 		} else if (value == ConditionOperation.END) {
-			return JudmentOperation.END_WITH;
+			return JudgmentOperation.END_WITH;
 		} else if (value == ConditionOperation.IS_NULL) {
-			return JudmentOperation.IS_NULL;
+			return JudgmentOperation.IS_NULL;
 		} else if (value == ConditionOperation.NOT_NULL) {
-			return JudmentOperation.NOT_NULL;
+			return JudgmentOperation.NOT_NULL;
 		} else if (value == ConditionOperation.IN) {
-			return JudmentOperation.IN;
+			return JudgmentOperation.IN;
 		} else if (value == ConditionOperation.NOT_IN) {
-			return JudmentOperation.NOT_IN;
+			return JudgmentOperation.NOT_IN;
 		}
 		return null;
 	}
 
-	public static JudmentOperation valueOf(ConditionRelationship value) {
+	public static JudgmentOperation valueOf(ConditionRelationship value) {
 		if (value == null) {
 			return null;
 		}
 		if (value == ConditionRelationship.AND) {
-			return JudmentOperation.AND;
+			return JudgmentOperation.AND;
 		} else if (value == ConditionRelationship.OR) {
-			return JudmentOperation.OR;
+			return JudgmentOperation.OR;
 		}
 		return null;
 	}
 
-	public static JudmentOperation valueOf(emConditionOperation value) {
+	public static JudgmentOperation valueOf(emConditionOperation value) {
 		if (value == null) {
 			return null;
 		}
 		if (value == emConditionOperation.CONTAIN) {
-			return JudmentOperation.CONTAIN;
+			return JudgmentOperation.CONTAIN;
 		} else if (value == emConditionOperation.NOT_CONTAIN) {
-			return JudmentOperation.NOT_CONTAIN;
+			return JudgmentOperation.NOT_CONTAIN;
 		} else if (value == emConditionOperation.EQUAL) {
-			return JudmentOperation.EQUAL;
+			return JudgmentOperation.EQUAL;
 		} else if (value == emConditionOperation.NOT_EQUAL) {
-			return JudmentOperation.NOT_EQUAL;
-		} else if (value == emConditionOperation.GRATER_EQUAL) {
-			return JudmentOperation.GRATER_EQUAL;
-		} else if (value == emConditionOperation.GRATER_THAN) {
-			return JudmentOperation.GRATER_THAN;
+			return JudgmentOperation.NOT_EQUAL;
+		} else if (value == emConditionOperation.GREATER_EQUAL) {
+			return JudgmentOperation.GREATER_EQUAL;
+		} else if (value == emConditionOperation.GREATER_THAN) {
+			return JudgmentOperation.GREATER_THAN;
 		} else if (value == emConditionOperation.LESS_EQUAL) {
-			return JudmentOperation.LESS_EQUAL;
+			return JudgmentOperation.LESS_EQUAL;
 		} else if (value == emConditionOperation.LESS_THAN) {
-			return JudmentOperation.LESS_THAN;
+			return JudgmentOperation.LESS_THAN;
 		} else if (value == emConditionOperation.BEGIN_WITH) {
-			return JudmentOperation.BEGIN_WITH;
+			return JudgmentOperation.BEGIN_WITH;
 		} else if (value == emConditionOperation.END_WITH) {
-			return JudmentOperation.END_WITH;
+			return JudgmentOperation.END_WITH;
 		} else if (value == emConditionOperation.NOT_BEGIN_WITH) {
-			return JudmentOperation.NOT_BEGIN_WITH;
+			return JudgmentOperation.NOT_BEGIN_WITH;
 		} else if (value == emConditionOperation.NOT_END_WITH) {
-			return JudmentOperation.NOT_END_WITH;
+			return JudgmentOperation.NOT_END_WITH;
 		} else if (value == emConditionOperation.IN) {
-			return JudmentOperation.IN;
+			return JudgmentOperation.IN;
 		} else if (value == emConditionOperation.NOT_IN) {
-			return JudmentOperation.NOT_IN;
+			return JudgmentOperation.NOT_IN;
 		}
 		return null;
 	}
 
-	public static JudmentOperation valueOf(emConditionRelationship value) {
+	public static JudgmentOperation valueOf(emConditionRelationship value) {
 		if (value == null) {
 			return null;
 		}
 		if (value == emConditionRelationship.AND) {
-			return JudmentOperation.AND;
+			return JudgmentOperation.AND;
 		} else if (value == emConditionRelationship.OR) {
-			return JudmentOperation.OR;
+			return JudgmentOperation.OR;
 		}
 		return null;
 	}

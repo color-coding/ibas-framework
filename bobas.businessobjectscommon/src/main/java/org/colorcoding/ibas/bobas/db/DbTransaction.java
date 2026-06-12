@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
-import java.util.function.Supplier;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.BOFactory;
@@ -37,16 +36,17 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.expression.BOJudgmentLinkCondition;
-import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
+import org.colorcoding.ibas.bobas.expression.JudgmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.organization.IUser;
-import org.colorcoding.ibas.bobas.repository.IUserGeter;
+import org.colorcoding.ibas.bobas.organization.OrganizationFactory;
+import org.colorcoding.ibas.bobas.repository.IUserAware;
 import org.colorcoding.ibas.bobas.repository.RepositoryException;
 import org.colorcoding.ibas.bobas.repository.Transaction;
 
-public abstract class DbTransaction extends Transaction implements IUserGeter {
+public class DbTransaction extends Transaction implements IUserAware {
 
 	public DbTransaction(Connection connection) {
 		Objects.requireNonNull(connection);
@@ -80,7 +80,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 
 	protected final synchronized Connection getConnection() throws SQLException {
 		if (this.connection == null) {
-			throw new SQLException(I18N.prop("msg_bobas_invaild_database_connection"));
+			throw new SQLException(I18N.prop("msg_bobas_invalid_database_connection"));
 		}
 		return connection;
 	}
@@ -250,7 +250,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 		} catch (Exception e) {
 			if (boType != null && e instanceof SQLException) {
 				throw new RepositoryException(
-						I18N.prop("msg_bobas_to_fetch_bo_data_faild", boType.getSimpleName(), e.getMessage()), e);
+						I18N.prop("msg_bobas_to_fetch_bo_data_failed", boType.getSimpleName(), e.getMessage()), e);
 			}
 			throw new RepositoryException(e);
 		}
@@ -823,7 +823,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 									// 主键值
 									statement.setString(5, valuesBuilder.toString());
 									// 操作用户
-									if (!DbTransaction.this.getAdapter().isNoUserTansactionSP()) {
+									if (!DbTransaction.this.getAdapter().isNoUserTransactionSP()) {
 										IUser user = DbTransaction.this.getUser();
 										if (user != null) {
 											statement.setInt(6, user.getId());
@@ -925,7 +925,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 				}
 				if (boType != null && (e instanceof SQLException || e instanceof TransactionException)) {
 					throw new RepositoryException(
-							I18N.prop("msg_bobas_to_save_bo_data_faild", boType.getSimpleName(), e.getMessage()), e);
+							I18N.prop("msg_bobas_to_save_bo_data_failed", boType.getSimpleName(), e.getMessage()), e);
 				}
 				throw e;
 			} finally {
@@ -1052,7 +1052,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 		} catch (Exception e) {
 			if (boType != null && e instanceof SQLException) {
 				throw new RepositoryException(
-						I18N.prop("msg_bobas_to_fetch_bo_data_faild", boType.getSimpleName(), e.getMessage()), e);
+						I18N.prop("msg_bobas_to_fetch_bo_data_failed", boType.getSimpleName(), e.getMessage()), e);
 			}
 			throw new RepositoryException(e);
 		}
@@ -1118,7 +1118,7 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 				}
 			};
 			return BOUtilities.fetch(iterator, criteria).toArray((T[]) Array.newInstance(boType, 0));
-		} catch (JudmentOperationException e) {
+		} catch (JudgmentOperationException e) {
 			throw new RepositoryException(e);
 		}
 	}
@@ -1128,9 +1128,22 @@ public abstract class DbTransaction extends Transaction implements IUserGeter {
 		this.connection = null;
 		this.adapter = null;
 		this.cacheDatas = null;
+		this.currentUser = null;
 		super.finalize();
 	}
 
+	private volatile IUser currentUser;
+
 	@Override
-	public abstract Supplier<IUser> userSupplier();
+	public IUser getUser() {
+		if (this.currentUser == null) {
+			return OrganizationFactory.UNKNOWN_USER;
+		}
+		return this.currentUser;
+	}
+
+	@Override
+	public void setUser(IUser user) {
+		this.currentUser = user;
+	}
 }

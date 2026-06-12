@@ -45,4 +45,11 @@ public interface IDataTable {
 	 * @return 行集合
 	 */
 	IDataTableRows getRows();
+
+	/**
+	 * 预分配行容量，减少扩容次数
+	 *
+	 * @param rowCount 预期行数
+	 */
+	void ensureCapacity(int rowCount);
 }

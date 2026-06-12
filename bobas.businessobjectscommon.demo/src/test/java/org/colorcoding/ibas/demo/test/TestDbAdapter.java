@@ -16,7 +16,7 @@ import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.db.DbAdapter;
 import org.colorcoding.ibas.bobas.db.DbField;
-import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.db.DataType;
 import org.colorcoding.ibas.bobas.db.SqlPreparedStatement;
 import org.colorcoding.ibas.bobas.db.SqlStoredProcedure;
 import org.colorcoding.ibas.demo.bo.salesorder.SalesOrder;
@@ -64,7 +64,7 @@ public class TestDbAdapter extends TestCase {
 		condition.setRelationship(ConditionRelationship.OR);
 		condition = criteria.getConditions().create();
 		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
-		condition.setOperation(ConditionOperation.GRATER_EQUAL);
+		condition.setOperation(ConditionOperation.GREATER_EQUAL);
 		condition.setValue(100);
 		condition = criteria.getConditions().create();
 		condition.setAlias(SalesOrder.PROPERTY_DOCUMENTTOTAL.getName());
@@ -250,12 +250,12 @@ public class TestDbAdapter extends TestCase {
 		System.out.println(adapter.getClass().getName().substring(0, adapter.getClass().getName().lastIndexOf(".")));
 
 		SqlStoredProcedure sp = new SqlStoredProcedure("CC_SP_SALESORDER_NOTIFY");
-		sp.setObject("ObjectType", "CC_TT_SALESORDER", DbFieldType.ALPHANUMERIC);
-		sp.setObject("TransType", emDocumentStatus.RELEASED, DbFieldType.ALPHANUMERIC);
-		sp.setObject("DocEntry", 2025000001, DbFieldType.NUMERIC);
-		sp.setObject("DocTotal", Decimals.valueOf("199.99"), DbFieldType.DECIMAL);
-		sp.setObject("DocDate", DateTimes.valueOf("2025-06-01"), DbFieldType.DATE);
-		sp.setObject("Remarks", null, DbFieldType.ALPHANUMERIC);
+		sp.setObject("ObjectType", "CC_TT_SALESORDER", DataType.ALPHANUMERIC);
+		sp.setObject("TransType", emDocumentStatus.RELEASED, DataType.ALPHANUMERIC);
+		sp.setObject("DocEntry", 2025000001, DataType.NUMERIC);
+		sp.setObject("DocTotal", Decimals.valueOf("199.99"), DataType.DECIMAL);
+		sp.setObject("DocDate", DateTimes.valueOf("2025-06-01"), DataType.DATE);
+		sp.setObject("Remarks", null, DataType.ALPHANUMERIC);
 		System.out.println("pseudo code:");
 		System.out.println(sp.getContent());
 		System.out.println("real code:");
@@ -267,12 +267,12 @@ public class TestDbAdapter extends TestCase {
 		System.out.println(adapter.getClass().getName().substring(0, adapter.getClass().getName().lastIndexOf(".")));
 
 		sp = new SqlStoredProcedure("CC_SP_SALESORDER_NOTIFY");
-		sp.setObject("ObjectType", "CC_TT_SALESORDER", DbFieldType.ALPHANUMERIC);
-		sp.setObject("TransType", emDocumentStatus.RELEASED, DbFieldType.ALPHANUMERIC);
-		sp.setObject("DocEntry", 2025000001, DbFieldType.NUMERIC);
-		sp.setObject("DocTotal", Decimals.valueOf("199.99"), DbFieldType.DECIMAL);
-		sp.setObject("DocDate", DateTimes.valueOf("2025-06-01"), DbFieldType.DATE);
-		sp.setObject("Remarks", null, DbFieldType.ALPHANUMERIC);
+		sp.setObject("ObjectType", "CC_TT_SALESORDER", DataType.ALPHANUMERIC);
+		sp.setObject("TransType", emDocumentStatus.RELEASED, DataType.ALPHANUMERIC);
+		sp.setObject("DocEntry", 2025000001, DataType.NUMERIC);
+		sp.setObject("DocTotal", Decimals.valueOf("199.99"), DataType.DECIMAL);
+		sp.setObject("DocDate", DateTimes.valueOf("2025-06-01"), DataType.DATE);
+		sp.setObject("Remarks", null, DataType.ALPHANUMERIC);
 		System.out.println("pseudo code:");
 		System.out.println(sp.getContent());
 		System.out.println("real code:");
@@ -282,8 +282,8 @@ public class TestDbAdapter extends TestCase {
 		// 含特殊字符的参数值（单引号、中文）
 		adapter = new org.colorcoding.ibas.bobas.db.mssql.DbAdapter();
 		sp = new SqlStoredProcedure("CC_SP_TEST_SPECIAL");
-		sp.setObject("Name", "宇宙无敌'影业", DbFieldType.ALPHANUMERIC);
-		sp.setObject("Code", "C'001", DbFieldType.ALPHANUMERIC);
+		sp.setObject("Name", "宇宙无敌'影业", DataType.ALPHANUMERIC);
+		sp.setObject("Code", "C'001", DataType.ALPHANUMERIC);
 		System.out.println("special chars (MSSQL):");
 		System.out.println(adapter.parsing(sp));
 	}

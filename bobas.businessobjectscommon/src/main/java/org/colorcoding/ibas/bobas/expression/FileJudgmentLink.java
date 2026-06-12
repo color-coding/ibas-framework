@@ -149,7 +149,7 @@ public class FileJudgmentLink extends JudgmentLink {
 		};
 	}
 
-	public boolean judge(File file) throws JudmentOperationException {
+	public boolean judge(File file) throws JudgmentOperationException {
 		return super.judge(file);
 	}
 
@@ -169,23 +169,23 @@ public class FileJudgmentLink extends JudgmentLink {
 			jItem.setOpenBracket(item.getBracketOpen());
 			jItem.setCloseBracket(item.getBracketClose());
 			if (item.getRelationship() == ConditionRelationship.NONE) {
-				jItem.setRelationship(JudmentOperation.AND);
+				jItem.setRelationship(JudgmentOperation.AND);
 			} else {
-				jItem.setRelationship(JudmentOperation.valueOf(item.getRelationship()));
+				jItem.setRelationship(JudgmentOperation.valueOf(item.getRelationship()));
 			}
-			jItem.setOperation(JudmentOperation.valueOf(item.getOperation()));
+			jItem.setOperation(JudgmentOperation.valueOf(item.getOperation()));
 			// 左边取值
 			IPropertyValueOperator propertyValueOperator = this.createPropertyValueOperator();
 			propertyValueOperator.setPropertyName(item.getAlias());
-			jItem.setLeftOperter(propertyValueOperator);
+			jItem.setLeftOperator(propertyValueOperator);
 			// 右边取值
 			IValueOperator ValueOperator = this.createValueOperator();
 			ValueOperator.setValue(item.getValue());
-			jItem.setRightOperter(ValueOperator);
+			jItem.setRightOperator(ValueOperator);
 			jLinkItems.add(jItem);
 		}
 		if (jLinkItems.isEmpty()) {
-			throw new ExpressionException(I18N.prop("msg_bobas_invaild_judgment_link_conditions"));
+			throw new ExpressionException(I18N.prop("msg_bobas_invalid_judgment_link_conditions"));
 		}
 		super.setJudgmentItems(jLinkItems.toArray(new JudgmentLinkItem[jLinkItems.size()]));
 	}

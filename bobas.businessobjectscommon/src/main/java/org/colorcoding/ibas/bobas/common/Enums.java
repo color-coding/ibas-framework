@@ -17,13 +17,13 @@ public class Enums {
 	/**
 	 * 类型默认值
 	 *
-	 * @param enumType 枚举类型；不允许为null，非枚举抛ClassCastException
+	 * @param enumType 枚举类型；不允许为null，非枚举抛IllegalArgumentException
 	 * @return 枚举的第一个值（缓存）
 	 */
 	public static Enum<?> defaultValue(Class<?> enumType) {
 		Objects.requireNonNull(enumType);
 		if (!enumType.isEnum()) {
-			throw new ClassCastException("is not Enum.");
+			throw new IllegalArgumentException(Strings.format("type [%s] is not Enum.", enumType.getName()));
 		}
 		if (!DEFAULT_VALUES.containsKey(enumType)) {
 			// 获取枚举的第一个值
@@ -124,13 +124,13 @@ public class Enums {
 	/**
 	 * 转换枚举类型为KeyValue数组
 	 *
-	 * @param enumType 枚举类型；不允许为null，非枚举抛ClassCastException
+	 * @param enumType 枚举类型；不允许为null，非枚举抛IllegalArgumentException
 	 * @return KeyValue数组（key=枚举名，value=ordinal）
 	 */
 	public static KeyValue[] toKeyValues(Class<?> enumType) {
 		Objects.requireNonNull(enumType);
 		if (!enumType.isEnum()) {
-			throw new ClassCastException("is not Enum.");
+			throw new IllegalArgumentException(Strings.format("type [%s] is not Enum.", enumType.getName()));
 		}
 		Object[] constants = enumType.getEnumConstants();
 		ArrayList<KeyValue> values = new ArrayList<>();

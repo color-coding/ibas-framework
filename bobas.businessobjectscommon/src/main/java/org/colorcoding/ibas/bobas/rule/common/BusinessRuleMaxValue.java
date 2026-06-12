@@ -5,6 +5,7 @@ import java.util.Map;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
+import org.colorcoding.ibas.bobas.rule.BusinessRuleException;
 
 /**
  * 业务规则-最大值检查
@@ -60,11 +61,11 @@ public class BusinessRuleMaxValue<T extends Comparable<?>> extends BusinessRuleC
 		Comparable<T> maxValue = (Comparable<T>) this.getMaxValue();
 		for (Map.Entry<IPropertyInfo<?>, Object> entry : context.getInputValues().entrySet()) {
 			if (entry.getValue() == null) {
-				throw new Exception(I18N.prop("msg_bobas_business_rule_required_error", entry.getKey().getName()));
+				throw new BusinessRuleException(I18N.prop("msg_bobas_business_rule_required_error", entry.getKey().getName()));
 			}
 			value = (T) entry.getValue();
 			if (maxValue.compareTo(value) < 0) {
-				throw new Exception(I18N.prop("msg_bobas_business_rule_max_value_error", entry.getKey().getName(),
+				throw new BusinessRuleException(I18N.prop("msg_bobas_business_rule_max_value_error", entry.getKey().getName(),
 						value, this.getMaxValue()));
 			}
 		}

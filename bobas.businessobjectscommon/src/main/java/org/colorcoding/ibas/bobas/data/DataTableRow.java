@@ -30,25 +30,59 @@ public class DataTableRow extends Serializable implements IDataTableRow {
 		if (this.values == null && this.columns != null) {
 			this.values = new Object[this.getColumns().size()];
 		}
+		// 反序列化后：列定义已就绪，将字符串值转换为目标类型
+		this.convertValues();
+	}
+
+	/**
+	 * 将values中的字符串值按列类型转换为目标类型（修复反序列化类型丢失问题）
+	 */
+	private void convertValues() {
+		if (this.values == null || this.columns == null) {
+			return;
+		}
+		for (int i = 0; i < this.values.length && i < this.columns.size(); i++) {
+			Object value = this.values[i];
+			if (value == null) {
+				continue;
+			}
+			IDataTableColumn column = this.columns.get(i);
+			if (column == null || column.getDataType() == null) {
+				continue;
+			}
+			// 字符串值且目标类型非String时，执行类型转换
+			if (value.getClass() == String.class && column.getDataType() != String.class) {
+				try {
+					this.values[i] = DataConvert.convert(column.getDataType(), value);
+				} catch (Exception e) {
+					// 转换失败保留原值
+				}
+			}
+			// 空字符串转数值类型时设为null
+			if (value.getClass() == String.class && Strings.isNullOrEmpty((String) value)
+					&& Number.class.isAssignableFrom(column.getDataType())) {
+				this.values[i] = null;
+			}
+		}
 	}
 
 	@XmlElementWrapper(name = "Cells")
 	@XmlElement(name = "Cell", type = String.class, required = true)
-	private String[] getValueProxys() {
+	private String[] getValueProxies() {
 		String[] values = new String[this.values.length];
 		for (int i = 0; i < this.values.length; i++) {
 			Object value = this.values[i];
 			if (value != null) {
 				values[i] = Strings.valueOf(value);
 			} else {
-				values[i] = new String();
+				values[i] = Strings.VALUE_EMPTY;
 			}
 		}
 		return values;
 	}
 
 	@SuppressWarnings("unused")
-	private void setValueProxys(String[] values) {
+	private void setValueProxies(String[] values) {
 		if (values != null) {
 			this.values = new Object[values.length];
 			for (int i = 0; i < this.values.length; i++) {
@@ -68,11 +102,16 @@ public class DataTableRow extends Serializable implements IDataTableRow {
 	@Override
 	public void setValue(int col, Object value) {
 		IDataTableColumn column = this.getColumns().get(col);
-		if (column.getDataType() != String.class && String.class.isInstance(value)) {
-			this.values[col] = column.getDataType().cast(value);
-		} else {
-			this.values[col] = value;
+		if (column != null && column.getDataType() != null
+				&& column.getDataType() != String.class && value instanceof String) {
+			// 使用DataConvert进行类型转换（修复Class.cast不执行实际转换的Bug）
+			try {
+				value = DataConvert.convert(column.getDataType(), value);
+			} catch (Exception e) {
+				// 转换失败保留原值
+			}
 		}
+		this.values[col] = value;
 	}
 
 	private int getColumnIndex(String col) {
@@ -86,9 +125,9 @@ public class DataTableRow extends Serializable implements IDataTableRow {
 	}
 
 	private int getColumnIndex(IDataTableColumn col) {
+		// 引用比较，直接遍历（通常列数较少，无需额外优化）
 		for (int i = 0; i < this.getColumns().size(); i++) {
-			IDataTableColumn column = this.getColumns().get(i);
-			if (column == col) {
+			if (this.getColumns().get(i) == col) {
 				return i;
 			}
 		}

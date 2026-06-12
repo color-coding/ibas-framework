@@ -72,14 +72,14 @@ public interface IUser extends IBOSimple {
 	 * 
 	 * @return 值
 	 */
-	emYesNo getSupperUser();
+	emYesNo getSuperUser();
 
 	/**
 	 * 设置-超级用户
 	 * 
 	 * @param value 值
 	 */
-	void setSupperUser(emYesNo value);
+	void setSuperUser(emYesNo value);
 
 	/**
 	 * 获取-电子邮件地址

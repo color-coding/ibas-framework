@@ -19,7 +19,7 @@ import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.expression.FileJudgmentLink;
-import org.colorcoding.ibas.bobas.expression.JudmentOperationException;
+import org.colorcoding.ibas.bobas.expression.JudgmentOperationException;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
 
@@ -159,7 +159,7 @@ public class LocalFileTransaction extends FileTransaction {
 		File folder = Files.valueOf(workFolder);
 		// 访问路径不在允许范围
 		if (!folder.getPath().startsWith(this.getRepositoryFolder())) {
-			throw new SecurityException(folder.getPath());
+			throw new IllegalStateException(Strings.format("path [%s] is out of repository scope.", folder.getPath()));
 		}
 		if (!folder.isDirectory() || !folder.exists()) {
 			Logger.log(MessageLevel.WARN, "repository: not found folder [%s].", workFolder);
@@ -266,7 +266,7 @@ public class LocalFileTransaction extends FileTransaction {
 						if (criteria.getResultCount() > 0 && files.size() >= criteria.getResultCount()) {
 							return;
 						}
-					} catch (JudmentOperationException e) {
+					} catch (JudgmentOperationException e) {
 						Logger.log(e);
 					}
 				}
@@ -313,7 +313,7 @@ public class LocalFileTransaction extends FileTransaction {
 		File file = Files.valueOf(fileData.getLocation());
 		// 访问路径不在允许范围
 		if (!file.getPath().startsWith(this.getRepositoryFolder())) {
-			throw new SecurityException(file.getPath());
+			throw new IllegalStateException(Strings.format("path [%s] is out of repository scope.", file.getPath()));
 		}
 		Files.writeTo(fileData.getStream(), file);
 		return new FileItem(file);
@@ -324,7 +324,7 @@ public class LocalFileTransaction extends FileTransaction {
 		File file = Files.valueOf(data.getPath());
 		// 访问路径不在允许范围
 		if (!file.getPath().startsWith(this.getRepositoryFolder())) {
-			throw new SecurityException(file.getPath());
+			throw new IllegalStateException(Strings.format("path [%s] is out of repository scope.", file.getPath()));
 		}
 		// 不允许删除文件夹
 		if (file.exists() && file.isFile()) {

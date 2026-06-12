@@ -144,7 +144,7 @@ public class BOInstanceLogService extends BusinessLogic<IBOInstanceLogContract, 
 		boLogst.setModifyDate(DateTimes.today());
 		boLogst.setModifyTime(DateTimes.time());
 		boLogst.setModifyUser(this.getUser().getId());
-		boLogst.setTransationId(this.getTransaction().getId());
+		boLogst.setTransactionId(this.getTransaction().getId());
 		boLogst.setContent(BOUtilities.toJsonString(contract.getHost()));
 		boLogst.setSavable(true);
 	}

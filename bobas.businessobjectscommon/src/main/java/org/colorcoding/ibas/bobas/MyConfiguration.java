@@ -76,7 +76,7 @@ public class MyConfiguration extends Configuration {
 	/**
 	 * 配置项目-禁用控制台消息（Debug模式下有效）
 	 */
-	public final static String CONFIG_ITEM_DISABLE_CONSOLE_MESSAGES = "disableConsoleMessage";
+	public final static String CONFIG_ITEM_DISABLE_CONSOLE_MESSAGES = "DisableConsoleMessage";
 
 	/**
 	 * 配置项目-配置方式
@@ -174,7 +174,7 @@ public class MyConfiguration extends Configuration {
 	/**
 	 * 配置项目-数据库无用户事务通知
 	 */
-	public final static String CONFIG_ITEM_DB_NO_USER_TANSACTION_SP = "DbNoUserTansactionSP";
+	public final static String CONFIG_ITEM_DB_NO_USER_TRANSACTION_SP = "DbNoUserTransactionSP";
 	/**
 	 * 配置项目-数据库批量查询子项
 	 */

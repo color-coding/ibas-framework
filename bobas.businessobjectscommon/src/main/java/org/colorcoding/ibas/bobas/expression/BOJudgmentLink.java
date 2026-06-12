@@ -34,9 +34,9 @@ public class BOJudgmentLink extends JudgmentLink {
 	 * 
 	 * @param bo 待判断的对象
 	 * @return true，满足条件；false，不满足
-	 * @throws JudmentOperationException
+	 * @throws JudgmentOperationException
 	 */
-	public boolean judge(IBusinessObject bo) throws JudmentOperationException {
+	public boolean judge(IBusinessObject bo) throws JudgmentOperationException {
 		// 无条件
 		if (this.getJudgmentItems() == null) {
 			return true;
@@ -45,12 +45,12 @@ public class BOJudgmentLink extends JudgmentLink {
 		// 设置所以条件的比较值
 		for (JudgmentLinkItem item : this.getJudgmentItems()) {
 			// 左值
-			if (item.getLeftOperter() instanceof IPropertyValueOperator) {
-				IPropertyValueOperator propertyOperator = (IPropertyValueOperator) item.getLeftOperter();
+			if (item.getLeftOperator() instanceof IPropertyValueOperator) {
+				IPropertyValueOperator propertyOperator = (IPropertyValueOperator) item.getLeftOperator();
 				propertyOperator.setValue(bo);
 				if (!Strings.isNullOrEmpty(propertyOperator.getPropertyName())
 						&& propertyOperator.getPropertyName().indexOf(".") > 0
-						&& item.getLeftOperter() instanceof FieldValueOperator) {
+						&& item.getLeftOperator() instanceof FieldValueOperator) {
 					try {
 						// 比较子判断
 						boolean result = this.judge(bo, item);
@@ -58,25 +58,25 @@ public class BOJudgmentLink extends JudgmentLink {
 						JudgmentLinkItem jItem = new JudgmentLinkItem();
 						jItem.setRelationship(item.getRelationship());
 						jItem.setOpenBracket(item.getOpenBracket());
-						jItem.setLeftOperter(this.createValueOperator());
-						jItem.getLeftOperter().setValue(true);
-						jItem.setOperation(JudmentOperation.EQUAL);
-						jItem.setRightOperter(this.createValueOperator());
-						jItem.getRightOperter().setValue(result);
+						jItem.setLeftOperator(this.createValueOperator());
+						jItem.getLeftOperator().setValue(true);
+						jItem.setOperation(JudgmentOperation.EQUAL);
+						jItem.setRightOperator(this.createValueOperator());
+						jItem.getRightOperator().setValue(result);
 						jItem.setCloseBracket(item.getCloseBracket());
 						jItems.add(jItem);
 						// 处理下一个
 						continue;
-					} catch (JudmentOperationException e) {
+					} catch (JudgmentOperationException e) {
 						throw e;
 					} catch (Exception e) {
-						throw new JudmentOperationException(e);
+						throw new ExpressionException(e);
 					}
 				}
 			}
 			// 右值
-			if (item.getRightOperter() instanceof IPropertyValueOperator) {
-				IPropertyValueOperator propertyOperator = (IPropertyValueOperator) item.getRightOperter();
+			if (item.getRightOperator() instanceof IPropertyValueOperator) {
+				IPropertyValueOperator propertyOperator = (IPropertyValueOperator) item.getRightOperator();
 				propertyOperator.setValue(bo);
 			}
 			jItems.add(item);
@@ -136,8 +136,8 @@ public class BOJudgmentLink extends JudgmentLink {
 
 	protected boolean judge(IBusinessObject bo, JudgmentLinkItem parent)
 			throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, JudmentOperationException {
-		String path = ((IPropertyValueOperator) parent.getLeftOperter()).getPropertyName();
+			InvocationTargetException, JudgmentOperationException {
+		String path = ((IPropertyValueOperator) parent.getLeftOperator()).getPropertyName();
 		if (path == null || path.isEmpty()) {
 			// 无属性
 			return false;
@@ -151,22 +151,22 @@ public class BOJudgmentLink extends JudgmentLink {
 		ArrayList<JudgmentLinkItem> jItems = new ArrayList<>();
 		for (Object item : values) {
 			JudgmentLinkItem jItem = new JudgmentLinkItem();
-			jItem.setRelationship(JudmentOperation.OR);
+			jItem.setRelationship(JudgmentOperation.OR);
 			// 左值
 			IPropertyValueOperator propertyValueOperator = this.createPropertyValueOperator();
 			propertyValueOperator.setPropertyName(property);
 			propertyValueOperator.setValue(item);
-			jItem.setLeftOperter(propertyValueOperator);
+			jItem.setLeftOperator(propertyValueOperator);
 			// 比较类型
 			jItem.setOperation(parent.getOperation());
 			// 获取右值，使用父项的运算结果避免藏数据
 			IValueOperator valueOperator = this.createValueOperator();
-			if (parent.getRightOperter() instanceof FieldValueOperator) {
-				parent.getRightOperter().setValue(item);
+			if (parent.getRightOperator() instanceof FieldValueOperator) {
+				parent.getRightOperator().setValue(item);
 			}
-			valueOperator.setValue(parent.getRightOperter().getValue());
+			valueOperator.setValue(parent.getRightOperator().getValue());
 			// 设置右值
-			jItem.setRightOperter(valueOperator);
+			jItem.setRightOperator(valueOperator);
 			jItems.add(jItem);
 		}
 		return this.judge(0, jItems.toArray(new JudgmentLinkItem[jItems.size()]));

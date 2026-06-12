@@ -46,12 +46,15 @@ public class DataTableRows extends ArrayList<IDataTableRow> implements IDataTabl
 	@Override
 	public boolean add(IDataTableRow item) {
 		boolean done = super.add(item);
-		if (done) {
-			if (item instanceof DataTableRow) {
-				DataTableRow row = (DataTableRow) item;
-				row.setColumns(this.getTable().getColumns());
-			}
+		if (done && item instanceof DataTableRow) {
+			DataTableRow row = (DataTableRow) item;
+			row.setColumns(this.getTable().getColumns());
 		}
 		return done;
+	}
+
+	@Override
+	public void ensureCapacity(int capacity) {
+		((java.util.ArrayList<?>) this).ensureCapacity(capacity);
 	}
 }

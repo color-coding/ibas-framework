@@ -9,7 +9,7 @@ import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
-import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.db.DataType;
 import org.colorcoding.ibas.bobas.db.MaxValue;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
@@ -36,9 +36,9 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 	}
 
 	@Override
-	public String castAs(DbFieldType type, String alias) {
+	public String castAs(DataType type, String alias) {
 		StringBuilder stringBuilder = new StringBuilder(64);
-		if (type == DbFieldType.ALPHANUMERIC) {
+		if (type == DataType.ALPHANUMERIC) {
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
 			stringBuilder.append(this.identifier());
@@ -49,7 +49,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			stringBuilder.append(" ");
 			stringBuilder.append("VARCHAR");
 			stringBuilder.append(")");
-		} else if (type == DbFieldType.DATE) {
+		} else if (type == DataType.DATE) {
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
 			stringBuilder.append(this.identifier());
@@ -60,7 +60,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			stringBuilder.append(" ");
 			stringBuilder.append("DATE");
 			stringBuilder.append(")");
-		} else if (type == DbFieldType.NUMERIC) {
+		} else if (type == DataType.NUMERIC) {
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
 			stringBuilder.append(this.identifier());
@@ -72,7 +72,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			stringBuilder.append("INTEGER");
 			stringBuilder.append(")");
 			return stringBuilder.toString();
-		} else if (type == DbFieldType.DECIMAL) {
+		} else if (type == DataType.DECIMAL) {
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
 			stringBuilder.append(this.identifier());

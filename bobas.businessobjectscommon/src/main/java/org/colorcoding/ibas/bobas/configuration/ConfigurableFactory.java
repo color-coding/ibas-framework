@@ -98,7 +98,7 @@ public abstract class ConfigurableFactory<T> {
 			T instance = this.newInstance(configValue, typeName);
 			return instance;
 		} catch (Exception e) {
-			throw new RuntimeException(I18N.prop("msg_bobas_configurable_factory_create_instance_faild", typeName), e);
+			throw new RuntimeException(I18N.prop("msg_bobas_configurable_factory_create_instance_failed", typeName), e);
 		}
 	}
 

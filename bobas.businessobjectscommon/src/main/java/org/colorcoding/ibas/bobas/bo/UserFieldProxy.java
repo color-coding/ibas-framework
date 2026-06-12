@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.DateTimes;
 import org.colorcoding.ibas.bobas.common.Strings;
-import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.db.DataType;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "UserFieldProxy", namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
@@ -37,12 +37,12 @@ public final class UserFieldProxy {
 	}
 
 	/**
-	 * 根据类型设置值类型（转换为DbFieldType字符串表示）
+	 * 根据类型设置值类型（转换为DataType字符串表示）
 	 *
 	 * @param valueType 值类型
 	 */
 	public final void setValueType(Class<?> valueType) {
-		this.setValueType(DbFieldType.valueOf(valueType).toString());
+		this.setValueType(DataType.valueOf(valueType).toString());
 	}
 
 	@XmlElement(name = "Value")

@@ -81,7 +81,7 @@ public class TestApprovals extends TestCase {
 		aStep.setOwner(leader);
 		ApprovalProcessStepCondition aCondition = new ApprovalProcessStepCondition();
 		aCondition.setPropertyName(SalesOrder.PROPERTY_DOCUMENTTOTAL.getName());
-		aCondition.setOperation(emConditionOperation.GRATER_EQUAL);
+		aCondition.setOperation(emConditionOperation.GREATER_EQUAL);
 		aCondition.setConditionValue("3000");
 		ApprovalProcessStepCondition bCondition = new ApprovalProcessStepCondition();
 		bCondition.setRelation(emConditionRelationship.AND);
@@ -96,7 +96,7 @@ public class TestApprovals extends TestCase {
 		aStep.setOwner(manager);
 		aCondition = new ApprovalProcessStepCondition();
 		aCondition.setPropertyName(SalesOrder.PROPERTY_DOCUMENTTOTAL.getName());
-		aCondition.setOperation(emConditionOperation.GRATER_EQUAL);
+		aCondition.setOperation(emConditionOperation.GREATER_EQUAL);
 		aCondition.setConditionValue("5000");
 		bCondition = new ApprovalProcessStepCondition();
 		bCondition.setRelation(emConditionRelationship.AND);
@@ -111,7 +111,7 @@ public class TestApprovals extends TestCase {
 		aStep.setOwner(boss);
 		aCondition = new ApprovalProcessStepCondition();
 		aCondition.setPropertyName(SalesOrder.PROPERTY_DOCUMENTTOTAL.getName());
-		aCondition.setOperation(emConditionOperation.GRATER_EQUAL);
+		aCondition.setOperation(emConditionOperation.GREATER_EQUAL);
 		aCondition.setConditionValue("10000");
 		aStep.setConditions(new IApprovalProcessStepCondition[] { aCondition });
 		aSteps.add(aStep);
@@ -197,7 +197,7 @@ public class TestApprovals extends TestCase {
 		step10.setOwner(leader);
 		ApprovalProcessStepCondition aCondition = new ApprovalProcessStepCondition();
 		aCondition.setPropertyName(SalesOrder.PROPERTY_DOCUMENTTOTAL.getName());
-		aCondition.setOperation(emConditionOperation.GRATER_EQUAL);
+		aCondition.setOperation(emConditionOperation.GREATER_EQUAL);
 		aCondition.setConditionValue("3000");
 		// 属性与属性比较
 		ApprovalProcessStepCondition bCondition = new ApprovalProcessStepCondition();
@@ -215,7 +215,7 @@ public class TestApprovals extends TestCase {
 		step20.setOwner(manager);
 		aCondition = new ApprovalProcessStepCondition();
 		aCondition.setPropertyName(SalesOrder.PROPERTY_DOCUMENTTOTAL.getName());
-		aCondition.setOperation(emConditionOperation.GRATER_EQUAL);
+		aCondition.setOperation(emConditionOperation.GREATER_EQUAL);
 		aCondition.setConditionValue("3000");
 		bCondition = new ApprovalProcessStepCondition();
 		bCondition.setRelation(emConditionRelationship.AND);
@@ -230,7 +230,7 @@ public class TestApprovals extends TestCase {
 		step30.setOwner(boss);
 		aCondition = new ApprovalProcessStepCondition();
 		aCondition.setPropertyName(SalesOrder.PROPERTY_DOCUMENTTOTAL.getName());
-		aCondition.setOperation(emConditionOperation.GRATER_EQUAL);
+		aCondition.setOperation(emConditionOperation.GREATER_EQUAL);
 		aCondition.setConditionValue("3000");
 		bCondition = new ApprovalProcessStepCondition();
 		bCondition.setRelation(emConditionRelationship.AND);

@@ -37,7 +37,7 @@ public class Strings {
 	/**
 	 * 根据字母表返回字符
 	 *
-	 * @param value ASCII码（0返回空字符串；范围[32,126]，越界抛IndexOutOfBoundsException）
+	 * @param value ASCII码（0返回空字符串；范围[32,126]，越界抛IllegalArgumentException）
 	 * @return 对应字符
 	 */
 	public static String alphabetOf(short value) {
@@ -45,7 +45,7 @@ public class Strings {
 			return VALUE_EMPTY;
 		}
 		if (value < 32 || value > 126) {
-			throw new IndexOutOfBoundsException();
+			throw new IllegalArgumentException(Strings.format("ascii value [%d] is out of range [32, 126].", value));
 		}
 		return ALPHABETS[value - 32];
 	}
@@ -650,5 +650,384 @@ public class Strings {
 		} catch (IOException e1) {
 			throw new SerializationException(e1);
 		}
+	}
+
+	// ==================== 判断 ====================
+
+	/**
+	 * 判断字符串是否为空白（null、空串或仅含空白字符）
+	 *
+	 * @param value 字符串
+	 * @return 为空白返回true
+	 */
+	public static boolean isBlank(String value) {
+		if (value == null || value.isEmpty()) {
+			return true;
+		}
+		for (int i = 0; i < value.length(); i++) {
+			if (!Character.isWhitespace(value.charAt(i))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * 判断字符串是否非空白
+	 *
+	 * @param value 字符串
+	 * @return 非空白返回true
+	 */
+	public static boolean isNotBlank(String value) {
+		return !isBlank(value);
+	}
+
+	/**
+	 * 判断字符串是否包含指定子串
+	 *
+	 * @param content 字符串；null返回false
+	 * @param value   子串；null返回false
+	 * @return 包含返回true
+	 */
+	public static boolean contains(String content, String value) {
+		if (content == null || value == null) {
+			return false;
+		}
+		return content.contains(value);
+	}
+
+	/**
+	 * 判断字符串是否包含指定子串（忽略大小写）
+	 *
+	 * @param content 字符串；null返回false
+	 * @param value   子串；null返回false
+	 * @return 包含返回true
+	 */
+	public static boolean containsIgnoreCase(String content, String value) {
+		if (content == null || value == null) {
+			return false;
+		}
+		return content.toUpperCase().contains(value.toUpperCase());
+	}
+
+	// ==================== 处理 ====================
+
+	/**
+	 * 去除两端空白；null安全版
+	 *
+	 * @param value 字符串
+	 * @return 去空白结果；null返回空字符串
+	 */
+	public static String trimToEmpty(String value) {
+		if (value == null) {
+			return VALUE_EMPTY;
+		}
+		return value.trim();
+	}
+
+	/**
+	 * 去除两端空白；null返回null
+	 *
+	 * @param value 字符串
+	 * @return 去空白结果；空白返回null
+	 */
+	public static String trimToNull(String value) {
+		String result = trim(value);
+		if (result == null || result.isEmpty()) {
+			return null;
+		}
+		return result;
+	}
+
+	/**
+	 * 去除前缀；存在则去除，否则原样返回
+	 *
+	 * @param content 字符串；null返回null
+	 * @param prefix  前缀；空值不处理
+	 * @return 去除前缀后的字符串
+	 */
+	public static String removeStart(String content, String prefix) {
+		if (isNullOrEmpty(content) || isNullOrEmpty(prefix)) {
+			return content;
+		}
+		if (content.startsWith(prefix)) {
+			return content.substring(prefix.length());
+		}
+		return content;
+	}
+
+	/**
+	 * 去除后缀；存在则去除，否则原样返回
+	 *
+	 * @param content 字符串；null返回null
+	 * @param suffix  后缀；空值不处理
+	 * @return 去除后缀后的字符串
+	 */
+	public static String removeEnd(String content, String suffix) {
+		if (isNullOrEmpty(content) || isNullOrEmpty(suffix)) {
+			return content;
+		}
+		if (content.endsWith(suffix)) {
+			return content.substring(0, content.length() - suffix.length());
+		}
+		return content;
+	}
+
+	/**
+	 * 重复字符串
+	 *
+	 * @param value  字符串；null或空返回空字符串
+	 * @param repeat 重复次数；小于1返回空字符串
+	 * @return 重复后的字符串
+	 */
+	public static String repeat(String value, int repeat) {
+		if (isNullOrEmpty(value) || repeat < 1) {
+			return VALUE_EMPTY;
+		}
+		StringBuilder builder = new StringBuilder(value.length() * repeat);
+		for (int i = 0; i < repeat; i++) {
+			builder.append(value);
+		}
+		return builder.toString();
+	}
+
+	/**
+	 * 左填充到指定长度
+	 *
+	 * @param value    字符串；null视为空字符串
+	 * @param size     目标长度；小于原长度时不填充
+	 * @param padChar  填充字符
+	 * @return 填充后的字符串
+	 */
+	public static String padLeft(String value, int size, char padChar) {
+		if (value == null) {
+			value = VALUE_EMPTY;
+		}
+		if (value.length() >= size) {
+			return value;
+		}
+		StringBuilder builder = new StringBuilder(size);
+		for (int i = value.length(); i < size; i++) {
+			builder.append(padChar);
+		}
+		builder.append(value);
+		return builder.toString();
+	}
+
+	/**
+	 * 右填充到指定长度
+	 *
+	 * @param value    字符串；null视为空字符串
+	 * @param size     目标长度；小于原长度时不填充
+	 * @param padChar  填充字符
+	 * @return 填充后的字符串
+	 */
+	public static String padRight(String value, int size, char padChar) {
+		if (value == null) {
+			value = VALUE_EMPTY;
+		}
+		if (value.length() >= size) {
+			return value;
+		}
+		StringBuilder builder = new StringBuilder(size);
+		builder.append(value);
+		for (int i = value.length(); i < size; i++) {
+			builder.append(padChar);
+		}
+		return builder.toString();
+	}
+
+	/**
+	 * 截取字符串最大长度；超过时追加省略标记
+	 *
+	 * @param value  字符串；null返回空字符串
+	 * @param maxLen 最大长度；小于1返回空字符串
+	 * @return 截取结果
+	 */
+	public static String ellipsis(String value, int maxLen) {
+		return ellipsis(value, maxLen, "...");
+	}
+
+	/**
+	 * 截取字符串最大长度；超过时追加省略标记
+	 *
+	 * @param value     字符串；null返回空字符串
+	 * @param maxLen    最大长度（含省略标记）；小于1返回空字符串
+	 * @param suffix    省略标记
+	 * @return 截取结果
+	 */
+	public static String ellipsis(String value, int maxLen, String suffix) {
+		if (isNullOrEmpty(value) || maxLen < 1) {
+			return VALUE_EMPTY;
+		}
+		if (value.length() <= maxLen) {
+			return value;
+		}
+		if (isNullOrEmpty(suffix) || maxLen <= suffix.length()) {
+			return value.substring(0, maxLen);
+		}
+		return value.substring(0, maxLen - suffix.length()) + suffix;
+	}
+
+	/**
+	 * 首字母大写
+	 *
+	 * @param value 字符串；null或空返回原值
+	 * @return 首字母大写的字符串
+	 */
+	public static String capitalize(String value) {
+		if (isNullOrEmpty(value)) {
+			return value;
+		}
+		char first = value.charAt(0);
+		if (Character.isUpperCase(first)) {
+			return value;
+		}
+		return Character.toUpperCase(first) + value.substring(1);
+	}
+
+	/**
+	 * 首字母小写
+	 *
+	 * @param value 字符串；null或空返回原值
+	 * @return 首字母小写的字符串
+	 */
+	public static String uncapitalize(String value) {
+		if (isNullOrEmpty(value)) {
+			return value;
+		}
+		char first = value.charAt(0);
+		if (Character.isLowerCase(first)) {
+			return value;
+		}
+		return Character.toLowerCase(first) + value.substring(1);
+	}
+
+	/**
+	 * 驼峰转下划线（myName → my_name）
+	 *
+	 * @param value 字符串；null返回null
+	 * @return 下划线格式字符串
+	 */
+	public static String toUnderscoreCase(String value) {
+		if (isNullOrEmpty(value)) {
+			return value;
+		}
+		StringBuilder builder = new StringBuilder(value.length() * 2);
+		for (int i = 0; i < value.length(); i++) {
+			char c = value.charAt(i);
+			if (Character.isUpperCase(c)) {
+				if (i > 0) {
+					builder.append('_');
+				}
+				builder.append(Character.toLowerCase(c));
+			} else {
+				builder.append(c);
+			}
+		}
+		return builder.toString();
+	}
+
+	/**
+	 * 下划线转驼峰（my_name → myName）
+	 *
+	 * @param value 字符串；null返回null
+	 * @return 驼峰格式字符串
+	 */
+	public static String toCamelCase(String value) {
+		if (isNullOrEmpty(value)) {
+			return value;
+		}
+		StringBuilder builder = new StringBuilder(value.length());
+		boolean nextUpper = false;
+		for (int i = 0; i < value.length(); i++) {
+			char c = value.charAt(i);
+			if (c == '_') {
+				nextUpper = true;
+			} else {
+				if (nextUpper) {
+					builder.append(Character.toUpperCase(c));
+					nextUpper = false;
+				} else {
+					builder.append(c);
+				}
+			}
+		}
+		return builder.toString();
+	}
+
+	/**
+	 * 用分隔符拼接数组/集合
+	 *
+	 * @param separator 分隔符；null视为空字符串
+	 * @param values    待拼接内容；null返回空字符串
+	 * @return 拼接结果
+	 */
+	public static String join(String separator, Object... values) {
+		if (values == null || values.length == 0) {
+			return VALUE_EMPTY;
+		}
+		String sep = separator != null ? separator : VALUE_EMPTY;
+		StringBuilder builder = new StringBuilder();
+		for (Object item : values) {
+			if (item == null) {
+				continue;
+			}
+			if (builder.length() > 0) {
+				builder.append(sep);
+			}
+			builder.append(item);
+		}
+		return builder.toString();
+	}
+
+	/**
+	 * 限制字符串最大长度；超过时截取，不追加省略标记
+	 *
+	 * @param value  字符串；null返回空字符串
+	 * @param maxLen 最大长度；小于1返回空字符串
+	 * @return 截取结果
+	 */
+	public static String truncate(String value, int maxLen) {
+		if (isNullOrEmpty(value) || maxLen < 1) {
+			return VALUE_EMPTY;
+		}
+		if (value.length() <= maxLen) {
+			return value;
+		}
+		return value.substring(0, maxLen);
+	}
+
+	/**
+	 * 计算子串出现次数
+	 *
+	 * @param content 字符串；null返回0
+	 * @param value   子串；null或空返回0
+	 * @return 出现次数
+	 */
+	public static int countOf(String content, String value) {
+		if (isNullOrEmpty(content) || isNullOrEmpty(value)) {
+			return 0;
+		}
+		int count = 0;
+		int index = 0;
+		while ((index = content.indexOf(value, index)) != -1) {
+			count++;
+			index += value.length();
+		}
+		return count;
+	}
+
+	/**
+	 * 反转字符串
+	 *
+	 * @param value 字符串；null返回null
+	 * @return 反转后的字符串
+	 */
+	public static String reverse(String value) {
+		if (value == null) {
+			return null;
+		}
+		return new StringBuilder(value).reverse().toString();
 	}
 }

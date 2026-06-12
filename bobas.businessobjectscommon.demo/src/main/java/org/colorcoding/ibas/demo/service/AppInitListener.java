@@ -39,7 +39,7 @@ public class AppInitListener implements ServletContextListener {
 					long taskId = AppInitListener.this.taskId;
 					AppInitListener.this.taskId = 0;
 					AppInitListener.this.runCommands();
-					Daemon.unRegister(taskId);
+					Daemon.unregister(taskId);
 				}
 
 				@Override

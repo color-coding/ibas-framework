@@ -19,8 +19,9 @@ import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.List;
+import org.colorcoding.ibas.bobas.db.DataType;
 import org.colorcoding.ibas.bobas.db.DbField;
-import org.colorcoding.ibas.bobas.db.DbFieldType;
+import org.colorcoding.ibas.bobas.db.EditType;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.task.Daemon;
 import org.colorcoding.ibas.bobas.task.IDaemonTask;
@@ -149,7 +150,7 @@ class UserFieldInfoList extends ArrayList<IPropertyInfo<?>> {
 				return item;
 			}
 		}
-		throw new ArrayIndexOutOfBoundsException(Strings.format("not found %s.", name));
+		throw new IllegalArgumentException(Strings.format("user field info [%s] not found.", name));
 	}
 }
 
@@ -251,8 +252,13 @@ class UserFieldInfo<P> implements IPropertyInfo<P> {
 					}
 
 					@Override
-					public DbFieldType type() {
-						return DbFieldType.valueOf(UserFieldInfo.this.getValueType());
+					public DataType type() {
+						return DataType.valueOf(UserFieldInfo.this.getValueType());
+					}
+
+					@Override
+					public EditType editType() {
+						return EditType.DEFAULT;
 					}
 
 					@Override
@@ -269,6 +275,7 @@ class UserFieldInfo<P> implements IPropertyInfo<P> {
 					public boolean uniqueKey() {
 						return false;
 					}
+
 				};
 			}
 			return (A) this.dbField;
