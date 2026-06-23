@@ -211,4 +211,9 @@ public class MyConfiguration extends Configuration {
 	 * 配置项目-文件仓库方式
 	 */
 	public final static String CONFIG_ITEM_FILE_REPOSITORY_WAY = "FileRepositoryWay";
+	/**
+	 * 配置项目-保存时截断小数位数(根据编辑类型设置)
+	 */
+	public final static String CONFIG_ITEM_TRUNCATE_DECIMALS_ON_SAVE = "TruncateDecimalsOnSave";
+
 }

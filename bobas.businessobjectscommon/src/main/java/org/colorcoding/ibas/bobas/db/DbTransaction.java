@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.db;
 
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,6 +25,7 @@ import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
 import org.colorcoding.ibas.bobas.common.Criteria;
 import org.colorcoding.ibas.bobas.common.DateTimes;
+import org.colorcoding.ibas.bobas.common.Decimals;
 import org.colorcoding.ibas.bobas.common.Enums;
 import org.colorcoding.ibas.bobas.common.IChildCriteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
@@ -31,9 +33,11 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Numbers;
 import org.colorcoding.ibas.bobas.common.Result;
 import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.configuration.Configuration;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.IDataTable;
+import org.colorcoding.ibas.bobas.data.IKeyText;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.expression.BOJudgmentLinkCondition;
 import org.colorcoding.ibas.bobas.expression.JudgmentOperationException;
@@ -51,9 +55,11 @@ public class DbTransaction extends Transaction implements IUserAware {
 	public DbTransaction(Connection connection) {
 		Objects.requireNonNull(connection);
 		this.connection = connection;
-		this.replacementUpdate = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_REPLACEMENT_UPDATE,
-				true);
-		this.batchFetch = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_BATCH_FETCH, true);
+		this.setReplacementUpdate(
+				MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_REPLACEMENT_UPDATE, true));
+		this.setBatchFetch(MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_DB_BATCH_FETCH, true));
+		this.setTruncateDecimals(
+				MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_TRUNCATE_DECIMALS_ON_SAVE, false));
 	}
 
 	private boolean replacementUpdate;
@@ -74,6 +80,39 @@ public class DbTransaction extends Transaction implements IUserAware {
 
 	public final void setBatchFetch(boolean batchFetch) {
 		this.batchFetch = batchFetch;
+	}
+
+	private boolean truncateDecimals;
+
+	public final boolean isTruncateDecimals() {
+		return truncateDecimals;
+	}
+
+	/**
+	 * 编辑类型小数位数
+	 */
+	private int[] edit_type_decimal_places;
+	private final static String TEMPLATE_DECIMAL_PLACES = "decimalPlaces|";
+
+	public final void setTruncateDecimals(boolean truncateDecimals) {
+		this.truncateDecimals = truncateDecimals;
+		// 给数组赋值
+		this.edit_type_decimal_places = null;
+		if (this.truncateDecimals) {
+			IKeyText keyText;
+			EditType[] types = EditType.values();
+			List<IKeyText> configs = ArrayList.create(Configuration.create().getElements());
+			this.edit_type_decimal_places = new int[types.length];
+			for (EditType editType : types) {
+				keyText = configs.firstOrDefault(c -> Strings.startsWith(c.getKey(), TEMPLATE_DECIMAL_PLACES, true)
+						&& Strings.endsWith(c.getKey(), editType.toString(), true));
+				if (keyText != null && Numbers.isNumeric(keyText.getText())) {
+					this.edit_type_decimal_places[editType.ordinal()] = Numbers.toInteger(keyText.getText());
+				} else {
+					this.edit_type_decimal_places[editType.ordinal()] = -1;
+				}
+			}
+		}
 	}
 
 	private volatile Connection connection;
@@ -350,8 +389,7 @@ public class DbTransaction extends Transaction implements IUserAware {
 									eCriteria = this.getAdapter().convert(eCriteria, cDatas.getElementType());
 									try (PreparedStatement checkStatement = this.getConnection().prepareStatement(
 											this.getAdapter().parsingSelect(cDatas.getElementType(), eCriteria))) {
-										this.getAdapter().bindParameters(checkStatement, eCriteria.getConditions(),
-												1);
+										this.getAdapter().bindParameters(checkStatement, eCriteria.getConditions(), 1);
 										try (ResultSet resultSet = checkStatement.executeQuery()) {
 											if (resultSet.isBeforeFirst()) {
 												// 有结果，则使用全量查询
@@ -686,6 +724,14 @@ public class DbTransaction extends Transaction implements IUserAware {
 														|| value == Numbers.FLOAT_VALUE_ZERO)) {
 											// 默认值时存空
 											value = null;
+										} else if (DbTransaction.this.edit_type_decimal_places != null
+												&& DbTransaction.this.edit_type_decimal_places[dbField.editType()
+														.ordinal()] >= 0
+												&& value instanceof BigDecimal) {
+											// 截断小数位
+											value = Decimals.round((BigDecimal) value,
+													DbTransaction.this.edit_type_decimal_places[dbField.editType()
+															.ordinal()]);
 										}
 										if (propertyInfo.getValueType() != null
 												&& propertyInfo.getValueType().isEnum()) {
@@ -733,6 +779,14 @@ public class DbTransaction extends Transaction implements IUserAware {
 														|| value == Numbers.FLOAT_VALUE_ZERO)) {
 											// 默认值时存空
 											value = null;
+										} else if (DbTransaction.this.edit_type_decimal_places != null
+												&& DbTransaction.this.edit_type_decimal_places[dbField.editType()
+														.ordinal()] >= 0
+												&& value instanceof BigDecimal) {
+											// 截断小数位
+											value = Decimals.round((BigDecimal) value,
+													DbTransaction.this.edit_type_decimal_places[dbField.editType()
+															.ordinal()]);
 										}
 										if (propertyInfo.getValueType() != null
 												&& propertyInfo.getValueType().isEnum()) {
