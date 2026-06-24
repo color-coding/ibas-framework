@@ -136,6 +136,29 @@ public class DbTransaction extends Transaction implements IUserAware {
 		return this.adapter;
 	}
 
+	/**
+	 * 将 SQL 异常翻译为友好的描述文本（用于包装异常）。
+	 * <p>
+	 * 调用当前数据库适配器的 {@link DbAdapter#translateException(SQLException)}：
+	 * 各厂商子类会按 ErrorCode/SQLState 识别并返回国际化消息，
+	 * 未识别的异常由基类直接返回原始消息。
+	 * 适配器不可用时，回退到原始异常消息。
+	 *
+	 * @param exception SQL 异常
+	 * @return 描述文本
+	 */
+	protected String translateSQLException(SQLException exception) {
+		try {
+			String translated = this.getAdapter().translateException(exception);
+			if (!Strings.isNullOrEmpty(translated)) {
+				return translated;
+			}
+		} catch (Exception ex) {
+			// 适配器不可用，回退到原始消息
+		}
+		return exception.getMessage();
+	}
+
 	public final synchronized boolean inTransaction() throws RepositoryException {
 		try {
 			if (this.connection == null) {
@@ -288,8 +311,9 @@ public class DbTransaction extends Transaction implements IUserAware {
 			return datas.toArray((T[]) Array.newInstance(boType, datas.size()));
 		} catch (Exception e) {
 			if (boType != null && e instanceof SQLException) {
+				String message = this.translateSQLException((SQLException) e);
 				throw new RepositoryException(
-						I18N.prop("msg_bobas_to_fetch_bo_data_failed", boType.getSimpleName(), e.getMessage()), e);
+						I18N.prop("msg_bobas_to_fetch_bo_data_failed", boType.getSimpleName(), message), e);
 			}
 			throw new RepositoryException(e);
 		}
@@ -978,8 +1002,14 @@ public class DbTransaction extends Transaction implements IUserAware {
 					mine = false;
 				}
 				if (boType != null && (e instanceof SQLException || e instanceof TransactionException)) {
+					String message;
+					if (e instanceof SQLException) {
+						message = this.translateSQLException((SQLException) e);
+					} else {
+						message = e.getMessage();
+					}
 					throw new RepositoryException(
-							I18N.prop("msg_bobas_to_save_bo_data_failed", boType.getSimpleName(), e.getMessage()), e);
+							I18N.prop("msg_bobas_to_save_bo_data_failed", boType.getSimpleName(), message), e);
 				}
 				throw e;
 			} finally {
@@ -1105,8 +1135,9 @@ public class DbTransaction extends Transaction implements IUserAware {
 			return datas.toArray((T[]) Array.newInstance(boType, datas.size()));
 		} catch (Exception e) {
 			if (boType != null && e instanceof SQLException) {
+				String message = this.translateSQLException((SQLException) e);
 				throw new RepositoryException(
-						I18N.prop("msg_bobas_to_fetch_bo_data_failed", boType.getSimpleName(), e.getMessage()), e);
+						I18N.prop("msg_bobas_to_fetch_bo_data_failed", boType.getSimpleName(), message), e);
 			}
 			throw new RepositoryException(e);
 		}

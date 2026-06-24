@@ -305,8 +305,7 @@ public abstract class DbAdapter {
 		for (int i = 0; i < columnCount; i++) {
 			Class<?> dataType = dataTable.getColumns().get(i).getDataType();
 			// 仅对引用类型建立缓存（基本类型包装类由JVM缓存，无需去重）
-			if (dataType == String.class || dataType == DateTime.class
-					|| dataType == BigDecimal.class) {
+			if (dataType == String.class || dataType == DateTime.class || dataType == BigDecimal.class) {
 				columnCaches[i] = new java.util.HashMap<>(64);
 			}
 		}
@@ -1267,8 +1266,7 @@ public abstract class DbAdapter {
 			return this.sqlValueOf(null, java.sql.Types.NULL);
 		}
 		if (value.getClass().isEnum()) {
-			if (this.dbFieldTypeOf(sqlType) == DataType.ALPHANUMERIC
-					|| this.dbFieldTypeOf(sqlType) == DataType.MEMO) {
+			if (this.dbFieldTypeOf(sqlType) == DataType.ALPHANUMERIC || this.dbFieldTypeOf(sqlType) == DataType.MEMO) {
 				return Strings.format(TEMPLATE_SQL_VALUE, Enums.annotationValue(value));
 			} else if (this.dbFieldTypeOf(sqlType) == DataType.NUMERIC) {
 				if (value instanceof Enum<?>) {
@@ -1364,5 +1362,20 @@ public abstract class DbAdapter {
 				index += 1;
 			}
 		}
+	}
+
+	/**
+	 * 翻译数据库异常为可读的描述文本。
+	 * <p>
+	 * 基类不做任何分析，直接返回异常的原始消息； 各厂商的 DbAdapter 子类应根据自身的 ErrorCode/SQLState 识别并返回国际化消息。
+	 *
+	 * @param exception 数据库异常
+	 * @return 描述文本；输入为 null 时返回 ""
+	 */
+	public String translateException(SQLException exception) {
+		if (exception == null) {
+			return Strings.VALUE_EMPTY;
+		}
+		return exception.getMessage();
 	}
 }

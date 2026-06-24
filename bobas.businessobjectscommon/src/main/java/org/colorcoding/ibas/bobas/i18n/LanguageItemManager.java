@@ -6,11 +6,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.net.JarURLConnection;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -57,16 +56,9 @@ public class LanguageItemManager {
 		this.languageCode = languageCode;
 	}
 
-	private Map<String, LanguageItem> languageItems;
+	private Map<String, LanguageItem> languageItems = new ConcurrentHashMap<>(256);
 
 	protected Map<String, LanguageItem> getLanguageItems() {
-		if (languageItems == null) {
-			synchronized (this) {
-				if (languageItems == null) {
-					languageItems = new ConcurrentHashMap<>(256);
-				}
-			}
-		}
 		return languageItems;
 	}
 
@@ -100,25 +92,8 @@ public class LanguageItemManager {
 		if (Strings.isNullOrEmpty(this.workFolder)) {
 			String path = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_I18N_FOLDER);
 			if (Strings.isNullOrEmpty(path) || !new File(path).exists()) {
-				// 配置路径无效，尝试从 classpath 定位
-				path = null;
-				try {
-					URI uri = MyConfiguration.getResource("i18n");
-					if (uri != null && "file".equalsIgnoreCase(uri.getScheme())) {
-						// classpath 上的 i18n 目录（仅 file 协议可用）
-						File dir = new File(uri);
-						if (dir.isDirectory()) {
-							path = dir.getPath();
-						}
-					}
-				} catch (URISyntaxException e) {
-					path = null;
-					Logger.log(MessageLevel.DEBUG, e);
-				}
-				if (path == null) {
-					// 回退到工作目录下 i18n 子目录
-					path = Files.valueOf(MyConfiguration.getWorkFolder(), "i18n").getPath();
-				}
+				// 配置路径无效，回退到工作目录下 i18n 子目录
+				path = Files.valueOf(MyConfiguration.getWorkFolder(), "i18n").getPath();
 			}
 			this.workFolder = new File(path).getPath();
 			Logger.log(MessageLevel.DEBUG, "i18n: use folder [%s].", workFolder);
@@ -129,8 +104,16 @@ public class LanguageItemManager {
 	/**
 	 * 从文件名提取语言编码
 	 * <p>
-	 * 如 locale.bobas_en-US.properties → "en-US"<br>
-	 * 如 locale.bobas.properties → ""（默认语言）
+	 * 仅当后缀符合 BCP 47 语言标签格式（如 en、en-US、zh-CN、zh-Hans-CN）时才识别为语言编码；
+	 * 否则视为默认语言文件，避免文件名中带下划线的前缀被误判。
+	 * <p>
+	 * 例：
+	 * <ul>
+	 * <li>locale.bobas_en-US.properties → "en-US"</li>
+	 * <li>locale.bobas.properties → ""</li>
+	 * <li>my_module_zh-CN.properties → "zh-CN"</li>
+	 * <li>locale.test_i18n.properties → ""（"i18n" 不符合语言标签格式）</li>
+	 * </ul>
 	 *
 	 * @param fileName 文件名（仅名称，不含路径）
 	 * @return 语言编码；默认语言返回空字符串
@@ -144,13 +127,52 @@ public class LanguageItemManager {
 		if (name.endsWith(".properties")) {
 			name = name.substring(0, name.length() - ".properties".length());
 		}
-		// 查找最后一个 _ 分隔的语言编码
+		// 查找最后一个 _ 分隔的后缀
 		int lastUnderscore = name.lastIndexOf('_');
 		if (lastUnderscore < 0) {
-			// 无语言编码后缀，为默认语言文件
 			return "";
 		}
-		return name.substring(lastUnderscore + 1);
+		String suffix = name.substring(lastUnderscore + 1);
+		// 校验是否为有效的 BCP 47 语言标签
+		if (this.isLanguageTag(suffix)) {
+			return suffix;
+		}
+		return "";
+	}
+
+	/**
+	 * 简易校验是否为 BCP 47 语言标签（如 en、en-US、zh-CN、zh-Hans-CN）。
+	 */
+	private boolean isLanguageTag(String value) {
+		if (Strings.isNullOrEmpty(value)) {
+			return false;
+		}
+		String[] parts = value.split("-");
+		// 主语言子标签：2-3 个字母
+		String primary = parts[0];
+		int primaryLen = primary.length();
+		if (primaryLen < 2 || primaryLen > 3) {
+			return false;
+		}
+		for (int i = 0; i < primaryLen; i++) {
+			if (!Character.isLetter(primary.charAt(i))) {
+				return false;
+			}
+		}
+		// 后续子标签：1-8 字母或数字
+		for (int i = 1; i < parts.length; i++) {
+			String part = parts[i];
+			int len = part.length();
+			if (len < 1 || len > 8) {
+				return false;
+			}
+			for (int j = 0; j < len; j++) {
+				if (!Character.isLetterOrDigit(part.charAt(j))) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -175,7 +197,12 @@ public class LanguageItemManager {
 	 * 从 JAR 文件中加载语言资源
 	 */
 	private void loadResourcesFromJar(URL url) {
-		try (JarFile jarFile = ((JarURLConnection) url.openConnection()).getJarFile()) {
+		JarFile jarFile = null;
+		try {
+			JarURLConnection conn = (JarURLConnection) url.openConnection();
+			// 使用 JVM 缓存，避免显式 close 影响其它资源共享同一 JarFile 句柄
+			conn.setUseCaches(true);
+			jarFile = conn.getJarFile();
 			Enumeration<JarEntry> jarEntries = jarFile.entries();
 			while (jarEntries.hasMoreElements()) {
 				JarEntry jarEntry = jarEntries.nextElement();
@@ -183,7 +210,8 @@ public class LanguageItemManager {
 					continue;
 				}
 				String entryName = jarEntry.getName();
-				if (!entryName.startsWith("i18n")) {
+				// 必须位于 i18n 目录下（不是以 i18n 为前缀的目录名）
+				if (!entryName.startsWith("i18n/")) {
 					continue;
 				}
 				if (!entryName.endsWith(".properties")) {
@@ -191,19 +219,16 @@ public class LanguageItemManager {
 				}
 				// 从文件名提取语言编码
 				String langCode = this.extractLanguageCode(new File(entryName).getName());
-				try (InputStream inputStream = jarFile.getInputStream(jarEntry)) {
-					try (Reader reader = new InputStreamReader(inputStream, "UTF-8")) {
-						List<LanguageItem> items = this.loadFileContent(reader, langCode);
-						for (LanguageItem item : items) {
-							this.getLanguageItems().put(item.getKey(), item);
-						}
-						if (!items.isEmpty()) {
-							Logger.log(MessageLevel.DEBUG, "i18n: read jar entry [%s] with lang [%s].", entryName,
-									Strings.isNullOrEmpty(langCode) ? "default" : langCode);
-						}
+				try (InputStream inputStream = jarFile.getInputStream(jarEntry);
+						Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
+					List<LanguageItem> items = this.loadFileContent(reader, langCode);
+					for (LanguageItem item : items) {
+						this.getLanguageItems().put(item.getKey(), item);
 					}
-				} catch (UnsupportedEncodingException e) {
-					Logger.log(MessageLevel.DEBUG, e);
+					if (!items.isEmpty()) {
+						Logger.log(MessageLevel.DEBUG, "i18n: read jar entry [%s] with lang [%s].", entryName,
+								Strings.isNullOrEmpty(langCode) ? "default" : langCode);
+					}
 				} catch (IOException e) {
 					// 单条目异常不影响其他条目
 					Logger.log(MessageLevel.DEBUG, "i18n: failed to read jar entry [%s].", entryName);
@@ -213,6 +238,7 @@ public class LanguageItemManager {
 		} catch (IOException e) {
 			Logger.log(e);
 		}
+		// 不在此处 close jarFile，依赖 JVM 缓存管理
 	}
 
 	/**
@@ -266,19 +292,26 @@ public class LanguageItemManager {
 	public void readResources() {
 		// 已加载的目录路径，防止重复加载
 		Set<String> loadedPaths = new HashSet<>();
+		// 已加载的 jar URL，防止同一 jar 被多次扫描
+		Set<String> loadedJars = new HashSet<>();
 		// 加载 classpath 上的语言资源（jar 和 file 协议均处理）
 		try {
 			Enumeration<URL> dirs = Thread.currentThread().getContextClassLoader().getResources("i18n");
 			while (dirs.hasMoreElements()) {
 				URL dir = dirs.nextElement();
-				this.loadResources(dir);
-				// 记录 file 协议的路径，避免与 getWorkFolder 重复
-				if ("file".equals(dir.getProtocol())) {
+				if ("jar".equals(dir.getProtocol())) {
+					if (loadedJars.add(dir.toString())) {
+						this.loadResources(dir);
+					}
+				} else if ("file".equals(dir.getProtocol())) {
+					this.loadResources(dir);
 					try {
 						loadedPaths.add(new File(dir.toURI()).getCanonicalPath());
 					} catch (Exception e) {
 						// 忽略
 					}
+				} else {
+					this.loadResources(dir);
 				}
 			}
 		} catch (IOException e) {
@@ -297,16 +330,16 @@ public class LanguageItemManager {
 		} catch (IOException e) {
 			Logger.log(e);
 		}
+		Logger.log(MessageLevel.INFO, "i18n: loaded %d keys.", this.getLanguageItems().size());
 	}
 
 	protected List<LanguageItem> loadFileContent(String file, String langCode) {
-		try (InputStream stream = new FileInputStream(file)) {
-			try (Reader reader = new InputStreamReader(stream, "UTF-8")) {
-				List<LanguageItem> items = this.loadFileContent(reader, langCode);
-				Logger.log("i18n: read file's data [%s] with lang [%s].", file,
-						Strings.isNullOrEmpty(langCode) ? "default" : langCode);
-				return items;
-			}
+		try (InputStream stream = new FileInputStream(file);
+				Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+			List<LanguageItem> items = this.loadFileContent(reader, langCode);
+			Logger.log("i18n: read file's data [%s] with lang [%s].", file,
+					Strings.isNullOrEmpty(langCode) ? "default" : langCode);
+			return items;
 		} catch (IOException e) {
 			Logger.log(e);
 		}

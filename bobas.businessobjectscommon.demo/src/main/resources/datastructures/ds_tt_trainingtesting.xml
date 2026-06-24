@@ -2,7 +2,7 @@
 <!DOCTYPE DomainModel>
 <Domain Name="TrainingTesting" ShortName="TT">
   <Model Name="Materials" Description="物料主数据" ModelType="Simple" Mapped="CC_TT_OITM">
-    <Property Name="ItemCode" Description="物料编号" DataType="Alphanumeric" DataSubType="Default" EditSize="20" Mapped="ItemCode" PrimaryKey="Yes" UniqueKey="Yes"/>
+    <Property Name="ItemCode" Description="物料编号" DataType="Alphanumeric" DataSubType="Default" EditSize="20" Mapped="ItemCode" UniqueKey="Yes"/>
     <Property Name="ItemDescription" Description="物料描述" DataType="Alphanumeric" DataSubType="Default" EditSize="100" Mapped="ItemName"/>
     <Property Name="OnOrder" Description="订购数量" DataType="Decimal" DataSubType="Quantity" EditSize="8" Mapped="OnOrder"/>
     <Property Name="OnHand" Description="库存数量" DataType="Decimal" DataSubType="Quantity" EditSize="8" Mapped="OnHand"/>

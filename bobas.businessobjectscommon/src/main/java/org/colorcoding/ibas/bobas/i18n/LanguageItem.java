@@ -44,12 +44,7 @@ public class LanguageItem {
 				}
 			}
 		}
-		// 未找到指定语言，回退到空编码的默认内容
-		for (KeyText item : this.getContents()) {
-			if (Strings.isNullOrEmpty(item.getKey())) {
-				return item.getText();
-			}
-		}
+		// 未找到指定语言，回退到默认内容
 		return this.getContent();
 	}
 

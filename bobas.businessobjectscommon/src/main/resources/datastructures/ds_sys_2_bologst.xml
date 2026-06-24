@@ -12,5 +12,4 @@
     <Property Name="Cause" Description="动机" DataType="Alphanumeric" DataSubType="Default" EditSize="8" Mapped="Cause"/>
     <Property Name="Content" Description="内容" DataType="Memo" DataSubType="Default" EditSize="8" Mapped="Content"/>
   </Model>
-  <BusinessObject MappedModel="BOLogst" ShortName="${Company}_SYS_BOLOGST"/>
 </Domain>
