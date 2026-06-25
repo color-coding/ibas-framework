@@ -22,7 +22,8 @@ public abstract class Bindable extends Serializable implements IBindable, IClone
 
 	public final void removeListener(PropertyChangeListener listener) {
 		if (this.listeners == null) {
-			this.listeners = new PropertyChangeSupport(this);
+			// 从未注册过，无需创建空容器
+			return;
 		}
 		this.listeners.removePropertyChangeListener(listener);
 	}

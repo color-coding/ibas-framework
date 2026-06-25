@@ -146,7 +146,10 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		int oldSize = this.size();
 		boolean result = super.add(item);
 		if (result) {
-			this.propertyListener.propertyChange(new PropertyChangeEvent(this, "size", oldSize, this.size()));
+			// 仅在父项非加载中时才派发size事件（避免无效PropertyChangeEvent分配）
+			if (this.getParent() instanceof Trackable && !this.getParent().isLoading()) {
+				this.propertyListener.propertyChange(new PropertyChangeEvent(this, "size", oldSize, this.size()));
+			}
 			boolean mine = false;
 			if (this.getParent() instanceof ITrackable && this.getParent().isLoading()) {
 				item.setLoading(true);
@@ -179,12 +182,12 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 					}
 					if (tmp instanceof IBOLine) {
 						IBOLine tmpLine = (IBOLine) tmp;
-						if (tmpLine.getLineId() >= max) {
-							max = tmpLine.getLineId() + 1;
+						if (tmpLine.getLineId() > max) {
+							max = tmpLine.getLineId();
 						}
 					}
 				}
-				line.setLineId(max);
+				line.setLineId(max + 1);
 			}
 		}
 		// 没父项，退出
@@ -252,7 +255,10 @@ public abstract class BusinessObjects<E extends IBusinessObject, P extends IBusi
 		int oldSize = this.size();
 		boolean result = super.remove(index) != null;
 		if (result) {
-			this.propertyListener.propertyChange(new PropertyChangeEvent(this, "size", oldSize, this.size()));
+			// 仅在父项非加载中时才派发size事件
+			if (this.getParent() instanceof Trackable && !this.getParent().isLoading()) {
+				this.propertyListener.propertyChange(new PropertyChangeEvent(this, "size", oldSize, this.size()));
+			}
 			boolean mine = false;
 			if (this.getParent() instanceof ITrackable && this.getParent().isLoading()) {
 				item.setLoading(true);

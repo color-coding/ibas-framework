@@ -17,7 +17,7 @@ public class JudgmentExpressionFloat extends JudgmentExpressionComparable<Float>
 		super(leftValue, operation, rightValue);
 	}
 
-	private float leftValue;
+	private Float leftValue;
 
 	@Override
 	public final Float getLeftValue() {
@@ -32,10 +32,16 @@ public class JudgmentExpressionFloat extends JudgmentExpressionComparable<Float>
 			this.setLeftValue((String) value);
 		} else if (value != null) {
 			this.setLeftValue(Strings.valueOf(value));
+		} else {
+			this.setLeftValue((Float) null);
 		}
 	}
 
 	public final void setLeftValue(String value) {
+		if (Strings.isNullOrEmpty(value)) {
+			this.setLeftValue((Float) null);
+			return;
+		}
 		this.setLeftValue(Float.valueOf(value));
 	}
 
@@ -43,7 +49,7 @@ public class JudgmentExpressionFloat extends JudgmentExpressionComparable<Float>
 		this.leftValue = value;
 	}
 
-	private float rightValue;
+	private Float rightValue;
 
 	@Override
 	public final Float getRightValue() {
@@ -58,14 +64,15 @@ public class JudgmentExpressionFloat extends JudgmentExpressionComparable<Float>
 			this.setRightValue((String) value);
 		} else if (value != null) {
 			this.setRightValue(Strings.valueOf(value));
+		} else {
+			this.setRightValue((Float) null);
 		}
 	}
 
 	public final void setRightValue(String value) {
 		if (Strings.isNullOrEmpty(value)) {
-			if (this.getOperation() == JudgmentOperation.IS_NULL || this.getOperation() == JudgmentOperation.NOT_NULL) {
-				value = Strings.VALUE_ZERO;
-			}
+			this.setRightValue((Float) null);
+			return;
 		}
 		this.setRightValue(Float.valueOf(value));
 	}

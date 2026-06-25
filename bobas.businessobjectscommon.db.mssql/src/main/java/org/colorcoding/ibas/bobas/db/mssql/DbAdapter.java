@@ -67,9 +67,8 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			stringBuilder.append("NVARCHAR");
 			stringBuilder.append(",");
 			stringBuilder.append(" ");
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(alias);
-			stringBuilder.append(this.identifier());
+			// 转义标识符引号字符，防止注入
+			stringBuilder.append(this.identifier(alias));
 			stringBuilder.append(",");
 			stringBuilder.append(" ");
 			stringBuilder.append("120");

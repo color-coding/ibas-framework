@@ -29,6 +29,7 @@ import org.colorcoding.ibas.bobas.common.IChildCriteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.ISort;
+import org.colorcoding.ibas.bobas.common.Numbers;
 import org.colorcoding.ibas.bobas.common.Result;
 import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.common.Strings;
@@ -225,6 +226,16 @@ public abstract class DbAdapter {
 
 	/**
 	 * 解析值（String/BigDecimal/DateTime类型数据库null值返回null，数值类型返回0，枚举按名称匹配）
+	 * <p>
+	 * 内存优化：对常见的默认值统一返回缓存实例，避免每行结果都产生新对象：
+	 * <ul>
+	 * <li>空字符串：返回 {@link Strings#VALUE_EMPTY}（JDBC驱动通常返回新实例）</li>
+	 * <li>Double/Float 0 值：返回
+	 * {@link Numbers#DOUBLE_VALUE_ZERO}/{@link Numbers#FLOAT_VALUE_ZERO}（JVM不自动缓存这两种装箱类型）</li>
+	 * <li>BigDecimal 0-10：由 {@link Decimals#valueOf(BigDecimal)} 内部缓存</li>
+	 * <li>DateTime 最小值：由 {@link DateTimes#valueOf(Date)} 内部缓存</li>
+	 * <li>Integer/Short/Long/Boolean/Character：依赖 JVM 自带的装箱缓存</li>
+	 * </ul>
 	 *
 	 * @param resultSet   结果集
 	 * @param columnIndex 列索引（从1开始）
@@ -237,12 +248,21 @@ public abstract class DbAdapter {
 			return resultSet.getInt(columnIndex);
 		} else if (dataType == String.class) {
 			String value = resultSet.getString(columnIndex);
-			return value == null ? null : Strings.valueOf(value);
+			if (value == null) {
+				return null;
+			}
+			if (value.isEmpty()) {
+				// 空串归一，避免JDBC驱动返回的新实例占内存
+				return Strings.VALUE_EMPTY;
+			}
+			return Strings.valueOf(value);
 		} else if (dataType == BigDecimal.class) {
 			BigDecimal value = resultSet.getBigDecimal(columnIndex);
 			return value == null ? null : Decimals.valueOf(value);
 		} else if (dataType == Double.class) {
-			return resultSet.getDouble(columnIndex);
+			double value = resultSet.getDouble(columnIndex);
+			// 零值复用缓存实例，避免每行装箱新对象
+			return value == 0d ? Numbers.DOUBLE_VALUE_ZERO : value;
 		} else if (dataType == DateTime.class) {
 			Date value = resultSet.getDate(columnIndex);
 			return value == null ? null : DateTimes.valueOf(value);
@@ -253,10 +273,12 @@ public abstract class DbAdapter {
 		} else if (dataType != null && dataType.isEnum()) {
 			return Enums.valueOf(dataType, resultSet.getString(columnIndex));
 		} else if (dataType == Float.class) {
-			return resultSet.getFloat(columnIndex);
+			float value = resultSet.getFloat(columnIndex);
+			// 零值复用缓存实例，避免每行装箱新对象
+			return value == 0f ? Numbers.FLOAT_VALUE_ZERO : value;
 		} else if (dataType == Character.class) {
 			String value = resultSet.getString(columnIndex);
-			return value == null ? 0 : value.charAt(0);
+			return Strings.isNullOrEmpty(value) ? 0 : value.charAt(0);
 		} else if (dataType == Boolean.class) {
 			return resultSet.getBoolean(columnIndex);
 		} else {
@@ -502,6 +524,33 @@ public abstract class DbAdapter {
 		return "\"";
 	}
 
+	/**
+	 * 用标识符引号包裹名称（字段名、别名、表名等），名称中的引号字符会按标准 SQL 规则"双写"转义。
+	 * <p>
+	 * 例如默认引号为 <code>"</code> 时，输入 <code>a"b</code> 输出 <code>"a""b"</code>；
+	 * 子类重写无参 {@link #identifier()} 使用其它引号字符（如 MySQL 的 <code>`</code>）时，自动按对应字符转义。
+	 * <p>
+	 * 该方法不做白名单/合法性校验，仅做最小化转义，是所有"拼接被引号包裹的标识符"场景的推荐入口；
+	 * 输入为 null 时按空串处理，引号为 null/空时不包裹直接返回。
+	 *
+	 * @param name 标识符原值
+	 * @return 形如 <code>"name"</code> 的字符串（具体引号由 {@link #identifier()} 决定）
+	 */
+	public final String identifier(String name) {
+		if (name == null) {
+			name = Strings.VALUE_EMPTY;
+		}
+		String quote = this.identifier();
+		if (quote == null || quote.length() == 0) {
+			return name;
+		}
+		if (name.indexOf(quote) >= 0) {
+			// 标识符引号字符在标识符内部需要双写转义，防止"标识符注入"
+			name = Strings.replace(name, quote, quote + quote);
+		}
+		return quote + name + quote;
+	}
+
 	public String separation() {
 		return ", ";
 	}
@@ -649,9 +698,7 @@ public abstract class DbAdapter {
 		stringBuilder.append(" ");
 		stringBuilder.append("FROM");
 		stringBuilder.append(" ");
-		stringBuilder.append(this.identifier());
-		stringBuilder.append(this.table(boType));
-		stringBuilder.append(this.identifier());
+		stringBuilder.append(this.identifier(this.table(boType)));
 		if (withLock) {
 			stringBuilder.append(" ");
 			stringBuilder.append("WITH (ROWLOCK, UPDLOCK)");
@@ -683,9 +730,7 @@ public abstract class DbAdapter {
 		if (type == DataType.ALPHANUMERIC) {
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(alias);
-			stringBuilder.append(this.identifier());
+			stringBuilder.append(this.identifier(alias));
 			stringBuilder.append(" ");
 			stringBuilder.append("AS");
 			stringBuilder.append(" ");
@@ -694,9 +739,7 @@ public abstract class DbAdapter {
 		} else if (type == DataType.DATE) {
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(alias);
-			stringBuilder.append(this.identifier());
+			stringBuilder.append(this.identifier(alias));
 			stringBuilder.append(" ");
 			stringBuilder.append("AS");
 			stringBuilder.append(" ");
@@ -705,9 +748,7 @@ public abstract class DbAdapter {
 		} else if (type == DataType.NUMERIC) {
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(alias);
-			stringBuilder.append(this.identifier());
+			stringBuilder.append(this.identifier(alias));
 			stringBuilder.append(" ");
 			stringBuilder.append("AS");
 			stringBuilder.append(" ");
@@ -717,18 +758,14 @@ public abstract class DbAdapter {
 		} else if (type == DataType.DECIMAL) {
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(alias);
-			stringBuilder.append(this.identifier());
+			stringBuilder.append(this.identifier(alias));
 			stringBuilder.append(" ");
 			stringBuilder.append("AS");
 			stringBuilder.append(" ");
 			stringBuilder.append("NUMERIC(19, 6)");
 			stringBuilder.append(")");
 		} else {
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(alias);
-			stringBuilder.append(this.identifier());
+			stringBuilder.append(this.identifier(alias));
 		}
 		return stringBuilder.toString();
 	}
@@ -823,6 +860,21 @@ public abstract class DbAdapter {
 			for (int i = 0; i < condition.getBracketOpen(); i++) {
 				stringBuilder.append("(");
 			}
+			// 空IN集合处理：IN空集合恒假，NOT IN空集合恒真，避免生成非法的 IN ()
+			if ((condition.getOperation() == ConditionOperation.IN
+					|| condition.getOperation() == ConditionOperation.NOT_IN)
+					&& Strings.split(condition.getValue()).length == 0) {
+				stringBuilder.append("1");
+				stringBuilder.append(" ");
+				stringBuilder.append("=");
+				stringBuilder.append(" ");
+				stringBuilder.append(condition.getOperation() == ConditionOperation.IN ? "0" : "1");
+				// 闭括号
+				for (int i = 0; i < condition.getBracketClose(); i++) {
+					stringBuilder.append(")");
+				}
+				continue;
+			}
 			// 比较左侧
 			if (Strings.isNullOrEmpty(condition.getAlias())) {
 				// 字段名为空，则为值(ComparedAlias)与值(Value)的比较
@@ -841,9 +893,8 @@ public abstract class DbAdapter {
 					// 数值类型的字段且需要作为字符比较的
 					stringBuilder.append(this.castAs(DataType.ALPHANUMERIC, condition.getAlias()));
 				} else {
-					stringBuilder.append(this.identifier());
-					stringBuilder.append(condition.getAlias());
-					stringBuilder.append(this.identifier());
+					// 转义标识符引号字符，防止注入
+					stringBuilder.append(this.identifier(condition.getAlias()));
 				}
 			}
 			// 操作符
@@ -911,9 +962,8 @@ public abstract class DbAdapter {
 			if (stringBuilder.length() > 0) {
 				stringBuilder.append(this.separation());
 			}
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(item.getAlias());
-			stringBuilder.append(this.identifier());
+			// 转义标识符引号字符，防止注入
+			stringBuilder.append(this.identifier(item.getAlias()));
 			stringBuilder.append(" ");
 			stringBuilder.append(this.parsing(item.getSortType()));
 		}
@@ -940,9 +990,7 @@ public abstract class DbAdapter {
 				stringBuilder.append(this.parsing(ConditionRelationship.AND));
 				stringBuilder.append(" ");
 			}
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(dbField.name());
-			stringBuilder.append(this.identifier());
+			stringBuilder.append(this.identifier(dbField.name()));
 			stringBuilder.append(" ");
 			stringBuilder.append("=");
 			stringBuilder.append(" ");
@@ -966,9 +1014,7 @@ public abstract class DbAdapter {
 		stringBuilder.append(" ");
 		stringBuilder.append("FROM");
 		stringBuilder.append(" ");
-		stringBuilder.append(this.identifier());
-		stringBuilder.append(this.table(boData.getClass()));
-		stringBuilder.append(this.identifier());
+		stringBuilder.append(this.identifier(this.table(boData.getClass())));
 		stringBuilder.append(" ");
 		stringBuilder.append(this.where());
 		stringBuilder.append(" ");
@@ -998,9 +1044,7 @@ public abstract class DbAdapter {
 		StringBuilder stringBuilder = new StringBuilder(properties.size() * 20 + 64);
 		stringBuilder.append("UPDATE");
 		stringBuilder.append(" ");
-		stringBuilder.append(this.identifier());
-		stringBuilder.append(this.table(boData.getClass()));
-		stringBuilder.append(this.identifier());
+		stringBuilder.append(this.identifier(this.table(boData.getClass())));
 		stringBuilder.append(" ");
 		stringBuilder.append("SET");
 		stringBuilder.append(" ");
@@ -1018,9 +1062,7 @@ public abstract class DbAdapter {
 			if (stringBuilder.length() > count) {
 				stringBuilder.append(this.separation());
 			}
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(dbField.name());
-			stringBuilder.append(this.identifier());
+			stringBuilder.append(this.identifier(dbField.name()));
 			stringBuilder.append(" ");
 			stringBuilder.append("=");
 			stringBuilder.append(" ");
@@ -1054,9 +1096,7 @@ public abstract class DbAdapter {
 			if (fieldsBuilder.length() > 0) {
 				fieldsBuilder.append(this.separation());
 			}
-			fieldsBuilder.append(this.identifier());
-			fieldsBuilder.append(dbField.name());
-			fieldsBuilder.append(this.identifier());
+			fieldsBuilder.append(this.identifier(dbField.name()));
 
 			if (valuesBuilder.length() > 0) {
 				valuesBuilder.append(this.separation());
@@ -1072,9 +1112,7 @@ public abstract class DbAdapter {
 		stringBuilder.append(" ");
 		stringBuilder.append("INTO");
 		stringBuilder.append(" ");
-		stringBuilder.append(this.identifier());
-		stringBuilder.append(this.table(boData.getClass()));
-		stringBuilder.append(this.identifier());
+		stringBuilder.append(this.identifier(this.table(boData.getClass())));
 		stringBuilder.append(" ");
 		stringBuilder.append("(");
 		stringBuilder.append(fieldsBuilder);
@@ -1099,9 +1137,7 @@ public abstract class DbAdapter {
 		StringBuilder stringBuilder = new StringBuilder(spName.length() + args.length * 16 + 32);
 		stringBuilder.append("EXEC");
 		stringBuilder.append(" ");
-		stringBuilder.append(this.identifier());
-		stringBuilder.append(MyConfiguration.applyVariables(spName));
-		stringBuilder.append(this.identifier());
+		stringBuilder.append(this.identifier(MyConfiguration.applyVariables(spName)));
 		if (args.length > 0) {
 			stringBuilder.append(" ");
 			int count = stringBuilder.length();
@@ -1136,16 +1172,12 @@ public abstract class DbAdapter {
 		stringBuilder.append(" ");
 		stringBuilder.append("Max");
 		stringBuilder.append("(");
-		stringBuilder.append(this.identifier());
-		stringBuilder.append(maxValue.getKeyField().getName());
-		stringBuilder.append(this.identifier());
+		stringBuilder.append(this.identifier(maxValue.getKeyField().getName()));
 		stringBuilder.append(")");
 		stringBuilder.append(" ");
 		stringBuilder.append("FROM");
 		stringBuilder.append(" ");
-		stringBuilder.append(this.identifier());
-		stringBuilder.append(this.table(maxValue.getType()));
-		stringBuilder.append(this.identifier());
+		stringBuilder.append(this.identifier(this.table(maxValue.getType())));
 		if (maxValue instanceof IDbTableLock) {
 			stringBuilder.append(" ");
 			stringBuilder.append("WITH (UPDLOCK)");

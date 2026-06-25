@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
@@ -48,17 +49,19 @@ import org.xml.sax.SAXException;
  */
 public class SerializerXml extends Serializer {
 
-	private Map<String, JAXBContext> contextCache;
+	private final Map<String, JAXBContext> contextCache = new ConcurrentHashMap<>();
 
 	private JAXBContext getOrCreateContext(Class<?>... types) throws JAXBException {
 		String key = Arrays.stream(types).map(Class::getName).sorted().collect(Collectors.joining(","));
-		if (this.contextCache == null) {
-			this.contextCache = new HashMap<>();
-		}
 		JAXBContext ctx = this.contextCache.get(key);
 		if (ctx == null) {
-			ctx = JAXBContext.newInstance(types);
-			this.contextCache.put(key, ctx);
+			synchronized (this.contextCache) {
+				ctx = this.contextCache.get(key);
+				if (ctx == null) {
+					ctx = JAXBContext.newInstance(types);
+					this.contextCache.put(key, ctx);
+				}
+			}
 		}
 		return ctx;
 	}

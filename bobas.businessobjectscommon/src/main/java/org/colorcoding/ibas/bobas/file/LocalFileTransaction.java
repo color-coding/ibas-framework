@@ -1,6 +1,8 @@
 package org.colorcoding.ibas.bobas.file;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.UUID;
@@ -28,6 +30,53 @@ public class LocalFileTransaction extends FileTransaction {
 	public void setRepositoryFolder(String folder) {
 		// 统一路径格式
 		super.setRepositoryFolder(Files.valueOf(folder).getPath());
+	}
+
+	/**
+	 * 判断文件路径是否在仓库范围内。
+	 * <p>
+	 * 采用"逻辑路径优先、真实路径兜底"策略：
+	 * <ul>
+	 * <li>逻辑路径：{@link Path#toAbsolutePath()} + {@link Path#normalize()}，处理 {@code ..} 穿越，但<b>不解析符号链接</b>，
+	 * 从而支持仓库内部存在软连接（如子目录软连接到外部存储）的合法场景；</li>
+	 * <li>真实路径：仅当逻辑路径不在仓库范围内时，再用 {@link Path#toRealPath()} 解析符号链接做兜底校验，
+	 * 防止通过 {@code ../} 或外部软连接逃逸出仓库边界。</li>
+	 * </ul>
+	 * 仓库路径始终用逻辑路径比较，避免仓库本身是软连接时与目标路径解析方式不一致导致误判。
+	 *
+	 * @param file 待校验文件或目录
+	 * @return 在仓库范围内返回true
+	 * @throws IOException 路径解析失败
+	 */
+	private boolean isInRepositoryScope(File file) throws IOException {
+		// 仓库逻辑路径：规范化但不解析软连接，兼容仓库本身为软连接的情况
+		Path logicalRepo = Files.valueOf(this.getRepositoryFolder()).toPath().toAbsolutePath().normalize();
+		// 目标逻辑路径：同样规范化但不解析软连接，支持仓库内子目录为软连接
+		Path logicalTarget = file.toPath().toAbsolutePath().normalize();
+		if (logicalTarget.startsWith(logicalRepo)) {
+			// 逻辑路径在仓库范围内，允许访问（包含仓库内软连接的合法场景）
+			return true;
+		}
+		// 逻辑路径不在仓库范围内，再用真实路径兜底，防止通过 ../ 或外部软连接逃逸
+		Path repositoryPath = logicalRepo.toRealPath();
+		Path targetPath;
+		if (file.exists()) {
+			targetPath = file.toPath().toRealPath();
+		} else {
+			File parent = file.getParentFile();
+			if (parent != null && parent.exists()) {
+				targetPath = parent.toPath().toRealPath().resolve(file.getName()).normalize();
+			} else {
+				targetPath = logicalTarget;
+			}
+		}
+		return targetPath.startsWith(repositoryPath);
+	}
+
+	private void checkRepositoryScope(File file) throws IOException {
+		if (!this.isInRepositoryScope(file)) {
+			throw new IllegalStateException(Strings.format("path [%s] is out of repository scope.", file.getPath()));
+		}
 	}
 
 	protected String groupingOf(String name) {
@@ -158,9 +207,7 @@ public class LocalFileTransaction extends FileTransaction {
 		// 检查文件夹内文件是否符合条件
 		File folder = Files.valueOf(workFolder);
 		// 访问路径不在允许范围
-		if (!folder.getPath().startsWith(this.getRepositoryFolder())) {
-			throw new IllegalStateException(Strings.format("path [%s] is out of repository scope.", folder.getPath()));
-		}
+		this.checkRepositoryScope(folder);
 		if (!folder.isDirectory() || !folder.exists()) {
 			Logger.log(MessageLevel.WARN, "repository: not found folder [%s].", workFolder);
 			return new ArrayList<>();
@@ -216,6 +263,9 @@ public class LocalFileTransaction extends FileTransaction {
 			public void accept(File file) {
 				if (file.isDirectory() && include) {
 					File[] folderFiles = file.listFiles();
+					if (folderFiles == null) {
+						return;
+					}
 					// 文件排序
 					if (!criteria.getSorts().isEmpty()) {
 						for (ISort sort : criteria.getSorts()) {
@@ -273,8 +323,11 @@ public class LocalFileTransaction extends FileTransaction {
 			}
 		};
 		if (folder.isDirectory()) {
-			for (File item : folder.listFiles()) {
-				searcher.accept(item);
+			File[] folderFiles = folder.listFiles();
+			if (folderFiles != null) {
+				for (File item : folderFiles) {
+					searcher.accept(item);
+				}
 			}
 		} else {
 			searcher.accept(folder);
@@ -312,9 +365,7 @@ public class LocalFileTransaction extends FileTransaction {
 		builder = null;
 		File file = Files.valueOf(fileData.getLocation());
 		// 访问路径不在允许范围
-		if (!file.getPath().startsWith(this.getRepositoryFolder())) {
-			throw new IllegalStateException(Strings.format("path [%s] is out of repository scope.", file.getPath()));
-		}
+		this.checkRepositoryScope(file);
 		Files.writeTo(fileData.getStream(), file);
 		return new FileItem(file);
 	}
@@ -323,9 +374,7 @@ public class LocalFileTransaction extends FileTransaction {
 	protected boolean delete(FileItem data) throws Exception {
 		File file = Files.valueOf(data.getPath());
 		// 访问路径不在允许范围
-		if (!file.getPath().startsWith(this.getRepositoryFolder())) {
-			throw new IllegalStateException(Strings.format("path [%s] is out of repository scope.", file.getPath()));
-		}
+		this.checkRepositoryScope(file);
 		// 不允许删除文件夹
 		if (file.exists() && file.isFile()) {
 			if (file.delete()) {

@@ -5,8 +5,11 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 /**
  * 事务接口，提供数据查询、保存和事务控制
  */
-public interface ITransaction extends AutoCloseable {
-	/** 获取事务标识 */
+public interface ITransaction extends AutoCloseable, Cloneable {
+
+	/**
+	 * 获取事务标识
+	 */
 	String getId();
 
 	/**
@@ -25,10 +28,14 @@ public interface ITransaction extends AutoCloseable {
 	 */
 	boolean beginTransaction() throws RepositoryException;
 
-	/** 回滚事务 */
+	/**
+	 * 回滚事务
+	 */
 	void rollback() throws RepositoryException;
 
-	/** 提交事务 */
+	/**
+	 * 提交事务
+	 */
 	void commit() throws RepositoryException;
 
 	/**
@@ -49,5 +56,4 @@ public interface ITransaction extends AutoCloseable {
 	 * @throws RepositoryException
 	 */
 	<T> T[] save(T[] bos) throws RepositoryException;
-
 }

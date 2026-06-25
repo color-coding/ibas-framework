@@ -224,7 +224,7 @@ class BusinessLogicChain implements IBusinessLogicChain {
 				continue;
 			}
 			// 无效状态数据（已删除的对象跳过）
-			if (logic.getBeAffected().isDeleted()) {
+			if (logic.getBeAffected().isNew() && logic.getBeAffected().isDeleted()) {
 				continue;
 			}
 			// 对象集合

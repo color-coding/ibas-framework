@@ -232,7 +232,8 @@ abstract class Serializer implements ISerializer {
 				if (value == null) {
 					continue;
 				}
-				if (DateTimes.VALUE_MIN == value) {
+				// 值等于VALUE_MIN即跳过（不依赖引用相同，兼容非缓存实例）
+				if (value.getTime() == DateTimes.VALUE_MIN.getTime()) {
 					continue;
 				}
 				if (i > 0) {
@@ -271,10 +272,8 @@ abstract class Serializer implements ISerializer {
 				if (value == null) {
 					continue;
 				}
-				if (Decimals.VALUE_ZERO == value) {
-					continue;
-				}
-				if (BigDecimal.ZERO == value) {
+				// 值为零即跳过（compareTo判断，兼容任意scale及BigDecimal.ZERO）
+				if (Decimals.isZero(value)) {
 					continue;
 				}
 				if (i > 0) {
@@ -296,7 +295,8 @@ abstract class Serializer implements ISerializer {
 				if (value == null) {
 					continue;
 				}
-				if (BigInteger.ZERO == value) {
+				// 值为零即跳过（signum判断，兼容任意BigInteger实例）
+				if (value.signum() == 0) {
 					continue;
 				}
 				if (i > 0) {
@@ -320,19 +320,8 @@ abstract class Serializer implements ISerializer {
 				if (value == null) {
 					continue;
 				}
-				if (Numbers.DOUBLE_VALUE_ZERO == value) {
-					continue;
-				}
-				if (Numbers.FLOAT_VALUE_ZERO == value) {
-					continue;
-				}
-				if (Numbers.SHORT_VALUE_ZERO == value) {
-					continue;
-				}
-				if (Numbers.INTEGER_VALUE_ZERO == value) {
-					continue;
-				}
-				if (Numbers.LONG_VALUE_ZERO == value) {
+				// 值为零即跳过（按数值判断，兼容非缓存的Double/Float实例）
+				if (Numbers.isZero(value)) {
 					continue;
 				}
 				if (i > 0) {

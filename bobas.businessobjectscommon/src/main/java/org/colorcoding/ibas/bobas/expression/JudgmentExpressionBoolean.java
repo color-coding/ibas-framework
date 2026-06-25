@@ -2,7 +2,6 @@ package org.colorcoding.ibas.bobas.expression;
 
 import java.util.Objects;
 
-import org.colorcoding.ibas.bobas.common.Booleans;
 import org.colorcoding.ibas.bobas.common.Strings;
 
 /**
@@ -49,7 +48,7 @@ public class JudgmentExpressionBoolean extends JudgmentExpression<Boolean> {
 		return super.result();
 	}
 
-	private boolean leftValue;
+	private Boolean leftValue;
 
 	@Override
 	public final Boolean getLeftValue() {
@@ -63,11 +62,15 @@ public class JudgmentExpressionBoolean extends JudgmentExpression<Boolean> {
 		} else if (value instanceof String) {
 			this.setLeftValue((String) value);
 		} else if (value == null) {
-			this.leftValue = false;
+			this.setLeftValue((Boolean) null);
 		}
 	}
 
 	public final void setLeftValue(String value) {
+		if (Strings.isNullOrEmpty(value)) {
+			this.setLeftValue((Boolean) null);
+			return;
+		}
 		this.setLeftValue(Boolean.valueOf(value));
 	}
 
@@ -75,7 +78,7 @@ public class JudgmentExpressionBoolean extends JudgmentExpression<Boolean> {
 		this.leftValue = value;
 	}
 
-	private boolean rightValue;
+	private Boolean rightValue;
 
 	@Override
 	public final Boolean getRightValue() {
@@ -89,15 +92,14 @@ public class JudgmentExpressionBoolean extends JudgmentExpression<Boolean> {
 		} else if (value instanceof String) {
 			this.setRightValue((String) value);
 		} else if (value == null) {
-			this.rightValue = false;
+			this.setRightValue((Boolean) null);
 		}
 	}
 
 	public final void setRightValue(String value) {
 		if (Strings.isNullOrEmpty(value)) {
-			if (this.getOperation() == JudgmentOperation.IS_NULL || this.getOperation() == JudgmentOperation.NOT_NULL) {
-				value = Boolean.toString(Booleans.VALUE_FALSE);
-			}
+			this.setRightValue((Boolean) null);
+			return;
 		}
 		this.setRightValue(Boolean.valueOf(value));
 	}

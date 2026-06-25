@@ -100,7 +100,7 @@ public abstract class FileTransaction extends Transaction {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T[] fetch(Class<?> dataType, ICriteria criteria) throws RepositoryException {
-		if (dataType != FileItem.class && FileItem.class.isAssignableFrom(dataType)) {
+		if (!FileItem.class.isAssignableFrom(dataType)) {
 			throw new RepositoryException(I18N.prop("msg_bobas_data_type_not_support", dataType));
 		}
 		try {

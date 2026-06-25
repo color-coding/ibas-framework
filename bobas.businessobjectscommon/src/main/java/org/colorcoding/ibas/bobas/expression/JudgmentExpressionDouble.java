@@ -17,7 +17,7 @@ public class JudgmentExpressionDouble extends JudgmentExpressionComparable<Doubl
 		super(leftValue, operation, rightValue);
 	}
 
-	private double leftValue;
+	private Double leftValue;
 
 	@Override
 	public final Double getLeftValue() {
@@ -32,10 +32,16 @@ public class JudgmentExpressionDouble extends JudgmentExpressionComparable<Doubl
 			this.setLeftValue((String) value);
 		} else if (value != null) {
 			this.setLeftValue(Strings.valueOf(value));
+		} else {
+			this.setLeftValue((Double) null);
 		}
 	}
 
 	public final void setLeftValue(String value) {
+		if (Strings.isNullOrEmpty(value)) {
+			this.setLeftValue((Double) null);
+			return;
+		}
 		this.setLeftValue(Double.valueOf(value));
 	}
 
@@ -43,7 +49,7 @@ public class JudgmentExpressionDouble extends JudgmentExpressionComparable<Doubl
 		this.leftValue = value;
 	}
 
-	private double rightValue;
+	private Double rightValue;
 
 	@Override
 	public final Double getRightValue() {
@@ -58,14 +64,15 @@ public class JudgmentExpressionDouble extends JudgmentExpressionComparable<Doubl
 			this.setRightValue((String) value);
 		} else if (value != null) {
 			this.setRightValue(Strings.valueOf(value));
+		} else {
+			this.setRightValue((Double) null);
 		}
 	}
 
 	public final void setRightValue(String value) {
 		if (Strings.isNullOrEmpty(value)) {
-			if (this.getOperation() == JudgmentOperation.IS_NULL || this.getOperation() == JudgmentOperation.NOT_NULL) {
-				value = Strings.VALUE_ZERO;
-			}
+			this.setRightValue((Double) null);
+			return;
 		}
 		this.setRightValue(Double.valueOf(value));
 	}

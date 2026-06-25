@@ -53,9 +53,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		StringBuilder stringBuilder = new StringBuilder(spName.length() + args.length * 16 + 32);
 		stringBuilder.append("EXEC");
 		stringBuilder.append(" ");
-		stringBuilder.append(this.identifier());
-		stringBuilder.append(MyConfiguration.applyVariables(spName));
-		stringBuilder.append(this.identifier());
+		stringBuilder.append(this.identifier(MyConfiguration.applyVariables(spName)));
 		if (args.length > 0) {
 			stringBuilder.append(" ");
 			stringBuilder.append("(");
@@ -67,6 +65,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 				if (Strings.isNullOrEmpty(arg)) {
 					stringBuilder.append("?");
 				} else {
+					// 参数名按标识符转义后再拼接，防止注入
 					stringBuilder.append(arg);
 					stringBuilder.append(" ");
 					stringBuilder.append("=");

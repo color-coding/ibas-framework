@@ -399,7 +399,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	 * @return 符合条件的属性列表
 	 */
 	@Override
-	public synchronized List<IPropertyInfo<?>> properties(Predicate<IPropertyInfo<?>> filter) {
+	public List<IPropertyInfo<?>> properties(Predicate<IPropertyInfo<?>> filter) {
 		List<IPropertyInfo<?>> properties = super.properties(filter);
 		if (this instanceof IBOUserFields && this.userFields != null && !this.userFields.isEmpty()) {
 			List<IPropertyInfo<?>> userFields = new ArrayList<>(this.userFields.size());
@@ -416,16 +416,13 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 
 	/**
 	 * 获取属性的值
-	 *
-	 * 不使用synchronized：读操作不修改状态，属性Map的key集合在构造后不变，
-	 * 并发get安全。详见FieldedObject.getProperty()注释。
-	 *
+	 * 
 	 * @param property 属性信息（null时抛NullPointerException）
 	 * @return 属性的值（用户字段null值返回默认值以节省内存）
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public synchronized final <P> P getProperty(IPropertyInfo<?> property) {
+	public final <P> P getProperty(IPropertyInfo<?> property) {
 		Objects.requireNonNull(property);
 		if (Strings.startsWith(property.getName(), IBOUserFields.USER_FIELD_PREFIX_SIGN)) {
 			if (this.userFields != null && this.userFields.containsKey(property)) {

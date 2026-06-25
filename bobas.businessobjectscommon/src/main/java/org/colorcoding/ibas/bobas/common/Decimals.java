@@ -11,16 +11,16 @@ public class Decimals {
 	/**
 	 * 截取小数方式-运行时
 	 */
-	public static RoundingMode ROUNDING_MODE_DEFAULT = RoundingMode.HALF_UP;
+	public static final RoundingMode ROUNDING_MODE_DEFAULT = RoundingMode.HALF_UP;
 	/**
-	 * 小数位数-存储时
+	 * 小数位数-存储时（影响{@link #VALUE_ZERO}等缓存实例的scale）
 	 */
-	public static int DECIMAL_PLACES_STORAGE = 6;
+	public static final int DECIMAL_PLACES_STORAGE = 6;
 
 	/**
-	 * 小数位数-运行时
+	 * 小数位数-运行时（{@link #valueOf(double)}等转换时的最大保留位数）
 	 */
-	public static int DECIMAL_PLACES_RUNNING = 9;
+	public static final int DECIMAL_PLACES_RUNNING = 9;
 
 	private static final BigDecimal zeroThroughTen[] = {
 			// 0 - 10
@@ -88,17 +88,20 @@ public class Decimals {
 
 	/**
 	 * 转换值（0-10及-1使用缓存，其余保留小数点后9位）
+	 * <p>
+	 * 缓存命中时返回的实例scale为{@link #DECIMAL_PLACES_STORAGE}；非缓存值由
+	 * {@link BigDecimal#valueOf(double)}产生，scale不固定。
 	 *
 	 * @param value 值
 	 * @return BigDecimal；0-10及-1返回缓存实例
 	 */
 	public static BigDecimal valueOf(double value) {
-		if (value >= 0 && value < zeroThroughTen.length) {
+		if (value >= 0 && value < zeroThroughTen.length && Double.compare(value, Math.rint(value)) == 0) {
 			return zeroThroughTen[(int) value];
 		} else if (Double.compare(value, -1d) == 0) {
 			return VALUE_MINUS_ONE;
 		}
-		BigDecimal decimal = new BigDecimal(value);
+		BigDecimal decimal = BigDecimal.valueOf(value);
 		if (decimal.scale() > DECIMAL_PLACES_RUNNING) {
 			return decimal.setScale(DECIMAL_PLACES_RUNNING, ROUNDING_MODE_DEFAULT);
 		}
@@ -107,17 +110,20 @@ public class Decimals {
 
 	/**
 	 * 转换值（0-10及-1使用缓存，其余保留小数点后9位）
+	 * <p>
+	 * 缓存命中时返回的实例scale为{@link #DECIMAL_PLACES_STORAGE}。
 	 *
 	 * @param value 值
 	 * @return BigDecimal
 	 */
 	public static BigDecimal valueOf(float value) {
-		if (value >= 0 && value < zeroThroughTen.length) {
+		if (value >= 0 && value < zeroThroughTen.length
+				&& Float.compare(value, (float) Math.rint((double) value)) == 0) {
 			return zeroThroughTen[(int) value];
 		} else if (Float.compare(value, -1f) == 0) {
 			return VALUE_MINUS_ONE;
 		}
-		BigDecimal decimal = new BigDecimal(value);
+		BigDecimal decimal = new BigDecimal(Float.toString(value));
 		if (decimal.scale() > DECIMAL_PLACES_RUNNING) {
 			return decimal.setScale(DECIMAL_PLACES_RUNNING, ROUNDING_MODE_DEFAULT);
 		}
@@ -170,52 +176,59 @@ public class Decimals {
 
 	/**
 	 * 转换值（字符串）
+	 * <p>
+	 * 解析为BigDecimal后再走 {@link #valueOf(BigDecimal)} 归一，因此 "2"、"10"、
+	 * "3.000000" 等任意 0-10、-1 等值都会命中缓存实例。
 	 *
-	 * @param value 字符串；null或空返回VALUE_ZERO
+	 * @param value 字符串；null/空/非数字格式返回VALUE_ZERO
 	 * @return BigDecimal
 	 */
 	public static BigDecimal valueOf(String value) {
-		if (value == null || value.isEmpty()) {
-			return VALUE_ZERO;
-		}
+		// 非数字（含null/空）一律视为零
 		if (Numbers.isZero(value)) {
 			return VALUE_ZERO;
 		}
-		// 分拆小数位
-		int index = value.indexOf(".");
-		if (index >= 0) {
-			boolean zero = true;
-			for (char item : value.substring(index + 1).toCharArray()) {
-				if (item != '0') {
-					zero = false;
-					break;
-				}
-			}
-			if (zero) {
-				value = value.substring(0, index);
-				// 小数点后都为零
-				if (value.equals("0") || value.equals("-0") || value.isEmpty()) {
-					return VALUE_ZERO;
-				} else if (value.equals("1")) {
-					return VALUE_ONE;
-				} else if (value.equals("-1")) {
-					return VALUE_MINUS_ONE;
-				}
-			}
-		}
-		return new BigDecimal(value);
+		return valueOf(new BigDecimal(value));
 	}
 
 	/**
-	 * 转换值（0-10使用缓存匹配）
+	 * 转换值（0-10及-1走缓存，符号分支+有序提前退出）
 	 *
-	 * @param value 值；不在缓存范围则原样返回
+	 * @param value 值；null返回VALUE_ZERO
 	 * @return 缓存匹配的实例或原值
 	 */
 	public static BigDecimal valueOf(BigDecimal value) {
-		for (BigDecimal item : zeroThroughTen) {
-			if (equals(item, value)) {
-				return item;
+		if (value == null) {
+			return VALUE_ZERO;
+		}
+		// JDK常量直接归一
+		if (value == BigDecimal.ZERO) {
+			return VALUE_ZERO;
+		} else if (value == BigDecimal.ONE) {
+			return VALUE_ONE;
+		} else if (value == BigDecimal.TEN) {
+			return zeroThroughTen[10];
+		}
+		// 按符号分支
+		int sign = value.signum();
+		if (sign == 0) {
+			return VALUE_ZERO;
+		}
+		if (sign < 0) {
+			// 缓存中负值仅有 -1
+			if (value.compareTo(VALUE_MINUS_ONE) == 0) {
+				return VALUE_MINUS_ONE;
+			}
+			return value;
+		}
+		// 正数1~10：有序匹配，提前退出
+		for (int i = 1; i < zeroThroughTen.length; i++) {
+			int c = value.compareTo(zeroThroughTen[i]);
+			if (c == 0) {
+				return zeroThroughTen[i];
+			}
+			if (c < 0) {
+				break;
 			}
 		}
 		return value;
@@ -371,10 +384,10 @@ public class Decimals {
 	/**
 	 * 除法
 	 *
-	 * @param dividend      被除数
-	 * @param divisor       除数
-	 * @param scale         保留小数位
-	 * @param roundingMode  进位方式
+	 * @param dividend     被除数
+	 * @param divisor      除数
+	 * @param scale        保留小数位
+	 * @param roundingMode 进位方式
 	 * @return 商
 	 */
 	public static BigDecimal divide(BigDecimal dividend, BigDecimal divisor, int scale, RoundingMode roundingMode) {
@@ -563,8 +576,8 @@ public class Decimals {
 	/**
 	 * 百分比（a占b的百分比，保留运行时小数位）
 	 *
-	 * @param value   数值
-	 * @param total   总数；null或为零返回VALUE_ZERO
+	 * @param value 数值
+	 * @param total 总数；null或为零返回VALUE_ZERO
 	 * @return 百分比值（0~1之间）
 	 */
 	public static BigDecimal percent(BigDecimal value, BigDecimal total) {
@@ -656,13 +669,15 @@ public class Decimals {
 		if (exponent >= 0) {
 			absEpsilon = BigDecimal.TEN.pow(exponent);
 		} else {
-			absEpsilon = BigDecimal.ONE.divide(BigDecimal.TEN.pow(-exponent), DECIMAL_PLACES_RUNNING, ROUNDING_MODE_DEFAULT);
+			absEpsilon = BigDecimal.ONE.divide(BigDecimal.TEN.pow(-exponent), DECIMAL_PLACES_RUNNING,
+					ROUNDING_MODE_DEFAULT);
 		}
 		if (diff.compareTo(absEpsilon) <= 0) {
 			return true;
 		}
 		// 相对误差阈值：10^(-digits)
-		BigDecimal relEpsilon = BigDecimal.ONE.divide(BigDecimal.TEN.pow(digits), DECIMAL_PLACES_RUNNING, ROUNDING_MODE_DEFAULT);
+		BigDecimal relEpsilon = BigDecimal.ONE.divide(BigDecimal.TEN.pow(digits), DECIMAL_PLACES_RUNNING,
+				ROUNDING_MODE_DEFAULT);
 		// 相对误差判断：diff / max(|value1|, |value2|) <= relEpsilon
 		BigDecimal maxAbs = value1.abs().max(value2.abs());
 		if (isZero(maxAbs)) {

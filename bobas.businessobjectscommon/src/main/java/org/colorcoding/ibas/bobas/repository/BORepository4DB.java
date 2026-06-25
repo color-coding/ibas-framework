@@ -110,10 +110,10 @@ public class BORepository4DB extends BORepository {
 	public synchronized void setTransaction(ITransaction transaction) {
 		super.setTransaction(transaction);
 		this.myConnection = false;
-		if (transaction instanceof DbTransaction) {
-			DbTransaction dbTrans = (DbTransaction) transaction;
+		if (transaction instanceof IUserAware) {
+			IUserAware userAware = (IUserAware) transaction;
 			// 从 transaction 读取用户，同步到 repository
-			IUser user = dbTrans.getUser();
+			IUser user = userAware.getUser();
 			if (user != null && user != OrganizationFactory.UNKNOWN_USER) {
 				try {
 					this.setUserToken(user.getToken());

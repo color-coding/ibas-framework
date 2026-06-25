@@ -54,9 +54,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		if (type == DataType.ALPHANUMERIC) {
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(alias);
-			stringBuilder.append(this.identifier());
+			stringBuilder.append(this.identifier(alias));
 			stringBuilder.append(" ");
 			stringBuilder.append("AS");
 			stringBuilder.append(" ");
@@ -65,9 +63,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		} else if (type == DataType.DATE) {
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(alias);
-			stringBuilder.append(this.identifier());
+			stringBuilder.append(this.identifier(alias));
 			stringBuilder.append(" ");
 			stringBuilder.append("AS");
 			stringBuilder.append(" ");
@@ -76,9 +72,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		} else if (type == DataType.NUMERIC) {
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(alias);
-			stringBuilder.append(this.identifier());
+			stringBuilder.append(this.identifier(alias));
 			stringBuilder.append(" ");
 			stringBuilder.append("AS");
 			stringBuilder.append(" ");
@@ -88,18 +82,14 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		} else if (type == DataType.DECIMAL) {
 			stringBuilder.append("CAST");
 			stringBuilder.append("(");
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(alias);
-			stringBuilder.append(this.identifier());
+			stringBuilder.append(this.identifier(alias));
 			stringBuilder.append(" ");
 			stringBuilder.append("AS");
 			stringBuilder.append(" ");
 			stringBuilder.append("NUMERIC(19, 6)");
 			stringBuilder.append(")");
 		} else {
-			stringBuilder.append(this.identifier());
-			stringBuilder.append(alias);
-			stringBuilder.append(this.identifier());
+			stringBuilder.append(this.identifier(alias));
 		}
 		return stringBuilder.toString();
 	}
@@ -123,9 +113,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		stringBuilder.append(" ");
 		stringBuilder.append("FROM");
 		stringBuilder.append(" ");
-		stringBuilder.append(this.identifier());
-		stringBuilder.append(this.table(boType));
-		stringBuilder.append(this.identifier());
+		stringBuilder.append(this.identifier(this.table(boType)));
 		if (criteria.getConditions().size() > 0) {
 			stringBuilder.append(" ");
 			stringBuilder.append(this.where());
@@ -157,16 +145,12 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		stringBuilder.append(" ");
 		stringBuilder.append("Max");
 		stringBuilder.append("(");
-		stringBuilder.append(this.identifier());
-		stringBuilder.append(maxValue.getKeyField().getName());
-		stringBuilder.append(this.identifier());
+		stringBuilder.append(this.identifier(maxValue.getKeyField().getName()));
 		stringBuilder.append(")");
 		stringBuilder.append(" ");
 		stringBuilder.append("FROM");
 		stringBuilder.append(" ");
-		stringBuilder.append(this.identifier());
-		stringBuilder.append(this.table(maxValue.getType()));
-		stringBuilder.append(this.identifier());
+		stringBuilder.append(this.identifier(this.table(maxValue.getType())));
 		stringBuilder.append(" ");
 		stringBuilder.append(this.where());
 		stringBuilder.append(" ");
@@ -182,9 +166,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		stringBuilder.append(" ");
 		stringBuilder.append("FROM");
 		stringBuilder.append(" ");
-		stringBuilder.append(this.identifier());
-		stringBuilder.append(MyConfiguration.applyVariables(spName));
-		stringBuilder.append(this.identifier());
+		stringBuilder.append(this.identifier(MyConfiguration.applyVariables(spName)));
 		if (args.length > 0) {
 			stringBuilder.append(" ");
 			stringBuilder.append("(");
@@ -196,6 +178,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 				if (Strings.isNullOrEmpty(arg)) {
 					stringBuilder.append("?");
 				} else {
+					// 参数名按标识符转义后再拼接，防止注入
 					stringBuilder.append(arg);
 					stringBuilder.append(" ");
 					stringBuilder.append("=");

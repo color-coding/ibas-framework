@@ -7,9 +7,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -137,12 +137,27 @@ public class DbTransaction extends Transaction implements IUserAware {
 	}
 
 	/**
+	 * 判断属性值是否为保存时应转为空值的默认值。
+	 *
+	 * @param propertyInfo 属性信息
+	 * @param value        属性值
+	 * @return 是默认空值返回true
+	 */
+	private boolean isDefaultNullValue(IPropertyInfo<?> propertyInfo, Object value) {
+		if (propertyInfo == null || propertyInfo.isPrimaryKey() || propertyInfo.isUniqueKey()) {
+			return false;
+		}
+		return Objects.equals(value, DateTimes.VALUE_MIN) || Objects.equals(value, Strings.VALUE_EMPTY)
+				|| Objects.equals(value, Numbers.SHORT_VALUE_ZERO) || Objects.equals(value, Numbers.INTEGER_VALUE_ZERO)
+				|| Objects.equals(value, Numbers.LONG_VALUE_ZERO) || Objects.equals(value, Numbers.DOUBLE_VALUE_ZERO)
+				|| Objects.equals(value, Numbers.FLOAT_VALUE_ZERO);
+	}
+
+	/**
 	 * 将 SQL 异常翻译为友好的描述文本（用于包装异常）。
 	 * <p>
-	 * 调用当前数据库适配器的 {@link DbAdapter#translateException(SQLException)}：
-	 * 各厂商子类会按 ErrorCode/SQLState 识别并返回国际化消息，
-	 * 未识别的异常由基类直接返回原始消息。
-	 * 适配器不可用时，回退到原始异常消息。
+	 * 调用当前数据库适配器的 {@link DbAdapter#translateException(SQLException)}： 各厂商子类会按
+	 * ErrorCode/SQLState 识别并返回国际化消息， 未识别的异常由基类直接返回原始消息。 适配器不可用时，回退到原始异常消息。
 	 *
 	 * @param exception SQL 异常
 	 * @return 描述文本
@@ -586,9 +601,9 @@ public class DbTransaction extends Transaction implements IUserAware {
 			BiFunction<TransactionType, List<BusinessObject<?>>, Exception> sqlExecuter = null;
 			// 事务通知语句执行者
 			BiFunction<Boolean, List<BusinessObject<?>>, Exception> spExecuter = null;
-			Map<Class<?>, List<BusinessObject<?>>> boDeletes = new HashMap<>(4, 1);
-			Map<Class<?>, List<BusinessObject<?>>> boUpdates = new HashMap<>(4, 1);
-			Map<Class<?>, List<BusinessObject<?>>> boInserts = new HashMap<>(4, 1);
+			Map<Class<?>, List<BusinessObject<?>>> boDeletes = new LinkedHashMap<>(4, 1);
+			Map<Class<?>, List<BusinessObject<?>>> boUpdates = new LinkedHashMap<>(4, 1);
+			Map<Class<?>, List<BusinessObject<?>>> boInserts = new LinkedHashMap<>(4, 1);
 
 			boolean mine = this.beginTransaction();
 			try {
@@ -739,13 +754,7 @@ public class DbTransaction extends Transaction implements IUserAware {
 											continue;
 										}
 										value = data.getProperty(propertyInfo);
-										if (!propertyInfo.isPrimaryKey() && !propertyInfo.isUniqueKey()
-												&& (value == DateTimes.VALUE_MIN || value == Strings.VALUE_EMPTY
-														|| value == Numbers.SHORT_VALUE_ZERO
-														|| value == Numbers.INTEGER_VALUE_ZERO
-														|| value == Numbers.LONG_VALUE_ZERO
-														|| value == Numbers.DOUBLE_VALUE_ZERO
-														|| value == Numbers.FLOAT_VALUE_ZERO)) {
+										if (DbTransaction.this.isDefaultNullValue(propertyInfo, value)) {
 											// 默认值时存空
 											value = null;
 										} else if (DbTransaction.this.edit_type_decimal_places != null
@@ -794,13 +803,7 @@ public class DbTransaction extends Transaction implements IUserAware {
 											continue;
 										}
 										value = data.getProperty(propertyInfo);
-										if (!propertyInfo.isPrimaryKey() && !propertyInfo.isUniqueKey()
-												&& (value == DateTimes.VALUE_MIN || value == Strings.VALUE_EMPTY
-														|| value == Numbers.SHORT_VALUE_ZERO
-														|| value == Numbers.INTEGER_VALUE_ZERO
-														|| value == Numbers.LONG_VALUE_ZERO
-														|| value == Numbers.DOUBLE_VALUE_ZERO
-														|| value == Numbers.FLOAT_VALUE_ZERO)) {
+										if (DbTransaction.this.isDefaultNullValue(propertyInfo, value)) {
 											// 默认值时存空
 											value = null;
 										} else if (DbTransaction.this.edit_type_decimal_places != null
@@ -827,13 +830,15 @@ public class DbTransaction extends Transaction implements IUserAware {
 								}
 								statement.addBatch();
 								count += 1;
-								if (i >= batchCount) {
+								if (count >= batchCount) {
 									statement.executeBatch();
+									statement.clearBatch();
 									count = 0;
 								}
 							}
 							if (count > 0) {
 								statement.executeBatch();
+								statement.clearBatch();
 							}
 						} catch (Exception e) {
 							return e;
@@ -864,6 +869,9 @@ public class DbTransaction extends Transaction implements IUserAware {
 									.prepareStatement(DbTransaction.this.getAdapter().sp_transaction_notification())) {
 								for (int i = 0; i < datas.size(); i++) {
 									data = (BusinessObject<?>) datas.get(i);
+									if (!data.isSavable()) {
+										continue;
+									}
 									if (data.isDeleted()) {
 										type = direction ? TransactionType.DELETE : TransactionType.BEFORE_DELETE;
 									} else if (data.isNew()) {
@@ -904,7 +912,13 @@ public class DbTransaction extends Transaction implements IUserAware {
 									if (!DbTransaction.this.getAdapter().isNoUserTransactionSP()) {
 										IUser user = DbTransaction.this.getUser();
 										if (user != null) {
-											statement.setInt(6, user.getId());
+											if (DbTransaction.this.cacheDatas != null
+													&& DbTransaction.this.cacheDatas.containsAll(datas)) {
+												// 缓存里有被保存对象，则认为是业务逻辑影响的，更新用户标记下
+												statement.setInt(6, -900000 - user.getId());
+											} else {
+												statement.setInt(6, user.getId());
+											}
 										} else {
 											statement.setInt(6, -1);
 										}

@@ -73,7 +73,7 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	 * @return 属性列表
 	 */
 	@Override
-	public synchronized List<IPropertyInfo<?>> properties() {
+	public List<IPropertyInfo<?>> properties() {
 		return this.properties(null);
 	}
 
@@ -84,7 +84,7 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	 * @return 符合条件的属性列表
 	 */
 	@Override
-	public synchronized List<IPropertyInfo<?>> properties(Predicate<IPropertyInfo<?>> filter) {
+	public List<IPropertyInfo<?>> properties(Predicate<IPropertyInfo<?>> filter) {
 		ArrayList<IPropertyInfo<?>> propertyInfos = new ArrayList<>(this.fields.size());
 		for (IPropertyInfo<?> propertyInfo : this.fields.keySet()) {
 			if (filter == null || filter.test(propertyInfo)) {
@@ -105,16 +105,13 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	 *
 	 * 值为null时返回属性的默认值（减少内存占用）
 	 *
-	 * 不使用synchronized：属性Map的key集合在构造后不再变化，put仅替换已有key的value，
-	 * 不会触发rehash/扩容等结构性修改，因此并发get是安全的。
-	 *
 	 * @param property 属性信息（不允许为null）
 	 *
 	 * @return 属性的值；存储null时返回默认值
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public synchronized <P> P getProperty(IPropertyInfo<?> property) {
+	public <P> P getProperty(IPropertyInfo<?> property) {
 		Objects.requireNonNull(property);
 		if (this.fields.containsKey(property)) {
 			P value = (P) this.fields.get(property);

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE DataStructureOrchestration>
-<ns2:DataStructureOrchestration
-    xmlns:ns2="http://colorcoding.org/btulz/transformers">
+<ns2:DataStructureOrchestration xmlns:ns2="http://colorcoding.org/btulz/transformers">
     <Name>sql_hana_ibas_initialization</Name>
     <Description>基于HANA的结构映射说明</Description>
     <Integrated>true</Integrated>
@@ -35,7 +34,7 @@
                     IN num_of_cols_in_key integer,                     --主键个数
                     IN list_of_key_cols_tab_del nvarchar(255),         --主键名称
                     IN list_of_cols_val_tab_del nvarchar(255),         --主键值
-                    IN user_id integer                                 --用户标识
+                    IN user_id integer                                 --用户标识（被动保存时:-900000）
                 )
                 LANGUAGE SQLSCRIPT AS
                 BEGIN

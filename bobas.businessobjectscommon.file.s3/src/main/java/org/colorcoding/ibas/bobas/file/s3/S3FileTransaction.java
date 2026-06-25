@@ -136,7 +136,7 @@ public class S3FileTransaction extends FileTransaction {
 	 * @throws RepositoryException 客户端已存在时抛出
 	 */
 	public void initClient(String endpoint, String accessKey, String secretKey) throws RepositoryException {
-		this.initClient(endpoint, accessKey, secretKey);
+		this.initClient(endpoint, accessKey, secretKey, MyConfiguration.getConfigValue(CONFIG_ITEM_S3_REGION));
 	}
 
 	public void initClient() throws RepositoryException {

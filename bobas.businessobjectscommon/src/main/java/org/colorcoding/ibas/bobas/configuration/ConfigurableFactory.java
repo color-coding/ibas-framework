@@ -65,17 +65,14 @@ public abstract class ConfigurableFactory<T> {
 	 * 
 	 * @param names 名称
 	 * @return 类型实例
-	 * @throws ClassNotFoundException
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
+	 * @throws ReflectiveOperationException 反射创建实例失败
 	 */
-	protected T newInstance(String... names)
-			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+	protected T newInstance(String... names) throws ReflectiveOperationException {
 		Class<T> type = this.classOf(names);
 		if (type == null) {
 			return null;
 		}
-		return type.newInstance();
+		return type.getDeclaredConstructor().newInstance();
 	}
 
 	/**

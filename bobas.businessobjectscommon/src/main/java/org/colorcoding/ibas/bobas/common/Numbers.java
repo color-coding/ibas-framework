@@ -46,6 +46,10 @@ public class Numbers {
 	 * 浮点型：0
 	 */
 	public final static Float FLOAT_VALUE_ZERO = Float.valueOf(0f);
+	/**
+	 * 字节型：0
+	 */
+	public final static Byte BYTE_VALUE_ZERO = Byte.valueOf((byte) 0);
 
 	/**
 	 * 类型默认值
@@ -65,6 +69,8 @@ public class Numbers {
 			return DOUBLE_VALUE_ZERO;
 		} else if (numberType == Float.class) {
 			return FLOAT_VALUE_ZERO;
+		} else if (numberType == Byte.class) {
+			return BYTE_VALUE_ZERO;
 		}
 		throw new IllegalArgumentException(Strings.format("type [%s] is not Number.", numberType.getName()));
 	}
@@ -80,6 +86,7 @@ public class Numbers {
 			return false;
 		}
 		boolean hasDot = false;
+		boolean hasDigit = false;
 		char cValue;
 		for (int i = 0; i < value.length(); i++) {
 			cValue = value.charAt(i);
@@ -96,12 +103,9 @@ public class Numbers {
 			if (!Character.isDigit(cValue)) {
 				return false;
 			}
+			hasDigit = true;
 		}
-		// 纯负号或 "-." 不是有效数字
-		if (value.equals("-") || value.equals("-.")) {
-			return false;
-		}
-		return true;
+		return hasDigit;
 	}
 
 	/**
@@ -151,14 +155,14 @@ public class Numbers {
 
 	public static double toDouble(BigDecimal value) {
 		if (value == null) {
-			return Double.valueOf(Strings.VALUE_ZERO);
+			return 0d;
 		}
 		return value.doubleValue();
 	}
 
 	public static double toDouble(Object value) {
 		if (value == null) {
-			return Double.valueOf(Strings.VALUE_ZERO);
+			return 0d;
 		}
 		return DataConvert.convert(Double.class, value);
 	}
@@ -181,14 +185,14 @@ public class Numbers {
 
 	public static float toFloat(BigDecimal value) {
 		if (value == null) {
-			return Float.valueOf(Strings.VALUE_ZERO);
+			return 0f;
 		}
 		return value.floatValue();
 	}
 
 	public static float toFloat(Object value) {
 		if (value == null) {
-			return Float.valueOf(Strings.VALUE_ZERO);
+			return 0f;
 		}
 		return DataConvert.convert(Float.class, value);
 	}
@@ -211,14 +215,14 @@ public class Numbers {
 
 	public static int toInteger(BigDecimal value) {
 		if (value == null) {
-			return Integer.valueOf(Strings.VALUE_ZERO);
+			return 0;
 		}
 		return value.intValue();
 	}
 
 	public static int toInteger(Object value) {
 		if (value == null) {
-			return Integer.valueOf(Strings.VALUE_ZERO);
+			return 0;
 		}
 		return DataConvert.convert(Integer.class, value);
 	}
@@ -241,14 +245,14 @@ public class Numbers {
 
 	public static long toLong(BigDecimal value) {
 		if (value == null) {
-			return Long.valueOf(Strings.VALUE_ZERO);
+			return 0L;
 		}
 		return value.longValue();
 	}
 
 	public static long toLong(Object value) {
 		if (value == null) {
-			return Long.valueOf(Strings.VALUE_ZERO);
+			return 0L;
 		}
 		return DataConvert.convert(Long.class, value);
 	}

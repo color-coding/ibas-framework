@@ -6,6 +6,7 @@ import java.io.Reader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.json.Json;
@@ -59,7 +60,7 @@ public class SerializerJson extends Serializer {
 		this.orderProperties = orderProperties;
 	}
 
-	private Map<String, JAXBContext> contextCache;
+	private final Map<String, JAXBContext> contextCache = new ConcurrentHashMap<>();
 
 	/**
 	 * 创建JAXB上下文（首次创建后缓存复用）
@@ -70,13 +71,15 @@ public class SerializerJson extends Serializer {
 	 */
 	protected JAXBContext createJAXBContextJson(Class<?>... types) throws JAXBException {
 		String key = Arrays.stream(types).map(Class::getName).sorted().collect(Collectors.joining(","));
-		if (this.contextCache == null) {
-			this.contextCache = new HashMap<>();
-		}
 		JAXBContext ctx = this.contextCache.get(key);
 		if (ctx == null) {
-			ctx = JAXBContextFactory.createContext(types, null);
-			this.contextCache.put(key, ctx);
+			synchronized (this.contextCache) {
+				ctx = this.contextCache.get(key);
+				if (ctx == null) {
+					ctx = JAXBContextFactory.createContext(types, null);
+					this.contextCache.put(key, ctx);
+				}
+			}
 		}
 		return ctx;
 	}

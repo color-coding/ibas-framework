@@ -90,7 +90,7 @@ public class BusinessLogicsManager {
 		}
 		if (logicClass != null && BusinessLogic.class.isAssignableFrom(logicClass)) {
 			try {
-				return (BusinessLogic<?, ?>) logicClass.newInstance();
+				return (BusinessLogic<?, ?>) logicClass.getDeclaredConstructor().newInstance();
 			} catch (Exception e) {
 				throw new BusinessLogicException(e);
 			}

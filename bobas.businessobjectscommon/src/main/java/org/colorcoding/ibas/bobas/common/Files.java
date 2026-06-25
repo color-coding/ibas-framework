@@ -163,6 +163,27 @@ public class Files {
 	}
 
 	/**
+	 * 判断文件名是否匹配前缀和后缀（忽略大小写，空前缀/后缀跳过）。
+	 *
+	 * @param name   文件名
+	 * @param prefix 前缀
+	 * @param suffix 后缀
+	 * @return 匹配返回true
+	 */
+	private static boolean matchFileName(String name, String prefix, String suffix) {
+		if (Strings.isNullOrEmpty(name)) {
+			return false;
+		}
+		if (!Strings.isNullOrEmpty(prefix) && !Strings.startsWith(name, prefix, true)) {
+			return false;
+		}
+		if (!Strings.isNullOrEmpty(suffix) && !Strings.endsWith(name, suffix, true)) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * 列出文件
 	 *
 	 * @param path   路径
@@ -184,17 +205,7 @@ public class Files {
 	 */
 	public static List<File> listFiles(File file, String prefix, String suffix) {
 		if (file.isFile()) {
-			if (!Strings.isNullOrEmpty(prefix)) {
-				if (Strings.startsWith(file.getName(), prefix, true)) {
-					return ArrayList.create(file);
-				}
-			}
-			if (!Strings.isNullOrEmpty(suffix)) {
-				if (Strings.endsWith(file.getName(), suffix, true)) {
-					return ArrayList.create(file);
-				}
-			}
-			if (Strings.isWith(file.getName(), prefix, suffix)) {
+			if (matchFileName(file.getName(), prefix, suffix)) {
 				return ArrayList.create(file);
 			}
 		} else if (file.isDirectory()) {
@@ -202,17 +213,7 @@ public class Files {
 			if (files != null) {
 				ArrayList<File> results = new ArrayList<>(files.length);
 				for (File item : files) {
-					if (!Strings.isNullOrEmpty(prefix)) {
-						if (Strings.startsWith(item.getName(), prefix, true)) {
-							results.add(item);
-						}
-					}
-					if (!Strings.isNullOrEmpty(suffix)) {
-						if (Strings.endsWith(item.getName(), suffix, true)) {
-							results.add(item);
-						}
-					}
-					if (Strings.isWith(item.getName(), prefix, suffix)) {
+					if (matchFileName(item.getName(), prefix, suffix)) {
 						results.add(item);
 					}
 				}
@@ -681,7 +682,7 @@ public class Files {
 	 * @throws IOException 读取失败
 	 */
 	public static List<String> readAllLines(String path, Charset charset) throws IOException {
-		return readAllLines(valueOf(path), null);
+		return readAllLines(valueOf(path), charset);
 	}
 
 	/**
@@ -892,8 +893,8 @@ public class Files {
 	 */
 	public static List<File> walk(File file) throws IOException {
 		ArrayList<File> results = new ArrayList<>();
-		for (Path p : java.nio.file.Files.walk(file.toPath()).toArray(Path[]::new)) {
-			results.add(p.toFile());
+		try (java.util.stream.Stream<Path> stream = java.nio.file.Files.walk(file.toPath())) {
+			stream.forEach(p -> results.add(p.toFile()));
 		}
 		results.trimToSize();
 		return results;

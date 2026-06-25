@@ -203,6 +203,8 @@ public class Strings {
 	 * 转为字符串
 	 *
 	 * 数组/集合以逗号拼接；null返回空字符串
+	 * <p>
+	 * 字符串归一：空串归一到{@link #VALUE_EMPTY}，单字符归一到{@link #ALPHABETS}缓存
 	 *
 	 * @param value 对象；null返回空字符串
 	 * @return 字符串表示
@@ -212,7 +214,12 @@ public class Strings {
 			return VALUE_EMPTY;
 		}
 		if (value.getClass() == String.class) {
-			String nValue = String.valueOf(value);
+			String nValue = (String) value;
+			// 空字符串归一
+			if (nValue.isEmpty()) {
+				return VALUE_EMPTY;
+			}
+			// 单字符归一到字母表缓存
 			if (nValue.length() == 1) {
 				char vChar = nValue.charAt(0);
 				if (vChar >= 32 && vChar <= 127) {
@@ -630,7 +637,7 @@ public class Strings {
 		try (ByteArrayOutputStream writer = new ByteArrayOutputStream(256)) {
 			ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_JSON);
 			serializer.serialize(data, writer);
-			return writer.toString();
+			return writer.toString("UTF-8");
 		} catch (IOException e1) {
 			throw new SerializationException(e1);
 		}
@@ -646,7 +653,7 @@ public class Strings {
 		try (ByteArrayOutputStream writer = new ByteArrayOutputStream(512)) {
 			ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_XML);
 			serializer.serialize(data, writer);
-			return writer.toString();
+			return writer.toString("UTF-8");
 		} catch (IOException e1) {
 			throw new SerializationException(e1);
 		}
