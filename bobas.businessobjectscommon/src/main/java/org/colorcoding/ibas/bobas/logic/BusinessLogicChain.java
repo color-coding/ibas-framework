@@ -276,6 +276,9 @@ class BusinessLogicChain implements IBusinessLogicChain {
 								|| item instanceof BOLogst) {
 							// 提高性能，编号不查询副本
 							logicChain.setTriggerCopy(null);
+						} else if (item.isSavable() == false) {
+							// 不保存的对象，则不查询副本
+							logicChain.setTriggerCopy(null);
 						} else if (item.isDirty() == false) {
 							// 主体未被修改，使用主体
 							logicChain.setTriggerCopy(item);
