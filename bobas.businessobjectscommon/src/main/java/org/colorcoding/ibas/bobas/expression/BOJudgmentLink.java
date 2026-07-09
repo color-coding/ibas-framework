@@ -70,7 +70,7 @@ public class BOJudgmentLink extends JudgmentLink {
 					} catch (JudgmentOperationException e) {
 						throw e;
 					} catch (Exception e) {
-						throw new ExpressionException(e);
+						throw new ExpressionException(e.getMessage(), e);
 					}
 				}
 			}

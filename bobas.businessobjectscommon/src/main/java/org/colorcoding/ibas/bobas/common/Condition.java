@@ -219,7 +219,7 @@ public class Condition extends Serializable implements ICondition {
 		try {
 			return (Condition) super.clone();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 

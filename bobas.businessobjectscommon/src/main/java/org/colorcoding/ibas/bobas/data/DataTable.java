@@ -110,7 +110,7 @@ public class DataTable extends Serializable implements IDataTable {
 				serializer.serialize(this, writer);
 				return writer.toString();
 			} catch (IOException e) {
-				throw new SerializationException(e);
+				throw new SerializationException(e.getMessage(), e);
 			}
 		}
 		return this.toString();

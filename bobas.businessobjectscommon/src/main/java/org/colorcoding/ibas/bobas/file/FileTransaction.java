@@ -112,7 +112,7 @@ public abstract class FileTransaction extends Transaction {
 		} catch (RepositoryException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new RepositoryException(e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 
@@ -142,7 +142,7 @@ public abstract class FileTransaction extends Transaction {
 		} catch (RepositoryException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new RepositoryException(e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 
@@ -168,7 +168,7 @@ public abstract class FileTransaction extends Transaction {
 		} catch (RepositoryException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new RepositoryException(e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 
@@ -247,7 +247,7 @@ public abstract class FileTransaction extends Transaction {
 			}
 			return datas.toArray((T[]) Array.newInstance(dataType, datas.size()));
 		} catch (JudgmentOperationException e) {
-			throw new RepositoryException(e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 

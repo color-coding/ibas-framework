@@ -306,8 +306,10 @@ class BusinessLogicChain implements IBusinessLogicChain {
 			DateTime endTime = DateTimes.now();
 			Logger.log(MessageLevel.INFO, "logics chain [%s]: ends at [%s].", this.hashCode(),
 					DateTimes.toString(endTime, DateTimes.FORMAT_TIME));
+		} catch (BusinessLogicException e) {
+			throw e;
 		} catch (Exception e) {
-			throw new BusinessLogicException(e);
+			throw new BusinessLogicException(e.getMessage(), e);
 		}
 	}
 

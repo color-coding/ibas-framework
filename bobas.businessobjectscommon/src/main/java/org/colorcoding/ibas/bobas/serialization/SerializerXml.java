@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -30,7 +31,6 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import javax.xml.XMLConstants;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.DateTime;
@@ -92,7 +92,7 @@ public class SerializerXml extends Serializer {
 			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);// 是否省略xm头声明信息
 			marshaller.marshal(object, outputStream);
 		} catch (JAXBException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -105,7 +105,7 @@ public class SerializerXml extends Serializer {
 			this.configureSecureUnmarshaller(unmarshaller);
 			return (T) unmarshaller.unmarshal(inputSource);
 		} catch (JAXBException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -119,7 +119,7 @@ public class SerializerXml extends Serializer {
 			this.configureSecureUnmarshaller(unmarshaller);
 			return (T) unmarshaller.unmarshal(inputStream);
 		} catch (JAXBException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -133,7 +133,7 @@ public class SerializerXml extends Serializer {
 			this.configureSecureUnmarshaller(unmarshaller);
 			return (T) unmarshaller.unmarshal(reader);
 		} catch (JAXBException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -149,7 +149,7 @@ public class SerializerXml extends Serializer {
 			Source xmlSource = new StreamSource(data);
 			validator.validate(xmlSource);
 		} catch (SAXException | IOException e) {
-			throw new ValidateException(e);
+			throw new ValidateException(e.getMessage(), e);
 		}
 	}
 
@@ -169,7 +169,7 @@ public class SerializerXml extends Serializer {
 				return factory.newSchema(xsdSource);
 			}
 		} catch (SAXException | IOException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -215,7 +215,7 @@ public class SerializerXml extends Serializer {
 			}
 			transformer.transform(new DOMSource(document), new StreamResult(outputStream));
 		} catch (ParserConfigurationException | TransformerException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 

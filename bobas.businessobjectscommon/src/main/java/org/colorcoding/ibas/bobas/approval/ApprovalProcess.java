@@ -405,7 +405,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 						this.setStatus(emApprovalStatus.PROCESSING);
 					}
 				} catch (JudgmentOperationException e) {
-					throw new ApprovalException(e);
+					throw new ApprovalException(e.getMessage(), e);
 				}
 			} else if (apResult == emApprovalResult.REJECTED) {
 				// 拒绝
@@ -629,7 +629,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 		} catch (ApprovalException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new ApprovalException(e);
+			throw new ApprovalException(e.getMessage(), e);
 		}
 	}
 
@@ -673,10 +673,10 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 				try {
 					transaction.rollback();
 				} catch (RepositoryException e1) {
-					throw new ApprovalException(e1);
+					throw new ApprovalException(e1.getMessage(), e1);
 				}
 			}
-			throw new ApprovalException(e);
+			throw new ApprovalException(e.getMessage(), e);
 		}
 	}
 

@@ -48,7 +48,7 @@ public class BOPeriodService extends BusinessLogic<IBOPeriodContract, IBusinessO
 			// 检查期间是否可用
 			this.getPeriodsManager().checkPeriod(contract.getHost());
 		} catch (Exception e) {
-			throw new BusinessLogicException(e);
+			throw new BusinessLogicException(e.getMessage(), e);
 		}
 	}
 
@@ -58,7 +58,7 @@ public class BOPeriodService extends BusinessLogic<IBOPeriodContract, IBusinessO
 			// 检查期间是否可用
 			this.getPeriodsManager().checkPeriod(contract.getHost());
 		} catch (Exception e) {
-			throw new BusinessLogicException(e);
+			throw new BusinessLogicException(e.getMessage(), e);
 		}
 	}
 

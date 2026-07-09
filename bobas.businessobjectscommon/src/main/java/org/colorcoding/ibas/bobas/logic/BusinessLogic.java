@@ -494,7 +494,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 		try {
 			return BOUtilities.fetch(iterator, criteria);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 
@@ -519,8 +519,10 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 				Transaction transaction = (Transaction) this.getTransaction();
 				results.addAll(transaction.fetchInCache(boType, criteria));
 			}
+		} catch (BusinessLogicException e) {
+			throw e;
 		} catch (Exception e) {
-			throw new BusinessLogicException(e);
+			throw new BusinessLogicException(e.getMessage(), e);
 		}
 		return results;
 	}

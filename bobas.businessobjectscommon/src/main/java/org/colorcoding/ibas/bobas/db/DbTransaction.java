@@ -184,7 +184,7 @@ public class DbTransaction extends Transaction implements IUserAware {
 			}
 			return !this.getConnection().getAutoCommit();
 		} catch (SQLException e) {
-			throw new RepositoryException(e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 
@@ -200,7 +200,7 @@ public class DbTransaction extends Transaction implements IUserAware {
 			this.getConnection().setAutoCommit(false);
 			return true;
 		} catch (SQLException e) {
-			throw new RepositoryException(e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 
@@ -225,7 +225,7 @@ public class DbTransaction extends Transaction implements IUserAware {
 				this.cacheDatas.clear();
 			}
 		} catch (SQLException e) {
-			throw new RepositoryException(e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 
@@ -240,7 +240,7 @@ public class DbTransaction extends Transaction implements IUserAware {
 				this.getConnection().setAutoCommit(true);
 			}
 		} catch (SQLException e) {
-			throw new RepositoryException(e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 
@@ -255,7 +255,7 @@ public class DbTransaction extends Transaction implements IUserAware {
 				this.getConnection().setAutoCommit(true);
 			}
 		} catch (SQLException e) {
-			throw new RepositoryException(e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 
@@ -324,13 +324,15 @@ public class DbTransaction extends Transaction implements IUserAware {
 				}
 			}
 			return datas.toArray((T[]) Array.newInstance(boType, datas.size()));
+		} catch (RepositoryException e) {
+			throw e;
 		} catch (Exception e) {
 			if (boType != null && e instanceof SQLException) {
 				String message = this.translateSQLException((SQLException) e);
 				throw new RepositoryException(
 						I18N.prop("msg_bobas_to_fetch_bo_data_failed", boType.getSimpleName(), message), e);
 			}
-			throw new RepositoryException(e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 
@@ -704,9 +706,9 @@ public class DbTransaction extends Transaction implements IUserAware {
 						if (MyConfiguration.isDebugMode()) {
 							Logger.log(MessageLevel.DEBUG, Strings.format("parameterized sql: %s", sql));
 						}
-						Object value;
-						DbField dbField;
-						BusinessObject<?> data;
+						Object value = null;
+						DbField dbField = null;
+						BusinessObject<?> data = null;
 						List<IPropertyInfo<?>> propertyInfos = tpltData.properties();
 						try (PreparedStatement statement = DbTransaction.this.getConnection().prepareStatement(sql)) {
 							int count = 0;
@@ -841,6 +843,16 @@ public class DbTransaction extends Transaction implements IUserAware {
 								statement.clearBatch();
 							}
 						} catch (Exception e) {
+							if (data != null) {
+								if (e instanceof SQLException) {
+									return new RepositoryException(I18N.prop("msg_bobas_to_save_bo_data_failed",
+											data.getClass().getSimpleName(),
+											DbTransaction.this.translateSQLException((SQLException) e)), e);
+								} else {
+									return new RepositoryException(I18N.prop("msg_bobas_to_save_bo_data_failed",
+											data.getClass().getSimpleName(), e.getMessage()), e);
+								}
+							}
 							return e;
 						} finally {
 							sql = null;
@@ -861,10 +873,10 @@ public class DbTransaction extends Transaction implements IUserAware {
 							int keyCount;
 							DbField dbField;
 							TransactionType type;
-							BusinessObject<?> data;
 							StringBuilder fieldsBuilder;
 							StringBuilder valuesBuilder;
 							List<IPropertyInfo<?>> keys;
+							BusinessObject<?> data = null;
 							try (PreparedStatement statement = DbTransaction.this.getConnection()
 									.prepareStatement(DbTransaction.this.getAdapter().sp_transaction_notification())) {
 								for (int i = 0; i < datas.size(); i++) {
@@ -938,6 +950,16 @@ public class DbTransaction extends Transaction implements IUserAware {
 									}
 								}
 							} catch (Exception e) {
+								if (data != null) {
+									if (e instanceof SQLException) {
+										return new RepositoryException(I18N.prop("msg_bobas_to_save_bo_data_failed",
+												data.getClass().getSimpleName(),
+												DbTransaction.this.translateSQLException((SQLException) e)), e);
+									} else {
+										return new RepositoryException(I18N.prop("msg_bobas_to_save_bo_data_failed",
+												data.getClass().getSimpleName(), e.getMessage()), e);
+									}
+								}
 								return e;
 							} finally {
 								dbField = null;
@@ -1015,16 +1037,6 @@ public class DbTransaction extends Transaction implements IUserAware {
 					this.rollback();
 					mine = false;
 				}
-				if (boType != null && (e instanceof SQLException || e instanceof TransactionException)) {
-					String message;
-					if (e instanceof SQLException) {
-						message = this.translateSQLException((SQLException) e);
-					} else {
-						message = e.getMessage();
-					}
-					throw new RepositoryException(
-							I18N.prop("msg_bobas_to_save_bo_data_failed", boType.getSimpleName(), message), e);
-				}
 				throw e;
 			} finally {
 				cData = null;
@@ -1042,7 +1054,7 @@ public class DbTransaction extends Transaction implements IUserAware {
 		} catch (RepositoryException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new RepositoryException(e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 
@@ -1085,8 +1097,10 @@ public class DbTransaction extends Transaction implements IUserAware {
 				}
 			}
 			return maxValue;
+		} catch (RepositoryException e) {
+			throw e;
 		} catch (Exception e) {
-			throw new RepositoryException(e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 
@@ -1109,8 +1123,10 @@ public class DbTransaction extends Transaction implements IUserAware {
 					return this.getAdapter().parsingDatas(resultSet);
 				}
 			}
+		} catch (RepositoryException e) {
+			throw e;
 		} catch (Exception e) {
-			throw new RepositoryException(e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 
@@ -1147,13 +1163,15 @@ public class DbTransaction extends Transaction implements IUserAware {
 				this.fetchChilds(datas, new Criteria());
 			}
 			return datas.toArray((T[]) Array.newInstance(boType, datas.size()));
+		} catch (RepositoryException e) {
+			throw e;
 		} catch (Exception e) {
 			if (boType != null && e instanceof SQLException) {
 				String message = this.translateSQLException((SQLException) e);
 				throw new RepositoryException(
 						I18N.prop("msg_bobas_to_fetch_bo_data_failed", boType.getSimpleName(), message), e);
 			}
-			throw new RepositoryException(e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 
@@ -1218,7 +1236,7 @@ public class DbTransaction extends Transaction implements IUserAware {
 			};
 			return BOUtilities.fetch(iterator, criteria).toArray((T[]) Array.newInstance(boType, 0));
 		} catch (JudgmentOperationException e) {
-			throw new RepositoryException(e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 

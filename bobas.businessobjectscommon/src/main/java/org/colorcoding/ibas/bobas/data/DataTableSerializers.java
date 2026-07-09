@@ -131,7 +131,7 @@ class DataTableSerializerCsv extends DataTableSerializer {
 		try {
 			this.serialize((IDataTable) object, outputStream, formated);
 		} catch (Exception e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -205,7 +205,7 @@ abstract class DataTableSerializer implements ISerializer {
 			this.getWriter().writeHeader(outputStream);
 			this.serialize((IDataTable) object, outputStream, formated);
 		} catch (Exception e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 

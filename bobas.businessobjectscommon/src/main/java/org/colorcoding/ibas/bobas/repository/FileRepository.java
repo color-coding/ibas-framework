@@ -125,7 +125,7 @@ public class FileRepository extends Repository {
 			}
 			super.close();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 

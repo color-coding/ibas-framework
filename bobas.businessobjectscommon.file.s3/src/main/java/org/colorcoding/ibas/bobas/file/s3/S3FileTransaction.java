@@ -90,7 +90,7 @@ public class S3FileTransaction extends FileTransaction {
 					try {
 						this.initClient();
 					} catch (Exception e) {
-						throw new RuntimeException(e);
+						throw new RuntimeException(e.getMessage(), e);
 					}
 				}
 			}
@@ -197,7 +197,7 @@ public class S3FileTransaction extends FileTransaction {
 							.key(fileItem.getPath()).build();
 					Files.writeTo(S3FileTransaction.this.getS3Client().getObject(request), outputStream);
 				} catch (AwsServiceException | SdkClientException | IOException e) {
-					throw new RuntimeException(e);
+					throw new RuntimeException(e.getMessage(), e);
 				}
 			}
 
@@ -404,7 +404,7 @@ public class S3FileTransaction extends FileTransaction {
 								.key(fileItem.getPath()).build();
 						Files.writeTo(S3FileTransaction.this.getS3Client().getObject(request), outputStream);
 					} catch (AwsServiceException | SdkClientException | IOException e) {
-						throw new RuntimeException(e);
+						throw new RuntimeException(e.getMessage(), e);
 					}
 				}
 

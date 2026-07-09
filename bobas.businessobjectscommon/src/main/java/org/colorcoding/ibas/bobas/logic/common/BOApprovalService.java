@@ -125,7 +125,7 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 			}
 			return processData;
 		} catch (Exception e) {
-			throw new BusinessLogicException(e);
+			throw new BusinessLogicException(e.getMessage(), e);
 		}
 	}
 
@@ -156,7 +156,7 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 				}
 			}
 		} catch (Exception e) {
-			throw new BusinessLogicException(e);
+			throw new BusinessLogicException(e.getMessage(), e);
 		}
 	}
 
@@ -281,7 +281,7 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 				}
 			}
 		} catch (Exception e) {
-			throw new BusinessLogicException(e);
+			throw new BusinessLogicException(e.getMessage(), e);
 		}
 	}
 

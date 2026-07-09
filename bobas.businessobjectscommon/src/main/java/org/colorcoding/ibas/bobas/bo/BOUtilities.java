@@ -701,7 +701,7 @@ public class BOUtilities {
 			serializer.serialize(data, writer);
 			return writer.toString();
 		} catch (IOException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		} catch (SerializationException e) {
 			Logger.log(MessageLevel.WARN, e);
 			// 内置发生错误，则使用标准方式
@@ -710,7 +710,7 @@ public class BOUtilities {
 				serializer.serialize(data, writer);
 				return writer.toString();
 			} catch (IOException e1) {
-				throw new SerializationException(e1);
+				throw new SerializationException(e1.getMessage(), e1);
 			}
 		}
 	}
@@ -728,7 +728,7 @@ public class BOUtilities {
 			serializer.serialize(data, writer);
 			return writer.toString();
 		} catch (IOException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		} catch (SerializationException e) {
 			Logger.log(MessageLevel.WARN, e);
 			// 内置发生错误，则使用标准方式
@@ -737,7 +737,7 @@ public class BOUtilities {
 				serializer.serialize(data, writer);
 				return writer.toString();
 			} catch (IOException e1) {
-				throw new SerializationException(e1);
+				throw new SerializationException(e1.getMessage(), e1);
 			}
 		}
 	}
@@ -754,7 +754,7 @@ public class BOUtilities {
 			serializer.serialize(data, writer);
 			return writer.toString();
 		} catch (IOException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 

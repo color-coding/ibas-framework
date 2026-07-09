@@ -197,7 +197,7 @@ public class Criteria extends Serializable implements ICriteria {
 			}
 			return criteria;
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 

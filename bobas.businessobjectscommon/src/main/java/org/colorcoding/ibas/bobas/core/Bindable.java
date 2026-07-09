@@ -42,7 +42,7 @@ public abstract class Bindable extends Serializable implements IBindable, IClone
 			nData.listeners = null;
 			return nData;
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 }

@@ -101,7 +101,7 @@ public class SerializerJson extends Serializer {
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);
 			marshaller.marshal(object, outputStream);
 		} catch (JAXBException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -133,7 +133,7 @@ public class SerializerJson extends Serializer {
 				return (T) object;
 			}
 		} catch (JAXBException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -153,7 +153,7 @@ public class SerializerJson extends Serializer {
 				return (T) object;
 			}
 		} catch (JAXBException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -172,7 +172,7 @@ public class SerializerJson extends Serializer {
 				return (T) object;
 			}
 		} catch (JAXBException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -206,7 +206,7 @@ public class SerializerJson extends Serializer {
 		} catch (ValidateException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new ValidateException(e);
+			throw new ValidateException(e.getMessage(), e);
 		}
 	}
 

@@ -71,7 +71,7 @@ public class BORepository4DB extends BORepository {
 		} catch (RepositoryException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new RepositoryException(e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 
@@ -102,7 +102,7 @@ public class BORepository4DB extends BORepository {
 			}
 			super.close();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 
@@ -118,7 +118,7 @@ public class BORepository4DB extends BORepository {
 				try {
 					this.setUserToken(user.getToken());
 				} catch (Exception e) {
-					throw new RuntimeException(e);
+					throw new RuntimeException(e.getMessage(), e);
 				}
 			}
 		}

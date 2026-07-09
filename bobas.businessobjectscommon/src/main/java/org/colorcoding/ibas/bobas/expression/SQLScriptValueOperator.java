@@ -79,7 +79,7 @@ public class SQLScriptValueOperator implements IPropertyValueOperator {
 				}
 			}
 		} catch (Exception e) {
-			throw new ExpressionException(e);
+			throw new ExpressionException(e.getMessage(), e);
 		}
 	}
 

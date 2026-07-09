@@ -106,7 +106,7 @@ class SerializerCsv extends Serializer {
 				count++;
 			}
 		} catch (Exception e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -158,7 +158,7 @@ abstract class Serializer implements ISerializer {
 			this.getWriter().writeHeader(outputStream);
 			this.serialize((IFieldedObject) object, outputStream, formated);
 		} catch (Exception e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 

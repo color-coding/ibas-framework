@@ -159,7 +159,7 @@ public class BOKeysService extends BusinessLogic<IBOKeysContract, BONumbering> {
 			}
 			return numbering;
 		} catch (Exception e) {
-			throw new BusinessLogicException(e);
+			throw new BusinessLogicException(e.getMessage(), e);
 		}
 	}
 

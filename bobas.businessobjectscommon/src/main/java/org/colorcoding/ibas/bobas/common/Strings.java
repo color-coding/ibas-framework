@@ -638,8 +638,8 @@ public class Strings {
 			ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_JSON);
 			serializer.serialize(data, writer);
 			return writer.toString("UTF-8");
-		} catch (IOException e1) {
-			throw new SerializationException(e1);
+		} catch (IOException e) {
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -654,8 +654,8 @@ public class Strings {
 			ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_XML);
 			serializer.serialize(data, writer);
 			return writer.toString("UTF-8");
-		} catch (IOException e1) {
-			throw new SerializationException(e1);
+		} catch (IOException e) {
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -801,9 +801,9 @@ public class Strings {
 	/**
 	 * 左填充到指定长度
 	 *
-	 * @param value    字符串；null视为空字符串
-	 * @param size     目标长度；小于原长度时不填充
-	 * @param padChar  填充字符
+	 * @param value   字符串；null视为空字符串
+	 * @param size    目标长度；小于原长度时不填充
+	 * @param padChar 填充字符
 	 * @return 填充后的字符串
 	 */
 	public static String padLeft(String value, int size, char padChar) {
@@ -824,9 +824,9 @@ public class Strings {
 	/**
 	 * 右填充到指定长度
 	 *
-	 * @param value    字符串；null视为空字符串
-	 * @param size     目标长度；小于原长度时不填充
-	 * @param padChar  填充字符
+	 * @param value   字符串；null视为空字符串
+	 * @param size    目标长度；小于原长度时不填充
+	 * @param padChar 填充字符
 	 * @return 填充后的字符串
 	 */
 	public static String padRight(String value, int size, char padChar) {
@@ -858,9 +858,9 @@ public class Strings {
 	/**
 	 * 截取字符串最大长度；超过时追加省略标记
 	 *
-	 * @param value     字符串；null返回空字符串
-	 * @param maxLen    最大长度（含省略标记）；小于1返回空字符串
-	 * @param suffix    省略标记
+	 * @param value  字符串；null返回空字符串
+	 * @param maxLen 最大长度（含省略标记）；小于1返回空字符串
+	 * @param suffix 省略标记
 	 * @return 截取结果
 	 */
 	public static String ellipsis(String value, int maxLen, String suffix) {

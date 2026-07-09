@@ -36,7 +36,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			}
 			return DriverManager.getConnection(dbURL, userName, userPwd);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 

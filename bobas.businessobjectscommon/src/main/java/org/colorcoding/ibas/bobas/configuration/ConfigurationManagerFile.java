@@ -102,7 +102,7 @@ public class ConfigurationManagerFile extends ConfigurationManager {
 				}
 			}
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 

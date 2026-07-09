@@ -168,7 +168,7 @@ public class Configuration {
 			}
 			return file.getPath();
 		} catch (URISyntaxException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 
