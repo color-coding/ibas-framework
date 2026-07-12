@@ -16,6 +16,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.BOFactory;
+import org.colorcoding.ibas.bobas.bo.IBODocument;
+import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
+import org.colorcoding.ibas.bobas.bo.IBOMasterData;
+import org.colorcoding.ibas.bobas.bo.IBOMasterDataLine;
+import org.colorcoding.ibas.bobas.bo.IBOSimple;
+import org.colorcoding.ibas.bobas.bo.IBOSimpleLine;
 import org.colorcoding.ibas.bobas.bo.IBOUserFields;
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
 import org.colorcoding.ibas.bobas.bo.UserFieldsFactory;
@@ -431,7 +437,45 @@ public abstract class DbAdapter {
 	 * @return 转换后的查询条件（克隆副本）
 	 */
 	public ICriteria convert(ICriteria criteria, Class<?> boType) {
-		return this.convert(criteria, BOFactory.propertyInfos(boType));
+		criteria = this.convert(criteria, BOFactory.propertyInfos(boType));
+		if (criteria.getSorts().isEmpty()) {
+			// 可能非聚集索引命中，导致顺序混乱，默认加排序
+			if (IBOMasterData.class.isAssignableFrom(boType)) {
+				ISort sort = criteria.getSorts().create();
+				sort.setAlias(IBOMasterData.SERIAL_NUMBER_KEY_NAME);
+				sort.setSortType(SortType.ASCENDING);
+			} else if (IBOMasterDataLine.class.isAssignableFrom(boType)) {
+				ISort sort = criteria.getSorts().create();
+				sort.setAlias(IBOMasterDataLine.MASTER_PRIMARY_KEY_NAME);
+				sort.setSortType(SortType.ASCENDING);
+				sort = criteria.getSorts().create();
+				sort.setAlias(IBOMasterDataLine.SECONDARY_PRIMARY_KEY_NAME);
+				sort.setSortType(SortType.ASCENDING);
+			} else if (IBODocument.class.isAssignableFrom(boType)) {
+				ISort sort = criteria.getSorts().create();
+				sort.setAlias(IBODocument.MASTER_PRIMARY_KEY_NAME);
+				sort.setSortType(SortType.ASCENDING);
+			} else if (IBODocumentLine.class.isAssignableFrom(boType)) {
+				ISort sort = criteria.getSorts().create();
+				sort.setAlias(IBODocumentLine.MASTER_PRIMARY_KEY_NAME);
+				sort.setSortType(SortType.ASCENDING);
+				sort = criteria.getSorts().create();
+				sort.setAlias(IBODocumentLine.SECONDARY_PRIMARY_KEY_NAME);
+				sort.setSortType(SortType.ASCENDING);
+			} else if (IBOSimple.class.isAssignableFrom(boType)) {
+				ISort sort = criteria.getSorts().create();
+				sort.setAlias(IBOSimple.MASTER_PRIMARY_KEY_NAME);
+				sort.setSortType(SortType.ASCENDING);
+			} else if (IBOSimpleLine.class.isAssignableFrom(boType)) {
+				ISort sort = criteria.getSorts().create();
+				sort.setAlias(IBOSimpleLine.MASTER_PRIMARY_KEY_NAME);
+				sort.setSortType(SortType.ASCENDING);
+				sort = criteria.getSorts().create();
+				sort.setAlias(IBOSimpleLine.SECONDARY_PRIMARY_KEY_NAME);
+				sort.setSortType(SortType.ASCENDING);
+			}
+		}
+		return criteria;
 	}
 
 	/**
@@ -527,11 +571,11 @@ public abstract class DbAdapter {
 	/**
 	 * 用标识符引号包裹名称（字段名、别名、表名等），名称中的引号字符会按标准 SQL 规则"双写"转义。
 	 * <p>
-	 * 例如默认引号为 <code>"</code> 时，输入 <code>a"b</code> 输出 <code>"a""b"</code>；
-	 * 子类重写无参 {@link #identifier()} 使用其它引号字符（如 MySQL 的 <code>`</code>）时，自动按对应字符转义。
+	 * 例如默认引号为 <code>"</code> 时，输入 <code>a"b</code> 输出 <code>"a""b"</code>； 子类重写无参
+	 * {@link #identifier()} 使用其它引号字符（如 MySQL 的 <code>`</code>）时，自动按对应字符转义。
 	 * <p>
-	 * 该方法不做白名单/合法性校验，仅做最小化转义，是所有"拼接被引号包裹的标识符"场景的推荐入口；
-	 * 输入为 null 时按空串处理，引号为 null/空时不包裹直接返回。
+	 * 该方法不做白名单/合法性校验，仅做最小化转义，是所有"拼接被引号包裹的标识符"场景的推荐入口； 输入为 null 时按空串处理，引号为
+	 * null/空时不包裹直接返回。
 	 *
 	 * @param name 标识符原值
 	 * @return 形如 <code>"name"</code> 的字符串（具体引号由 {@link #identifier()} 决定）

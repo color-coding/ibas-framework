@@ -222,7 +222,7 @@ public class Strings {
 			// 单字符归一到字母表缓存
 			if (nValue.length() == 1) {
 				char vChar = nValue.charAt(0);
-				if (vChar >= 32 && vChar <= 127) {
+				if (vChar >= 32 && vChar <= 126) {
 					return alphabetOf(vChar);
 				}
 			}
