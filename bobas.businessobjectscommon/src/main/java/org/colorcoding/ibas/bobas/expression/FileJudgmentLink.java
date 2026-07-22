@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.expression;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 import java.io.File;
 
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
@@ -100,7 +102,7 @@ public class FileJudgmentLink extends JudgmentLink {
 			@Override
 			public void setValue(Object value) {
 				if (!(value instanceof File)) {
-					throw new ExpressionException(I18N.prop("msg_bobas_invalid_data"));
+					throw new ExpressionException(I18N.prop("msg_bobas_invalid_data", value != null ? value.getClass().getName() : "null"));
 				}
 				this.setValue((File) value);
 			}
@@ -131,7 +133,7 @@ public class FileJudgmentLink extends JudgmentLink {
 				} else if (CRITERIA_CONDITION_ALIAS_MODIFIED_TIME.equals(this.getPropertyName())) {
 					return Long.class;
 				}
-				throw new RuntimeException(I18N.prop("msg_bobas_not_support_type_expression", this.getPropertyName()));
+				throw new BasRuntimeException(I18N.prop("msg_bobas_not_support_type_expression", this.getPropertyName()));
 			}
 
 			@Override
@@ -149,7 +151,7 @@ public class FileJudgmentLink extends JudgmentLink {
 		};
 	}
 
-	public boolean judge(File file) throws JudgmentOperationException {
+	public boolean judge(File file)  {
 		return super.judge(file);
 	}
 

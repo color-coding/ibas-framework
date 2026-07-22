@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.configuration;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -102,7 +104,7 @@ public class ConfigurationManagerFile extends ConfigurationManager {
 				}
 			}
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage(), e);
+			throw new BasRuntimeException(e.getMessage(), e);
 		}
 	}
 

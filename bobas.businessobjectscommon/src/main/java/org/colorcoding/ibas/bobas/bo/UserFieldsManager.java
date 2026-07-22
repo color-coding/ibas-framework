@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.bo;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -123,7 +125,7 @@ public abstract class UserFieldsManager {
 		} else if (type == DataType.MEMO) {
 			return String.class;
 		}
-		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", type.toString()));
+		throw new BasRuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", type.toString()));
 	}
 
 	/**

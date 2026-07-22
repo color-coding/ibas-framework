@@ -20,6 +20,7 @@ import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.data.emYesNo;
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
 import org.colorcoding.ibas.bobas.expression.FileItemJudgmentLink;
 import org.colorcoding.ibas.bobas.file.FileData;
 import org.colorcoding.ibas.bobas.file.FileItem;
@@ -90,7 +91,7 @@ public class S3FileTransaction extends FileTransaction {
 					try {
 						this.initClient();
 					} catch (Exception e) {
-						throw new RuntimeException(e.getMessage(), e);
+						throw new BasRuntimeException(e.getMessage(), e);
 					}
 				}
 			}
@@ -197,7 +198,7 @@ public class S3FileTransaction extends FileTransaction {
 							.key(fileItem.getPath()).build();
 					Files.writeTo(S3FileTransaction.this.getS3Client().getObject(request), outputStream);
 				} catch (AwsServiceException | SdkClientException | IOException e) {
-					throw new RuntimeException(e.getMessage(), e);
+					throw new BasRuntimeException(e.getMessage(), e);
 				}
 			}
 
@@ -404,7 +405,7 @@ public class S3FileTransaction extends FileTransaction {
 								.key(fileItem.getPath()).build();
 						Files.writeTo(S3FileTransaction.this.getS3Client().getObject(request), outputStream);
 					} catch (AwsServiceException | SdkClientException | IOException e) {
-						throw new RuntimeException(e.getMessage(), e);
+						throw new BasRuntimeException(e.getMessage(), e);
 					}
 				}
 

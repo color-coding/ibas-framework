@@ -1,6 +1,8 @@
 package org.colorcoding.ibas.bobas.repository;
 
-public class RepositoryException extends Exception {
+import org.colorcoding.ibas.bobas.exception.BasException;
+
+public class RepositoryException extends BasException {
 
 	private static final long serialVersionUID = -7114791616597264059L;
 

@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.db;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -125,10 +127,24 @@ public abstract class DbAdapter {
 	 * @return 解析后的数据列表
 	 * @throws SQLException 数据库访问异常
 	 */
-	@SuppressWarnings("unchecked")
 	public <T> List<T> parsingDatas(Class<?> boType, ResultSet resultSet) throws SQLException {
+		return this.parsingDatas(boType, resultSet, -1);
+	}
+
+	/**
+	 * 解析数据
+	 *
+	 * @param <T>          对象类型
+	 * @param boType       对象类型（Result、KeyText、KeyValue、BusinessObject、SPValues）
+	 * @param resultSet    结果集
+	 * @param expectedSize 预期行数（用于预分配ArrayList容量，减少扩容拷贝；小于等于0时不预分配）
+	 * @return 解析后的数据列表
+	 * @throws SQLException 数据库访问异常
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> List<T> parsingDatas(Class<?> boType, ResultSet resultSet, int expectedSize) throws SQLException {
 		T data = null;
-		ArrayList<T> datas = new ArrayList<>();
+		ArrayList<T> datas = expectedSize > 0 ? new ArrayList<>(expectedSize) : new ArrayList<>();
 		IPropertyInfo<?>[] orderProperties = null;
 		while (resultSet.next()) {
 			if (boType.equals(Result.class)) {
@@ -684,7 +700,7 @@ public abstract class DbAdapter {
 			// 存储过程赋值对象
 			DbProcedure procedure = boType.getAnnotation(DbProcedure.class);
 			if (procedure == null) {
-				throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", boType.toString()));
+				throw new BasRuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", boType.toString()));
 			}
 			return this.parsingStoredProcedure(procedure.name(), new String[criteria.getConditions().size()]);
 		}
@@ -716,7 +732,7 @@ public abstract class DbAdapter {
 				return this.table(boType);
 			}
 		}
-		throw new RuntimeException(I18N.prop("msg_bobas_not_found_bo_table", boType.toString()));
+		throw new BasRuntimeException(I18N.prop("msg_bobas_not_found_bo_table", boType.toString()));
 	}
 
 	/**
@@ -826,7 +842,7 @@ public abstract class DbAdapter {
 		} else if (type == SortType.DESCENDING) {
 			return "DESC";
 		}
-		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", type.toString()));
+		throw new BasRuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", type.toString()));
 	}
 
 	/**
@@ -880,7 +896,7 @@ public abstract class DbAdapter {
 		} else if (value == ConditionOperation.NOT_IN) {
 			return "NOT IN";
 		}
-		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
+		throw new BasRuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
 	}
 
 	/**
@@ -1041,7 +1057,7 @@ public abstract class DbAdapter {
 			stringBuilder.append("?");
 		}
 		if (stringBuilder.length() == 0) {
-			throw new RuntimeException(I18N.prop("msg_bobas_bo_not_found_primarykeys", boData.toString()));
+			throw new BasRuntimeException(I18N.prop("msg_bobas_bo_not_found_primarykeys", boData.toString()));
 		}
 		return stringBuilder.toString();
 	}
@@ -1148,7 +1164,7 @@ public abstract class DbAdapter {
 			valuesBuilder.append("?");
 		}
 		if (fieldsBuilder.length() == 0 || valuesBuilder.length() == 0) {
-			throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", boData.toString()));
+			throw new BasRuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", boData.toString()));
 		}
 
 		StringBuilder stringBuilder = new StringBuilder(properties.size() * 20 + 64);
@@ -1443,15 +1459,15 @@ public abstract class DbAdapter {
 	/**
 	 * 翻译数据库异常为可读的描述文本。
 	 * <p>
-	 * 基类不做任何分析，直接返回异常的原始消息； 各厂商的 DbAdapter 子类应根据自身的 ErrorCode/SQLState 识别并返回国际化消息。
+	 * 基类不做任何分析，返回空字符串表示未识别； 各厂商的 DbAdapter 子类应根据自身的 ErrorCode/SQLState 识别并返回国际化消息。
 	 *
 	 * @param exception 数据库异常
-	 * @return 描述文本；输入为 null 时返回 ""
+	 * @return 描述文本；输入为 null 或未识别时返回 ""
 	 */
 	public String translateException(SQLException exception) {
 		if (exception == null) {
 			return Strings.VALUE_EMPTY;
 		}
-		return exception.getMessage();
+		return Strings.VALUE_EMPTY;
 	}
 }

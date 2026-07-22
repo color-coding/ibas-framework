@@ -61,7 +61,7 @@ public class BusinessRuleMinValue<T extends Comparable<?>> extends BusinessRuleC
 		Comparable<T> minValue = (Comparable<T>) this.getMinValue();
 		for (Map.Entry<IPropertyInfo<?>, Object> entry : context.getInputValues().entrySet()) {
 			if (entry.getValue() == null) {
-				throw new BusinessRuleException(I18N.prop("msg_bobas_business_rule_required_error", entry.getKey().getName()));
+				throw new BusinessRuleException(I18N.prop("msg_bobas_business_rule_value_required", entry.getKey().getName()));
 			}
 			value = (T) entry.getValue();
 			if (minValue.compareTo(value) > 0) {

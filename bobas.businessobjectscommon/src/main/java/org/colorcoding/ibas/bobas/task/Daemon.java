@@ -29,7 +29,7 @@ public class Daemon {
 	 * @return 任务ID，小于0任务注册失败
 	 * @throws InvalidDaemonTaskException
 	 */
-	public static long register(IDaemonTask task) throws InvalidDaemonTaskException {
+	public static long register(IDaemonTask task)  {
 		return register(task, true);
 	}
 
@@ -41,7 +41,7 @@ public class Daemon {
 	 * @return 任务ID，小于0任务注册失败
 	 * @throws InvalidDaemonTaskException
 	 */
-	public static long register(IDaemonTask task, boolean log) throws InvalidDaemonTaskException {
+	public static long register(IDaemonTask task, boolean log)  {
 		synchronized (Daemon.class) {
 			return create().add(task, log);
 		}

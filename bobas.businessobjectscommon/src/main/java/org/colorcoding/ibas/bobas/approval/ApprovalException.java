@@ -1,6 +1,8 @@
 package org.colorcoding.ibas.bobas.approval;
 
-public class ApprovalException extends Exception {
+import org.colorcoding.ibas.bobas.exception.BasException;
+
+public class ApprovalException extends BasException {
 
 	private static final long serialVersionUID = 5565402598264677846L;
 

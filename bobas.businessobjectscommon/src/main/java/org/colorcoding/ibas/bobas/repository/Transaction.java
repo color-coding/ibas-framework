@@ -46,4 +46,10 @@ public abstract class Transaction implements ITransaction {
 	 * @throws RepositoryException 查询失败
 	 */
 	public abstract <T> T[] fetchInCache(Class<?> boType, ICriteria criteria) throws RepositoryException;
+
+	/**
+	 * 清理缓存数据，释放被引用的对象
+	 */
+	public void clearCache() {
+	}
 }

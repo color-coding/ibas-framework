@@ -17,7 +17,6 @@ import org.colorcoding.ibas.bobas.expression.JudgmentExpressionDecimal;
 import org.colorcoding.ibas.bobas.expression.JudgmentExpressionInteger;
 import org.colorcoding.ibas.bobas.expression.JudgmentExpressionString;
 import org.colorcoding.ibas.bobas.expression.JudgmentOperation;
-import org.colorcoding.ibas.bobas.expression.JudgmentOperationException;
 import org.colorcoding.ibas.bobas.test.demo.SalesOrder;
 
 import junit.framework.TestCase;
@@ -25,12 +24,10 @@ import junit.framework.TestCase;
 /**
  * 表达式判断功能测试
  *
- * 测试范围：
- * 1. 布尔表达式判断（EQUAL/AND/OR/NOT_EQUAL）
- * 2. 日期表达式判断（EQUAL/NOT_EQUAL/LESS_EQUAL）
- * 3. 字符串表达式判断（EQUAL/NOT_EQUAL/CONTAIN/BEGIN_WITH/END_WITH/IN）
- * 4. 整数表达式判断（EQUAL/NOT_EQUAL/LESS_EQUAL）
- * 5. 十进制数表达式判断（EQUAL/NOT_EQUAL/LESS_EQUAL）
+ * 测试范围： 1. 布尔表达式判断（EQUAL/AND/OR/NOT_EQUAL） 2.
+ * 日期表达式判断（EQUAL/NOT_EQUAL/LESS_EQUAL） 3.
+ * 字符串表达式判断（EQUAL/NOT_EQUAL/CONTAIN/BEGIN_WITH/END_WITH/IN） 4.
+ * 整数表达式判断（EQUAL/NOT_EQUAL/LESS_EQUAL） 5. 十进制数表达式判断（EQUAL/NOT_EQUAL/LESS_EQUAL）
  * 6. 复合条件判断链（BOJudgmentLinkCondition）
  */
 public class TestExpressions extends TestCase {
@@ -112,7 +109,7 @@ public class TestExpressions extends TestCase {
 
 	}
 
-	public void testJudgmentLinks() throws JudgmentOperationException {
+	public void testJudgmentLinks() {
 		// 查询条件
 		ICriteria criteria = new Criteria();
 		criteria.setResultCount(100);
@@ -205,8 +202,7 @@ public class TestExpressions extends TestCase {
 	// ==================== 新增测试 ====================
 
 	/**
-	 * 测试布尔表达式-反向场景
-	 * 覆盖：true!=true, false AND true, false OR false
+	 * 测试布尔表达式-反向场景 覆盖：true!=true, false AND true, false OR false
 	 */
 	public void testBooleanExpressionNegative() {
 		JudgmentExpressionBoolean judgment = new JudgmentExpressionBoolean();
@@ -227,8 +223,7 @@ public class TestExpressions extends TestCase {
 	}
 
 	/**
-	 * 测试整数表达式-更多操作
-	 * 覆盖：GREATER_EQUAL, LESS_THAN, GREATER_THAN
+	 * 测试整数表达式-更多操作 覆盖：GREATER_EQUAL, LESS_THAN, GREATER_THAN
 	 */
 	public void testIntegerExpressionMore() {
 		JudgmentExpressionInteger judgment = new JudgmentExpressionInteger();
@@ -254,8 +249,7 @@ public class TestExpressions extends TestCase {
 	}
 
 	/**
-	 * 测试字符串表达式-NOT_CONTAIN和NOT_IN
-	 * 覆盖：不包含、不在列表中
+	 * 测试字符串表达式-NOT_CONTAIN和NOT_IN 覆盖：不包含、不在列表中
 	 */
 	public void testStringExpressionMore() {
 		JudgmentExpressionString judgment = new JudgmentExpressionString();
@@ -282,8 +276,7 @@ public class TestExpressions extends TestCase {
 	}
 
 	/**
-	 * 测试Decimal表达式-更多操作
-	 * 覆盖：GREATER_THAN, LESS_THAN, LESS_EQUAL
+	 * 测试Decimal表达式-更多操作 覆盖：GREATER_THAN, LESS_THAN, LESS_EQUAL
 	 */
 	public void testDecimalExpressionMore() {
 		JudgmentExpressionDecimal judgment = new JudgmentExpressionDecimal();
@@ -304,10 +297,9 @@ public class TestExpressions extends TestCase {
 	}
 
 	/**
-	 * 测试复合条件判断链-具体断言
-	 * 覆盖：验证复合条件判断的精确结果
+	 * 测试复合条件判断链-具体断言 覆盖：验证复合条件判断的精确结果
 	 */
-	public void testJudgmentLinksWithAssertions() throws JudgmentOperationException {
+	public void testJudgmentLinksWithAssertions() {
 		// 简单条件：DocEntry = 1
 		ICriteria criteria = new Criteria();
 		ICondition condition = criteria.getConditions().create();

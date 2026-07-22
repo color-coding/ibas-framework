@@ -633,7 +633,7 @@ public class Strings {
 	 * @param data 数据对象
 	 * @return JSON字符串；序列化失败抛出SerializationException
 	 */
-	public static String toJsonString(Object data) {
+	public static String toJsonString(Object data) throws SerializationException {
 		try (ByteArrayOutputStream writer = new ByteArrayOutputStream(256)) {
 			ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_JSON);
 			serializer.serialize(data, writer);
@@ -649,7 +649,7 @@ public class Strings {
 	 * @param data 数据对象
 	 * @return XML字符串；序列化失败抛出SerializationException
 	 */
-	public static String toXmlString(Object data) {
+	public static String toXmlString(Object data) throws SerializationException {
 		try (ByteArrayOutputStream writer = new ByteArrayOutputStream(512)) {
 			ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_XML);
 			serializer.serialize(data, writer);

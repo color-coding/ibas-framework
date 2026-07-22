@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.repository;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 import java.util.Objects;
 
 import org.colorcoding.ibas.bobas.common.ICriteria;
@@ -64,7 +66,7 @@ public class FileRepository extends Repository {
 
 	private volatile FileTransaction transaction;
 
-	public synchronized final FileTransaction getTransaction() throws RepositoryException {
+	public synchronized final FileTransaction getTransaction()  {
 		return transaction;
 	}
 
@@ -125,7 +127,7 @@ public class FileRepository extends Repository {
 			}
 			super.close();
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage(), e);
+			throw new BasRuntimeException(e.getMessage(), e);
 		}
 	}
 

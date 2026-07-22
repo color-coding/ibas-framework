@@ -22,51 +22,61 @@ class UserFields implements IUserFields {
 	private IUserField<?>[] fields;
 
 	protected void initialize() {
-		if (this.parent == null || this.parent.userFields == null) {
+		if (this.parent == null) {
 			this.fields = new IUserField<?>[0];
 			return;
 		}
-		int index = 0;
-		this.fields = new IUserField<?>[this.parent.userFields.size()];
-		for (IPropertyInfo<?> property : this.parent.userFields.keySet()) {
-			this.fields[index] = new IUserField<Object>() {
+		synchronized (this.parent) {
+			if (this.parent.userFields == null) {
+				this.fields = new IUserField<?>[0];
+				return;
+			}
+			int index = 0;
+			this.fields = new IUserField<?>[this.parent.userFields.size()];
+			for (IPropertyInfo<?> property : this.parent.userFields.keySet()) {
+				this.fields[index] = new IUserField<Object>() {
 
-				@Override
-				public String getName() {
-					return property.getName();
-				}
+					@Override
+					public String getName() {
+						return property.getName();
+					}
 
-				@Override
-				public Class<?> getValueType() {
-					return property.getValueType();
-				}
+					@Override
+					public Class<?> getValueType() {
+						return property.getValueType();
+					}
 
-				@Override
-				public Object getValue() {
-					return UserFields.this.parent.userFields.get(property);
-				}
-
-				@Override
-				public void setValue(Object value) {
-					if (UserFields.this.parent.userFields.containsKey(property)) {
-						Object oldValue = UserFields.this.parent.userFields.get(property);
-						if (oldValue == null) {
-							oldValue = property.getDefaultValue();
-						}
-						if (oldValue == null || value == null || !oldValue.equals(value)) {
-							UserFields.this.parent.userFields.put(property, value);
-							UserFields.this.parent.firePropertyChange(property, oldValue, value);
+					@Override
+					public Object getValue() {
+						synchronized (UserFields.this.parent) {
+							return UserFields.this.parent.userFields.get(property);
 						}
 					}
-				}
 
-				@Override
-				public final String toString() {
-					return String.format("{userField: %s = %s}", this.getName(), this.getValue());
-				}
+					@Override
+					public void setValue(Object value) {
+						synchronized (UserFields.this.parent) {
+							if (UserFields.this.parent.userFields.containsKey(property)) {
+								Object oldValue = UserFields.this.parent.userFields.get(property);
+								if (oldValue == null) {
+									oldValue = property.getDefaultValue();
+								}
+								if (oldValue == null || value == null || !oldValue.equals(value)) {
+									UserFields.this.parent.userFields.put(property, value);
+									UserFields.this.parent.firePropertyChange(property, oldValue, value);
+								}
+							}
+						}
+					}
 
-			};
-			index++;
+					@Override
+					public final String toString() {
+						return String.format("{userField: %s = %s}", this.getName(), this.getValue());
+					}
+
+				};
+				index++;
+			}
 		}
 	}
 
@@ -150,13 +160,18 @@ class UserFields implements IUserFields {
 	 */
 	@Override
 	public <P> IUserField<P> register(String name, Class<?> valueType) {
-		if (this.indexOf(name) < 0) {
-			IPropertyInfo<?> uFieldInfo = UserFieldsFactory.createManager().registerUserField(this.parent.getClass(),
-					name, valueType);
-			this.parent.userFields.put(uFieldInfo, null);
-			this.initialize();
+		if (this.parent == null) {
+			throw new IllegalStateException("cannot register user field on empty user fields");
 		}
-		return this.get(name);
+		synchronized (this.parent) {
+			if (this.indexOf(name) < 0) {
+				IPropertyInfo<?> uFieldInfo = UserFieldsFactory.createManager().registerUserField(this.parent.getClass(),
+						name, valueType);
+				this.parent.userFields.put(uFieldInfo, null);
+				this.initialize();
+			}
+			return this.get(name);
+		}
 	}
 
 	@Override

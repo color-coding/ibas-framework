@@ -20,7 +20,7 @@ public class JudgmentExpressionDateTime extends JudgmentExpression<DateTime> {
 	}
 
 	@Override
-	public boolean result() throws ExpressionException {
+	public boolean result()  {
 		// 等于
 		if (this.getOperation() == JudgmentOperation.EQUAL) {
 			if (this.getLeftValue() == null && this.getRightValue() == null) {

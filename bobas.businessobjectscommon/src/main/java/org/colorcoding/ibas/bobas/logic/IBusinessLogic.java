@@ -14,15 +14,15 @@ public interface IBusinessLogic<T extends IBusinessObject> {
 	 *
 	 * @return 被影响的业务对象；未加载时为null
 	 */
-	T getBeAffected();
+	T getBeAffected() throws BusinessLogicException;
 
 	/**
 	 * 正向执行逻辑
 	 */
-	void forward();
+	void forward() throws BusinessLogicException;
 
 	/**
 	 * 反向执行逻辑（撤销）
 	 */
-	void reverse();
+	void reverse() throws BusinessLogicException;
 }

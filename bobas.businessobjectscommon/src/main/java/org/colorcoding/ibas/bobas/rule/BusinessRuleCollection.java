@@ -143,6 +143,8 @@ public abstract class BusinessRuleCollection extends BusinessRule {
 					fieldedObject.setLoading(false);
 				}
 			}
+		} catch (BusinessRuleException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new BusinessRuleException(
 					I18N.prop("msg_bobas_bo_executing_business_rule_failed", bo, this.getName()), e);

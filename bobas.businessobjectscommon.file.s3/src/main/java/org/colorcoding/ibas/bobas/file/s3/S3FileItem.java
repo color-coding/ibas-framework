@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.file.s3;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
@@ -33,7 +35,7 @@ public class S3FileItem extends FileItem {
 	@Override
 	public void writeTo(OutputStream outputStream) throws IOException {
 		if (loader == null) {
-			throw new RuntimeException(I18N.prop("msg_bobas_s3_no_loader_specified"));
+			throw new BasRuntimeException(I18N.prop("msg_bobas_s3_no_loader_specified"));
 		}
 		this.loader.accept(outputStream);
 	}

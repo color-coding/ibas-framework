@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.configuration;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.BOFactory;
 import org.colorcoding.ibas.bobas.i18n.I18N;
@@ -95,7 +97,7 @@ public abstract class ConfigurableFactory<T> {
 			T instance = this.newInstance(configValue, typeName);
 			return instance;
 		} catch (Exception e) {
-			throw new RuntimeException(I18N.prop("msg_bobas_configurable_factory_create_instance_failed", typeName), e);
+			throw new BasRuntimeException(I18N.prop("msg_bobas_configurable_factory_create_instance_failed", typeName), e);
 		}
 	}
 
