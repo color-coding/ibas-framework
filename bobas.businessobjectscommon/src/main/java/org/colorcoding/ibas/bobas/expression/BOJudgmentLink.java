@@ -36,7 +36,7 @@ public class BOJudgmentLink extends JudgmentLink {
 	 * @return true，满足条件；false，不满足
 	 * @throws JudgmentOperationException
 	 */
-	public boolean judge(IBusinessObject bo) throws JudgmentOperationException {
+	public boolean judge(IBusinessObject bo)  {
 		// 无条件
 		if (this.getJudgmentItems() == null) {
 			return true;
@@ -135,8 +135,7 @@ public class BOJudgmentLink extends JudgmentLink {
 	}
 
 	protected boolean judge(IBusinessObject bo, JudgmentLinkItem parent)
-			throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, JudgmentOperationException {
+			throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		String path = ((IPropertyValueOperator) parent.getLeftOperator()).getPropertyName();
 		if (path == null || path.isEmpty()) {
 			// 无属性

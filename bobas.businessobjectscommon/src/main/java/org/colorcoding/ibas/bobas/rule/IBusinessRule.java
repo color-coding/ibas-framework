@@ -8,8 +8,6 @@ import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 /**
  * 业务规则
  *
- * 运行时点：1.输入属性集合的属性值发生变化时。2.保存数据之前。
- *
  * @author Niuren.Zhu
  *
  */
@@ -28,7 +26,9 @@ public interface IBusinessRule {
 	 *
 	 * @param bo 执行规则的业务对象
 	 */
-	void execute(IBusinessObject bo) throws BusinessRuleException;
+	default void execute(IBusinessObject bo) throws BusinessRuleException {
+		this.execute(bo, null);
+	}
 
 	/**
 	 * 输入的属性集合

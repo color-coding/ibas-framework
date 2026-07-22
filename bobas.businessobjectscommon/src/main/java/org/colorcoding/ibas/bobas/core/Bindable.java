@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.core;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
@@ -42,7 +44,7 @@ public abstract class Bindable extends Serializable implements IBindable, IClone
 			nData.listeners = null;
 			return nData;
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage(), e);
+			throw new BasRuntimeException(e.getMessage(), e);
 		}
 	}
 }

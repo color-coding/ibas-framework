@@ -35,7 +35,7 @@ public class MaxValue extends Trackable implements IFieldedObject {
 		return keyField;
 	}
 
-	public void setKeyField(IPropertyInfo<?> keyField) {
+	public synchronized void setKeyField(IPropertyInfo<?> keyField) {
 		if (this.keyField != null) {
 			this.fields.remove(this.keyField);
 		}
@@ -52,13 +52,13 @@ public class MaxValue extends Trackable implements IFieldedObject {
 		return conditionFields;
 	}
 
-	public void addConditionField(IPropertyInfo<?> conditionField) {
+	public synchronized void addConditionField(IPropertyInfo<?> conditionField) {
 		this.getConditionFields().add(conditionField);
 		this.fields.put(conditionField, null);
 	}
 
 	@Override
-	public List<IPropertyInfo<?>> properties() {
+	public synchronized List<IPropertyInfo<?>> properties() {
 		ArrayList<IPropertyInfo<?>> propertyInfos = new ArrayList<>();
 		for (IPropertyInfo<?> item : this.fields.keySet()) {
 			propertyInfos.add(item);
@@ -69,15 +69,31 @@ public class MaxValue extends Trackable implements IFieldedObject {
 	private Map<IPropertyInfo<?>, Object> fields = null;
 
 	/**
-	 * 获取属性值。存储值为null时返回属性默认值；属性未注册时抛出异常
+	 * 获取属性值。存储值为null时返回属性默认值；属性未注册时抛出异常。
+	 * 加载中时跳过 synchronized 以避免锁开销（对象单线程访问）。
 	 *
 	 * @param property 属性信息，不可为null
 	 * @return 属性值，存储值为null时返回默认值
 	 * @throws IllegalArgumentException 属性未注册时
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public <P> P getProperty(IPropertyInfo<?> property) {
+		if (this.isLoading()) {
+			return this.getPropertyValue(property);
+		}
+		synchronized (this) {
+			return this.getPropertyValue(property);
+		}
+	}
+
+	/**
+	 * 读取属性值的实际逻辑（无锁）
+	 *
+	 * @param property 属性信息（不允许为null）
+	 * @return 属性值，存储值为null时返回默认值
+	 */
+	@SuppressWarnings("unchecked")
+	private <P> P getPropertyValue(IPropertyInfo<?> property) {
 		Objects.requireNonNull(property);
 		if (this.fields.containsKey(property)) {
 			P value = (P) this.fields.get(property);
@@ -92,7 +108,8 @@ public class MaxValue extends Trackable implements IFieldedObject {
 	}
 
 	/**
-	 * 设置属性值。加载中直接存储；否则值变化时标记脏并触发属性变更事件；属性未注册时抛出异常
+	 * 设置属性值。加载中直接存储；否则值变化时标记脏并触发属性变更事件；属性未注册时抛出异常。
+	 * 加载中时跳过 synchronized 以避免锁开销（对象单线程访问）。
 	 *
 	 * @param property 属性信息，不可为null
 	 * @param value 属性值
@@ -109,11 +126,13 @@ public class MaxValue extends Trackable implements IFieldedObject {
 		if (this.isLoading()) {
 			this.fields.put(property, value);
 		} else {
-			P oldValue = (P) this.fields.get(property);
-			if (oldValue != value) {
-				this.fields.put(property, value);
-				this.markDirty();
-				this.firePropertyChange(property.getName(), oldValue, value);
+			synchronized (this) {
+				P oldValue = (P) this.fields.get(property);
+				if (oldValue != value) {
+					this.fields.put(property, value);
+					this.markDirty();
+					this.firePropertyChange(property.getName(), oldValue, value);
+				}
 			}
 		}
 	}

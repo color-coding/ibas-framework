@@ -8,7 +8,6 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DateTime;
-import org.colorcoding.ibas.bobas.expression.JudgmentOperationException;
 import org.colorcoding.ibas.demo.bo.materialsjournal.MaterialsJournal;
 
 import junit.framework.TestCase;
@@ -16,14 +15,13 @@ import junit.framework.TestCase;
 /**
  * 性能测试
  *
- * 测试范围：
- * 1. 缓存查询性能（阶梯增长 vs 一次性查询）
+ * 测试范围： 1. 缓存查询性能（阶梯增长 vs 一次性查询）
  */
 public class TestPerformance extends TestCase {
 
 	/**
-	 * 创建标准测试用Criteria
-	 * 查询条件：BaseDocumentType=ORDER, BaseDocumentEntry=200, BaseDocumentLineId=1
+	 * 创建标准测试用Criteria 查询条件：BaseDocumentType=ORDER, BaseDocumentEntry=200,
+	 * BaseDocumentLineId=1
 	 */
 	private ICriteria createTestCriteria() {
 		ICriteria criteria = Criteria.create();
@@ -42,10 +40,9 @@ public class TestPerformance extends TestCase {
 	// ==================== 1. 缓存查询性能 ====================
 
 	/**
-	 * 测试缓存查询性能
-	 * 覆盖：阶梯增长（每次新增一个对象后查询）vs 一次性查询（2000个对象一次查询）
+	 * 测试缓存查询性能 覆盖：阶梯增长（每次新增一个对象后查询）vs 一次性查询（2000个对象一次查询）
 	 */
-	public void testFetchInCache() throws JudgmentOperationException {
+	public void testFetchInCache() {
 		ICriteria criteria = createTestCriteria();
 
 		MaterialsJournal journal;

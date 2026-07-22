@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.db.sqlite;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -39,7 +41,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			return DriverManager.getConnection(dbURL, userName, userPwd);
 		} catch (Exception e) {
 			// 接数据库失败
-			throw new RuntimeException(e.getMessage(), e);
+			throw new BasRuntimeException(e.getMessage(), e);
 		}
 	}
 

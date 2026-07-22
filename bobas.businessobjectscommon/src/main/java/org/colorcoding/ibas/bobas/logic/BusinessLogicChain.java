@@ -26,7 +26,7 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.period.IPeriodData;
 import org.colorcoding.ibas.bobas.repository.ITransaction;
-import org.colorcoding.ibas.bobas.repository.RepositoryException;
+import org.colorcoding.ibas.bobas.rule.BusinessRuleException;
 
 /**
  * 业务逻辑链
@@ -89,15 +89,14 @@ class BusinessLogicChain implements IBusinessLogicChain {
 	}
 
 	@Override
-	public final <T extends IBusinessObject> void setTriggerCopy(T trigger) {
+	public final <T extends IBusinessObject> void setTriggerCopy(T trigger) throws BusinessLogicException {
 		// 副本版本更高，不能被覆盖逻辑
 		if (!this.getTrigger().isNew() && this.getTrigger() instanceof IBOStorageTag
 				&& trigger instanceof IBOStorageTag) {
 			IBOStorageTag hostTag = (IBOStorageTag) this.getTrigger();
 			IBOStorageTag copyTag = (IBOStorageTag) trigger;
 			if (copyTag.getLogInst() > hostTag.getLogInst()) {
-				throw new BusinessLogicException(
-						I18N.prop("msg_bobas_bo_copy_is_more_newer", this.getTrigger().toString()));
+				throw new BusinessLogicException(I18N.prop("msg_bobas_bo_copy_is_newer", this.getTrigger().toString()));
 			}
 		}
 		this.triggerCopy = trigger;
@@ -193,7 +192,7 @@ class BusinessLogicChain implements IBusinessLogicChain {
 	 * 执行逻辑
 	 */
 	@Override
-	public final void execute() {
+	public final void execute() throws BusinessLogicException {
 		// 执行当前逻辑，再执行被影响对象逻辑，最后保存触发对象
 		Objects.requireNonNull(this.getTransaction());
 		// 执行逻辑，先反向，再正向
@@ -286,16 +285,16 @@ class BusinessLogicChain implements IBusinessLogicChain {
 							// 主体被修改，则查询副本
 							criteria = item.getCriteria();
 							if (criteria == null || criteria.getConditions().isEmpty()) {
-								throw new RepositoryException(I18N.prop("msg_bobas_invalid_criteria"));
+								throw new BusinessLogicException(I18N.prop("msg_bobas_invalid_criteria"));
 							}
 							criteria.setResultCount(1);
 							tmpDatas = this.getTransaction().fetch(item.getClass(), criteria);
 							if (tmpDatas == null || tmpDatas.length != 1) {
-								throw new RepositoryException(I18N.prop("msg_bobas_fetch_bo_copy_failed", item));
+								throw new BusinessLogicException(I18N.prop("msg_bobas_fetch_bo_copy_failed", item));
 							}
 							if (BOUtilities.isNewer(tmpDatas[0], item)) {
-								throw new RepositoryException(
-										I18N.prop("msg_bobas_bo_copy_is_more_newer", item.toString()));
+								throw new BusinessLogicException(
+										I18N.prop("msg_bobas_bo_copy_is_newer", item.toString()));
 							}
 							logicChain.setTriggerCopy(tmpDatas[0]);
 						}
@@ -306,6 +305,8 @@ class BusinessLogicChain implements IBusinessLogicChain {
 			DateTime endTime = DateTimes.now();
 			Logger.log(MessageLevel.INFO, "logics chain [%s]: ends at [%s].", this.hashCode(),
 					DateTimes.toString(endTime, DateTimes.FORMAT_TIME));
+		} catch (BusinessRuleException e) {
+			throw e;
 		} catch (BusinessLogicException e) {
 			throw e;
 		} catch (Exception e) {

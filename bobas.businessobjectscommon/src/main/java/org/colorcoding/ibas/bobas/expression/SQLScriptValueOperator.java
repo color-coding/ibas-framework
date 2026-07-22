@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.expression;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -46,7 +48,7 @@ public class SQLScriptValueOperator implements IPropertyValueOperator {
 				Objects.requireNonNull(this.dbTransaction);
 				if (this.propertyName == null || this.propertyName.isEmpty()) {
 					// 此时propertyName为查询命令
-					throw new RuntimeException(I18N.prop("msg_bobas_invalid_sql_query"));
+					throw new BasRuntimeException(I18N.prop("msg_bobas_invalid_sql_query"));
 				}
 				String query = this.propertyName;
 				// 使用参数化方式替换查询中的变量，避免SQL注入

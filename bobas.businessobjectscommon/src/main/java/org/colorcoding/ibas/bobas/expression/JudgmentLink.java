@@ -69,7 +69,7 @@ public abstract class JudgmentLink {
 	 * @return true满足条件；false不满足；无条件时返回true
 	 * @throws JudgmentOperationException 判断操作异常
 	 */
-	public boolean judge(Object object) throws JudgmentOperationException {
+	public boolean judge(Object object)  {
 		// 无条件
 		if (this.getJudgmentItems() == null) {
 			return true;
@@ -135,7 +135,7 @@ public abstract class JudgmentLink {
 	 * @return true满足条件；false不满足
 	 * @throws JudgmentOperationException 判断操作异常
 	 */
-	protected boolean judge(int bracket, JudgmentLinkItem[] judgmentItems) throws JudgmentOperationException {
+	protected boolean judge(int bracket, JudgmentLinkItem[] judgmentItems)  {
 		boolean currentValue = false;// 当前的结果
 		ExpressionFactory factory = ExpressionFactory.create();
 		IJudgmentExpression rootJudExp = null;

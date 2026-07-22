@@ -19,7 +19,7 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
  */
 class DaemonTaskWrapping {
 
-	public DaemonTaskWrapping(IDaemonTask task) throws InvalidDaemonTaskException {
+	public DaemonTaskWrapping(IDaemonTask task)  {
 		this();
 		if (task == null) {
 			throw new InvalidDaemonTaskException();

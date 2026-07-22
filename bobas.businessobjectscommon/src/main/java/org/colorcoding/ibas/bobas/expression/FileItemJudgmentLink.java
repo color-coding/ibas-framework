@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.expression;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.file.FileItem;
 import org.colorcoding.ibas.bobas.i18n.I18N;
@@ -12,7 +14,7 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
  */
 public class FileItemJudgmentLink extends FileJudgmentLink {
 
-	public boolean judge(FileItem file) throws JudgmentOperationException {
+	public boolean judge(FileItem file)  {
 		return super.judge(file);
 	}
 
@@ -55,7 +57,7 @@ public class FileItemJudgmentLink extends FileJudgmentLink {
 			@Override
 			public void setValue(Object value) {
 				if (!(value instanceof FileItem)) {
-					throw new ExpressionException(I18N.prop("msg_bobas_invalid_data"));
+					throw new ExpressionException(I18N.prop("msg_bobas_invalid_data", value != null ? value.getClass().getName() : "null"));
 				}
 				this.setValue((FileItem) value);
 			}
@@ -86,7 +88,7 @@ public class FileItemJudgmentLink extends FileJudgmentLink {
 				} else if (CRITERIA_CONDITION_ALIAS_MODIFIED_TIME.equals(this.getPropertyName())) {
 					return Long.class;
 				}
-				throw new RuntimeException(I18N.prop("msg_bobas_not_support_type_expression", this.getPropertyName()));
+				throw new BasRuntimeException(I18N.prop("msg_bobas_not_support_type_expression", this.getPropertyName()));
 			}
 
 			@Override

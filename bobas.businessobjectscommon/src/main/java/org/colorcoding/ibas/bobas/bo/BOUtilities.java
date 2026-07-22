@@ -20,10 +20,12 @@ import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.List;
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
 import org.colorcoding.ibas.bobas.expression.BOJudgmentLinkCondition;
 import org.colorcoding.ibas.bobas.expression.JudgmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.rule.BusinessRuleException;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.rule.BusinessRulesManager;
 import org.colorcoding.ibas.bobas.rule.IBusinessRules;
@@ -540,7 +542,7 @@ public class BOUtilities {
 	 * @return 符合条件的数据列表
 	 * @throws JudgmentOperationException 表达式判断异常
 	 */
-	public static <T> List<T> fetch(Iterable<T> datas, ICriteria criteria) throws JudgmentOperationException {
+	public static <T> List<T> fetch(Iterable<T> datas, ICriteria criteria) {
 		return fetch(datas == null ? null : datas.iterator(), criteria);
 	}
 
@@ -553,7 +555,7 @@ public class BOUtilities {
 	 * @return 符合条件的数据列表
 	 * @throws JudgmentOperationException 表达式判断异常
 	 */
-	public static <T> List<T> fetch(Iterator<T> datas, ICriteria criteria) throws JudgmentOperationException {
+	public static <T> List<T> fetch(Iterator<T> datas, ICriteria criteria) {
 		ArrayList<T> results = new ArrayList<>();
 		if (datas == null) {
 			return results;
@@ -627,20 +629,22 @@ public class BOUtilities {
 	 *
 	 * @param <T>             数据类型
 	 * @param operationResult 操作结果
-	 * @return 数据列表（operationResult为null返回null，有错误时抛RuntimeException）
+	 * @return 数据列表（operationResult为null返回null，有错误时抛出异常）
+	 * @throws BasRuntimeException 操作结果包含错误时抛出
 	 */
 	public static <T> List<T> valueOf(IOperationResult<T> operationResult) {
 		if (operationResult == null) {
 			return null;
 		}
-		if (operationResult.getError() instanceof RuntimeException) {
-			throw (RuntimeException) operationResult.getError();
-		}
 		if (operationResult.getError() != null) {
-			throw new RuntimeException(operationResult.getError());
+			if (operationResult.getError() instanceof BasRuntimeException) {
+				throw (BasRuntimeException) operationResult.getError();
+			} else {
+				throw new BasRuntimeException(operationResult.getError());
+			}
 		}
 		if (operationResult.getResultCode() != 0) {
-			throw new RuntimeException(operationResult.getMessage());
+			throw new BasRuntimeException(operationResult.getMessage());
 		}
 		return ArrayList.create(operationResult.getResultObjects());
 	}
@@ -649,8 +653,9 @@ public class BOUtilities {
 	 * 执行业务对象规则（先执行子项，再执行自身）
 	 *
 	 * @param host 目标对象（BusinessObject或ICheckRules实例）
+	 * @throws BusinessRuleException 规则检查不通过或执行失败
 	 */
-	public static void executeRules(Object host) {
+	public static void executeRules(Object host) throws BusinessRuleException {
 		if (host instanceof BusinessObject<?>) {
 			BusinessObject<?> bo = (BusinessObject<?>) host;
 			if (bo.isLoading()) {
@@ -694,7 +699,7 @@ public class BOUtilities {
 	 * @param data 数据对象
 	 * @return json字符串
 	 */
-	public static String toJsonString(Object data) {
+	public static String toJsonString(Object data) throws SerializationException {
 		// 首先使用内置序列化方式
 		try (ByteArrayOutputStream writer = new ByteArrayOutputStream(256)) {
 			ISerializer serializer = new SerializerJson();
@@ -721,7 +726,7 @@ public class BOUtilities {
 	 * @param data 数据对象
 	 * @return xml字符串
 	 */
-	public static String toXmlString(Object data) {
+	public static String toXmlString(Object data) throws SerializationException {
 		// 首先使用内置序列化方式
 		try (ByteArrayOutputStream writer = new ByteArrayOutputStream(512)) {
 			ISerializer serializer = new SerializerXml();
@@ -748,7 +753,7 @@ public class BOUtilities {
 	 * @param data 数据对象
 	 * @return csv字符串
 	 */
-	public static String toCsvString(Object data) {
+	public static String toCsvString(Object data) throws SerializationException {
 		try (ByteArrayOutputStream writer = new ByteArrayOutputStream(256)) {
 			ISerializer serializer = new SerializerCsv();
 			serializer.serialize(data, writer);

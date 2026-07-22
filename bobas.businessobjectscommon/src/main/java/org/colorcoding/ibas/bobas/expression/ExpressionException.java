@@ -1,6 +1,8 @@
 package org.colorcoding.ibas.bobas.expression;
 
-public class ExpressionException extends RuntimeException {
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
+public class ExpressionException extends BasRuntimeException {
 
 	private static final long serialVersionUID = -3098369422805629747L;
 

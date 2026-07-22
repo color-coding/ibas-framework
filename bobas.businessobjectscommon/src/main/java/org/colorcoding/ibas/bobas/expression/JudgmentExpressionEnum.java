@@ -35,7 +35,7 @@ public class JudgmentExpressionEnum extends JudgmentExpression<Object> {
 	}
 
 	@Override
-	public boolean result() throws ExpressionException {
+	public boolean result()  {
 		// 等
 		if (this.getOperation() == JudgmentOperation.EQUAL) {
 			String tmpLeft = Strings.valueOf(this.getLeftValue());

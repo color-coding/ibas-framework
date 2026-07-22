@@ -175,7 +175,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public T clone() {
+	public synchronized T clone() {
 		BusinessObject<?> nData = (BusinessObject<?>) super.clone();
 		if (this.userFields != null) {
 			nData.userFields = new HashMap<>(this.userFields);
@@ -399,7 +399,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	 * @return 符合条件的属性列表
 	 */
 	@Override
-	public List<IPropertyInfo<?>> properties(Predicate<IPropertyInfo<?>> filter) {
+	public synchronized List<IPropertyInfo<?>> properties(Predicate<IPropertyInfo<?>> filter) {
 		List<IPropertyInfo<?>> properties = super.properties(filter);
 		if (this instanceof IBOUserFields && this.userFields != null && !this.userFields.isEmpty()) {
 			List<IPropertyInfo<?>> userFields = new ArrayList<>(this.userFields.size());
@@ -416,7 +416,10 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 
 	/**
 	 * 获取属性的值
-	 * 
+	 *
+	 * 用户字段（U_前缀）读取 userFields，系统字段委托 super.getProperty。
+	 * 加载中时跳过 synchronized 以避免锁开销（对象单线程访问）。
+	 *
 	 * @param property 属性信息（null时抛NullPointerException）
 	 * @return 属性的值（用户字段null值返回默认值以节省内存）
 	 */
@@ -426,12 +429,22 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 		Objects.requireNonNull(property);
 		if (Strings.startsWith(property.getName(), IBOUserFields.USER_FIELD_PREFIX_SIGN)) {
 			if (this.userFields != null && this.userFields.containsKey(property)) {
-				P value = (P) this.userFields.get(property);
-				// 值是空，则使用默认值（减少内存占用）
-				if (value == null) {
-					return (P) property.getDefaultValue();
+				if (this.isLoading()) {
+					// 加载中：无需加锁
+					P value = (P) this.userFields.get(property);
+					if (value == null) {
+						return (P) property.getDefaultValue();
+					}
+					return value;
 				}
-				return value;
+				synchronized (this) {
+					P value = (P) this.userFields.get(property);
+					// 值是空，则使用默认值（减少内存占用）
+					if (value == null) {
+						return (P) property.getDefaultValue();
+					}
+					return value;
+				}
 			}
 			// 非代码注册的
 			if (!IPropertyInfo.class.getPackage().equals(property.getClass().getPackage())) {
@@ -445,12 +458,15 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	/**
 	 * 设置属性的值
 	 *
+	 * 用户字段（U_前缀）写入 userFields，系统字段委托 super.setProperty。
+	 * 加载中时跳过 synchronized 以避免数据批量加载阶段的锁开销（对象刚创建，单线程访问）。
+	 *
 	 * @param property 属性信息（null时抛NullPointerException）
 	 * @param value    新的值（加载中仅设值不触发变更事件）
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public synchronized final <P> void setProperty(IPropertyInfo<?> property, P value) {
+	public final <P> void setProperty(IPropertyInfo<?> property, P value) {
 		Objects.requireNonNull(property);
 		if (Strings.startsWith(property.getName(), IBOUserFields.USER_FIELD_PREFIX_SIGN)) {
 			if (this.userFields != null && this.userFields.containsKey(property)) {
@@ -462,15 +478,17 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 						this.userFields.put(property, value);
 					}
 				} else {
-					P oldValue = (P) this.userFields.get(property);
-					if (oldValue == null) {
-						oldValue = (P) property.getDefaultValue();
-					}
-					if (oldValue == null || value == null || !oldValue.equals(value)) {
-						this.userFields.put(property, value);
-						this.getModifiedProperties().add(property);
-						this.markDirty();
-						this.firePropertyChange(property.getName(), oldValue, value);
+					synchronized (this) {
+						P oldValue = (P) this.userFields.get(property);
+						if (oldValue == null) {
+							oldValue = (P) property.getDefaultValue();
+						}
+						if (oldValue == null || value == null || !oldValue.equals(value)) {
+							this.userFields.put(property, value);
+							this.getModifiedProperties().add(property);
+							this.markDirty();
+							this.firePropertyChange(property.getName(), oldValue, value);
+						}
 					}
 				}
 				return;
@@ -484,7 +502,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 		super.setProperty(property, value);
 	}
 
-	public final IUserFields getUserFields() {
+	public synchronized final IUserFields getUserFields() {
 		if (this.userFields != null) {
 			return new UserFields(this);
 		}
@@ -493,7 +511,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 
 	@XmlElementWrapper(name = UserFields.WRAPPER_NAME)
 	@XmlElement(name = UserFields.ELEMENT_NAME, type = UserFieldProxy.class, required = false)
-	private UserFieldProxy[] getUserFieldProxies() {
+	private synchronized UserFieldProxy[] getUserFieldProxies() {
 		if (this.userFields == null) {
 			return null;
 		}
@@ -515,7 +533,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	}
 
 	@SuppressWarnings("unused")
-	private void setUserFieldProxies(UserFieldProxy[] values) {
+	private synchronized void setUserFieldProxies(UserFieldProxy[] values) {
 		if (this.userFields == null || values == null) {
 			return;
 		}
@@ -533,7 +551,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 
 	transient Map<IPropertyInfo<?>, Object> userFields = null;
 
-	void firePropertyChange(IPropertyInfo<?> userField, Object oldValue, Object newValue) {
+	synchronized void firePropertyChange(IPropertyInfo<?> userField, Object oldValue, Object newValue) {
 		if (this.isLoading()) {
 			return;
 		}

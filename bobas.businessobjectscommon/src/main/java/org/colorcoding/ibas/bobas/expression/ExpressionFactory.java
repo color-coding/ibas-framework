@@ -33,7 +33,7 @@ public class ExpressionFactory {
 	 * @return 判断表达式实例
 	 * @throws JudgmentOperationException 不支持的类型时抛出
 	 */
-	public IJudgmentExpression createJudgment(Class<?> type) throws JudgmentOperationException {
+	public IJudgmentExpression createJudgment(Class<?> type)  {
 		if (type == null) {
 			return null;
 		}

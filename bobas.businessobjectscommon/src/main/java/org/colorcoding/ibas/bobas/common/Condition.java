@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.common;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 import java.math.BigDecimal;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -219,7 +221,7 @@ public class Condition extends Serializable implements ICondition {
 		try {
 			return (Condition) super.clone();
 		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage(), e);
+			throw new BasRuntimeException(e.getMessage(), e);
 		}
 	}
 

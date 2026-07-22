@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.configuration;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -168,7 +170,7 @@ public class Configuration {
 			}
 			return file.getPath();
 		} catch (URISyntaxException e) {
-			throw new RuntimeException(e.getMessage(), e);
+			throw new BasRuntimeException(e.getMessage(), e);
 		}
 	}
 

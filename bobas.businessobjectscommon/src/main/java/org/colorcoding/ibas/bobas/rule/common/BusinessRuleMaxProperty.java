@@ -67,7 +67,7 @@ public class BusinessRuleMaxProperty<T extends Comparable<?>> extends BusinessRu
 				continue;
 			}
 			if (entry.getValue() == null) {
-				throw new BusinessRuleException(I18N.prop("msg_bobas_business_rule_required_error", entry.getKey().getName()));
+				throw new BusinessRuleException(I18N.prop("msg_bobas_business_rule_value_required", entry.getKey().getName()));
 			}
 			value = (T) entry.getValue();
 			if (maxValue.compareTo(value) < 0) {

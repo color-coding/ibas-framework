@@ -1,6 +1,8 @@
 package org.colorcoding.ibas.bobas.organization;
 
-public class InvalidAuthorizationException extends Exception {
+import org.colorcoding.ibas.bobas.exception.BasException;
+
+public class InvalidAuthorizationException extends BasException {
 
 	private static final long serialVersionUID = -2013118631823755958L;
 
@@ -8,16 +10,16 @@ public class InvalidAuthorizationException extends Exception {
 		super();
 	}
 
-	public InvalidAuthorizationException(String arg0, Throwable arg1) {
-		super(arg0, arg1);
+	public InvalidAuthorizationException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
-	public InvalidAuthorizationException(String arg0) {
-		super(arg0);
+	public InvalidAuthorizationException(String message) {
+		super(message);
 	}
 
-	public InvalidAuthorizationException(Throwable arg0) {
-		super(arg0);
+	public InvalidAuthorizationException(Throwable cause) {
+		super(cause);
 	}
 
 }

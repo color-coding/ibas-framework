@@ -1,11 +1,14 @@
 package org.colorcoding.ibas.bobas.db;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 import java.sql.Connection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.colorcoding.ibas.bobas.bo.BOFactory;
 import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
 
 public class DbFactory {
@@ -48,13 +51,13 @@ public class DbFactory {
 					DbAdapter.class.getSimpleName());
 			Class<?> adapterClass = BOFactory.loadClass(nameClass);
 			if (adapterClass == null || !DbAdapter.class.isAssignableFrom(adapterClass)) {
-				throw new Exception(Strings.format("unavailable [%s].", nameClass));
+				throw new BasRuntimeException(I18N.prop("msg_bobas_not_found_db_adapter", type));
 			}
 			this.adapters.put(type, (DbAdapter) adapterClass.getDeclaredConstructor().newInstance());
 		}
 		DbAdapter adapter = this.adapters.get(type);
 		if (adapter == null) {
-			throw new Exception("not found db adapter.");
+			throw new BasRuntimeException(I18N.prop("msg_bobas_not_found_db_adapter", type));
 		}
 		return adapter;
 	}

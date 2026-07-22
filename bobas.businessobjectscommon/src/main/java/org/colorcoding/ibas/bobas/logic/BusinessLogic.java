@@ -26,6 +26,7 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.repository.ITransaction;
 import org.colorcoding.ibas.bobas.repository.Transaction;
+import org.colorcoding.ibas.bobas.rule.BusinessRuleException;
 
 /**
  * 业务逻辑基类
@@ -227,7 +228,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 	 * 运行正向逻辑
 	 */
 	@Override
-	public final void forward() {
+	public final void forward() throws BusinessLogicException {
 		// 检查父项数据状态
 		if (this.getParent() != null && !this.checkDataStatus(this.getParent())) {
 			// 数据状态不通过，跳过正向逻辑执行
@@ -261,7 +262,15 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 		}
 		if (this.beAffected == null) {
 			// 加载被影响的数据
-			this.beAffected = this.fetchBeAffected(this.getContract());
+			try {
+				this.beAffected = this.fetchBeAffected(this.getContract());
+			} catch (BusinessRuleException e) {
+				throw e;
+			} catch (BusinessLogicException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new BusinessLogicException(e.getMessage(), e);
+			}
 			// 自动缓存数据
 			if (this.getTransaction() instanceof Transaction) {
 				Transaction transaction = (Transaction) this.getTransaction();
@@ -300,7 +309,16 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 				bo.setReferenced(emYesNo.YES);
 			}
 		}
-		this.impact(this.getContract());
+		// 执行正向逻辑
+		try {
+			this.impact(this.getContract());
+		} catch (BusinessRuleException e) {
+			throw e;
+		} catch (BusinessLogicException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new BusinessLogicException(e.getMessage(), e);
+		}
 	}
 
 	private int reverseCount = 0;
@@ -309,7 +327,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 	 * 运行反向逻辑
 	 */
 	@Override
-	public final void reverse() {
+	public final void reverse() throws BusinessLogicException {
 		// 检查父项数据状态
 		if (this.getParent() != null && !this.checkDataStatus(this.getParent())) {
 			// 数据状态不通过，跳过反向逻辑执行
@@ -349,7 +367,15 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 		}
 		if (this.beAffected == null) {
 			// 加载被影响的数据
-			this.beAffected = this.fetchBeAffected(this.getContract());
+			try {
+				this.beAffected = this.fetchBeAffected(this.getContract());
+			} catch (BusinessRuleException e) {
+				throw e;
+			} catch (BusinessLogicException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new BusinessLogicException(e.getMessage(), e);
+			}
 			// 自动缓存数据
 			if (this.getTransaction() instanceof Transaction) {
 				Transaction transaction = (Transaction) this.getTransaction();
@@ -368,7 +394,15 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 			}
 		}
 		// 执行撤销逻辑
-		this.revoke(this.getContract());
+		try {
+			this.revoke(this.getContract());
+		} catch (BusinessRuleException e) {
+			throw e;
+		} catch (BusinessLogicException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new BusinessLogicException(e.getMessage(), e);
+		}
 	}
 
 	/**
@@ -491,11 +525,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 				return null;
 			}
 		};
-		try {
-			return BOUtilities.fetch(iterator, criteria);
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage(), e);
-		}
+		return BOUtilities.fetch(iterator, criteria);
 	}
 
 	/**
@@ -519,6 +549,8 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 				Transaction transaction = (Transaction) this.getTransaction();
 				results.addAll(transaction.fetchInCache(boType, criteria));
 			}
+		} catch (BusinessRuleException e) {
+			throw e;
 		} catch (BusinessLogicException e) {
 			throw e;
 		} catch (Exception e) {
@@ -553,19 +585,19 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 	 * @param contract 契约数据
 	 * @return 被影响的对象；可能为null或代理对象
 	 */
-	protected abstract T fetchBeAffected(L contract);
+	protected abstract T fetchBeAffected(L contract) throws Exception;
 
 	/**
 	 * 执行逻辑（正向）
 	 *
 	 * @param contract 契约数据
 	 */
-	protected abstract void impact(L contract);
+	protected abstract void impact(L contract) throws Exception;
 
 	/**
 	 * 撤销逻辑（反向）
 	 *
 	 * @param contract 契约数据
 	 */
-	protected abstract void revoke(L contract);
+	protected abstract void revoke(L contract) throws Exception;
 }

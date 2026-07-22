@@ -41,7 +41,7 @@ public abstract class JudgmentExpression<T> implements IJudgmentExpression {
 	 * @throws ExpressionException 不支持的操作时抛出
 	 */
 	@Override
-	public boolean result() throws ExpressionException {
+	public boolean result()  {
 		// 空值
 		if (this.getOperation() == JudgmentOperation.IS_NULL) {
 			if (this.getLeftValue() == null) {

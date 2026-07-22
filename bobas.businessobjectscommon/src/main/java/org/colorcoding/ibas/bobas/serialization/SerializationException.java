@@ -1,6 +1,8 @@
 package org.colorcoding.ibas.bobas.serialization;
 
-public class SerializationException extends RuntimeException {
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
+public class SerializationException extends BasRuntimeException {
 
 	private static final long serialVersionUID = 639883472487495216L;
 

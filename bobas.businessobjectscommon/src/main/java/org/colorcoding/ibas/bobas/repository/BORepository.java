@@ -14,7 +14,6 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logic.BusinessLogicsManager;
 import org.colorcoding.ibas.bobas.logic.IBusinessLogicChain;
 import org.colorcoding.ibas.bobas.logic.IBusinessLogicContract;
-import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializerManager;
 
@@ -54,7 +53,8 @@ public abstract class BORepository extends Repository {
 	 */
 	protected final void addSkipLogics(Class<?> contract) {
 		if (!IBusinessLogicContract.class.isAssignableFrom(contract)) {
-			throw new IllegalArgumentException(Strings.format("class [%s] is not business logic contract class.", contract.getName()));
+			throw new IllegalArgumentException(
+					Strings.format("class [%s] is not business logic contract class.", contract.getName()));
 		}
 		if (this.skipLogicContracts == null) {
 			this.skipLogicContracts = new ArrayList<>();
@@ -78,7 +78,7 @@ public abstract class BORepository extends Repository {
 
 	private volatile ITransaction transaction;
 
-	public synchronized final ITransaction getTransaction() throws RepositoryException {
+	public synchronized final ITransaction getTransaction() {
 		return transaction;
 	}
 
@@ -120,7 +120,7 @@ public abstract class BORepository extends Repository {
 	 *
 	 * @param boType   业务对象类型
 	 * @param criteria 查询条件
-	 * @return 操作结果，出错时包含异常信息
+	 * @return 操作结果
 	 */
 	protected <T extends IBusinessObject> OperationResult<T> fetch(Class<?> boType, ICriteria criteria) {
 		try {
@@ -134,94 +134,93 @@ public abstract class BORepository extends Repository {
 			}
 			return operationResult;
 		} catch (Exception e) {
-			Logger.log(e);
 			return new OperationResult<>(e);
 		}
 	}
 
 	/**
-	 * 保存业务对象，包含版本检查、业务逻辑链执行和事务管理。
-	 * 非新建对象且未跳过实例检查时，会验证数据库副本版本；删除操作使用数据库副本。
+	 * 保存业务对象，包含版本检查、业务逻辑链执行和事务管理。 非新建对象且未跳过实例检查时，会验证数据库副本版本；删除操作使用数据库副本。
 	 *
 	 * @param bo 待保存对象
 	 * @return 操作结果，包含保存后的对象（删除时不包含）
 	 */
 	@SuppressWarnings("unchecked")
 	protected <T extends IBusinessObject> OperationResult<T> save(T bo) {
+		boolean mine = false;
 		try {
 			Objects.requireNonNull(bo);
 			this.initTransaction();
-			boolean mine = this.beginTransaction();
-			try {
-				T boCopy = null;
-				// 更新数据时，检查版本是否新于数据库副本
-				if (!this.isSkipInstanceCheck() && bo.isSavable() && !bo.isNew()) {
-					ICriteria criteria = bo.getCriteria();
-					if (criteria == null || criteria.getConditions().isEmpty()) {
-						throw new RepositoryException(I18N.prop("msg_bobas_invalid_criteria"));
-					}
-					criteria.setResultCount(1);
-					// 不能调用当前查询，会被重写
-					T[] results = this.getTransaction().fetch(bo.getClass(), criteria);
-					if (results.length > 0) {
-						boCopy = results[0];
-					}
-					if (boCopy == null) {
-						// 不存在副本
-						throw new RepositoryException(I18N.prop("msg_bobas_not_found_bo_copy", bo.toString()));
-					}
-					// 存在副本
-					if (BOUtilities.isNewer(boCopy, bo)) {
-						throw new RepositoryException(I18N.prop("msg_bobas_bo_copy_is_more_newer", bo.toString()));
-					}
-					// 如果是删除数据，则使用数据库副本
-					if (bo.isDeleted()) {
-						// 完全克隆，不重置状态
-						if (boCopy instanceof BusinessObject) {
-							bo = (T) ((BusinessObject<?>) boCopy).clone();
-							bo.delete();
-						} else {
-							ISerializer serializer = new SerializerManager().create();
-							bo = serializer.clone(boCopy);
-							bo.delete();
-						}
+			mine = this.beginTransaction();
+			T boCopy = null;
+			// 更新数据时，检查版本是否新于数据库副本
+			if (!this.isSkipInstanceCheck() && bo.isSavable() && !bo.isNew()) {
+				ICriteria criteria = bo.getCriteria();
+				if (criteria == null || criteria.getConditions().isEmpty()) {
+					throw new RepositoryException(I18N.prop("msg_bobas_invalid_criteria"));
+				}
+				criteria.setResultCount(1);
+				// 不能调用当前查询，会被重写
+				T[] results = this.getTransaction().fetch(bo.getClass(), criteria);
+				if (results.length > 0) {
+					boCopy = results[0];
+				}
+				if (boCopy == null) {
+					// 不存在副本
+					throw new RepositoryException(I18N.prop("msg_bobas_not_found_bo_copy", bo.toString()));
+				}
+				// 存在副本
+				if (BOUtilities.isNewer(boCopy, bo)) {
+					throw new RepositoryException(I18N.prop("msg_bobas_bo_copy_is_newer", bo.toString()));
+				}
+				// 如果是删除数据，则使用数据库副本
+				if (bo.isDeleted()) {
+					// 完全克隆，不重置状态
+					if (boCopy instanceof BusinessObject) {
+						bo = (T) ((BusinessObject<?>) boCopy).clone();
+						bo.delete();
+					} else {
+						ISerializer serializer = new SerializerManager().create();
+						bo = serializer.clone(boCopy);
+						bo.delete();
 					}
 				}
-				// 返回结果
-				OperationResult<T> operationResult = new OperationResult<T>(1);
-				if (this.isSkipLogics() && (this.skipLogicContracts == null || this.skipLogicContracts.isEmpty())) {
-					// 跳过全部业务逻辑
-					this.getTransaction().save(new IBusinessObject[] { bo });
-				} else {
-					// 执行业务逻辑
-					try (IBusinessLogicChain logicChain = BusinessLogicsManager.create()
-							.createChain(this.getTransaction(), this.getCurrentUser())) {
-						if (this.skipLogicContracts != null) {
-							// 添加跳过的逻辑契约
-							this.skipLogicContracts.forEach(c -> logicChain.addSkipLogics(c));
-						}
-						logicChain.setTrigger(bo);
-						logicChain.setTriggerCopy(boCopy);
-						logicChain.execute();
-					}
-				}
-				// 非删除，返回对象
-				if (bo.isDeleted() == false) {
-					operationResult.addResultObjects(bo);
-				}
-				if (mine == true) {
-					this.commitTransaction();
-					mine = false;
-				}
-				return operationResult;
-			} catch (Exception e) {
-				if (mine == true) {
-					this.rollbackTransaction();
-				}
-				throw e;
 			}
+			// 返回结果
+			OperationResult<T> operationResult = new OperationResult<T>(1);
+			if (this.isSkipLogics() && (this.skipLogicContracts == null || this.skipLogicContracts.isEmpty())) {
+				// 跳过全部业务逻辑
+				this.getTransaction().save(new IBusinessObject[] { bo });
+			} else {
+				// 执行业务逻辑
+				try (IBusinessLogicChain logicChain = BusinessLogicsManager.create()
+						.createChain(this.getTransaction(), this.getCurrentUser())) {
+					if (this.skipLogicContracts != null) {
+						// 添加跳过的逻辑契约
+						this.skipLogicContracts.forEach(c -> logicChain.addSkipLogics(c));
+					}
+					logicChain.setTrigger(bo);
+					logicChain.setTriggerCopy(boCopy);
+					logicChain.execute();
+				}
+			}
+			// 非删除，返回对象
+			if (bo.isDeleted() == false) {
+				operationResult.addResultObjects(bo);
+			}
+			if (mine == true) {
+				this.commitTransaction();
+				mine = false;
+			}
+			return operationResult;
 		} catch (Exception e) {
-			Logger.log(e);
+			if (mine == true) {
+				try {
+					this.rollbackTransaction();
+				} catch (Exception e1) {
+					// 回滚失败时，将回滚异常附加到原始异常上，避免丢失真正的故障原因
+					e.addSuppressed(e1);
+				}
+			}
 			return new OperationResult<>(e);
 		}
 	}

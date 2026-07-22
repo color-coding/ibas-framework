@@ -1,6 +1,8 @@
 package org.colorcoding.ibas.bobas.logic;
 
-public class BusinessLogicException extends RuntimeException {
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
+public class BusinessLogicException extends BasRuntimeException {
 
 	private static final long serialVersionUID = 6654310086635040829L;
 

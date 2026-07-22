@@ -97,7 +97,7 @@ public class SerializerXml extends Serializer {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T deserialize(InputSource inputSource, Class<?>... types) throws SerializationException {
+	public <T> T deserialize(InputSource inputSource, Class<?>... types)  {
 		try {
 			// 反序列化不使用缓存，避免types不含根类型时context缺少descriptor
 			JAXBContext context = JAXBContext.newInstance(types);
@@ -111,7 +111,7 @@ public class SerializerXml extends Serializer {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T deserialize(InputStream inputStream, Class<?>... types) throws SerializationException {
+	public <T> T deserialize(InputStream inputStream, Class<?>... types)  {
 		try {
 			// 反序列化不使用缓存，避免types不含根类型时context缺少descriptor
 			JAXBContext context = JAXBContext.newInstance(types);
@@ -125,7 +125,7 @@ public class SerializerXml extends Serializer {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T deserialize(Reader reader, Class<?>... types) throws SerializationException {
+	public <T> T deserialize(Reader reader, Class<?>... types)  {
 		try {
 			// 反序列化不使用缓存，避免types不含根类型时context缺少descriptor
 			JAXBContext context = JAXBContext.newInstance(types);
@@ -158,7 +158,7 @@ public class SerializerXml extends Serializer {
 		this.validate(this.schema(type), data);
 	}
 
-	public Schema schema(Class<?> type) throws SerializationException {
+	public Schema schema(Class<?> type)  {
 		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream(512)) {
 			this.schema(type, outputStream);
 			try (InputStream stream = new ByteArrayInputStream(outputStream.toByteArray())) {
@@ -179,7 +179,7 @@ public class SerializerXml extends Serializer {
 	public static final String XML_FILE_NAMESPACE = "http://www.w3.org/2001/XMLSchema";
 
 	@Override
-	public void schema(Class<?> type, OutputStream outputStream) throws SerializationException {
+	public void schema(Class<?> type, OutputStream outputStream)  {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);

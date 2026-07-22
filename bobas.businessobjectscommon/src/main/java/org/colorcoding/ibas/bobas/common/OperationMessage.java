@@ -10,6 +10,8 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.DateTime;
+import org.colorcoding.ibas.bobas.exception.BasException;
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 
 /**
@@ -113,12 +115,21 @@ public class OperationMessage extends Result implements IOperationMessage {
 		if (currentMessage != null && !currentMessage.isEmpty()) {
 			return;
 		}
+		// 取异常消息
 		String message = this.error.getMessage();
 		if (message == null || message.isEmpty()) {
-			this.setMessage(I18N.prop("msg_bobas_unknown_exception"));
+			message = I18N.prop("msg_bobas_unknown_exception");
 		} else {
-			this.setMessage(message);
+			// 追加业务异常 cause 的消息；系统异常（SQLException 等）的原始消息不追加
+			Throwable cause = this.error.getCause();
+			if (cause instanceof BasException || cause instanceof BasRuntimeException) {
+				String causeMessage = cause.getMessage();
+				if (causeMessage != null && !causeMessage.isEmpty() && !message.contains(causeMessage)) {
+					message = message + ": " + causeMessage;
+				}
+			}
 		}
+		this.setMessage(message);
 	}
 
 	/**

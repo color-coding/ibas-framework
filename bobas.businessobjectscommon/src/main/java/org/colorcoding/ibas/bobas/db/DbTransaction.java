@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -36,11 +37,12 @@ import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.configuration.Configuration;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
+import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.IDataTable;
 import org.colorcoding.ibas.bobas.data.IKeyText;
 import org.colorcoding.ibas.bobas.data.List;
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
 import org.colorcoding.ibas.bobas.expression.BOJudgmentLinkCondition;
-import org.colorcoding.ibas.bobas.expression.JudgmentOperationException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
@@ -128,10 +130,11 @@ public class DbTransaction extends Transaction implements IUserAware {
 
 	public final DbAdapter getAdapter() throws Exception {
 		if (this.adapter == null) {
-			this.adapter = DbFactory.create().createAdapter(this.getConnection().getClass().getName());
-		}
-		if (this.adapter == null) {
-			throw new Exception("not found db adapter.");
+			String adapterType = this.getConnection().getClass().getName();
+			this.adapter = DbFactory.create().createAdapter(adapterType);
+			if (this.adapter == null) {
+				throw new BasRuntimeException(I18N.prop("msg_bobas_not_found_db_adapter", adapterType));
+			}
 		}
 		return this.adapter;
 	}
@@ -147,17 +150,41 @@ public class DbTransaction extends Transaction implements IUserAware {
 		if (propertyInfo == null || propertyInfo.isPrimaryKey() || propertyInfo.isUniqueKey()) {
 			return false;
 		}
-		return Objects.equals(value, DateTimes.VALUE_MIN) || Objects.equals(value, Strings.VALUE_EMPTY)
-				|| Objects.equals(value, Numbers.SHORT_VALUE_ZERO) || Objects.equals(value, Numbers.INTEGER_VALUE_ZERO)
-				|| Objects.equals(value, Numbers.LONG_VALUE_ZERO) || Objects.equals(value, Numbers.DOUBLE_VALUE_ZERO)
-				|| Objects.equals(value, Numbers.FLOAT_VALUE_ZERO);
+		if (value == null) {
+			return false;
+		}
+		// 按属性类型短路比较，避免对每个值盲目比较7种默认值
+		Class<?> valueType = propertyInfo.getValueType();
+		if (valueType == String.class) {
+			return value.equals(Strings.VALUE_EMPTY);
+		}
+		if (valueType == Integer.class || valueType == int.class) {
+			return value.equals(Numbers.INTEGER_VALUE_ZERO);
+		}
+		if (valueType == Short.class || valueType == short.class) {
+			return value.equals(Numbers.SHORT_VALUE_ZERO);
+		}
+		if (valueType == Long.class || valueType == long.class) {
+			return value.equals(Numbers.LONG_VALUE_ZERO);
+		}
+		if (valueType == Double.class || valueType == double.class) {
+			return value.equals(Numbers.DOUBLE_VALUE_ZERO);
+		}
+		if (valueType == Float.class || valueType == float.class) {
+			return value.equals(Numbers.FLOAT_VALUE_ZERO);
+		}
+		if (valueType == DateTime.class || (valueType != null && Date.class.isAssignableFrom(valueType))) {
+			return value.equals(DateTimes.VALUE_MIN);
+		}
+		// 其他类型（BigDecimal等）不存在默认空值
+		return false;
 	}
 
 	/**
 	 * 将 SQL 异常翻译为友好的描述文本（用于包装异常）。
 	 * <p>
 	 * 调用当前数据库适配器的 {@link DbAdapter#translateException(SQLException)}： 各厂商子类会按
-	 * ErrorCode/SQLState 识别并返回国际化消息， 未识别的异常由基类直接返回原始消息。 适配器不可用时，回退到原始异常消息。
+	 * ErrorCode/SQLState 识别并返回国际化消息， 未识别的异常包装为国际化兜底消息。 适配器不可用时，同样回退到兜底消息。
 	 *
 	 * @param exception SQL 异常
 	 * @return 描述文本
@@ -169,9 +196,13 @@ public class DbTransaction extends Transaction implements IUserAware {
 				return translated;
 			}
 		} catch (Exception ex) {
-			// 适配器不可用，回退到原始消息
+			// 适配器不可用，回退到兜底消息
 		}
-		return exception.getMessage();
+		String rawMessage = exception.getMessage();
+		if (Strings.isNullOrEmpty(rawMessage)) {
+			return I18N.prop("msg_bobas_db_unknown_error", exception.getClass().getSimpleName());
+		}
+		return I18N.prop("msg_bobas_db_unknown_error", rawMessage);
 	}
 
 	public final synchronized boolean inTransaction() throws RepositoryException {
@@ -216,7 +247,7 @@ public class DbTransaction extends Transaction implements IUserAware {
 		try {
 			if (this.inTransaction()) {
 				// 处于事务中，不允许关闭数据库连接
-				throw new SQLException(I18N.prop("msg_bobas_database_has_not_commit_transaction"));
+				throw new SQLException(I18N.prop("msg_bobas_database_uncommitted_transaction_exists"));
 			}
 			if (this.isClosed() == false) {
 				this.getConnection().close();
@@ -239,6 +270,10 @@ public class DbTransaction extends Transaction implements IUserAware {
 				this.getConnection().rollback();
 				this.getConnection().setAutoCommit(true);
 			}
+			// 回滚后清理缓存，释放业务逻辑影响对象的引用
+			if (this.cacheDatas != null) {
+				this.cacheDatas.clear();
+			}
 		} catch (SQLException e) {
 			throw new RepositoryException(e.getMessage(), e);
 		}
@@ -253,6 +288,10 @@ public class DbTransaction extends Transaction implements IUserAware {
 			if (!this.getConnection().getAutoCommit()) {
 				this.getConnection().commit();
 				this.getConnection().setAutoCommit(true);
+			}
+			// 提交后清理缓存，释放业务逻辑影响对象的引用
+			if (this.cacheDatas != null) {
+				this.cacheDatas.clear();
 			}
 		} catch (SQLException e) {
 			throw new RepositoryException(e.getMessage(), e);
@@ -293,7 +332,8 @@ public class DbTransaction extends Transaction implements IUserAware {
 					this.getAdapter().bindParameters(statement, nCriteria.getConditions(), 1);
 					// 运行查询
 					try (ResultSet resultSet = statement.executeQuery();) {
-						results = this.getAdapter().parsingDatas(boType, resultSet);
+						// 传入预期行数，预分配ArrayList容量以减少扩容拷贝
+						results = this.getAdapter().parsingDatas(boType, resultSet, nCriteria.getResultCount());
 					}
 				}
 				// 加载子项，并保留有效的
@@ -544,7 +584,7 @@ public class DbTransaction extends Transaction implements IUserAware {
 									for (int i = 0; i < results.length; i++) {
 										cDatas.add((IBusinessObject) results[i]);
 									}
-								} else {
+								} else if (results.length > 0) {
 									eCriteria = cDatas.getElementCriteria();
 									// 查询无效则跳过
 									if (eCriteria == null || eCriteria.getConditions().isEmpty()) {
@@ -721,7 +761,7 @@ public class DbTransaction extends Transaction implements IUserAware {
 									// 获取主键
 									List<IPropertyInfo<?>> ptyKeys = propertyInfos.where(c -> c.isPrimaryKey());
 									if (ptyKeys.isEmpty()) {
-										throw new SQLException("this operation requires a primary key.");
+										throw new SQLException(I18N.prop("msg_bobas_operation_requires_primary_key"));
 									}
 									// 设置主键条件值
 									for (IPropertyInfo<?> propertyInfo : ptyKeys) {
@@ -747,7 +787,7 @@ public class DbTransaction extends Transaction implements IUserAware {
 									// 获取主键
 									List<IPropertyInfo<?>> ptyKeys = propertyInfos.where(c -> c.isPrimaryKey());
 									if (ptyKeys.isEmpty()) {
-										throw new SQLException("this operation requires a primary key.");
+										throw new SQLException(I18N.prop("msg_bobas_operation_requires_primary_key"));
 									}
 									// 设置更新值
 									for (IPropertyInfo<?> propertyInfo : propertyInfos.where(c -> !c.isPrimaryKey())) {
@@ -1034,7 +1074,12 @@ public class DbTransaction extends Transaction implements IUserAware {
 				return datas;
 			} catch (Exception e) {
 				if (mine == true) {
-					this.rollback();
+					try {
+						this.rollback();
+					} catch (Exception e1) {
+						// 回滚失败时，将回滚异常附加到原始异常上，避免丢失真正的故障原因
+						e.addSuppressed(e1);
+					}
 					mine = false;
 				}
 				throw e;
@@ -1179,7 +1224,7 @@ public class DbTransaction extends Transaction implements IUserAware {
 
 	/**
 	 * 缓存数据
-	 * 
+	 *
 	 * @param data 待缓存数据
 	 * @return true:缓存成功（新）; false:已缓存
 	 */
@@ -1190,6 +1235,16 @@ public class DbTransaction extends Transaction implements IUserAware {
 			this.cacheDatas = new HashSet<>();
 		}
 		return this.cacheDatas.add(data);
+	}
+
+	/**
+	 * 清理缓存数据，释放被引用的对象
+	 */
+	@Override
+	public synchronized void clearCache() {
+		if (this.cacheDatas != null) {
+			this.cacheDatas.clear();
+		}
 	}
 
 	/**
@@ -1235,7 +1290,7 @@ public class DbTransaction extends Transaction implements IUserAware {
 				}
 			};
 			return BOUtilities.fetch(iterator, criteria).toArray((T[]) Array.newInstance(boType, 0));
-		} catch (JudgmentOperationException e) {
+		} catch (Exception e) {
 			throw new RepositoryException(e.getMessage(), e);
 		}
 	}

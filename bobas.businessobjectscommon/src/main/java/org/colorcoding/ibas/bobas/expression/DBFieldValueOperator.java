@@ -3,6 +3,7 @@ package org.colorcoding.ibas.bobas.expression;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.db.DbField;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 
 /**
  * 数据库字段值操作
@@ -27,7 +28,7 @@ public class DBFieldValueOperator extends FieldValueOperator {
 			}
 		}
 		if (this.property == null) {
-			throw new ExpressionException("not found property.");
+			throw new ExpressionException(I18N.prop("msg_bobas_not_found_property", this.getPropertyName()));
 		}
 		return this.property;
 	}
