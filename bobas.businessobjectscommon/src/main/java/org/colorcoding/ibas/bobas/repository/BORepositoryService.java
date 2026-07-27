@@ -153,6 +153,8 @@ public class BORepositoryService extends BORepository4DB {
 						ICondition condition = null;
 						IPropertyInfo<?> cKey = null;
 						int index = pCriteria.getConditions().size();
+						// 临时存放当前子项的条件，便于去重判断
+						java.util.List<ICondition> tmpConditions = new java.util.ArrayList<>();
 						List<IPropertyInfo<?>> cKeys = BOFactory.propertyInfos(subType).where(c -> c.isPrimaryKey());
 						for (IPropertyInfo<?> pKey : BOFactory.propertyInfos(boType).where(c -> c.isPrimaryKey())) {
 							cKey = cKeys.firstOrDefault(c -> Strings.equals(pKey.getName(), c.getName()));
@@ -163,13 +165,39 @@ public class BORepositoryService extends BORepository4DB {
 							condition = new Condition();
 							condition.setAlias(pKey);
 							condition.setValue(BOUtilities.propertyValue(item, cKey));
-							pCriteria.getConditions().add(condition);
+							tmpConditions.add(condition);
 						}
 						// 没有增加条件，跳过
-						if (index == pCriteria.getConditions().size()) {
+						if (tmpConditions.isEmpty()) {
 							continue;
 						}
-						if (pCriteria.getConditions().size() > (index + 1)) {
+						// 检查是否已存在相同条件组（去重）
+						// 条件按组添加，每组大小相同，按组比较 alias 与 value
+						int groupSize = tmpConditions.size();
+						boolean duplicated = false;
+						for (int i = 0; i + groupSize <= index; i += groupSize) {
+							boolean match = true;
+							for (int j = 0; j < groupSize; j++) {
+								ICondition existing = pCriteria.getConditions().get(i + j);
+								ICondition tmp = tmpConditions.get(j);
+								if (!Strings.equals(existing.getAlias(), tmp.getAlias())
+										|| !Strings.equals(existing.getValue(), tmp.getValue())) {
+									match = false;
+									break;
+								}
+							}
+							if (match) {
+								duplicated = true;
+								break;
+							}
+						}
+						if (duplicated) {
+							continue;
+						}
+						// 添加条件
+						pCriteria.getConditions().addAll(tmpConditions);
+						// 多个条件（联合主键），添加括号
+						if (tmpConditions.size() > 1) {
 							pCriteria.getConditions().get(index).addBracketOpen();
 							pCriteria.getConditions().lastOrDefault().addBracketClose();
 						}

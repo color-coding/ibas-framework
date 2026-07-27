@@ -165,7 +165,8 @@ public class FileJudgmentLink extends JudgmentLink {
 		if (conditions == null || conditions.toString().equals("[]")) {
 			return;
 		}
-		ArrayList<JudgmentLinkItem> jLinkItems = new ArrayList<JudgmentLinkItem>();
+		ArrayList<JudgmentLinkItem> jLinkItems = new ArrayList<JudgmentLinkItem>(
+				conditions instanceof java.util.Collection ? ((java.util.Collection<?>) conditions).size() : 16);
 		for (ICondition item : conditions) {
 			JudgmentLinkItem jItem = new JudgmentLinkItem();
 			jItem.setOpenBracket(item.getBracketOpen());

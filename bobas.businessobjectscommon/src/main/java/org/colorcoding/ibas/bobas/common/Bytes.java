@@ -79,10 +79,10 @@ public class Bytes {
 	 * @return 小写16进制字符串；null或空数组输入返回null
 	 */
 	public static String toHexString(byte[] bytes) {
-		StringBuilder stringBuilder = new StringBuilder();
 		if (bytes == null || bytes.length <= 0) {
 			return null;
 		}
+		StringBuilder stringBuilder = new StringBuilder(bytes.length * 2);
 		for (int i = 0; i < bytes.length; i++) {
 			int v = bytes[i] & 0xFF;
 			String hv = Integer.toHexString(v);
@@ -162,7 +162,7 @@ public class Bytes {
 		if (Strings.isNullOrEmpty(mimeType)) {
 			return toBase64String(bytes);
 		}
-		StringBuilder builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder(mimeType.length() + bytes.length * 4 / 3 + 32);
 		builder.append("data:");
 		builder.append(mimeType);
 		builder.append(";base64");

@@ -28,7 +28,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 				application = Strings.format("ibas_%s", this.hashCode());
 			}
 			Class.forName("dm.jdbc.driver.DmDriver");
-			String dbURL = String.format("jdbc:dm://%s?schema=\"\"%s\"\"", server, dbName);
+			String dbURL = String.format("jdbc:dm://%s?schema=%s", server, dbName);
 			if (MyConfiguration.isDebugMode()) {
 				Logger.log(MessageLevel.DEBUG, Strings.format("db adapter: %s", dbURL));
 			}
@@ -130,6 +130,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	@Override
 	public String parsingMaxValue(MaxValue maxValue, Collection<ICondition> conditions) {
 		StringBuilder stringBuilder = new StringBuilder(conditions.size() * 32 + 96);
 		stringBuilder.append("SELECT");

@@ -101,7 +101,7 @@ public abstract class JudgmentLink {
 		boolean done = false;// 完成
 		int closeCount = 0;
 		int bracket = -1;
-		ArrayList<JudgmentLinkItem> currentJudgmentItems = new ArrayList<JudgmentLinkItem>();
+		ArrayList<JudgmentLinkItem> currentJudgmentItems = new ArrayList<JudgmentLinkItem>(judgmentItems.length - startIndex);
 		for (int i = startIndex; i < judgmentItems.length; i++) {
 			JudgmentLinkItem jItem = judgmentItems[i];
 			if (bracket == -1) {
@@ -157,6 +157,10 @@ public abstract class JudgmentLink {
 			} else {
 				// 计算当前表达式
 				IJudgmentExpression currentJudExp = factory.createJudgment(jItem.getLeftOperator().getValueClass());
+				if (currentJudExp == null) {
+					throw new ExpressionException(I18N.prop("msg_bobas_not_support_type_expression",
+							jItem.getLeftOperator().getValueClass()));
+				}
 				currentJudExp.setLeftValue(jItem.getLeftOperator().getValue());
 				currentJudExp.setOperation(jItem.getOperation());
 				currentJudExp.setRightValue(jItem.getRightOperator().getValue());

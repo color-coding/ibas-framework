@@ -54,7 +54,7 @@ public class SQLScriptValueOperator implements IPropertyValueOperator {
 				// 使用参数化方式替换查询中的变量，避免SQL注入
 				Matcher matcher = Pattern.compile(MyConfiguration.VARIABLE_PATTERN).matcher(query);
 				ArrayList<Object> sqlParameters = new ArrayList<>();
-				StringBuffer stringBuffer = new StringBuffer();
+				StringBuffer stringBuffer = new StringBuffer(query.length());
 				while (matcher.find()) {
 					// 带格式名称${}
 					String vName = matcher.group(0);

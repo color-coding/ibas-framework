@@ -327,17 +327,29 @@ public class DbTransaction extends Transaction implements IUserAware {
 					Logger.log(MessageLevel.DEBUG,
 							Strings.format("executable sql: %s", this.getAdapter().parsing(sqlBuilder)));
 				}
-				try (PreparedStatement statement = this.getConnection().prepareStatement(sql)) {
-					// 填充参数
-					this.getAdapter().bindParameters(statement, nCriteria.getConditions(), 1);
-					// 运行查询
-					try (ResultSet resultSet = statement.executeQuery();) {
-						// 传入预期行数，预分配ArrayList容量以减少扩容拷贝
-						results = this.getAdapter().parsingDatas(boType, resultSet, nCriteria.getResultCount());
+				if (this.getAdapter().isPreparable(sql)) {
+					// 参数数量在限制内，使用预编译查询
+					try (PreparedStatement statement = this.getConnection().prepareStatement(sql)) {
+						// 填充参数
+						this.getAdapter().bindParameters(statement, nCriteria.getConditions(), 1);
+						try (ResultSet resultSet = statement.executeQuery();) {
+							// 传入预期行数，预分配ArrayList容量以减少扩容拷贝
+							results = this.getAdapter().parsingDatas(boType, resultSet, nCriteria.getResultCount());
+						}
+					}
+				} else {
+					// 参数超限（如sql server超过2100），退而使用语句内联执行
+					SqlPreparedStatement sqlBuilder = new SqlPreparedStatement(sql);
+					this.getAdapter().bindParameters(sqlBuilder, nCriteria.getConditions(), 1);
+					try (Statement nStatement = this.getConnection().createStatement()) {
+						try (ResultSet resultSet = nStatement.executeQuery(this.getAdapter().parsing(sqlBuilder))) {
+							results = this.getAdapter().parsingDatas(boType, resultSet, nCriteria.getResultCount());
+						}
 					}
 				}
 				// 加载子项，并保留有效的
-				if (!results.isEmpty() && !nCriteria.isNoChilds()) {
+				if (!results.isEmpty() && !nCriteria.isNoChilds()
+						&& IBusinessObject.class.isAssignableFrom(boType)) {
 					this.fetchChilds(results, nCriteria);
 				}
 				for (IBusinessObject item : results) {
@@ -1204,7 +1216,7 @@ public class DbTransaction extends Transaction implements IUserAware {
 				datas = new ArrayList<>();
 			}
 			// 加载子对象
-			if (!datas.isEmpty()) {
+			if (!datas.isEmpty() && IBusinessObject.class.isAssignableFrom(boType)) {
 				this.fetchChilds(datas, new Criteria());
 			}
 			return datas.toArray((T[]) Array.newInstance(boType, datas.size()));

@@ -102,6 +102,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	@Override
 	public String parsingSelect(Class<?> boType, ICriteria criteria, boolean withLock) {
 		StringBuilder stringBuilder = new StringBuilder(
 				(3 + criteria.getConditions().size() + criteria.getSorts().size()) * 32);
@@ -137,6 +138,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	@Override
 	public String parsingMaxValue(MaxValue maxValue, Collection<ICondition> conditions) {
 		StringBuilder stringBuilder = new StringBuilder(conditions.size() * 32 + 96);
 		stringBuilder.append("SELECT");

@@ -36,7 +36,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 	}
 
 	/**
-	 * 返回SQL类型；value为null时返回Types.NULL，否则委托给sqlTypeOf(type)
+	 * 返回SQL类型；value为null时返回Types.NULL，否则委托给基类按值细化后的映射。
 	 *
 	 * @param type  数据字段类型
 	 * @param value 当前值，null时返回NULL类型
@@ -47,7 +47,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		if (value == null) {
 			return java.sql.Types.NULL;
 		}
-		return this.sqlTypeOf(type);
+		return super.sqlTypeOf(type, value);
 	}
 
 	@Override
@@ -141,6 +141,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	@Override
 	public String parsingMaxValue(MaxValue maxValue, Collection<ICondition> conditions) {
 		StringBuilder stringBuilder = new StringBuilder(conditions.size() * 32 + 96);
 		stringBuilder.append("SELECT");
@@ -160,6 +161,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	@Override
 	public String parsingStoredProcedure(String spName, String... args) {
 		StringBuilder stringBuilder = new StringBuilder(spName.length() + args.length * 16 + 32);
 		stringBuilder.append("SELECT");

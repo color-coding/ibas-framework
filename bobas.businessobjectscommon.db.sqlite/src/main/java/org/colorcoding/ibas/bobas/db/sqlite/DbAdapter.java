@@ -123,6 +123,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	@Override
 	public String parsingMaxValue(MaxValue maxValue, Collection<ICondition> conditions) {
 		StringBuilder stringBuilder = new StringBuilder(conditions.size() * 32 + 96);
 		stringBuilder.append("SELECT");
@@ -142,6 +143,16 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * SQLite 不支持存储过程，此处降级为可执行的 SELECT 语句。
+	 * <p>
+	 * 注意：该语句仅保证语法可解析，不会真正执行原存储过程的逻辑；传入的参数仅用于占位，不会按名称赋值。
+	 *
+	 * @param spName 存储过程/函数名
+	 * @param args   参数名称数组
+	 * @return 可执行的 SELECT SQL字符串
+	 */
+	@Override
 	public String parsingStoredProcedure(String spName, String... args) {
 		StringBuilder stringBuilder = new StringBuilder(spName.length() + args.length * 16 + 32);
 		stringBuilder.append("SELECT");
@@ -151,14 +162,12 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		stringBuilder.append("FROM");
 		stringBuilder.append(" ");
 		stringBuilder.append(this.identifier(MyConfiguration.applyVariables(spName)));
-		stringBuilder.append(" ");
-		stringBuilder.append("WHERE");
-		stringBuilder.append(" ");
 		if (args.length > 0) {
 			stringBuilder.append(" ");
-			int count = stringBuilder.length();
+			stringBuilder.append("WHERE");
+			stringBuilder.append(" ");
 			for (int i = 0; i < args.length; i++) {
-				if (stringBuilder.length() > count) {
+				if (i > 0) {
 					stringBuilder.append(" ");
 					stringBuilder.append("OR");
 					stringBuilder.append(" ");

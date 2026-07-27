@@ -41,7 +41,7 @@ public class BOJudgmentLink extends JudgmentLink {
 		if (this.getJudgmentItems() == null) {
 			return true;
 		}
-		ArrayList<JudgmentLinkItem> jItems = new ArrayList<>();
+		ArrayList<JudgmentLinkItem> jItems = new ArrayList<>(this.getJudgmentItems().length);
 		// 设置所以条件的比较值
 		for (JudgmentLinkItem item : this.getJudgmentItems()) {
 			// 左值
@@ -147,7 +147,7 @@ public class BOJudgmentLink extends JudgmentLink {
 			return false;
 		}
 		String property = path.substring(path.lastIndexOf(".") + 1);
-		ArrayList<JudgmentLinkItem> jItems = new ArrayList<>();
+		ArrayList<JudgmentLinkItem> jItems = new ArrayList<>(values.size());
 		for (Object item : values) {
 			JudgmentLinkItem jItem = new JudgmentLinkItem();
 			jItem.setRelationship(JudgmentOperation.OR);

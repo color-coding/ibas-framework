@@ -30,7 +30,8 @@ public class BOJudgmentLinkCondition extends BOJudgmentLink {
 		}
 		ICondition item;
 		JudgmentLinkItem jItem;
-		ArrayList<JudgmentLinkItem> jLinkItems = new ArrayList<JudgmentLinkItem>();
+		ArrayList<JudgmentLinkItem> jLinkItems = new ArrayList<JudgmentLinkItem>(
+				conditions instanceof java.util.Collection ? ((java.util.Collection<?>) conditions).size() : 16);
 		while (iterator.hasNext()) {
 			item = (ICondition) iterator.next();
 			jItem = new JudgmentLinkItem();

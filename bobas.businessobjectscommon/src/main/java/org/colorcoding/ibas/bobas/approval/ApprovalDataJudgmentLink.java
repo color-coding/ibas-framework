@@ -36,7 +36,7 @@ public class ApprovalDataJudgmentLink extends BOJudgmentLink {
 		if (conditions == null || conditions.length == 0) {
 			return;
 		}
-		ArrayList<JudgmentLinkItem> jLinkItems = new ArrayList<JudgmentLinkItem>();
+		ArrayList<JudgmentLinkItem> jLinkItems = new ArrayList<JudgmentLinkItem>(conditions.length);
 		for (IApprovalProcessStepCondition item : conditions) {
 			JudgmentLinkItem jItem = new JudgmentLinkItem();
 			if (item.getRelation() == emConditionRelationship.NONE || item.getRelation() == null) {
@@ -59,7 +59,7 @@ public class ApprovalDataJudgmentLink extends BOJudgmentLink {
 			} else {
 				// 与对象属性值比较
 				IPropertyValueOperator valueOperator = this.createPropertyValueOperator(item.getConditionValueMode());
-				valueOperator.setPropertyName(item.getPropertyName());
+				valueOperator.setPropertyName(item.getConditionValue());
 				jItem.setRightOperator(valueOperator);
 			}
 			// 设置括号

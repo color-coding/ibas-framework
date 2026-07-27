@@ -128,7 +128,7 @@ public abstract class FileTransaction extends Transaction {
 		try {
 			FileItem fileItem;
 			FileData fileData;
-			List<FileItem> results = new ArrayList<>();
+			List<FileItem> results = new ArrayList<>(datas.length);
 			for (T data : datas) {
 				fileData = (FileData) data;
 				fileItem = this.save(fileData);
@@ -156,7 +156,7 @@ public abstract class FileTransaction extends Transaction {
 		}
 		try {
 			FileItem fileItem;
-			List<FileItem> results = new ArrayList<>();
+			List<FileItem> results = new ArrayList<>(datas.length);
 			for (T data : datas) {
 				fileItem = (FileItem) data;
 				if (!this.delete(fileItem)) {

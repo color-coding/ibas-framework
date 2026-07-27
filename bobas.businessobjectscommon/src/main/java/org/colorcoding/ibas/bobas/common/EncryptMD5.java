@@ -36,7 +36,7 @@ public class EncryptMD5 {
 	 * @return 16进制小写MD5摘要字符串
 	 */
 	public static String md5(String... inputStrs) {
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder(inputStrs.length * 16);
 		for (String string : inputStrs) {
 			stringBuilder.append(string);
 		}
@@ -92,7 +92,7 @@ public class EncryptMD5 {
 			}
 			shortStr[i] = outChars;
 		}
-		StringBuffer sb = new StringBuffer();
+		StringBuffer sb = new StringBuffer(16);
 		for (int i = 0; i < shortStr.length; i++) {
 			if (shortStr[i] == null) {
 				continue;

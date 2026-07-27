@@ -229,8 +229,8 @@ public class Strings {
 			return nValue;
 		} else if (value.getClass().isArray()) {
 			Object tmpVlue = null;
-			StringBuilder builder = new StringBuilder();
 			int length = Array.getLength(value);
+			StringBuilder builder = new StringBuilder(length * 8);
 			for (int i = 0; i < length; i++) {
 				if (builder.length() > 0) {
 					builder.append(VALUE_COMMA);
@@ -322,7 +322,7 @@ public class Strings {
 	 */
 	public static String concat(String... pars) {
 		if (pars.length > 0) {
-			StringBuilder builder = new StringBuilder();
+			StringBuilder builder = new StringBuilder(pars.length * 16);
 			for (String item : pars) {
 				if (item == null) {
 					continue;
@@ -975,7 +975,7 @@ public class Strings {
 			return VALUE_EMPTY;
 		}
 		String sep = separator != null ? separator : VALUE_EMPTY;
-		StringBuilder builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder(values.length * 16);
 		for (Object item : values) {
 			if (item == null) {
 				continue;

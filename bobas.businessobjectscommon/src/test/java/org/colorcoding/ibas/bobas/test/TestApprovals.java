@@ -206,7 +206,7 @@ public class TestApprovals extends TestCase {
 		bCondition.setPropertyName(SalesOrder.PROPERTY_DOCUMENTTOTAL.getAnnotation(DbField.class).name());
 		bCondition.setOperation(emConditionOperation.EQUAL);
 		bCondition.setConditionValueMode(ValueMode.DB_FIELD);
-		bCondition.setPropertyName(SalesOrder.PROPERTY_DOCUMENTTOTAL.getAnnotation(DbField.class).name());
+		bCondition.setConditionValue(SalesOrder.PROPERTY_DOCUMENTTOTAL.getAnnotation(DbField.class).name());
 		step10.setConditions(new IApprovalProcessStepCondition[] { aCondition, bCondition });
 		aSteps.add(step10);
 		// 3000以上，10000以下经理审批

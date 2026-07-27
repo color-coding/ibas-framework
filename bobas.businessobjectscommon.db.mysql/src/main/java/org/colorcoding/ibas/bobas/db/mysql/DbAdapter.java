@@ -14,7 +14,6 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.db.DataType;
 import org.colorcoding.ibas.bobas.db.MaxValue;
-import org.colorcoding.ibas.bobas.db.SqlStatement;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
@@ -45,10 +44,12 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		}
 	}
 
+	@Override
 	public String identifier() {
 		return "`";
 	}
 
+	@Override
 	public String escape() {
 		// 改变默认"\"字符
 		return "/";
@@ -136,6 +137,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	@Override
 	public String parsingMaxValue(MaxValue maxValue, Collection<ICondition> conditions) {
 		StringBuilder stringBuilder = new StringBuilder(conditions.size() * 32 + 96);
 		stringBuilder.append("SELECT");
@@ -186,12 +188,36 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 	}
 
 	/**
-	 * 解析SQL语句；对反斜杠进行双写转义
+	 * 转义字符串值中的特殊字符（MySQL 特定）。
+	 * <p>
+	 * 在标准SQL转义（单引号双写、空字符替换）基础上，增加反斜杠转义。
+	 * MySQL 默认将反斜杠视为转义字符，若不转义，形如 {@code \'} 的输入会导致
+	 * 单引号被"绕过"，引发SQL注入风险。
+	 * <p>
+	 * 注意：转义顺序很重要——先转义反斜杠自身，再转义单引号，避免互相干扰。
+	 *
+	 * @param value 原始字符串值（不为null）
+	 * @return 转义后的字符串（未加外层单引号）
 	 */
 	@Override
-	public String parsing(SqlStatement sqlStatement) {
-		// 处理转义字符
-		return Strings.replace(super.parsing(sqlStatement), "\\", "\\\\");
+	protected String escapeStringValue(String value) {
+		StringBuilder sb = new StringBuilder(value.length() + 16);
+		for (int i = 0; i < value.length(); i++) {
+			char c = value.charAt(i);
+			if (c == '\\') {
+				// 反斜杠双写（MySQL特定，防止反斜杠转义单引号）
+				sb.append("\\\\");
+			} else if (c == '\'') {
+				// 单引号双写转义
+				sb.append("''");
+			} else if (c == '\0') {
+				// 空字符替换为空格，防止截断攻击
+				sb.append(' ');
+			} else {
+				sb.append(c);
+			}
+		}
+		return sb.toString();
 	}
 
 	/**

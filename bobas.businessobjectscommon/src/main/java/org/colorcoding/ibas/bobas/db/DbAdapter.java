@@ -1,7 +1,5 @@
 package org.colorcoding.ibas.bobas.db;
 
-import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
-
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -54,6 +52,7 @@ import org.colorcoding.ibas.bobas.data.IDataTableRow;
 import org.colorcoding.ibas.bobas.data.KeyText;
 import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.data.List;
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 
 /**
@@ -108,6 +107,16 @@ public abstract class DbAdapter {
 	}
 
 	/**
+	 * 判断SQL语句是否可走预编译（参数数量是否在数据库限制内）。 基类默认不限制，各数据库子类按需重写。
+	 *
+	 * @param sql 已生成的含?占位符的SQL语句
+	 * @return true表示可使用PreparedStatement执行
+	 */
+	public boolean isPreparable(String sql) {
+		return true;
+	}
+
+	/**
 	 * 创建数据库连接
 	 *
 	 * @param server   服务器地址
@@ -144,8 +153,8 @@ public abstract class DbAdapter {
 	@SuppressWarnings("unchecked")
 	public <T> List<T> parsingDatas(Class<?> boType, ResultSet resultSet, int expectedSize) throws SQLException {
 		T data = null;
-		ArrayList<T> datas = expectedSize > 0 ? new ArrayList<>(expectedSize) : new ArrayList<>();
 		IPropertyInfo<?>[] orderProperties = null;
+		ArrayList<T> datas = expectedSize > 0 ? new ArrayList<>(expectedSize) : new ArrayList<>();
 		while (resultSet.next()) {
 			if (boType.equals(Result.class)) {
 				datas.add((T) new Result(resultSet.getInt(1), resultSet.getString(2)));
@@ -153,7 +162,7 @@ public abstract class DbAdapter {
 				datas.add((T) new KeyText(resultSet.getString(1), resultSet.getString(2)));
 			} else if (boType.equals(KeyValue.class)) {
 				datas.add((T) new KeyValue(resultSet.getString(1), resultSet.getObject(2)));
-			} else if (IFieldedObject.class.isAssignableFrom(boType)) {
+			} else if (FieldedObject.class.isAssignableFrom(boType)) {
 				if (orderProperties == null) {
 					ResultSetMetaData metaData = resultSet.getMetaData();
 					ArrayList<String> columnNames = new ArrayList<>(metaData.getColumnCount());
@@ -214,6 +223,8 @@ public abstract class DbAdapter {
 					((FieldedObject) data).markOld();
 				}
 				datas.add(data);
+			} else {
+				throw new BasRuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", boType.getName()));
 			}
 		}
 		return datas;
@@ -436,12 +447,27 @@ public abstract class DbAdapter {
 
 	/**
 	 * 返回SQL类型
-	 * 
+	 * <p>
+	 * 在 {@link #sqlTypeOf(DataType)} 基础上，结合当前实际值进一步细化 JDBC 类型： 当声明类型为
+	 * {@link DataType#NUMERIC} 时，按值的实际类型分别映射为 TINYINT / SMALLINT / INTEGER /
+	 * BIGINT，避免 Short/Long 等被笼统地按 INTEGER 处理。
+	 *
 	 * @param type  数据字段类型
 	 * @param value 当前值
 	 * @return java.sql.Types中的常量
 	 */
 	public int sqlTypeOf(DataType type, Object value) {
+		if (type == DataType.NUMERIC && value instanceof Number) {
+			if (value instanceof Long) {
+				return java.sql.Types.BIGINT;
+			}
+			if (value instanceof Short) {
+				return java.sql.Types.SMALLINT;
+			}
+			if (value instanceof Byte) {
+				return java.sql.Types.TINYINT;
+			}
+		}
 		return this.sqlTypeOf(type);
 	}
 
@@ -1296,7 +1322,7 @@ public abstract class DbAdapter {
 										|| parameter.value instanceof java.sql.Date) {
 									sqlBuilder.append(this.sqlValueOf(parameter.value, java.sql.Types.DATE));
 								} else if (parameter.value instanceof Short) {
-									sqlBuilder.append(this.sqlValueOf(parameter.value, java.sql.Types.TINYINT));
+									sqlBuilder.append(this.sqlValueOf(parameter.value, java.sql.Types.SMALLINT));
 								} else if (parameter.value instanceof Long) {
 									sqlBuilder.append(this.sqlValueOf(parameter.value, java.sql.Types.BIGINT));
 								} else if (parameter.value instanceof Double) {
@@ -1313,22 +1339,8 @@ public abstract class DbAdapter {
 							sqlBuilder.append(this.sqlValueOf(null, java.sql.Types.NULL));
 						}
 						index++;
-					} else if (item == '\'') {
-						// 需要转义的字符
-						sqlBuilder.append(item);
-						sqlBuilder.append(item);
 					} else {
 						sqlBuilder.append(item);
-					}
-				}
-				// 替换被重复处理的转义字符
-				if (!Strings.isNullOrEmpty(this.escape())) {
-					String oldString = String.format("''%s''", this.escape());
-					String newString = oldString.substring(1, oldString.length() - 1);
-					index = sqlBuilder.indexOf(oldString);
-					while (index != -1) {
-						sqlBuilder.replace(index, index + oldString.length(), newString);
-						index = sqlBuilder.indexOf(oldString);
 					}
 				}
 				sqlString = sqlBuilder.toString();
@@ -1338,6 +1350,31 @@ public abstract class DbAdapter {
 	}
 
 	private static String TEMPLATE_SQL_VALUE = "'%s'";
+
+	/**
+	 * 转义字符串值中的特殊字符，防止SQL注入。
+	 * <p>
+	 * 基类实现标准SQL转义规则：单引号双写、空字符替换为空格。 各数据库适配器（如MySQL）可重写此方法补充数据库特定的转义（如反斜杠）。
+	 *
+	 * @param value 原始字符串值（不为null）
+	 * @return 转义后的字符串（未加外层单引号）
+	 */
+	protected String escapeStringValue(String value) {
+		StringBuilder sb = new StringBuilder(value.length() + 8);
+		for (int i = 0; i < value.length(); i++) {
+			char c = value.charAt(i);
+			if (c == '\'') {
+				// 单引号双写转义（标准SQL规则）
+				sb.append("''");
+			} else if (c == '\0') {
+				// 空字符替换为空格，防止截断攻击
+				sb.append(' ');
+			} else {
+				sb.append(c);
+			}
+		}
+		return sb.toString();
+	}
 
 	/**
 	 * 返回SQL值（null和VALUE_MIN返回"NULL"，枚举按注解值或ordinal转换，
@@ -1359,7 +1396,7 @@ public abstract class DbAdapter {
 		}
 		if (value.getClass().isEnum()) {
 			if (this.dbFieldTypeOf(sqlType) == DataType.ALPHANUMERIC || this.dbFieldTypeOf(sqlType) == DataType.MEMO) {
-				return Strings.format(TEMPLATE_SQL_VALUE, Enums.annotationValue(value));
+				return Strings.format(TEMPLATE_SQL_VALUE, this.escapeStringValue(Enums.annotationValue(value)));
 			} else if (this.dbFieldTypeOf(sqlType) == DataType.NUMERIC) {
 				if (value instanceof Enum<?>) {
 					Enum<?> itemValue = (Enum<?>) value;
@@ -1369,22 +1406,8 @@ public abstract class DbAdapter {
 		}
 		String sqlValue = null;
 		if (value instanceof String) {
-			// 字符串类型，处理特殊字符（防SQL注入：单引号双写、空字符替换）
-			String strValue = value.toString();
-			StringBuilder sb = new StringBuilder(strValue.length() + 8);
-			for (int i = 0; i < strValue.length(); i++) {
-				char c = strValue.charAt(i);
-				if (c == '\'') {
-					// 单引号双写转义
-					sb.append("''");
-				} else if (c == '\0') {
-					// 空字符替换为空格，防止截断攻击
-					sb.append(' ');
-				} else {
-					sb.append(c);
-				}
-			}
-			sqlValue = sb.toString();
+			// 字符串类型，通过 escapeStringValue 处理特殊字符（防SQL注入）
+			sqlValue = this.escapeStringValue(value.toString());
 		} else {
 			sqlValue = Strings.valueOf(value);
 		}
@@ -1426,10 +1449,11 @@ public abstract class DbAdapter {
 			// 比较右侧
 			if (condition.getOperation() == ConditionOperation.IN
 					|| condition.getOperation() == ConditionOperation.NOT_IN) {
-				// IN、NOT IN，值拆成数组
+				// IN、NOT IN，值拆成数组，按字段声明类型绑定
 				String[] values = Strings.split(condition.getValue());
+				int sqlType = this.sqlTypeOf(condition.getAliasDataType());
 				for (String value : values) {
-					statement.setObject(index, value.trim(), this.sqlTypeOf(DataType.ALPHANUMERIC));
+					statement.setObject(index, value.trim(), sqlType);
 					index += 1;
 				}
 			} else if (condition.getOperation() == ConditionOperation.START) {

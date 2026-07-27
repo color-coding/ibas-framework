@@ -170,7 +170,7 @@ public interface IManagedFields {
 	 */
 	default IFieldData[] getFields(Predicate<? super IFieldData> filter) {
 		Objects.requireNonNull(filter);
-		List<IFieldData> fields = new ArrayList<>();
+		List<IFieldData> fields = new ArrayList<>(this.getFields().length);
 		for (IFieldData item : this.getFields()) {
 			if (filter.test(item)) {
 				fields.add(item);

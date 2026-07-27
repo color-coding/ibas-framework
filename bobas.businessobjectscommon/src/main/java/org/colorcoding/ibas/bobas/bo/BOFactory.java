@@ -209,7 +209,12 @@ public final class BOFactory {
 			Class<?> superClass = type.getSuperclass();
 			while (superClass != null && superClass != BusinessObject.class
 					&& !Modifier.isAbstract(type.getModifiers())) {
-				propertyInfos = propertyInfos(superClass);
+				try {
+					propertyInfos = propertyInfos(superClass);
+				} catch (BasRuntimeException e) {
+					// 父项为抽象类且未注册属性时会抛出异常，忽略并继续向上查找
+					propertyInfos = null;
+				}
 				if (propertyInfos != null && !propertyInfos.isEmpty()) {
 					BO_PROPERTIES.put(type, new ArrayList<IPropertyInfo<?>>(propertyInfos));
 					return propertyInfos(type);

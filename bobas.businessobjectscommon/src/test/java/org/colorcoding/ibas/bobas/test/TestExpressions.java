@@ -197,6 +197,12 @@ public class TestExpressions extends TestCase {
 			boolean ok = judgmentLinks.judge(item);
 			System.out.println(String.format("judged bo: %s is %s", item.toString(), ok));
 		}
+		// 断言预期结果
+		assertTrue("Order 1 should match. ", judgmentLinks.judge(salesOrders.get(0)));
+		assertFalse("Order 2 should not match (DocDueDate mismatch). ", judgmentLinks.judge(salesOrders.get(1)));
+		assertTrue("Order 3 should match. ", judgmentLinks.judge(salesOrders.get(2)));
+		assertFalse("Order 4 should not match (DocTotal < 10000). ", judgmentLinks.judge(salesOrders.get(3)));
+		assertFalse("Order 5 should not match (DocTotal < 10000). ", judgmentLinks.judge(salesOrders.get(4)));
 	}
 
 	// ==================== 新增测试 ====================
@@ -319,5 +325,157 @@ public class TestExpressions extends TestCase {
 
 		assertTrue("DocEntry=1 should match. ", judgmentLinks.judge(so1));
 		assertFalse("DocEntry=2 should not match. ", judgmentLinks.judge(so2));
+	}
+
+	/**
+	 * 测试括号分组-多种嵌套场景 覆盖：(A OR B) AND C, A AND (B OR C), (A OR B) AND (C OR D),
+	 * (A OR B) AND (C OR (D AND E)), ((A)) 同项双括号
+	 */
+	public void testBracketScenarios() {
+		SalesOrder so;
+		BOJudgmentLinkCondition judgmentLinks;
+		ICriteria criteria;
+		ICondition condition;
+
+		// 场景1：(DocEntry = 1 OR DocEntry = 2) AND DocEntry = 1
+		// so1(DocEntry=1) -> true, so2(DocEntry=2) -> false
+		criteria = new Criteria();
+		condition = criteria.getConditions().create();
+		condition.setBracketOpen(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(1);
+		condition = criteria.getConditions().create();
+		condition.setBracketClose(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(2);
+		condition.setRelationship(ConditionRelationship.OR);
+		condition = criteria.getConditions().create();
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(1);
+		condition.setRelationship(ConditionRelationship.AND);
+
+		judgmentLinks = new BOJudgmentLinkCondition();
+		judgmentLinks.parsingConditions(criteria.getConditions());
+		so = new SalesOrder();
+		so.setDocEntry(1);
+		assertTrue("(1 OR 2) AND 1, DocEntry=1 should match. ", judgmentLinks.judge(so));
+		so = new SalesOrder();
+		so.setDocEntry(2);
+		assertFalse("(1 OR 2) AND 1, DocEntry=2 should not match. ", judgmentLinks.judge(so));
+
+		// 场景2：DocEntry = 1 AND (DocEntry = 1 OR DocEntry = 2)
+		// so1(DocEntry=1) -> true, so3(DocEntry=3) -> false
+		criteria = new Criteria();
+		condition = criteria.getConditions().create();
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(1);
+		condition = criteria.getConditions().create();
+		condition.setBracketOpen(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(1);
+		condition.setRelationship(ConditionRelationship.AND);
+		condition = criteria.getConditions().create();
+		condition.setBracketClose(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(2);
+		condition.setRelationship(ConditionRelationship.OR);
+
+		judgmentLinks = new BOJudgmentLinkCondition();
+		judgmentLinks.parsingConditions(criteria.getConditions());
+		so = new SalesOrder();
+		so.setDocEntry(1);
+		assertTrue("1 AND (1 OR 2), DocEntry=1 should match. ", judgmentLinks.judge(so));
+		so = new SalesOrder();
+		so.setDocEntry(3);
+		assertFalse("1 AND (1 OR 2), DocEntry=3 should not match. ", judgmentLinks.judge(so));
+
+		// 场景3：(DocEntry = 1 OR DocEntry = 2) AND (DocEntry = 2 OR DocEntry = 3)
+		// so1(DocEntry=1) -> false, so2(DocEntry=2) -> true
+		criteria = new Criteria();
+		condition = criteria.getConditions().create();
+		condition.setBracketOpen(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(1);
+		condition = criteria.getConditions().create();
+		condition.setBracketClose(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(2);
+		condition.setRelationship(ConditionRelationship.OR);
+		condition = criteria.getConditions().create();
+		condition.setBracketOpen(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(2);
+		condition.setRelationship(ConditionRelationship.AND);
+		condition = criteria.getConditions().create();
+		condition.setBracketClose(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(3);
+		condition.setRelationship(ConditionRelationship.OR);
+
+		judgmentLinks = new BOJudgmentLinkCondition();
+		judgmentLinks.parsingConditions(criteria.getConditions());
+		so = new SalesOrder();
+		so.setDocEntry(1);
+		assertFalse("(1 OR 2) AND (2 OR 3), DocEntry=1 should not match. ", judgmentLinks.judge(so));
+		so = new SalesOrder();
+		so.setDocEntry(2);
+		assertTrue("(1 OR 2) AND (2 OR 3), DocEntry=2 should match. ", judgmentLinks.judge(so));
+
+		// 场景4：嵌套括号 (DocEntry = 1 OR DocEntry = 2) AND (DocEntry = 1 OR (DocEntry = 2 AND DocEntry = 3))
+		// so1(DocEntry=1) -> true, so2(DocEntry=2) -> false (2 AND 3 fails), so3(DocEntry=3) -> false
+		criteria = new Criteria();
+		condition = criteria.getConditions().create();
+		condition.setBracketOpen(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(1);
+		condition = criteria.getConditions().create();
+		condition.setBracketClose(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(2);
+		condition.setRelationship(ConditionRelationship.OR);
+		condition = criteria.getConditions().create();
+		condition.setBracketOpen(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(1);
+		condition.setRelationship(ConditionRelationship.AND);
+		condition = criteria.getConditions().create();
+		condition.setBracketOpen(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(2);
+		condition.setRelationship(ConditionRelationship.OR);
+		condition = criteria.getConditions().create();
+		condition.setBracketClose(2);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(3);
+		condition.setRelationship(ConditionRelationship.AND);
+
+		judgmentLinks = new BOJudgmentLinkCondition();
+		judgmentLinks.parsingConditions(criteria.getConditions());
+		so = new SalesOrder();
+		so.setDocEntry(1);
+		assertTrue("nested brackets, DocEntry=1 should match. ", judgmentLinks.judge(so));
+		so = new SalesOrder();
+		so.setDocEntry(2);
+		assertFalse("nested brackets, DocEntry=2 should not match. ", judgmentLinks.judge(so));
+		so = new SalesOrder();
+		so.setDocEntry(3);
+		assertFalse("nested brackets, DocEntry=3 should not match. ", judgmentLinks.judge(so));
+
+		// 场景5：同项双括号 ((DocEntry = 1))
+		criteria = new Criteria();
+		condition = criteria.getConditions().create();
+		condition.setBracketOpen(2);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(1);
+		condition.setBracketClose(2);
+
+		judgmentLinks = new BOJudgmentLinkCondition();
+		judgmentLinks.parsingConditions(criteria.getConditions());
+		so = new SalesOrder();
+		so.setDocEntry(1);
+		assertTrue("((DocEntry=1)), DocEntry=1 should match. ", judgmentLinks.judge(so));
+		so = new SalesOrder();
+		so.setDocEntry(2);
+		assertFalse("((DocEntry=1)), DocEntry=2 should not match. ", judgmentLinks.judge(so));
 	}
 }

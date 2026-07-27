@@ -17,6 +17,21 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 
+	/** sql server 预编译参数上限 */
+	private static final int MAX_PREPARED_PARAMETERS = 2100;
+
+	@Override
+	public boolean isPreparable(String sql) {
+		// sql server 预编译参数不能超过2100，统计占位符?数量判断
+		int count = 0;
+		for (int i = 0; i < sql.length(); i++) {
+			if (sql.charAt(i) == '?') {
+				count++;
+			}
+		}
+		return count <= MAX_PREPARED_PARAMETERS;
+	}
+
 	@Override
 	public Connection createConnection(String server, String dbName, String userName, String userPwd) {
 		try {
