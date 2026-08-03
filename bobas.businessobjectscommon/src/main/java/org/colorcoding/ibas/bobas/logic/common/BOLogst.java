@@ -1,28 +1,20 @@
 package org.colorcoding.ibas.bobas.logic.common;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
 import org.colorcoding.ibas.bobas.bo.IBOCustomKey;
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.DateTime;
+import org.colorcoding.ibas.bobas.db.DataType;
 import org.colorcoding.ibas.bobas.db.DbField;
 import org.colorcoding.ibas.bobas.db.EditType;
-import org.colorcoding.ibas.bobas.db.DataType;
-import org.colorcoding.ibas.bobas.db.IDbTableUpdate;
 
 /**
  * 业务对象日志
- * 
+ *
  */
-@XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = BOLogst.BUSINESS_OBJECT_NAME, namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
-@XmlRootElement(name = BOLogst.BUSINESS_OBJECT_NAME, namespace = MyConfiguration.NAMESPACE_BOBAS_BO)
-public class BOLogst extends BusinessObject<BOLogst> implements IBOCustomKey, IDbTableUpdate {
+public class BOLogst extends BusinessObject<BOLogst> implements IBOCustomKey {
 
 	/**
 	 * 序列化版本标记
@@ -45,6 +37,36 @@ public class BOLogst extends BusinessObject<BOLogst> implements IBOCustomKey, ID
 	public static final String BUSINESS_OBJECT_NAME = "BOLogst";
 
 	/**
+	 * 属性名称-事务标识
+	 */
+	private static final String PROPERTY_TRANSACTIONID_NAME = "TransactionId";
+
+	/**
+	 * 事务标识 属性（主键首位，UUID v7 时间有序，保证追加写）
+	 */
+	@DbField(name = "TransactionId", type = DataType.ALPHANUMERIC, table = DB_TABLE_NAME, primaryKey = true)
+	public static final IPropertyInfo<String> PROPERTY_TRANSACTIONID = registerProperty(PROPERTY_TRANSACTIONID_NAME,
+			String.class, MY_CLASS);
+
+	/**
+	 * 获取-事务标识
+	 *
+	 * @return 值
+	 */
+	public String getTransactionId() {
+		return this.getProperty(PROPERTY_TRANSACTIONID);
+	}
+
+	/**
+	 * 设置-事务标识
+	 *
+	 * @param value 值
+	 */
+	public void setTransactionId(String value) {
+		this.setProperty(PROPERTY_TRANSACTIONID, value);
+	}
+
+	/**
 	 * 属性名称-类型
 	 */
 	private static final String PROPERTY_BOCODE_NAME = "BOCode";
@@ -61,7 +83,7 @@ public class BOLogst extends BusinessObject<BOLogst> implements IBOCustomKey, ID
 	 * 
 	 * @return 值
 	 */
-	public final String getBOCode() {
+	public String getBOCode() {
 		return this.getProperty(PROPERTY_BOCODE);
 	}
 
@@ -70,7 +92,7 @@ public class BOLogst extends BusinessObject<BOLogst> implements IBOCustomKey, ID
 	 * 
 	 * @param value 值
 	 */
-	public final void setBOCode(String value) {
+	public void setBOCode(String value) {
 		this.setProperty(PROPERTY_BOCODE, value);
 	}
 
@@ -91,7 +113,7 @@ public class BOLogst extends BusinessObject<BOLogst> implements IBOCustomKey, ID
 	 * 
 	 * @return 值
 	 */
-	public final String getBOKeys() {
+	public String getBOKeys() {
 		return this.getProperty(PROPERTY_BOKEYS);
 	}
 
@@ -100,7 +122,7 @@ public class BOLogst extends BusinessObject<BOLogst> implements IBOCustomKey, ID
 	 * 
 	 * @param value 值
 	 */
-	public final void setBOKeys(String value) {
+	public void setBOKeys(String value) {
 		this.setProperty(PROPERTY_BOKEYS, value);
 	}
 
@@ -121,7 +143,7 @@ public class BOLogst extends BusinessObject<BOLogst> implements IBOCustomKey, ID
 	 * 
 	 * @return 值
 	 */
-	public final Integer getLogInst() {
+	public Integer getLogInst() {
 		return this.getProperty(PROPERTY_LOGINST);
 	}
 
@@ -130,7 +152,7 @@ public class BOLogst extends BusinessObject<BOLogst> implements IBOCustomKey, ID
 	 * 
 	 * @param value 值
 	 */
-	public final void setLogInst(Integer value) {
+	public void setLogInst(Integer value) {
 		this.setProperty(PROPERTY_LOGINST, value);
 	}
 
@@ -151,7 +173,7 @@ public class BOLogst extends BusinessObject<BOLogst> implements IBOCustomKey, ID
 	 * 
 	 * @return 值
 	 */
-	public final Integer getModifyUser() {
+	public Integer getModifyUser() {
 		return this.getProperty(PROPERTY_MODIFYUSER);
 	}
 
@@ -160,7 +182,7 @@ public class BOLogst extends BusinessObject<BOLogst> implements IBOCustomKey, ID
 	 * 
 	 * @param value 值
 	 */
-	public final void setModifyUser(Integer value) {
+	public void setModifyUser(Integer value) {
 		this.setProperty(PROPERTY_MODIFYUSER, value);
 	}
 
@@ -181,7 +203,7 @@ public class BOLogst extends BusinessObject<BOLogst> implements IBOCustomKey, ID
 	 * 
 	 * @return 值
 	 */
-	public final DateTime getModifyDate() {
+	public DateTime getModifyDate() {
 		return this.getProperty(PROPERTY_MODIFYDATE);
 	}
 
@@ -190,7 +212,7 @@ public class BOLogst extends BusinessObject<BOLogst> implements IBOCustomKey, ID
 	 * 
 	 * @param value 值
 	 */
-	public final void setModifyDate(DateTime value) {
+	public void setModifyDate(DateTime value) {
 		this.setProperty(PROPERTY_MODIFYDATE, value);
 	}
 
@@ -202,8 +224,8 @@ public class BOLogst extends BusinessObject<BOLogst> implements IBOCustomKey, ID
 	/**
 	 * 修改时间 属性
 	 */
-@DbField(name = "ModifyTime", type = DataType.NUMERIC, editType = EditType.TIME, table = DB_TABLE_NAME)
-public static final IPropertyInfo<Short> PROPERTY_MODIFYTIME = registerProperty(PROPERTY_MODIFYTIME_NAME,
+	@DbField(name = "ModifyTime", type = DataType.NUMERIC, editType = EditType.TIME, table = DB_TABLE_NAME)
+	public static final IPropertyInfo<Short> PROPERTY_MODIFYTIME = registerProperty(PROPERTY_MODIFYTIME_NAME,
 			Short.class, MY_CLASS);
 
 	/**
@@ -211,7 +233,7 @@ public static final IPropertyInfo<Short> PROPERTY_MODIFYTIME = registerProperty(
 	 * 
 	 * @return 值
 	 */
-	public final Short getModifyTime() {
+	public Short getModifyTime() {
 		return this.getProperty(PROPERTY_MODIFYTIME);
 	}
 
@@ -220,38 +242,8 @@ public static final IPropertyInfo<Short> PROPERTY_MODIFYTIME = registerProperty(
 	 * 
 	 * @param value 值
 	 */
-	public final void setModifyTime(Short value) {
+	public void setModifyTime(Short value) {
 		this.setProperty(PROPERTY_MODIFYTIME, value);
-	}
-
-	/**
-	 * 属性名称-事务标识
-	 */
-	private static final String PROPERTY_TRANSACTIONID_NAME = "TransactionId";
-
-	/**
-	 * 事务标识 属性
-	 */
-	@DbField(name = "TransactionId", type = DataType.ALPHANUMERIC, table = DB_TABLE_NAME)
-	public static final IPropertyInfo<String> PROPERTY_TRANSACTIONID = registerProperty(PROPERTY_TRANSACTIONID_NAME,
-			String.class, MY_CLASS);
-
-	/**
-	 * 获取-事务标识
-	 * 
-	 * @return 值
-	 */
-	public final String getTransactionId() {
-		return this.getProperty(PROPERTY_TRANSACTIONID);
-	}
-
-	/**
-	 * 设置-事务标识
-	 * 
-	 * @param value 值
-	 */
-	public final void setTransactionId(String value) {
-		this.setProperty(PROPERTY_TRANSACTIONID, value);
 	}
 
 	/**
@@ -271,7 +263,7 @@ public static final IPropertyInfo<Short> PROPERTY_MODIFYTIME = registerProperty(
 	 * 
 	 * @return 值
 	 */
-	public final String getCause() {
+	public String getCause() {
 		return this.getProperty(PROPERTY_CAUSE);
 	}
 
@@ -280,7 +272,7 @@ public static final IPropertyInfo<Short> PROPERTY_MODIFYTIME = registerProperty(
 	 * 
 	 * @param value 值
 	 */
-	public final void setCause(String value) {
+	public void setCause(String value) {
 		this.setProperty(PROPERTY_CAUSE, value);
 	}
 
@@ -297,22 +289,42 @@ public static final IPropertyInfo<Short> PROPERTY_MODIFYTIME = registerProperty(
 			MY_CLASS);
 
 	/**
-	 * 获取-内容
-	 * 
+	 * 获取-内容（自动解压压缩数据）
+	 *
 	 * @return 值
 	 */
-	public final String getContent() {
-		return this.getProperty(PROPERTY_CONTENT);
+	public String getContent() {
+		String value = this.getProperty(PROPERTY_CONTENT);
+		if (value == null || value.isEmpty()) {
+			return value;
+		}
+		// JSON 以 { 或 [ 开头，Base64 编码的压缩数据不会以这两个字符开头
+		char first = value.charAt(0);
+		if (first == '{' || first == '[') {
+			return value;
+		}
+		return Strings.fromZipString(value);
 	}
 
 	/**
-	 * 设置-内容
-	 * 
+	 * 设置-内容（按配置决定是否压缩）
+	 *
 	 * @param value 值
 	 */
-	public final void setContent(String value) {
-		this.setProperty(PROPERTY_CONTENT, value);
+	public void setContent(String value) {
+		if (value == null || value.length() < COMPRESSION_THRESHOLD) {
+			this.setProperty(PROPERTY_CONTENT, value);
+			return;
+		}
+		if (MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_ENABLE_BO_LOGST_ZIP, true)) {
+			this.setProperty(PROPERTY_CONTENT, Strings.toZipString(value));
+		} else {
+			this.setProperty(PROPERTY_CONTENT, value);
+		}
 	}
+
+	/** 压缩阈值（字节），小于此值不压缩 */
+	private static final int COMPRESSION_THRESHOLD = 128;
 
 	/**
 	 * 初始化数据

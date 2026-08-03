@@ -11,7 +11,25 @@ import org.colorcoding.ibas.bobas.common.Strings;
 public abstract class Transaction implements ITransaction {
 
 	public Transaction() {
-		this.setId(UUID.randomUUID().toString());
+		this.setId(newTransactionId());
+	}
+
+	/**
+	 * 生成时间有序的事务标识（UUID v7 风格）
+	 *
+	 * 前48位为毫秒时间戳，使标识按时间递增，优化数据库主键索引性能；
+	 * 后续位为随机数，保证同一毫秒内的唯一性。
+	 *
+	 * @return 事务标识
+	 */
+	protected static String newTransactionId() {
+		long timestamp = System.currentTimeMillis();
+		UUID random = UUID.randomUUID();
+		// MSB: 48位时间戳 | 4位版本号(7) | 12位随机
+		long mostSigBits = (timestamp << 16) | 0x7000 | (random.getMostSignificantBits() & 0x0FFF);
+		// LSB: 2位变体标记(10) | 62位随机
+		long leastSigBits = (random.getLeastSignificantBits() & 0x3FFFFFFFFFFFFFFFL) | 0x8000000000000000L;
+		return new UUID(mostSigBits, leastSigBits).toString();
 	}
 
 	private String id;

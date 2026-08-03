@@ -1,9 +1,14 @@
 package org.colorcoding.ibas.bobas.common;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Iterator;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializationException;
@@ -1036,5 +1041,57 @@ public class Strings {
 			return null;
 		}
 		return new StringBuilder(value).reverse().toString();
+	}
+
+	/**
+	 * 压缩字符串：UTF-8 编码 -> GZIP -> Base64
+	 *
+	 * @param value 原始字符串；null或空则原样返回
+	 * @return Base64 编码的压缩字符串；压缩失败或结果更长则返回原值
+	 */
+	public static String toZipString(String value) {
+		if (value == null || value.isEmpty()) {
+			return value;
+		}
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream(value.length() / 4);
+			try (GZIPOutputStream gos = new GZIPOutputStream(baos, 8192)) {
+				gos.write(value.getBytes(StandardCharsets.UTF_8));
+			}
+			String result = Base64.getEncoder().encodeToString(baos.toByteArray());
+			if (result.length() >= value.length()) {
+				// 压缩后更长，返回原值
+				return value;
+			}
+			return result;
+		} catch (Exception e) {
+			return value;
+		}
+	}
+
+	/**
+	 * 解压字符串：Base64 解码 -> GZIP 解压 -> UTF-8 字符串
+	 *
+	 * @param value Base64 编码的压缩字符串；null或空则原样返回
+	 * @return 原始字符串；解压失败返回原值
+	 */
+	public static String fromZipString(String value) {
+		if (value == null || value.isEmpty()) {
+			return value;
+		}
+		try {
+			byte[] compressed = Base64.getDecoder().decode(value);
+			try (GZIPInputStream gis = new GZIPInputStream(new ByteArrayInputStream(compressed), 8192)) {
+				ByteArrayOutputStream baos = new ByteArrayOutputStream(compressed.length * 8);
+				byte[] buffer = new byte[8192];
+				int len;
+				while ((len = gis.read(buffer)) != -1) {
+					baos.write(buffer, 0, len);
+				}
+				return new String(baos.toByteArray(), StandardCharsets.UTF_8);
+			}
+		} catch (Exception e) {
+			return value;
+		}
 	}
 }
