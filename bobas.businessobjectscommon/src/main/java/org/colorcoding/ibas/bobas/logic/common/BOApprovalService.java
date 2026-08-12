@@ -125,7 +125,7 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 			}
 			return processData;
 		} catch (Exception e) {
-			throw new BusinessLogicException(e);
+			throw new BusinessLogicException(e.getMessage(), e);
 		}
 	}
 
@@ -156,7 +156,7 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 				}
 			}
 		} catch (Exception e) {
-			throw new BusinessLogicException(e);
+			throw new BusinessLogicException(e.getMessage(), e);
 		}
 	}
 
@@ -244,7 +244,7 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 					if (process != null) {
 						process.checkToSave(this.getUser());
 						if (process.cancel(this.getUser().getToken(),
-								I18N.prop("msg_bobas_user_planed_approval_data"))) {
+								I18N.prop("msg_bobas_user_planned_approval_data"))) {
 							if (this.getTrigger() instanceof IApprovalData) {
 								// 审批流程取消，修改触发对象状态
 								IApprovalData approvalData = (IApprovalData) this.getTrigger();
@@ -267,7 +267,7 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 					if (process != null) {
 						process.checkToSave(this.getUser());
 						if (process.cancel(this.getUser().getToken(),
-								I18N.prop("msg_bobas_user_planed_approval_data"))) {
+								I18N.prop("msg_bobas_user_planned_approval_data"))) {
 							if (this.getTrigger() instanceof IApprovalData) {
 								// 审批流程取消，修改触发对象状态
 								IApprovalData approvalData = (IApprovalData) this.getTrigger();
@@ -281,7 +281,7 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 				}
 			}
 		} catch (Exception e) {
-			throw new BusinessLogicException(e);
+			throw new BusinessLogicException(e.getMessage(), e);
 		}
 	}
 

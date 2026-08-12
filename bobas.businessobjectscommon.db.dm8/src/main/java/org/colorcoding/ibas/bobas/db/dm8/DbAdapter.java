@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.db.dm8;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -26,14 +28,14 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 				application = Strings.format("ibas_%s", this.hashCode());
 			}
 			Class.forName("dm.jdbc.driver.DmDriver");
-			String dbURL = String.format("jdbc:dm://%s?schema=\"\"%s\"\"", server, dbName);
+			String dbURL = String.format("jdbc:dm://%s?schema=%s", server, dbName);
 			if (MyConfiguration.isDebugMode()) {
 				Logger.log(MessageLevel.DEBUG, Strings.format("db adapter: %s", dbURL));
 			}
 			return DriverManager.getConnection(dbURL, userName, userPwd);
 		} catch (Exception e) {
 			// 接数据库失败
-			throw new RuntimeException(e);
+			throw new BasRuntimeException(e.getMessage(), e);
 		}
 	}
 
@@ -128,6 +130,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	@Override
 	public String parsingMaxValue(MaxValue maxValue, Collection<ICondition> conditions) {
 		StringBuilder stringBuilder = new StringBuilder(conditions.size() * 32 + 96);
 		stringBuilder.append("SELECT");

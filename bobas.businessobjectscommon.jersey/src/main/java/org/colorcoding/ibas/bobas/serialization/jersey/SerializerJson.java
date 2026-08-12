@@ -101,7 +101,7 @@ public class SerializerJson extends Serializer {
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);
 			marshaller.marshal(object, outputStream);
 		} catch (JAXBException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -122,7 +122,7 @@ public class SerializerJson extends Serializer {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T deserialize(InputStream ipnInputStream, Class<?>... types) throws SerializationException {
+	public <T> T deserialize(InputStream ipnInputStream, Class<?>... types)  {
 		try {
 			Unmarshaller unmarshaller = this.createUnmarshaller(types);
 			Object object = unmarshaller.unmarshal(ipnInputStream);
@@ -133,7 +133,7 @@ public class SerializerJson extends Serializer {
 				return (T) object;
 			}
 		} catch (JAXBException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -142,7 +142,7 @@ public class SerializerJson extends Serializer {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T deserialize(Reader reader, Class<?>... types) throws SerializationException {
+	public <T> T deserialize(Reader reader, Class<?>... types)  {
 		try {
 			Unmarshaller unmarshaller = this.createUnmarshaller(types);
 			Object object = unmarshaller.unmarshal(reader);
@@ -153,7 +153,7 @@ public class SerializerJson extends Serializer {
 				return (T) object;
 			}
 		} catch (JAXBException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -161,7 +161,7 @@ public class SerializerJson extends Serializer {
 	 * 反序列化JsonObject，不包含根元素时自动提取JAXBElement的值
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T deserialize(JsonObject jsonObject, Class<?>... types) throws SerializationException {
+	public <T> T deserialize(JsonObject jsonObject, Class<?>... types)  {
 		try {
 			Unmarshaller unmarshaller = this.createUnmarshaller(types);
 			Object object = unmarshaller.unmarshal(new JsonStructureSource(jsonObject));
@@ -172,7 +172,7 @@ public class SerializerJson extends Serializer {
 				return (T) object;
 			}
 		} catch (JAXBException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -180,7 +180,7 @@ public class SerializerJson extends Serializer {
 	 * 输出类型的JSON Schema（draft-07）
 	 */
 	@Override
-	public void schema(Class<?> type, OutputStream outputStream) throws SerializationException {
+	public void schema(Class<?> type, OutputStream outputStream)  {
 
 		SchemaWriter schemaWriter = new SchemaWriter();
 		schemaWriter.isIncludeJsonRoot = this.isIncludeJsonRoot();
@@ -206,7 +206,7 @@ public class SerializerJson extends Serializer {
 		} catch (ValidateException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new ValidateException(e);
+			throw new ValidateException(e.getMessage(), e);
 		}
 	}
 

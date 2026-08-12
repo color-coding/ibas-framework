@@ -13,7 +13,7 @@ public interface IJudgmentExpression extends IExpression {
 	 * @return true，成立；false，不成立
 	 * @throws ExpressionException
 	 */
-	boolean result() throws ExpressionException;
+	boolean result();
 
 	/**
 	 * 获取表达式-左值

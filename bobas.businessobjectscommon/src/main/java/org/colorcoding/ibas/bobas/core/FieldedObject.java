@@ -84,7 +84,7 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	 * @return 符合条件的属性列表
 	 */
 	@Override
-	public List<IPropertyInfo<?>> properties(Predicate<IPropertyInfo<?>> filter) {
+	public synchronized List<IPropertyInfo<?>> properties(Predicate<IPropertyInfo<?>> filter) {
 		ArrayList<IPropertyInfo<?>> propertyInfos = new ArrayList<>(this.fields.size());
 		for (IPropertyInfo<?> propertyInfo : this.fields.keySet()) {
 			if (filter == null || filter.test(propertyInfo)) {
@@ -103,15 +103,31 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	/**
 	 * 获取属性的值
 	 *
-	 * 值为null时返回属性的默认值（减少内存占用）
+	 * 值为null时返回属性的默认值（减少内存占用）。
+	 * 加载中时跳过 synchronized 以避免锁开销（对象单线程访问）。
 	 *
 	 * @param property 属性信息（不允许为null）
 	 *
 	 * @return 属性的值；存储null时返回默认值
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public <P> P getProperty(IPropertyInfo<?> property) {
+		if (this.isLoading()) {
+			return this.getPropertyValue(property);
+		}
+		synchronized (this) {
+			return this.getPropertyValue(property);
+		}
+	}
+
+	/**
+	 * 读取属性值的实际逻辑（无锁）
+	 *
+	 * @param property 属性信息（不允许为null）
+	 * @return 属性的值；存储null时返回默认值
+	 */
+	@SuppressWarnings("unchecked")
+	private <P> P getPropertyValue(IPropertyInfo<?> property) {
 		Objects.requireNonNull(property);
 		if (this.fields.containsKey(property)) {
 			P value = (P) this.fields.get(property);
@@ -139,7 +155,8 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	/**
 	 * 设置属性的值
 	 *
-	 * 加载中时非主键/唯一键不触发属性改变事件；值等于默认值时存储null以节省内存
+	 * 加载中时非主键/唯一键不触发属性改变事件；值等于默认值时存储null以节省内存。
+	 * 加载中时跳过 synchronized 以避免数据批量加载阶段的锁开销（对象刚创建，单线程访问）。
 	 *
 	 * @param property 属性信息（不允许为null）
 	 *
@@ -147,7 +164,7 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public synchronized <P> void setProperty(IPropertyInfo<?> property, P value) {
+	public <P> void setProperty(IPropertyInfo<?> property, P value) {
 		Objects.requireNonNull(property);
 		if (!this.fields.containsKey(property)) {
 			throw new IllegalArgumentException(
@@ -161,21 +178,23 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 				this.fields.put(property, value);
 			}
 		} else {
-			P oldValue = (P) this.fields.get(property);
-			if (oldValue == null) {
-				oldValue = (P) property.getDefaultValue();
-			}
-			if (oldValue == null || value == null || !oldValue.equals(value)) {
-				this.fields.put(property, value);
-				this.getModifiedProperties().add(property);
-				this.firePropertyChange(property.getName(), oldValue, value);
-				this.markDirty();
+			synchronized (this) {
+				P oldValue = (P) this.fields.get(property);
+				if (oldValue == null) {
+					oldValue = (P) property.getDefaultValue();
+				}
+				if (oldValue == null || value == null || !oldValue.equals(value)) {
+					this.fields.put(property, value);
+					this.getModifiedProperties().add(property);
+					this.firePropertyChange(property.getName(), oldValue, value);
+					this.markDirty();
+				}
 			}
 		}
 	}
 
 	@Override
-	public void markOld() {
+	public synchronized void markOld() {
 		super.markOld();
 		if (this.modifiedProperties != null) {
 			this.modifiedProperties.clear();
@@ -183,7 +202,7 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	}
 
 	@Override
-	public boolean isModified(IPropertyInfo<?> propertyInfo) {
+	public synchronized boolean isModified(IPropertyInfo<?> propertyInfo) {
 		if (this.modifiedProperties != null) {
 			return this.modifiedProperties.contains(propertyInfo);
 		}
@@ -197,7 +216,7 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	 *
 	 * @return 被修改的属性集合
 	 */
-	protected final Set<IPropertyInfo<?>> getModifiedProperties() {
+	protected final synchronized Set<IPropertyInfo<?>> getModifiedProperties() {
 		if (this.modifiedProperties == null) {
 			this.modifiedProperties = new HashSet<>();
 		}

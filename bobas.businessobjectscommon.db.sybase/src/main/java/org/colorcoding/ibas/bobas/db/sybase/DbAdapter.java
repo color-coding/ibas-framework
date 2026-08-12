@@ -1,11 +1,18 @@
 package org.colorcoding.ibas.bobas.db.sybase;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Collection;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.common.ICondition;
+import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.db.IDbTableLock;
+import org.colorcoding.ibas.bobas.db.MaxValue;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
 
@@ -26,7 +33,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			return DriverManager.getConnection(dbURL, userName, userPwd);
 		} catch (Exception e) {
 			// 接数据库失败
-			throw new RuntimeException(e);
+			throw new BasRuntimeException(e.getMessage(), e);
 		}
 	}
 
@@ -75,6 +82,66 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			}
 			stringBuilder.append(")");
 		}
+		return stringBuilder.toString();
+	}
+
+	@Override
+	public String parsingSelect(Class<?> boType, ICriteria criteria, boolean withLock) {
+		StringBuilder stringBuilder = new StringBuilder(
+				(3 + criteria.getConditions().size() + criteria.getSorts().size()) * 32);
+		stringBuilder.append("SELECT");
+		if (criteria.getResultCount() > 0) {
+			stringBuilder.append(" ");
+			stringBuilder.append("TOP");
+			stringBuilder.append(" ");
+			stringBuilder.append(criteria.getResultCount());
+		}
+		stringBuilder.append(" ");
+		stringBuilder.append("*");
+		stringBuilder.append(" ");
+		stringBuilder.append("FROM");
+		stringBuilder.append(" ");
+		stringBuilder.append(this.identifier(this.table(boType)));
+		if (withLock) {
+			stringBuilder.append(" ");
+			stringBuilder.append("HOLDLOCK");
+		}
+		if (criteria.getConditions().size() > 0) {
+			stringBuilder.append(" ");
+			stringBuilder.append(this.where());
+			stringBuilder.append(" ");
+			stringBuilder.append(this.parsingWhere(criteria.getConditions()));
+		}
+		if (criteria.getSorts().size() > 0) {
+			stringBuilder.append(" ");
+			stringBuilder.append("ORDER BY");
+			stringBuilder.append(" ");
+			stringBuilder.append(this.parsingOrder(criteria.getSorts()));
+		}
+		return stringBuilder.toString();
+	}
+
+	@Override
+	public String parsingMaxValue(MaxValue maxValue, Collection<ICondition> conditions) {
+		StringBuilder stringBuilder = new StringBuilder(conditions.size() * 32 + 96);
+		stringBuilder.append("SELECT");
+		stringBuilder.append(" ");
+		stringBuilder.append("Max");
+		stringBuilder.append("(");
+		stringBuilder.append(this.identifier(maxValue.getKeyField().getName()));
+		stringBuilder.append(")");
+		stringBuilder.append(" ");
+		stringBuilder.append("FROM");
+		stringBuilder.append(" ");
+		stringBuilder.append(this.identifier(this.table(maxValue.getType())));
+		if (maxValue instanceof IDbTableLock) {
+			stringBuilder.append(" ");
+			stringBuilder.append("HOLDLOCK");
+		}
+		stringBuilder.append(" ");
+		stringBuilder.append(this.where());
+		stringBuilder.append(" ");
+		stringBuilder.append(this.parsingWhere(conditions));
 		return stringBuilder.toString();
 	}
 

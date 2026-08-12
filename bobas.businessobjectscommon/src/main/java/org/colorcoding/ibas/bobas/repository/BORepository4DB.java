@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.repository;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.db.DbFactory;
@@ -71,7 +73,7 @@ public class BORepository4DB extends BORepository {
 		} catch (RepositoryException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new RepositoryException(e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 
@@ -102,7 +104,7 @@ public class BORepository4DB extends BORepository {
 			}
 			super.close();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new BasRuntimeException(e.getMessage(), e);
 		}
 	}
 
@@ -118,7 +120,7 @@ public class BORepository4DB extends BORepository {
 				try {
 					this.setUserToken(user.getToken());
 				} catch (Exception e) {
-					throw new RuntimeException(e);
+					throw new BasRuntimeException(e.getMessage(), e);
 				}
 			}
 		}

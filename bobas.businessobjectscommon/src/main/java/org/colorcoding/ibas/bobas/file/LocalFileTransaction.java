@@ -80,7 +80,7 @@ public class LocalFileTransaction extends FileTransaction {
 	}
 
 	protected String groupingOf(String name) {
-		StringBuilder builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder(8);
 		char[] items = new char[4];
 		for (int i = 0; i < 4 && i < name.length(); i++) {
 			items[i] = name.charAt(i);
@@ -353,7 +353,7 @@ public class LocalFileTransaction extends FileTransaction {
 			fileData.setName(Strings.isNullOrEmpty(tmpValue) ? UUID.randomUUID().toString()
 					: Strings.concat(UUID.randomUUID().toString(), Strings.VALUE_DOT, tmpValue.toLowerCase()));
 		}
-		StringBuilder builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder(this.getRepositoryFolder().length() + fileData.getName().length() + 32);
 		builder.append(this.getRepositoryFolder());
 		builder.append(File.separator);
 		if (this.isGroupingFiles()) {

@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -30,7 +31,6 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import javax.xml.XMLConstants;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.data.DateTime;
@@ -92,12 +92,12 @@ public class SerializerXml extends Serializer {
 			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);// 是否省略xm头声明信息
 			marshaller.marshal(object, outputStream);
 		} catch (JAXBException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T deserialize(InputSource inputSource, Class<?>... types) throws SerializationException {
+	public <T> T deserialize(InputSource inputSource, Class<?>... types)  {
 		try {
 			// 反序列化不使用缓存，避免types不含根类型时context缺少descriptor
 			JAXBContext context = JAXBContext.newInstance(types);
@@ -105,13 +105,13 @@ public class SerializerXml extends Serializer {
 			this.configureSecureUnmarshaller(unmarshaller);
 			return (T) unmarshaller.unmarshal(inputSource);
 		} catch (JAXBException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T deserialize(InputStream inputStream, Class<?>... types) throws SerializationException {
+	public <T> T deserialize(InputStream inputStream, Class<?>... types)  {
 		try {
 			// 反序列化不使用缓存，避免types不含根类型时context缺少descriptor
 			JAXBContext context = JAXBContext.newInstance(types);
@@ -119,13 +119,13 @@ public class SerializerXml extends Serializer {
 			this.configureSecureUnmarshaller(unmarshaller);
 			return (T) unmarshaller.unmarshal(inputStream);
 		} catch (JAXBException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T deserialize(Reader reader, Class<?>... types) throws SerializationException {
+	public <T> T deserialize(Reader reader, Class<?>... types)  {
 		try {
 			// 反序列化不使用缓存，避免types不含根类型时context缺少descriptor
 			JAXBContext context = JAXBContext.newInstance(types);
@@ -133,7 +133,7 @@ public class SerializerXml extends Serializer {
 			this.configureSecureUnmarshaller(unmarshaller);
 			return (T) unmarshaller.unmarshal(reader);
 		} catch (JAXBException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -149,7 +149,7 @@ public class SerializerXml extends Serializer {
 			Source xmlSource = new StreamSource(data);
 			validator.validate(xmlSource);
 		} catch (SAXException | IOException e) {
-			throw new ValidateException(e);
+			throw new ValidateException(e.getMessage(), e);
 		}
 	}
 
@@ -158,7 +158,7 @@ public class SerializerXml extends Serializer {
 		this.validate(this.schema(type), data);
 	}
 
-	public Schema schema(Class<?> type) throws SerializationException {
+	public Schema schema(Class<?> type)  {
 		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream(512)) {
 			this.schema(type, outputStream);
 			try (InputStream stream = new ByteArrayInputStream(outputStream.toByteArray())) {
@@ -169,7 +169,7 @@ public class SerializerXml extends Serializer {
 				return factory.newSchema(xsdSource);
 			}
 		} catch (SAXException | IOException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -179,7 +179,7 @@ public class SerializerXml extends Serializer {
 	public static final String XML_FILE_NAMESPACE = "http://www.w3.org/2001/XMLSchema";
 
 	@Override
-	public void schema(Class<?> type, OutputStream outputStream) throws SerializationException {
+	public void schema(Class<?> type, OutputStream outputStream)  {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
@@ -215,7 +215,7 @@ public class SerializerXml extends Serializer {
 			}
 			transformer.transform(new DOMSource(document), new StreamResult(outputStream));
 		} catch (ParserConfigurationException | TransformerException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 

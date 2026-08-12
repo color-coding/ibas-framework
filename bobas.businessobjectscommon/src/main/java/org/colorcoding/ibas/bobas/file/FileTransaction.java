@@ -112,7 +112,7 @@ public abstract class FileTransaction extends Transaction {
 		} catch (RepositoryException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new RepositoryException(e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 
@@ -128,7 +128,7 @@ public abstract class FileTransaction extends Transaction {
 		try {
 			FileItem fileItem;
 			FileData fileData;
-			List<FileItem> results = new ArrayList<>();
+			List<FileItem> results = new ArrayList<>(datas.length);
 			for (T data : datas) {
 				fileData = (FileData) data;
 				fileItem = this.save(fileData);
@@ -142,7 +142,7 @@ public abstract class FileTransaction extends Transaction {
 		} catch (RepositoryException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new RepositoryException(e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 
@@ -156,7 +156,7 @@ public abstract class FileTransaction extends Transaction {
 		}
 		try {
 			FileItem fileItem;
-			List<FileItem> results = new ArrayList<>();
+			List<FileItem> results = new ArrayList<>(datas.length);
 			for (T data : datas) {
 				fileItem = (FileItem) data;
 				if (!this.delete(fileItem)) {
@@ -168,7 +168,7 @@ public abstract class FileTransaction extends Transaction {
 		} catch (RepositoryException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new RepositoryException(e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 
@@ -247,7 +247,7 @@ public abstract class FileTransaction extends Transaction {
 			}
 			return datas.toArray((T[]) Array.newInstance(dataType, datas.size()));
 		} catch (JudgmentOperationException e) {
-			throw new RepositoryException(e);
+			throw new RepositoryException(e.getMessage(), e);
 		}
 	}
 

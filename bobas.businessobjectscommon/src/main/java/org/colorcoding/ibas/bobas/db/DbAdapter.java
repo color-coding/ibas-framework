@@ -16,6 +16,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.BOFactory;
+import org.colorcoding.ibas.bobas.bo.IBODocument;
+import org.colorcoding.ibas.bobas.bo.IBODocumentLine;
+import org.colorcoding.ibas.bobas.bo.IBOMasterData;
+import org.colorcoding.ibas.bobas.bo.IBOMasterDataLine;
+import org.colorcoding.ibas.bobas.bo.IBOSimple;
+import org.colorcoding.ibas.bobas.bo.IBOSimpleLine;
 import org.colorcoding.ibas.bobas.bo.IBOUserFields;
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
 import org.colorcoding.ibas.bobas.bo.UserFieldsFactory;
@@ -46,6 +52,7 @@ import org.colorcoding.ibas.bobas.data.IDataTableRow;
 import org.colorcoding.ibas.bobas.data.KeyText;
 import org.colorcoding.ibas.bobas.data.KeyValue;
 import org.colorcoding.ibas.bobas.data.List;
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 
 /**
@@ -100,6 +107,16 @@ public abstract class DbAdapter {
 	}
 
 	/**
+	 * 判断SQL语句是否可走预编译（参数数量是否在数据库限制内）。 基类默认不限制，各数据库子类按需重写。
+	 *
+	 * @param sql 已生成的含?占位符的SQL语句
+	 * @return true表示可使用PreparedStatement执行
+	 */
+	public boolean isPreparable(String sql) {
+		return true;
+	}
+
+	/**
 	 * 创建数据库连接
 	 *
 	 * @param server   服务器地址
@@ -119,11 +136,25 @@ public abstract class DbAdapter {
 	 * @return 解析后的数据列表
 	 * @throws SQLException 数据库访问异常
 	 */
-	@SuppressWarnings("unchecked")
 	public <T> List<T> parsingDatas(Class<?> boType, ResultSet resultSet) throws SQLException {
+		return this.parsingDatas(boType, resultSet, -1);
+	}
+
+	/**
+	 * 解析数据
+	 *
+	 * @param <T>          对象类型
+	 * @param boType       对象类型（Result、KeyText、KeyValue、BusinessObject、SPValues）
+	 * @param resultSet    结果集
+	 * @param expectedSize 预期行数（用于预分配ArrayList容量，减少扩容拷贝；小于等于0时不预分配）
+	 * @return 解析后的数据列表
+	 * @throws SQLException 数据库访问异常
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> List<T> parsingDatas(Class<?> boType, ResultSet resultSet, int expectedSize) throws SQLException {
 		T data = null;
-		ArrayList<T> datas = new ArrayList<>();
 		IPropertyInfo<?>[] orderProperties = null;
+		ArrayList<T> datas = expectedSize > 0 ? new ArrayList<>(expectedSize) : new ArrayList<>();
 		while (resultSet.next()) {
 			if (boType.equals(Result.class)) {
 				datas.add((T) new Result(resultSet.getInt(1), resultSet.getString(2)));
@@ -131,7 +162,7 @@ public abstract class DbAdapter {
 				datas.add((T) new KeyText(resultSet.getString(1), resultSet.getString(2)));
 			} else if (boType.equals(KeyValue.class)) {
 				datas.add((T) new KeyValue(resultSet.getString(1), resultSet.getObject(2)));
-			} else if (IFieldedObject.class.isAssignableFrom(boType)) {
+			} else if (FieldedObject.class.isAssignableFrom(boType)) {
 				if (orderProperties == null) {
 					ResultSetMetaData metaData = resultSet.getMetaData();
 					ArrayList<String> columnNames = new ArrayList<>(metaData.getColumnCount());
@@ -192,6 +223,8 @@ public abstract class DbAdapter {
 					((FieldedObject) data).markOld();
 				}
 				datas.add(data);
+			} else {
+				throw new BasRuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", boType.getName()));
 			}
 		}
 		return datas;
@@ -414,12 +447,27 @@ public abstract class DbAdapter {
 
 	/**
 	 * 返回SQL类型
-	 * 
+	 * <p>
+	 * 在 {@link #sqlTypeOf(DataType)} 基础上，结合当前实际值进一步细化 JDBC 类型： 当声明类型为
+	 * {@link DataType#NUMERIC} 时，按值的实际类型分别映射为 TINYINT / SMALLINT / INTEGER /
+	 * BIGINT，避免 Short/Long 等被笼统地按 INTEGER 处理。
+	 *
 	 * @param type  数据字段类型
 	 * @param value 当前值
 	 * @return java.sql.Types中的常量
 	 */
 	public int sqlTypeOf(DataType type, Object value) {
+		if (type == DataType.NUMERIC && value instanceof Number) {
+			if (value instanceof Long) {
+				return java.sql.Types.BIGINT;
+			}
+			if (value instanceof Short) {
+				return java.sql.Types.SMALLINT;
+			}
+			if (value instanceof Byte) {
+				return java.sql.Types.TINYINT;
+			}
+		}
 		return this.sqlTypeOf(type);
 	}
 
@@ -431,7 +479,45 @@ public abstract class DbAdapter {
 	 * @return 转换后的查询条件（克隆副本）
 	 */
 	public ICriteria convert(ICriteria criteria, Class<?> boType) {
-		return this.convert(criteria, BOFactory.propertyInfos(boType));
+		criteria = this.convert(criteria, BOFactory.propertyInfos(boType));
+		if (criteria.getSorts().isEmpty()) {
+			// 可能非聚集索引命中，导致顺序混乱，默认加排序
+			if (IBOMasterData.class.isAssignableFrom(boType)) {
+				ISort sort = criteria.getSorts().create();
+				sort.setAlias(IBOMasterData.SERIAL_NUMBER_KEY_NAME);
+				sort.setSortType(SortType.ASCENDING);
+			} else if (IBOMasterDataLine.class.isAssignableFrom(boType)) {
+				ISort sort = criteria.getSorts().create();
+				sort.setAlias(IBOMasterDataLine.MASTER_PRIMARY_KEY_NAME);
+				sort.setSortType(SortType.ASCENDING);
+				sort = criteria.getSorts().create();
+				sort.setAlias(IBOMasterDataLine.SECONDARY_PRIMARY_KEY_NAME);
+				sort.setSortType(SortType.ASCENDING);
+			} else if (IBODocument.class.isAssignableFrom(boType)) {
+				ISort sort = criteria.getSorts().create();
+				sort.setAlias(IBODocument.MASTER_PRIMARY_KEY_NAME);
+				sort.setSortType(SortType.ASCENDING);
+			} else if (IBODocumentLine.class.isAssignableFrom(boType)) {
+				ISort sort = criteria.getSorts().create();
+				sort.setAlias(IBODocumentLine.MASTER_PRIMARY_KEY_NAME);
+				sort.setSortType(SortType.ASCENDING);
+				sort = criteria.getSorts().create();
+				sort.setAlias(IBODocumentLine.SECONDARY_PRIMARY_KEY_NAME);
+				sort.setSortType(SortType.ASCENDING);
+			} else if (IBOSimple.class.isAssignableFrom(boType)) {
+				ISort sort = criteria.getSorts().create();
+				sort.setAlias(IBOSimple.MASTER_PRIMARY_KEY_NAME);
+				sort.setSortType(SortType.ASCENDING);
+			} else if (IBOSimpleLine.class.isAssignableFrom(boType)) {
+				ISort sort = criteria.getSorts().create();
+				sort.setAlias(IBOSimpleLine.MASTER_PRIMARY_KEY_NAME);
+				sort.setSortType(SortType.ASCENDING);
+				sort = criteria.getSorts().create();
+				sort.setAlias(IBOSimpleLine.SECONDARY_PRIMARY_KEY_NAME);
+				sort.setSortType(SortType.ASCENDING);
+			}
+		}
+		return criteria;
 	}
 
 	/**
@@ -527,11 +613,11 @@ public abstract class DbAdapter {
 	/**
 	 * 用标识符引号包裹名称（字段名、别名、表名等），名称中的引号字符会按标准 SQL 规则"双写"转义。
 	 * <p>
-	 * 例如默认引号为 <code>"</code> 时，输入 <code>a"b</code> 输出 <code>"a""b"</code>；
-	 * 子类重写无参 {@link #identifier()} 使用其它引号字符（如 MySQL 的 <code>`</code>）时，自动按对应字符转义。
+	 * 例如默认引号为 <code>"</code> 时，输入 <code>a"b</code> 输出 <code>"a""b"</code>； 子类重写无参
+	 * {@link #identifier()} 使用其它引号字符（如 MySQL 的 <code>`</code>）时，自动按对应字符转义。
 	 * <p>
-	 * 该方法不做白名单/合法性校验，仅做最小化转义，是所有"拼接被引号包裹的标识符"场景的推荐入口；
-	 * 输入为 null 时按空串处理，引号为 null/空时不包裹直接返回。
+	 * 该方法不做白名单/合法性校验，仅做最小化转义，是所有"拼接被引号包裹的标识符"场景的推荐入口； 输入为 null 时按空串处理，引号为
+	 * null/空时不包裹直接返回。
 	 *
 	 * @param name 标识符原值
 	 * @return 形如 <code>"name"</code> 的字符串（具体引号由 {@link #identifier()} 决定）
@@ -640,7 +726,7 @@ public abstract class DbAdapter {
 			// 存储过程赋值对象
 			DbProcedure procedure = boType.getAnnotation(DbProcedure.class);
 			if (procedure == null) {
-				throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", boType.toString()));
+				throw new BasRuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", boType.toString()));
 			}
 			return this.parsingStoredProcedure(procedure.name(), new String[criteria.getConditions().size()]);
 		}
@@ -672,7 +758,7 @@ public abstract class DbAdapter {
 				return this.table(boType);
 			}
 		}
-		throw new RuntimeException(I18N.prop("msg_bobas_not_found_bo_table", boType.toString()));
+		throw new BasRuntimeException(I18N.prop("msg_bobas_not_found_bo_table", boType.toString()));
 	}
 
 	/**
@@ -782,7 +868,7 @@ public abstract class DbAdapter {
 		} else if (type == SortType.DESCENDING) {
 			return "DESC";
 		}
-		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", type.toString()));
+		throw new BasRuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", type.toString()));
 	}
 
 	/**
@@ -836,7 +922,7 @@ public abstract class DbAdapter {
 		} else if (value == ConditionOperation.NOT_IN) {
 			return "NOT IN";
 		}
-		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
+		throw new BasRuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", value.toString()));
 	}
 
 	/**
@@ -997,7 +1083,7 @@ public abstract class DbAdapter {
 			stringBuilder.append("?");
 		}
 		if (stringBuilder.length() == 0) {
-			throw new RuntimeException(I18N.prop("msg_bobas_bo_not_found_primarykeys", boData.toString()));
+			throw new BasRuntimeException(I18N.prop("msg_bobas_bo_not_found_primarykeys", boData.toString()));
 		}
 		return stringBuilder.toString();
 	}
@@ -1104,7 +1190,7 @@ public abstract class DbAdapter {
 			valuesBuilder.append("?");
 		}
 		if (fieldsBuilder.length() == 0 || valuesBuilder.length() == 0) {
-			throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", boData.toString()));
+			throw new BasRuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", boData.toString()));
 		}
 
 		StringBuilder stringBuilder = new StringBuilder(properties.size() * 20 + 64);
@@ -1236,7 +1322,7 @@ public abstract class DbAdapter {
 										|| parameter.value instanceof java.sql.Date) {
 									sqlBuilder.append(this.sqlValueOf(parameter.value, java.sql.Types.DATE));
 								} else if (parameter.value instanceof Short) {
-									sqlBuilder.append(this.sqlValueOf(parameter.value, java.sql.Types.TINYINT));
+									sqlBuilder.append(this.sqlValueOf(parameter.value, java.sql.Types.SMALLINT));
 								} else if (parameter.value instanceof Long) {
 									sqlBuilder.append(this.sqlValueOf(parameter.value, java.sql.Types.BIGINT));
 								} else if (parameter.value instanceof Double) {
@@ -1253,22 +1339,8 @@ public abstract class DbAdapter {
 							sqlBuilder.append(this.sqlValueOf(null, java.sql.Types.NULL));
 						}
 						index++;
-					} else if (item == '\'') {
-						// 需要转义的字符
-						sqlBuilder.append(item);
-						sqlBuilder.append(item);
 					} else {
 						sqlBuilder.append(item);
-					}
-				}
-				// 替换被重复处理的转义字符
-				if (!Strings.isNullOrEmpty(this.escape())) {
-					String oldString = String.format("''%s''", this.escape());
-					String newString = oldString.substring(1, oldString.length() - 1);
-					index = sqlBuilder.indexOf(oldString);
-					while (index != -1) {
-						sqlBuilder.replace(index, index + oldString.length(), newString);
-						index = sqlBuilder.indexOf(oldString);
 					}
 				}
 				sqlString = sqlBuilder.toString();
@@ -1278,6 +1350,31 @@ public abstract class DbAdapter {
 	}
 
 	private static String TEMPLATE_SQL_VALUE = "'%s'";
+
+	/**
+	 * 转义字符串值中的特殊字符，防止SQL注入。
+	 * <p>
+	 * 基类实现标准SQL转义规则：单引号双写、空字符替换为空格。 各数据库适配器（如MySQL）可重写此方法补充数据库特定的转义（如反斜杠）。
+	 *
+	 * @param value 原始字符串值（不为null）
+	 * @return 转义后的字符串（未加外层单引号）
+	 */
+	protected String escapeStringValue(String value) {
+		StringBuilder sb = new StringBuilder(value.length() + 8);
+		for (int i = 0; i < value.length(); i++) {
+			char c = value.charAt(i);
+			if (c == '\'') {
+				// 单引号双写转义（标准SQL规则）
+				sb.append("''");
+			} else if (c == '\0') {
+				// 空字符替换为空格，防止截断攻击
+				sb.append(' ');
+			} else {
+				sb.append(c);
+			}
+		}
+		return sb.toString();
+	}
 
 	/**
 	 * 返回SQL值（null和VALUE_MIN返回"NULL"，枚举按注解值或ordinal转换，
@@ -1299,7 +1396,7 @@ public abstract class DbAdapter {
 		}
 		if (value.getClass().isEnum()) {
 			if (this.dbFieldTypeOf(sqlType) == DataType.ALPHANUMERIC || this.dbFieldTypeOf(sqlType) == DataType.MEMO) {
-				return Strings.format(TEMPLATE_SQL_VALUE, Enums.annotationValue(value));
+				return Strings.format(TEMPLATE_SQL_VALUE, this.escapeStringValue(Enums.annotationValue(value)));
 			} else if (this.dbFieldTypeOf(sqlType) == DataType.NUMERIC) {
 				if (value instanceof Enum<?>) {
 					Enum<?> itemValue = (Enum<?>) value;
@@ -1309,22 +1406,8 @@ public abstract class DbAdapter {
 		}
 		String sqlValue = null;
 		if (value instanceof String) {
-			// 字符串类型，处理特殊字符（防SQL注入：单引号双写、空字符替换）
-			String strValue = value.toString();
-			StringBuilder sb = new StringBuilder(strValue.length() + 8);
-			for (int i = 0; i < strValue.length(); i++) {
-				char c = strValue.charAt(i);
-				if (c == '\'') {
-					// 单引号双写转义
-					sb.append("''");
-				} else if (c == '\0') {
-					// 空字符替换为空格，防止截断攻击
-					sb.append(' ');
-				} else {
-					sb.append(c);
-				}
-			}
-			sqlValue = sb.toString();
+			// 字符串类型，通过 escapeStringValue 处理特殊字符（防SQL注入）
+			sqlValue = this.escapeStringValue(value.toString());
 		} else {
 			sqlValue = Strings.valueOf(value);
 		}
@@ -1366,10 +1449,11 @@ public abstract class DbAdapter {
 			// 比较右侧
 			if (condition.getOperation() == ConditionOperation.IN
 					|| condition.getOperation() == ConditionOperation.NOT_IN) {
-				// IN、NOT IN，值拆成数组
+				// IN、NOT IN，值拆成数组，按字段声明类型绑定
 				String[] values = Strings.split(condition.getValue());
+				int sqlType = this.sqlTypeOf(condition.getAliasDataType());
 				for (String value : values) {
-					statement.setObject(index, value.trim(), this.sqlTypeOf(DataType.ALPHANUMERIC));
+					statement.setObject(index, value.trim(), sqlType);
 					index += 1;
 				}
 			} else if (condition.getOperation() == ConditionOperation.START) {
@@ -1399,15 +1483,15 @@ public abstract class DbAdapter {
 	/**
 	 * 翻译数据库异常为可读的描述文本。
 	 * <p>
-	 * 基类不做任何分析，直接返回异常的原始消息； 各厂商的 DbAdapter 子类应根据自身的 ErrorCode/SQLState 识别并返回国际化消息。
+	 * 基类不做任何分析，返回空字符串表示未识别； 各厂商的 DbAdapter 子类应根据自身的 ErrorCode/SQLState 识别并返回国际化消息。
 	 *
 	 * @param exception 数据库异常
-	 * @return 描述文本；输入为 null 时返回 ""
+	 * @return 描述文本；输入为 null 或未识别时返回 ""
 	 */
 	public String translateException(SQLException exception) {
 		if (exception == null) {
 			return Strings.VALUE_EMPTY;
 		}
-		return exception.getMessage();
+		return Strings.VALUE_EMPTY;
 	}
 }

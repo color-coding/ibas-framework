@@ -1,6 +1,8 @@
 package org.colorcoding.ibas.bobas.db;
 
-public class TransactionException extends Exception {
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
+public class TransactionException extends BasRuntimeException {
 
 	private static final long serialVersionUID = 8780220025540362087L;
 

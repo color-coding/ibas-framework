@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.bo;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -94,6 +96,40 @@ public final class BOFactory {
 	}
 
 	/**
+	 * 取消注册对象
+	 *
+	 * @param type 对象类型
+	 * @return 是否取消成功（type未注册时返回false）
+	 */
+	public static boolean unregister(Class<?> type) {
+		if (type == null) {
+			return false;
+		}
+		String boCode = MAP_BO2CODE.remove(type);
+		if (boCode == null) {
+			return false;
+		}
+		MAP_CODE2BO.remove(boCode);
+		return true;
+	}
+
+	/**
+	 * 取消注册对象
+	 *
+	 * @param boCode 对象编码
+	 * @param type   对象类型
+	 * @return 是否取消成功（type为null时返回false）
+	 */
+	public static boolean unregister(String boCode, Class<?> type) {
+		if (type == null) {
+			return false;
+		}
+		MAP_BO2CODE.remove(type);
+		MAP_CODE2BO.remove(boCode);
+		return true;
+	}
+
+	/**
 	 * 获取对象编码
 	 *
 	 * @param type 对象类型
@@ -138,7 +174,7 @@ public final class BOFactory {
 		try {
 			return (T) type.getDeclaredConstructor().newInstance();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new BasRuntimeException(e);
 		}
 	}
 
@@ -173,7 +209,12 @@ public final class BOFactory {
 			Class<?> superClass = type.getSuperclass();
 			while (superClass != null && superClass != BusinessObject.class
 					&& !Modifier.isAbstract(type.getModifiers())) {
-				propertyInfos = propertyInfos(superClass);
+				try {
+					propertyInfos = propertyInfos(superClass);
+				} catch (BasRuntimeException e) {
+					// 父项为抽象类且未注册属性时会抛出异常，忽略并继续向上查找
+					propertyInfos = null;
+				}
 				if (propertyInfos != null && !propertyInfos.isEmpty()) {
 					BO_PROPERTIES.put(type, new ArrayList<IPropertyInfo<?>>(propertyInfos));
 					return propertyInfos(type);
@@ -189,7 +230,7 @@ public final class BOFactory {
 				}
 			}
 		}
-		throw new RuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", type.toString()));
+		throw new BasRuntimeException(I18N.prop("msg_bobas_value_can_not_be_resolved", type.toString()));
 	}
 
 	private static ClassLoader classLoader = null;
@@ -226,7 +267,7 @@ public final class BOFactory {
 		try {
 			return getClassLoader().loadClass(className);
 		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
+			throw new BasRuntimeException(e);
 		}
 	}
 

@@ -51,7 +51,7 @@ public class JudgmentExpressionString extends JudgmentExpressionComparable<Strin
 	}
 
 	@Override
-	public boolean result() throws ExpressionException {
+	public boolean result()  {
 		// 开始与
 		if (this.getOperation() == JudgmentOperation.BEGIN_WITH) {
 			if (this.getLeftValue() == null || this.getRightValue() == null) {

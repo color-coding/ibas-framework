@@ -146,6 +146,15 @@ public class BOInstanceLogService extends BusinessLogic<IBOInstanceLogContract, 
 		boLogst.setModifyUser(this.getUser().getId());
 		boLogst.setTransactionId(this.getTransaction().getId());
 		boLogst.setContent(BOUtilities.toJsonString(contract.getHost()));
+		// 设置操作动机：区分删除与更新
+		if (this.getTrigger() instanceof IBusinessObject) {
+			IBusinessObject trigger = (IBusinessObject) this.getTrigger();
+			if (trigger.isDeleted()) {
+				boLogst.setCause("DELETED");
+			} else {
+				boLogst.setCause("UPDATED");
+			}
+		}
 		boLogst.setSavable(true);
 	}
 

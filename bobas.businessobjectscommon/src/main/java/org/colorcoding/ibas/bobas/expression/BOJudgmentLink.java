@@ -36,12 +36,12 @@ public class BOJudgmentLink extends JudgmentLink {
 	 * @return true，满足条件；false，不满足
 	 * @throws JudgmentOperationException
 	 */
-	public boolean judge(IBusinessObject bo) throws JudgmentOperationException {
+	public boolean judge(IBusinessObject bo)  {
 		// 无条件
 		if (this.getJudgmentItems() == null) {
 			return true;
 		}
-		ArrayList<JudgmentLinkItem> jItems = new ArrayList<>();
+		ArrayList<JudgmentLinkItem> jItems = new ArrayList<>(this.getJudgmentItems().length);
 		// 设置所以条件的比较值
 		for (JudgmentLinkItem item : this.getJudgmentItems()) {
 			// 左值
@@ -70,7 +70,7 @@ public class BOJudgmentLink extends JudgmentLink {
 					} catch (JudgmentOperationException e) {
 						throw e;
 					} catch (Exception e) {
-						throw new ExpressionException(e);
+						throw new ExpressionException(e.getMessage(), e);
 					}
 				}
 			}
@@ -135,8 +135,7 @@ public class BOJudgmentLink extends JudgmentLink {
 	}
 
 	protected boolean judge(IBusinessObject bo, JudgmentLinkItem parent)
-			throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, JudgmentOperationException {
+			throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		String path = ((IPropertyValueOperator) parent.getLeftOperator()).getPropertyName();
 		if (path == null || path.isEmpty()) {
 			// 无属性
@@ -148,7 +147,7 @@ public class BOJudgmentLink extends JudgmentLink {
 			return false;
 		}
 		String property = path.substring(path.lastIndexOf(".") + 1);
-		ArrayList<JudgmentLinkItem> jItems = new ArrayList<>();
+		ArrayList<JudgmentLinkItem> jItems = new ArrayList<>(values.size());
 		for (Object item : values) {
 			JudgmentLinkItem jItem = new JudgmentLinkItem();
 			jItem.setRelationship(JudgmentOperation.OR);

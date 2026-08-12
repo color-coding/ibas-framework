@@ -5,13 +5,32 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.common.ConditionRelationship;
+import org.colorcoding.ibas.bobas.common.ICondition;
+import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.db.DataType;
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
+
+	/** sql server 预编译参数上限 */
+	private static final int MAX_PREPARED_PARAMETERS = 2100;
+
+	@Override
+	public boolean isPreparable(String sql) {
+		// sql server 预编译参数不能超过2100，统计占位符?数量判断
+		int count = 0;
+		for (int i = 0; i < sql.length(); i++) {
+			if (sql.charAt(i) == '?') {
+				count++;
+			}
+		}
+		return count <= MAX_PREPARED_PARAMETERS;
+	}
 
 	@Override
 	public Connection createConnection(String server, String dbName, String userName, String userPwd) {
@@ -36,7 +55,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			}
 			return DriverManager.getConnection(dbURL, userName, userPwd);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new BasRuntimeException(e.getMessage(), e);
 		}
 	}
 
@@ -76,6 +95,39 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			return stringBuilder.toString();
 		}
 		return super.castAs(type, alias);
+	}
+
+	@Override
+	public String parsingSelect(Class<?> boType, ICriteria criteria, boolean withLock) {
+		String sql = super.parsingSelect(boType, criteria, withLock);
+		if (criteria != null) {
+			// 检测是否存在跨列 OR 组，存在则追加 OPTION (RECOMPILE)
+			// 跨列 OR 组：(A=? AND B=?) OR (A=? AND B=?) -> 参数化时优化器易退化全表扫描
+			// 同列 OR： A=? OR A=? OR A=? -> 优化器转为 IN 列表，高效
+			boolean crossColumnOr = false;
+			String prevAlias = null;
+			for (ICondition condition : criteria.getConditions()) {
+				if (condition.getRelationship() == ConditionRelationship.OR) {
+					// OR 条件的列与前一个条件不同 -> 跨列 OR 组
+					if (prevAlias == null || !prevAlias.equals(condition.getAlias())) {
+						crossColumnOr = true;
+						break;
+					}
+				}
+				prevAlias = condition.getAlias();
+			}
+			if (crossColumnOr) {
+				StringBuilder stringBuilder = new StringBuilder(sql);
+				stringBuilder.append(" ");
+				stringBuilder.append("OPTION");
+				stringBuilder.append(" ");
+				stringBuilder.append("(");
+				stringBuilder.append("RECOMPILE");
+				stringBuilder.append(")");
+				sql = stringBuilder.toString();
+			}
+		}
+		return sql;
 	}
 
 	/**

@@ -28,12 +28,7 @@ public interface IBusinessLogicChain extends AutoCloseable {
 	 *
 	 * @param trigger 触发对象的数据库副本
 	 */
-	<T extends IBusinessObject> void setTriggerCopy(T trigger);
-
-	/**
-	 * 执行逻辑链（先反向再正向）
-	 */
-	void execute();
+	<T extends IBusinessObject> void setTriggerCopy(T trigger) throws BusinessLogicException;
 
 	/**
 	 * 添加跳过的逻辑
@@ -41,4 +36,9 @@ public interface IBusinessLogicChain extends AutoCloseable {
 	 * @param contractType 逻辑对应的契约类型，该契约的逻辑将被跳过
 	 */
 	void addSkipLogics(Class<?> contractType);
+
+	/**
+	 * 执行逻辑链（先反向再正向）
+	 */
+	void execute() throws BusinessLogicException;
 }

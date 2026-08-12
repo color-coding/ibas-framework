@@ -60,7 +60,7 @@
     <repository>
       <id>ibas-maven</id>
       <name>Color-Coding Maven Repository</name>
-      <url>http://maven.colorcoding.org/repository/maven-public/</url>
+      <url>https://maven.colorcoding.org/repository/maven-public/</url>
       <layout>default</layout>
       <snapshots>
         <enabled>false</enabled>

@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.file.s3;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 import java.io.File;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
@@ -22,7 +24,7 @@ public class TransactionManager extends org.colorcoding.ibas.bobas.file.Transact
 		String bucket = MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_FILE_REPOSITORY_FOLDER);
 		bucket = MyConfiguration.getConfigValue(S3FileTransaction.CONFIG_ITEM_S3_BUCKET, bucket);
 		if (Strings.isNullOrEmpty(bucket)) {
-			throw new RuntimeException(I18N.prop("msg_bobas_s3_not_designated_bucket"));
+			throw new BasRuntimeException(I18N.prop("msg_bobas_s3_not_designated_bucket"));
 		}
 		if (!Strings.isNullOrEmpty(repository)) {
 			repository = Files.pathOf(repository).replace(File.separator, S3FileTransaction.PATH_SEPARATOR);

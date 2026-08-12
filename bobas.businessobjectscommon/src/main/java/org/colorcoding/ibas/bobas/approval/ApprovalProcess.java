@@ -9,6 +9,7 @@ import org.colorcoding.ibas.bobas.common.Enums;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.IOperationResult;
 import org.colorcoding.ibas.bobas.common.Numbers;
+import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.data.emApprovalResult;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
@@ -278,7 +279,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	 * @throws JudgmentOperationException 条件判断异常
 	 * @throws ApprovalException          审批异常
 	 */
-	private ApprovalProcessStep<?> nextStep() throws JudgmentOperationException, ApprovalException {
+	private ApprovalProcessStep<?> nextStep() throws ApprovalException {
 		ApprovalDataJudgmentLink judgmentLinks;
 		for (ApprovalProcessStep<?> stepItem : this.getProcessSteps()) {
 			if (stepItem.getStatus() != emApprovalStepStatus.PENDING) {
@@ -378,7 +379,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 			} else {
 				// 操作的步骤不是正在进行的步骤
 				throw new ApprovalException(
-						I18N.prop("msg_bobas_next_approval_process_step_was_stated", apStep.getId()));
+						I18N.prop("msg_bobas_next_approval_process_step_already_started", apStep.getId()));
 			}
 		} else {
 			// 当前步骤操作
@@ -405,7 +406,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 						this.setStatus(emApprovalStatus.PROCESSING);
 					}
 				} catch (JudgmentOperationException e) {
-					throw new ApprovalException(e);
+					throw new ApprovalException(e.getMessage(), e);
 				}
 			} else if (apResult == emApprovalResult.REJECTED) {
 				// 拒绝
@@ -503,6 +504,10 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 			} catch (InvalidAuthorizationException e) {
 				throw new ApprovalException(I18N.prop("msg_bobas_invalid_user_authorization"), e);
 			}
+			// 记录取消备注
+			if (!Strings.isNullOrEmpty(remarks)) {
+				Logger.log("approval process: [%s] cancelled with remarks [%s].", this.getName(), remarks);
+			}
 			// 重置当前进行中的步骤
 			ApprovalProcessStep<?> currentStep = this.currentStep();
 			if (currentStep != null) {
@@ -583,7 +588,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 		}
 		// 不允许修改数据
 		throw new ApprovalException(I18N.prop("msg_bobas_data_in_approval_process_not_allow_to_update",
-				this.getApprovalData().toString(), this.getName(), user.toString()));
+						this.getApprovalData().toString(), this.getName(), user.toString()));
 	}
 
 	/**
@@ -629,7 +634,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 		} catch (ApprovalException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new ApprovalException(e);
+			throw new ApprovalException(e.getMessage(), e);
 		}
 	}
 
@@ -673,10 +678,11 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 				try {
 					transaction.rollback();
 				} catch (RepositoryException e1) {
-					throw new ApprovalException(e1);
+					// 回滚失败时，将回滚异常附加到原始异常上，避免丢失真正的故障原因
+					e.addSuppressed(e1);
 				}
 			}
-			throw new ApprovalException(e);
+			throw new ApprovalException(e.getMessage(), e);
 		}
 	}
 

@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.db.hana;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -32,7 +34,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			return DriverManager.getConnection(dbURL, userName, userPwd);
 		} catch (Exception e) {
 			// 接数据库失败
-			throw new RuntimeException(e);
+			throw new BasRuntimeException(e.getMessage(), e);
 		}
 	}
 
@@ -100,6 +102,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	@Override
 	public String parsingSelect(Class<?> boType, ICriteria criteria, boolean withLock) {
 		StringBuilder stringBuilder = new StringBuilder(
 				(3 + criteria.getConditions().size() + criteria.getSorts().size()) * 32);
@@ -135,6 +138,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		return stringBuilder.toString();
 	}
 
+	@Override
 	public String parsingMaxValue(MaxValue maxValue, Collection<ICondition> conditions) {
 		StringBuilder stringBuilder = new StringBuilder(conditions.size() * 32 + 96);
 		stringBuilder.append("SELECT");

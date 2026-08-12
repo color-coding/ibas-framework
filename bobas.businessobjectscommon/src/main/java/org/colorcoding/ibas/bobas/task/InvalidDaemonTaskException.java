@@ -1,12 +1,14 @@
 package org.colorcoding.ibas.bobas.task;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 /**
  * 无效的后台任务
- * 
+ *
  * @author Niuren.Zhu
  *
  */
-public class InvalidDaemonTaskException extends RuntimeException {
+public class InvalidDaemonTaskException extends BasRuntimeException {
 
 	private static final long serialVersionUID = 398846462991172932L;
 

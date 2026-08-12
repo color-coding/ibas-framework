@@ -69,7 +69,7 @@ public abstract class JudgmentLink {
 	 * @return true满足条件；false不满足；无条件时返回true
 	 * @throws JudgmentOperationException 判断操作异常
 	 */
-	public boolean judge(Object object) throws JudgmentOperationException {
+	public boolean judge(Object object)  {
 		// 无条件
 		if (this.getJudgmentItems() == null) {
 			return true;
@@ -101,7 +101,7 @@ public abstract class JudgmentLink {
 		boolean done = false;// 完成
 		int closeCount = 0;
 		int bracket = -1;
-		ArrayList<JudgmentLinkItem> currentJudgmentItems = new ArrayList<JudgmentLinkItem>();
+		ArrayList<JudgmentLinkItem> currentJudgmentItems = new ArrayList<JudgmentLinkItem>(judgmentItems.length - startIndex);
 		for (int i = startIndex; i < judgmentItems.length; i++) {
 			JudgmentLinkItem jItem = judgmentItems[i];
 			if (bracket == -1) {
@@ -135,7 +135,7 @@ public abstract class JudgmentLink {
 	 * @return true满足条件；false不满足
 	 * @throws JudgmentOperationException 判断操作异常
 	 */
-	protected boolean judge(int bracket, JudgmentLinkItem[] judgmentItems) throws JudgmentOperationException {
+	protected boolean judge(int bracket, JudgmentLinkItem[] judgmentItems)  {
 		boolean currentValue = false;// 当前的结果
 		ExpressionFactory factory = ExpressionFactory.create();
 		IJudgmentExpression rootJudExp = null;
@@ -157,6 +157,10 @@ public abstract class JudgmentLink {
 			} else {
 				// 计算当前表达式
 				IJudgmentExpression currentJudExp = factory.createJudgment(jItem.getLeftOperator().getValueClass());
+				if (currentJudExp == null) {
+					throw new ExpressionException(I18N.prop("msg_bobas_not_support_type_expression",
+							jItem.getLeftOperator().getValueClass()));
+				}
 				currentJudExp.setLeftValue(jItem.getLeftOperator().getValue());
 				currentJudExp.setOperation(jItem.getOperation());
 				currentJudExp.setRightValue(jItem.getRightOperator().getValue());

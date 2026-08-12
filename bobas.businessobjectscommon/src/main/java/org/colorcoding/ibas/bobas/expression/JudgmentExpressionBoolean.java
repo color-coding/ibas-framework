@@ -21,7 +21,7 @@ public class JudgmentExpressionBoolean extends JudgmentExpression<Boolean> {
 	}
 
 	@Override
-	public boolean result() throws ExpressionException {
+	public boolean result()  {
 		// 等
 		if (this.getOperation() == JudgmentOperation.EQUAL) {
 			return Objects.equals(this.getLeftValue(), this.getRightValue());

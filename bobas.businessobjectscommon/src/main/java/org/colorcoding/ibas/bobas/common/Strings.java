@@ -1,9 +1,14 @@
 package org.colorcoding.ibas.bobas.common;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Iterator;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializationException;
@@ -222,15 +227,15 @@ public class Strings {
 			// 单字符归一到字母表缓存
 			if (nValue.length() == 1) {
 				char vChar = nValue.charAt(0);
-				if (vChar >= 32 && vChar <= 127) {
+				if (vChar >= 32 && vChar <= 126) {
 					return alphabetOf(vChar);
 				}
 			}
 			return nValue;
 		} else if (value.getClass().isArray()) {
 			Object tmpVlue = null;
-			StringBuilder builder = new StringBuilder();
 			int length = Array.getLength(value);
+			StringBuilder builder = new StringBuilder(length * 8);
 			for (int i = 0; i < length; i++) {
 				if (builder.length() > 0) {
 					builder.append(VALUE_COMMA);
@@ -322,7 +327,7 @@ public class Strings {
 	 */
 	public static String concat(String... pars) {
 		if (pars.length > 0) {
-			StringBuilder builder = new StringBuilder();
+			StringBuilder builder = new StringBuilder(pars.length * 16);
 			for (String item : pars) {
 				if (item == null) {
 					continue;
@@ -633,13 +638,13 @@ public class Strings {
 	 * @param data 数据对象
 	 * @return JSON字符串；序列化失败抛出SerializationException
 	 */
-	public static String toJsonString(Object data) {
+	public static String toJsonString(Object data) throws SerializationException {
 		try (ByteArrayOutputStream writer = new ByteArrayOutputStream(256)) {
 			ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_JSON);
 			serializer.serialize(data, writer);
 			return writer.toString("UTF-8");
-		} catch (IOException e1) {
-			throw new SerializationException(e1);
+		} catch (IOException e) {
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -649,13 +654,13 @@ public class Strings {
 	 * @param data 数据对象
 	 * @return XML字符串；序列化失败抛出SerializationException
 	 */
-	public static String toXmlString(Object data) {
+	public static String toXmlString(Object data) throws SerializationException {
 		try (ByteArrayOutputStream writer = new ByteArrayOutputStream(512)) {
 			ISerializer serializer = SerializationFactory.createManager().create(SerializationFactory.TYPE_XML);
 			serializer.serialize(data, writer);
 			return writer.toString("UTF-8");
-		} catch (IOException e1) {
-			throw new SerializationException(e1);
+		} catch (IOException e) {
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -801,9 +806,9 @@ public class Strings {
 	/**
 	 * 左填充到指定长度
 	 *
-	 * @param value    字符串；null视为空字符串
-	 * @param size     目标长度；小于原长度时不填充
-	 * @param padChar  填充字符
+	 * @param value   字符串；null视为空字符串
+	 * @param size    目标长度；小于原长度时不填充
+	 * @param padChar 填充字符
 	 * @return 填充后的字符串
 	 */
 	public static String padLeft(String value, int size, char padChar) {
@@ -824,9 +829,9 @@ public class Strings {
 	/**
 	 * 右填充到指定长度
 	 *
-	 * @param value    字符串；null视为空字符串
-	 * @param size     目标长度；小于原长度时不填充
-	 * @param padChar  填充字符
+	 * @param value   字符串；null视为空字符串
+	 * @param size    目标长度；小于原长度时不填充
+	 * @param padChar 填充字符
 	 * @return 填充后的字符串
 	 */
 	public static String padRight(String value, int size, char padChar) {
@@ -858,9 +863,9 @@ public class Strings {
 	/**
 	 * 截取字符串最大长度；超过时追加省略标记
 	 *
-	 * @param value     字符串；null返回空字符串
-	 * @param maxLen    最大长度（含省略标记）；小于1返回空字符串
-	 * @param suffix    省略标记
+	 * @param value  字符串；null返回空字符串
+	 * @param maxLen 最大长度（含省略标记）；小于1返回空字符串
+	 * @param suffix 省略标记
 	 * @return 截取结果
 	 */
 	public static String ellipsis(String value, int maxLen, String suffix) {
@@ -975,7 +980,7 @@ public class Strings {
 			return VALUE_EMPTY;
 		}
 		String sep = separator != null ? separator : VALUE_EMPTY;
-		StringBuilder builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder(values.length * 16);
 		for (Object item : values) {
 			if (item == null) {
 				continue;
@@ -1036,5 +1041,57 @@ public class Strings {
 			return null;
 		}
 		return new StringBuilder(value).reverse().toString();
+	}
+
+	/**
+	 * 压缩字符串：UTF-8 编码 -> GZIP -> Base64
+	 *
+	 * @param value 原始字符串；null或空则原样返回
+	 * @return Base64 编码的压缩字符串；压缩失败或结果更长则返回原值
+	 */
+	public static String toZipString(String value) {
+		if (value == null || value.isEmpty()) {
+			return value;
+		}
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream(value.length() / 4);
+			try (GZIPOutputStream gos = new GZIPOutputStream(baos, 8192)) {
+				gos.write(value.getBytes(StandardCharsets.UTF_8));
+			}
+			String result = Base64.getEncoder().encodeToString(baos.toByteArray());
+			if (result.length() >= value.length()) {
+				// 压缩后更长，返回原值
+				return value;
+			}
+			return result;
+		} catch (Exception e) {
+			return value;
+		}
+	}
+
+	/**
+	 * 解压字符串：Base64 解码 -> GZIP 解压 -> UTF-8 字符串
+	 *
+	 * @param value Base64 编码的压缩字符串；null或空则原样返回
+	 * @return 原始字符串；解压失败返回原值
+	 */
+	public static String fromZipString(String value) {
+		if (value == null || value.isEmpty()) {
+			return value;
+		}
+		try {
+			byte[] compressed = Base64.getDecoder().decode(value);
+			try (GZIPInputStream gis = new GZIPInputStream(new ByteArrayInputStream(compressed), 8192)) {
+				ByteArrayOutputStream baos = new ByteArrayOutputStream(compressed.length * 8);
+				byte[] buffer = new byte[8192];
+				int len;
+				while ((len = gis.read(buffer)) != -1) {
+					baos.write(buffer, 0, len);
+				}
+				return new String(baos.toByteArray(), StandardCharsets.UTF_8);
+			}
+		} catch (Exception e) {
+			return value;
+		}
 	}
 }

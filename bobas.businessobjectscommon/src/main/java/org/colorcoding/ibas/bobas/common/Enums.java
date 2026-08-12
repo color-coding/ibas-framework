@@ -133,7 +133,7 @@ public class Enums {
 			throw new IllegalArgumentException(Strings.format("type [%s] is not Enum.", enumType.getName()));
 		}
 		Object[] constants = enumType.getEnumConstants();
-		ArrayList<KeyValue> values = new ArrayList<>();
+		ArrayList<KeyValue> values = new ArrayList<>(constants.length);
 		if (constants.length > 0) {
 			for (int i = 0; i < constants.length; i++) {
 				Enum<?> item = (Enum<?>) constants[i];

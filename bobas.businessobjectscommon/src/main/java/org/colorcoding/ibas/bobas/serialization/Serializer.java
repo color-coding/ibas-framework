@@ -34,29 +34,29 @@ public abstract class Serializer implements ISerializer {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T clone(T object, Class<?>... types) throws SerializationException {
+	public <T> T clone(T object, Class<?>... types) {
 		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream(512)) {
 			this.serialize(object, outputStream, false, types);
 			try (ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray())) {
 				return (T) this.deserialize(inputStream, this.buildKnownTypes(object, types));
 			}
 		} catch (IOException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
 	@Override
-	public void serialize(Object object, OutputStream outputStream, Class<?>... types) throws SerializationException {
+	public void serialize(Object object, OutputStream outputStream, Class<?>... types) {
 		this.serialize(object, outputStream,
 				MyConfiguration.getConfigValue(MyConfiguration.CONFIG_ITEM_FORMATTED_OUTPUT, false), types);
 	}
 
 	@Override
-	public <T> T deserialize(String data, Class<?>... types) throws SerializationException {
+	public <T> T deserialize(String data, Class<?>... types) {
 		try (InputStream stream = new ByteArrayInputStream(Bytes.valueOf(data))) {
 			return this.deserialize(stream, types);
 		} catch (IOException e) {
-			throw new SerializationException(e);
+			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
@@ -65,7 +65,7 @@ public abstract class Serializer implements ISerializer {
 		try (InputStream stream = new ByteArrayInputStream(Bytes.valueOf(data))) {
 			this.validate(type, stream);
 		} catch (IOException e) {
-			throw new ValidateException(e);
+			throw new ValidateException(e.getMessage(), e);
 		}
 
 	}

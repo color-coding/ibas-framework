@@ -17,7 +17,6 @@ import org.colorcoding.ibas.bobas.expression.JudgmentExpressionDecimal;
 import org.colorcoding.ibas.bobas.expression.JudgmentExpressionInteger;
 import org.colorcoding.ibas.bobas.expression.JudgmentExpressionString;
 import org.colorcoding.ibas.bobas.expression.JudgmentOperation;
-import org.colorcoding.ibas.bobas.expression.JudgmentOperationException;
 import org.colorcoding.ibas.bobas.test.demo.SalesOrder;
 
 import junit.framework.TestCase;
@@ -25,12 +24,10 @@ import junit.framework.TestCase;
 /**
  * 表达式判断功能测试
  *
- * 测试范围：
- * 1. 布尔表达式判断（EQUAL/AND/OR/NOT_EQUAL）
- * 2. 日期表达式判断（EQUAL/NOT_EQUAL/LESS_EQUAL）
- * 3. 字符串表达式判断（EQUAL/NOT_EQUAL/CONTAIN/BEGIN_WITH/END_WITH/IN）
- * 4. 整数表达式判断（EQUAL/NOT_EQUAL/LESS_EQUAL）
- * 5. 十进制数表达式判断（EQUAL/NOT_EQUAL/LESS_EQUAL）
+ * 测试范围： 1. 布尔表达式判断（EQUAL/AND/OR/NOT_EQUAL） 2.
+ * 日期表达式判断（EQUAL/NOT_EQUAL/LESS_EQUAL） 3.
+ * 字符串表达式判断（EQUAL/NOT_EQUAL/CONTAIN/BEGIN_WITH/END_WITH/IN） 4.
+ * 整数表达式判断（EQUAL/NOT_EQUAL/LESS_EQUAL） 5. 十进制数表达式判断（EQUAL/NOT_EQUAL/LESS_EQUAL）
  * 6. 复合条件判断链（BOJudgmentLinkCondition）
  */
 public class TestExpressions extends TestCase {
@@ -112,7 +109,7 @@ public class TestExpressions extends TestCase {
 
 	}
 
-	public void testJudgmentLinks() throws JudgmentOperationException {
+	public void testJudgmentLinks() {
 		// 查询条件
 		ICriteria criteria = new Criteria();
 		criteria.setResultCount(100);
@@ -200,13 +197,18 @@ public class TestExpressions extends TestCase {
 			boolean ok = judgmentLinks.judge(item);
 			System.out.println(String.format("judged bo: %s is %s", item.toString(), ok));
 		}
+		// 断言预期结果
+		assertTrue("Order 1 should match. ", judgmentLinks.judge(salesOrders.get(0)));
+		assertFalse("Order 2 should not match (DocDueDate mismatch). ", judgmentLinks.judge(salesOrders.get(1)));
+		assertTrue("Order 3 should match. ", judgmentLinks.judge(salesOrders.get(2)));
+		assertFalse("Order 4 should not match (DocTotal < 10000). ", judgmentLinks.judge(salesOrders.get(3)));
+		assertFalse("Order 5 should not match (DocTotal < 10000). ", judgmentLinks.judge(salesOrders.get(4)));
 	}
 
 	// ==================== 新增测试 ====================
 
 	/**
-	 * 测试布尔表达式-反向场景
-	 * 覆盖：true!=true, false AND true, false OR false
+	 * 测试布尔表达式-反向场景 覆盖：true!=true, false AND true, false OR false
 	 */
 	public void testBooleanExpressionNegative() {
 		JudgmentExpressionBoolean judgment = new JudgmentExpressionBoolean();
@@ -227,8 +229,7 @@ public class TestExpressions extends TestCase {
 	}
 
 	/**
-	 * 测试整数表达式-更多操作
-	 * 覆盖：GREATER_EQUAL, LESS_THAN, GREATER_THAN
+	 * 测试整数表达式-更多操作 覆盖：GREATER_EQUAL, LESS_THAN, GREATER_THAN
 	 */
 	public void testIntegerExpressionMore() {
 		JudgmentExpressionInteger judgment = new JudgmentExpressionInteger();
@@ -254,8 +255,7 @@ public class TestExpressions extends TestCase {
 	}
 
 	/**
-	 * 测试字符串表达式-NOT_CONTAIN和NOT_IN
-	 * 覆盖：不包含、不在列表中
+	 * 测试字符串表达式-NOT_CONTAIN和NOT_IN 覆盖：不包含、不在列表中
 	 */
 	public void testStringExpressionMore() {
 		JudgmentExpressionString judgment = new JudgmentExpressionString();
@@ -282,8 +282,7 @@ public class TestExpressions extends TestCase {
 	}
 
 	/**
-	 * 测试Decimal表达式-更多操作
-	 * 覆盖：GREATER_THAN, LESS_THAN, LESS_EQUAL
+	 * 测试Decimal表达式-更多操作 覆盖：GREATER_THAN, LESS_THAN, LESS_EQUAL
 	 */
 	public void testDecimalExpressionMore() {
 		JudgmentExpressionDecimal judgment = new JudgmentExpressionDecimal();
@@ -304,10 +303,9 @@ public class TestExpressions extends TestCase {
 	}
 
 	/**
-	 * 测试复合条件判断链-具体断言
-	 * 覆盖：验证复合条件判断的精确结果
+	 * 测试复合条件判断链-具体断言 覆盖：验证复合条件判断的精确结果
 	 */
-	public void testJudgmentLinksWithAssertions() throws JudgmentOperationException {
+	public void testJudgmentLinksWithAssertions() {
 		// 简单条件：DocEntry = 1
 		ICriteria criteria = new Criteria();
 		ICondition condition = criteria.getConditions().create();
@@ -327,5 +325,157 @@ public class TestExpressions extends TestCase {
 
 		assertTrue("DocEntry=1 should match. ", judgmentLinks.judge(so1));
 		assertFalse("DocEntry=2 should not match. ", judgmentLinks.judge(so2));
+	}
+
+	/**
+	 * 测试括号分组-多种嵌套场景 覆盖：(A OR B) AND C, A AND (B OR C), (A OR B) AND (C OR D),
+	 * (A OR B) AND (C OR (D AND E)), ((A)) 同项双括号
+	 */
+	public void testBracketScenarios() {
+		SalesOrder so;
+		BOJudgmentLinkCondition judgmentLinks;
+		ICriteria criteria;
+		ICondition condition;
+
+		// 场景1：(DocEntry = 1 OR DocEntry = 2) AND DocEntry = 1
+		// so1(DocEntry=1) -> true, so2(DocEntry=2) -> false
+		criteria = new Criteria();
+		condition = criteria.getConditions().create();
+		condition.setBracketOpen(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(1);
+		condition = criteria.getConditions().create();
+		condition.setBracketClose(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(2);
+		condition.setRelationship(ConditionRelationship.OR);
+		condition = criteria.getConditions().create();
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(1);
+		condition.setRelationship(ConditionRelationship.AND);
+
+		judgmentLinks = new BOJudgmentLinkCondition();
+		judgmentLinks.parsingConditions(criteria.getConditions());
+		so = new SalesOrder();
+		so.setDocEntry(1);
+		assertTrue("(1 OR 2) AND 1, DocEntry=1 should match. ", judgmentLinks.judge(so));
+		so = new SalesOrder();
+		so.setDocEntry(2);
+		assertFalse("(1 OR 2) AND 1, DocEntry=2 should not match. ", judgmentLinks.judge(so));
+
+		// 场景2：DocEntry = 1 AND (DocEntry = 1 OR DocEntry = 2)
+		// so1(DocEntry=1) -> true, so3(DocEntry=3) -> false
+		criteria = new Criteria();
+		condition = criteria.getConditions().create();
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(1);
+		condition = criteria.getConditions().create();
+		condition.setBracketOpen(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(1);
+		condition.setRelationship(ConditionRelationship.AND);
+		condition = criteria.getConditions().create();
+		condition.setBracketClose(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(2);
+		condition.setRelationship(ConditionRelationship.OR);
+
+		judgmentLinks = new BOJudgmentLinkCondition();
+		judgmentLinks.parsingConditions(criteria.getConditions());
+		so = new SalesOrder();
+		so.setDocEntry(1);
+		assertTrue("1 AND (1 OR 2), DocEntry=1 should match. ", judgmentLinks.judge(so));
+		so = new SalesOrder();
+		so.setDocEntry(3);
+		assertFalse("1 AND (1 OR 2), DocEntry=3 should not match. ", judgmentLinks.judge(so));
+
+		// 场景3：(DocEntry = 1 OR DocEntry = 2) AND (DocEntry = 2 OR DocEntry = 3)
+		// so1(DocEntry=1) -> false, so2(DocEntry=2) -> true
+		criteria = new Criteria();
+		condition = criteria.getConditions().create();
+		condition.setBracketOpen(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(1);
+		condition = criteria.getConditions().create();
+		condition.setBracketClose(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(2);
+		condition.setRelationship(ConditionRelationship.OR);
+		condition = criteria.getConditions().create();
+		condition.setBracketOpen(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(2);
+		condition.setRelationship(ConditionRelationship.AND);
+		condition = criteria.getConditions().create();
+		condition.setBracketClose(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(3);
+		condition.setRelationship(ConditionRelationship.OR);
+
+		judgmentLinks = new BOJudgmentLinkCondition();
+		judgmentLinks.parsingConditions(criteria.getConditions());
+		so = new SalesOrder();
+		so.setDocEntry(1);
+		assertFalse("(1 OR 2) AND (2 OR 3), DocEntry=1 should not match. ", judgmentLinks.judge(so));
+		so = new SalesOrder();
+		so.setDocEntry(2);
+		assertTrue("(1 OR 2) AND (2 OR 3), DocEntry=2 should match. ", judgmentLinks.judge(so));
+
+		// 场景4：嵌套括号 (DocEntry = 1 OR DocEntry = 2) AND (DocEntry = 1 OR (DocEntry = 2 AND DocEntry = 3))
+		// so1(DocEntry=1) -> true, so2(DocEntry=2) -> false (2 AND 3 fails), so3(DocEntry=3) -> false
+		criteria = new Criteria();
+		condition = criteria.getConditions().create();
+		condition.setBracketOpen(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(1);
+		condition = criteria.getConditions().create();
+		condition.setBracketClose(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(2);
+		condition.setRelationship(ConditionRelationship.OR);
+		condition = criteria.getConditions().create();
+		condition.setBracketOpen(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(1);
+		condition.setRelationship(ConditionRelationship.AND);
+		condition = criteria.getConditions().create();
+		condition.setBracketOpen(1);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(2);
+		condition.setRelationship(ConditionRelationship.OR);
+		condition = criteria.getConditions().create();
+		condition.setBracketClose(2);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(3);
+		condition.setRelationship(ConditionRelationship.AND);
+
+		judgmentLinks = new BOJudgmentLinkCondition();
+		judgmentLinks.parsingConditions(criteria.getConditions());
+		so = new SalesOrder();
+		so.setDocEntry(1);
+		assertTrue("nested brackets, DocEntry=1 should match. ", judgmentLinks.judge(so));
+		so = new SalesOrder();
+		so.setDocEntry(2);
+		assertFalse("nested brackets, DocEntry=2 should not match. ", judgmentLinks.judge(so));
+		so = new SalesOrder();
+		so.setDocEntry(3);
+		assertFalse("nested brackets, DocEntry=3 should not match. ", judgmentLinks.judge(so));
+
+		// 场景5：同项双括号 ((DocEntry = 1))
+		criteria = new Criteria();
+		condition = criteria.getConditions().create();
+		condition.setBracketOpen(2);
+		condition.setAlias(SalesOrder.PROPERTY_DOCENTRY.getName());
+		condition.setValue(1);
+		condition.setBracketClose(2);
+
+		judgmentLinks = new BOJudgmentLinkCondition();
+		judgmentLinks.parsingConditions(criteria.getConditions());
+		so = new SalesOrder();
+		so.setDocEntry(1);
+		assertTrue("((DocEntry=1)), DocEntry=1 should match. ", judgmentLinks.judge(so));
+		so = new SalesOrder();
+		so.setDocEntry(2);
+		assertFalse("((DocEntry=1)), DocEntry=2 should not match. ", judgmentLinks.judge(so));
 	}
 }

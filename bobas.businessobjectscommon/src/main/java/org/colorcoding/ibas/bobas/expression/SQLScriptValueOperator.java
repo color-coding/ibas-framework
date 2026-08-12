@@ -1,5 +1,7 @@
 package org.colorcoding.ibas.bobas.expression;
 
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
+
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -46,13 +48,13 @@ public class SQLScriptValueOperator implements IPropertyValueOperator {
 				Objects.requireNonNull(this.dbTransaction);
 				if (this.propertyName == null || this.propertyName.isEmpty()) {
 					// 此时propertyName为查询命令
-					throw new RuntimeException(I18N.prop("msg_bobas_invalid_sql_query"));
+					throw new BasRuntimeException(I18N.prop("msg_bobas_invalid_sql_query"));
 				}
 				String query = this.propertyName;
 				// 使用参数化方式替换查询中的变量，避免SQL注入
 				Matcher matcher = Pattern.compile(MyConfiguration.VARIABLE_PATTERN).matcher(query);
 				ArrayList<Object> sqlParameters = new ArrayList<>();
-				StringBuffer stringBuffer = new StringBuffer();
+				StringBuffer stringBuffer = new StringBuffer(query.length());
 				while (matcher.find()) {
 					// 带格式名称${}
 					String vName = matcher.group(0);
@@ -79,7 +81,7 @@ public class SQLScriptValueOperator implements IPropertyValueOperator {
 				}
 			}
 		} catch (Exception e) {
-			throw new ExpressionException(e);
+			throw new ExpressionException(e.getMessage(), e);
 		}
 	}
 

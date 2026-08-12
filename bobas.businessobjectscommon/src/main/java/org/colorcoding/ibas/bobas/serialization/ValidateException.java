@@ -1,8 +1,10 @@
 package org.colorcoding.ibas.bobas.serialization;
 
-public class ValidateException extends Exception {
+import org.colorcoding.ibas.bobas.exception.BasException;
 
-	private static final long serialVersionUID = 639883472487495216L;
+public class ValidateException extends BasException {
+
+	private static final long serialVersionUID = 3301816157795784826L;
 
 	public ValidateException() {
 		super();
