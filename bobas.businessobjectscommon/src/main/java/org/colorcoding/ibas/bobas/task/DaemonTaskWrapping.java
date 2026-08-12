@@ -6,6 +6,7 @@ import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.message.Logger;
@@ -26,7 +27,7 @@ class DaemonTaskWrapping {
 		}
 		this.setTask(task);
 		// 设置首次运行时间
-		this.setNextRunTime(System.currentTimeMillis() + (task.getInterval() * 1000l));
+		this.setNextRunTime(calculateNextRunTime(System.currentTimeMillis(), task.getInterval()));
 	}
 
 	public DaemonTaskWrapping() {
@@ -45,10 +46,16 @@ class DaemonTaskWrapping {
 	}
 
 	public String getName() {
-		if (this.getTask() == null || this.getTask().getName() == null || this.getTask().getName().isEmpty()) {
+		if (this.getTask() == null) {
 			return "unknown";
 		}
-		return this.getTask().getName();
+		try {
+			String name = this.getTask().getName();
+			return name == null || name.isEmpty() ? "unknown" : name;
+		} catch (Exception e) {
+			Logger.log(e);
+			return "unknown";
+		}
 	}
 
 	public boolean isActivated() {
@@ -58,6 +65,8 @@ class DaemonTaskWrapping {
 	}
 
 	private volatile boolean running;
+	private volatile boolean closeRequested;
+	private final AtomicBoolean closed = new AtomicBoolean(false);
 
 	/**
 	 * 运行中
@@ -118,15 +127,26 @@ class DaemonTaskWrapping {
 
 	private void setNextRunTime() {
 		if (this.getTask() != null) {
-			if (this.getTask().getInterval() == 0l && this.getLastRunTime() > 0l) {
+			long interval = this.getTask().getInterval();
+			if (interval <= 0l && this.getLastRunTime() > 0l) {
 				// 间隔0秒，执行过则不在执行
 				this.setNextRunTime(0l);
 			} else {
-				this.setNextRunTime(this.getLastRunTime() + (this.getTask().getInterval() * 1000l));
+				this.setNextRunTime(calculateNextRunTime(this.getLastRunTime(), interval));
 			}
 		} else {
 			this.setNextRunTime(0l);
 		}
+	}
+
+	private static long calculateNextRunTime(long baseTime, long interval) {
+		if (interval <= 0l) {
+			return baseTime;
+		}
+		if (interval > (Long.MAX_VALUE - baseTime) / 1000l) {
+			return Long.MAX_VALUE;
+		}
+		return baseTime + interval * 1000l;
 	}
 
 	private boolean log;
@@ -222,14 +242,60 @@ class DaemonTaskWrapping {
 			Logger.log(e);
 		} finally {
 			this.setLastRunTime();
-			this.setNextRunTime();
-			this.setRunning(false);
-			if (this.currentLock != null) {
-				this.currentLock.release();
-				this.currentLock = null;
+			try {
+				this.setNextRunTime();
+			} catch (Exception e) {
+				this.setNextRunTime(0l);
+				Logger.log(e);
+			} finally {
+				if (this.currentLock != null) {
+					this.currentLock.release();
+					this.currentLock = null;
+				}
+			}
+			boolean close;
+			synchronized (this) {
+				this.setRunning(false);
+				close = this.closeRequested;
+			}
+			if (close) {
+				this.closeNow();
 			}
 			// 恢复线程池线程的原始名称，避免影响后续复用
 			Thread.currentThread().setName(originalName);
+		}
+	}
+
+	/**
+	 * 任务尚未提交到线程池或提交失败时回滚运行状态。
+	 * tryRun 可能已经获取了跨进程锁，必须在此处释放。
+	 */
+	synchronized void cancelRun() {
+		this.setRunning(false);
+		if (this.currentLock != null) {
+			this.currentLock.release();
+			this.currentLock = null;
+		}
+	}
+
+	/**
+	 * 注销任务时关闭资源。运行中的任务延迟到 run 的 finally 中关闭。
+	 */
+	synchronized void closeTask() {
+		if (this.isRunning()) {
+			this.closeRequested = true;
+			return;
+		}
+		this.closeNow();
+	}
+
+	private void closeNow() {
+		if (this.getTask() != null && this.closed.compareAndSet(false, true)) {
+			try {
+				this.getTask().close();
+			} catch (Exception e) {
+				Logger.log(e);
+			}
 		}
 	}
 
@@ -245,7 +311,7 @@ class DaemonTaskWrapping {
 	 *
 	 * <pre>
 	 * 正常运行：
-	 *   进程A获取锁(FileLock+写时间戳) → 运行任务 → 清空时间戳+释放FileLock → 删除锁文件
+	 *   进程A获取锁(FileLock+写时间戳) → 运行任务 → 清空时间戳+释放FileLock
 	 *   进程B尝试获取 → tryLock()返回null → 等待
 	 *
 	 * 崩溃恢复：
@@ -265,7 +331,8 @@ class DaemonTaskWrapping {
 
 		SingleTaskLock(File lockFile, long keepTimeSeconds) {
 			this.lockFile = lockFile;
-			this.keepTimeMs = keepTimeSeconds * 1000L;
+			this.keepTimeMs = keepTimeSeconds > Long.MAX_VALUE / 1000L ? Long.MAX_VALUE
+					: keepTimeSeconds * 1000L;
 		}
 
 		/**
@@ -307,7 +374,7 @@ class DaemonTaskWrapping {
 				}
 
 				long now = System.currentTimeMillis();
-				if (lastTimestamp > 0 && now < lastTimestamp + keepTimeMs) {
+				if (lastTimestamp > 0 && (now < lastTimestamp || now - lastTimestamp < keepTimeMs)) {
 					// 前一个持有者崩溃，但keepTime未过期，需等待
 					close();
 					return false;
@@ -350,8 +417,7 @@ class DaemonTaskWrapping {
 				// 忽略，后续close会释放资源
 			}
 			close();
-			// 删除锁文件（已无FileLock，删除是安全的）
-			lockFile.delete();
+			// 锁文件必须保留。释放后删除会产生竞争窗口，使其他进程锁定不同的文件实体。
 		}
 
 		private void close() {

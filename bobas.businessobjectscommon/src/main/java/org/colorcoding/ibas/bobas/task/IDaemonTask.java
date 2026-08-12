@@ -23,15 +23,12 @@ public interface IDaemonTask extends Runnable {
 	long getInterval();
 
 	/**
-	 * 是否激活的。默认实现：间隔大于0时激活，间隔为0时仅执行一次不激活后续运行
+	 * 是否激活的。默认实现：间隔大于等于0时激活；间隔为0的任务执行一次后由调度器移除
 	 *
 	 * @return true激活，false不激活
 	 */
 	default boolean isActivated() {
-		if (this.getInterval() <= 0) {
-			return false;
-		}
-		return true;
+		return this.getInterval() >= 0;
 	}
 
 	/**
