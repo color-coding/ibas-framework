@@ -20,6 +20,10 @@ public class MaxValue extends Trackable implements IFieldedObject {
 
 	private Class<?> boType;
 
+	public MaxValue() {
+		this(null);
+	}
+
 	public MaxValue(Class<?> boType) {
 		this.boType = boType;
 		this.fields = new HashMap<>();

@@ -1307,15 +1307,6 @@ public class DbTransaction extends Transaction implements IUserAware {
 		}
 	}
 
-	@Override
-	protected void finalize() throws Throwable {
-		this.connection = null;
-		this.adapter = null;
-		this.cacheDatas = null;
-		this.currentUser = null;
-		super.finalize();
-	}
-
 	private volatile IUser currentUser;
 
 	@Override

@@ -5,9 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.annotation.WebListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.annotation.WebListener;
 
 import org.colorcoding.ibas.bobas.common.Files;
 import org.colorcoding.ibas.bobas.common.Strings;

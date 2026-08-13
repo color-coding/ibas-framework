@@ -2,7 +2,7 @@ package org.colorcoding.ibas.bobas.serialization.structure;
 
 import java.util.Collection;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 import org.colorcoding.ibas.bobas.data.ArrayList;
 

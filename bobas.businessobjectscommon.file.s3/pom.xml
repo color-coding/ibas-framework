@@ -16,8 +16,15 @@
 	</organization>
 	<properties>
 		<awssdk.version>2.42.26</awssdk.version>
+		<junit.version>4.13.2</junit.version>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.colorcoding.ibas</groupId>
 			<artifactId>bobas.businessobjectscommon</artifactId>
@@ -36,6 +43,10 @@
 				<exclusion>
 					<groupId>software.amazon.awssdk</groupId>
 					<artifactId>apache-client</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>software.amazon.awssdk</groupId>
+					<artifactId>crt-core</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>

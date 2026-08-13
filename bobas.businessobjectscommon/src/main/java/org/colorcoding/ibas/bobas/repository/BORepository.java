@@ -226,12 +226,6 @@ public abstract class BORepository extends Repository {
 	}
 
 	@Override
-	protected void finalize() throws Throwable {
-		this.close();
-		super.finalize();
-	}
-
-	@Override
 	public void close() throws Exception {
 		this.transaction = null;
 	}

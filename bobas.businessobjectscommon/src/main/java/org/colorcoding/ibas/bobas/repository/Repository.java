@@ -80,12 +80,6 @@ public class Repository implements AutoCloseable {
 	}
 
 	@Override
-	protected void finalize() throws Throwable {
-		this.currentUser = null;
-		super.finalize();
-	}
-
-	@Override
 	public void close() throws Exception {
 	}
 }

@@ -114,12 +114,6 @@ public class FileRepository extends Repository {
 	}
 
 	@Override
-	protected void finalize() throws Throwable {
-		this.close();
-		super.finalize();
-	}
-
-	@Override
 	public synchronized void close() throws RuntimeException {
 		try {
 			if (this.transaction != null) {

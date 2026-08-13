@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.repository;
 
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PreDestroy;
 
 import org.colorcoding.ibas.bobas.bo.BusinessObjectUnit;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
@@ -247,12 +247,6 @@ public class BORepositoryServiceApplication extends BORepositoryService {
 	@Override
 	public void close() {
 		super.close();
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		this.ownershipJudger = null;
-		super.finalize();
 	}
 
 }

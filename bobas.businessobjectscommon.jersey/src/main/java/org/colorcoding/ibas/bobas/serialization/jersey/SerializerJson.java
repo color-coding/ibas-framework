@@ -1,25 +1,31 @@
 package org.colorcoding.ibas.bobas.serialization.jersey;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonValue;
-import javax.json.JsonWriter;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.json.Json;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonStructure;
+import jakarta.json.JsonValue;
+import jakarta.json.JsonWriter;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 import org.colorcoding.ibas.bobas.data.DateTime;
 import org.colorcoding.ibas.bobas.serialization.SerializationException;
@@ -99,9 +105,51 @@ public class SerializerJson extends Serializer {
 			marshaller.setProperty(MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
 			marshaller.setProperty(MarshallerProperties.JSON_TYPE_COMPATIBILITY, true);
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);
-			marshaller.marshal(object, outputStream);
-		} catch (JAXBException e) {
+			if (this.isCollectionType(object.getClass())) {
+				this.serializeCollection((Collection<?>) object, context, outputStream, formated, types);
+			} else {
+				marshaller.marshal(object, outputStream);
+			}
+		} catch (Exception e) {
 			throw new SerializationException(e.getMessage(), e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void serializeCollection(Collection<?> collection, JAXBContext context, OutputStream outputStream,
+			boolean formated, Class<?>... types) throws Exception {
+		Class<?> itemType = this.resolveCollectionItemType(types);
+		Marshaller itemMarshaller = context.createMarshaller();
+		itemMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
+		itemMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
+		itemMarshaller.setProperty(MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
+		itemMarshaller.setProperty(MarshallerProperties.JSON_TYPE_COMPATIBILITY, true);
+		JsonArrayBuilder array = Json.createArrayBuilder();
+		for (Object item : collection) {
+			if (item == null) {
+				continue;
+			}
+			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+			try {
+				itemMarshaller.marshal(item, buffer);
+			} catch (JAXBException e) {
+				String[] itemInfo = this.resolveXmlInfo(itemType);
+				JAXBElement<Object> element = new JAXBElement<>(
+						new javax.xml.namespace.QName(itemInfo[0], itemInfo[1]),
+						(Class<Object>) itemType, item);
+				itemMarshaller.marshal(element, buffer);
+			}
+			try (JsonReader reader = Json.createReader(new ByteArrayInputStream(buffer.toByteArray()))) {
+				array.add(reader.readValue());
+			}
+		}
+		JsonValue value = array.build();
+		if (this.isIncludeJsonRoot()) {
+			String rootName = this.resolveXmlInfo(collection.getClass())[1];
+			value = Json.createObjectBuilder().add(rootName, value).build();
+		}
+		try (JsonWriter writer = Json.createWriter(outputStream)) {
+			writer.write(value);
 		}
 	}
 
@@ -118,62 +166,123 @@ public class SerializerJson extends Serializer {
 	}
 
 	/**
-	 * 反序列化JSON流，不包含根元素时自动提取JAXBElement的值
+	 * 反序列化JSON流。
+	 *
+	 * MOXy 对无根JSON（includeJsonRoot=false）无法用 unmarshal(source) 推断目标类型，
+	 * 必须显式传入 declaredType；集合根还需逐项反序列化以保留具体集合类型与元素类型。
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T deserialize(InputStream ipnInputStream, Class<?>... types)  {
-		try {
-			Unmarshaller unmarshaller = this.createUnmarshaller(types);
-			Object object = unmarshaller.unmarshal(ipnInputStream);
-			if (object instanceof JAXBElement) {
-				// 因为不包括头，此处返回的是这个玩意儿
-				return ((JAXBElement<T>) object).getValue();
-			} else {
-				return (T) object;
-			}
-		} catch (JAXBException e) {
+	public <T> T deserialize(InputStream ipnInputStream, Class<?>... types) {
+		try (JsonReader reader = Json.createReader(ipnInputStream)) {
+			return this.deserializeValue(reader.readValue(), types);
+		} catch (Exception e) {
 			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
 	/**
-	 * 反序列化JSON读取器，不包含根元素时自动提取JAXBElement的值
+	 * 反序列化JSON读取器。
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T deserialize(Reader reader, Class<?>... types)  {
-		try {
-			Unmarshaller unmarshaller = this.createUnmarshaller(types);
-			Object object = unmarshaller.unmarshal(reader);
-			if (object instanceof JAXBElement) {
-				// 因为不包括头，此处返回的是这个玩意儿
-				return ((JAXBElement<T>) object).getValue();
-			} else {
-				return (T) object;
-			}
-		} catch (JAXBException e) {
+	public <T> T deserialize(Reader reader, Class<?>... types) {
+		try (JsonReader jsonReader = Json.createReader(reader)) {
+			return this.deserializeValue(jsonReader.readValue(), types);
+		} catch (Exception e) {
 			throw new SerializationException(e.getMessage(), e);
 		}
 	}
 
 	/**
-	 * 反序列化JsonObject，不包含根元素时自动提取JAXBElement的值
+	 * 反序列化JsonObject。
 	 */
-	@SuppressWarnings("unchecked")
-	public <T> T deserialize(JsonObject jsonObject, Class<?>... types)  {
+	public <T> T deserialize(JsonObject jsonObject, Class<?>... types) {
 		try {
-			Unmarshaller unmarshaller = this.createUnmarshaller(types);
-			Object object = unmarshaller.unmarshal(new JsonStructureSource(jsonObject));
-			if (object instanceof JAXBElement) {
-				// 因为不包括头，此处返回的是这个玩意儿
-				return ((JAXBElement<T>) object).getValue();
-			} else {
-				return (T) object;
-			}
-		} catch (JAXBException e) {
+			return this.deserializeValue(jsonObject, types);
+		} catch (Exception e) {
 			throw new SerializationException(e.getMessage(), e);
 		}
+	}
+
+	/**
+	 * 反序列化核心：按输入是数组还是对象、以及声明的根类型是否为集合，分流处理。
+	 *
+	 * @param jsonValue 已解析的JSON值（对象或数组）
+	 * @param types     已知类型；约定 types[0] 为根类型（普通对象或集合），集合时 types[1] 为元素类型
+	 * @return 反序列化结果
+	 * @throws JAXBException JAXB反序列化失败时抛出
+	 */
+	@SuppressWarnings("unchecked")
+	private <T> T deserializeValue(JsonValue jsonValue, Class<?>... types) throws JAXBException {
+		if (jsonValue == null || jsonValue == JsonValue.NULL) {
+			return null;
+		}
+		Unmarshaller unmarshaller = this.createUnmarshaller(types);
+		boolean rootIsCollection = types != null && types.length > 0 && this.isCollectionType(types[0]);
+		if (rootIsCollection && this.isIncludeJsonRoot() && jsonValue instanceof JsonObject) {
+			String rootName = this.resolveXmlInfo(types[0])[1];
+			JsonValue rootValue = ((JsonObject) jsonValue).get(rootName);
+			if (rootValue == null) {
+				throw new SerializationException("JSON root is missing: " + rootName);
+			}
+			jsonValue = rootValue;
+		}
+		if (jsonValue.getValueType() == JsonValue.ValueType.ARRAY || rootIsCollection) {
+			// 集合根：逐项反序列化，保留具体集合类型与元素类型
+			return (T) this.unmarshalCollection(unmarshaller, jsonValue, types);
+		}
+		// 普通对象：显式传入 declaredType，使MOXy在无根时也能定位descriptor
+		Class<?> declaredType = (types != null && types.length > 0) ? types[0] : Object.class;
+		return (T) this.unmarshalValue(unmarshaller, jsonValue, declaredType);
+	}
+
+	/**
+	 * 反序列化集合根：解析数组并逐项构造，填充到具体集合实例中。
+	 */
+	private Collection<Object> unmarshalCollection(Unmarshaller unmarshaller, JsonValue jsonValue,
+			Class<?>... types) throws JAXBException {
+		Class<?> collectionType = (types != null && types.length > 0 && this.isCollectionType(types[0]))
+				? types[0] : ArrayList.class;
+		Class<?> itemType = this.resolveCollectionItemType(types);
+		Collection<Object> collection = this.newCollection(collectionType);
+		if (jsonValue.getValueType() == JsonValue.ValueType.ARRAY) {
+			for (JsonValue item : jsonValue.asJsonArray()) {
+				if (item == null || item == JsonValue.NULL) {
+					continue;
+				}
+				Object value = this.unmarshalValue(unmarshaller, item, itemType);
+				if (value != null) {
+					collection.add(value);
+				}
+			}
+		} else if (jsonValue instanceof JsonObject) {
+			// 声明为集合但输入是单对象，按单个元素处理
+			Object value = this.unmarshalValue(unmarshaller, jsonValue, itemType);
+			if (value != null) {
+				collection.add(value);
+			}
+		}
+		return collection;
+	}
+
+	/**
+	 * 反序列化单个值；itemType为null时回退到无declaredType调用。
+	 */
+	private Object unmarshalValue(Unmarshaller unmarshaller, JsonValue jsonValue, Class<?> itemType)
+			throws JAXBException {
+		if (!(jsonValue instanceof JsonStructure)) {
+			// 基本类型（字符串/数字/布尔）无法用JsonStructureSource承载，跳过
+			return null;
+		}
+		Object object;
+		if (itemType != null) {
+			object = unmarshaller.unmarshal(new JsonStructureSource((JsonStructure) jsonValue), itemType);
+		} else {
+			object = unmarshaller.unmarshal(new JsonStructureSource((JsonStructure) jsonValue));
+		}
+		if (object instanceof JAXBElement) {
+			return ((JAXBElement<?>) object).getValue();
+		}
+		return object;
 	}
 
 	/**
@@ -281,7 +390,7 @@ public class SerializerJson extends Serializer {
 				throw new ValidateException(String.format("property [%s] expected array but was [%s].",
 						element.getWrapper(), jsonValue.getValueType()));
 			}
-			javax.json.JsonArray jsonArray = jsonValue.asJsonArray();
+			jakarta.json.JsonArray jsonArray = jsonValue.asJsonArray();
 			for (JsonValue item : jsonArray) {
 				if (item == JsonValue.NULL) {
 					continue;
@@ -337,7 +446,7 @@ public class SerializerJson extends Serializer {
 				}
 				try {
 					jsonValue.toString();
-					((javax.json.JsonNumber) jsonValue).intValueExact();
+					((jakarta.json.JsonNumber) jsonValue).intValueExact();
 				} catch (ArithmeticException e) {
 					throw new ValidateException(String
 							.format("property [%s] expected integer but value is not exact integer.", propertyName));
@@ -373,7 +482,7 @@ public class SerializerJson extends Serializer {
 				throw new ValidateException(String.format("property [%s] expected enum string but was [%s].",
 						element.getName(), jsonValue.getValueType()));
 			}
-			String strValue = ((javax.json.JsonString) jsonValue).getString();
+			String strValue = ((jakarta.json.JsonString) jsonValue).getString();
 			for (Object enumItem : element.getType().getEnumConstants()) {
 				if (enumItem instanceof Enum<?>) {
 					if (((Enum<?>) enumItem).name().equals(strValue)) {

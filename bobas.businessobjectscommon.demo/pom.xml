@@ -16,12 +16,20 @@
 	</organization>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jakarta.servlet.version>6.1.0</jakarta.servlet.version>
+		<junit.version>4.13.2</junit.version>
 	</properties>
 	<dependencies>
 		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>jakarta.servlet</groupId>
 			<artifactId>jakarta.servlet-api</artifactId>
-			<version>4.0.4</version>
+			<version>${jakarta.servlet.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

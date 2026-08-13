@@ -9,7 +9,9 @@ import java.util.Random;
 import org.colorcoding.ibas.bobas.common.Bytes;
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
+import org.colorcoding.ibas.bobas.common.Condition;
 import org.colorcoding.ibas.bobas.common.Criteria;
+import org.colorcoding.ibas.bobas.common.Conditions;
 import org.colorcoding.ibas.bobas.common.Decimals;
 import org.colorcoding.ibas.bobas.common.IChildCriteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
@@ -17,6 +19,8 @@ import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.OperationResult;
 import org.colorcoding.ibas.bobas.common.SortType;
+import org.colorcoding.ibas.bobas.common.Sort;
+import org.colorcoding.ibas.bobas.common.Sorts;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.data.DataTable;
 import org.colorcoding.ibas.bobas.data.IDataTableColumn;
@@ -46,6 +50,38 @@ import junit.framework.TestCase;
  * 6. DataTable多格式输出（CSV/JSON/XML）
  */
 public class TestCommon extends TestCase {
+
+	public void testCollectionRootJsonRoundTrip() throws IOException {
+		Conditions conditions = new Conditions();
+		Condition condition = new Condition();
+		condition.setAlias("DocEntry");
+		conditions.add(condition);
+		SerializerJson serializer = new SerializerJson();
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		serializer.serialize(conditions, output, Condition.class);
+		String json = output.toString("UTF-8");
+		assertTrue(json.trim().startsWith("["));
+		Conditions result = serializer.deserialize(json, Conditions.class, Condition.class);
+		assertEquals(1, result.size());
+		assertEquals("DocEntry", result.get(0).getAlias());
+
+		serializer.setIncludeJsonRoot(true);
+		output.reset();
+		serializer.serialize(conditions, output, Condition.class);
+		json = output.toString("UTF-8");
+		assertTrue(json.contains("Conditions"));
+		result = serializer.deserialize(json, Conditions.class, Condition.class);
+		assertEquals(1, result.size());
+
+		Sorts sorts = new Sorts();
+		sorts.add(new Sort("DocEntry", SortType.DESCENDING));
+		serializer = new SerializerJson();
+		output.reset();
+		serializer.serialize(sorts, output, Sort.class);
+		Sorts sortResult = serializer.deserialize(output.toString("UTF-8"), Sorts.class, Sort.class);
+		assertEquals(1, sortResult.size());
+		assertEquals("DocEntry", sortResult.get(0).getAlias());
+	}
 
 	// ==================== 辅助方法 ====================
 

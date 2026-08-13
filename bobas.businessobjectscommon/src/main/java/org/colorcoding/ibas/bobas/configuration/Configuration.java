@@ -1,7 +1,5 @@
 package org.colorcoding.ibas.bobas.configuration;
 
-import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
-
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -36,11 +34,6 @@ public class Configuration {
 			synchronized (Configuration.class) {
 				if (instance == null) {
 					String folder = getStartupFolder();
-					if (folder.endsWith("target" + File.separator + "test-classes")
-							|| folder.endsWith("target" + File.separator + "classes")) {
-						// 测试脚本 target\test-classes
-						folder = (new File(folder)).getParentFile().getParentFile().getPath();
-					}
 					String configFile = Files.valueOf(folder, "app.xml").getPath();
 					try {
 						instance = create(configFile);
@@ -48,11 +41,9 @@ public class Configuration {
 						System.err.println(e);
 					}
 					if (instance == null) {
-						// 读取配置文件失败
 						System.err.println(String.format("config: read file's data [%s] faild.", configFile));
 						instance = new ConfigurationManagerFile(configFile);
 					} else {
-						// 读取配置文件成功
 						Logger.log("config: read file's data [%s].", configFile);
 					}
 				}
@@ -138,40 +129,44 @@ public class Configuration {
 	 * @return 启动目录路径
 	 */
 	public static String getStartupFolder() {
-		try {
-			File file = null;
-			// 优先：线程上下文类加载器的类路径根目录
-			if (file == null) {
-				URL url = Thread.currentThread().getContextClassLoader().getResource("");
-				if (url != null) {
-					file = new File(url.toURI());
-				}
+		File file = null;
+		URL url = Thread.currentThread().getContextClassLoader().getResource("");
+		if (url != null && "file".equalsIgnoreCase(url.getProtocol())) {
+			try {
+				file = new File(url.toURI());
+			} catch (URISyntaxException e) {
+				file = new File(url.getPath());
 			}
-			// 回退：ProtectionDomain 获取类加载位置
-			// java -jar 场景下 getResource("") 可能返回 null，此时可获取到 JAR 文件路径
-			if (file == null) {
-				URL codeSourceLocation = Configuration.class.getProtectionDomain().getCodeSource().getLocation();
-				if (codeSourceLocation != null) {
-					file = new File(codeSourceLocation.toURI());
-				}
-			}
-			// 最终回退：当前工作目录
-			if (file == null) {
-				file = new File(System.getProperty("user.dir"));
-			}
-			// 如果是文件（如JAR），取其所在目录
-			if (file.isFile()) {
-				file = file.getParentFile();
-			}
-			// Web容器场景：类路径为 .../WEB-INF/classes，定位到 WEB-INF 目录
-			if (file.getName().equalsIgnoreCase("classes") && file.getParentFile() != null
-					&& file.getParentFile().getName().equalsIgnoreCase("WEB-INF")) {
-				file = file.getParentFile();
-			}
-			return file.getPath();
-		} catch (URISyntaxException e) {
-			throw new BasRuntimeException(e.getMessage(), e);
 		}
+		if (file == null && Configuration.class.getProtectionDomain() != null
+				&& Configuration.class.getProtectionDomain().getCodeSource() != null) {
+			URL location = Configuration.class.getProtectionDomain().getCodeSource().getLocation();
+			if (location != null && "file".equalsIgnoreCase(location.getProtocol())) {
+				try {
+					file = new File(location.toURI());
+				} catch (URISyntaxException e) {
+					file = new File(location.getPath());
+				}
+			}
+		}
+		if (file == null) {
+			file = new File(System.getProperty("user.dir"));
+		}
+		if (file.isFile()) {
+			file = file.getParentFile();
+		}
+		if (file.getName().equalsIgnoreCase("classes") && file.getParentFile() != null
+				&& file.getParentFile().getName().equalsIgnoreCase("WEB-INF")) {
+			file = file.getParentFile();
+		}
+		// 测试/开发环境：target/classes 或 target/test-classes 对应模块目录。
+		if (file.getName().equalsIgnoreCase("classes") || file.getName().equalsIgnoreCase("test-classes")) {
+			File target = file.getParentFile();
+			if (target != null && target.getName().equalsIgnoreCase("target") && target.getParentFile() != null) {
+				file = target.getParentFile();
+			}
+		}
+		return file.getPath();
 	}
 
 	/**
@@ -207,8 +202,8 @@ public class Configuration {
 			create().addConfigValue(CONFIG_ITEM_WORK_FOLDER, path);
 		}
 		File folder = new File(path);
-		if (!folder.exists()) {
-			folder.mkdirs();
+		if ((!folder.exists() && !folder.mkdirs()) || !folder.isDirectory()) {
+			throw new IllegalStateException(Strings.format("configuration: invalid work folder [%s].", folder.getPath()));
 		}
 		return folder.getPath();
 	}
@@ -221,8 +216,8 @@ public class Configuration {
 	public static String getTempFolder() {
 		String tmpFolder = System.getProperty("java.io.tmpdir");
 		File folder = Strings.isNullOrEmpty(tmpFolder) ? new File(getWorkFolder(), "temp") : new File(tmpFolder);
-		if (!folder.exists()) {
-			folder.mkdirs();
+		if ((!folder.exists() && !folder.mkdirs()) || !folder.isDirectory()) {
+			throw new IllegalStateException(Strings.format("configuration: invalid temporary folder [%s].", folder.getPath()));
 		}
 		return folder.getPath();
 	}
@@ -234,8 +229,8 @@ public class Configuration {
 	 */
 	public static String getDataFolder() {
 		File folder = new File(getWorkFolder(), "data");
-		if (!folder.exists()) {
-			folder.mkdirs();
+		if ((!folder.exists() && !folder.mkdirs()) || !folder.isDirectory()) {
+			throw new IllegalStateException(Strings.format("configuration: invalid data folder [%s].", folder.getPath()));
 		}
 		return folder.getPath();
 	}
@@ -247,8 +242,8 @@ public class Configuration {
 	 */
 	public static String getLogFolder() {
 		File folder = new File(getWorkFolder(), "logs");
-		if (!folder.exists()) {
-			folder.mkdirs();
+		if ((!folder.exists() && !folder.mkdirs()) || !folder.isDirectory()) {
+			throw new IllegalStateException(Strings.format("configuration: invalid log folder [%s].", folder.getPath()));
 		}
 		return folder.getPath();
 	}

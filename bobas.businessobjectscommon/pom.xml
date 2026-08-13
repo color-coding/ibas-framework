@@ -14,7 +14,32 @@
     <url>https://colorcoding.org</url>
   </organization>
   <properties>
+    <jakarta.annotation.version>3.0.0</jakarta.annotation.version>
+    <jakarta.xml.bind.version>4.0.2</jakarta.xml.bind.version>
+    <jaxb.runtime.version>4.0.9</jaxb.runtime.version>
+    <junit.version>4.13.2</junit.version>
   </properties>
   <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+      <version>${jakarta.xml.bind.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+      <version>${jaxb.runtime.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+      <version>${jakarta.annotation.version}</version>
+    </dependency>
   </dependencies>
 </project>

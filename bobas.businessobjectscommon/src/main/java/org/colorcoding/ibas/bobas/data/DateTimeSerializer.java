@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.data;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.colorcoding.ibas.bobas.common.DateTimes;
 

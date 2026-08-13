@@ -8,19 +8,25 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.UUID;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 import org.colorcoding.ibas.bobas.common.ConditionOperation;
 import org.colorcoding.ibas.bobas.common.ConditionRelationship;
+import org.colorcoding.ibas.bobas.common.Condition;
+import org.colorcoding.ibas.bobas.common.Conditions;
 import org.colorcoding.ibas.bobas.common.Criteria;
+import org.colorcoding.ibas.bobas.common.ChildCriteria;
+import org.colorcoding.ibas.bobas.common.ChildCriterias;
 import org.colorcoding.ibas.bobas.common.IChildCriteria;
 import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.ISort;
 import org.colorcoding.ibas.bobas.common.SortType;
+import org.colorcoding.ibas.bobas.common.Sort;
+import org.colorcoding.ibas.bobas.common.Sorts;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.db.DbAdapter;
 import org.colorcoding.ibas.bobas.db.SqlPreparedStatement;
@@ -39,6 +45,42 @@ import junit.framework.TestCase;
  * SQL语句生成（DbAdapter）
  */
 public class TestCriteria extends TestCase {
+
+	public void testXmlCollectionRoots() throws IOException {
+		SerializerXml serializer = new SerializerXml();
+		Conditions conditions = new Conditions();
+		Condition condition = new Condition();
+		condition.setAlias("DocEntry");
+		conditions.add(condition);
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		serializer.serialize(conditions, output, false, Condition.class);
+		String xml = output.toString("UTF-8");
+		assertTrue(xml.contains("Conditions"));
+		Conditions conditionResult = serializer.deserialize(
+				new ByteArrayInputStream(output.toByteArray()), Conditions.class, Condition.class);
+		assertEquals(1, conditionResult.size());
+		assertEquals("DocEntry", conditionResult.get(0).getAlias());
+
+		ChildCriterias childCriterias = new ChildCriterias();
+		ChildCriteria childCriteria = new ChildCriteria();
+		childCriteria.setPropertyPath("Items");
+		childCriterias.add(childCriteria);
+		output.reset();
+		serializer.serialize(childCriterias, output, false, ChildCriteria.class);
+		ChildCriterias childResult = serializer.deserialize(
+				new ByteArrayInputStream(output.toByteArray()), ChildCriterias.class, ChildCriteria.class);
+		assertEquals(1, childResult.size());
+		assertEquals("Items", childResult.get(0).getPropertyPath());
+
+		Sorts sorts = new Sorts();
+		sorts.add(new Sort("DocEntry", SortType.DESCENDING));
+		output.reset();
+		serializer.serialize(sorts, output, false, Sort.class);
+		Sorts sortResult = serializer.deserialize(
+				new ByteArrayInputStream(output.toByteArray()), Sorts.class, Sort.class);
+		assertEquals(1, sortResult.size());
+		assertEquals("DocEntry", sortResult.get(0).getAlias());
+	}
 
 	/**
 	 * 创建标准测试用Criteria 包含：条件（带括号）、排序、子项查询

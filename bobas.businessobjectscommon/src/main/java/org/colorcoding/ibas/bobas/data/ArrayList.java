@@ -9,8 +9,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.Decimals;
@@ -23,7 +22,6 @@ import org.colorcoding.ibas.bobas.common.Decimals;
  * @param <E> 元素类型
  */
 @XmlType(name = "ArrayList", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
-@XmlRootElement(name = "ArrayList", namespace = MyConfiguration.NAMESPACE_BOBAS_DATA)
 public class ArrayList<E> extends java.util.ArrayList<E> implements List<E> {
 
 	private static final long serialVersionUID = 721283937680328856L;

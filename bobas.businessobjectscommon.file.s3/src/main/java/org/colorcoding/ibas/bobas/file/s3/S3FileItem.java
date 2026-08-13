@@ -40,10 +40,4 @@ public class S3FileItem extends FileItem {
 		this.loader.accept(outputStream);
 	}
 
-	@Override
-	protected void finalize() throws Throwable {
-		this.loader = null;
-		super.finalize();
-	}
-
 }

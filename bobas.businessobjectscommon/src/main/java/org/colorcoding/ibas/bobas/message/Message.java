@@ -12,7 +12,7 @@ public class Message {
 	public Message() {
 		this.setTime(DateTimes.now());
 		Thread thread = Thread.currentThread();
-		this.setThread(String.format("%s(%s)", thread.getName(), thread.getId()));
+		this.setThread(String.format("%s(%s)", thread.getName(), thread.threadId()));
 	}
 
 	public Message(String message) {

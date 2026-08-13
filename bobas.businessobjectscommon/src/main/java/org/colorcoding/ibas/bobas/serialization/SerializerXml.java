@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -14,15 +15,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -39,6 +42,8 @@ import org.colorcoding.ibas.bobas.serialization.structure.Element;
 import org.colorcoding.ibas.bobas.serialization.structure.ElementRoot;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -86,12 +91,17 @@ public class SerializerXml extends Serializer {
 			knownTypes[0] = object.getClass();
 			System.arraycopy(types, 0, knownTypes, 1, types.length);
 			JAXBContext context = this.getOrCreateContext(knownTypes);
-			Marshaller marshaller = context.createMarshaller();
-			marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");// 编码格式
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);// 是否格式化生成的xml串
-			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);// 是否省略xm头声明信息
-			marshaller.marshal(object, outputStream);
-		} catch (JAXBException e) {
+			if (object instanceof Collection<?>) {
+				// 集合根：JAXB不支持Collection子类作为根直接marshal，用DOM包裹逐项marshal
+				this.serializeCollection(object, context, outputStream, formated, types);
+			} else {
+				Marshaller marshaller = context.createMarshaller();
+				marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");// 编码格式
+				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formated);// 是否格式化生成的xml串
+				marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);// 是否省略xm头声明信息
+				marshaller.marshal(object, outputStream);
+			}
+		} catch (Exception e) {
 			throw new SerializationException(e.getMessage(), e);
 		}
 	}
@@ -99,12 +109,15 @@ public class SerializerXml extends Serializer {
 	@SuppressWarnings("unchecked")
 	public <T> T deserialize(InputSource inputSource, Class<?>... types)  {
 		try {
+			if (types != null && types.length > 0 && this.isCollectionType(types[0])) {
+				return (T) this.deserializeCollection(inputSource, types);
+			}
 			// 反序列化不使用缓存，避免types不含根类型时context缺少descriptor
 			JAXBContext context = JAXBContext.newInstance(types);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			this.configureSecureUnmarshaller(unmarshaller);
 			return (T) unmarshaller.unmarshal(inputSource);
-		} catch (JAXBException e) {
+		} catch (Exception e) {
 			throw new SerializationException(e.getMessage(), e);
 		}
 	}
@@ -113,12 +126,15 @@ public class SerializerXml extends Serializer {
 	@SuppressWarnings("unchecked")
 	public <T> T deserialize(InputStream inputStream, Class<?>... types)  {
 		try {
+			if (types != null && types.length > 0 && this.isCollectionType(types[0])) {
+				return (T) this.deserializeCollection(new InputSource(inputStream), types);
+			}
 			// 反序列化不使用缓存，避免types不含根类型时context缺少descriptor
 			JAXBContext context = JAXBContext.newInstance(types);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			this.configureSecureUnmarshaller(unmarshaller);
 			return (T) unmarshaller.unmarshal(inputStream);
-		} catch (JAXBException e) {
+		} catch (Exception e) {
 			throw new SerializationException(e.getMessage(), e);
 		}
 	}
@@ -127,14 +143,119 @@ public class SerializerXml extends Serializer {
 	@SuppressWarnings("unchecked")
 	public <T> T deserialize(Reader reader, Class<?>... types)  {
 		try {
+			if (types != null && types.length > 0 && this.isCollectionType(types[0])) {
+				return (T) this.deserializeCollection(new InputSource(reader), types);
+			}
 			// 反序列化不使用缓存，避免types不含根类型时context缺少descriptor
 			JAXBContext context = JAXBContext.newInstance(types);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			this.configureSecureUnmarshaller(unmarshaller);
 			return (T) unmarshaller.unmarshal(reader);
-		} catch (JAXBException e) {
+		} catch (Exception e) {
 			throw new SerializationException(e.getMessage(), e);
 		}
+	}
+
+	/**
+	 * 序列化集合根：用DOM包裹逐项marshal，再通过Transformer输出。
+	 *
+	 * JAXB RI将Collection子类视为CollectionBeanInfo，不支持作为根直接marshal；
+	 * 此方法创建一个包裹元素，将每个元素marshal为其子节点。
+	 */
+	@SuppressWarnings("unchecked")
+	private void serializeCollection(Object object, JAXBContext context, OutputStream outputStream, boolean formated,
+			Class<?>... types)
+				throws Exception {
+		Collection<?> collection = (Collection<?>) object;
+		Class<?> itemType = this.resolveCollectionItemType(types);
+		String[] rootInfo = this.resolveXmlInfo(object.getClass());
+		// 构建DOM文档
+		DocumentBuilder db = this.createSecureDocumentBuilder();
+		Document doc = db.newDocument();
+		org.w3c.dom.Element root = doc.createElementNS(rootInfo[0].isEmpty() ? null : rootInfo[0], rootInfo[1]);
+		if (!rootInfo[0].isEmpty()) {
+			root.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns", rootInfo[0]);
+		}
+		doc.appendChild(root);
+		if (!collection.isEmpty()) {
+			Marshaller marshaller = context.createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
+			for (Object item : collection) {
+				if (item == null) {
+					continue;
+				}
+				try {
+					marshaller.marshal(item, root);
+				} catch (JAXBException e) {
+					String[] itemInfo = this.resolveXmlInfo(itemType);
+					JAXBElement<Object> element = new JAXBElement<>(
+							new javax.xml.namespace.QName(itemInfo[0], itemInfo[1]),
+							(Class<Object>) itemType, item);
+					marshaller.marshal(element, root);
+				}
+			}
+		}
+		// 通过Transformer输出，支持格式化
+		TransformerFactory tf = TransformerFactory.newInstance();
+		tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+		try {
+			tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+			tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+		} catch (IllegalArgumentException e) {
+			// Oracle JDK 8 内置 TransformerFactory 不支持此属性，忽略
+		}
+		Transformer transformer = tf.newTransformer();
+		transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+		transformer.setOutputProperty(OutputKeys.ENCODING, XML_FILE_ENCODING);
+		if (formated) {
+			transformer.setOutputProperty(OutputKeys.INDENT, XML_FILE_INDENT);
+			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+		} else {
+			transformer.setOutputProperty(OutputKeys.INDENT, "no");
+		}
+		transformer.transform(new DOMSource(doc), new StreamResult(outputStream));
+	}
+
+	/**
+	 * 反序列化集合根：解析XML为DOM，逐项unmarshal子元素，填充到具体集合实例。
+	 */
+	@SuppressWarnings("unchecked")
+	private <T> T deserializeCollection(InputSource inputSource, Class<?>... types) throws Exception {
+		DocumentBuilder db = this.createSecureDocumentBuilder();
+		Document doc = db.parse(inputSource);
+		org.w3c.dom.Element root = doc.getDocumentElement();
+		Class<?> collectionType = types[0];
+		Class<?> itemType = this.resolveCollectionItemType(types);
+		Collection<Object> collection = this.newCollection(collectionType);
+		// 反序列化不使用缓存，避免types不含根类型时context缺少descriptor
+		JAXBContext context = JAXBContext.newInstance(types);
+		Unmarshaller unmarshaller = context.createUnmarshaller();
+		this.configureSecureUnmarshaller(unmarshaller);
+		NodeList children = root.getChildNodes();
+		for (int i = 0; i < children.getLength(); i++) {
+			Node child = children.item(i);
+			if (child.getNodeType() == Node.ELEMENT_NODE) {
+				Object item = unmarshaller.unmarshal(child, itemType).getValue();
+				if (item != null) {
+					collection.add(item);
+				}
+			}
+		}
+		return (T) collection;
+	}
+
+	/**
+	 * 创建安全的DocumentBuilder，防御XXE攻击。
+	 */
+	private DocumentBuilder createSecureDocumentBuilder() throws ParserConfigurationException {
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		dbf.setNamespaceAware(true);
+		dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+		dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+		dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+		dbf.setXIncludeAware(false);
+		dbf.setExpandEntityReferences(false);
+		return dbf.newDocumentBuilder();
 	}
 
 	public void validate(Schema schema, InputStream data) throws ValidateException {

@@ -1,9 +1,9 @@
 package org.colorcoding.ibas.bobas.logic.common;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.bo.BusinessObject;
@@ -143,7 +143,7 @@ public class BONumbering extends BusinessObject<BONumbering> implements IBOCusto
 		this.setProperty(PROPERTY_SERIESNUMBERINGS, new SeriesNumberings(this));
 	}
 
-	private class SeriesNumberings extends BusinessObjects<BOSeriesNumbering, BONumbering> {
+	private static class SeriesNumberings extends BusinessObjects<BOSeriesNumbering, BONumbering> {
 
 		private static final long serialVersionUID = 1L;
 

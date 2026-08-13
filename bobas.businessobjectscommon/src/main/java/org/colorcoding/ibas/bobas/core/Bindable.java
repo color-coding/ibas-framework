@@ -5,8 +5,8 @@ import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class Bindable extends Serializable implements IBindable, ICloneable {

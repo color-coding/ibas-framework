@@ -1,6 +1,6 @@
 package org.colorcoding.ibas.bobas.test.demo;
 
-import javax.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
 
 import org.colorcoding.ibas.bobas.bo.BusinessObjects;
 

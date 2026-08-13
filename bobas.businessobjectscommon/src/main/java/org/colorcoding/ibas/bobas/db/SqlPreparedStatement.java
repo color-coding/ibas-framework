@@ -25,7 +25,10 @@ public class SqlPreparedStatement extends SqlStatement implements PreparedStatem
 	/**
 	 * 参数项
 	 */
-	protected class Parameter {
+	protected static class Parameter {
+
+		protected Parameter() {
+		}
 
 		/** 目标数据库字段类型 */
 		public DataType targetType;

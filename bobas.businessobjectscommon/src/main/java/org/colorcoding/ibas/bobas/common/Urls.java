@@ -49,8 +49,8 @@ public class Urls {
 			return null;
 		}
 		try {
-			return new URL(url);
-		} catch (MalformedURLException e) {
+			return new URI(url).toURL();
+		} catch (MalformedURLException | URISyntaxException e) {
 			return null;
 		}
 	}

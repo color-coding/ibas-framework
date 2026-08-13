@@ -4,7 +4,7 @@ package org.colorcoding.ibas.bobas.file.s3;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
 import org.colorcoding.ibas.bobas.common.Criteria;
@@ -59,7 +59,7 @@ public class TestS3FileRepository extends TestCase {
 
 		// 设置url后，toUrl返回URL字符串
 		try {
-			item.url = new URL("https://bucket.s3.amazonaws.com/folder/test.txt");
+			item.url = URI.create("https://bucket.s3.amazonaws.com/folder/test.txt").toURL();
 			assertEquals("toUrl should return URL string. ", "https://bucket.s3.amazonaws.com/folder/test.txt",
 					item.toUrl());
 		} catch (Exception e) {
