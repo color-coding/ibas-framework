@@ -39,6 +39,7 @@ import org.colorcoding.ibas.bobas.common.Numbers;
 import org.colorcoding.ibas.bobas.common.Result;
 import org.colorcoding.ibas.bobas.common.SortType;
 import org.colorcoding.ibas.bobas.common.Strings;
+import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.core.FieldedObject;
 import org.colorcoding.ibas.bobas.core.IFieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
@@ -1490,8 +1491,12 @@ public abstract class DbAdapter {
 	 */
 	public String translateException(SQLException exception) {
 		if (exception == null) {
-			return Strings.VALUE_EMPTY;
+			return I18N.prop("msg_bobas_db_unknown_error", SQLException.class.getSimpleName());
 		}
-		return Strings.VALUE_EMPTY;
+		String message = exception.getMessage();
+		if (Strings.isNullOrEmpty(message)) {
+			message = exception.getClass().getSimpleName();
+		}
+		return I18N.prop("msg_bobas_db_unknown_error", message);
 	}
 }

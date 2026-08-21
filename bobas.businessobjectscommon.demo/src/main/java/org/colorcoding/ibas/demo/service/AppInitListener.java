@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
@@ -260,7 +261,8 @@ public class AppInitListener implements ServletContextListener {
 		System.out.println(Strings.format("command: start, %s", command));
 		process = processBuilder.start();
 		// 读取输出（不使用inheritIO，手动读取以避免输出重复或丢失）
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+		try (BufferedReader reader = new BufferedReader(
+				new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
 			while ((line = reader.readLine()) != null) {
 				System.out.println(line);
 			}
