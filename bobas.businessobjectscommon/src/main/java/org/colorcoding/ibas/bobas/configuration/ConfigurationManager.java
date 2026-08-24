@@ -32,7 +32,7 @@ public abstract class ConfigurationManager {
 		this.elementsMap = new ConcurrentHashMap<>(initialCapacity, 1);
 	}
 
-	private Map<String, String> elementsMap;
+	private volatile Map<String, String> elementsMap;
 
 	/**
 	 * 获取全部配置项
@@ -104,6 +104,18 @@ public abstract class ConfigurationManager {
 			return;
 		}
 		this.elementsMap.put(key, value);
+	}
+
+	void replaceConfigValues(Collection<IKeyText> values) {
+		Map<String, String> replacement = new ConcurrentHashMap<>(Math.max(16, values == null ? 0 : values.size()), 1);
+		if (values != null) {
+			for (IKeyText item : values) {
+				if (item != null && item.getKey() != null && item.getText() != null) {
+					replacement.put(item.getKey(), item.getText());
+				}
+			}
+		}
+		this.elementsMap = replacement;
 	}
 
 	private String configSign;

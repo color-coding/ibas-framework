@@ -1,8 +1,10 @@
 package org.colorcoding.ibas.bobas.message;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
@@ -231,7 +233,8 @@ public class MessageRecorder4File extends MessageRecorder {
 				file.createNewFile();
 			}
 			Message message;
-			try (FileWriter fileWriter = new FileWriter(file, true)) {
+			try (OutputStreamWriter fileWriter = new OutputStreamWriter(new FileOutputStream(file, true),
+					StandardCharsets.UTF_8)) {
 				while (!queue.isEmpty()) {
 					message = queue.poll();
 					if (message == null) {

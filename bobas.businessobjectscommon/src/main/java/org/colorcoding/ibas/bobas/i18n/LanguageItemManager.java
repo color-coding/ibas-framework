@@ -226,8 +226,8 @@ public class LanguageItemManager {
 						this.getLanguageItems().put(item.getKey(), item);
 					}
 					if (!items.isEmpty()) {
-						Logger.log(MessageLevel.DEBUG, "i18n: read jar entry [%s] with lang [%s].", entryName,
-								Strings.isNullOrEmpty(langCode) ? "default" : langCode);
+					Logger.log(MessageLevel.DEBUG, "i18n: read jar file [%s], entry [%s] with lang [%s].",
+							jarFile.getName(), entryName, Strings.isNullOrEmpty(langCode) ? "default" : langCode);
 					}
 				} catch (IOException e) {
 					// 单条目异常不影响其他条目
@@ -337,7 +337,7 @@ public class LanguageItemManager {
 		try (InputStream stream = new FileInputStream(file);
 				Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
 			List<LanguageItem> items = this.loadFileContent(reader, langCode);
-			Logger.log("i18n: read file's data [%s] with lang [%s].", file,
+			Logger.log(MessageLevel.DEBUG, "i18n: read file's data [%s] with lang [%s].", file,
 					Strings.isNullOrEmpty(langCode) ? "default" : langCode);
 			return items;
 		} catch (IOException e) {

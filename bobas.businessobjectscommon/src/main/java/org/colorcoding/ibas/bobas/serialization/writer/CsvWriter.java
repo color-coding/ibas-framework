@@ -12,6 +12,7 @@ public class CsvWriter extends Writer {
 
 	protected static final byte[][] CHAR_BYTES = new byte[128][];
 	protected static final int SIGN_INDEX_COLON = 127;
+	protected static final byte[] UTF8_BOM = new byte[] { (byte) 0xEF, (byte) 0xBB, (byte) 0xBF };
 
 	static {
 		CHAR_BYTES['"'] = "\"\"".getBytes();
@@ -45,17 +46,22 @@ public class CsvWriter extends Writer {
 		if (value == null || value.isEmpty()) {
 			return;
 		}
-		if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+		if (value.contains(",") || value.contains("\"") || value.contains("\n") || value.contains("\r")) {
 			outputStream.write(CHAR_BYTES[SIGN_INDEX_COLON]);
-			super.write(outputStream, value);
+			// CSV字段中的换行等控制字符必须保留；基类Writer会跳过控制字符，不能直接调用。
+			outputStream.write(value.replace("\"", "\"\"").getBytes(this.getCharset()));
 			outputStream.write(CHAR_BYTES[SIGN_INDEX_COLON]);
 		} else {
-			super.write(outputStream, value);
+			outputStream.write(value.getBytes(this.getCharset()));
 		}
 	}
 
 	@Override
 	public void writeHeader(OutputStream outputStream) throws IOException {
+		// UTF-8 CSV写入BOM，便于Excel等工具正确识别编码
+		if ("UTF-8".equalsIgnoreCase(this.getCharset())) {
+			outputStream.write(UTF8_BOM);
+		}
 	}
 
 	@Override

@@ -38,8 +38,12 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 			Connection connection = DriverManager.getConnection(dbURL, userName, userPwd);
 			connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 			return connection;
+		} catch (SQLException e) {
+			// 建立连接阶段不会经过 DbTransaction，需要在此处记录并翻译数据库异常。
+			Logger.log(MessageLevel.ERROR, e);
+			throw new BasRuntimeException(this.translateException(e), e);
 		} catch (Exception e) {
-			// 接数据库失败
+			Logger.log(MessageLevel.ERROR, e);
 			throw new BasRuntimeException(e.getMessage(), e);
 		}
 	}
@@ -245,6 +249,10 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 	public String translateException(SQLException exception) {
 		if (exception == null) {
 			return super.translateException(exception);
+		}
+		// JDBC 连接类错误使用 SQLState 08 开头（如 Communications link failure: 08S01）。
+		if (exception.getSQLState() != null && exception.getSQLState().startsWith("08")) {
+			return I18N.prop("msg_bobas_db_connection_failed");
 		}
 		// 沿 getNextException 链查找最具体的错误码（兼容 BatchUpdateException）
 		SQLException effective = exception;

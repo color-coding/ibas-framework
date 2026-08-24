@@ -7,6 +7,9 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Collection;
 
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -98,9 +101,15 @@ public class ConfigurationManagerFile extends ConfigurationManager {
 			try (InputStream stream = new FileInputStream(file)) {
 				JAXBContext context = JAXBContext.newInstance(ConfigurationManagerFile.class);
 				Unmarshaller unmarshaller = context.createUnmarshaller();
-				ConfigurationManagerFile tmpManager = (ConfigurationManagerFile) unmarshaller.unmarshal(stream);
-				for (IKeyText item : tmpManager.getElements()) {
-					this.addConfigValue(item.getKey(), item.getText());
+				XMLInputFactory inputFactory = XMLInputFactory.newFactory();
+				inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+				inputFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+				XMLStreamReader reader = inputFactory.createXMLStreamReader(stream);
+				try {
+					ConfigurationManagerFile tmpManager = (ConfigurationManagerFile) unmarshaller.unmarshal(reader);
+					this.replaceConfigValues(tmpManager.getElements());
+				} finally {
+					reader.close();
 				}
 			}
 		} catch (Exception e) {

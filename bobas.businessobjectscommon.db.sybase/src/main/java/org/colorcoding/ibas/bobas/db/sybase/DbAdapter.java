@@ -15,6 +15,7 @@ import org.colorcoding.ibas.bobas.db.IDbTableLock;
 import org.colorcoding.ibas.bobas.db.MaxValue;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
+import org.colorcoding.ibas.bobas.message.MessageLevel;
 
 public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 
@@ -31,8 +32,11 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 				Logger.log(Strings.format("db adapter: %s", dbURL));
 			}
 			return DriverManager.getConnection(dbURL, userName, userPwd);
+		} catch (SQLException e) {
+			Logger.log(MessageLevel.ERROR, e);
+			throw new BasRuntimeException(this.translateException(e), e);
 		} catch (Exception e) {
-			// 接数据库失败
+			Logger.log(MessageLevel.ERROR, e);
 			throw new BasRuntimeException(e.getMessage(), e);
 		}
 	}
@@ -170,6 +174,9 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 	public String translateException(SQLException exception) {
 		if (exception == null) {
 			return super.translateException(exception);
+		}
+		if (exception.getSQLState() != null && exception.getSQLState().startsWith("08")) {
+			return I18N.prop("msg_bobas_db_connection_failed");
 		}
 		// 沿 getNextException 链查找最具体的错误码（兼容 BatchUpdateException）
 		SQLException effective = exception;

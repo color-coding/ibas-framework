@@ -8,6 +8,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -142,7 +143,8 @@ public class Configuration {
 			File file = null;
 			// 优先：线程上下文类加载器的类路径根目录
 			if (file == null) {
-				URL url = Thread.currentThread().getContextClassLoader().getResource("");
+				ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+				URL url = classLoader == null ? null : classLoader.getResource("");
 				if (url != null) {
 					file = new File(url.toURI());
 				}
@@ -182,7 +184,9 @@ public class Configuration {
 	 * @throws URISyntaxException URL转URI失败
 	 */
 	public static URI getResource(String name) throws URISyntaxException {
-		URL url = Thread.currentThread().getContextClassLoader().getResource(name);
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		URL url = classLoader == null ? Configuration.class.getClassLoader().getResource(name)
+				: classLoader.getResource(name);
 		if (url == null) {
 			return null;
 		}
@@ -258,9 +262,17 @@ public class Configuration {
 	 */
 	public static final String VARIABLE_NAMING_TEMPLATE = "${%s}";
 	/**
-	 * 变量样式，${XXXXXX}
+	 * 变量表达式
+	 * 例如：${Name}。
 	 */
 	public static final String VARIABLE_PATTERN = "\\$\\{([\\!a-zA-Z].*?)\\}";
+	private static final Pattern VARIABLE_PATTERN_COMPILED = Pattern.compile(VARIABLE_PATTERN);
+	/**
+	 * 变量表达式：变量名后可跟一个受限字符串操作。
+	 * 例如：${Name.toLowerCase()}、${Name.replace("a", "b")}。
+	 */
+	public static final String VARIABLE_EXPRESSION_PATTERN = "^\\s*([\\!a-zA-Z][a-zA-Z0-9_-]*)(?:\\.([a-zA-Z][a-zA-Z0-9_]*)(?:\\((.*)\\)|,(.*))?)?\\s*$";
+	private static final Pattern VARIABLE_EXPRESSION_PATTERN_COMPILED = Pattern.compile(VARIABLE_EXPRESSION_PATTERN);
 
 	/**
 	 * 用配置项替换字符中的变量
@@ -272,25 +284,7 @@ public class Configuration {
 		if (Strings.isNullOrEmpty(value)) {
 			return value;
 		}
-		ArrayList<String> names = new ArrayList<>(4);
-		Matcher matcher = Pattern.compile(VARIABLE_PATTERN).matcher(value);
-		while (matcher.find()) {
-			// 带格式名称${}
-			names.add(matcher.group(0));
-		}
-		Object variable;
-		for (String name : names) {
-			variable = create().getConfigValue(name);
-			if (variable == null) {
-				// 不带格式名称
-				variable = create().getConfigValue(name.substring(2, name.length() - 1));
-			}
-			if (variable == null) {
-				continue;
-			}
-			value = value.replace(name, variable == null ? Strings.VALUE_EMPTY : variable.toString());
-		}
-		return value;
+		return applyVariables(value, create().getElements());
 	}
 
 	/**
@@ -304,25 +298,118 @@ public class Configuration {
 		if (value == null || variables == null) {
 			return value;
 		}
-		ArrayList<String> names = new ArrayList<>(8);
-		Matcher matcher = Pattern.compile(VARIABLE_PATTERN).matcher(value);
-		while (matcher.find()) {
-			names.add(matcher.group(0));
-		}
-		String tName;
-		IKeyText variable;
+		ArrayList<IKeyText> items = new ArrayList<>();
 		while (variables.hasNext()) {
-			variable = variables.next();
-			for (String name : names) {
-				// 不带格式名称
-				tName = name.substring(2, name.length() - 1);
-				if (name.equalsIgnoreCase(variable.getKey()) || tName.equalsIgnoreCase(variable.getKey())) {
-					value = value.replace(name, variable.getText() == null ? Strings.VALUE_EMPTY : variable.getText());
-					break;
-				}
+			items.add(variables.next());
+		}
+		Matcher matcher = VARIABLE_PATTERN_COMPILED.matcher(value);
+		StringBuffer result = new StringBuffer();
+		while (matcher.find()) {
+			String replacement = resolveVariableExpression(matcher.group(1), items);
+			matcher.appendReplacement(result, Matcher.quoteReplacement(
+					replacement == null ? matcher.group(0) : replacement));
+		}
+		matcher.appendTail(result);
+		return result.toString();
+	}
+
+	private static String resolveVariableExpression(String expression, Iterable<IKeyText> variables) {
+		Matcher expressionMatcher = VARIABLE_EXPRESSION_PATTERN_COMPILED.matcher(expression);
+		if (!expressionMatcher.matches()) {
+			return null;
+		}
+		String variableName = expressionMatcher.group(1);
+		String operation = expressionMatcher.group(2);
+		String operationArguments = expressionMatcher.group(3);
+		if (operationArguments == null) {
+			operationArguments = expressionMatcher.group(4);
+		}
+		String source = null;
+		boolean found = false;
+		for (IKeyText variable : variables) {
+			if (variable == null) {
+				continue;
+			}
+			String key = variable.getKey();
+			if (key != null && (key.equalsIgnoreCase(variableName)
+					|| key.equalsIgnoreCase(String.format(VARIABLE_NAMING_TEMPLATE, variableName)))) {
+				source = variable.getText();
+				found = true;
+				break;
 			}
 		}
-		return value;
+		if (!found) {
+			return null;
+		}
+		if (source == null) {
+			source = Strings.VALUE_EMPTY;
+		}
+		if (operation == null || operation.isEmpty()) {
+			return source;
+		}
+		if ("toLowerCase".equalsIgnoreCase(operation)) {
+			return source.toLowerCase(Locale.ROOT);
+		}
+		if ("toUpperCase".equalsIgnoreCase(operation)) {
+			return source.toUpperCase(Locale.ROOT);
+		}
+		if ("trim".equalsIgnoreCase(operation)) {
+			return source.trim();
+		}
+		if ("replace".equalsIgnoreCase(operation)) {
+			String[] arguments = parseVariableArguments(operationArguments);
+			return arguments == null ? null : source.replace(arguments[0], arguments[1]);
+		}
+		if ("replaceAll".equalsIgnoreCase(operation) || "replaceFirst".equalsIgnoreCase(operation)) {
+			String[] arguments = parseVariableArguments(operationArguments);
+			if (arguments == null) {
+				return null;
+			}
+			try {
+				return "replaceAll".equalsIgnoreCase(operation) ? source.replaceAll(arguments[0], arguments[1])
+						: source.replaceFirst(arguments[0], arguments[1]);
+			} catch (IllegalArgumentException e) {
+				return null;
+			}
+		}
+		return null;
+	}
+
+	private static String[] parseVariableArguments(String text) {
+		if (text == null) {
+			return null;
+		}
+		text = text.trim();
+		if (text.length() >= 2 && text.charAt(0) == '[' && text.charAt(text.length() - 1) == ']') {
+			text = text.substring(1, text.length() - 1);
+		}
+		ArrayList<String> arguments = new ArrayList<>(2);
+		StringBuilder current = new StringBuilder();
+		boolean quoted = false;
+		char quote = 0;
+		for (int i = 0; i < text.length(); i++) {
+			char character = text.charAt(i);
+			if ((character == '"' || character == '\'') && (!quoted || character == quote)) {
+				if (!quoted) {
+					quoted = true;
+					quote = character;
+				} else {
+					quoted = false;
+				}
+				continue;
+			}
+			if (character == ',' && !quoted) {
+				arguments.add(current.toString().trim());
+				current.setLength(0);
+			} else {
+				current.append(character);
+			}
+		}
+		if (quoted) {
+			return null;
+		}
+		arguments.add(current.toString().trim());
+		return arguments.size() == 2 ? arguments.toArray(new String[0]) : null;
 	}
 
 	/**

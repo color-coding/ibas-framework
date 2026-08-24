@@ -29,8 +29,11 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 				Logger.log(MessageLevel.DEBUG, Strings.format("db adapter: %s", dbURL));
 			}
 			return DriverManager.getConnection(dbURL, userName, userPwd);
+		} catch (SQLException e) {
+			Logger.log(MessageLevel.ERROR, e);
+			throw new BasRuntimeException(this.translateException(e), e);
 		} catch (Exception e) {
-			// 接数据库失败
+			Logger.log(MessageLevel.ERROR, e);
 			throw new BasRuntimeException(e.getMessage(), e);
 		}
 	}
@@ -220,6 +223,9 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 	public String translateException(SQLException exception) {
 		if (exception == null) {
 			return super.translateException(exception);
+		}
+		if (exception.getSQLState() != null && exception.getSQLState().startsWith("08")) {
+			return I18N.prop("msg_bobas_db_connection_failed");
 		}
 		// 沿 getNextException 链查找具体 SQLSTATE（兼容 BatchUpdateException）
 		SQLException effective = exception;
