@@ -630,15 +630,16 @@ public class BOUtilities {
 	 * @param <T>             数据类型
 	 * @param operationResult 操作结果
 	 * @return 数据列表（operationResult为null返回null，有错误时抛出异常）
-	 * @throws BasRuntimeException 操作结果包含错误时抛出
+	 * @throws RuntimeException 操作结果包含运行时错误时原样抛出；其他错误统一封装为 BasRuntimeException
 	 */
 	public static <T> List<T> valueOf(IOperationResult<T> operationResult) {
 		if (operationResult == null) {
 			return null;
 		}
 		if (operationResult.getError() != null) {
-			if (operationResult.getError() instanceof BasRuntimeException) {
-				throw (BasRuntimeException) operationResult.getError();
+			if (operationResult.getError() instanceof RuntimeException) {
+				// 保留具体运行时异常，避免调用方的类型判断、重试和错误处理失效
+				throw (RuntimeException) operationResult.getError();
 			} else {
 				throw new BasRuntimeException(operationResult.getError());
 			}

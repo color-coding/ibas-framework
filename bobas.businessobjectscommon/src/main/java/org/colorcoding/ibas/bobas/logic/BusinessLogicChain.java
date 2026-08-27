@@ -17,6 +17,7 @@ import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DateTime;
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logic.common.BOLogst;
 import org.colorcoding.ibas.bobas.logic.common.BONumbering;
@@ -26,7 +27,6 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.period.IPeriodData;
 import org.colorcoding.ibas.bobas.repository.ITransaction;
-import org.colorcoding.ibas.bobas.rule.BusinessRuleException;
 
 /**
  * 业务逻辑链
@@ -305,9 +305,7 @@ class BusinessLogicChain implements IBusinessLogicChain {
 			DateTime endTime = DateTimes.now();
 			Logger.log(MessageLevel.INFO, "logics chain [%s]: ends at [%s].", this.hashCode(),
 					DateTimes.toString(endTime, DateTimes.FORMAT_TIME));
-		} catch (BusinessRuleException e) {
-			throw e;
-		} catch (BusinessLogicException e) {
+		} catch (BasRuntimeException e) {
 			throw e;
 		} catch (Exception e) {
 			throw new BusinessLogicException(e.getMessage(), e);

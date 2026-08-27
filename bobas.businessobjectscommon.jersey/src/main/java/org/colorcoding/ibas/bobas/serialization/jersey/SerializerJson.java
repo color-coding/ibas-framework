@@ -110,6 +110,8 @@ public class SerializerJson extends Serializer {
 			} else {
 				marshaller.marshal(object, outputStream);
 			}
+		} catch (SerializationException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new SerializationException(e.getMessage(), e);
 		}
@@ -175,6 +177,8 @@ public class SerializerJson extends Serializer {
 	public <T> T deserialize(InputStream ipnInputStream, Class<?>... types) {
 		try (JsonReader reader = Json.createReader(ipnInputStream)) {
 			return this.deserializeValue(reader.readValue(), types);
+		} catch (SerializationException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new SerializationException(e.getMessage(), e);
 		}
@@ -187,6 +191,8 @@ public class SerializerJson extends Serializer {
 	public <T> T deserialize(Reader reader, Class<?>... types) {
 		try (JsonReader jsonReader = Json.createReader(reader)) {
 			return this.deserializeValue(jsonReader.readValue(), types);
+		} catch (SerializationException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new SerializationException(e.getMessage(), e);
 		}
@@ -198,6 +204,8 @@ public class SerializerJson extends Serializer {
 	public <T> T deserialize(JsonObject jsonObject, Class<?>... types) {
 		try {
 			return this.deserializeValue(jsonObject, types);
+		} catch (SerializationException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new SerializationException(e.getMessage(), e);
 		}

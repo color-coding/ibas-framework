@@ -101,6 +101,8 @@ public class SerializerXml extends Serializer {
 				marshaller.setProperty(Marshaller.JAXB_FRAGMENT, false);// 是否省略xm头声明信息
 				marshaller.marshal(object, outputStream);
 			}
+		} catch (SerializationException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new SerializationException(e.getMessage(), e);
 		}
@@ -117,6 +119,8 @@ public class SerializerXml extends Serializer {
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			this.configureSecureUnmarshaller(unmarshaller);
 			return (T) unmarshaller.unmarshal(inputSource);
+		} catch (SerializationException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new SerializationException(e.getMessage(), e);
 		}
@@ -134,6 +138,8 @@ public class SerializerXml extends Serializer {
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			this.configureSecureUnmarshaller(unmarshaller);
 			return (T) unmarshaller.unmarshal(inputStream);
+		} catch (SerializationException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new SerializationException(e.getMessage(), e);
 		}
@@ -151,6 +157,8 @@ public class SerializerXml extends Serializer {
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			this.configureSecureUnmarshaller(unmarshaller);
 			return (T) unmarshaller.unmarshal(reader);
+		} catch (SerializationException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new SerializationException(e.getMessage(), e);
 		}

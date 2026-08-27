@@ -18,6 +18,7 @@ import org.colorcoding.ibas.bobas.data.List;
 import org.colorcoding.ibas.bobas.data.emApprovalStatus;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
 import org.colorcoding.ibas.bobas.logic.common.BOKeysService;
 import org.colorcoding.ibas.bobas.logic.common.BORulesService;
 import org.colorcoding.ibas.bobas.logic.common.BOStorageTagService;
@@ -26,7 +27,6 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.repository.ITransaction;
 import org.colorcoding.ibas.bobas.repository.Transaction;
-import org.colorcoding.ibas.bobas.rule.BusinessRuleException;
 
 /**
  * 业务逻辑基类
@@ -264,9 +264,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 			// 加载被影响的数据
 			try {
 				this.beAffected = this.fetchBeAffected(this.getContract());
-			} catch (BusinessRuleException e) {
-				throw e;
-			} catch (BusinessLogicException e) {
+			} catch (BasRuntimeException e) {
 				throw e;
 			} catch (Exception e) {
 				throw new BusinessLogicException(e.getMessage(), e);
@@ -312,9 +310,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 		// 执行正向逻辑
 		try {
 			this.impact(this.getContract());
-		} catch (BusinessRuleException e) {
-			throw e;
-		} catch (BusinessLogicException e) {
+		} catch (BasRuntimeException e) {
 			throw e;
 		} catch (Exception e) {
 			throw new BusinessLogicException(e.getMessage(), e);
@@ -369,9 +365,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 			// 加载被影响的数据
 			try {
 				this.beAffected = this.fetchBeAffected(this.getContract());
-			} catch (BusinessRuleException e) {
-				throw e;
-			} catch (BusinessLogicException e) {
+			} catch (BasRuntimeException e) {
 				throw e;
 			} catch (Exception e) {
 				throw new BusinessLogicException(e.getMessage(), e);
@@ -396,9 +390,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 		// 执行撤销逻辑
 		try {
 			this.revoke(this.getContract());
-		} catch (BusinessRuleException e) {
-			throw e;
-		} catch (BusinessLogicException e) {
+		} catch (BasRuntimeException e) {
 			throw e;
 		} catch (Exception e) {
 			throw new BusinessLogicException(e.getMessage(), e);
@@ -549,9 +541,7 @@ public abstract class BusinessLogic<L extends IBusinessLogicContract, T extends 
 				Transaction transaction = (Transaction) this.getTransaction();
 				results.addAll(transaction.fetchInCache(boType, criteria));
 			}
-		} catch (BusinessRuleException e) {
-			throw e;
-		} catch (BusinessLogicException e) {
+		} catch (BasRuntimeException e) {
 			throw e;
 		} catch (Exception e) {
 			throw new BusinessLogicException(e.getMessage(), e);
