@@ -36,6 +36,11 @@ public class Configuration {
 			synchronized (Configuration.class) {
 				if (instance == null) {
 					String folder = getStartupFolder();
+					File startupFolder = new File(folder);
+					if (Strings.equalsIgnoreCase(startupFolder.getName(), "target")
+							&& startupFolder.getParentFile() != null) {
+						folder = startupFolder.getParentFile().getPath();
+					}
 					String configFile = Files.valueOf(folder, "app.xml").getPath();
 					try {
 						instance = create(configFile);
@@ -134,7 +139,7 @@ public class Configuration {
 		File file = null;
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		URL url = classLoader == null ? null : classLoader.getResource("");
-		if (url != null && "file".equalsIgnoreCase(url.getProtocol())) {
+		if (url != null && Strings.equalsIgnoreCase("file", url.getProtocol())) {
 			try {
 				file = new File(url.toURI());
 			} catch (URISyntaxException e) {
@@ -144,7 +149,7 @@ public class Configuration {
 		if (file == null && Configuration.class.getProtectionDomain() != null
 				&& Configuration.class.getProtectionDomain().getCodeSource() != null) {
 			URL location = Configuration.class.getProtectionDomain().getCodeSource().getLocation();
-			if (location != null && "file".equalsIgnoreCase(location.getProtocol())) {
+			if (location != null && Strings.equalsIgnoreCase("file", location.getProtocol())) {
 				try {
 					file = new File(location.toURI());
 				} catch (URISyntaxException e) {
@@ -158,16 +163,14 @@ public class Configuration {
 		if (file.isFile()) {
 			file = file.getParentFile();
 		}
-		if (file.getName().equalsIgnoreCase("classes") && file.getParentFile() != null
-				&& file.getParentFile().getName().equalsIgnoreCase("WEB-INF")) {
+		if (Strings.equalsIgnoreCase(file.getName(), "classes") && file.getParentFile() != null
+				&& Strings.equalsIgnoreCase(file.getParentFile().getName(), "WEB-INF")) {
 			file = file.getParentFile();
 		}
-		// 测试/开发环境：target/classes 或 target/test-classes 对应模块目录。
-		if (file.getName().equalsIgnoreCase("classes") || file.getName().equalsIgnoreCase("test-classes")) {
-			File target = file.getParentFile();
-			if (target != null && target.getName().equalsIgnoreCase("target") && target.getParentFile() != null) {
-				file = target.getParentFile();
-			}
+		if ((Strings.equalsIgnoreCase(file.getName(), "classes")
+				|| Strings.equalsIgnoreCase(file.getName(), "test-classes")) && file.getParentFile() != null
+				&& Strings.equalsIgnoreCase(file.getParentFile().getName(), "target")) {
+			file = file.getParentFile();
 		}
 		return file.getPath();
 	}
@@ -343,8 +346,8 @@ public class Configuration {
 				continue;
 			}
 			String key = variable.getKey();
-			if (key != null && (key.equalsIgnoreCase(variableName)
-					|| key.equalsIgnoreCase(String.format(VARIABLE_NAMING_TEMPLATE, variableName)))) {
+			if (Strings.equalsIgnoreCase(key, variableName)
+					|| Strings.equalsIgnoreCase(key, String.format(VARIABLE_NAMING_TEMPLATE, variableName))) {
 				source = variable.getText();
 				found = true;
 				break;
@@ -359,29 +362,29 @@ public class Configuration {
 		if (operation == null || operation.isEmpty()) {
 			return source;
 		}
-		if ("toLowerCase".equalsIgnoreCase(operation)) {
+		if (Strings.equalsIgnoreCase("toLowerCase", operation)) {
 			return source.toLowerCase(Locale.ROOT);
 		}
-		if ("toUpperCase".equalsIgnoreCase(operation)) {
+		if (Strings.equalsIgnoreCase("toUpperCase", operation)) {
 			return source.toUpperCase(Locale.ROOT);
 		}
-		if ("trim".equalsIgnoreCase(operation)) {
+		if (Strings.equalsIgnoreCase("trim", operation)) {
 			return source.trim();
 		}
-		if ("replace".equalsIgnoreCase(operation)) {
+		if (Strings.equalsIgnoreCase("replace", operation)) {
 			String[] arguments = parseVariableArguments(operationArguments);
 			if (arguments == null || arguments.length != 2) {
 				return null;
 			}
 			return source.replace(arguments[0], arguments[1]);
 		}
-		if ("replaceAll".equalsIgnoreCase(operation) || "replaceFirst".equalsIgnoreCase(operation)) {
+		if (Strings.equalsIgnoreCase("replaceAll", operation) || Strings.equalsIgnoreCase("replaceFirst", operation)) {
 			String[] arguments = parseVariableArguments(operationArguments);
 			if (arguments == null || arguments.length != 2) {
 				return null;
 			}
 			try {
-				if ("replaceAll".equalsIgnoreCase(operation)) {
+				if (Strings.equalsIgnoreCase("replaceAll", operation)) {
 					return source.replaceAll(arguments[0], arguments[1]);
 				}
 				return source.replaceFirst(arguments[0], arguments[1]);

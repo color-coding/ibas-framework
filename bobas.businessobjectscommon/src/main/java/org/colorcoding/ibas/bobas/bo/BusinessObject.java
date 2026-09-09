@@ -132,7 +132,6 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	@Override
 	public String getIdentifiers() {
 		String boCode = null;
-		StringBuilder stringBuilder = new StringBuilder(96);
 		if (this instanceof IBOStorageTag) {
 			IBOStorageTag tagBO = (IBOStorageTag) this;
 			boCode = tagBO.getObjectCode();
@@ -142,35 +141,15 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 		if (boCode == null || boCode.isEmpty()) {
 			return super.toString();
 		}
-		stringBuilder.append("{");
-		stringBuilder.append("[");
-		stringBuilder.append(boCode);
-		stringBuilder.append("]");
-		stringBuilder.append(".");
+		BOIdentifierBuilder builder = BOIdentifierBuilder.create().objectCode(boCode);
 		if (this instanceof IBOMasterData) {
-			stringBuilder.append("[");
-			stringBuilder.append(IBOMasterData.MASTER_PRIMARY_KEY_NAME);
-			stringBuilder.append(" ");
-			stringBuilder.append("=");
-			stringBuilder.append(" ");
-			stringBuilder.append(((IBOMasterData) this).getCode());
-			stringBuilder.append("]");
+			builder.property(IBOMasterData.MASTER_PRIMARY_KEY_NAME, ((IBOMasterData) this).getCode());
 		} else {
 			for (IPropertyInfo<?> property : this.properties().where(c -> c.isPrimaryKey())) {
-				if (stringBuilder.length() > boCode.length() + 4) {
-					stringBuilder.append("&");
-				}
-				stringBuilder.append("[");
-				stringBuilder.append(property.getName());
-				stringBuilder.append(" ");
-				stringBuilder.append("=");
-				stringBuilder.append(" ");
-				stringBuilder.append(Strings.valueOf(this.getProperty(property)));
-				stringBuilder.append("]");
+				builder.property(property, this.getProperty(property));
 			}
 		}
-		stringBuilder.append("}");
-		return stringBuilder.toString();
+		return builder.build();
 	}
 
 	@Override

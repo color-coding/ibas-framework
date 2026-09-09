@@ -50,6 +50,11 @@ public class Criteria extends Serializable implements ICriteria {
 		}
 		if (value.startsWith("{[") && value.endsWith("]}")) {
 			// 对象识别码
+			if (!value.contains("].[")) {
+				Criteria criteria = new Criteria();
+				criteria.setBusinessObject(value.substring(2, value.length() - 2));
+				return criteria;
+			}
 			return fromIdentifiers(value);
 		}
 		return null;

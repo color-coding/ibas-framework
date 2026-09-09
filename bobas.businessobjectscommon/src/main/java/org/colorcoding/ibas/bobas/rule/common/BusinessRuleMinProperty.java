@@ -2,6 +2,7 @@ package org.colorcoding.ibas.bobas.rule.common;
 
 import java.util.Map;
 
+import org.colorcoding.ibas.bobas.bo.BOIdentifierBuilder;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
@@ -19,7 +20,6 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleException;
 public class BusinessRuleMinProperty<T extends Comparable<?>> extends BusinessRuleCommon {
 
 	protected BusinessRuleMinProperty() {
-		this.setName(I18N.prop("msg_bobas_business_rule_min_property"));
 	}
 
 	/**
@@ -67,12 +67,14 @@ public class BusinessRuleMinProperty<T extends Comparable<?>> extends BusinessRu
 				continue;
 			}
 			if (entry.getValue() == null) {
-				throw new BusinessRuleException(I18N.prop("msg_bobas_business_rule_value_required", entry.getKey().getName()));
+				throw new BusinessRuleException(I18N.prop("msg_bobas_business_rule_value_required",
+						BOIdentifierBuilder.create(context.getSource()).property(entry.getKey()).build()));
 			}
 			value = (T) entry.getValue();
 			if (minValue.compareTo(value) > 0) {
-				throw new BusinessRuleException(I18N.prop("msg_bobas_business_rule_min_property_error", entry.getKey().getName(),
-						this.getMinProperty().getName()));
+				throw new BusinessRuleException(I18N.prop("msg_bobas_business_rule_min_property_error",
+						BOIdentifierBuilder.create(context.getSource()).property(entry.getKey()).build(),
+						BOIdentifierBuilder.create(context.getSource()).property(this.getMinProperty()).build()));
 			}
 		}
 	}

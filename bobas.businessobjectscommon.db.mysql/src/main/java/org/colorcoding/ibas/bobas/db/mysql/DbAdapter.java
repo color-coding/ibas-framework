@@ -29,7 +29,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 				timeZone = "UTC";
 			}
 			String dbURL = String.format(
-					"jdbc:mysql://%s/%s?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=%s&useServerPrepStmts=true&cachePrepStmts=true",
+					"jdbc:mysql://%s/%s?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=%s&useServerPrepStmts=false&cachePrepStmts=true&prepStmtCacheSize=250&prepStmtCacheSqlLimit=2048",
 					server, dbName, java.net.URLEncoder.encode(timeZone, "UTF-8"));
 			if (MyConfiguration.isDebugMode()) {
 				Logger.log(MessageLevel.DEBUG,
