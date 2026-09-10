@@ -37,10 +37,10 @@ public class Configuration {
 			synchronized (Configuration.class) {
 				if (instance == null) {
 					String folder = getStartupFolder();
-					if (folder.endsWith("target" + File.separator + "test-classes")
-							|| folder.endsWith("target" + File.separator + "classes")) {
-						// 测试脚本 target\test-classes
-						folder = (new File(folder)).getParentFile().getParentFile().getPath();
+					File startupFolder = new File(folder);
+					if (Strings.equalsIgnoreCase(startupFolder.getName(), "target")
+							&& startupFolder.getParentFile() != null) {
+						folder = startupFolder.getParentFile().getPath();
 					}
 					String configFile = Files.valueOf(folder, "app.xml").getPath();
 					try {
@@ -166,8 +166,13 @@ public class Configuration {
 				file = file.getParentFile();
 			}
 			// Web容器场景：类路径为 .../WEB-INF/classes，定位到 WEB-INF 目录
-			if (file.getName().equalsIgnoreCase("classes") && file.getParentFile() != null
-					&& file.getParentFile().getName().equalsIgnoreCase("WEB-INF")) {
+			if (Strings.equalsIgnoreCase(file.getName(), "classes") && file.getParentFile() != null
+					&& Strings.equalsIgnoreCase(file.getParentFile().getName(), "WEB-INF")) {
+				file = file.getParentFile();
+			}
+			if ((Strings.equalsIgnoreCase(file.getName(), "classes")
+					|| Strings.equalsIgnoreCase(file.getName(), "test-classes")) && file.getParentFile() != null
+					&& Strings.equalsIgnoreCase(file.getParentFile().getName(), "target")) {
 				file = file.getParentFile();
 			}
 			return file.getPath();

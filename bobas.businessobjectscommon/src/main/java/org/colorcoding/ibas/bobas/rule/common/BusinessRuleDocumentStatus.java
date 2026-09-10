@@ -7,7 +7,6 @@ import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.emDocumentStatus;
 import org.colorcoding.ibas.bobas.data.emYesNo;
-import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleCollection;
 
 /**
@@ -21,7 +20,6 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCollection;
 public class BusinessRuleDocumentStatus extends BusinessRuleCollection {
 
 	protected BusinessRuleDocumentStatus() {
-		this.setName(I18N.prop("msg_bobas_business_rule_element_status"));
 		this.setAffectedInSilent(true);
 	}
 

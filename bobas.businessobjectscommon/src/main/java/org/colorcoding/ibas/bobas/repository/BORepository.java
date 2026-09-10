@@ -14,6 +14,7 @@ import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logic.BusinessLogicsManager;
 import org.colorcoding.ibas.bobas.logic.IBusinessLogicChain;
 import org.colorcoding.ibas.bobas.logic.IBusinessLogicContract;
+import org.colorcoding.ibas.bobas.message.Logger;
 import org.colorcoding.ibas.bobas.serialization.ISerializer;
 import org.colorcoding.ibas.bobas.serialization.SerializerManager;
 
@@ -134,6 +135,7 @@ public abstract class BORepository extends Repository {
 			}
 			return operationResult;
 		} catch (Exception e) {
+			Logger.log(e);
 			return new OperationResult<>(e);
 		}
 	}
@@ -221,6 +223,7 @@ public abstract class BORepository extends Repository {
 					e.addSuppressed(e1);
 				}
 			}
+			Logger.log(e);
 			return new OperationResult<>(e);
 		}
 	}
