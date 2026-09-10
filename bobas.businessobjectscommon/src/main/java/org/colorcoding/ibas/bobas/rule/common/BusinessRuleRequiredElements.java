@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.colorcoding.ibas.bobas.bo.IBOTagDeleted;
 import org.colorcoding.ibas.bobas.bo.IBusinessObjects;
+import org.colorcoding.ibas.bobas.bo.BOIdentifierBuilder;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.emYesNo;
 import org.colorcoding.ibas.bobas.i18n.I18N;
@@ -23,7 +24,6 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleException;
 public class BusinessRuleRequiredElements extends BusinessRuleCommon {
 
 	protected BusinessRuleRequiredElements() {
-		this.setName(I18N.prop("msg_bobas_business_rule_required_elements"));
 	}
 
 	/**
@@ -56,28 +56,30 @@ public class BusinessRuleRequiredElements extends BusinessRuleCommon {
 			}
 		}
 		for (Map.Entry<IPropertyInfo<?>, Object> entry : context.getInputValues().entrySet()) {
+			String property = BOIdentifierBuilder.create(context.getSource())
+					.property(entry.getKey()).build();
 			if (entry.getValue() == null) {
 				throw new BusinessRuleException(
-						I18N.prop("msg_bobas_business_rule_required_elements_error", entry.getKey().getName()));
+						I18N.prop("msg_bobas_business_rule_required_elements_error", property));
 			}
 			Class<?> valueType = entry.getValue().getClass();
 			if (valueType.isArray()) {
 				// 数组
 				if (Array.getLength(entry.getValue()) == 0)
 					throw new BusinessRuleException(
-							I18N.prop("msg_bobas_business_rule_required_elements_error", entry.getKey().getName()));
+							I18N.prop("msg_bobas_business_rule_required_elements_error", property));
 			} else if (entry.getValue() instanceof IBusinessObjects<?, ?>) {
 				// 是业务对象集合，非删除的
 				IBusinessObjects<?, ?> objects = (IBusinessObjects<?, ?>) entry.getValue();
 				if (objects.where(c -> c.isSavable() == true && c.isDeleted() == false).size() == 0)
 					throw new BusinessRuleException(
-							I18N.prop("msg_bobas_business_rule_required_elements_error", entry.getKey().getName()));
+							I18N.prop("msg_bobas_business_rule_required_elements_error", property));
 			} else if (entry.getValue() instanceof Collection<?>) {
 				// 是集合
 				Collection<?> collection = (Collection<?>) entry.getValue();
 				if (collection.isEmpty())
 					throw new BusinessRuleException(
-							I18N.prop("msg_bobas_business_rule_required_elements_error", entry.getKey().getName()));
+							I18N.prop("msg_bobas_business_rule_required_elements_error", property));
 			}
 		}
 	}

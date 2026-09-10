@@ -6,7 +6,6 @@ import org.colorcoding.ibas.bobas.common.Decimals;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.List;
-import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 
 /**
@@ -20,7 +19,6 @@ import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
 public class BusinessRuleSummation extends BusinessRuleCommon {
 
 	protected BusinessRuleSummation() {
-		this.setName(I18N.prop("msg_bobas_business_rule_summation"));
 	}
 
 	/**
