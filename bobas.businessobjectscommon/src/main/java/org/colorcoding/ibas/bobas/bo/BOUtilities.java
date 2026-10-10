@@ -204,7 +204,7 @@ public class BOUtilities {
 			if (value1.getClass() != value2.getClass()) {
 				return false;
 			}
-			if (value1 != value2 && value1.equals(value2)) {
+			if (value1 != value2 && !value1.equals(value2)) {
 				return false;
 			}
 		}
@@ -434,7 +434,7 @@ public class BOUtilities {
 	@SuppressWarnings("unchecked")
 	public static <P> P propertyValue(IBusinessObject bo, String propertyName) {
 		Objects.requireNonNull(propertyName);
-		if (Strings.indexOf(propertyName, ".") > 1) {
+		if (Strings.indexOf(propertyName, ".") > 0) {
 			// 属性是路径
 			String property = propertyName.split("\\.")[0];
 			Object value = propertyValue(bo, property);
@@ -460,11 +460,11 @@ public class BOUtilities {
 				}
 				return (P) cValues.toArray();
 			} else if (value instanceof IBusinessObject) {
-				return propertyValue((IBusinessObject) value, propertyName.split("\\.")[1]);
+				return propertyValue((IBusinessObject) value, propertyName.substring(property.length() + 1));
 			} else {
 				return (P) value;
 			}
-		} else if (Strings.indexOf(propertyName, "[") > 1
+		} else if (Strings.indexOf(propertyName, "[") > 0
 				&& Strings.indexOf(propertyName, "]") == propertyName.length() - 1) {
 			// 数组索引
 			String property = propertyName.split("\\[")[0];

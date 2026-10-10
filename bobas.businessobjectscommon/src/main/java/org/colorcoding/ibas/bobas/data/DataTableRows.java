@@ -58,6 +58,6 @@ public class DataTableRows extends ArrayList<IDataTableRow> implements IDataTabl
 
 	@Override
 	public void ensureCapacity(int capacity) {
-		((java.util.ArrayList<?>) this).ensureCapacity(capacity);
+		super.ensureCapacity(capacity);
 	}
 }

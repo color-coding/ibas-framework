@@ -1,6 +1,7 @@
 package org.colorcoding.ibas.bobas.expression;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.colorcoding.ibas.bobas.bo.BOUtilities;
@@ -94,42 +95,26 @@ public class BOJudgmentLink extends JudgmentLink {
 			// 不能识别的对象
 			return values;
 		}
-		String property = null;
-		if (propertys.length == 1) {
-			// 最后一个属性
-			property = propertys[0];
-			IPropertyInfo<?> propertyInfo = BOUtilities.propertyInfo(bo, property);
-			if (propertyInfo == null) {
-				// 未找到属性
-				Logger.log(MessageLevel.WARN, "not found %s property %s.", bo, property);
-			} else {
-				values.add(bo);
-			}
+		String property = propertys[0];
+		IPropertyInfo<?> propertyInfo = BOUtilities.propertyInfo(bo, property);
+		if (propertyInfo == null) {
+			Logger.log(MessageLevel.WARN, "not found %s property %s.", bo, property);
 			return values;
 		}
-		// 获取属性路径的值
-		for (int i = 0; i < propertys.length - 1; i++) {
-			property = propertys[i];
-			IPropertyInfo<?> propertyInfo = BOUtilities.propertyInfo(bo, property);
-			if (propertyInfo == null) {
-				// 未找到属性
-				Logger.log(MessageLevel.WARN, "not found %s property %s.", bo, property);
-				break;
+		if (propertys.length == 1) {
+			// 返回最终属性所属的对象，供判断链读取该属性。
+			values.add(bo);
+			return values;
+		}
+		// 每层只消费一个路径段，并在子对象上继续解析剩余路径。
+		String[] lasts = Arrays.copyOfRange(propertys, 1, propertys.length);
+		Object value = BOUtilities.propertyValue(bo, propertyInfo);
+		if (value instanceof IBusinessObjects<?, ?>) {
+			for (IBusinessObject item : (IBusinessObjects<?, ?>) value) {
+				values.addAll(this.getValues(item, lasts));
 			}
-			String[] lasts = new String[propertys.length - i - 1];
-			for (int j = 0; j < lasts.length; j++) {
-				lasts[j] = propertys[i + j + 1];
-			}
-			if (BOUtilities.propertyValue(bo, property) instanceof IBusinessObjects<?, ?>) {
-				// 值是业务对象列表
-				IBusinessObjects<?, ?> boList = BOUtilities.propertyValue(bo, property);
-				for (IBusinessObject item : boList) {
-					values.addAll(this.getValues(item, lasts));
-				}
-			} else if (BOUtilities.propertyValue(bo, property) instanceof IBusinessObject) {
-				// 值是对象
-				values.add(BOUtilities.propertyValue(bo, property));
-			}
+		} else if (value instanceof IBusinessObject) {
+			values.addAll(this.getValues((IBusinessObject) value, lasts));
 		}
 		return values;
 	}
