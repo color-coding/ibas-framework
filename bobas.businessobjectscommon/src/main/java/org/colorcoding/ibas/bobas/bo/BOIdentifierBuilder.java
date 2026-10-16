@@ -12,8 +12,9 @@ import org.colorcoding.ibas.bobas.core.IPropertyInfo;
  * 业务对象引用构建器。
  *
  * <p>
- * 支持生成带属性值的业务对象标识，以及用于消息描述的无值属性引用：
- * {@code {[ObjectCode].[Property = Value]}} 和 {@code {[ObjectCode].[Property]}}。
+ * 支持生成业务对象标识 {@code {[ObjectCode].[Property = Value]}}、
+ * 无值对象属性引用 {@code {[ObjectCode].[Property]}}，
+ * 以及用于消息翻译的属性引用 {@code {property: Type.Property}}。
  * </p>
  */
 public final class BOIdentifierBuilder {
@@ -44,6 +45,36 @@ public final class BOIdentifierBuilder {
 			throw new IllegalArgumentException("Argument [bo] can not be null.");
 		}
 		return create().objectCode(objectCodeOf(bo));
+	}
+
+	/**
+	 * 创建用于消息翻译的对象类型引用，与业务对象编码无关。
+	 *
+	 * @param bo 业务对象
+	 * @return 格式为 {@code {object: Type}} 的对象类型引用
+	 */
+	public static String objectReference(IBusinessObject bo) {
+		if (bo == null) {
+			throw new IllegalArgumentException("Argument [bo] can not be null.");
+		}
+		return String.format("{object: %s}", bo.getClass().getSimpleName());
+	}
+
+	/**
+	 * 创建用于消息翻译的属性引用，与业务对象编码无关。
+	 *
+	 * @param bo       属性所属的业务对象
+	 * @param property 属性信息
+	 * @return 格式为 {@code {property: Type.Property}} 的属性引用
+	 */
+	public static String propertyReference(IBusinessObject bo, IPropertyInfo<?> property) {
+		if (bo == null) {
+			throw new IllegalArgumentException("Argument [bo] can not be null.");
+		}
+		if (property == null) {
+			throw new IllegalArgumentException("Argument [property] can not be null.");
+		}
+		return String.format("{property: %s.%s}", bo.getClass().getSimpleName(), property.getName());
 	}
 
 	/**

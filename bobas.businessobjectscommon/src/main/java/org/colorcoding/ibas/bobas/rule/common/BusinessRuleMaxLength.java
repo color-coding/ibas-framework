@@ -4,9 +4,7 @@ import java.util.Map;
 
 import org.colorcoding.ibas.bobas.bo.BOIdentifierBuilder;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
-import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
-import org.colorcoding.ibas.bobas.rule.BusinessRuleException;
 
 /**
  * 业务规则-最大字符长度
@@ -55,9 +53,9 @@ public class BusinessRuleMaxLength extends BusinessRuleCommon {
 				continue;
 			}
 			if (String.valueOf(entry.getValue()).length() > this.getMaxLength()) {
-				throw new BusinessRuleException(I18N.prop("msg_bobas_business_rule_max_length_error",
-						BOIdentifierBuilder.create(context.getSource()).property(entry.getKey()).build(),
-						entry.getValue(), this.getMaxLength()));
+				throw this.createException(context.getSource(), "msg_bobas_business_rule_max_length_error",
+						BOIdentifierBuilder.propertyReference(context.getSource(), entry.getKey()),
+						entry.getValue(), this.getMaxLength());
 			}
 		}
 	}

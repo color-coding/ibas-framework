@@ -77,8 +77,11 @@ class BusinessRules implements IBusinessRules {
 
 	@Override
 	public final void execute(IBusinessObject bo, IPropertyInfo<?>... properties) throws BusinessRuleException {
+		if (properties == null) {
+			properties = new IPropertyInfo<?>[0];
+		}
 		ArrayList<IBusinessRule> doRules = new ArrayList<>(this.getRules().size());
-		if (properties == null || properties.length == 0) {
+		if (properties.length == 0) {
 			// 未指定执行属性，全部执行
 			doRules.addAll(this.getRules());
 		} else {

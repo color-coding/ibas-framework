@@ -4,9 +4,7 @@ import java.util.Map;
 
 import org.colorcoding.ibas.bobas.bo.BOIdentifierBuilder;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
-import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.rule.BusinessRuleCommon;
-import org.colorcoding.ibas.bobas.rule.BusinessRuleException;
 
 /**
  * 业务规则-最大值检查
@@ -61,14 +59,14 @@ public class BusinessRuleMaxValue<T extends Comparable<?>> extends BusinessRuleC
 		Comparable<T> maxValue = (Comparable<T>) this.getMaxValue();
 		for (Map.Entry<IPropertyInfo<?>, Object> entry : context.getInputValues().entrySet()) {
 			if (entry.getValue() == null) {
-				throw new BusinessRuleException(I18N.prop("msg_bobas_business_rule_value_required",
-						BOIdentifierBuilder.create(context.getSource()).property(entry.getKey()).build()));
+				throw this.createException(context.getSource(), "msg_bobas_business_rule_required_error",
+						BOIdentifierBuilder.propertyReference(context.getSource(), entry.getKey()));
 			}
 			value = (T) entry.getValue();
 			if (maxValue.compareTo(value) < 0) {
-				throw new BusinessRuleException(I18N.prop("msg_bobas_business_rule_max_value_error",
-						BOIdentifierBuilder.create(context.getSource()).property(entry.getKey()).build(),
-						value, this.getMaxValue()));
+				throw this.createException(context.getSource(), "msg_bobas_business_rule_max_value_error",
+						BOIdentifierBuilder.propertyReference(context.getSource(), entry.getKey()),
+						value, this.getMaxValue());
 			}
 		}
 
