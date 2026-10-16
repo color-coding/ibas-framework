@@ -17,6 +17,7 @@ import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
 import org.colorcoding.ibas.bobas.data.ArrayList;
 import org.colorcoding.ibas.bobas.data.DateTime;
+import org.colorcoding.ibas.bobas.exception.BasRuntimeException;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.logic.common.BOLogst;
 import org.colorcoding.ibas.bobas.logic.common.BONumbering;
@@ -26,7 +27,6 @@ import org.colorcoding.ibas.bobas.message.MessageLevel;
 import org.colorcoding.ibas.bobas.organization.IUser;
 import org.colorcoding.ibas.bobas.period.IPeriodData;
 import org.colorcoding.ibas.bobas.repository.ITransaction;
-import org.colorcoding.ibas.bobas.rule.BusinessRuleException;
 
 /**
  * 业务逻辑链
@@ -126,6 +126,8 @@ class BusinessLogicChain implements IBusinessLogicChain {
 
 	private ArrayList<Class<?>> skipContractTypes;
 
+	private ArrayList<Class<?>> localSkipContractTypes;
+
 	public final ArrayList<Class<?>> getSkipContractTypes() {
 		if (this.skipContractTypes == null) {
 			this.skipContractTypes = new ArrayList<>();
@@ -139,7 +141,25 @@ class BusinessLogicChain implements IBusinessLogicChain {
 
 	@Override
 	public void addSkipLogics(Class<?> contractType) {
-		this.getSkipContractTypes().add(contractType);
+		this.addSkipLogics(contractType, true);
+	}
+
+	@Override
+	public void addSkipLogics(Class<?> contractType, boolean recursive) {
+		if (recursive) {
+			this.getSkipContractTypes().add(contractType);
+		} else {
+			if (this.localSkipContractTypes == null) {
+				this.localSkipContractTypes = new ArrayList<>();
+			}
+			this.localSkipContractTypes.add(contractType);
+		}
+	}
+
+	private boolean isSkipped(IBusinessLogicContract contract) {
+		return this.getSkipContractTypes().contains(c -> c.isInstance(contract))
+				|| (this.localSkipContractTypes != null
+						&& this.localSkipContractTypes.contains(c -> c.isInstance(contract)));
 	}
 
 	/**
@@ -155,7 +175,7 @@ class BusinessLogicChain implements IBusinessLogicChain {
 			}
 			// 跳过设置的契约逻辑
 			if (logic.getContract() != null) {
-				if (this.getSkipContractTypes().contains(c -> c.isInstance(logic.getContract()))) {
+				if (this.isSkipped(logic.getContract())) {
 					Logger.log(MessageLevel.DEBUG, BusinessLogic.MSG_LOGICS_SKIP_LOGIC_EXECUTION,
 							logic.getClass().getName(), "Skipped", "true");
 					continue;
@@ -178,7 +198,7 @@ class BusinessLogicChain implements IBusinessLogicChain {
 			}
 			// 跳过设置的契约逻辑
 			if (logic.getContract() != null) {
-				if (this.getSkipContractTypes().contains(c -> c.isInstance(logic.getContract()))) {
+				if (this.isSkipped(logic.getContract())) {
 					Logger.log(MessageLevel.DEBUG, BusinessLogic.MSG_LOGICS_SKIP_LOGIC_EXECUTION,
 							logic.getClass().getName(), "Skipped", "true");
 					continue;
@@ -305,9 +325,7 @@ class BusinessLogicChain implements IBusinessLogicChain {
 			DateTime endTime = DateTimes.now();
 			Logger.log(MessageLevel.INFO, "logics chain [%s]: ends at [%s].", this.hashCode(),
 					DateTimes.toString(endTime, DateTimes.FORMAT_TIME));
-		} catch (BusinessRuleException e) {
-			throw e;
-		} catch (BusinessLogicException e) {
+		} catch (BasRuntimeException e) {
 			throw e;
 		} catch (Exception e) {
 			throw new BusinessLogicException(e.getMessage(), e);
@@ -544,6 +562,7 @@ class BusinessLogicChain implements IBusinessLogicChain {
 		this.triggerCopyLogics = null;
 		this.parentChain = null;
 		this.skipContractTypes = null;
+		this.localSkipContractTypes = null;
 	}
 
 }

@@ -462,7 +462,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 						if (oldValue == null) {
 							oldValue = (P) property.getDefaultValue();
 						}
-						if (oldValue == null || value == null || !oldValue.equals(value)) {
+						if (!Objects.equals(oldValue, value == null ? property.getDefaultValue() : value)) {
 							this.userFields.put(property, value);
 							this.getModifiedProperties().add(property);
 							this.markDirty();
@@ -482,7 +482,7 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	}
 
 	public synchronized final IUserFields getUserFields() {
-		if (this.userFields != null) {
+		if (this.userFields != null || this instanceof IBOUserFields) {
 			return new UserFields(this);
 		}
 		return UserFields.EMPTY_DATA;

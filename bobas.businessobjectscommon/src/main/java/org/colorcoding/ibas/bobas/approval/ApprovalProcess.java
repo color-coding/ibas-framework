@@ -689,8 +689,8 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	private class BORepository4Approval extends BORepositoryService {
 
 		public BORepository4Approval() {
-			// 跳过审批契约
-			this.addSkipLogics(IBOApprovalContract.class);
+			// 仅跳过当前审批数据的审批契约，关联单据仍需执行自身审批
+			this.addSkipLogics(IBOApprovalContract.class, false);
 		}
 
 		public void toSave(IApprovalData data) throws Exception {

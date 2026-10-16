@@ -38,6 +38,14 @@ public interface IBusinessLogicChain extends AutoCloseable {
 	void addSkipLogics(Class<?> contractType);
 
 	/**
+	 * 添加跳过的逻辑，并指定是否传递给被影响对象的逻辑链
+	 *
+	 * @param contractType 逻辑对应的契约类型
+	 * @param recursive 是否同时跳过被影响对象的逻辑
+	 */
+	void addSkipLogics(Class<?> contractType, boolean recursive);
+
+	/**
 	 * 执行逻辑链（先反向再正向）
 	 */
 	void execute() throws BusinessLogicException;

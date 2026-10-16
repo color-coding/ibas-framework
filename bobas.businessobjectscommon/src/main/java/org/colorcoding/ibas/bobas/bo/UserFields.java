@@ -1,6 +1,8 @@
 package org.colorcoding.ibas.bobas.bo;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Objects;
 
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
@@ -61,7 +63,7 @@ class UserFields implements IUserFields {
 								if (oldValue == null) {
 									oldValue = property.getDefaultValue();
 								}
-								if (oldValue == null || value == null || !oldValue.equals(value)) {
+								if (!Objects.equals(oldValue, value == null ? property.getDefaultValue() : value)) {
 									UserFields.this.parent.userFields.put(property, value);
 									UserFields.this.parent.firePropertyChange(property, oldValue, value);
 								}
@@ -167,7 +169,11 @@ class UserFields implements IUserFields {
 			if (this.indexOf(name) < 0) {
 				IPropertyInfo<?> uFieldInfo = UserFieldsFactory.createManager().registerUserField(this.parent.getClass(),
 						name, valueType);
-				this.parent.userFields.put(uFieldInfo, null);
+				if (this.parent.userFields == null) {
+					this.parent.userFields = new HashMap<>();
+				}
+				// 其他包装器可能已注册并赋值，不能以null覆盖已有值。
+				this.parent.userFields.putIfAbsent(uFieldInfo, null);
 				this.initialize();
 			}
 			return this.get(name);

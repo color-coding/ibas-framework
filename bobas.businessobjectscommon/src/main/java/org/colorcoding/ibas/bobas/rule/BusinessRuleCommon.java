@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.colorcoding.ibas.bobas.MyConfiguration;
+import org.colorcoding.ibas.bobas.bo.BOIdentifierBuilder;
 import org.colorcoding.ibas.bobas.bo.IBusinessObject;
 import org.colorcoding.ibas.bobas.core.IFieldedObject;
 import org.colorcoding.ibas.bobas.core.IPropertyInfo;
@@ -80,7 +81,8 @@ public abstract class BusinessRuleCommon extends BusinessRule {
 			throw e;
 		} catch (Exception e) {
 			throw new BusinessRuleException(
-					I18N.prop("msg_bobas_bo_executing_business_rule_failed", bo, this.getName()), e);
+					I18N.prop("msg_bobas_bo_executing_business_rule_failed",
+							BOIdentifierBuilder.objectReference(bo), this.getName()), e);
 		}
 	}
 

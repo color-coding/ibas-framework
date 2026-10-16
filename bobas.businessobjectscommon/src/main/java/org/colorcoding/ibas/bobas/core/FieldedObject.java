@@ -183,11 +183,11 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 				if (oldValue == null) {
 					oldValue = (P) property.getDefaultValue();
 				}
-				if (oldValue == null || value == null || !oldValue.equals(value)) {
+				if (!Objects.equals(oldValue, value == null ? property.getDefaultValue() : value)) {
 					this.fields.put(property, value);
 					this.getModifiedProperties().add(property);
-					this.firePropertyChange(property.getName(), oldValue, value);
 					this.markDirty();
+					this.firePropertyChange(property.getName(), oldValue, value);
 				}
 			}
 		}

@@ -310,9 +310,17 @@ public class Daemon {
 
 	public void checkRun() {
 		long time = System.currentTimeMillis();
+		List<DaemonTaskWrapping> snapshot;
 		synchronized (this.getWrappings()) {
-			for (DaemonTaskWrapping wrapping : this.getWrappings()) {
+			snapshot = new ArrayList<>(this.getWrappings());
+		}
+		for (DaemonTaskWrapping wrapping : snapshot) {
+			synchronized (this.getWrappings()) {
 				if (wrapping == null) {
+					continue;
+				}
+				// 任务回调可能重入注册或注销；跳过快照后已注销的任务。
+				if (!this.getWrappings().contains(wrapping)) {
 					continue;
 				}
 				if (wrapping.isRunning()) {
@@ -329,7 +337,7 @@ public class Daemon {
 					Logger.log(e);
 					continue;
 				}
-				if (done) {
+				if (done && this.getWrappings().contains(wrapping)) {
 					// 在提交前设置运行状态，防止同一任务被重复提交
 					wrapping.setRunning(true);
 					try {

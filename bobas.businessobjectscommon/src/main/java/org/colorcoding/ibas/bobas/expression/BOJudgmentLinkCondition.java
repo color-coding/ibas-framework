@@ -22,10 +22,12 @@ public class BOJudgmentLinkCondition extends BOJudgmentLink {
 	public void parsingConditions(Iterable<ICondition> conditions) {
 		// 判断无条件
 		if (conditions == null) {
+			super.setJudgmentItems(null);
 			return;
 		}
 		Iterator<ICondition> iterator = conditions.iterator();
 		if (!iterator.hasNext()) {
+			super.setJudgmentItems(null);
 			return;
 		}
 		ICondition item;
