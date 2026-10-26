@@ -42,10 +42,13 @@ public abstract class BORepository extends Repository {
 		this.skipLogics = skipLogics;
 		if (this.skipLogics == false) {
 			this.skipLogicContracts = null;
+			this.localSkipLogicContracts = null;
 		}
 	}
 
 	private List<Class<?>> skipLogicContracts;
+
+	private List<Class<?>> localSkipLogicContracts;
 
 	/**
 	 * 添加跳过的逻辑契约类型，同时自动开启跳过逻辑标记
@@ -53,14 +56,31 @@ public abstract class BORepository extends Repository {
 	 * @param contract 逻辑契约类型，必须实现IBusinessLogicContract
 	 */
 	protected final void addSkipLogics(Class<?> contract) {
+		this.addSkipLogics(contract, true);
+	}
+
+	/**
+	 * 添加跳过的逻辑契约类型，并指定是否传递给被影响对象
+	 *
+	 * @param contract 逻辑契约类型，必须实现IBusinessLogicContract
+	 * @param recursive 是否同时跳过被影响对象的逻辑
+	 */
+	protected final void addSkipLogics(Class<?> contract, boolean recursive) {
 		if (!IBusinessLogicContract.class.isAssignableFrom(contract)) {
 			throw new IllegalArgumentException(
 					Strings.format("class [%s] is not business logic contract class.", contract.getName()));
 		}
-		if (this.skipLogicContracts == null) {
-			this.skipLogicContracts = new ArrayList<>();
+		if (recursive) {
+			if (this.skipLogicContracts == null) {
+				this.skipLogicContracts = new ArrayList<>();
+			}
+			this.skipLogicContracts.add(contract);
+		} else {
+			if (this.localSkipLogicContracts == null) {
+				this.localSkipLogicContracts = new ArrayList<>();
+			}
+			this.localSkipLogicContracts.add(contract);
 		}
-		this.skipLogicContracts.add(contract);
 		if (this.skipLogics == false) {
 			this.skipLogics = true;
 		}
@@ -189,7 +209,8 @@ public abstract class BORepository extends Repository {
 			}
 			// 返回结果
 			OperationResult<T> operationResult = new OperationResult<T>(1);
-			if (this.isSkipLogics() && (this.skipLogicContracts == null || this.skipLogicContracts.isEmpty())) {
+			if (this.isSkipLogics() && (this.skipLogicContracts == null || this.skipLogicContracts.isEmpty())
+					&& (this.localSkipLogicContracts == null || this.localSkipLogicContracts.isEmpty())) {
 				// 跳过全部业务逻辑
 				this.getTransaction().save(new IBusinessObject[] { bo });
 			} else {
@@ -199,6 +220,10 @@ public abstract class BORepository extends Repository {
 					if (this.skipLogicContracts != null) {
 						// 添加跳过的逻辑契约
 						this.skipLogicContracts.forEach(c -> logicChain.addSkipLogics(c));
+					}
+					if (this.localSkipLogicContracts != null) {
+						// 仅当前触发对象跳过，不传递给被影响对象
+						this.localSkipLogicContracts.forEach(c -> logicChain.addSkipLogics(c, false));
 					}
 					logicChain.setTrigger(bo);
 					logicChain.setTriggerCopy(boCopy);

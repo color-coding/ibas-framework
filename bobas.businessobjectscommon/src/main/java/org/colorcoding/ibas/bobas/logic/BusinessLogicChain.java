@@ -126,6 +126,8 @@ class BusinessLogicChain implements IBusinessLogicChain {
 
 	private ArrayList<Class<?>> skipContractTypes;
 
+	private ArrayList<Class<?>> localSkipContractTypes;
+
 	public final ArrayList<Class<?>> getSkipContractTypes() {
 		if (this.skipContractTypes == null) {
 			this.skipContractTypes = new ArrayList<>();
@@ -139,7 +141,25 @@ class BusinessLogicChain implements IBusinessLogicChain {
 
 	@Override
 	public void addSkipLogics(Class<?> contractType) {
-		this.getSkipContractTypes().add(contractType);
+		this.addSkipLogics(contractType, true);
+	}
+
+	@Override
+	public void addSkipLogics(Class<?> contractType, boolean recursive) {
+		if (recursive) {
+			this.getSkipContractTypes().add(contractType);
+		} else {
+			if (this.localSkipContractTypes == null) {
+				this.localSkipContractTypes = new ArrayList<>();
+			}
+			this.localSkipContractTypes.add(contractType);
+		}
+	}
+
+	private boolean isSkipped(IBusinessLogicContract contract) {
+		return this.getSkipContractTypes().contains(c -> c.isInstance(contract))
+				|| (this.localSkipContractTypes != null
+						&& this.localSkipContractTypes.contains(c -> c.isInstance(contract)));
 	}
 
 	/**
@@ -155,7 +175,7 @@ class BusinessLogicChain implements IBusinessLogicChain {
 			}
 			// 跳过设置的契约逻辑
 			if (logic.getContract() != null) {
-				if (this.getSkipContractTypes().contains(c -> c.isInstance(logic.getContract()))) {
+				if (this.isSkipped(logic.getContract())) {
 					Logger.log(MessageLevel.DEBUG, BusinessLogic.MSG_LOGICS_SKIP_LOGIC_EXECUTION,
 							logic.getClass().getName(), "Skipped", "true");
 					continue;
@@ -178,7 +198,7 @@ class BusinessLogicChain implements IBusinessLogicChain {
 			}
 			// 跳过设置的契约逻辑
 			if (logic.getContract() != null) {
-				if (this.getSkipContractTypes().contains(c -> c.isInstance(logic.getContract()))) {
+				if (this.isSkipped(logic.getContract())) {
 					Logger.log(MessageLevel.DEBUG, BusinessLogic.MSG_LOGICS_SKIP_LOGIC_EXECUTION,
 							logic.getClass().getName(), "Skipped", "true");
 					continue;
@@ -542,6 +562,7 @@ class BusinessLogicChain implements IBusinessLogicChain {
 		this.triggerCopyLogics = null;
 		this.parentChain = null;
 		this.skipContractTypes = null;
+		this.localSkipContractTypes = null;
 	}
 
 }

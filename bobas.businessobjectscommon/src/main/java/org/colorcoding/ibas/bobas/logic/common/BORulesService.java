@@ -83,19 +83,21 @@ public class BORulesService extends BusinessLogic<IBORulesContract, IBusinessObj
 
 	@Override
 	protected void revoke(IBORulesContract contract) {
-		// 引用的数据，不能被物理删除
-		if (contract.getHost() instanceof IBOTagReferenced) {
-			if (this.getTrigger() instanceof IBusinessObject) {
-				if (contract.getHost().getClass() == this.getTrigger().getClass()) {
-					IBusinessObject trigger = (IBusinessObject) this.getTrigger();
-					if (BOUtilities.isSame(contract.getHost(), trigger, true)) {
-						if (trigger.isDeleted() && ((IBOTagReferenced) trigger).getReferenced() == emYesNo.YES) {
-							throw new BusinessRuleException(
-									I18N.prop("msg_bobas_data_was_referenced_not_allow_to_delete", trigger.toString()));
-						}
-					}
-				}
-			}
+		if (!(this.getTrigger() instanceof IBusinessObject)) {
+			return;
+		}
+		IBusinessObject trigger = (IBusinessObject) this.getTrigger();
+		// 按已有身份规则检查兼容类型、主键和版本，不要求运行时类型完全相同。
+		if (!trigger.isDeleted() || !BOUtilities.isSame(contract.getHost(), trigger, true)) {
+			return;
+		}
+		// 自定义校验与引用标记是独立能力，不能用引用接口限制自定义删除保护。
+		if (trigger instanceof ICheckRules) {
+			((ICheckRules) trigger).check();
+		}
+		if (trigger instanceof IBOTagReferenced && ((IBOTagReferenced) trigger).getReferenced() == emYesNo.YES) {
+			throw new BusinessRuleException(
+					I18N.prop("msg_bobas_data_was_referenced_not_allow_to_delete", trigger.toString()));
 		}
 	}
 
