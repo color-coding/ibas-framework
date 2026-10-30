@@ -41,7 +41,7 @@ Enterprise-grade Java Business Object Framework — a complete set of analysis, 
 - **⚙️ 业务规则引擎** — 17 个内置规则（必填、长度、求和、乘法、状态流转等），支持自定义扩展
 - **🔗 业务逻辑链** — 责任链模式实现跨对象业务逻辑，通过契约接口解耦模块间依赖
 - **🗃️ 仓储模式** — 统一的数据访问抽象，支持数据库、文件、REST 服务三种持久化方式
-- **🌐 多数据库适配** — 开箱即用支持 MSSQL、MySQL、PostgreSQL、SAP HANA、SQLite、Sybase、达梦 DM8 共 7 种数据库
+- **🌐 多数据库适配** — 开箱即用支持 MSSQL、MySQL、PostgreSQL、SAP HANA、SQLite、H2、Sybase、达梦 DM8 共 8 种数据库
 - **✅ 审批工作流** — 可配置的多步审批流程，支持条件表达式引擎进行路由判断
 - **🔐 数据权限** — 基于组织结构的读写权限控制
 - **🌍 国际化** — 内置多语言支持
@@ -107,6 +107,7 @@ Serializable   →  框架基类（JAXB 序列化钩子）
 | `bobas.businessobjectscommon.db.pgsql` | PostgreSQL 数据库适配器 |
 | `bobas.businessobjectscommon.db.hana` | SAP HANA 数据库适配器 |
 | `bobas.businessobjectscommon.db.sqlite` | SQLite 数据库适配器 |
+| `bobas.businessobjectscommon.db.h2` | H2 数据库适配器 |
 | `bobas.businessobjectscommon.db.sybase` | Sybase 数据库适配器 |
 | `bobas.businessobjectscommon.db.dm8` | 达梦 DM8 数据库适配器 |
 | `bobas.businessobjectscommon.file.s3` | AWS S3 对象存储适配器 |
@@ -347,6 +348,7 @@ OperationResult<ISalesOrder> result = repo.save(order);
 | PostgreSQL | `bobas.businessobjectscommon.db.pgsql` | ✅ |
 | SAP HANA | `bobas.businessobjectscommon.db.hana` | ✅ |
 | SQLite | `bobas.businessobjectscommon.db.sqlite` | ✅ |
+| H2 | `bobas.businessobjectscommon.db.h2` | ✅ |
 | Sybase | `bobas.businessobjectscommon.db.sybase` | ✅ |
 | 达梦 DM8 | `bobas.businessobjectscommon.db.dm8` | ✅ |
 
@@ -373,12 +375,13 @@ mvn clean package install -Dmaven.test.skip=true -f bobas.businessobjectscommon/
 3.  bobas.businessobjectscommon.db.mssql
 4.  bobas.businessobjectscommon.db.mysql
 5.  bobas.businessobjectscommon.db.pgsql
-6.  bobas.businessobjectscommon.db.sybase
-7.  bobas.businessobjectscommon.db.sqlite
-8.  bobas.businessobjectscommon.db.dm8
-9.  bobas.businessobjectscommon.file.s3
-10. bobas.businessobjectscommon.jersey
-11. bobas.businessobjectscommon.demo       ← 最后编译
+6.  bobas.businessobjectscommon.db.h2
+7.  bobas.businessobjectscommon.db.sybase
+8.  bobas.businessobjectscommon.db.sqlite
+9.  bobas.businessobjectscommon.db.dm8
+10. bobas.businessobjectscommon.file.s3
+11. bobas.businessobjectscommon.jersey
+12. bobas.businessobjectscommon.demo       ← 最后编译
 ```
 
 ---

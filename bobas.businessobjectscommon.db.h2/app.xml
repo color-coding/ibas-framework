@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE configuration>
+<ns2:configuration xmlns:ns2="http://colorcoding.org/ibas/bobas/configuration">
+    <appSettings>
+        <add key="Company" value="CC" />
+        <add key="DebugMode" value="true" />
+        <add key="MasterDbType" value="H2" />
+        <!-- 嵌入式连接不使用数据库地址。 -->
+        <add key="MasterDbServer" value="embedded" />
+        <!--
+            内存数据库 mem:ibas;DB_CLOSE_DELAY=-1；数据保留至 JVM 退出
+            文件数据库可使用 ./data/ibas。
+        -->
+        <add key="MasterDbName" value="mem:ibas_demo_v2;DB_CLOSE_DELAY=-1" />
+        <!-- H2 默认用户为 sa，密码为空。 -->
+        <add key="MasterDbUserID" value="sa" />
+        <add key="MasterDbUserPassword" value="" />
+    </appSettings>
+</ns2:configuration>

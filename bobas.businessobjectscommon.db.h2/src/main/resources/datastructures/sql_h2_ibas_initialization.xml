@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE DataStructureOrchestration>
+<ns2:DataStructureOrchestration xmlns:ns2="http://colorcoding.org/btulz/transformers">
+    <Name>sql_h2_ibas_initialization</Name>
+    <Description>基于H2的结构映射说明</Description>
+    <Integrated>true</Integrated>
+    <DriverName>org.h2.Driver</DriverName>
+    <DbUrl>jdbc:h2:${DbName}</DbUrl>
+    <DbUser>${DbUser}</DbUser>
+    <DbPassword>${DbPassword}</DbPassword>
+    <Action Name="create stored procedures ${Company}_SP_TRANSACTION_NOTIFICATION">
+        <Step Name="check and drop exists stored procedures">
+            <Script><![CDATA[
+               SELECT COUNT(0) FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_SCHEMA = CURRENT_SCHEMA() AND TABLE_NAME = '${Company}_SP_TRANSACTION_NOTIFICATION';
+            ]]></Script>
+        </Step>
+        <Step Name="create stored procedures" RunOnValue="0">
+            <Script><![CDATA[
+                CREATE VIEW "${Company}_SP_TRANSACTION_NOTIFICATION" AS
+                    /* 数据库不支持此功能 */
+                    SELECT 0 AS "Code", 'OK' AS "Message";
+            ]]></Script>
+        </Step>
+    </Action>
+</ns2:DataStructureOrchestration>
