@@ -73,14 +73,14 @@ public class DbFactory {
 	 * @return 数据库连接
 	 * @throws Exception 连接创建失败时抛出
 	 */
-	public synchronized Connection createConnection(String type, String server, String dbName, String userName, String userPwd)
+	public Connection createConnection(String type, String server, String dbName, String userName, String userPwd)
 			throws Exception {
 		DbAdapter adapter = createAdapter(type);
 		Connection connection = adapter.createConnection(server, dbName, userName, userPwd);
 		Logger.log(MSG_CONNECTION_USER_CONNECTED, userName, server, dbName);
-		if (connection != null && !this.adapters.containsKey(connection.getClass().getName())) {
+		if (connection != null) {
 			// 记录此数据库链接的解释器
-			this.adapters.put(connection.getClass().getName(), adapter);
+			this.adapters.putIfAbsent(connection.getClass().getName(), adapter);
 		}
 		return connection;
 	}

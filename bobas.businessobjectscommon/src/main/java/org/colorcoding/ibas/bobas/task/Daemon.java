@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -44,20 +43,24 @@ public class Daemon {
 	 * @throws InvalidDaemonTaskException
 	 */
 	public static long register(IDaemonTask task, boolean log)  {
+		Daemon current;
 		synchronized (Daemon.class) {
-			return create().add(task, log);
+			current = create();
 		}
+		return current.add(task, log);
 	}
 
 	/**
 	 * 终止线程
 	 */
 	public static void destroy() {
+		Daemon current;
 		synchronized (Daemon.class) {
-			if (daemon != null) {
-				daemon.stop();
-				daemon = null;
-			}
+			current = daemon;
+			daemon = null;
+		}
+		if (current != null) {
+			current.stop();
 		}
 	}
 
@@ -68,10 +71,8 @@ public class Daemon {
 	 * @return true，成功；false，失败
 	 */
 	public static boolean unregister(long id) {
-		synchronized (Daemon.class) {
-			// daemon 已销毁时不应因为注销一个任务而重新启动后台线程。
-			return daemon != null && daemon.remove(id);
-		}
+		Daemon current = daemon;
+		return current != null && current.remove(id);
 	}
 
 	private volatile static Daemon daemon;
@@ -159,14 +160,16 @@ public class Daemon {
 			this.daemonThread = null;
 		}
 		// 先通知所有任务关闭，使运行中的任务有机会尽快结束。
+		List<DaemonTaskWrapping> closing;
 		synchronized (this.getWrappings()) {
-			for (DaemonTaskWrapping wrapping : this.getWrappings()) {
-				if (wrapping == null) {
-					continue;
-				}
-				wrapping.closeTask();
-			}
+			closing = new ArrayList<>(this.getWrappings());
 			this.getWrappings().clear();
+		}
+		for (DaemonTaskWrapping wrapping : closing) {
+			if (wrapping == null) {
+				continue;
+			}
+			wrapping.closeTask();
 		}
 		// 关闭线程池
 		this.shutdownThreadPool();
@@ -229,8 +232,11 @@ public class Daemon {
 				throw new InvalidDaemonTaskException();
 			}
 		}
+		DaemonTaskWrapping wrapping = new DaemonTaskWrapping(task);
 		synchronized (this.getWrappings()) {
-			DaemonTaskWrapping wrapping = new DaemonTaskWrapping(task);
+			if (!this.running) {
+				throw new IllegalStateException("Daemon stopped");
+			}
 			wrapping.setLog(isLog);
 			long taskId = TASK_ID_GENERATOR.incrementAndGet();
 			if (taskId <= 0L) {
@@ -239,33 +245,32 @@ public class Daemon {
 			}
 			wrapping.setId(taskId);
 			this.getWrappings().add(wrapping);
-			Logger.log("daemon: register task id [%s], name [%s].", wrapping.getId(), wrapping.getName());
-			return wrapping.getId();
 		}
+		Logger.log("daemon: register task id [%s], name [%s].", wrapping.getId(), wrapping.getName());
+		return wrapping.getId();
 	}
 
 	public boolean remove(long taskId) {
-		if (taskId < 0) {
-			return false;
-		}
+		DaemonTaskWrapping removed = null;
 		synchronized (this.getWrappings()) {
-			for (int i = this.getWrappings().size() - 1; i >= 0; i--) {
-				DaemonTaskWrapping wrapping = this.getWrappings().get(i);
-				if (wrapping == null) {
-					continue;
-				}
-				if (wrapping.getId() == taskId) {
-					this.getWrappings().remove(i);
-					if (this.cancelQueued(wrapping)) {
-						wrapping.cancelRun();
-					}
-					wrapping.closeTask();
-					Logger.log("daemon: remove task id [%s], name [%s].", wrapping.getId(), wrapping.getName());
-					return true;
+			for (DaemonTaskWrapping wrapping : this.getWrappings()) {
+				if (wrapping != null && wrapping.getId() == taskId) {
+					removed = wrapping;
+					break;
 				}
 			}
+			if (removed != null) {
+				this.getWrappings().remove(removed);
+			}
 		}
-		return false;
+		if (removed == null) {
+			return false;
+		}
+		if (this.cancelQueued(removed)) {
+			removed.cancelRun();
+		}
+		removed.closeTask();
+		return true;
 	}
 
 	private boolean cancelQueued(DaemonTaskWrapping wrapping) {
@@ -316,38 +321,30 @@ public class Daemon {
 		}
 		for (DaemonTaskWrapping wrapping : snapshot) {
 			synchronized (this.getWrappings()) {
-				if (wrapping == null) {
+				if (!this.running || wrapping == null || !this.getWrappings().contains(wrapping)
+						|| wrapping.isRunning()) {
 					continue;
 				}
-				// 任务回调可能重入注册或注销；跳过快照后已注销的任务。
-				if (!this.getWrappings().contains(wrapping)) {
+				// 预留调度状态，锁外回调期间注销仅请求延迟关闭。
+				wrapping.setRunning(true);
+			}
+			boolean submitted = false;
+			try {
+				if (!wrapping.isActivated() || !wrapping.tryRun(time)) {
 					continue;
 				}
-				if (wrapping.isRunning()) {
-					continue;
-				}
-				// 可以运行否。单个任务配置异常不应中断本轮其他任务的调度。
-				boolean done;
-				try {
-					if (!wrapping.isActivated()) {
-						continue;
+				ExecutorService pool = this.getThreadPool();
+				synchronized (this.getWrappings()) {
+					if (this.running && this.getWrappings().contains(wrapping)) {
+						pool.execute(new TaskRunner(wrapping));
+						submitted = true;
 					}
-					done = wrapping.tryRun(time);
-				} catch (Exception e) {
-					Logger.log(e);
-					continue;
 				}
-				if (done && this.getWrappings().contains(wrapping)) {
-					// 在提交前设置运行状态，防止同一任务被重复提交
-					wrapping.setRunning(true);
-					try {
-						// 从线程池中调用新的线程运行此任务
-						this.getThreadPool().execute(new TaskRunner(wrapping));
-					} catch (RejectedExecutionException e) {
-						// 线程池已满或已关闭，回滚运行状态并释放已获取的单任务锁。
-						wrapping.cancelRun();
-						Logger.log(MessageLevel.WARN, "daemon: task [%s] rejected by thread pool.", wrapping.getName());
-					}
+			} catch (Exception e) {
+				Logger.log(e);
+			} finally {
+				if (!submitted) {
+					wrapping.cancelRun();
 				}
 			}
 		}

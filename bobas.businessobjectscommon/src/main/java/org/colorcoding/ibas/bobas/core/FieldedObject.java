@@ -84,18 +84,14 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	 * @return 符合条件的属性列表
 	 */
 	@Override
-	public synchronized List<IPropertyInfo<?>> properties(Predicate<IPropertyInfo<?>> filter) {
-		ArrayList<IPropertyInfo<?>> propertyInfos = new ArrayList<>(this.fields.size());
-		for (IPropertyInfo<?> propertyInfo : this.fields.keySet()) {
-			if (filter == null || filter.test(propertyInfo)) {
-				propertyInfos.add(propertyInfo);
-			}
+	public List<IPropertyInfo<?>> properties(Predicate<IPropertyInfo<?>> filter) {
+		ArrayList<IPropertyInfo<?>> propertyInfos;
+		synchronized (this) {
+			propertyInfos = new ArrayList<>(this.fields.keySet());
 		}
-		// 符合条件的小于总量，则回收空间
-		if (propertyInfos.size() < this.fields.size()) {
-			propertyInfos.trimToSize();
+		if (filter != null) {
+			propertyInfos.removeIf((property) -> !filter.test(property));
 		}
-		// 属性排序
 		propertyInfos.sort((c1, c2) -> Integer.compare(c1.getIndex(), c2.getIndex()));
 		return propertyInfos;
 	}
@@ -234,12 +230,14 @@ public abstract class FieldedObject extends Trackable implements IFieldedObject,
 	}
 
 	@Override
-	public synchronized Object clone() {
-		FieldedObject nData = (FieldedObject) super.clone();
-		// 被修改属性延迟初始化
-		nData.modifiedProperties = null;
-		// 初始化对象属性
-		nData.fields = new HashMap<>(this.fields);
+	public Object clone() {
+		FieldedObject nData;
+		synchronized (this) {
+			nData = (FieldedObject) super.clone();
+			nData.modifiedProperties = null;
+			nData.fields = new HashMap<>(this.fields);
+		}
+		// 在属性快照上克隆，避免持有源对象锁调用其他对象。
 		// 替换可克隆的值
 		for (Entry<?, Object> entry : nData.fields.entrySet()) {
 			if (entry.getValue() instanceof java.util.ArrayList) {
