@@ -106,23 +106,22 @@ final class PropertyInfo<P> implements IPropertyInfo<P> {
 
 	volatile Runnable resolver = null;
 
-	private Annotation[] annotations = null;
+	private volatile Annotation[] annotations = null;
 
-	protected synchronized Annotation[] getAnnotations() {
-		if (this.resolver != null) {
-			this.resolver.run();
+	protected Annotation[] getAnnotations() {
+		// 不持有属性锁执行列表解析，避免与 resolving() 的锁顺序反转。
+		Runnable resolver = this.resolver;
+		if (resolver != null) {
+			resolver.run();
 			this.resolver = null;
 		}
 		return annotations;
 	}
 
+	// 父子类型的列表共享属性，保留写入同步；此处不再获取列表锁。
 	synchronized void setAnnotations(Annotation[] annotations) {
-		if (this.resolver != null && annotations != null) {
-			this.resolver = null;
-		}
-		this.annotations = annotations;
-		if (this.annotations != null) {
-			for (Annotation annotation : this.annotations) {
+		if (annotations != null) {
+			for (Annotation annotation : annotations) {
 				if (annotation.annotationType().equals(Field.class)) {
 					Field field = (Field) annotation;
 					if (field.primaryKey() == true) {
@@ -144,18 +143,26 @@ final class PropertyInfo<P> implements IPropertyInfo<P> {
 				}
 			}
 		}
+		// 先发布注解及其标记，最后清除解析器。
+		this.annotations = annotations;
+		if (annotations != null) {
+			this.resolver = null;
+		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public synchronized final <A extends Annotation> A getAnnotation(Class<A> type) {
-		if (this.resolver != null) {
-			this.resolver.run();
+	public final <A extends Annotation> A getAnnotation(Class<A> type) {
+		// 不持有属性锁执行列表解析，避免与 resolving() 的锁顺序反转。
+		Runnable resolver = this.resolver;
+		if (resolver != null) {
+			resolver.run();
 			this.resolver = null;
 		}
-		if (this.annotations == null) {
+		Annotation[] annotations = this.annotations;
+		if (annotations == null) {
 			return null;
 		}
-		for (Annotation annotation : this.annotations) {
+		for (Annotation annotation : annotations) {
 			if (annotation.annotationType().equals(type)) {
 				return (A) annotation;
 			}

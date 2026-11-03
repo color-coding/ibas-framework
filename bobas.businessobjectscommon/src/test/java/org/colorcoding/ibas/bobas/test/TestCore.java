@@ -41,6 +41,14 @@ import junit.framework.TestCase;
  */
 public class TestCore extends TestCase {
 
+	public void testPropertyFilterDoesNotHoldObjectLock() {
+		Order order = new Order();
+		assertFalse(order.properties((property) -> {
+			assertFalse("Filter must run outside the BO lock", Thread.holdsLock(order));
+			return true;
+		}).isEmpty());
+	}
+
 	// ==================== 1. 基础属性赋值与取值 ====================
 
 	/**

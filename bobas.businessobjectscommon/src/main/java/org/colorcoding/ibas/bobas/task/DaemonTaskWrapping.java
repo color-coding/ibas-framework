@@ -270,21 +270,27 @@ class DaemonTaskWrapping {
 	 * 任务尚未提交到线程池或提交失败时回滚运行状态。
 	 * tryRun 可能已经获取了跨进程锁，必须在此处释放。
 	 */
-	synchronized void cancelRun() {
-		this.setRunning(false);
-		if (this.currentLock != null) {
-			this.currentLock.release();
-			this.currentLock = null;
+	void cancelRun() {
+		boolean close;
+		synchronized (this) {
+			this.setRunning(false);
+			if (this.currentLock != null) {
+				this.currentLock.release();
+				this.currentLock = null;
+			}
+			close = this.closeRequested;
+		}
+		if (close) {
+			this.closeNow();
 		}
 	}
 
-	/**
-	 * 注销任务时关闭资源。运行中的任务延迟到 run 的 finally 中关闭。
-	 */
-	synchronized void closeTask() {
-		if (this.isRunning()) {
+	void closeTask() {
+		synchronized (this) {
 			this.closeRequested = true;
-			return;
+			if (this.isRunning()) {
+				return;
+			}
 		}
 		this.closeNow();
 	}

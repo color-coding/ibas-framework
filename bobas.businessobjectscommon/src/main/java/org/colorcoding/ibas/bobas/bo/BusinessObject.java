@@ -154,10 +154,12 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public synchronized T clone() {
+	public T clone() {
 		BusinessObject<?> nData = (BusinessObject<?>) super.clone();
-		if (this.userFields != null) {
-			nData.userFields = new HashMap<>(this.userFields);
+		synchronized (this) {
+			nData.userFields = this.userFields == null ? null : new HashMap<>(this.userFields);
+		}
+		if (nData.userFields != null) {
 			for (Entry<?, Object> entry : nData.userFields.entrySet()) {
 				if (entry.getValue() instanceof ICloneable) {
 					entry.setValue(((ICloneable) entry.getValue()).clone());
@@ -378,17 +380,18 @@ public abstract class BusinessObject<T extends IBusinessObject> extends FieldedO
 	 * @return 符合条件的属性列表
 	 */
 	@Override
-	public synchronized List<IPropertyInfo<?>> properties(Predicate<IPropertyInfo<?>> filter) {
-		List<IPropertyInfo<?>> properties = super.properties(filter);
-		if (this instanceof IBOUserFields && this.userFields != null && !this.userFields.isEmpty()) {
-			List<IPropertyInfo<?>> userFields = new ArrayList<>(this.userFields.size());
-			for (IPropertyInfo<?> property : this.userFields.keySet()) {
-				if (filter == null || filter.test(property)) {
-					userFields.add(property);
-				}
+	public List<IPropertyInfo<?>> properties(Predicate<IPropertyInfo<?>> filter) {
+		List<IPropertyInfo<?>> properties;
+		synchronized (this) {
+			properties = super.properties(null);
+			if (this instanceof IBOUserFields && this.userFields != null && !this.userFields.isEmpty()) {
+				List<IPropertyInfo<?>> userFields = new ArrayList<>(this.userFields.keySet());
+				userFields.sort((c1, c2) -> Integer.compare(c1.getIndex(), c2.getIndex()));
+				properties.addAll(userFields);
 			}
-			userFields.sort((c1, c2) -> Integer.compare(c1.getIndex(), c2.getIndex()));
-			properties.addAll(userFields);
+		}
+		if (filter != null) {
+			properties.removeIf((property) -> !filter.test(property));
 		}
 		return properties;
 	}
