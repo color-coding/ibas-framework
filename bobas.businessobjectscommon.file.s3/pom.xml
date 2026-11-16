@@ -15,7 +15,7 @@
 		<url>https://colorcoding.org</url>
 	</organization>
 	<properties>
-		<awssdk.version>2.42.26</awssdk.version>
+		<awssdk.version>2.57.13</awssdk.version>
 		<junit.version>4.13.2</junit.version>
 	</properties>
 	<dependencies>

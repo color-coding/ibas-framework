@@ -16,7 +16,7 @@
 	<properties>
 		<eclipse.moxy.version>5.0.1</eclipse.moxy.version>
 		<glassfish.hk2.version>4.0.1</glassfish.hk2.version>
-		<jersey.version>4.0.2</jersey.version>
+		<jersey.version>4.0.3</jersey.version>
 		<junit.version>4.13.2</junit.version>
 	</properties>
 	<dependencies>
