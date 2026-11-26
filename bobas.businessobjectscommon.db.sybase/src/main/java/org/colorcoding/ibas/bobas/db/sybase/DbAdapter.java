@@ -12,6 +12,7 @@ import org.colorcoding.ibas.bobas.common.ICondition;
 import org.colorcoding.ibas.bobas.common.ICriteria;
 import org.colorcoding.ibas.bobas.common.Strings;
 import org.colorcoding.ibas.bobas.db.IDbTableLock;
+import org.colorcoding.ibas.bobas.db.IDbTableNoLock;
 import org.colorcoding.ibas.bobas.db.MaxValue;
 import org.colorcoding.ibas.bobas.i18n.I18N;
 import org.colorcoding.ibas.bobas.message.Logger;
@@ -138,7 +139,7 @@ public class DbAdapter extends org.colorcoding.ibas.bobas.db.DbAdapter {
 		stringBuilder.append("FROM");
 		stringBuilder.append(" ");
 		stringBuilder.append(this.identifier(this.table(maxValue.getType())));
-		if (maxValue instanceof IDbTableLock) {
+		if (maxValue instanceof IDbTableLock && !(maxValue instanceof IDbTableNoLock)) {
 			stringBuilder.append(" ");
 			stringBuilder.append("HOLDLOCK");
 		}

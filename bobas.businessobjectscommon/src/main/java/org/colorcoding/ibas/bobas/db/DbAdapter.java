@@ -716,6 +716,8 @@ public abstract class DbAdapter {
 
 	/**
 	 * 语句-查询（SPValues类型生成存储过程调用）
+	 * <p>
+	 * 普通查询按对象类型的标记接口决定是否添加更新锁，IDbTableNoLock优先于IDbTableLock。
 	 *
 	 * @param boType   对象类型
 	 * @param criteria 查询条件
@@ -730,7 +732,9 @@ public abstract class DbAdapter {
 			}
 			return this.parsingStoredProcedure(procedure.name(), new String[criteria.getConditions().size()]);
 		}
-		return this.parsingSelect(boType, criteria, IDbTableLock.class.isAssignableFrom(boType));
+		boolean withLock = IDbTableLock.class.isAssignableFrom(boType)
+				&& !IDbTableNoLock.class.isAssignableFrom(boType);
+		return this.parsingSelect(boType, criteria, withLock);
 	}
 
 	private Map<Class<?>, String> tables = new ConcurrentHashMap<>(128);
@@ -1246,7 +1250,7 @@ public abstract class DbAdapter {
 	}
 
 	/**
-	 * 语句-获取最大值（IDbTableLock类型加UPDLOCK锁）
+	 * 语句-获取最大值（MaxValue实例实现IDbTableLock且未实现IDbTableNoLock时加UPDLOCK锁）
 	 *
 	 * @param maxValue   最大值查询配置
 	 * @param conditions 查询条件
@@ -1264,7 +1268,7 @@ public abstract class DbAdapter {
 		stringBuilder.append("FROM");
 		stringBuilder.append(" ");
 		stringBuilder.append(this.identifier(this.table(maxValue.getType())));
-		if (maxValue instanceof IDbTableLock) {
+		if (maxValue instanceof IDbTableLock && !(maxValue instanceof IDbTableNoLock)) {
 			stringBuilder.append(" ");
 			stringBuilder.append("WITH (UPDLOCK)");
 		}
