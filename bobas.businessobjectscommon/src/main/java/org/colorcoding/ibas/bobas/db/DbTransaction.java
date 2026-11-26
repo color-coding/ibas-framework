@@ -316,8 +316,8 @@ public class DbTransaction extends Transaction implements IUserAware {
 				}
 				// 查询方法，不主动开启事务
 				nCriteria = this.getAdapter().convert(nCriteria, boType);
-				String sql = this.inTransaction()
-						// 事务中且锁表对象，则查询对象加锁
+				String sql = this.inTransaction() && !IDbTableNoLock.class.isAssignableFrom(boType)
+						// 事务内默认请求更新锁；禁用锁标记优先，事务外由适配器按标记接口判断
 						? this.getAdapter().parsingSelect(boType, nCriteria, true)
 						: this.getAdapter().parsingSelect(boType, nCriteria);
 				if (MyConfiguration.isDebugMode()) {
