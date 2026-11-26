@@ -105,10 +105,10 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 		return this.approvalData;
 	}
 
+	/**
+	 * 绑定本次操作的数据，不改变审批请求的状态和关联信息。
+	 */
 	protected void setApprovalData(IApprovalData approvalData) {
-		if (this.processData != null) {
-			this.processData.setApprovalData(approvalData);
-		}
 		this.approvalData = approvalData;
 	}
 
@@ -256,6 +256,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 					// 满足条件，开启此步骤
 					stepItem.start();
 					this.setApprovalData(data);
+					this.getProcessData().setApprovalData(data);
 					this.setStartedTime(DateTimes.now());
 					this.setStatus(emApprovalStatus.PROCESSING);
 					this.onStatusChanged();
@@ -294,6 +295,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 				// 审批的数据可能存在是代理数据情况
 				if (this.approvalData == null) {
 					this.setApprovalData(this.fetchApprovalData());
+					this.getProcessData().setApprovalData(this.getApprovalData());
 				}
 				if (this.getApprovalData() instanceof IBusinessObject) {
 					// 数据为业务对象时进行属性的条件判断
@@ -330,6 +332,11 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 	 */
 	public final void approval(int stepId, emApprovalResult apResult, String authorizationCode, String judgment)
 			throws ApprovalException {
+		// 从请求进入时加载实际单据，已取消单据不允许继续审批或撤销批准。
+		IApprovalData data = this.approvalData == null ? this.fetchApprovalData() : this.getApprovalData();
+		if (data instanceof IBOTagCanceled && ((IBOTagCanceled) data).getCanceled() == emYesNo.YES) {
+			throw new ApprovalException(I18N.prop("msg_bobas_canceled_data_not_allow_to_approve"));
+		}
 		ApprovalProcessStep<?> apStep = this.getProcessStep(stepId);
 		if (apStep == null) {
 			throw new ApprovalException(I18N.prop("msg_bobas_not_found_approval_process_step", stepId));
@@ -527,6 +534,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 		Logger.log("approval process: [%s]'s status change to [%s].", this.getName(), this.getStatus());
 		if (this.approvalData == null) {
 			this.setApprovalData(this.fetchApprovalData());
+			this.getProcessData().setApprovalData(this.getApprovalData());
 		}
 		this.changeApprovalDataStatus(this.getStatus());
 	}
@@ -541,6 +549,16 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 		// 没有审批步骤，无效的审批流，可修改数据
 		if (this.getProcessSteps() == null || this.getProcessSteps().length == 0) {
 			return;
+		}
+		// 已批准单据的取消权限优先于删除放行，避免组合操作绕过数据所有者检查。
+		if (this.getStatus() == emApprovalStatus.APPROVED && this.getApprovalData() instanceof IBOTagCanceled
+				&& ((IBOTagCanceled) this.getApprovalData()).getCanceled() == emYesNo.YES) {
+			Integer dataOwner = this.fetchApprovalData().getDataOwner();
+			if (dataOwner != null && dataOwner.intValue() == user.getId()) {
+				return;
+			}
+			throw new ApprovalException(
+					I18N.prop("msg_bobas_data_was_approved_not_allow_to_update", this.getApprovalData().toString()));
 		}
 		// 所有者修改数据
 		if (Integer.compare(this.getOwner().getId(), user.getId()) == 0) {
@@ -562,7 +580,7 @@ public abstract class ApprovalProcess<T extends IProcessData> {
 			// 可标记取消数据
 			if (this.getApprovalData() instanceof IBOTagCanceled) {
 				IBOTagCanceled referenced = (IBOTagCanceled) this.getApprovalData();
-				if (referenced.getCanceled() == emYesNo.YES) {
+				if (referenced.getCanceled() == emYesNo.YES && this.getStatus() != emApprovalStatus.APPROVED) {
 					return;
 				}
 			}
