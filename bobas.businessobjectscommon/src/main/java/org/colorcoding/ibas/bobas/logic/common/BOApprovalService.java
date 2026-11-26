@@ -1,5 +1,6 @@
 package org.colorcoding.ibas.bobas.logic.common;
 
+import org.colorcoding.ibas.bobas.approval.ApprovalException;
 import org.colorcoding.ibas.bobas.approval.ApprovalFactory;
 import org.colorcoding.ibas.bobas.approval.ApprovalProcess;
 import org.colorcoding.ibas.bobas.approval.ApprovalProcessManager;
@@ -139,21 +140,18 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 			return;
 		}
 		try {
-			ApprovalProcess<IProcessData> process = null;
 			if (!Enums.equals(this.getBeAffected().getStatus(), contract.getHost().getApprovalStatus())) {
-				// 请求状态与数据状态，不一致，则重开始流程
-				process = this.getProcessManager().startProcess(this.getBeAffected());
-				if (process != null) {
-					process.start(contract.getHost());
-					process.perfecting();
-				}
-			} else {
-				process = this.getProcessManager().startProcess(this.getBeAffected(), contract.getHost());
-				if (process != null) {
-					// 检查用户是否可以修改数据
-					process.checkToSave(this.getUser());
-					process.perfecting();
-				}
+				// 新建及可重入流程已在加载阶段同步状态，不允许通过提交状态重置已有流程。
+				throw new ApprovalException(I18N.prop("msg_bobas_approval_status_mismatch"));
+			}
+			ApprovalProcess<IProcessData> process = this.getProcessManager().startProcess(this.getBeAffected(),
+					contract.getHost());
+			if (process != null) {
+				// 检查用户是否可以修改数据
+				process.checkToSave(this.getUser());
+				// 正向编辑检查通过后同步关联信息，此分支的单据与请求审批状态一致。
+				process.getProcessData().setApprovalData(contract.getHost());
+				process.perfecting();
 			}
 		} catch (Exception e) {
 			throw new BusinessLogicException(e.getMessage(), e);
@@ -177,7 +175,7 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 				ITrackable trackable = (ITrackable) this.getTrigger();
 				if (trackable.isDeleted()) {
 					if (process == null) {
-						process = this.getProcessManager().startProcess(this.getBeAffected(), contract.getHost());
+						process = this.getProcessManager().startProcess(this.getBeAffected(), (IApprovalData) this.getTrigger());
 					}
 					if (process != null) {
 						process.checkToSave(this.getUser());
@@ -193,7 +191,7 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 				IBOTagDeleted tagDeleted = (IBOTagDeleted) this.getTrigger();
 				if (tagDeleted.getDeleted() == emYesNo.YES) {
 					if (process == null) {
-						process = this.getProcessManager().startProcess(this.getBeAffected(), contract.getHost());
+						process = this.getProcessManager().startProcess(this.getBeAffected(), (IApprovalData) this.getTrigger());
 					}
 					if (process != null) {
 						process.checkToSave(this.getUser());
@@ -216,10 +214,18 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 				IBOTagCanceled tagCanceled = (IBOTagCanceled) this.getTrigger();
 				if (tagCanceled.getCanceled() == emYesNo.YES) {
 					if (process == null) {
-						process = this.getProcessManager().startProcess(this.getBeAffected(), contract.getHost());
+						process = this.getProcessManager().startProcess(this.getBeAffected(), (IApprovalData) this.getTrigger());
 					}
 					if (process != null) {
 						process.checkToSave(this.getUser());
+						if (process.getStatus() == emApprovalStatus.APPROVED) {
+							// 取消已批准单据不取消审批流程，单据保留请求的已批准状态。
+							IApprovalData approvalData = (IApprovalData) this.getTrigger();
+							if (approvalData.getApprovalStatus() != process.getStatus()) {
+								approvalData.setApprovalStatus(process.getStatus());
+							}
+							return;
+						}
 						if (process.cancel(this.getUser().getToken(),
 								I18N.prop("msg_bobas_user_canceled_approval_data"))) {
 							if (this.getTrigger() instanceof IApprovalData) {
@@ -239,7 +245,7 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 				IBODocument document = (IBODocument) this.getTrigger();
 				if (document.getDocumentStatus() == emDocumentStatus.PLANNED) {
 					if (process == null) {
-						process = this.getProcessManager().startProcess(this.getBeAffected(), contract.getHost());
+						process = this.getProcessManager().startProcess(this.getBeAffected(), (IApprovalData) this.getTrigger());
 					}
 					if (process != null) {
 						process.checkToSave(this.getUser());
@@ -262,7 +268,7 @@ public class BOApprovalService extends BusinessLogic<IBOApprovalContract, IProce
 				IBODocumentLine document = (IBODocumentLine) this.getTrigger();
 				if (document.getLineStatus() == emDocumentStatus.PLANNED) {
 					if (process == null) {
-						process = this.getProcessManager().startProcess(this.getBeAffected(), contract.getHost());
+						process = this.getProcessManager().startProcess(this.getBeAffected(), (IApprovalData) this.getTrigger());
 					}
 					if (process != null) {
 						process.checkToSave(this.getUser());
